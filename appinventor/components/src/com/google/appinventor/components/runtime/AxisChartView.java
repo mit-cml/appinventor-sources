@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.charts.BarLineChartBase;
@@ -8,6 +13,15 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Base class for Chart Views (Chart UI) for Charts types that
+ * have an axis.
+ *
+ * @see com.google.appinventor.components.runtime.ChartView
+ * @param <C> Chart parameter (MPAndroidChart class for Chart view. Must be subclass of BarLineChartBase)
+ * @param <D> Chart Data parameter (MPAndroidChart class for Chart data series collection. Must extend
+ *            BarLineScatterCandleBubbleData)
+ */
 public abstract class AxisChartView<C extends BarLineChartBase,
     D extends BarLineScatterCandleBubbleData> extends ChartView<C, D> {
   // List containing Strings to use for the X Axis of the Axis Chart.
@@ -59,7 +73,8 @@ public abstract class AxisChartView<C extends BarLineChartBase,
 
   /**
    * Changes the visibility of the Chart grid.
-   * @param enabled  Indicates whether the grid should be shown.
+   *
+   * @param enabled Indicates whether the grid should be shown.
    */
   public void setGridEnabled(boolean enabled) {
     // Change the visibilities of the X Axis and the Y (right)
@@ -71,13 +86,13 @@ public abstract class AxisChartView<C extends BarLineChartBase,
   /**
    * Changes the List of X Axis labels to use for the Chart
    * to the specified List of Strings.
-   *
+   * <p>
    * The first entry of the List corresponds to an x value of 0,
    * the second entry to an x value of 1, and so on.
    * If an entry is not present for an x value, a default value
    * (usually the numeric value) is used instead.
    *
-   * @param labels  List of labels to apply to the X Axis
+   * @param labels List of labels to apply to the X Axis
    */
   public void setLabels(List<String> labels) {
     this.axisLabels = labels;

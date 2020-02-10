@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.ChartData;
@@ -8,6 +13,13 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Base class for data models that are used by Charts that
+ * use 2-dimensional data (e.g. Line or Scatter charts).
+ *
+ * @param <T> Chart Dataset parameter (MPAndroidChart class for single data series)
+ * @param <D> Chart Data parameter (MPAndroidChart class for collection of all data series)
+ */
 public abstract class Chart2DDataModel<T extends DataSet, D extends ChartData> extends ChartDataModel<T, D> {
   /**
    * Initializes a new Chart2DDataModel object instance.

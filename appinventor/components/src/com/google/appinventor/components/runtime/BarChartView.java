@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
@@ -12,6 +17,10 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
 import java.util.List;
 
+/**
+ * Class for handling the UI (view) of the Bar Chart for the Chart component.
+ * @see com.google.appinventor.components.runtime.ChartView
+ */
 public class BarChartView extends AxisChartView<BarChart, BarData> {
   // Constant for the starting value to group Bar Chart bars from
   private static final float START_X_VALUE = 0f;
@@ -105,14 +114,6 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
         (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
     chart.getXAxis().setGranularity(1f); // Granularity should be 1 (bars go from x values of 0, 1, ..., N)
-
-//    // The X Axis values should be rounded off (since x values are whole numbers)
-//    chart.getXAxis().setValueFormatter(new ValueFormatter() {
-//      @Override
-//      public String getFormattedValue(float value) {
-//        return String.valueOf((int) value);
-//      }
-//    });
   }
 
   @Override
@@ -167,30 +168,4 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
           chart.getData().getGroupWidth(GROUP_SPACE, barSpace) * maxEntries);
     }
   }
-
-
-//  @Override
-//  protected Runnable getRefreshRunnable() {
-//    return new Runnable() {
-//      @Override
-//      public void run() {
-//        // Regroup bars (if appropriate)
-//        regroupBars();
-//
-//        // Notify the Data component of data changes (needs to be called
-//        // when Datasets get changed directly)
-//        chart.getData().notifyDataChanged();
-//
-//        // Notify the Chart of Data changes (needs to be called
-//        // when Data objects get changed directly)
-//        chart.notifyDataSetChanged();
-//
-//        // Invalidate the Chart view for the changes to take
-//        // effect. NOTE: Most exceptions with regards to data
-//        // changing too fast occur as a result of calling the
-//        // invalidate method.
-//        chart.invalidate();
-//      }
-//    };
-//  }
 }

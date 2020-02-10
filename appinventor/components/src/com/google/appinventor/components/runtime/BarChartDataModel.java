@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Handles the data operations & model-specific styling for Bar
+ * Chart data for the Chart component.
+ * @see com.google.appinventor.components.runtime.ChartDataModel
+ */
 public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
   /**
    * Initializes a new ChartDataModel object instance.
