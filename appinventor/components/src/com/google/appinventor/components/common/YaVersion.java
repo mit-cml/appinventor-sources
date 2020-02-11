@@ -567,7 +567,7 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 28
   // - The dictionaries blocks were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 28;
+  public static final int BLOCKS_LANGUAGE_VERSION = 29;
 
   // ................................. Target SDK Version Number ..................................
 
