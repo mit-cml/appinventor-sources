@@ -1205,14 +1205,23 @@
                         result))))
     (reverse! (looper '()))))
 
+;;; The initial version of this function iterated over entries rather than
+;;; keys, which has getKey and getValue methods. Unfortunately, Kawa tries
+;;; to do the Java Bean thing and look up the fields directly rather than
+;;; calling the methods. This fails because the fields don't have the right
+;;; access modifiers for what Kawa wants to do. Now we use this less
+;;; efficient process by iterating over the keys and looking up the
+;;; corresponding value.
 (define (java-map->yail-dictionary jMap :: JavaMap)
-  (let ((iterator :: JavaIterator ((jMap:entrySet):iterator))
+  (let ((iterator :: JavaIterator ((jMap:keySet):iterator))
         (dict :: YailDictionary (YailDictionary)))
     (define (convert)
       (if (not (iterator:hasNext))
           dict
-          (let ((entry (iterator:next)))
-            (entry:setValue (santize-component-data (entry:getValue)))
+          (let ((key (iterator:next)))
+            (*:put dict
+                   key
+                   (sanitize-component-data (jMap:get key)))
             (convert))))
     (convert)))
 

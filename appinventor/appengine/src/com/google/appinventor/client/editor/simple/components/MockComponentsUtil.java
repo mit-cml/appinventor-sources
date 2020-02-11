@@ -1,14 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
-// import com.google.gwt.event.dom.client.LoadEvent;
-// import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -280,7 +277,10 @@ public final class MockComponentsUtil {
    *         0 and height at index 1.
    */
   static String[] clearSizeStyle(Widget w) {
-    Element element = w.getElement();
+    return clearSizeStyle(w.getElement());
+  }
+
+  static String[] clearSizeStyle(Element element) {
     String widthStyle = DOM.getStyleAttribute(element, "width");
     String heightStyle = DOM.getStyleAttribute(element, "height");
     String lineHeightStyle = DOM.getStyleAttribute(element, "lineHeight");
@@ -304,7 +304,10 @@ public final class MockComponentsUtil {
    *        and height at index 1.
    */
   static void restoreSizeStyle(Widget w, String[] style) {
-    Element element = w.getElement();
+    restoreSizeStyle(w.getElement(), style);
+  }
+
+  static void restoreSizeStyle(Element element, String[] style) {
     if (style[0] != null) {
       DOM.setStyleAttribute(element, "width", style[0]);
     }
@@ -365,6 +368,30 @@ public final class MockComponentsUtil {
     // Detach the widget from the DOM before returning
     RootPanel.get().remove(w);
 
+    return new int[] { width, height };
+  }
+
+  /**
+   * Returns the preferred size of the specified DOM element in an array of the
+   * form {@code [width, height]}.
+   *
+   * @see #getPreferredSizeOfDetachedWidget(Widget)
+   * @param element the DOM element to compute the size for
+   * @return the natural width and height of the element
+   */
+  public static int[] getPreferredSizeOfElement(Element element) {
+    Element root = RootPanel.get().getElement();
+    root.appendChild(element);
+
+    String[] style = clearSizeStyle(element);
+    int width = element.getOffsetWidth() + 4;
+    int height = element.getOffsetHeight() + 6;
+    if (height < 26) {
+      height = 26;
+    }
+    restoreSizeStyle(element, style);
+
+    root.removeChild(element);
     return new int[] { width, height };
   }
 
