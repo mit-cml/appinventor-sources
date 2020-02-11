@@ -106,8 +106,7 @@ public class DexExecTask {
         synchronized (semaphore) {
 
             final int count = inputs.size();
-            boolean successful = true;
-            for (int i = 0; i < count && successful; i++) {
+            for (int i = 0; i < count; i++) {
                 File input = inputs.get(i);
                 if (input.isFile()) {
                     // check if this libs needs to be pre-dexed
@@ -125,7 +124,8 @@ public class DexExecTask {
                         if (dexedLib.isFile()) {
                             dexedLib.delete();
                         }
-                        successful = runDx(input, dexedLibPath, /*showInputs=*/ false);
+                        boolean dxSuccess = runDx(input, dexedLibPath, /*showInputs=*/ false);
+                        if (!dxSuccess) return false;
                     } else {
                         System.out.println(
                                 String.format("Using Pre-Dexed %1$s <- %2$s",
@@ -136,7 +136,7 @@ public class DexExecTask {
                     inputs.set(i, dexedLib);
                 }
             }
-            return successful;
+            return true;
         }
     }
 
