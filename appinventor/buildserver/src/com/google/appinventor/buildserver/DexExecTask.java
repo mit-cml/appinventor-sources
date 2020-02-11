@@ -16,26 +16,25 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
 
 /**
  * Dex task, modified from the Android SDK to run in BuildServer.
  * Custom task to execute dx while handling dependencies.
  */
-public class DexExecTask  {
+public class DexExecTask {
 
     private String mExecutable;
     private String mOutput;
@@ -46,11 +45,12 @@ public class DexExecTask  {
     private boolean mDisableDexMerger = false;
     private static Map<String, String> alreadyChecked = new HashMap<String, String>();
 
-    private static Object semaphore = new Object(); // Used to protect dex cache creation
+    private static final Object semaphore = new Object(); // Used to protect dex cache creation
 
 
     /**
      * Sets the value of the "executable" attribute.
+     *
      * @param executable the value.
      */
     public void setExecutable(String executable) {
@@ -59,6 +59,7 @@ public class DexExecTask  {
 
     /**
      * Sets the value of the "verbose" attribute.
+     *
      * @param verbose the value.
      */
     public void setVerbose(boolean verbose) {
@@ -67,6 +68,7 @@ public class DexExecTask  {
 
     /**
      * Sets the value of the "output" attribute.
+     *
      * @param output the value.
      */
     public void setOutput(String output) {
@@ -79,6 +81,7 @@ public class DexExecTask  {
 
     /**
      * Sets the value of the "nolocals" attribute.
+     *
      * @param verbose the value.
      */
     public void setNoLocals(boolean nolocals) {
@@ -100,11 +103,11 @@ public class DexExecTask  {
             return true;
         }
 
-        synchronized(semaphore) {
+        synchronized (semaphore) {
 
             final int count = inputs.size();
-            boolean allSuccessful = true;
-            for (int i = 0 ; i < count; i++) {
+            boolean successful = true;
+            for (int i = 0; i < count && successful; i++) {
                 File input = inputs.get(i);
                 if (input.isFile()) {
                     // check if this libs needs to be pre-dexed
@@ -112,30 +115,28 @@ public class DexExecTask  {
                     File dexedLib = new File(mDexedLibs, fileName);
                     String dexedLibPath = dexedLib.getAbsolutePath();
 
-                    if (dexedLib.isFile() == false/*||
+                    if (!dexedLib.isFile()/*||
                                                     dexedLib.lastModified() < input.lastModified()*/) {
 
                         System.out.println(
-                            String.format("Pre-Dexing %1$s -> %2$s",
-                              input.getAbsolutePath(), fileName));
+                                String.format("Pre-Dexing %1$s -> %2$s",
+                                        input.getAbsolutePath(), fileName));
 
                         if (dexedLib.isFile()) {
                             dexedLib.delete();
                         }
-
-                        boolean dexSuccess = runDx(input, dexedLibPath, false /*showInput*/);
-                        allSuccessful = allSuccessful && dexSuccess;
+                        successful = runDx(input, dexedLibPath, /*showInputs=*/ false);
                     } else {
                         System.out.println(
-                            String.format("Using Pre-Dexed %1$s <- %2$s",
-                              fileName, input.getAbsolutePath()));
+                                String.format("Using Pre-Dexed %1$s <- %2$s",
+                                        fileName, input.getAbsolutePath()));
                     }
 
                     // replace the input with the pre-dex libs.
                     inputs.set(i, dexedLib);
                 }
             }
-            return allSuccessful;
+            return successful;
         }
     }
 
