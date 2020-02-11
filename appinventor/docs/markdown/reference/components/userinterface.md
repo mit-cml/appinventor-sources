@@ -1135,6 +1135,10 @@ This class is used to display a `Slider`.
  integer, i.e., `0xAARRGGBB`.  An alpha of `00`
  indicates fully transparent and `FF` means opaque.
 
+{:id="Slider.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `Slider`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
 {:id="Slider.MaxValue" .number} *MaxValue*
 : Sets the maximum value of slider. If the new maximum is less than the
  current minimum, then minimum and maximum will both be set to this value.
