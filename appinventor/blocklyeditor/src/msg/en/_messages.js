@@ -213,15 +213,11 @@ Blockly.Msg.en.switch_language_to_english = {
         + 'the list.  Use the given variable name to refer to the current list item.';
 
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL = '/reference/blocks/control.html#foreachdict';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_ITEM = 'for each';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY = 'key';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_WITH = 'with';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE = 'value';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_INDICT = 'in dictionary';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT = 'for each %1 with %2 in dictionary %3';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO = 'do';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_COLLAPSED_TEXT = 'for key with value in dictionary';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_COLLAPSED_PREFIX = 'for';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_COLLAPSED_SUFFIX = ' in dictionary';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY = 'key';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE = 'value';
+    // Used by the typeblock system.
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE = 'for each in dictionary';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP =
         'Runs the blocks in the \'do\' section for each key-value entry in the dictionary.'

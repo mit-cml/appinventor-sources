@@ -422,25 +422,20 @@ Blockly.Blocks['controls_for_each_dict'] = {
   helpUrl: Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL,
 
   init: function() {
-    console.log('init');
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('DICT')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType(
-            'dictionary', Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_ITEM)
-        .appendField(
-            new Blockly.FieldParameterFlydown(
-                Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY,
-                true, Blockly.FieldFlydown.DISPLAY_BELOW),
-            'KEY')
-        .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_WITH)
-        .appendField(
-            new Blockly.FieldParameterFlydown(
-                Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE,
-                true, Blockly.FieldFlydown.DISPLAY_BELOW),
-            'VALUE')
-        .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_INDICT)
-        .setAlign(Blockly.ALIGN_RIGHT);
+    var checkTypeDict = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
+        'dictionary', Blockly.Blocks.Utilities.INPUT);
+    var keyField = new Blockly.FieldParameterFlydown(
+        Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY,
+        true, Blockly.FieldFlydown.DISPLAY_BELOW);
+    var valueField = new Blockly.FieldParameterFlydown(
+        Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE,
+        true, Blockly.FieldFlydown.DISPLAY_BELOW);
+    this.interpolateMsg(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT,
+        ['KEY', keyField],
+        ['VALUE', valueField],
+        ['DICT', checkTypeDict, Blockly.ALIGN_LEFT],
+        Blockly.ALIGN_LEFT);
     this.appendStatementInput('DO')
         .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO);
     this.setPreviousStatement(true);
@@ -449,12 +444,10 @@ Blockly.Blocks['controls_for_each_dict'] = {
   },
 
   getVars: function () {
-    console.log('get vars');
     return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
   },
 
   blocksInScope: function () {
-    console.log('get in scope');
     var doBlock = this.getInputTargetBlock('DO');
     if (doBlock) {
       return [doBlock];
@@ -464,12 +457,10 @@ Blockly.Blocks['controls_for_each_dict'] = {
   },
 
   declaredNames: function () {
-    console.trace('declared names');
     return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
   },
 
   renameVar: function (oldName, newName) {
-    console.log('rename var: ', oldName, newName);
     if (Blockly.Names.equals(oldName, this.getFieldValue('KEY'))) {
       this.setFieldValue(newName, 'KEY');
     }
@@ -479,7 +470,6 @@ Blockly.Blocks['controls_for_each_dict'] = {
   },
 
   renameBound: function (boundSubstitution, freeSubstitution) {
-    console.log('bound substitution: ', boundSubstitution, freeSubstitution);
     Blockly.LexicalVariable.renameFree(
         this.getInputTargetBlock('DICT'), freeSubstitution);
 
@@ -507,7 +497,6 @@ Blockly.Blocks['controls_for_each_dict'] = {
   },
 
   renameFree: function (freeSubstitution) {
-    console.log('free substitution: ', freeSubstitution);
     var bodyFreeVars = Blockly.LexicalVariable.freeVariables(
         this.getInputTargetBlock('DO'));
 
@@ -543,7 +532,6 @@ Blockly.Blocks['controls_for_each_dict'] = {
       var nextBlock = this.nextConnection.targetBlock();
       result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
     }
-    console.log('free result: ', result);
 
     return result;
   },
