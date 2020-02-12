@@ -438,6 +438,7 @@ Blockly.Blocks['controls_for_each_dict'] = {
         Blockly.ALIGN_LEFT);
     this.appendStatementInput('DO')
         .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO);
+    this.setInputsInline(false);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP);
