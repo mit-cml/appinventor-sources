@@ -608,7 +608,7 @@ public class YailEvalTest extends TestCase {
   public void testForEachDict() throws Throwable {
     /* test for_each_dict block */
     String schemeInputString = "(begin " +
-        "(def x 0)" +
+        "(def x 0) " +
         "(foreach y " +
         " (let " +
         "   ( " +
@@ -632,15 +632,16 @@ public class YailEvalTest extends TestCase {
         "  ) " +
         "  (call-yail-primitive make-yail-dictionary " +
         "   (*list-for-runtime* " +
-        "    (call-yail-primitive make-ke-dictionary-pair " +
+        "    (call-yail-primitive make-dictionary-pair " +
         "     (*list-for-runtime* 1 2 ) '(key any)  \"make a pair\" " +
         "    ) " +
-        "    (call-yail-primitive make-ke-dictionary-pair " +
+        "    (call-yail-primitive make-dictionary-pair " +
         "     (*list-for-runtime* 3 4 ) '(key any)  \"make a pair\" " +
         "    ) " +
-        "   )" +
-        "  ) '(pair pair ) \"make a dictionary\"" +
+        "   ) '(pair pair ) \"make a dictionary\"" +
+        "  ) " +
         " ) " +
+        " (get-var x) " +
         ") ";
     String schemeResultString = "10";
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
