@@ -165,7 +165,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
       form.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          form.askPermission(new BulkPermissionRequest(me, "AudioRecord",
+          form.askPermission(new BulkPermissionRequest(me, "Start",
                   Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
             @Override
             public void onGranted() {
