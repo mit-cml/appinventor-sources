@@ -1083,8 +1083,8 @@ Blockly.LexicalVariable.getEventParam = function (block) {
     var name = prefixPair[1];
     var child = block;
     var parent = block.getParent();
-    var type = parent.type;
     while (parent) {
+       var type = parent.type;
        // Walk up ancestor tree to determine if name is an event parameter name.
        if (type === "component_event") {
          var componentDb = block.getTopWorkspace().getComponentDatabase();
