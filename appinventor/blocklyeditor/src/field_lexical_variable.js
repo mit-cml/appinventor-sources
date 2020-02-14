@@ -675,17 +675,20 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturables = function (source
 //  }
   var sourcePrefix = "";
   if (Blockly.showPrefixToUser) {
-    if (sourceBlock.type == "procedures_mutatorarg"
-        || sourceBlock.type == "procedures_defnoreturn"
-        || sourceBlock.type == "procedures_defreturn") {
+    var type = sourceBlock.type;
+    if (type == "procedures_mutatorarg"
+        || type == "procedures_defnoreturn"
+        || type == "procedures_defreturn") {
       sourcePrefix = Blockly.procedureParameterPrefix;
-    } else if (sourceBlock.type == "controls_forEach") {
+    } else if (type == "controls_forEach") {
       sourcePrefix = Blockly.loopParameterPrefix;
-    } else if ( sourceBlock.type == "controls_forRange") {
+    } else if (type == "controls_for_each_dict") {
+      sourcePrefix = Blockly.loopKeyParameterPrefix;
+    } else if (type == "controls_forRange") {
       sourcePrefix = Blockly.loopRangeParameterPrefix;
-    } else if (sourceBlock.type == "local_declaration_statement"
-               || sourceBlock.type == "local_declaration_expression"
-               || sourceBlock.type == "local_mutatorarg") {
+    } else if (type == "local_declaration_statement"
+        || type == "local_declaration_expression"
+        || type == "local_mutatorarg") {
       sourcePrefix = Blockly.localNamePrefix;
     }
   }
@@ -875,7 +878,26 @@ Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
     var listResults = Blockly.LexicalVariable.referenceResult(block.getInputTargetBlock('LIST'), name, prefix, env);
     var doResults = Blockly.LexicalVariable.referenceResult(block.getInputTargetBlock('DO'), name, prefix, newEnv);
     var nextResults = Blockly.LexicalVariable.referenceResult(Blockly.LexicalVariable.getNextTargetBlock(block), name, prefix, env);
-    referenceResults = [listResults,doResults,nextResults];
+    referenceResults = [listResults, doResults, nextResults];
+  } else if (block.type == "controls_for_each_dict") {
+    var keyVar = block.getFieldValue('KEY');
+    var valueVar = block.getFieldValue('VALUE');
+    if (Blockly.usePrefixInYail) {
+      var keyFunc = Blockly.possiblyPrefixMenuNameWith(
+          Blockly.loopKeyParameterPrefix);
+      var valueFunc = Blockly.possiblyPrefixMenuNameWith(
+          Blockly.loopValueParameterPrefix);
+      keyVar = keyFunc(keyVar);
+      valueVar = valueFunc(valueVar);
+    }
+    var newEnv = env.concat([loopVar]);
+    var dictResults = Blockly.LexicalVariable.referenceResult(
+        block.getInputTargetBlock('DICT'), name, prefix, env);
+    var doResults = Blockly.LexicalVariable.referenceResult(
+        block.getInputTargetBlock('DO'), name, prefix, newEnv);
+    var nextResults = Blockly.LexicalVariable.referenceResult(
+        block.getNextBlock(), name, prefix, env);
+    referenceResults = [dictResults, doResults, nextResults];
   } else if (block.type === "controls_forRange") {
     var loopVar = block.getFieldValue('VAR');
     if (Blockly.usePrefixInYail) { // Invariant: Blockly.showPrefixToUser must also be true!
@@ -1061,9 +1083,10 @@ Blockly.LexicalVariable.getEventParam = function (block) {
     var name = prefixPair[1];
     var child = block;
     var parent = block.getParent();
+    var type = parent.type;
     while (parent) {
        // Walk up ancestor tree to determine if name is an event parameter name.
-       if (parent.type === "component_event") {
+       if (type === "component_event") {
          var componentDb = block.getTopWorkspace().getComponentDatabase();
          var untranslatedEventParams = parent.getParameters().map( function(param) {return param.name;});
          var translatedEventParams =  untranslatedEventParams.map(
@@ -1076,20 +1099,21 @@ Blockly.LexicalVariable.getEventParam = function (block) {
          } else {
            return null;
          }
-       } else if ( ( parent.type === "local_declaration_expression"
+       } else if ((type === "local_declaration_expression"
           && parent.getInputTargetBlock('RETURN') == child ) // only body is in scope of names
-          || ( parent.type === "local_declaration_statement"
+          || (type === "local_declaration_statement"
           && parent.getInputTargetBlock('STACK') == child ) // only body is in scope of names
            ) {
           var params = parent.getVars(); // [lyn, 10/13/13] Names from block, not localNames_ instance var
           if (params.indexOf(name) != -1) {
             return null; // Name is locally bound, not an event parameter.
           }
-       } else if ( ( (parent.type === "controls_forEach") || (parent.type === "controls_forRange") )
-                   && (parent.getInputTargetBlock('DO') == child) ) { // Only DO is in scope, not other inputs!
+       } else if ((type === "controls_forEach"
+           || type === "controls_forRange" || type === "controls_for_each_dict")
+           && (parent.getInputTargetBlock('DO') == child) ) { // Only DO is in scope, not other inputs!
          var loopName = parent.getFieldValue('VAR');
-           if (loopName == name) {
-             return null; // Name is locally bound, not an event parameter.
+         if (loopName == name) {
+           return null; // Name is locally bound, not an event parameter.
          }
        }
       child = parent;
