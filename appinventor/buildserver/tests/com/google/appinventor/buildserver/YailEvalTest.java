@@ -10,11 +10,9 @@ import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import gnu.math.DFloNum;
 import gnu.math.IntNum;
+import java.util.Random;
 import junit.framework.TestCase;
 import kawa.standard.Scheme;
-
-import java.util.Random;
-
 
 /**
  * Tests the evaluation of various YAIL code.
@@ -1143,21 +1141,21 @@ public class YailEvalTest extends TestCase {
    }
 
    public void testTrigonometricIdentities() throws Throwable {
-       Random random = new Random();
-       double theta = 90 * random.nextDouble();
+     Random random = new Random();
+     double theta = 90 * random.nextDouble();
 
-       String sinExpression = "(" + "sin-degrees" + " " + theta + ")";
-       Object sinResult = scheme.eval(sinExpression);
-       String cosExpression = "(" + "cos-degrees" + " " + theta + ")";
-       Object cosResult = scheme.eval(cosExpression);
-       String tanExpression = "(" + "tan-degrees" + " " + theta + ")";
-       Object tanResult = scheme.eval(tanExpression);
+     String sinExpression = "(" + "sin-degrees" + " " + theta + ")";
+     Object sinResult = scheme.eval(sinExpression);
+     String cosExpression = "(" + "cos-degrees" + " " + theta + ")";
+     Object cosResult = scheme.eval(cosExpression);
+     String tanExpression = "(" + "tan-degrees" + " " + theta + ")";
+     Object tanResult = scheme.eval(tanExpression);
 
-       double sin = Double.parseDouble(String.valueOf(sinResult));
-       double cos = Double.parseDouble(String.valueOf(cosResult));
-       double tan = Double.parseDouble(String.valueOf(tanResult));
+     double sin = Double.parseDouble(String.valueOf(sinResult));
+     double cos = Double.parseDouble(String.valueOf(cosResult));
+     double tan = Double.parseDouble(String.valueOf(tanResult));
 
-       assertEquals(tan * cos, sin, DELTA);
+     assertEquals(tan * cos, sin, DELTA);
   }
 
   // These constant definitions make the below tests more readable.
