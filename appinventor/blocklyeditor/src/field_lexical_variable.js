@@ -683,7 +683,11 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturables = function (source
     } else if (type == "controls_forEach") {
       sourcePrefix = Blockly.loopParameterPrefix;
     } else if (type == "controls_for_each_dict") {
-      sourcePrefix = Blockly.loopKeyParameterPrefix;
+      if (oldName == sourceBlock.getFieldValue('KEY')) {
+        sourcePrefix = Blockly.loopKeyParameterPrefix;
+      } else {
+        sourcePrefix = Blockly.loopValueParameterPrefix;
+      }
     } else if (type == "controls_forRange") {
       sourcePrefix = Blockly.loopRangeParameterPrefix;
     } else if (type == "local_declaration_statement"
