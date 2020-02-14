@@ -120,9 +120,9 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns true when the Serial connection is open.")
-  public boolean Opened() {
+  public boolean IsOpen() {
     if (mPhysicaloid == null) {
-      form.dispatchErrorOccurredEvent(Serial.this, "Opened", ErrorMessages.ERROR_SERIAL_NOT_INITIALIZED);
+      form.dispatchErrorOccurredEvent(Serial.this, "IsOpen", ErrorMessages.ERROR_SERIAL_NOT_INITIALIZED);
       return false;
     }
     return mPhysicaloid.isOpened();
