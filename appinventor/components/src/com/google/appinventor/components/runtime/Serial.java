@@ -133,8 +133,7 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
     return mPhysicaloid != null;
   }
 
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-    description = "Returns the current baud rate")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns the current baud rate")
   public int BaudRate() {
     return this.baudRate;
   }
