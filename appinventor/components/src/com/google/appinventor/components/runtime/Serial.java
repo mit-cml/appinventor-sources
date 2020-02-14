@@ -102,9 +102,9 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
   }
 
   @SimpleFunction(description = "Writes given data to serial.")
-  public void WriteSerial(String writeDataSerial) {
-    if (!writeDataSerial.isEmpty() && mPhysicaloid != null) {
-      byte[] buf = writeDataSerial.getBytes();
+  public void WriteSerial(String data) {
+    if (!data.isEmpty() && mPhysicaloid != null) {
+      byte[] buf = data.getBytes();
       int result = mPhysicaloid.write(buf);
       if (result == -1)
         form.dispatchErrorOccurredEvent(Serial.this, "WriteSerial", ErrorMessages.ERROR_SERIAL_WRITING);
@@ -114,9 +114,9 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
   }
 
   @SimpleFunction(description = "Writes given data to serial, and appends a new line at the end.")
-  public void PrintSerial(String writeDataSerial) {
-    if (!writeDataSerial.isEmpty())
-      WriteSerial(writeDataSerial + "\n");
+  public void PrintSerial(String data) {
+    if (!data.isEmpty())
+      WriteSerial(data + "\n");
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns true when the Serial connection is open.")
