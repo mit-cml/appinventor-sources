@@ -241,7 +241,7 @@ import Toast_Swift
     PrimaryColorDark = Int32(bitPattern: 0xFF303F9F)
     Theme = "Classic"
     Scrollable = false
-    Sizing = "Fixed"
+    Sizing = "Responsive"
     BackgroundImage = ""
     AboutScreen = ""
     BackgroundColor = Int32(bitPattern: Color.default.rawValue)
@@ -250,7 +250,7 @@ import Toast_Swift
     self.title = ""
     ShowStatusBar = true
     TitleVisible = true
-    ShowListsAsJson = false
+    ShowListsAsJson = true
     ScreenOrientation = "unspecified"
   }
   
