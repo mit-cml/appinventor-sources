@@ -25,6 +25,7 @@ import java.util.Map;
 public final class ProjectManager {
   // Map to find the project from a project ID.
   private final Map<Long, Project> projectsMap;
+  private final Map<Long, Project> deletedProjectsMap;
 
   // List of listeners for any project manager events.
   private final List<ProjectManagerEventListener> projectManagerEventListeners;
@@ -39,18 +40,20 @@ public final class ProjectManager {
    */
   public ProjectManager() {
     projectsMap = new HashMap<Long, Project>();
+    deletedProjectsMap = new HashMap<Long, Project>();
     projectManagerEventListeners = new ArrayList<ProjectManagerEventListener>();
     Ode.getInstance().getProjectService().getProjectInfos(
-        new OdeAsyncCallback<List<UserProject>>(
+      new OdeAsyncCallback<List<UserProject>>(
         MESSAGES.projectInformationRetrievalError()) {
-      @Override
-      public void onSuccess(List<UserProject> projectInfos) {
-        for (UserProject projectInfo : projectInfos) {
-          addProject(projectInfo);
+        @Override
+        public void onSuccess(List<UserProject> projectInfos) {
+          for (UserProject projectInfo : projectInfos) {
+            if(!projectInfo.getProjectMovedToTrashFlag()){addProject(projectInfo);}
+            else{addDeletedProject(projectInfo);}
+          }
+          fireProjectsLoaded();
         }
-        fireProjectsLoaded();
-      }
-    });
+      });
   }
 
   /**
@@ -62,6 +65,16 @@ public final class ProjectManager {
     List<Project> projects = new ArrayList<Project>();
 
     for (Project project : projectsMap.values()) {
+      projects.add(project);
+    }
+
+    return projects;
+  }
+
+  public List<Project> getDeletedProjects() {
+    List<Project> projects = new ArrayList<Project>();
+
+    for (Project project : deletedProjectsMap.values()) {
       projects.add(project);
     }
 
@@ -116,6 +129,22 @@ public final class ProjectManager {
   }
 
   /**
+   * Returns the trash project for the given project name.
+   *
+   * @param name  trash project name
+   * @return  the corresponding project or {@code null}
+   */
+  public Project getTrashProject(String name) {
+    for (Project project : deletedProjectsMap.values()) {
+      if (project.getProjectName().equals(name)) {
+        return project;
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * Returns the project for the given project ID.
    *
    * @param projectId project ID
@@ -139,6 +168,18 @@ public final class ProjectManager {
   }
 
   /**
+   * Adds a deleted project to this project manager.
+   *
+   * @param projectInfo information about the project
+   * @return deleted project
+   */
+  public void addDeletedProject(UserProject projectInfo) {
+    Project project= new Project(projectInfo);
+    deletedProjectsMap.put(projectInfo.getProjectId(), project);
+    fireDeletedProjectAdded(project);
+  }
+
+  /**
    * Removes the given project.
    *
    * @param projectId project ID
@@ -147,6 +188,31 @@ public final class ProjectManager {
     Project project = projectsMap.remove(projectId);
     fireProjectRemoved(project);
   }
+
+  /**
+   * Removes the project from trash permanently.
+   *
+   * @param projectId project ID
+   */
+
+  public void removeDeletedProject(long projectId) {
+    Project project = deletedProjectsMap.remove(projectId);
+    fireDeletedProjectRemoved(project);
+  }
+
+  /**
+   * Restores the project from trash back to my projects.
+   *
+   * @param projectId project ID
+   */
+
+  public void restoreDeletedProject(long projectId) {
+    Project project=deletedProjectsMap.remove(projectId);
+    projectsMap.put(projectId, project);
+    fireDeletedProjectRemoved(project);
+    fireProjectAdded(project);
+  }
+
 
   /**
    * Handles situation when a project has been published
@@ -160,7 +226,7 @@ public final class ProjectManager {
     projectsMap.put(projectId, project);
     fireProjectPublishedOrUnpublished();
   }
-    /**
+  /**
    * Handles situation when a project has been published
    *
    * @param projectId project ID
@@ -213,11 +279,29 @@ public final class ProjectManager {
   }
 
   /*
+   * Triggers a 'project added' event to be sent to the listener on the listener list.
+   */
+  private void fireDeletedProjectAdded(Project project) {
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+      listener.onDeletedProjectAdded(project);
+    }
+  }
+
+  /*
    * Triggers a 'project removed' event to be sent to the listener on the listener list.
    */
   private void fireProjectRemoved(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onProjectRemoved(project);
+    }
+  }
+
+  /*
+   * Triggers a 'project removed' event to be sent to the listener on the listener list.
+   */
+  private void fireDeletedProjectRemoved(Project project) {
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+      listener.onDeletedProjectRemoved(project);
     }
   }
 

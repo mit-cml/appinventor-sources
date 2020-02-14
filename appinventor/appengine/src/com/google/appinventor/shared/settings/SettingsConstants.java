@@ -27,6 +27,8 @@ public class SettingsConstants {
   // a particular message to a particular user.
   public static final String DISABLED_USER_URL = "DisabledUserUrl";
   public static final String USER_LAST_LOCALE = "LastLocale";
+  public static final String USER_DYSLEXIC_FONT = "DyslexicFont";
+  public static final String USER_AUTOLOAD_PROJECT = "AutoloadLastProject";
 
   public static final String SPLASH_SETTINGS = "SplashSettings";
 
@@ -44,6 +46,7 @@ public class SettingsConstants {
   // Project settings
   public static final String YOUNG_ANDROID_SETTINGS_ICON = "Icon";
   public static final String YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS = "ShowHiddenComponents";
+  public static final String YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP = "ScreenCheckboxStateMap";
   public static final String YOUNG_ANDROID_SETTINGS_PHONE_TABLET = "PhoneTablet";
   public static final String YOUNG_ANDROID_SETTINGS_VERSION_CODE = "VersionCode";
   public static final String YOUNG_ANDROID_SETTINGS_VERSION_NAME = "VersionName";

@@ -37,7 +37,6 @@
   <servlet path="/components" class="com.google.appinventor.server.ComponentServiceImpl" />
   <servlet path="/download" class="com.google.appinventor.server.DownloadServlet" />
   <servlet path="/getmotd" class="com.google.appinventor.server.GetMotdServiceImpl" />
-  <servlet path="/help" class="com.google.appinventor.server.HelpServiceImpl" />
   <servlet path="/projects" class="com.google.appinventor.server.ProjectServiceImpl" />
   <servlet path="/upload" class="com.google.appinventor.server.UploadServlet" />
   <servlet path="/userinfo" class="com.google.appinventor.server.UserInfoServiceImpl" />
@@ -83,7 +82,6 @@
   <source path="shared/youngandroid"/>
   <source path="shared/properties/json"/>
   <source path="shared/rpc/component"/>
-  <source path="shared/rpc/help"/>
   <source path="shared/rpc/launch"/>
   <source path="shared/rpc/project"/>
   <source path="shared/rpc/user"/>

@@ -360,30 +360,38 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
   }
 };
 
+Blockly.ComponentDatabase.PROPDESC = /PropertyDescriptions$/;
+Blockly.ComponentDatabase.METHODDESC = /MethodDescrptions$/;
+Blockly.ComponentDatabase.EVENTDESC = /EventDescriptions$/;
+
 /**
  * Populate the tranlsations for components.
  * @param translations
  */
 Blockly.ComponentDatabase.prototype.populateTranslations = function(translations) {
+  var newkey;
   for (var key in translations) {
     if (translations.hasOwnProperty(key)) {
       var parts = key.split('-', 2);
-      if (parts[0] == 'COMPONENT') {
+      if (parts[0] === 'COMPONENT') {
         this.i18nComponentTypes_[parts[1]] = translations[key];
-      } else if (parts[0] == 'PROPERTY') {
+      } else if (parts[0] === 'PROPERTY') {
         this.i18nPropertyNames_[parts[1]] = translations[key];
-      } else if (parts[0] == 'EVENT') {
+      } else if (parts[0] === 'EVENT') {
         this.i18nEventNames_[parts[1]] = translations[key];
-      } else if (parts[0] == 'METHOD') {
+      } else if (parts[0] === 'METHOD') {
         this.i18nMethodNames_[parts[1]] = translations[key];
-      } else if (parts[0] == 'PARAM') {
+      } else if (parts[0] === 'PARAM') {
         this.i18nParamNames_[parts[1]] = translations[key];
-      } else if (parts[0] == 'EVENTDESC') {
+      } else if (parts[0] === 'EVENTDESC') {
+        newkey = parts[1].replace(Blockly.ComponentDatabase.EVENTDESC, '');
         this.i18nEventDescriptions_[parts[1]] = translations[key];
-      } else if (parts[0] == 'METHDESC') {
-        this.i18nMethodDescriptions_[parts[1]] = translations[key];
-      } else if (parts[0] == 'PROPDESC') {
-        this.i18nPropertyDescriptions_[parts[1]] = translations[key];
+      } else if (parts[0] === 'METHODDESC') {
+        newkey = parts[1].replace(Blockly.ComponentDatabase.METHODDESC, '');
+        this.i18nMethodDescriptions_[newkey] = translations[key];
+      } else if (parts[0] === 'PROPDESC') {
+        newkey = parts[1].replace(Blockly.ComponentDatabase.PROPDESC, '');
+        this.i18nPropertyDescriptions_[newkey] = translations[key];
       }
     }
   }
@@ -521,8 +529,8 @@ Blockly.ComponentDatabase.prototype.getInternationalizedEventName = function(nam
  * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
-Blockly.ComponentDatabase.prototype.getInternationalizedEventDescription = function(name, opt_default) {
-  return this.i18nEventDescriptions_[name] || opt_default || name;
+Blockly.ComponentDatabase.prototype.getInternationalizedEventDescription = function(component, name, opt_default) {
+  return this.i18nEventDescriptions_[component + '.' + name] || this.i18nEventDescriptions_[name] || opt_default || name;
 };
 
 /**
@@ -541,8 +549,8 @@ Blockly.ComponentDatabase.prototype.getInternationalizedMethodName = function(na
  * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
-Blockly.ComponentDatabase.prototype.getInternationalizedMethodDescription = function(name, opt_default) {
-  return this.i18nMethodDescriptions_[name] || opt_default || name;
+Blockly.ComponentDatabase.prototype.getInternationalizedMethodDescription = function(component, name, opt_default) {
+  return this.i18nMethodDescriptions_[component + '.' + name] || this.i18nMethodDescriptions_[name] || opt_default || name;
 };
 
 /**
@@ -571,6 +579,6 @@ Blockly.ComponentDatabase.prototype.getInternationalizedPropertyName = function(
  * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.
  */
-Blockly.ComponentDatabase.prototype.getInternationalizedPropertyDescription = function(name, opt_default) {
-  return this.i18nPropertyDescriptions_[name] || opt_default || name;
+Blockly.ComponentDatabase.prototype.getInternationalizedPropertyDescription = function(component, name, opt_default) {
+  return this.i18nPropertyDescriptions_[component + '.' + name] || this.i18nPropertyDescriptions_[name] || opt_default || name;
 };

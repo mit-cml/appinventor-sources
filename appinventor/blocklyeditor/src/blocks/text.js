@@ -37,6 +37,8 @@ Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection) {
       return true;
     } else if (otherTypeArray[i] == "Number" && !isNaN(parseFloat(block.getFieldValue('TEXT')))) {
       return true;
+    } else if (otherTypeArray[i] == "Key") {
+      return true;
     }
   }
   return false;

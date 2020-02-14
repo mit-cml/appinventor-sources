@@ -37,6 +37,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * `Polygon` encloses an arbitrary 2-dimensional area on a {@link Map}. `Polygon`s can be used for
+ * drawing a perimeter, such as a campus, city, or country. `Polygon`s begin as basic triangles.
+ * New vertices can be created by dragging the midpoint of a polygon away from the edge. Clicking
+ * on a vertex will remove the vertex, but a minimum of 3 vertices must exist at all times.
+ */
 @DesignerComponent(version = YaVersion.POLYGON_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
     description = "Polygon")
@@ -110,7 +116,8 @@ public class Polygon extends PolygonBase implements MapPolygon {
 
   @Override
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "The type of the feature. For polygons, this returns the text \"Polygon\".")
+      description = "Returns the type of the feature. For polygons, this returns the text "
+          + "\"Polygon\".")
   public String Type() {
     return MapFactory.MapFeatureType.TYPE_POLYGON;
   }
@@ -134,6 +141,12 @@ public class Polygon extends PolygonBase implements MapPolygon {
     }
   }
 
+  /**
+   * Specifies the Points used for drawing the `Polygon`. The Points are specified as a list of
+   * lists containing latitude and longitude values, such as `[[lat1, long1], [lat2, long2], ...]`.
+   *
+   * @param points a list of points defining the polygon.
+   */
   @Override
   @SimpleProperty
   public void Points(YailList points) {
@@ -158,8 +171,14 @@ public class Polygon extends PolygonBase implements MapPolygon {
     }
   }
 
+  /**
+   * Specifies the points for the `Polygon` from a GeoJSON string. Unlike {@link #Points(YailList)},
+   * this property expects that the longitude comes first in the point rather than the latitude.
+   *
+   * @param pointString
+   */
   @SuppressWarnings("squid:S00100")
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
   @SimpleProperty(description = "Constructs a polygon from the given list of coordinates.")
   public void PointsFromString(String pointString) {
     if (TextUtils.isEmpty(pointString)) {
@@ -191,7 +210,8 @@ public class Polygon extends PolygonBase implements MapPolygon {
   }
 
   @Override
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Gets or sets the sequence of points used to draw holes in the polygon.")
   public YailList HolePoints() {
     if (holePoints.isEmpty()) {
       return YailList.makeEmptyList();
@@ -206,6 +226,12 @@ public class Polygon extends PolygonBase implements MapPolygon {
     }
   }
 
+  /**
+   * Specifies the points of any holes in the `Polygon`. The `HolePoints` property is a list of
+   * lists, with each sublist containing `(latitude, longitude)` points representing a hole.
+   *
+   * @param points a list of lists of lists defining the holes in each part of the multipolygon.
+   */
   @Override
   @SimpleProperty
   public void HolePoints(YailList points) {
@@ -232,8 +258,15 @@ public class Polygon extends PolygonBase implements MapPolygon {
     }
   }
 
+  /**
+   * Specifies holes in a `Polygon`from a GeoJSON string. In contrast to
+   * {@link #HolePoints(YailList)}, the longitude of each point comes before the latitude as
+   * stated in the GeoJSON specification.
+   *
+   * @param pointString
+   */
   @SuppressWarnings("squid:S00100")
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
   @SimpleProperty(description = "Constructs holes in a polygon from a given list of coordinates per hole.")
   public void HolePointsFromString(String pointString) {
     if (TextUtils.isEmpty(pointString)) {
@@ -261,6 +294,9 @@ public class Polygon extends PolygonBase implements MapPolygon {
     }
   }
 
+  /**
+   * Gets the centroid of the `Polygon` as a `(latitude, longitude)` pair.
+   */
   @Override
   @SimpleFunction(description = "Returns the centroid of the Polygon as a (latitude, longitude) pair.")
   public YailList Centroid() {

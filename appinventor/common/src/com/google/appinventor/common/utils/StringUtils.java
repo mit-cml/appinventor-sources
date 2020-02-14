@@ -329,4 +329,21 @@ public final class StringUtils {
     }
     return count;
   }
+
+  /* <p>Checks if text is null or empty ("")</p>
+   *
+   * <pre>
+   * StringUtils.isNullOrEmpty(null)      = true
+   * StringUtils.isNullOrEmpty("")        = true
+   * StringUtils.isNullOrEmpty(" ")       = false
+   * StringUtils.isNullOrEmpty("bob")     = false
+   * StringUtils.isNullOrEmpty("  bob  ") = false
+   * </pre>
+   *
+   * @param text  the String to check, may be null
+   * @return {@code true} if the text is empty or null
+   */
+  public static boolean isNullOrEmpty(final String text) {
+     return text == null || text.isEmpty();
+  }
 }
