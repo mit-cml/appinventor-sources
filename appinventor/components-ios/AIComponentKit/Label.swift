@@ -10,7 +10,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _bold = false
   fileprivate var _italic = false
   fileprivate var _hasMargins = false
-  fileprivate var _htmlContent: String? = nil
+  fileprivate var _htmlContent: String = ""
   fileprivate var _htmlFormat = false
   
   public override init(_ parent: ComponentContainer) {
@@ -79,6 +79,9 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     set(bold) {
       _bold = bold
       _view.font = getFontTrait(font: _view.font, trait: .traitBold, shouldSet: bold)
+      if _htmlFormat {
+        updateFormattedContent()
+      }
     }
   }
   
@@ -89,6 +92,9 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     set(italic) {
       _italic = italic
       _view.font = getFontTrait(font: _view.font, trait: .traitItalic, shouldSet: italic)
+      if _htmlFormat {
+        updateFormattedContent()
+      }
     }
   }
   
@@ -111,6 +117,9 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     set(size) {
       _view.font = _view.font.withSize(CGFloat(size))
       _view.sizeToFit()
+      if _htmlFormat {
+        updateFormattedContent()
+      }
     }
   }
   
@@ -124,32 +133,20 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
           _typeface = type
           _view.font = getFontTypeface(font: _view.font, typeFace: type)
         }
+        if _htmlFormat {
+          updateFormattedContent()
+        }
       }
     }
   }
   
   @objc public var Text: String {
     get {
-      if let text = _view.text {
-        return text
-      } else {
-        return ""
-      }
+      return _view.text ?? ""
     }
     set(text) {
       _htmlContent = text
-      if _htmlFormat {
-        let data = text.data(using: .utf8) ?? Data()
-        var options = [NSAttributedString.DocumentReadingOptionKey:Any]()
-        options[NSAttributedString.DocumentReadingOptionKey.documentType] =
-          NSAttributedString.DocumentType.html
-        _view.attributedText = try? NSAttributedString(data: data,
-                                                       options: options,
-                                                       documentAttributes: nil)
-      } else {
-        _view.text = text
-        _view.widthAnchor.constraint(equalToConstant:_view.intrinsicContentSize.width).isActive = true
-      }
+      updateFormattedContent()
       _view.setNeedsUpdateConstraints()
       _view.setNeedsLayout()
       _container.form.view.setNeedsLayout()
@@ -158,7 +155,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
 
   @objc public var HTMLContent: String {
     get {
-      return _htmlContent ?? ""
+      return _htmlContent
     }
   }
 
@@ -168,19 +165,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(fmt) {
       _htmlFormat = fmt
-      if let content = _htmlContent {
-        if _htmlFormat {
-          let data = content.data(using: .utf8) ?? Data()
-          var options = [NSAttributedString.DocumentReadingOptionKey:Any]()
-          options[NSAttributedString.DocumentReadingOptionKey.documentType] =
-            NSAttributedString.DocumentType.html
-          _view.attributedText = try? NSAttributedString(data: data,
-                                                         options: options,
-                                                         documentAttributes: nil)
-        } else {
-          _view.text = content
-        }
-      }
+      updateFormattedContent()
     }
   }
   
@@ -190,6 +175,37 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(argb) {
       _view.textColor = argbToColor(argb)
+    }
+  }
+
+  // MARK: Private methods
+
+  private func updateFormattedContent() {
+    if _htmlFormat {
+      var style = "font-size: \(_view.font.pointSize)pt;"
+      switch _typeface {
+      case .normal, .sansSerif:
+        style += "font-family: sans-serif;"
+      case .serif:
+        style += "font-family: serif;"
+      case .monospace:
+        style += "font-family: monospace;"
+      }
+      if _bold {
+        style += "font-weight: bold;"
+      }
+      if _italic {
+        style += "font-style: italic;"
+      }
+      let data = ("<div style=\"\(style)\">" + _htmlContent + "</div>").data(using: .utf8) ?? Data()
+      var options = [NSAttributedString.DocumentReadingOptionKey:Any]()
+      options[NSAttributedString.DocumentReadingOptionKey.documentType] =
+        NSAttributedString.DocumentType.html
+      _view.attributedText = try? NSAttributedString(data: data,
+                                                     options: options,
+                                                     documentAttributes: nil)
+    } else {
+      _view.text = _htmlContent
     }
   }
 }
