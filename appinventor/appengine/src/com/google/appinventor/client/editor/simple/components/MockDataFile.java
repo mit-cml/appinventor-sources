@@ -31,7 +31,9 @@ public class MockDataFile extends MockNonVisibleComponent {
 
   private List<String> columnNames; // First row of the Data File's contents
   private List<List<String>> columns; // Parsed columns of the Data File
-  private Set<DataFileChangeListener> dataFileChangeListeners;
+
+  private final Set<DataFileChangeListener> dataFileChangeListeners
+      = new HashSet<DataFileChangeListener>();
 
   /**
    * Creates a new instance of a DataFile component whose icon is
@@ -39,8 +41,6 @@ public class MockDataFile extends MockNonVisibleComponent {
    */
   public MockDataFile(SimpleEditor editor, String type, Image iconImage) {
     super(editor, type, iconImage);
-
-    dataFileChangeListeners = new HashSet<DataFileChangeListener>();
   }
 
   /**
@@ -187,12 +187,6 @@ public class MockDataFile extends MockNonVisibleComponent {
    * Updates all the attached DataFileChangeListeners
    */
   private void updateDataFileChangeListeners() {
-    // DataFileChangeListeners set is not yet initialized. Ignore method.
-    // Can occur pre-initialization in certain cases.
-    if (dataFileChangeListeners == null) {
-      return;
-    }
-
     for (DataFileChangeListener listener : dataFileChangeListeners) {
       // Call onColumnsChange event
       listener.onColumnsChange(this);
