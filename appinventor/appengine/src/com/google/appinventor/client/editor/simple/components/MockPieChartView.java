@@ -5,31 +5,26 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.output.OdeLog;
 import org.pepstock.charba.client.IsChart;
 import org.pepstock.charba.client.PieChart;
 import org.pepstock.charba.client.callbacks.LegendLabelsCallback;
-import org.pepstock.charba.client.callbacks.TooltipBodyCallback;
-import org.pepstock.charba.client.callbacks.TooltipCustomCallback;
-import org.pepstock.charba.client.callbacks.TooltipFilterCallback;
-import org.pepstock.charba.client.callbacks.TooltipItemSortCallback;
 import org.pepstock.charba.client.callbacks.TooltipLabelCallback;
-import org.pepstock.charba.client.callbacks.TooltipTitleCallback;
 import org.pepstock.charba.client.colors.ColorBuilder;
 import org.pepstock.charba.client.colors.IsColor;
 import org.pepstock.charba.client.data.PieDataset;
-import org.pepstock.charba.client.enums.InteractionMode;
 import org.pepstock.charba.client.events.LegendClickEvent;
 import org.pepstock.charba.client.events.LegendClickEventHandler;
 import org.pepstock.charba.client.items.LegendLabelItem;
-import org.pepstock.charba.client.items.TooltipBodyItem;
 import org.pepstock.charba.client.items.TooltipItem;
 import org.pepstock.charba.client.items.TooltipLabelColor;
-import org.pepstock.charba.client.items.TooltipModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Chart View for the Pie Chart. Responsible for the GUI of the Pie Chart.
+ * @see com.google.appinventor.client.editor.simple.components.MockChartView
+ */
 public class MockPieChartView extends MockChartView<PieChart> {
   // A local List of attached Data Models has to be kept to
   // construct Legend entries
@@ -83,7 +78,7 @@ public class MockPieChartView extends MockChartView<PieChart> {
             // The x value can be found in the labels List, while the
             // y value can be found in the Data List of the Data Series
             String xValue = model.getLabels().get(entryIndex);
-            double yValue = model.dataSeries.getData().get(entryIndex);
+            double yValue = model.getDataSeries().getData().get(entryIndex);
 
             // Format the label String which displays the x and the y values
             return xValue + ": " + yValue;
@@ -167,7 +162,7 @@ public class MockPieChartView extends MockChartView<PieChart> {
         // Iterate over all attached Data Models
         for (int i = 0; i < dataModels.size(); ++i) {
           MockPieChartDataModel model = dataModels.get(i);
-          PieDataset dataset = model.dataSeries; // TODO: Use getter instead
+          PieDataset dataset = model.getDataSeries();
 
           // Get the labels of the model and add them to the
           // data labels list storing all the labels

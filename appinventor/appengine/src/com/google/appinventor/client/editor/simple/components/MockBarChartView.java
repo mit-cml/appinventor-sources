@@ -22,6 +22,7 @@ import org.pepstock.charba.client.data.Dataset;
  * 2.Following from the 1st property, the entries are sorted by the x value (in
  * ascending order), and the difference between neighboring entries' x values are
  * at most 1.
+ * @see com.google.appinventor.client.editor.simple.components.MockChartView
  */
 public class MockBarChartView extends MockAxisChartView<BarChart> {
   /**

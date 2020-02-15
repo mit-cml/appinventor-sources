@@ -32,6 +32,10 @@ public abstract class MockChartDataModel<D extends Dataset> {
     this.chartData = chartData;
   }
 
+  public D getDataSeries() {
+    return this.dataSeries;
+  }
+
   /**
    * Changes the Color of the Data Series.
    *
