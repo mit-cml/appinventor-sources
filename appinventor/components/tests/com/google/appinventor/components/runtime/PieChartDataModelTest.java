@@ -214,7 +214,7 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
    * the invalid entries, and sets the colors from the
    * valid entries.
    *
-   * THIS TEST IS OUTDATED. But it would still apply to ChartDataBase.
+   * THIS TEST IS OUTDATED. But it would still apply to DataBase.
    */
 //  @Test
 //  public void testSetColorsInvalidEntries() {

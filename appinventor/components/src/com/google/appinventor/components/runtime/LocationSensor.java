@@ -67,10 +67,10 @@ import java.util.Set;
                  "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS")
 public class LocationSensor extends AndroidNonvisibleComponent
     implements Component, OnStopListener, OnResumeListener, Deleteable,
-    RealTimeChartDataSource<String, Float> {
+    RealTimeDataSource<String, Float> {
 
   // Set of observers
-  private Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private Set<DataBase> dataSourceObservers = new HashSet<DataBase>();
 
   public interface LocationSensorListener extends LocationListener {
     void onTimeIntervalChanged(int time);
@@ -719,19 +719,19 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   @Override
-  public void addDataObserver(ChartDataBase dataComponent) {
+  public void addDataObserver(DataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
   @Override
-  public void removeDataObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(DataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataObservers(String key, Object value) {
     // Notify each Chart Data observer component of the Data value change
-    for (ChartDataBase dataComponent : dataSourceObservers) {
+    for (DataBase dataComponent : dataSourceObservers) {
       dataComponent.onReceiveValue(this, key, value);
     }
   }

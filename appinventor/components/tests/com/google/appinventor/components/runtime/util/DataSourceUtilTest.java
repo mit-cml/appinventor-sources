@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  * Unit tests for the ChartDataSourceUtil utility class.
  */
-public class ChartDataSourceUtilTest {
+public class DataSourceUtilTest {
   /**
    * Test case to ensure that passing in a null List to the
    * determineMaximumListSize returns 0.

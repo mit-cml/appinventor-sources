@@ -34,7 +34,7 @@ import java.util.Set;
 @SimpleObject
 public class ProximitySensor extends AndroidNonvisibleComponent
         implements OnStopListener, OnResumeListener, SensorComponent, OnPauseListener,
-        SensorEventListener, Deleteable, RealTimeChartDataSource<String, Float> {
+        SensorEventListener, Deleteable, RealTimeDataSource<String, Float> {
 
     private Sensor proximitySensor;
 
@@ -48,7 +48,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
     private boolean keepRunningWhenOnPause;
 
     // Set of observers
-    private Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+    private Set<DataBase> dataSourceObservers = new HashSet<DataBase>();
 
     /**
      * Creates a new ProximitySensor component.
@@ -236,19 +236,19 @@ public class ProximitySensor extends AndroidNonvisibleComponent
     }
 
     @Override
-    public void addDataObserver(ChartDataBase dataComponent) {
+    public void addDataObserver(DataBase dataComponent) {
         dataSourceObservers.add(dataComponent);
     }
 
     @Override
-    public void removeDataObserver(ChartDataBase dataComponent) {
+    public void removeDataObserver(DataBase dataComponent) {
         dataSourceObservers.remove(dataComponent);
     }
 
     @Override
     public void notifyDataObservers(String key, Object value) {
         // Notify each Chart Data observer component of the Data value change
-        for (ChartDataBase dataComponent : dataSourceObservers) {
+        for (DataBase dataComponent : dataSourceObservers) {
             dataComponent.onReceiveValue(this, key, value);
         }
     }

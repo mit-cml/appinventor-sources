@@ -18,7 +18,7 @@ import java.util.concurrent.*;
     iconName = "images/file.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
-public class DataFile extends FileBase implements ChartDataSource<YailList, Future<YailList>> {
+public class DataFile extends FileBase implements DataSource<YailList, Future<YailList>> {
     private String sourceFile;
 
     private YailList rows;

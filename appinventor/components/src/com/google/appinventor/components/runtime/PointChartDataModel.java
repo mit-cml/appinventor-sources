@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
@@ -10,6 +15,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Handles the data operations & model-specific styling for point-based
+ * Chart data (e.g. Scatter or Line data) for the Chart component.
+ * @see com.google.appinventor.components.runtime.ChartDataModel
+ */
 public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDataSet,
     D extends BarLineScatterCandleBubbleData> extends Chart2DDataModel<T, D> {
   /**
@@ -47,17 +57,4 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
 
     return null;
   }
-
-//  @Override
-//  protected YailList getDefaultValues(int size) {
-//    // Default values for Point Chart Data Models should be
-//    // integers from 0 to N (0, 1, 2, ...)
-//    ArrayList<Integer> defaultValues = new ArrayList<>();
-//
-//    for (int i = 0; i < size; ++i) {
-//      defaultValues.add(i);
-//    }
-//
-//    return YailList.makeList(defaultValues);
-//  }
 }

@@ -8,20 +8,16 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.SimpleObject;
 
 /**
- * Interface for acceptable Chart Data Source components.
- * Contains the necessary methods for the Chart Data component
- * to interact with the Data Source in importing data.
+ * Interface for acceptable Data Source components.
+ * Contains the necessary methods to interact with the
+ * data source.
  * <p>
- * TODO: REMARK:
- * TODO: Sometimes, ant compilation fails due to ChartDataSource
- * TODO: parameter parsing. In most cases this does not occur.
- * TODO: This might require more investigation.
  *
  * @param <K> key (data identifier)
  * @param <V> value (returned data type)
  */
 @SimpleObject
-public interface ChartDataSource<K, V> {
+public interface DataSource<K, V> {
   /**
    * Gets the specified data value
    *

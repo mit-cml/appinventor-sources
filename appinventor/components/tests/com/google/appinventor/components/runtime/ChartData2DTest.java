@@ -4,36 +4,29 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.renderer.scatter.IShapeRenderer;
 import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.easymock.EasyMock;
 import org.junit.Test;
-import org.powermock.api.easymock.PowerMock;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
-import org.robolectric.shadows.ShadowApplication;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.*;
 
 public class ChartData2DTest extends RobolectricTestBase {
   private Chart chartComponent;
-  private ChartData2D data;
+  private Data2D data;
   private ChartDataModel model;
 
   @Override
   public void setUp() {
     super.setUp();
     chartComponent = new Chart(getForm());
-    data = new ChartData2D(chartComponent);
+    data = new Data2D(chartComponent);
     model = data.chartDataModel;
 
     // The ExecutorService used by the ChartData component has

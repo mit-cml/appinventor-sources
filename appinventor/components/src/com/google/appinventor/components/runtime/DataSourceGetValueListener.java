@@ -6,9 +6,9 @@
 package com.google.appinventor.components.runtime;
 
 /**
- * Interface for receiving real time data from a Chart Data Source.
+ * Interface for receiving real time data from a Data Source.
  */
-public interface ChartDataSourceGetValueListener {
+public interface DataSourceGetValueListener {
   /**
    * Event called when a new real time value is sent to the observer.
    *
@@ -16,5 +16,5 @@ public interface ChartDataSourceGetValueListener {
    * @param key  identifier of the value
    * @param value  value received
    */
-  void onReceiveValue(RealTimeChartDataSource component, String key, Object value);
+  void onReceiveValue(RealTimeDataSource component, String key, Object value);
 }

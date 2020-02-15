@@ -102,7 +102,7 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
 
 @UsesLibraries(libraries = "jedis.jar")
 public final class CloudDB extends AndroidNonvisibleComponent implements Component,
-  OnClearListener, OnDestroyListener, ObservableChartDataSource<String, Future<List>> {
+  OnClearListener, OnDestroyListener, ObservableDataSource<String, Future<List>> {
   private static final boolean DEBUG = false;
   private static final String LOG_TAG = "CloudDB";
   private boolean importProject = false;
@@ -242,7 +242,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private ConnectivityManager cm;
 
   // Set of observers
-  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private HashSet<DataBase> dataSourceObservers = new HashSet<DataBase>();
 
   private static class storedValue {
     private String tag;
@@ -1388,19 +1388,19 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   @Override
-  public void addDataObserver(ChartDataBase dataComponent) {
+  public void addDataObserver(DataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
   @Override
-  public void removeDataObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(DataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataObservers(String key, Object newValue) {
     // Notify each Chart Data observer component of the Data value change
-    for (ChartDataBase dataComponent : dataSourceObservers) {
+    for (DataBase dataComponent : dataSourceObservers) {
       dataComponent.onDataSourceValueChange(this, key, newValue);
     }
   }

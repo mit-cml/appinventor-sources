@@ -84,7 +84,7 @@ import java.util.concurrent.FutureTask;
 @UsesLibraries(libraries = "json.jar")
 
 
-public class Web extends AndroidNonvisibleComponent implements Component, ObservableChartDataSource<YailList, Future<YailList>> {
+public class Web extends AndroidNonvisibleComponent implements Component, ObservableDataSource<YailList, Future<YailList>> {
   /**
    * InvalidRequestHeadersException can be thrown from processRequestHeaders.
    * It is thrown if the list passed to processRequestHeaders contains an item that is not a list.
@@ -208,7 +208,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   private YailList columns = new YailList();
 
   // Set of observers
-  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private HashSet<DataBase> dataSourceObservers = new HashSet<DataBase>();
 
   /**
    * Creates a new Web component.
@@ -1346,18 +1346,18 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   }
 
   @Override
-  public void addDataObserver(ChartDataBase dataComponent) {
+  public void addDataObserver(DataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
   @Override
-  public void removeDataObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(DataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataObservers(YailList key, Object newValue) {
-    for (ChartDataBase dataComponent : dataSourceObservers) {
+    for (DataBase dataComponent : dataSourceObservers) {
       // Notify Data Component observer with the new columns value (and null key,
       // since key does not matter in the case of the Web component)
       dataComponent.onDataSourceValueChange(this, null, columns);

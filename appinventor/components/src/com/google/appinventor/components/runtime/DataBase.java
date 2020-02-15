@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.concurrent.*;
 
 @SimpleObject
-public abstract class ChartDataBase implements Component, OnBeforeInitializeListener, ChartDataSourceChangeListener,
-    ChartDataSourceGetValueListener {
+public abstract class DataBase implements Component, OnBeforeInitializeListener, DataSourceChangeListener,
+    DataSourceGetValueListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
 
@@ -51,7 +51,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
     private int pointShape;
     private int lineType;
 
-    private ChartDataSource dataSource; // Attached Chart Data Source
+    private DataSource dataSource; // Attached Chart Data Source
 
     // Currently imported observed Data Source value. This has to be
     // kept track of in order to remove old entries whenever the
@@ -67,7 +67,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
     /**
      * Creates a new Chart Data component.
      */
-    protected ChartDataBase(Chart chartContainer) {
+    protected DataBase(Chart chartContainer) {
         this.container = chartContainer;
         chartContainer.addDataComponent(this);
 
@@ -366,12 +366,12 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
                 "GyroscopeSensor, LocationSesnro, OrientationSensor, Pedometer, " +
                 "ProximitySensor TinyDB and Web components.")
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
-    public void Source(ChartDataSource dataSource) {
-        // If the previous Data Source is an ObservableChartDataSource,
+    public void Source(DataSource dataSource) {
+        // If the previous Data Source is an ObservableDataSource,
         // this Chart Data component must be removed from the observers
         // List of the Data Source.
-        if (this.dataSource != dataSource && this.dataSource instanceof ObservableChartDataSource) {
-            ((ObservableChartDataSource)this.dataSource).removeDataObserver(this);
+        if (this.dataSource != dataSource && this.dataSource instanceof ObservableDataSource) {
+            ((ObservableDataSource)this.dataSource).removeDataObserver(this);
         }
 
         this.dataSource = dataSource;
@@ -380,9 +380,9 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
         // is initialized, otherwise exceptions may be caused in case
         // of very small data files.
         if (initialized) {
-          if (dataSource instanceof ObservableChartDataSource) {
-            // Add this Data Component as an observer to the ObservableChartDataSource object
-            ((ObservableChartDataSource)dataSource).addDataObserver(this);
+          if (dataSource instanceof ObservableDataSource) {
+            // Add this Data Component as an observer to the ObservableDataSource object
+            ((ObservableDataSource)dataSource).addDataObserver(this);
 
             // No Data Source Value specified; Do not proceed with importing data
             if (dataSourceValue == null) {
@@ -459,7 +459,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
         "components, the key value should be in CSV format, specified as follows: X,Y,Z\n" +
         "X, Y and Z correspond to column names respectively to use from the DataFile or Web " +
         "component upon importing.")
-    public void ChangeDataSource(final ChartDataSource source, final String keyValue) {
+    public void ChangeDataSource(final DataSource source, final String keyValue) {
         // To avoid interruptions to Data importing, the Chart Data Source should be
         // changed asynchronously.
         threadRunner.execute(new Runnable() {
@@ -838,7 +838,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
     }
 
     /**
-     * Event called when the value of the observed ChartDataSource component changes.
+     * Event called when the value of the observed DataSource component changes.
      *
      * If the key matches the dataSourceValue of the Data Component, the specified
      * new value is processed and imported, while the old data part of the Data
@@ -852,7 +852,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
      * @param newValue  the new value of the observed value
      */
     @Override
-    public void onDataSourceValueChange(final ChartDataSource component, final String key, final Object newValue) {
+    public void onDataSourceValueChange(final DataSource component, final String key, final Object newValue) {
         if (component != dataSource // Calling component is not the attached Data Source. TODO: Un-observe?
             || (key != null && !key.equals(dataSourceValue))) { // The changed value is not the observed value
             return;
@@ -882,7 +882,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
     }
 
     @Override
-    public void onReceiveValue(RealTimeChartDataSource component, final String key, Object value) {
+    public void onReceiveValue(RealTimeDataSource component, final String key, Object value) {
         // Calling component is not the actual Data Source
         if (component != dataSource) {
             return;
@@ -949,7 +949,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
      * @param key  Key of the updated value
      * @param newValue  The updated value
      */
-    private void updateCurrentDataSourceValue(ChartDataSource source, Object key, Object newValue) {
+    private void updateCurrentDataSourceValue(DataSource source, Object key, Object newValue) {
         if (source == dataSource // The source must be the same as the attached source
             && (key == null || key.equals(dataSourceValue))) { // The key should equal the local key (or null)
             if (source instanceof Web) {

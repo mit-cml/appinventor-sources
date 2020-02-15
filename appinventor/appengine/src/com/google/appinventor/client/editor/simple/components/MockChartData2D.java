@@ -16,7 +16,7 @@ import java.util.Arrays;
  * In the future, this would also apply to Radar/Spider-web charts.
  */
 public class MockChartData2D extends MockChartData {
-  public static final String TYPE = "ChartData2D";
+  public static final String TYPE = "Data2D";
 
   /**
    * Creates a new MockChartData2D component.
@@ -27,7 +27,7 @@ public class MockChartData2D extends MockChartData {
     super(editor, TYPE, images.tinyDB());
 
     // Initialize dataFileColumns to default values.
-    // Since ChartData2D consists of 2 entries,
+    // Since Data2D consists of 2 entries,
     // the List is initialized with 2 entries.
     dataFileColumns = Arrays.asList("", "");
   }

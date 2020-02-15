@@ -61,7 +61,7 @@ import java.util.Set;
 @SimpleObject
 public class OrientationSensor extends AndroidNonvisibleComponent
     implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener,
-    RealTimeChartDataSource<String, Float> {
+    RealTimeDataSource<String, Float> {
   // Constants
   private static final String LOG_TAG = "OrientationSensor";
   // offsets in array returned by SensorManager.getOrientation()
@@ -100,7 +100,7 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   private final float[] values = new float[DIMENSIONS];
 
   // Set of observers
-  private Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private Set<DataBase> dataSourceObservers = new HashSet<DataBase>();
 
   /**
    * Creates a new OrientationSensor component.
@@ -441,19 +441,19 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   }
 
   @Override
-  public void addDataObserver(ChartDataBase dataComponent) {
+  public void addDataObserver(DataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
   @Override
-  public void removeDataObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(DataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataObservers(String key, Object value) {
     // Notify each Chart Data observer component of the Data value change
-    for (ChartDataBase dataComponent : dataSourceObservers) {
+    for (DataBase dataComponent : dataSourceObservers) {
       dataComponent.onReceiveValue(this, key, value);
     }
   }

@@ -44,14 +44,14 @@ import java.util.concurrent.TimeUnit;
 @UsesPermissions(permissionNames =
                  "android.permission.BLUETOOTH, " +
                  "android.permission.BLUETOOTH_ADMIN")
-public final class BluetoothClient extends BluetoothConnectionBase implements RealTimeChartDataSource<String, String> {
+public final class BluetoothClient extends BluetoothConnectionBase implements RealTimeDataSource<String, String> {
   private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
 
   private final List<Component> attachedComponents = new ArrayList<Component>();
   private Set<Integer> acceptableDeviceClasses;
 
   // Set of observers
-  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private HashSet<DataBase> dataSourceObservers = new HashSet<DataBase>();
 
   // Executor Service to poll data continuously from the Input Stream
   // which holds data sent by Bluetooth connections. Used for sending
@@ -316,7 +316,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   }
 
   @Override
-  public void addDataObserver(ChartDataBase dataComponent) {
+  public void addDataObserver(DataBase dataComponent) {
     // Data Polling Service has not been initialized yet; Initialize it
     // (since Data Component is added)
     if (dataPollService == null) {
@@ -357,7 +357,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   }
 
   @Override
-  public void removeDataObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(DataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
 
     // No more Data Source observers exist;
@@ -373,7 +373,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
 
   @Override
   public void notifyDataObservers(String key, Object newValue) {
-    for (ChartDataBase observer : dataSourceObservers) {
+    for (DataBase observer : dataSourceObservers) {
       observer.onReceiveValue(this, key, newValue);
     }
   }

@@ -80,7 +80,7 @@ import java.util.Set;
 @SimpleObject
 public class AccelerometerSensor extends AndroidNonvisibleComponent
     implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable,
-    RealTimeChartDataSource<String, Float> {
+    RealTimeDataSource<String, Float> {
 
   // Logging and Debugging
   private final static String LOG_TAG = "AccelerometerSensor";
@@ -129,7 +129,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   private final Handler androidUIHandler;
 
   // Set of observers
-  private final Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private final Set<DataBase> dataSourceObservers = new HashSet<DataBase>();
 
   /**
    * Creates a new AccelerometerSensor component.
@@ -497,19 +497,19 @@ public int getDeviceDefaultOrientation() {
   }
 
   @Override
-  public void addDataObserver(ChartDataBase dataComponent) {
+  public void addDataObserver(DataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
   @Override
-  public void removeDataObserver(ChartDataBase dataComponent) {
+  public void removeDataObserver(DataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataObservers(String key, Object value) {
     // Notify each Chart Data observer component of the Data value change
-    for (ChartDataBase dataComponent : dataSourceObservers) {
+    for (DataBase dataComponent : dataSourceObservers) {
       dataComponent.onReceiveValue(this, key, value);
     }
   }

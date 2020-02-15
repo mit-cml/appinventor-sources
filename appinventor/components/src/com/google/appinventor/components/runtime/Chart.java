@@ -13,13 +13,11 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @SimpleObject
@@ -50,7 +48,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     private int t = 1;
 
     // Attached Data components
-    private ArrayList<ChartDataBase> dataComponents;
+    private ArrayList<DataBase> dataComponents;
 
     /**
      * Creates a new Chart component.
@@ -65,7 +63,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         // Adds the view to the designated container
         container.$add(this);
 
-        dataComponents = new ArrayList<ChartDataBase>();
+        dataComponents = new ArrayList<DataBase>();
 
         // Set default values
         Type(ComponentConstants.CHART_TYPE_LINE);
@@ -207,7 +205,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
         // the Data components are attached to the Chart.
         // This has no effect when the Type property is default (0), since
         // the Data components are not attached yet, making the List empty.
-        for (ChartDataBase dataComponent : dataComponents) {
+        for (DataBase dataComponent : dataComponents) {
             dataComponent.initChartData();
         }
 
@@ -407,7 +405,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
      * Attach a Data Component to the Chart.
      * @param dataComponent  Data component object instance to add
      */
-    public void addDataComponent(ChartDataBase dataComponent) {
+    public void addDataComponent(DataBase dataComponent) {
         dataComponents.add(dataComponent);
     }
 

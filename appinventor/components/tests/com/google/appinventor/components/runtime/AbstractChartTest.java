@@ -143,12 +143,12 @@ public abstract class AbstractChartTest<V extends ChartView,
      */
     @Test
     public void testChangeTypeReinitializeChartDataComponents() {
-        ArrayList<ChartDataBase> dataComponents = new ArrayList<ChartDataBase>();
+        ArrayList<DataBase> dataComponents = new ArrayList<DataBase>();
 
         for (int i = 0; i < 3; ++i) {
             // Create a mock Data component, and expect an initChartData
             // method call.
-            ChartDataBase dataComponent = EasyMock.createMock(ChartDataBase.class);
+            DataBase dataComponent = EasyMock.createMock(DataBase.class);
             dataComponent.initChartData();
             expectLastCall();
             replay(dataComponent);
@@ -162,7 +162,7 @@ public abstract class AbstractChartTest<V extends ChartView,
 
         // Verify initChartData() method calls for all the
         // attached Data components.
-        for (ChartDataBase dataComponent : dataComponents) {
+        for (DataBase dataComponent : dataComponents) {
             verify(dataComponent);
         }
     }
