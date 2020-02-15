@@ -186,7 +186,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     // If the component is currently selected, re-select it to refresh
     // the Properties panel.
     if (isSelected()) {
-      refreshForm(true);
+      onSelectedChange(true);
     }
   }
 
