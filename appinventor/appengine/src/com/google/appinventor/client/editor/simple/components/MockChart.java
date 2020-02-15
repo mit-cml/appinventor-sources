@@ -260,7 +260,7 @@ public final class MockChart extends MockContainer {
         return new MockPieChartView();
       default:
         // Invalid argument
-        throw new IllegalArgumentException("Invalid chart type specified: " + type);
+        throw new IllegalArgumentException("Invalid Chart type specified: " + type);
     }
   }
 

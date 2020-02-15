@@ -5,14 +5,11 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
 import java.util.List;
@@ -38,7 +35,7 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
    *
    * @param context  Context to instantiate view in
    */
-  public BarChartView(Activity context) {
+  public BarChartView(Form context) {
     // Set the Chart object to a new Bar Chart instance
     chart = new BarChart(context);
 

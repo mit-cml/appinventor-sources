@@ -17,7 +17,7 @@ public class AreaChartView extends LineChartViewBase {
    *
    * @param context  Context to create view in
    */
-  public AreaChartView(Activity context) {
+  public AreaChartView(Form context) {
     super(context);
 
     // In order for the fill under the Chart to work on SDK < 18,

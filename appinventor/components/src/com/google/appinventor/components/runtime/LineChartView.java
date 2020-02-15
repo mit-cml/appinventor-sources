@@ -12,7 +12,7 @@ public class LineChartView extends LineChartViewBase {
      *
      * @param context Context to instantiate view in
      */
-    public LineChartView(Activity context) {
+    public LineChartView(Form context) {
         super(context);
     }
 

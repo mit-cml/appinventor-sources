@@ -44,7 +44,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
    * all the Pie Chart rings.
    * @param context  Activity context where the view should be initialized in
    */
-  public PieChartView(Activity context) {
+  public PieChartView(Form context) {
     // Instantiate the Root View layout and the Root Chart
     rootView = new RelativeLayout(context);
     chart = new PieChart(context); // the Chart instance represents the root Pie Chart
