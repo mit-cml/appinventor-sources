@@ -70,7 +70,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
     RealTimeChartDataSource<String, Float> {
 
   // Set of observers
-  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   public interface LocationSensorListener extends LocationListener {
     void onTimeIntervalChanged(int time);

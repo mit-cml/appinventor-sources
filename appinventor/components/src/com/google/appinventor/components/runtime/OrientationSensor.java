@@ -30,6 +30,7 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Sensor that can measure absolute orientation in 3 dimensions.
@@ -99,7 +100,7 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   private final float[] values = new float[DIMENSIONS];
 
   // Set of observers
-  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /**
    * Creates a new OrientationSensor component.

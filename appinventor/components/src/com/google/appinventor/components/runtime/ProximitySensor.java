@@ -18,6 +18,7 @@ import com.google.appinventor.components.common.YaVersion;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @DesignerComponent(version = YaVersion.PROXIMITYSENSOR_COMPONENT_VERSION,
         description = "<p>Non-visible component that can measures the proximity of an object in cm " +
@@ -47,7 +48,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
     private boolean keepRunningWhenOnPause;
 
     // Set of observers
-    private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+    private Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
     /**
      * Creates a new ProximitySensor component.

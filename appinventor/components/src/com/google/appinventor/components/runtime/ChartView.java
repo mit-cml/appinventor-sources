@@ -2,7 +2,6 @@ package com.google.appinventor.components.runtime;
 
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.Legend;
@@ -11,11 +10,6 @@ import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class ChartView<C extends Chart, D extends ChartData> {
@@ -24,10 +18,12 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
 
     protected Handler uiHandler = new Handler();
 
-    // Used to store a single Runnable to refresh the Chart.
-    // The AtomicReference acts as an accumulator in throttling the
-    // number of refreshes to limit the refresh rate to a single refreesh
-    // per certain time frame.
+    /**
+     * Used to store a single Runnable to refresh the Chart.
+     * The AtomicReference acts as an accumulator in throttling the
+     * number of refreshes to limit the refresh rate to a single refreesh
+     * per certain time frame.
+     */
     private AtomicReference<Runnable> refreshRunnable = new AtomicReference<Runnable>();
 
     /**

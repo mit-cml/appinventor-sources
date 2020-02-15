@@ -80,6 +80,37 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
     }
 
     /**
+     * Changes the underlying Executor Service of the threadRunner.
+     *
+     * Primarily used for testing to inject test/mock ExecutorService
+     * classes.
+     *
+     * @param service  new ExecutorService object to use..
+     */
+    public void setExecutorService(ExecutorService service) {
+        threadRunner = service;
+    }
+
+    /**
+     * Initializes the Chart Data object by setting
+     * the default properties and initializing the
+     * corresponding ChartDataModel object instance.
+     */
+    public void initChartData() {
+        // Creates a ChartDataModel based on the current
+        // Chart type being used.
+        chartDataModel = container.createChartModel();
+
+        // Set default values
+        Color(Component.COLOR_BLACK);
+        Label("");
+    }
+
+    /*
+     * SimpleProperties
+     */
+
+    /**
      * Returns the data series color as an alpha-red-green-blue integer.
      *
      * @return  background RGB color with alpha
@@ -244,135 +275,6 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
     }
 
     /**
-     * Initializes the Chart Data object by setting
-     * the default properties and initializing the
-     * corresponding ChartDataModel object instance.
-     */
-    public void initChartData() {
-        // Creates a ChartDataModel based on the current
-        // Chart type being used.
-        chartDataModel = container.createChartModel();
-
-        // Set default values
-        Color(Component.COLOR_BLACK);
-        Label("");
-    }
-
-    /**
-     * Adds elements to the Data component from a specified List of tuples.
-     *
-     * @param list  YailList of tuples.
-     */
-    @SimpleFunction(description = "Imports data from a list of entries" +
-      "Data is not overwritten.")
-    public void ImportFromList(final YailList list) {
-        // Import the specified data asynchronously
-        threadRunner.execute(new Runnable() {
-            @Override
-            public void run() {
-                chartDataModel.importFromList(list);
-                refreshChart();
-            }
-        });
-    }
-
-    /**
-     * Removes all the entries from the Data Series.
-     */
-    @SimpleFunction(description = "Clears all of the data.")
-    public void Clear() {
-        // Run clear entries asynchronously in the queued Thread runner.
-        // Queuing ensures that values are cleared only after all the
-        // async reading is processed.
-        threadRunner.execute(new Runnable() {
-            @Override
-            public void run() {
-                chartDataModel.clearEntries();
-                refreshChart();
-            }
-        });
-    }
-
-    /**
-     * Imports data from a Data File component, with the specified column names.
-     * The method is ran asynchronously.
-     *
-     * @param dataFile  Data File component to import from
-     * @param columns  list of column names to import from
-     */
-    protected void importFromDataFileAsync(final DataFile dataFile, YailList columns) {
-        // Get the Future object representing the columns in the DataFile component.
-        final Future<YailList> dataFileColumns = dataFile.getDataValue(columns);
-
-        // Import the data from the Data file asynchronously
-        threadRunner.execute(new Runnable() {
-            @Override
-            public void run() {
-                YailList dataResult = null;
-
-                try {
-                    // Get the columns from the DataFile. The retrieval of
-                    // the result is blocking, so it will first wait for
-                    // the reading to be processed.
-                    dataResult = dataFileColumns.get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-                // Import from Data file with the specified parameters
-                chartDataModel.importFromColumns(dataResult);
-
-                // Refresh the Chart after import
-                refreshChart();
-            }
-        });
-    }
-
-
-    /**
-     * Imports data from a Web component, with the specified column names.
-     * The method is ran asynchronously.
-     *
-     * @param webComponent  web component to import from
-     * @param columns  list of column names to import from
-     */
-    protected void importFromWebAsync(final Web webComponent, final YailList columns) {
-      // Get the Future object representing the columns in the Web component.
-      final Future<YailList> webColumns = webComponent.getDataValue(columns);
-
-        // Import the Data from the Web component asynchronously
-        threadRunner.execute(new Runnable() {
-            @Override
-            public void run() {
-              // Get the data columns from the Web component. The retrieval of
-              // the result is blocking, so it will first wait for
-              // the retrieval to be processed in full.
-              YailList dataColumns = null;
-
-              try {
-                dataColumns = webColumns.get();
-              } catch (InterruptedException e) {
-                e.printStackTrace();
-              } catch (ExecutionException e) {
-                e.printStackTrace();
-              }
-
-              if (webComponent == dataSource) {
-                  updateCurrentDataSourceValue(dataSource, null, null);
-              }
-
-                // Import the data from the retrieved columns
-                chartDataModel.importFromColumns(dataColumns);
-
-                // Refresh the Chart after import
-                refreshChart();
-            }
-        });
-    }
-
-    /**
      * Sets the Data column to parse data from the DataFile source for the x values.
      *
      * @param column  name of the column for the x values
@@ -460,7 +362,9 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
             description = "Sets the Data Source for the Data component. Accepted types " +
-                "include DataFile, Web, TinyDB, CloudDB, AccelerometerSensor and BluetoothClient components.")
+                "include AccelerometerSensor, BluetoothClient, CloudDB, DataFile, " +
+                "GyroscopeSensor, LocationSesnro, OrientationSensor, Pedometer, " +
+                "ProximitySensor TinyDB and Web components.")
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
     public void Source(ChartDataSource dataSource) {
         // If the previous Data Source is an ObservableChartDataSource,
@@ -496,6 +400,45 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
                 importFromWebAsync((Web)dataSource, YailList.makeList(webColumns));
             }
         }
+    }
+
+    /*
+     * SimpleFunctions
+     */
+
+    /**
+     * Adds elements to the Data component from a specified List of tuples.
+     *
+     * @param list  YailList of tuples.
+     */
+    @SimpleFunction(description = "Imports data from a list of entries" +
+        "Data is not overwritten.")
+    public void ImportFromList(final YailList list) {
+        // Import the specified data asynchronously
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                chartDataModel.importFromList(list);
+                refreshChart();
+            }
+        });
+    }
+
+    /**
+     * Removes all the entries from the Data Series.
+     */
+    @SimpleFunction(description = "Clears all of the data.")
+    public void Clear() {
+        // Run clear entries asynchronously in the queued Thread runner.
+        // Queuing ensures that values are cleared only after all the
+        // async reading is processed.
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                chartDataModel.clearEntries();
+                refreshChart();
+            }
+        });
     }
 
     /**
@@ -734,6 +677,89 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
         });
     }
 
+    /*
+     * Helper methods & overrides
+     */
+
+    /**
+     * Imports data from a Data File component, with the specified column names.
+     * The method is ran asynchronously.
+     *
+     * @param dataFile  Data File component to import from
+     * @param columns  list of column names to import from
+     */
+    protected void importFromDataFileAsync(final DataFile dataFile, YailList columns) {
+        // Get the Future object representing the columns in the DataFile component.
+        final Future<YailList> dataFileColumns = dataFile.getDataValue(columns);
+
+        // Import the data from the Data file asynchronously
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                YailList dataResult = null;
+
+                try {
+                    // Get the columns from the DataFile. The retrieval of
+                    // the result is blocking, so it will first wait for
+                    // the reading to be processed.
+                    dataResult = dataFileColumns.get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                // Import from Data file with the specified parameters
+                chartDataModel.importFromColumns(dataResult);
+
+                // Refresh the Chart after import
+                refreshChart();
+            }
+        });
+    }
+
+
+    /**
+     * Imports data from a Web component, with the specified column names.
+     * The method is ran asynchronously.
+     *
+     * @param webComponent  web component to import from
+     * @param columns  list of column names to import from
+     */
+    protected void importFromWebAsync(final Web webComponent, final YailList columns) {
+        // Get the Future object representing the columns in the Web component.
+        final Future<YailList> webColumns = webComponent.getDataValue(columns);
+
+        // Import the Data from the Web component asynchronously
+        threadRunner.execute(new Runnable() {
+            @Override
+            public void run() {
+                // Get the data columns from the Web component. The retrieval of
+                // the result is blocking, so it will first wait for
+                // the retrieval to be processed in full.
+                YailList dataColumns = null;
+
+                try {
+                    dataColumns = webColumns.get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                if (webComponent == dataSource) {
+                    updateCurrentDataSourceValue(dataSource, null, null);
+                }
+
+                // Import the data from the retrieved columns
+                chartDataModel.importFromColumns(dataColumns);
+
+                // Refresh the Chart after import
+                refreshChart();
+            }
+        });
+    }
+
     /**
      * Refreshes the Chart View object with the current up to date
      * Data Series data.
@@ -939,17 +965,5 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
                 currentDataSourceValue = newValue;
             }
         }
-    }
-
-    /**
-     * Changes the underlying Executor Service of the threadRunner.
-     *
-     * Primarily used for testing to inject test/mock ExecutorService
-     * classes.
-     *
-     * @param service  new ExecutorService object to use..
-     */
-    public void setExecutorService(ExecutorService service) {
-        threadRunner = service;
     }
 }

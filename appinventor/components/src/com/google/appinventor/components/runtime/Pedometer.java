@@ -26,6 +26,7 @@ import android.hardware.SensorManager;
 import android.util.Log;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This component keeps count of steps using the accelerometer.
@@ -74,7 +75,7 @@ public class Pedometer extends AndroidNonvisibleComponent
   private int avgPos = 0;
 
   // Set of observers
-  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /** Constructor. */
   public Pedometer(ComponentContainer container) {

@@ -23,6 +23,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Component providing data from the device's gyroscope sensor.
@@ -53,7 +54,7 @@ public class GyroscopeSensor extends AndroidNonvisibleComponent
   private boolean listening;
 
   // Set of observers
-  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /**
    * Creates a new GyroscopeSensor component.
