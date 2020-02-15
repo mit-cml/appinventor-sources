@@ -1261,39 +1261,6 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
     // Run and return the getDataValue FutureTask
     AsynchUtil.runAsynchronously(getDataValueTask);
     return getDataValueTask;
-
-    // The initial, alternate approach was to simply send a request. However,
-    // this approach is inefficient since too many requests will be sent,
-    // and that has an impact on both performance and on APIs which allow
-    // limited requests to be sent. When this approach was used, the data
-    // type is YailList instead of Future<YailList>
-    //    YailList result = null;
-    //    final CapturedProperties webProps = capturePropertyValues("Get");
-    //
-    //    if (webProps != null) {
-    //      // Open the connection.
-    //      HttpURLConnection connection = null;
-    //      try {
-    //        connection = openConnection(webProps, "GET");
-    //      } catch (IOException e) {
-    //        e.printStackTrace();
-    //      }
-    //
-    //      if (connection != null) {
-    //        try {
-    //          // Get the response.
-    //          final String responseType = getResponseType(connection);
-    //          final String responseContent = getResponseContent(connection);
-    //
-    //        } catch (IOException e) {
-    //          return result;
-    //        } finally {
-    //          connection.disconnect();
-    //        }
-    //      }
-    //    }
-    //
-    //    return result;
   }
 
   /**

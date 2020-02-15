@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.BarData;
@@ -15,6 +20,9 @@ import java.util.List;
  * Handles the data operations & model-specific styling for Bar
  * Chart data for the Chart component.
  * @see com.google.appinventor.components.runtime.ChartDataModel
+ * TODO: The data model's operations can be optimized further to O(1) instead of O(n)
+ * TODO: (mainly for FindEntryIndex) by making use of the property that the
+ * TODO: x value corresponds to the index in the Bar Chart Data Model.
  */
 public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
   /**
@@ -173,20 +181,4 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
     List tupleEntries = Arrays.asList((float)Math.floor(entry.getX()), entry.getY());
     return YailList.makeList(tupleEntries);
   }
-
-  // TODO: FindEntryIndex can be optimized by making use of the property
-  // TODO: that the x value corresponds to the index.
-
-//  @Override
-//  protected YailList getDefaultValues(int size) {
-//    // Default values for Bar Chart Data Models should be
-//    // integers from 0 to N (0, 1, 2, ...)
-//    ArrayList<Integer> defaultValues = new ArrayList<>();
-//
-//    for (int i = 0; i < size; ++i) {
-//      defaultValues.add(i);
-//    }
-//
-//    return YailList.makeList(defaultValues);
-//  }
 }

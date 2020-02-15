@@ -92,11 +92,6 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
   }
 
   @Override
-  protected void setDefaultStylingProperties() {
-
-  }
-
-  @Override
   public void addEntryFromTuple(String... tuple) {
     try {
       // First entry is a String

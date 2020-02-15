@@ -134,7 +134,16 @@ public abstract class MockChartDataModel<D extends Dataset> {
   /**
    * Sets the default styling properties of the Data Series.
    */
-  protected abstract void setDefaultStylingProperties();
+  protected void setDefaultStylingProperties() {
+    /* Method body empty since no default styling properties
+       apply for all data models at once. To be overriden (if needed)
+       by subclasses. The method was left empty to avoid too many
+       empty overriden methods for the styling properties, and if
+       in the future some default styling properties apply to all
+       models at once, it would be more convenient to have this method
+       non-abstract.
+    */
+  }
 
   /**
    * Sets the elements of the Data Series from the specified columns.

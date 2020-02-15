@@ -76,11 +76,6 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
   }
 
   @Override
-  protected void setDefaultStylingProperties() {
-
-  }
-
-  @Override
   public void addEntryFromTuple(String... tuple) {
     try {
       // Parse x and y values

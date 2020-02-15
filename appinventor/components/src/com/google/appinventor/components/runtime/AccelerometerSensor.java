@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * Physical world component that can detect shaking and measure
@@ -128,7 +129,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   private final Handler androidUIHandler;
 
   // Set of observers
-  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private final Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /**
    * Creates a new AccelerometerSensor component.
