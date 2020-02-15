@@ -538,7 +538,7 @@ public final class MockMap extends MockContainer {
             // This is not desirable because it causes issues with the selected component.
             return;
           } else if (el === background) {
-            this.owner.@com.google.appinventor.client.editor.simple.components.MockComponent::select()();
+            this.owner.@com.google.appinventor.client.editor.simple.components.MockComponent::select(*)(e);
             return;
           }
           el = el.parentNode;

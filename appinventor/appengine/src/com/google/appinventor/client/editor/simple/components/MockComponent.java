@@ -12,7 +12,6 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
@@ -35,8 +34,8 @@ import com.google.appinventor.shared.rpc.project.HasAssetsFolder;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
@@ -79,7 +78,6 @@ import com.google.appinventor.shared.simple.ComponentDatabaseInterface.Component
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -328,7 +326,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
     sourceStructureExplorerItem = new SourceStructureExplorerItem() {
       @Override
-      public void onSelected() {
+      public void onSelected(NativeEvent source) {
         // are we showing the blocks editor? if so, toggle the component drawer
         if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
           YaBlocksEditor blocksEditor =
@@ -336,7 +334,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
           OdeLog.log("Showing item " + getName());
           blocksEditor.showComponentBlocks(getName());
         } else {
-          select();
+          select(source);
         }
       }
 
@@ -523,7 +521,33 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     if (isPropertyforYail(name)) {
       type |= EditableProperty.TYPE_DOYAIL;
     }
-    properties.addProperty(name, defaultValue, caption, editor, type);
+    properties.addProperty(name, defaultValue, caption, editor, type, "", null);
+  }
+
+  /**
+   * Adds a new property for the component.
+   *
+   * @param name  property name
+   * @param defaultValue  default value of property
+   * @param caption  property's caption for use in the ui
+   * @param editorType  editor type for the property
+   * @param editorArgs  additional editor arguments
+   * @param editor  property editor
+   */
+  public final void addProperty(String name, String defaultValue, String caption,
+      String editorType, String[] editorArgs, PropertyEditor editor) {
+
+    int type = EditableProperty.TYPE_NORMAL;
+    if (!isPropertyPersisted(name)) {
+      type |= EditableProperty.TYPE_NONPERSISTED;
+    }
+    if (!isPropertyVisible(name)) {
+      type |= EditableProperty.TYPE_INVISIBLE;
+    }
+    if (isPropertyforYail(name)) {
+      type |= EditableProperty.TYPE_DOYAIL;
+    }
+    properties.addProperty(name, defaultValue, caption, editor, type, editorType, editorArgs);
   }
 
   /**
@@ -655,8 +679,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   /**
    * Selects this component in the visual editor.
    */
-  public final void select() {
-    getForm().setSelectedComponent(this);
+  public final void select(NativeEvent event) {
+    getForm().setSelectedComponent(this, event);
   }
 
   /**
@@ -680,7 +704,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Returns whether this component is selected.
    */
   public boolean isSelected() {
-    return (getForm().getSelectedComponent() == this);
+    return (getForm().getSelectedComponents() == this);
   }
 
   /**
@@ -868,7 +892,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       case Event.ONTOUCHSTART:
       case Event.ONTOUCHEND:
         if (isForm()) {
-          select();
+          select(event);
         }
       case Event.ONTOUCHMOVE:
       case Event.ONTOUCHCANCEL:
@@ -887,7 +911,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
       case Event.ONCLICK:
         cancelBrowserEvent(event);
-        select();
+        select(event);
         break;
 
       default:
@@ -1095,7 +1119,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
   public void delete() {
     this.editor.getProjectEditor().clearLocation(getName());
-    getForm().select();
+    getForm().select(null);
     // Pass true to indicate that the component is being permanently deleted.
     getContainer().removeComponent(this, true);
     // tell the component its been removed, so it can remove children's blocks
@@ -1183,7 +1207,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     for (PropertyDefinition property : newProperties) {
       if (toBeAdded.contains(property.getName())) {
         PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), (YaFormEditor) editor, property.getEditorArgs());
-        addProperty(property.getName(), property.getDefaultValue(), property.getCaption(), propertyEditor);
+        addProperty(property.getName(), property.getDefaultValue(), property.getCaption(), property.getEditorType(), property.getEditorArgs(), propertyEditor);
       }
     }
 

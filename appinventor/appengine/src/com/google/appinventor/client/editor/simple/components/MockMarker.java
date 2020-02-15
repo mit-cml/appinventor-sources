@@ -420,7 +420,7 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
     map.addLayer(marker);
     if (!marker.clickHandler) {
       marker.clickHandler = function(e) {
-        self.@com.google.appinventor.client.editor.simple.components.MockMarker::select()();
+        self.@com.google.appinventor.client.editor.simple.components.MockMarker::select(*)(e);
         if (e.originalEvent) e.originalEvent.stopPropagation();
       };
       marker.dragHandler = function(e) {
