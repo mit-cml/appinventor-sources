@@ -18,14 +18,14 @@ public interface ObservableDataSource<K,V> extends DataSource<K,V> {
    * Adds a new Chart Data observer to the Data Source
    * @param dataComponent  Chart Data object to add as an observer
    */
-  void addDataObserver(DataBase dataComponent);
+  void addDataObserver(ChartDataBase dataComponent);
 
   /**
    * Removes the specified Chart Data observer from the observers list,
    * if it exists.
    * @param dataComponent  Chart Data object to remove
    */
-  void removeDataObserver(DataBase dataComponent);
+  void removeDataObserver(ChartDataBase dataComponent);
 
   /**
    * Notifies the observers of a value change

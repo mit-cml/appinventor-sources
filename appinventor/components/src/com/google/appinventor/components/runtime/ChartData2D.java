@@ -25,11 +25,11 @@ import java.util.concurrent.ExecutionException;
     category = ComponentCategory.CHARTS,
     iconName = "images/web.png")
 @SimpleObject
-public final class Data2D extends DataBase {
+public final class ChartData2D extends ChartDataBase {
   /**
    * Creates a new Coordinate Data component.
    */
-  public Data2D(Chart chartContainer) {
+  public ChartData2D(Chart chartContainer) {
     super(chartContainer);
     dataFileColumns = Arrays.asList("", ""); // Construct default dataFileColumns list with 2 entries
     webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries

@@ -19,14 +19,14 @@ import static org.junit.Assert.*;
 
 public class ChartData2DTest extends RobolectricTestBase {
   private Chart chartComponent;
-  private Data2D data;
+  private ChartData2D data;
   private ChartDataModel model;
 
   @Override
   public void setUp() {
     super.setUp();
     chartComponent = new Chart(getForm());
-    data = new Data2D(chartComponent);
+    data = new ChartData2D(chartComponent);
     model = data.chartDataModel;
 
     // The ExecutorService used by the ChartData component has

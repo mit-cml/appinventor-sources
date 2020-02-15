@@ -51,7 +51,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   private Set<Integer> acceptableDeviceClasses;
 
   // Set of observers
-  private HashSet<DataBase> dataSourceObservers = new HashSet<DataBase>();
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   // Executor Service to poll data continuously from the Input Stream
   // which holds data sent by Bluetooth connections. Used for sending
@@ -316,7 +316,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   }
 
   @Override
-  public void addDataObserver(DataBase dataComponent) {
+  public void addDataObserver(ChartDataBase dataComponent) {
     // Data Polling Service has not been initialized yet; Initialize it
     // (since Data Component is added)
     if (dataPollService == null) {
@@ -357,7 +357,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   }
 
   @Override
-  public void removeDataObserver(DataBase dataComponent) {
+  public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
 
     // No more Data Source observers exist;
@@ -373,7 +373,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
 
   @Override
   public void notifyDataObservers(String key, Object newValue) {
-    for (DataBase observer : dataSourceObservers) {
+    for (ChartDataBase observer : dataSourceObservers) {
       observer.onReceiveValue(this, key, newValue);
     }
   }

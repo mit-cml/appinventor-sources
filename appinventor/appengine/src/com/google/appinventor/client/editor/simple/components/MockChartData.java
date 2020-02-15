@@ -11,14 +11,16 @@ import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Base class for MockChartData components, providing base functionality
  * for property setters, adding the component to a Mock Chart
  * as a child, and showing/hiding properties.
- *
+ * <p>
  * The component acts as an invisible visible component, and was not chosen
  * to be a NonVisibleComponent so that it would appear in the Chart hierarchy
  * instead of the non-visible component bar.
@@ -36,23 +38,34 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
   private static final String PROPERTY_WEB_X_COLUMN = "WebXColumn";
   private static final String PROPERTY_WEB_Y_COLUMN = "WebYColumn";
 
-  // The HashMap contains properties that should be hidden by default.
-  // Height and Width properties should be hidden since they do not matter
-  // for the Chart Data component.
-  // Chart Source related properties should be hidden by default,
-  // as they are only shown upon certain conditions (e.g. DataFileColumn
-  // properties are only shown when the Source component is a DataFile)
-  // The Point Shape property should be h
-  private static final HashSet<String> hiddenProperties = new HashSet<String>() {{
-    add(PROPERTY_NAME_HEIGHT);
-    add(PROPERTY_NAME_WIDTH);
-    add(PROPERTY_DATA_FILE_X_COLUMN);
-    add(PROPERTY_DATA_FILE_Y_COLUMN);
-    add(PROPERTY_CHART_SOURCE_VALUE);
-    add(PROPERTY_WEB_X_COLUMN);
-    add(PROPERTY_WEB_Y_COLUMN);
-    add(PROPERTY_POINT_SHAPE);
-  }};
+  /**
+   * The HashMap contains properties that should be hidden by default.
+   * Height and Width properties should be hidden since they do not matter
+   * for the Chart Data component.
+   * Chart Source related properties should be hidden by default,
+   * as they are only shown upon certain conditions (e.g. DataFileColumn
+   * properties are only shown when the Source component is a DataFile)
+   * The Point Shape property should be hidden by default since only a
+   * subset of Chart Data types support point shape settings.
+   */
+  private static final Set<String> hiddenProperties;
+
+  static {
+    Set<String> propertyNames = new HashSet<String>() {{
+      add(PROPERTY_NAME_HEIGHT);
+      add(PROPERTY_NAME_WIDTH);
+      add(PROPERTY_DATA_FILE_X_COLUMN);
+      add(PROPERTY_DATA_FILE_Y_COLUMN);
+      add(PROPERTY_CHART_SOURCE_VALUE);
+      add(PROPERTY_WEB_X_COLUMN);
+      add(PROPERTY_WEB_Y_COLUMN);
+      add(PROPERTY_POINT_SHAPE);
+    }};
+
+    // Set Hidden Properties map to an immutable set so that
+    // the contents could not be modified.
+    hiddenProperties = Collections.unmodifiableSet(propertyNames);
+  }
 
   // Represents the Chart data icon
   private Image iconWidget;
@@ -173,7 +186,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     // If the component is currently selected, re-select it to refresh
     // the Properties panel.
     if (isSelected()) {
-      onSelectedChange(true);
+      refreshForm(true);
     }
   }
 

@@ -129,7 +129,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   private final Handler androidUIHandler;
 
   // Set of observers
-  private final Set<DataBase> dataSourceObservers = new HashSet<DataBase>();
+  private final Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /**
    * Creates a new AccelerometerSensor component.
@@ -497,19 +497,19 @@ public int getDeviceDefaultOrientation() {
   }
 
   @Override
-  public void addDataObserver(DataBase dataComponent) {
+  public void addDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
   @Override
-  public void removeDataObserver(DataBase dataComponent) {
+  public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataObservers(String key, Object value) {
     // Notify each Chart Data observer component of the Data value change
-    for (DataBase dataComponent : dataSourceObservers) {
+    for (ChartDataBase dataComponent : dataSourceObservers) {
       dataComponent.onReceiveValue(this, key, value);
     }
   }

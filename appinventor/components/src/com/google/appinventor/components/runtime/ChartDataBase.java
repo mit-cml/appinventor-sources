@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 @SimpleObject
-public abstract class DataBase implements Component, OnBeforeInitializeListener, DataSourceChangeListener,
+public abstract class ChartDataBase implements Component, OnBeforeInitializeListener, DataSourceChangeListener,
     DataSourceGetValueListener {
     protected Chart container;
     protected ChartDataModel chartDataModel;
@@ -67,7 +67,7 @@ public abstract class DataBase implements Component, OnBeforeInitializeListener,
     /**
      * Creates a new Chart Data component.
      */
-    protected DataBase(Chart chartContainer) {
+    protected ChartDataBase(Chart chartContainer) {
         this.container = chartContainer;
         chartContainer.addDataComponent(this);
 

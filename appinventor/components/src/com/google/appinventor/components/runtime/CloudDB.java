@@ -242,7 +242,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private ConnectivityManager cm;
 
   // Set of observers
-  private HashSet<DataBase> dataSourceObservers = new HashSet<DataBase>();
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   private static class storedValue {
     private String tag;
@@ -1388,19 +1388,19 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   @Override
-  public void addDataObserver(DataBase dataComponent) {
+  public void addDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
   @Override
-  public void removeDataObserver(DataBase dataComponent) {
+  public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataObservers(String key, Object newValue) {
     // Notify each Chart Data observer component of the Data value change
-    for (DataBase dataComponent : dataSourceObservers) {
+    for (ChartDataBase dataComponent : dataSourceObservers) {
       dataComponent.onDataSourceValueChange(this, key, newValue);
     }
   }

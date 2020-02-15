@@ -208,7 +208,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   private YailList columns = new YailList();
 
   // Set of observers
-  private HashSet<DataBase> dataSourceObservers = new HashSet<DataBase>();
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /**
    * Creates a new Web component.
@@ -1346,18 +1346,18 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   }
 
   @Override
-  public void addDataObserver(DataBase dataComponent) {
+  public void addDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
   @Override
-  public void removeDataObserver(DataBase dataComponent) {
+  public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataObservers(YailList key, Object newValue) {
-    for (DataBase dataComponent : dataSourceObservers) {
+    for (ChartDataBase dataComponent : dataSourceObservers) {
       // Notify Data Component observer with the new columns value (and null key,
       // since key does not matter in the case of the Web component)
       dataComponent.onDataSourceValueChange(this, null, columns);

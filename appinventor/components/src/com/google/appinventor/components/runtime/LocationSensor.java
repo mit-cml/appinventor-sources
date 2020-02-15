@@ -70,7 +70,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
     RealTimeDataSource<String, Float> {
 
   // Set of observers
-  private Set<DataBase> dataSourceObservers = new HashSet<DataBase>();
+  private Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   public interface LocationSensorListener extends LocationListener {
     void onTimeIntervalChanged(int time);
@@ -719,19 +719,19 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   @Override
-  public void addDataObserver(DataBase dataComponent) {
+  public void addDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.add(dataComponent);
   }
 
   @Override
-  public void removeDataObserver(DataBase dataComponent) {
+  public void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
   }
 
   @Override
   public void notifyDataObservers(String key, Object value) {
     // Notify each Chart Data observer component of the Data value change
-    for (DataBase dataComponent : dataSourceObservers) {
+    for (ChartDataBase dataComponent : dataSourceObservers) {
       dataComponent.onReceiveValue(this, key, value);
     }
   }
