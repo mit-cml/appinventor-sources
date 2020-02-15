@@ -9,11 +9,14 @@ import com.google.appinventor.components.common.ComponentConstants;
 
 import java.util.Map;
 
+/**
+ * Class that allows controlling the layout of the MockChart container.
+ */
 public class MockChartLayout extends MockLayout {
 
   MockChartLayout() {
-    layoutWidth = ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH;
-    layoutHeight = ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;
+    layoutWidth = ComponentConstants.CHART_PREFERRED_WIDTH;
+    layoutHeight = ComponentConstants.CHART_PREFERRED_HEIGHT;
   }
 
   @Override
@@ -21,12 +24,12 @@ public class MockChartLayout extends MockLayout {
     return new LayoutInfo(layoutInfoMap, container) {
       @Override
       int calculateAutomaticWidth() {
-        return ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH;
+        return ComponentConstants.CHART_PREFERRED_WIDTH;
       }
 
       @Override
       int calculateAutomaticHeight() {
-        return ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;
+        return ComponentConstants.CHART_PREFERRED_HEIGHT;
       }
     };
   }
@@ -39,10 +42,14 @@ public class MockChartLayout extends MockLayout {
   @Override
   boolean onDrop(MockComponent source, int x, int y, int offsetX, int offsetY) {
     if (source instanceof MockChartData) {
+      // When dropping MockChartData onto a MockChart, the
+      // ChartData should be attached to this Mock Chart container.
       container.addComponent(source);
       ((MockChartData) source).addToChart((MockChart) container);
       return true;
     } else if (source instanceof MockDataFile) {
+      // When dropping a MockDataFile onto a MockChart, the
+      // DataFile should be attached to this Mock Chart container.
       ((MockChart) container).addDataFile((MockDataFile) source);
       return true;
     }

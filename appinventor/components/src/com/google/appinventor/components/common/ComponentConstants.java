@@ -106,6 +106,9 @@ public class ComponentConstants {
   /**
    * Chart Components
    */
+  public static final int CHART_PREFERRED_WIDTH = 176;
+  public static final int CHART_PREFERRED_HEIGHT = 144;
+
   public static final int CHART_TYPE_LINE = 0;
   public static final int CHART_TYPE_SCATTER = 1;
   public static final int CHART_TYPE_AREA = 2;

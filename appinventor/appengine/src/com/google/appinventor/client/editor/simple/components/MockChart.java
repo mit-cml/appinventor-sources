@@ -292,12 +292,12 @@ public final class MockChart extends MockContainer {
 
   @Override
   public int getPreferredWidth() {
-    return ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH;
+    return ComponentConstants.CHART_PREFERRED_WIDTH;
   }
 
   @Override
   public int getPreferredHeight() {
-    return ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;
+    return ComponentConstants.CHART_PREFERRED_HEIGHT;
   }
 
   @Override
