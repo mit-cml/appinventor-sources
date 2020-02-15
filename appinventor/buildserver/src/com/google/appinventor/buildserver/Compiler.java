@@ -2271,6 +2271,59 @@ public final class Compiler {
     return success;
   }
 
+  private boolean runD8(File classesDir, String dexedClassesDir) {
+    int mx = childProcessRamMb - 200;
+
+    List<String> classes = getFilesWithExtensionRecursively(classesDir, ".class");
+
+    Set<String> jars = new LinkedHashSet<>();
+    jars.addAll(classes);
+    jars.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
+    jars.add(getResource(KAWA_RUNTIME));
+    jars.add(getResource(ACRA_RUNTIME));
+
+    for (String SUPPORT_JAR : SUPPORT_JARS) {
+      jars.add(getResource(SUPPORT_JAR));
+    }
+
+    jars.addAll(uniqueLibsNeeded);
+
+    for (String type : extCompTypes) {
+      String sourcePath = getExtCompDirPath(type) + SIMPLE_ANDROID_RUNTIME_JAR;
+      jars.add(sourcePath);
+    }
+
+    // d8 --release --no-desugaring --lib ANDROID_RUNTIME --output dexedClassesDir ...jars
+    List<String> commandLineList = new ArrayList<>();
+    commandLineList.add(System.getProperty("java.home") + "/bin/java");
+    commandLineList.add("-mx" + mx + "M");
+    commandLineList.add("-jar");
+    commandLineList.add(getResource(D8_JAR));
+    commandLineList.add("--release");
+    commandLineList.add("--no-desugaring");
+    commandLineList.add("--lib");
+    commandLineList.add(getResource(ANDROID_RUNTIME));
+    commandLineList.add("--output");
+    commandLineList.add(dexedClassesDir);
+
+    commandLineList.addAll(jars);
+
+    String[] d8CommandLine = commandLineList.toArray(new String[0]);
+
+    long startD8 = System.currentTimeMillis();
+    if (!Execution.execute(null, d8CommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - D8 execution failed.");
+      err.println("YAIL compiler - D8 execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "D8"));
+      return false;
+    }
+    String d8TimeMessage = "D8 time: " +
+            ((System.currentTimeMillis() - startD8) / 1000.0) + " seconds";
+    out.println(d8TimeMessage);
+    LOG.info(d8TimeMessage);
+    return true;
+  }
+
   private boolean runAaptPackage(File manifestFile, File resDir, String tmpPackageName, File sourceOutputDir, File symbolOutputDir) {
     // Need to make sure assets directory exists otherwise aapt will fail.
     final File mergedAssetsDir = createDir(project.getBuildDirectory(), ASSET_DIR_NAME);
@@ -2882,6 +2935,22 @@ public final class Compiler {
       dir.mkdir();
     }
     return dir;
+  }
+
+  private static List<String> getFilesWithExtensionRecursively(File path, String extension) {
+    List<String> tmp = new ArrayList<>();
+
+    File[] files = path.listFiles();
+    if (files == null) return Collections.emptyList();
+
+    for (File file : files) {
+      if (file.isFile() && file.getName().endsWith(extension)) {
+        tmp.add(file.getAbsolutePath());
+      } else if (file.isDirectory()) {
+        tmp.addAll(getFilesWithExtensionRecursively(file, extension));
+      }
+    }
+    return tmp;
   }
 
   private void setProgress(int increments) {
