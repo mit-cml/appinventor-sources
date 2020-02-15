@@ -125,8 +125,8 @@ public class DexExecTask {
                             dexedLib.delete();
                         }
 
-                        boolean dxSuccess = runDx(input, dexedLibPath, /*showInputs=*/ false);
-                        if (!dxSuccess) return false;
+                        boolean dexSuccess = runDx(input, dexedLibPath, /*showInputs=*/ false);
+                        if (!dexSuccess) return false;
                     } else {
                         System.out.println(
                             String.format("Using Pre-Dexed %1$s <- %2$s",
