@@ -894,7 +894,7 @@ Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
       keyVar = keyFunc(keyVar);
       valueVar = valueFunc(valueVar);
     }
-    var newEnv = env.concat([loopVar]);
+    var newEnv = env.concat([keyVar, valueVar]);
     var dictResults = Blockly.LexicalVariable.referenceResult(
         block.getInputTargetBlock('DICT'), name, prefix, env);
     var doResults = Blockly.LexicalVariable.referenceResult(
@@ -1112,13 +1112,16 @@ Blockly.LexicalVariable.getEventParam = function (block) {
           if (params.indexOf(name) != -1) {
             return null; // Name is locally bound, not an event parameter.
           }
-       } else if ((type === "controls_forEach"
-           || type === "controls_forRange" || type === "controls_for_each_dict")
+       } else if ((type === "controls_forEach" || type === "controls_forRange")
            && (parent.getInputTargetBlock('DO') == child) ) { // Only DO is in scope, not other inputs!
          var loopName = parent.getFieldValue('VAR');
          if (loopName == name) {
            return null; // Name is locally bound, not an event parameter.
          }
+       } else if (type == 'controls_for_each_dict'
+           && parent.getInputTargetBlock('DO') == child
+           && parent.getVars().indexOf(name) != -1) {
+         return null;
        }
       child = parent;
       parent = parent.getParent(); // keep moving up the chain.
