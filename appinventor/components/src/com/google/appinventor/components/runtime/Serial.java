@@ -42,6 +42,7 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
   private Physicaloid mPhysicaloid;
 
   private int baudRate = 9600;
+  private int bytes = 256;
 
   public Serial(ComponentContainer container) {
     super(container.$form());
@@ -82,7 +83,7 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
       form.dispatchErrorOccurredEvent(Serial.this, "ReadSerial", ErrorMessages.ERROR_SERIAL_NOT_INITIALIZED);
       return "";
     } else {
-      byte[] buf = new byte[256];
+      byte[] buf = new byte[bytes];
       boolean success = true;
       String data = "";
   
@@ -147,5 +148,17 @@ public class Serial extends AndroidNonvisibleComponent implements Component {
       mPhysicaloid.setBaudrate(baudRate);
     else
       Log.w(LOG_TAG, "Could not set Serial Baud Rate to " + baudRate + ". Just saved, not applied to serial! Maybe you forgot to initialize it?");
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns the buffer size in bytes")
+  public int BufferSize() {
+    return this.bytes;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER, defaultValue = "256")
+  @SimpleProperty
+  public void BufferSize(int bytes) {
+    this.bytes = bytes;
+    Log.d(LOG_TAG, "Buffer Size: " + bytes);
   }
 }
