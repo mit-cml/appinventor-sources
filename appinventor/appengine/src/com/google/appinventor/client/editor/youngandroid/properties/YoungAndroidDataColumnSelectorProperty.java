@@ -78,7 +78,11 @@ public class YoungAndroidDataColumnSelectorProperty
     // If the property value is "None" and choices doesn't contain the value "None", set the
     // property value to "".
     String value = property.getValue();
-    if (value.equals("None") && !choices.containsValue(value)) {
+
+    // Check if the current value is exactly the None value
+    boolean valueIsNone = value == choices.getValueAtIndex(0);
+
+    if (valueIsNone && !choices.containsValue(value)) {
       property.setValue("");
     }
   }

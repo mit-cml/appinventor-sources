@@ -187,9 +187,15 @@ public class MockDataFile extends MockNonVisibleComponent {
    * Updates all the attached DataFileChangeListeners
    */
   private void updateDataFileChangeListeners() {
-    for (DataFileChangeListener listener : dataFileChangeListeners) {
-      // Call onColumnsChange event
-      listener.onColumnsChange(this);
+    /* To prevent errors, and extra check here is needed.
+       It only makes sense updating the listeners only when
+       the data file is attached.
+    */
+    if (this.isAttached()) {
+      for (DataFileChangeListener listener : dataFileChangeListeners) {
+        // Call onColumnsChange event
+        listener.onColumnsChange(this);
+      }
     }
   }
 }
