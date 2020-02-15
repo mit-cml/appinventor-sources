@@ -80,9 +80,7 @@ public class YoungAndroidDataColumnSelectorProperty
     String value = property.getValue();
 
     // Check if the current value is exactly the None value
-    boolean valueIsNone = value == choices.getValueAtIndex(0);
-
-    if (valueIsNone && !choices.containsValue(value)) {
+    if (value == choices.getValueAtIndex(0)) {
       property.setValue("");
     }
   }
