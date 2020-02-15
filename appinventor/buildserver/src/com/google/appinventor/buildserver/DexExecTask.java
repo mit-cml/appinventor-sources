@@ -118,18 +118,19 @@ public class DexExecTask {
                                                     dexedLib.lastModified() < input.lastModified()*/) {
 
                         System.out.println(
-                                String.format("Pre-Dexing %1$s -> %2$s",
-                                        input.getAbsolutePath(), fileName));
+                            String.format("Pre-Dexing %1$s -> %2$s",
+                              input.getAbsolutePath(), fileName));
 
                         if (dexedLib.isFile()) {
                             dexedLib.delete();
                         }
+
                         boolean dxSuccess = runDx(input, dexedLibPath, /*showInputs=*/ false);
                         if (!dxSuccess) return false;
                     } else {
                         System.out.println(
-                                String.format("Using Pre-Dexed %1$s <- %2$s",
-                                        fileName, input.getAbsolutePath()));
+                            String.format("Using Pre-Dexed %1$s <- %2$s",
+                              fileName, input.getAbsolutePath()));
                     }
 
                     // replace the input with the pre-dex libs.
