@@ -401,55 +401,38 @@ Blockly.TypeBlock.prototype.loadProcedures_ = function(){
  * example of how to call this function.
  */
 Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
-  //clean up any previous procedures in the list
-  this.TBOptions_ = goog.object.filter(this.TBOptions_,
-      function(opti){ return !opti.isGlobalvar;});
-
-  var globalVarNames = createTypeBlockForVariables_.call(this);
-  var self = this;
-  goog.array.forEach(globalVarNames, function(varName){
-    var canonicalN;
-    if (varName.translatedName.substring(0,3) === 'get')
-      canonicalN = 'lexical_variable_get';
-    else
-      canonicalN = 'lexical_variable_set';
-    self.TBOptions_[varName.translatedName] = {
-      canonicName: canonicalN,
-      dropDown: varName.dropDown,
-      isGlobalvar: true
-    };
+  // Remove any global vars from the list so that we can re-add them.
+  this.TBOptions_ = goog.object.filter(this.TBOptions_, function(option) {
+    return !option.isGlobalvar;
   });
 
-  /**
-   * Create TypeBlock options for global variables (a setter and a getter for each).
-   * @returns {Array} array of global var options
-   */
-  function createTypeBlockForVariables_() {
-    var options = [];
-    var varNames = Blockly.FieldLexicalVariable.getGlobalNames();
-    // Make a setter and a getter for each of the names
-    goog.array.forEach(varNames, function(varName){
-      options.push(
-          {
-            translatedName: 'get global ' + varName,
-            dropDown: {
-              titleName: 'VAR',
-              value: 'global ' + varName
-            }
-          }
-      );
-      options.push(
-          {
-            translatedName: 'set global ' + varName,
-            dropDown: {
-              titleName: 'VAR',
-              value: 'global ' + varName
-            }
-          }
-      );
-    });
-    return options;
-  }
+  var globalVarNames = Blockly.FieldLexicalVariable.getGlobalNames();
+  goog.array.forEach(globalVarNames, function(varName) {
+    var prefixedName = Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX  +
+        ' ' + varName;
+    var translatedGet = Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET +
+        ' ' + prefixedName;
+    // We can leave 'global' as 'global' inside the value property because
+    // (I believe) the FieldLexicalVariable translates that later.
+    this.TBOptions_[translatedGet] = {
+      canonicName: 'lexical_variable_get',
+      dropDown: {
+        titleName: 'VAR',
+        value: 'global ' + varName
+      },
+      isGlobalvar: true
+    };
+    var translatedSet = Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET +
+        ' ' + prefixedName;
+    this.TBOptions_[translatedSet] = {
+      canonicName: 'lexical_variable_set',
+      dropDown: {
+        titleName: 'VAR',
+        value: 'global ' + varName
+      },
+      isGlobalvar: true
+    }
+  }.bind(this));
 };
 
 /**
