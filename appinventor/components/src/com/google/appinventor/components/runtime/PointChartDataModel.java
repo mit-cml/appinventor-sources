@@ -8,12 +8,8 @@ package com.google.appinventor.components.runtime;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleDataSet;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineDataSet;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Handles the data operations & model-specific styling for point-based
@@ -21,14 +17,15 @@ import java.util.List;
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
 public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDataSet,
-    D extends BarLineScatterCandleBubbleData> extends Chart2DDataModel<T, D> {
+    D extends BarLineScatterCandleBubbleData, V extends PointChartView>
+    extends Chart2DDataModel<T, D, V> {
   /**
    * Initializes a new PointChartDataModel object instance.
    *
    * @param data Chart data instance
    */
-  protected PointChartDataModel(D data) {
-    super(data);
+  protected PointChartDataModel(D data, V view) {
+    super(data, view);
   }
 
   @Override
@@ -48,6 +45,10 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
         return new Entry(x, y);
       } catch (NumberFormatException e) {
         // Nothing happens: Do not add entry on NumberFormatException
+        this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
+            "GetEntryFromTuple",
+            ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
+            xValue, yValue);
       }
     } catch (Exception e) {
       // 2-tuples are invalid when null entries are present, or if

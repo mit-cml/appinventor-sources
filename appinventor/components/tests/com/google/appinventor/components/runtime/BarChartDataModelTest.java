@@ -28,7 +28,7 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
   @Override
   public void setup() {
     data = new BarData();
-    model = new BarChartDataModel(data);
+    model = new BarChartDataModel(data, new BarChartView(new Chart(getForm())));
   }
 
   /**

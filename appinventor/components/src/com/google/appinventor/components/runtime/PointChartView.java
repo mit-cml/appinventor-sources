@@ -19,6 +19,16 @@ public abstract class PointChartView<T extends BarLineChartBase,
     D extends BarLineScatterCandleBubbleData>
     extends AxisChartView<T, D> {
 
+  /**
+   * Creates a new Point Chart View with the specified Chart component
+   * instance as the parent of the View.
+   *
+   * @param chartComponent Chart component to link View to
+   */
+  protected PointChartView(Chart chartComponent) {
+    super(chartComponent);
+  }
+
   @Override
   protected void initializeDefaultSettings() {
     super.initializeDefaultSettings();

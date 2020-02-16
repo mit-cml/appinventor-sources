@@ -29,6 +29,16 @@ public abstract class AxisChartView<C extends BarLineChartBase,
   // an x value of 1, and so on.
   private List<String> axisLabels = new ArrayList<String>();
 
+  /**
+   * Creates a new Axis Chart View with the specified Chart component
+   * instance as the parent of the View.
+   *
+   * @param chartComponent Chart component to link View to
+   */
+  protected AxisChartView(Chart chartComponent) {
+    super(chartComponent);
+  }
+
   @Override
   protected void initializeDefaultSettings() {
     super.initializeDefaultSettings();

@@ -26,7 +26,7 @@ public class LineChartDataModelTest
   @Override
   public void setup() {
     data = new LineData();
-    model = new LineChartDataModel(data);
+    model = new LineChartDataModel(data, new LineChartView(new Chart(getForm())));
   }
 
   /**

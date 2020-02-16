@@ -12,13 +12,13 @@ import com.github.mikephil.charting.data.LineData;
  * Chart data for the Chart component.
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
-public class LineChartDataModel extends LineChartBaseDataModel {
+public class LineChartDataModel extends LineChartBaseDataModel<LineChartView> {
   /**
    * Initializes a new LineChartDataModel object instance.
    *
    * @param data Line Chart Data object instance
    */
-  public LineChartDataModel(LineData data) {
-    super(data);
+  public LineChartDataModel(LineData data, LineChartView view) {
+    super(data, view);
   }
 }

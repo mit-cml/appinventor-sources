@@ -32,7 +32,6 @@ import java.util.List;
 public class PieChartView extends ChartView<PieChart, PieData> {
   private RelativeLayout rootView; // Root view to store all the Pie Chart views
   private List<PieChart> pieCharts = new ArrayList<PieChart>(); // List to store all the Pie Chart views
-  private Activity activity; // Activity of the Screen (needed to initialize Pie Chart views)
 
   private int pieHoleRadius = 0;
 
@@ -47,15 +46,14 @@ public class PieChartView extends ChartView<PieChart, PieData> {
   /**
    * Creates a new Pie Chart view instance which manages
    * all the Pie Chart rings.
-   * @param context  Activity context where the view should be initialized in
+   * @param chartComponent  Chart Component to link Pie Chart View to.
    */
-  public PieChartView(Form context) {
-    // Instantiate the Root View layout and the Root Chart
-    rootView = new RelativeLayout(context);
-    chart = new PieChart(context); // the Chart instance represents the root Pie Chart
+  public PieChartView(Chart chartComponent) {
+    super(chartComponent);
 
-    // Store the activity variable locally
-    this.activity = context;
+    // Instantiate the Root View layout and the Root Chart
+    rootView = new RelativeLayout(this.form);
+    chart = new PieChart(this.form); // the Chart instance represents the root Pie Chart
 
     // Initialize default settings for the Root Chart
     initializeDefaultSettings();
@@ -88,7 +86,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
 
     // Return a new Pie Chart Data model linking it to
     // the created Pie Chart ring
-    return new PieChartDataModel(this, pieChart, new PieData());
+    return new PieChartDataModel(new PieData(), this, pieChart);
   }
 
   /**
@@ -104,7 +102,7 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     if (pieCharts.isEmpty()) { // No Pie Charts have been added yet (root Pie Chart)
       pieChart = chart; // Set Pie Chart to root Pie Chart
     } else { // Inner Pie Chart
-      pieChart = new PieChart(activity); // Create a new Pie Chart
+      pieChart = new PieChart(this.form); // Create a new Pie Chart
       pieChart.getDescription().setEnabled(false); // Hide description
       pieChart.getLegend().setEnabled(false); // Hide legend
     };

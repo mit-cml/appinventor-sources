@@ -11,6 +11,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import java.util.List;
  * Chart data for the Chart component.
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
-public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
+public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData, PieChartView> {
   /* Since a custom legend is used which is shared by all the separate
    * Pie Chart views (rings), for ease of deletion and operations on
    * the entries, the Legend Entries List is kept for this single
@@ -31,7 +32,6 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
    * Legend accordingly.
    */
   private List<LegendEntry> legendEntries = new ArrayList<LegendEntry>();
-  private PieChartView view;
 
   /**
    * Initializes a new PieChartDataModel object instance.
@@ -40,10 +40,11 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
    * Pie Chart instance represents a single ring of a Pie Chart.
    *
    * @param chart  Chart to link Data Model
+   * @param view   Chart View to link Data Model
    * @param data Chart data instance
    */
-  public PieChartDataModel(PieChartView view, PieChart chart, PieData data) {
-    super(data);
+  public PieChartDataModel(PieData data, PieChartView view, PieChart chart) {
+    super(data, view);
 
     // Initialize dataset and add it to the Data object
     dataset = new PieDataSet(new ArrayList<PieEntry>(), "");
@@ -135,6 +136,10 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
         return new PieEntry(y, xValue);
       } catch (NumberFormatException e) {
         // Nothing happens: Do not add entry on NumberFormatException
+        this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
+            "GetEntryFromTuple",
+            ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
+            xValue, yValue);
       }
     } catch (Exception e) {
       // 2-tuples are invalid when null entries are present, or if

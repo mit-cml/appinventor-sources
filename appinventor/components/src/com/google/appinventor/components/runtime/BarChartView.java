@@ -31,13 +31,16 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
 
 
   /**
-   * Instantiates a new Bar Chart View in the given context.
+   * Creates a new Bar Chart View with the specified Chart component
+   * instance as the parent of the View.
    *
-   * @param context  Context to instantiate view in
+   * @param chartComponent  Chart component to link View to
    */
-  public BarChartView(Form context) {
+  public BarChartView(Chart chartComponent) {
+    super(chartComponent);
+
     // Set the Chart object to a new Bar Chart instance
-    chart = new BarChart(context);
+    chart = new BarChart(this.form);
 
     // Instantiate new Data object and set it to the Bar Chart
     data = new BarData();
@@ -55,7 +58,7 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
   public ChartDataModel createChartModel() {
     // Instantiate a new Bar Chart Data Model with the local
     // BarData object.
-    BarChartDataModel model = new BarChartDataModel(data);
+    BarChartDataModel model = new BarChartDataModel(data, this);
 
     // Since the creation a new Bar Chart Data model implies
     // an addition of an additional Data Series, the Bar Space

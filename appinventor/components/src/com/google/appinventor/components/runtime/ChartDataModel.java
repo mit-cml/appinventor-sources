@@ -24,10 +24,12 @@ import java.util.List;
  * or one list of points in a Scatter Chart).
  * @param <T>  (Chart) DataSet type (MPAndroidChart DataSet class)
  * @param <D>  (Chart) Data type  (MPAndroidChart ChartData class)
+ * @param <V>  (Chart) View that the model is compatible with (ChartView (sub)classes)
  */
-public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
+public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V extends ChartView> {
   protected D data;
   protected T dataset;
+  protected V view;
 
   /**
    * Local List of entries; The modifications of the Data are made
@@ -58,9 +60,12 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
    * Initializes a new ChartDataModel object instance.
    *
    * @param data Chart data instance
+   * @param view Chart View to link model to
    */
-  protected ChartDataModel(D data) {
+  protected ChartDataModel(D data, V view) {
     this.data = data;
+    this.view = view;
+
     entries = new ArrayList<Entry>();
   }
 

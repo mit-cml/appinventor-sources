@@ -22,14 +22,15 @@ import java.util.List;
  * Chart data (i.e. Line and Area charts) for the Chart component.
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
-public abstract class LineChartBaseDataModel extends PointChartDataModel<LineDataSet, LineData> {
+public abstract class LineChartBaseDataModel<V extends LineChartViewBase>
+    extends PointChartDataModel<LineDataSet, LineData, V> {
   /**
    * Initializes a new LineChartBaseDataModel object instance.
    *
    * @param data Line Chart Data object instance
    */
-  protected LineChartBaseDataModel(LineData data) {
-    super(data);
+  protected LineChartBaseDataModel(LineData data, V view) {
+    super(data, view);
     dataset = new LineDataSet(new ArrayList<Entry>(), "");
     this.data.addDataSet(dataset); // Safe add
     setDefaultStylingProperties();

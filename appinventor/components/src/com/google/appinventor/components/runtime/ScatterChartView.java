@@ -14,12 +14,15 @@ import com.github.mikephil.charting.data.ScatterData;
  */
 public class ScatterChartView extends PointChartView<ScatterChart, ScatterData> {
   /**
-   * Instantiate a new ScatterChartView in the given context.
+   * Creates a new Scatter Chart View with the specified Chart component
+   * instance as the parent of the View.
    *
-   * @param context Context to instantiate view in
+   * @param chartComponent  Chart component to link View to
    */
-  public ScatterChartView(Form context) {
-    chart = new ScatterChart(context);
+  public ScatterChartView(Chart chartComponent) {
+    super(chartComponent);
+
+    chart = new ScatterChart(this.form);
 
     data = new ScatterData();
     chart.setData(data);
@@ -29,6 +32,6 @@ public class ScatterChartView extends PointChartView<ScatterChart, ScatterData> 
 
   @Override
   public ChartDataModel createChartModel() {
-    return new ScatterChartDataModel(data);
+    return new ScatterChartDataModel(data, this);
   }
 }

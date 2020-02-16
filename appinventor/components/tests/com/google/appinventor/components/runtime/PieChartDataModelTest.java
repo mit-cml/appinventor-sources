@@ -519,7 +519,7 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
 
   @Override
   public void setup() {
-    chartView = new PieChartView(getForm());
+    chartView = new PieChartView(new Chart(getForm()));
     model = (PieChartDataModel) chartView.createChartModel();
     data = (PieData) model.getData();
     legendEntries = chartView.getLegendEntries();

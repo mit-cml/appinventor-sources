@@ -28,6 +28,11 @@ import java.util.concurrent.atomic.AtomicReference;
  * @param <D>  Chart Data type (MPAndroidChart ChartData class)
  */
 public abstract class ChartView<C extends Chart, D extends ChartData> {
+  // Keep track of the parent Chart component to be able to report
+  // detailed errors & warnings.
+  protected com.google.appinventor.components.runtime.Chart chartComponent;
+  protected Form form;
+
   protected C chart;
   protected D data;
 
@@ -40,6 +45,21 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
    * per certain time frame.
    */
   private AtomicReference<Runnable> refreshRunnable = new AtomicReference<Runnable>();
+
+  /**
+   * Creates a new Chart View with the specified Chart component
+   * instance as the parent of the View.
+   *
+   * @param chartComponent  Chart component to link View to
+   */
+  protected ChartView(com.google.appinventor.components.runtime.Chart chartComponent) {
+    this.chartComponent = chartComponent;
+    this.form = chartComponent.$form();
+  }
+
+  public Form getForm() {
+    return this.form;
+  }
 
   /**
    * Returns the underlying view holding all the necessary Chart Views.

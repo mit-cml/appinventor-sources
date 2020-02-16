@@ -20,14 +20,15 @@ import java.util.List;
  * @param <T> Chart Dataset parameter (MPAndroidChart class for single data series)
  * @param <D> Chart Data parameter (MPAndroidChart class for collection of all data series)
  */
-public abstract class Chart2DDataModel<T extends DataSet, D extends ChartData> extends ChartDataModel<T, D> {
+public abstract class Chart2DDataModel<T extends DataSet, D extends ChartData, V extends ChartView>
+    extends ChartDataModel<T, D, V> {
   /**
    * Initializes a new Chart2DDataModel object instance.
    *
    * @param data Chart data instance
    */
-  protected Chart2DDataModel(D data) {
-    super(data);
+  protected Chart2DDataModel(D data, V view) {
+    super(data, view);
   }
 
   @Override

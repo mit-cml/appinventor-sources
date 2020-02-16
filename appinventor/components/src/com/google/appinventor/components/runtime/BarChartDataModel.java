@@ -10,6 +10,7 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -24,14 +25,14 @@ import java.util.List;
  * TODO: (mainly for FindEntryIndex) by making use of the property that the
  * TODO: x value corresponds to the index in the Bar Chart Data Model.
  */
-public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
+public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData, BarChartView> {
   /**
    * Initializes a new ChartDataModel object instance.
    *
    * @param data Chart data instance
    */
-  protected BarChartDataModel(BarData data) {
-    super(data);
+  protected BarChartDataModel(BarData data, BarChartView view) {
+    super(data, view);
     dataset = new BarDataSet(new ArrayList<BarEntry>(), "");
     this.data.addDataSet(dataset); // Safe add
     setDefaultStylingProperties();
@@ -103,6 +104,10 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
         return new BarEntry(x, y);
       } catch (NumberFormatException e) {
         // Nothing happens: Do not add entry on NumberFormatException
+        this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
+            "GetEntryFromTuple",
+            ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
+            xValue, yValue);
       }
     } catch (Exception e) {
       // 2-tuples are invalid when null entries are present, or if

@@ -22,7 +22,7 @@ public class ScatterChartDataModelTest
   @Override
   public void setup() {
     data = new ScatterData();
-    model = new ScatterChartDataModel(data);
+    model = new ScatterChartDataModel(data, new ScatterChartView(new Chart(getForm())));
   }
 
   /**

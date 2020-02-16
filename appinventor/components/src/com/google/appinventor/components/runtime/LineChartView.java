@@ -11,16 +11,17 @@ package com.google.appinventor.components.runtime;
  */
 public class LineChartView extends LineChartViewBase {
   /**
-   * Instantiate a new LineChartView in the given context.
+   * Creates a new Line Chart View with the specified Chart component
+   * instance as the parent of the View.
    *
-   * @param context Context to instantiate view in
+   * @param chartComponent  Chart component to link View to
    */
-  public LineChartView(Form context) {
-    super(context);
+  public LineChartView(Chart chartComponent) {
+    super(chartComponent);
   }
 
   @Override
   public ChartDataModel createChartModel() {
-    return new LineChartDataModel(data);
+    return new LineChartDataModel(data, this);
   }
 }

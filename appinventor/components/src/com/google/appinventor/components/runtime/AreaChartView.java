@@ -13,12 +13,13 @@ import android.app.Activity;
  */
 public class AreaChartView extends LineChartViewBase {
   /**
-   * Creates a new Area Chart View instance with the given context
+   * Creates a new Area Chart View with the specified Chart component
+   * instance as the parent of the View.
    *
-   * @param context  Context to create view in
+   * @param chartComponent  Chart component to link View to
    */
-  public AreaChartView(Form context) {
-    super(context);
+  public AreaChartView(Chart chartComponent) {
+    super(chartComponent);
 
     // In order for the fill under the Chart to work on SDK < 18,
     // hardware acceleration has to be disabled.
@@ -27,6 +28,6 @@ public class AreaChartView extends LineChartViewBase {
 
   @Override
   public ChartDataModel createChartModel() {
-    return new AreaChartDataModel(data);
+    return new AreaChartDataModel(data, this);
   }
 }

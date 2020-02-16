@@ -14,14 +14,14 @@ import java.util.List;
  * Chart data for the Chart component.
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
-public class AreaChartDataModel extends LineChartBaseDataModel {
+public class AreaChartDataModel extends LineChartBaseDataModel<AreaChartView> {
   /**
    * Initializes a new AreaChartDataModel object instance.
    *
    * @param data Line Chart Data object instance
    */
-  public AreaChartDataModel(LineData data) {
-    super(data);
+  public AreaChartDataModel(LineData data, AreaChartView view) {
+    super(data, view);
   }
 
   @Override

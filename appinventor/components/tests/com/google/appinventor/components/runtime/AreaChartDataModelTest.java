@@ -17,6 +17,6 @@ public class AreaChartDataModelTest
   @Override
   public void setup() {
     data = new LineData();
-    model = new AreaChartDataModel(data);
+    model = new AreaChartDataModel(data, new AreaChartView(new Chart(getForm())));
   }
 }

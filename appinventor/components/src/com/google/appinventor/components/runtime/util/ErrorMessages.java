@@ -264,7 +264,10 @@ public final class ErrorMessages {
   public static final int ERROR_SERVER = 3808;
   public static final int ERROR_SPEECH_TIMEOUT = 3809;
 
-  // Start the next group of errors at 3900
+  //ChartData Errors
+  public static final int ERROR_INVALID_CHART_ENTRY_VALUES = 3901;
+
+  // Start the next group of errors at 4000
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -654,6 +657,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_RECOGNIZER_BUSY, "RecognitionService Busy");
     errorMessages.put(ERROR_SERVER, "Error From Server");
     errorMessages.put(ERROR_SPEECH_TIMEOUT, "No Speech Input");
+
+    //ChartData Errors
+    errorMessages.put(ERROR_INVALID_CHART_ENTRY_VALUES, "Invalid Chart Entry Value(s): %1$s, %2$s");
   }
 
   private ErrorMessages() {

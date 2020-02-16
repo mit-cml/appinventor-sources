@@ -16,12 +16,15 @@ import com.github.mikephil.charting.data.LineData;
  */
 public abstract class LineChartViewBase extends PointChartView<LineChart, LineData> {
   /**
-   * Instantiate a new LineChartViewBase in the given context.
+   * Creates a new Line Chart Base View with the specified Chart component
+   * instance as the parent of the View.
    *
-   * @param context Context to instantiate view in
+   * @param chartComponent  Chart component to link View to
    */
-  protected LineChartViewBase(Activity context) {
-    chart = new LineChart(context);
+  protected LineChartViewBase(Chart chartComponent) {
+    super(chartComponent);
+
+    chart = new LineChart(this.form);
 
     data = new LineData();
     chart.setData(data);

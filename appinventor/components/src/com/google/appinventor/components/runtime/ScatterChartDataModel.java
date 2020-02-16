@@ -19,14 +19,14 @@ import java.util.ArrayList;
  * Chart data for the Chart component.
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
-public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, ScatterData> {
+public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, ScatterData, ScatterChartView> {
   /**
    * Initializes a new ScatterChartDataModel object instance.
    *
    * @param data Chart data instance
    */
-  public ScatterChartDataModel(ScatterData data) {
-    super(data);
+  public ScatterChartDataModel(ScatterData data, ScatterChartView view) {
+    super(data, view);
     dataset = new ScatterDataSet(new ArrayList<Entry>(), "");
     this.data.addDataSet(dataset); // Safe add
     setDefaultStylingProperties();
