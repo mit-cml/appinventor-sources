@@ -358,7 +358,6 @@ public final class Compiler {
   private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
 
   private BuildServer.ProgressReporter reporter; // Used to report progress of the build
-  private int minSdkForCompilation;
 
   /*
    * Generate the set of Android permissions needed by this project.
@@ -2300,6 +2299,8 @@ public final class Compiler {
     d8Command.add(getResource(ANDROID_RUNTIME));
     d8Command.add("--main-dex-list");
     d8Command.add(getResource(MAIN_DEX_LIST));
+    d8Command.add("--min-api");
+    d8Command.add(minSdkForCompilation + "");
     d8Command.add("--output");
     d8Command.add(dexedClassesDir);
 
