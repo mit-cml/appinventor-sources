@@ -2271,7 +2271,7 @@ public final class Compiler {
 
     List<String> classes = getFilesWithExtensionRecursively(classesDir, ".class");
 
-    Set<String> input = new LinkedHashSet<>(classes);
+    Set<String> input = new LinkedHashSet<>(classes); // any combination of dex, class, zip, jar, or apk files
     input.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
     input.add(getResource(KAWA_RUNTIME));
     input.add(getResource(ACRA_RUNTIME));
@@ -2291,8 +2291,9 @@ public final class Compiler {
     List<String> d8Command = new ArrayList<>();
     d8Command.add(System.getProperty("java.home") + "/bin/java");
     d8Command.add("-mx" + mx + "M");
-    d8Command.add("-jar");
+    d8Command.add("-cp");
     d8Command.add(getResource(D8_JAR));
+    d8Command.add("com.android.tools.r8.D8");
     d8Command.add("--release");
 //    d8Command.add("--no-desugaring");
     d8Command.add("--lib");
