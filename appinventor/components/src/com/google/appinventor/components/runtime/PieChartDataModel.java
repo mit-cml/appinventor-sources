@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -13,6 +18,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Handles the data operations & model-specific styling for Pie
+ * Chart data for the Chart component.
+ * @see com.google.appinventor.components.runtime.ChartDataModel
+ */
 public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
   /* Since a custom legend is used which is shared by all the separate
    * Pie Chart views (rings), for ease of deletion and operations on
@@ -151,21 +161,6 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData> {
     // Set spacing between each slice
     dataset.setSliceSpace(3);
   }
-
-//  @Override
-//  protected YailList getDefaultValues(int size) {
-//    // Default values for PieChartBaseDataModel should be
-//    // integers from 0 to N (0, 1, 2, ...)
-//    // TODO: This could be updated in the future to return Strings
-//    // TODO: such as "Entry 1", "Entry 2", ... for x and 1,2,3,...,N for y
-//    ArrayList<Integer> defaultValues = new ArrayList<>();
-//
-//    for (int i = 0; i < size; ++i) {
-//      defaultValues.add(i);
-//    }
-//
-//    return YailList.makeList(defaultValues);
-//  }
 
   /**
    * Sets the colors of the Data Series from the specified

@@ -32,7 +32,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
   private static final String PROPERTY_LINE_TYPE = "LineType";
   private static final String PROPERTY_PAIRS = "ElementsFromPairs";
   private static final String PROPERTY_CHART_SOURCE = "Source";
-  private static final String PROPERTY_CHART_SOURCE_VALUE = "DataSourceValue";
+  private static final String PROPERTY_CHART_SOURCE_VALUE = "DataSourceKey";
   private static final String PROPERTY_DATA_FILE_X_COLUMN = "DataFileXColumn";
   private static final String PROPERTY_DATA_FILE_Y_COLUMN = "DataFileYColumn";
   private static final String PROPERTY_WEB_X_COLUMN = "WebXColumn";

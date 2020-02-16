@@ -528,7 +528,7 @@ public class ChartData2DTest extends RobolectricTestBase {
 
     // Set the Source related properties to the Data component
     data.Source(tinyDB);
-    data.DataSourceValue(expectedParameter);
+    data.DataSourceKey(expectedParameter);
 
     // Initialize Data component
     data.onBeforeInitialize();
@@ -634,7 +634,7 @@ public class ChartData2DTest extends RobolectricTestBase {
     String keyValue = "X";
     float value = 3f;
 
-    data.DataSourceValue(keyValue);
+    data.DataSourceKey(keyValue);
     data.Source(sensor);
     data.onBeforeInitialize();
 

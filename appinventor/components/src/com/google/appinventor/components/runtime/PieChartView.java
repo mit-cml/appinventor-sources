@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
@@ -328,20 +333,6 @@ public class PieChartView extends ChartView<PieChart, PieData> {
       bottomOffset = Math.min(25f, bottomOffset);
     }
 
-    // Incomplete alternate solution which takes the value that
-    // would be calculated if setDrawInside were to be enabled.
-    // The issue with this solution is that the offset is calculated
-    // on the root Pie Chart, which is bigger than inner Pie Charts
-    // (therefore it is not fully representative)
-    //    if (pieChart == chart) {
-    //      chart.setExtraBottomOffset(0);
-    //      chart.getLegend().setDrawInside(false);
-    //      chart.invalidate();
-    //      offset = Utils.convertPixelsToDp(chart.getViewPortHandler().offsetBottom());
-    //      chart.getLegend().setDrawInside(true);
-    //      chart.invalidate();
-    //    }
-
     // Alternate solution (MPAndroidChart based)
     // This solution seems to downsize inner rings far too much.
     // Calculate the offset in pixels to apply to the Pie Chart.
@@ -352,28 +343,6 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     //
     //    // Divide offset by 2 (the direct value is a bit too large)
     //    offset = Utils.convertPixelsToDp(offset);
-
-    // Alternate solution by making use of line break counts.
-    // The multiplier and offset have been picked through trial and error.
-    // The value 7 seems like a sweet spot value for offsets, and the multiplier
-    // was chosen through observing different values.
-//    if (chart == pieChart) {
-//      chart.getLegendRenderer().computeLegend(chart.getData());
-//
-//      float multiplier = 1;
-//
-//      for (boolean point : chart.getLegend().getCalculatedLabelBreakPoints()) {
-//        if (point) {
-//          multiplier +=  0.75f;
-//
-//          if (multiplier >= 4f) {
-//            break;
-//          }
-//        }
-//      }
-//
-//      offset = multiplier * 7f;
-//    }
 
     // Set the bottom offset to the indicated Pie Chart and
     // recalculate offsets to update straight away.
@@ -455,31 +424,6 @@ public class PieChartView extends ChartView<PieChart, PieData> {
     // Resize Pie Chart rings accordingly
     resizePieRings();
   }
-
-  //  @Override
-//  public Runnable getRefreshRunnable() {
-//    return new Runnable() {
-//      @Override
-//      public void run() {
-//        // Refresh each Pie Chart (ring) individually
-//        for (final PieChart pieChart : pieCharts) {
-//          // Notify the Data component of data changes (needs to be called
-//          // when Datasets get changed directly)
-//          pieChart.getData().notifyDataChanged();
-//
-//          // Notify the Chart of Data changes (needs to be called
-//          // when Data objects get changed directly)
-//          pieChart.notifyDataSetChanged();
-//
-//          // Invalidate the Chart on the UI thread (via the Handler)
-//          // The invalidate method should only be invoked on the UI thread
-//          // to prevent exceptions.
-//          updatePieChartRingOffset(pieChart);
-//          pieChart.invalidate();
-//        }
-//      }
-//    };
-//  }
 
   /**
    * Returns a List of the Pie Chart's Legend Entries.
