@@ -18,17 +18,17 @@ import java.util.Comparator;
  * Provides full functionality for data operations and some styling settings
  * for Scatter points.
  */
-public class MockScatterChartDataModel extends MockPointChartDataModel {
+public class MockScatterChartDataModel extends MockPointChartDataModel<MockScatterChartView> {
   private PointStyle pointStyle = PointStyle.CIRCLE;
 
   /**
    * Creates a new Mock Scatter Chart Data Model object instance, linking it with
-   * the Data object of a specific Chart.
+   * the specified Scatter Chart View.
    *
-   * @param chartData Chart Data object to link to
+   * @param view Chart View to link to
    */
-  protected MockScatterChartDataModel(Data chartData) {
-    super(chartData);
+  protected MockScatterChartDataModel(MockScatterChartView view) {
+    super(view);
   }
 
   @Override

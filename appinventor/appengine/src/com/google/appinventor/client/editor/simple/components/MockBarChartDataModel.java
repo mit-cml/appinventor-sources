@@ -21,22 +21,15 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 /**
  * Chart Data Model for Bar Chart based views.
  */
-public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
-  // Keep track of the associated Mock Bar Chart View to be able
-  // to invoke axis label updating.
-  private MockBarChartView view;
-
+public class MockBarChartDataModel extends MockChartDataModel<BarDataset, MockBarChartView> {
   /**
    * Creates a new Mock Bar Chart Data Model object instance,
    * linking it with the specified MockBarChartView object.
    *
-   * @param view MockBarChartView to link the model to
+   * @param view Chart View to link the model to
    */
   public MockBarChartDataModel(MockBarChartView view) {
-    super(view.getChartWidget().getData());
-
-    // Set local view variable (needed to invoke the updateLabels method)
-    this.view = view;
+    super(view);
 
     // Create the Data Series object
     dataSeries = new BarDataset();

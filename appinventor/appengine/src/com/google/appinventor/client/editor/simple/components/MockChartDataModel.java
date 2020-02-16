@@ -17,19 +17,23 @@ import java.util.List;
  * of a Chart, and represents the data of a single Data Series.
  * Individual styling and options of a single Data Series is also
  * a responsibility of the Data Model class.
+ * @param <D>  Dataset used by the model (Charba Dataset)
+ * @param <V>  Chart view type that generated the model (MockChartView (sub)class)
  */
-public abstract class MockChartDataModel<D extends Dataset> {
+public abstract class MockChartDataModel<D extends Dataset, V extends MockChartView> {
   protected D dataSeries;
+  protected V view;
   protected Data chartData;
 
   /**
    * Creates a new Mock Chart Model object instance, linking it with
-   * the Data object of a specific Chart.
+   * the specified Chart view.
    *
-   * @param chartData Chart Data object to link to
+   * @param view  Mock Chart view to link the model to
    */
-  protected MockChartDataModel(Data chartData) {
-    this.chartData = chartData;
+  protected MockChartDataModel(V view) {
+    this.view = view;
+    this.chartData = view.getChartWidget().getData();
   }
 
   public D getDataSeries() {

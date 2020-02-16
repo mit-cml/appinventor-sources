@@ -15,14 +15,14 @@ import org.pepstock.charba.client.data.Data;
  * Responsible for handling data operations on the Data
  * of the Area Chart.
  */
-public class MockAreaChartDataModel extends MockLineChartBaseDataModel {
+public class MockAreaChartDataModel extends MockLineChartBaseDataModel<MockAreaChartView> {
   /**
    * Creates a new MockAreaChartDataModel instance.
    *
-   * @param chartData Data object of the Chart view.
+   * @param view  Chart View to link model to.
    */
-  public MockAreaChartDataModel(Data chartData) {
-    super(chartData);
+  public MockAreaChartDataModel(MockAreaChartView view) {
+    super(view);
   }
 
   @Override

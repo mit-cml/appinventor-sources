@@ -32,6 +32,6 @@ public class MockAreaChartView extends MockLineChartViewBase {
 
   @Override
   public MockChartDataModel createDataModel() {
-    return new MockAreaChartDataModel(chartWidget.getData());
+    return new MockAreaChartDataModel(this);
   }
 }

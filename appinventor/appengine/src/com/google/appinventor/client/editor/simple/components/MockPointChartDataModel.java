@@ -23,16 +23,17 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * Extensions should minimally only provide a constructor. The class handles
  * 2D data operations.
  */
-public abstract class MockPointChartDataModel extends MockChartDataModel<ScatterDataset> {
+public abstract class MockPointChartDataModel<V extends MockPointChartView>
+    extends MockChartDataModel<ScatterDataset, V> {
 
   /**
    * Creates a new Mock Point Chart Data Model object instance, linking it with
-   * the Data object of a specific Chart.
+   * the specified Point Chart View.
    *
-   * @param chartData Chart Data object to link to
+   * @param view Chart View to link model to.
    */
-  protected MockPointChartDataModel(Data chartData) {
-    super(chartData);
+  protected MockPointChartDataModel(V view) {
+    super(view);
 
     // Create the Data Series object
     dataSeries = new ScatterDataset();

@@ -19,6 +19,6 @@ public class MockScatterChartView extends MockPointChartView {
 
   @Override
   public MockChartDataModel createDataModel() {
-    return new MockScatterChartDataModel(chartWidget.getData());
+    return new MockScatterChartDataModel(this);
   }
 }

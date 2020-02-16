@@ -14,32 +14,22 @@ import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
+public class MockPieChartDataModel extends MockChartDataModel<PieDataset, MockPieChartView> {
   // Local references of the colors and labels properties have to be
   // kept in the Data Model class to be able to add to them and set them.
   // This is due to the API for changing colors and labels being quite limited (in v2.5)
   private List<String> colors = new ArrayList<String>();
   private List<String> labels = new ArrayList<String>();
   private String color = "";
-
-  // Since labels of the Legend are global per entry, the
-  // view has to be kept in the Data Model. It is
-  // required to notify the view of the deletion of the
-  // Pie Chart Data Model to handle the Legend creation.
-  private MockPieChartView view;
-
+  
   /**
    * Creates a new Mock Pie Chart Model object instance, linking it with
-   * the Data object of a specific Chart.
+   * the specified Chart View.
    *
-   * @param chartData Chart Data object to link to
    * @Param view  Mock Pie Chart View to link Data Model to
    */
-  public MockPieChartDataModel(Data chartData, MockPieChartView view) {
-    super(chartData);
-
-    // Set a local reference to the parent Mock Pie Chart View
-    this.view = view;
+  public MockPieChartDataModel(MockPieChartView view) {
+    super(view);
 
     // Create the Data Series object
     dataSeries = new PieDataset();

@@ -15,14 +15,15 @@ import java.util.Comparator;
 /**
  * Chart Data Model for Mock Line Chart based views.
  */
-public abstract class MockLineChartBaseDataModel extends MockPointChartDataModel {
+public abstract class MockLineChartBaseDataModel<V extends MockLineChartViewBase>
+    extends MockPointChartDataModel<V> {
   /**
    * Creates a new MockLineChartBaseDataModel instance.
    *
-   * @param chartData Data object of the Chart View.
+   * @param view Chart View to link the model to.
    */
-  public MockLineChartBaseDataModel(Data chartData) {
-    super(chartData);
+  public MockLineChartBaseDataModel(V view) {
+    super(view);
   }
 
   @Override

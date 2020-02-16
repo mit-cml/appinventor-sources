@@ -196,7 +196,7 @@ public class MockPieChartView extends MockChartView<PieChart> {
   @Override
   public MockChartDataModel createDataModel() {
     // Create a new MockPieChartDataModel
-    MockPieChartDataModel model = new MockPieChartDataModel(chartWidget.getData(), this);
+    MockPieChartDataModel model = new MockPieChartDataModel(this);
 
     // Add the Data Model to the local List of Data Models
     dataModels.add(model);

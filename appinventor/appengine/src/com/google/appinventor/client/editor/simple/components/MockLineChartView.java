@@ -20,6 +20,6 @@ public class MockLineChartView extends MockLineChartViewBase {
 
   @Override
   public MockChartDataModel createDataModel() {
-    return new MockLineChartDataModel(chartWidget.getData());
+    return new MockLineChartDataModel(this);
   }
 }

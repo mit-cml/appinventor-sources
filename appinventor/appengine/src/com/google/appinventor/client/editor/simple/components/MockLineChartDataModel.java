@@ -13,14 +13,14 @@ import org.pepstock.charba.client.data.Data;
  * Responsible for handling data operations on the Data
  * of the Line Chart.
  */
-public class MockLineChartDataModel extends MockLineChartBaseDataModel {
+public class MockLineChartDataModel extends MockLineChartBaseDataModel<MockLineChartView> {
 
   /**
    * Creates a new MockLineChartDataModel instance.
    *
-   * @param chartData Data object of the Chart View.
+   * @param view  Chart View to link model to.
    */
-  public MockLineChartDataModel(Data chartData) {
-    super(chartData);
+  public MockLineChartDataModel(MockLineChartView view) {
+    super(view);
   }
 }
