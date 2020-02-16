@@ -150,6 +150,12 @@ public class YoungAndroidDataColumnSelectorProperty
    * @param source new MockDataFile source
    */
   public void changeSource(MockDataFile source) {
+    // Source is equal to DataFile; No need
+    // to change anything.
+    if (source == dataFile) {
+      return;
+    }
+
     // Check if a DataFile source is currently referenced by the
     // selector, and if it is, de-attach this selector from it.
     if (dataFile != null) {
@@ -207,7 +213,7 @@ public class YoungAndroidDataColumnSelectorProperty
   @Override
   public void onColumnsChange(MockDataFile dataFile) {
     // Edge case: Event originates from the wrong MockDataFile source
-    if (!this.dataFile.equals(dataFile)) {
+    if (this.dataFile != dataFile) {
       return;
     }
 

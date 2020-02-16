@@ -316,7 +316,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   }
 
   @Override
-  public void addDataObserver(ChartDataBase dataComponent) {
+  public synchronized void addDataObserver(ChartDataBase dataComponent) {
     // Data Polling Service has not been initialized yet; Initialize it
     // (since Data Component is added)
     if (dataPollService == null) {
@@ -357,7 +357,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   }
 
   @Override
-  public void removeDataObserver(ChartDataBase dataComponent) {
+  public synchronized void removeDataObserver(ChartDataBase dataComponent) {
     dataSourceObservers.remove(dataComponent);
 
     // No more Data Source observers exist;
