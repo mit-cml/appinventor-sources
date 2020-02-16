@@ -5,27 +5,24 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.github.mikephil.charting.data.BarEntry;
+import static junit.framework.Assert.assertEquals;
+
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
 import com.google.appinventor.components.runtime.util.YailList;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
-import java.util.Map;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import java.util.ArrayList;
 
 /**
  * Base class for Line Chart based Data Model tests.
+ *
+ * @param <M> PointChartDataModel class type under test
+ * @param <D> ChartData type under test (should be same type as the M ChartData type used)
  */
 public abstract class PointChartDataModelTest
     <M extends PointChartDataModel,
-    D extends ChartData>
+        D extends ChartData>
     extends ChartDataModel2DTest<M, D> {
   /**
    * Test to ensure that importing from a tuple with

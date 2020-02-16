@@ -5,17 +5,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.widget.RelativeLayout;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.LegendEntry;
-import com.google.appinventor.components.common.ComponentConstants;
-import org.junit.Before;
-import org.junit.Test;
-import org.robolectric.shadows.ShadowLooper;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -23,6 +12,23 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import android.widget.RelativeLayout;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.LegendEntry;
+import com.google.appinventor.components.common.ComponentConstants;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Test class for the Pie Chart View.
+ * The test class also tests the integration with the Chart Component
+ * with the given view.
+ *
+ * @see com.google.appinventor.components.runtime.AbstractChartTest
+ */
 public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
   private RelativeLayout rootView;
 
@@ -69,7 +75,7 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
    * Test case to ensure that setting the Pie Radius
    * of the Chart while the type is of type Pie Chart
    * actually has effect on the radius.
-   *
+   * <p>
    * Since the calculated values are non-direct, for
    * simplicity, this test case tests a non-full Pie Chart
    * fill and a full fill, the difference between them being

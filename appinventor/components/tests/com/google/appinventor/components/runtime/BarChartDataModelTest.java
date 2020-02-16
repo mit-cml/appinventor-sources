@@ -5,6 +5,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
@@ -15,9 +18,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-
+/**
+ * Test class for the Bar Chart Data Model.
+ * Tests various data operations on Bar data.
+ * @see com.google.appinventor.components.runtime.ChartDataModel2DTest
+ */
 public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataModel, BarData> {
 
   @Override
@@ -218,11 +223,6 @@ public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataMode
     model.importFromList(tuples);
 
     findEntryIndexHelper(tuples, searchEntry, expectedIndex);
-  }
-
-  @Override
-  public void testRemoveValuesInvalidEntries() {
-
   }
 
   @Override

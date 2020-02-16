@@ -18,6 +18,7 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     D extends ChartData>
@@ -861,10 +862,9 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
   @Test
   public void testGetEntryFromTupleTooSmall() {
     YailList tuple = createTuple(1f);
-    Entry expected = null;
 
     Entry result = model.getEntryFromTuple(tuple);
-    assertEquals(expected, result);
+    assertNull(result);
   }
 
   /**
@@ -1005,7 +1005,7 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
       add(createTuple(0f, 3f));
       add(createTuple(1f, 10f));
-      add(createTuple(9f, 5f));
+      add(createTuple(2f, 5f));
     }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
@@ -1015,7 +1015,7 @@ public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
 
     // Remove entries
     List<Object> removeEntries = new ArrayList<Object>() {{
-      add(Arrays.asList(9f, 5f));
+      add(Arrays.asList(2f, 5f));
       add(Collections.singletonList(1f)); // tuple too small
       add("test-string"); // invalid entry
     }};

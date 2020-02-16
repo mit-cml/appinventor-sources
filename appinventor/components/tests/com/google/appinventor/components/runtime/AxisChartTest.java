@@ -5,17 +5,16 @@
 
 package com.google.appinventor.components.runtime;
 
+import static org.junit.Assert.assertEquals;
+
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Abstract test class for Axis based Charts.

@@ -5,6 +5,12 @@
 
 package com.google.appinventor.components.runtime;
 
+import static junit.framework.Assert.assertEquals;
+import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.renderer.scatter.IShapeRenderer;
@@ -19,9 +25,12 @@ import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.*;
-
+/**
+ * Test class for the ChartData2D component.
+ * The class performs integration testing between the
+ * Chart component, the ChartData2D component and the
+ * ChartDataModel class.
+ */
 public class ChartData2DTest extends RobolectricTestBase {
   private Chart chartComponent;
   private ChartData2D data;

@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,7 @@ public class JsonUtilTest extends TestCase {
   // The elements in this next test were commented out due to a change in the
   // Json.javq library that makes geStringListFromJsonArray throw an error
   // if the item being operated on is not a string.
+  @Test
   public void testGetStringListFromJsonArray() throws JSONException {
 //   Object[] firstArray = {"Houston", "we", "have", "a", "problem"};
 //   Object[] secondArray = {"China", "we", "have", "an", "ultimatum"};
@@ -53,6 +55,7 @@ public class JsonUtilTest extends TestCase {
     }
   }
 
+  @Test
   public void testGetListFromJsonArray() throws JSONException {
     Object[] firstArray = {"Houston", "we", "have", "a", "problem"};
     List<Object> firstList = Arrays.asList(firstArray);
@@ -86,6 +89,7 @@ public class JsonUtilTest extends TestCase {
     }
   }
 
+  @Test
   public void testGetListFromJsonObject() throws JSONException {
     String jsonInput = "{\"a\": 1, \"c\": [\"a\", \"b\", \"c\"], " +
         "\"b\": \"boo\", \"d\": {\"e\": \"f\"}}";
@@ -105,6 +109,7 @@ public class JsonUtilTest extends TestCase {
     assertEquals(returnList.get(3), dList);
   }
 
+  @Test
   public void testConvertBoolean() throws JSONException {
     assertEquals(true, JsonUtil.convertJsonItem("true"));
     assertEquals(true, JsonUtil.convertJsonItem(true));
@@ -114,6 +119,7 @@ public class JsonUtilTest extends TestCase {
     assertEquals(false, JsonUtil.convertJsonItem("faLse"));
   }
 
+  @Test
   public void testConvertNumber() throws JSONException {
     String jsonInput = "[9.5,-9.5,9,-9,123456789101112,0xF]";
     JSONArray array = new JSONArray(jsonInput);
@@ -126,7 +132,8 @@ public class JsonUtilTest extends TestCase {
 //    The above line used to work before the JSON library was changed.
     assertEquals("0xF", JsonUtil.convertJsonItem(array.get(5)));
   }
-  
+
+  @Test
   public void testConvertEmpty() throws JSONException {
     Object shouldBeEmpty = JsonUtil.getObjectFromJson("");
     assertEquals("", JsonUtil.getObjectFromJson(""));
@@ -136,6 +143,7 @@ public class JsonUtilTest extends TestCase {
    * Test case to ensure that retrieving columns from JSON
    * from an element that is not a List returns an empty List.
    */
+  @Test
   public void testGetColumnsFromJSONNotList() {
     String json = "1";
 
@@ -150,6 +158,7 @@ public class JsonUtilTest extends TestCase {
    * containing one Array entry with multiple elements
    * returns a List containing the appropriate column.
    */
+  @Test
   public void testGetColumnsFromJSONArrayMultipleEntries() {
     String json = "{" +
         "\"array\": " +
@@ -168,6 +177,7 @@ public class JsonUtilTest extends TestCase {
    * containing one Array entry with a single element
    * returns a List containing the appropriate column.
    */
+  @Test
   public void testGetColumnsFromJSONArraySingleEntry() {
     String json = "{" +
         "\"array\": " +
@@ -186,6 +196,7 @@ public class JsonUtilTest extends TestCase {
    * containing one non-Array entry returns a List containing
    * the appropriate column.
    */
+  @Test
   public void testGetColumnsFromJSONElement() {
     String json = "{" +
         "\"value\": " +
@@ -204,6 +215,7 @@ public class JsonUtilTest extends TestCase {
    * containing mixed entries (both Array and non-array)
    * returns a List of the appropriate columns.
    */
+  @Test
   public void testGetColumnsFromJSONMixedEntries() {
     String json = "{" +
         "\"array\": [1,2,3]," +

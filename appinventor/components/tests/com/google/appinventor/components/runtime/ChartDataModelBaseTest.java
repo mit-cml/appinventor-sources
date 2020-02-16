@@ -18,7 +18,7 @@ import static junit.framework.Assert.assertEquals;
 
 /**
  * Base class for ChartDataMod*el tests.
- *
+ * <p>
  * Tests the integration with the MPAndroidChart library
  * classes by actually operating on the Data Series objects.
  */
@@ -87,7 +87,7 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
    * For each entry (as well as the size of the entries), an assertion
    * is made.
    *
-   * @param expectedEntries  list of expected entries
+   * @param expectedEntries list of expected entries
    */
   protected void assertExpectedEntriesHelper(List<Entry> expectedEntries) {
     // Make sure the number of entries parsed is correct
@@ -132,12 +132,12 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
 
   protected void removeEntryFromTupleHelper(List<YailList> tuples, List<Entry> expectedEntries,
                                             YailList deleteTuple) {
-      YailList pairs = YailList.makeList(tuples);
+    YailList pairs = YailList.makeList(tuples);
 
-      // Import the data, remove the entry and assert all the entries
-      model.importFromList(pairs);
-      model.removeEntryFromTuple(deleteTuple);
-      assertExpectedEntriesHelper(expectedEntries);
+    // Import the data, remove the entry and assert all the entries
+    model.importFromList(pairs);
+    model.removeEntryFromTuple(deleteTuple);
+    assertExpectedEntriesHelper(expectedEntries);
   }
 
   protected void doesEntryExistHelper(List<YailList> tuples, YailList searchTuple, boolean expected) {
@@ -160,7 +160,7 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
     YailList expected = YailList.makeList(tuples);
     model.importFromList(expected);
 
-    YailList result =  model.getEntriesAsTuples();
+    YailList result = model.getEntriesAsTuples();
     assertEquals(expected, result);
   }
 
@@ -181,8 +181,8 @@ public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
    * This is needed because the MPAndroidChart library's equal method checks
    * by hash-code instead.
    *
-   * @param e1  Expected Entry
-   * @param e2  Actual Entry
+   * @param e1 Expected Entry
+   * @param e2 Actual Entry
    */
   protected abstract void assertEntriesEqual(Entry e1, Entry e2);
 

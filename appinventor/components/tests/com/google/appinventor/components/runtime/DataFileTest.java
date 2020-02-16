@@ -1,4 +1,13 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
@@ -9,13 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for the DataFile component.
@@ -413,25 +416,6 @@ public class DataFileTest extends FileTestBase {
     // Use the helper to assert the result
     testGetColumnsHelper(expected, columns);
   }
-
-//  @Test
-//  public void test() {
-//    String json = "{\n";
-//
-//    json += "\"value\": \"test\",\n";
-//    json += "\"values\": [1,2,3]";
-//
-//    json += "\n}";
-//
-//    List list = (List) JsonUtil.getObjectFromJson(json);
-//
-//    testWriteAndReadFile("/" + TARGET_FILE_READ, json, true);
-//
-//    dataFile.ReadFile(TARGET_FILE_READ);
-//
-//    System.out.println(dataFile.Columns().toString());
-//    System.out.println(dataFile.Rows().toString());
-//  }
 
   /// Helper methods
 

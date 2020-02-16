@@ -106,7 +106,7 @@ public class MockDataFile extends MockNonVisibleComponent {
 
     // Show message to indicate parsing of the files
     // (since this is an asynchronous operation)
-    ErrorReporter.reportInfo(MESSAGES.dsataFileParsingMessage(sourceFile, this.getName()));
+    ErrorReporter.reportInfo(MESSAGES.dataFileParsingMessage(sourceFile, this.getName()));
   }
 
   /**

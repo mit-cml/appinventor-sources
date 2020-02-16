@@ -5,11 +5,11 @@
 
 package com.google.appinventor.components.runtime;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
 import android.graphics.Color;
-import android.os.Looper;
-import android.widget.RelativeLayout;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
@@ -20,10 +20,12 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
+/**
+ * Test class for the Pie Chart Data Model.
+ * Tests various data operations on Pie data.
+ *
+ * @see com.google.appinventor.components.runtime.ChartDataModel2DTest
+ */
 public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataModel, PieData> {
   private PieChartView chartView;
   private List<LegendEntry> legendEntries;
@@ -130,12 +132,12 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
       add(createTuple("Entry 4", 9f));
     }};
 
-   int[] expectedColors = {
-       color,
-       color,
-       color,
-       color
-   };
+    int[] expectedColors = {
+        color,
+        color,
+        color,
+        color
+    };
 
     setColorsHelper(colorList, tuples, expectedColors);
   }
@@ -214,54 +216,6 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
   }
 
   /**
-   * Test to ensure that setting the Colors property
-   * with a List containing invalid entries skips
-   * the invalid entries, and sets the colors from the
-   * valid entries.
-   *
-   * THIS TEST IS OUTDATED. But it would still apply to ChartDataBase.
-   */
-//  @Test
-//  public void testSetColorsInvalidEntries() {
-//    List<Object> colorList = new ArrayList<Object>() {{
-//      add(Color.RED);
-//      add("test");
-//      add("random-string");
-//      add(Color.BLUE);
-//    }};
-//
-//    List<Integer> colorListExpected = new ArrayList<Integer>() {{
-//      add(Color.RED);
-//      add(Color.BLUE);
-//    }};
-//
-//    List<YailList> tuples = new ArrayList<YailList>() {{
-//      add(createTuple("Entry", 32f));
-//      add(createTuple("Entry 2", 40f));
-//      add(createTuple("Entry 3", 25f));
-//    }};
-//
-//    int[] expectedColors = {
-//        Color.RED,
-//        Color.BLUE,
-//        Color.RED
-//    };
-//
-//    YailList colors = YailList.makeList(colorList);
-//    model.setColors(colors);
-//    model.importFromList(tuples);
-//
-//    assertEquals(colorListExpected, model.getDataset().getColors());
-//    assertEquals(expectedColors.length, legendEntries.size());
-//
-//    for (int i = 0; i < expectedColors.length; ++i) {
-//      LegendEntry legendEntry = legendEntries.get(i);
-//
-//      assertEquals(expectedColors[i], legendEntry.formColor);
-//    }
-//  }
-
-  /**
    * Test to ensure that checking for criterion satisfaction with the
    * X Value criterion and a matching x value which is a String returns true.
    */
@@ -289,7 +243,7 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     model.addEntryFromTuple(tuple);
 
     LegendEntry[] expectedEntries = {
-      createLegendEntry("Entry", Color.RED)
+        createLegendEntry("Entry", Color.RED)
     };
 
     checkLegendHelper(expectedEntries);
@@ -337,8 +291,8 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     final int color2 = Color.GREEN;
     final int color3 = Color.BLUE;
 
-    PieChartDataModel model2 = (PieChartDataModel)chartView.createChartModel();
-    PieChartDataModel model3 = (PieChartDataModel)chartView.createChartModel();
+    PieChartDataModel model2 = (PieChartDataModel) chartView.createChartModel();
+    PieChartDataModel model3 = (PieChartDataModel) chartView.createChartModel();
 
     model.setColor(color1);
     model2.setColor(color2);
@@ -469,8 +423,8 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
     final int color2 = Color.MAGENTA;
     final int color3 = Color.YELLOW;
 
-    PieChartDataModel model2 = (PieChartDataModel)chartView.createChartModel();
-    PieChartDataModel model3 = (PieChartDataModel)chartView.createChartModel();
+    PieChartDataModel model2 = (PieChartDataModel) chartView.createChartModel();
+    PieChartDataModel model3 = (PieChartDataModel) chartView.createChartModel();
 
     model.setColor(color1);
     model2.setColor(color2);
@@ -538,35 +492,35 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
   }
 
   private void checkLegendHelper(LegendEntry[] expectedEntries) {
-      assertEquals(expectedEntries.length, legendEntries.size());
+    assertEquals(expectedEntries.length, legendEntries.size());
 
-      for (int i = 0; i < expectedEntries.length; ++i) {
-        LegendEntry expected = expectedEntries[i];
-        LegendEntry actual = legendEntries.get(i);
+    for (int i = 0; i < expectedEntries.length; ++i) {
+      LegendEntry expected = expectedEntries[i];
+      LegendEntry actual = legendEntries.get(i);
 
-        assertEquals(expected.label, actual.label);
-        assertEquals(expected.formColor, actual.formColor);
-      }
+      assertEquals(expected.label, actual.label);
+      assertEquals(expected.formColor, actual.formColor);
+    }
   }
 
   private void setColorsHelper(List colorList, List<YailList> tuples, int[] expectedColors) {
-      model.setColors(colorList);
-      model.importFromList(tuples);
+    model.setColors(colorList);
+    model.importFromList(tuples);
 
-      assertEquals(colorList, model.getDataset().getColors());
-      assertEquals(expectedColors.length, legendEntries.size());
+    assertEquals(colorList, model.getDataset().getColors());
+    assertEquals(expectedColors.length, legendEntries.size());
 
-      for (int i = 0; i < expectedColors.length; ++i) {
-        LegendEntry legendEntry = legendEntries.get(i);
+    for (int i = 0; i < expectedColors.length; ++i) {
+      LegendEntry legendEntry = legendEntries.get(i);
 
-        assertEquals(expectedColors[i], legendEntry.formColor);
-      }
+      assertEquals(expectedColors[i], legendEntry.formColor);
+    }
   }
 
   @Override
   public void setup() {
     chartView = new PieChartView(getForm());
-    model = (PieChartDataModel)chartView.createChartModel();
+    model = (PieChartDataModel) chartView.createChartModel();
     data = (PieData) model.getData();
     legendEntries = chartView.getLegendEntries();
   }
@@ -574,7 +528,7 @@ public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataMode
   @Override
   protected void assertEntriesEqual(Entry e1, Entry e2) {
     assertEquals(e1.getClass(), e2.getClass());
-    assertEquals(((PieEntry)e1).getLabel(), ((PieEntry)e2).getLabel());
+    assertEquals(((PieEntry) e1).getLabel(), ((PieEntry) e2).getLabel());
     assertEquals(e1.getY(), e2.getY());
   }
 
