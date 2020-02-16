@@ -24,7 +24,7 @@ public class MockChartData2D extends MockChartData {
    * @param editor editor of source file the component belongs to
    */
   public MockChartData2D(SimpleEditor editor) {
-    super(editor, TYPE, images.tinyDB());
+    super(editor, TYPE, images.chartData2D());
 
     // Initialize dataFileColumns to default values.
     // Since ChartData2D consists of 2 entries,

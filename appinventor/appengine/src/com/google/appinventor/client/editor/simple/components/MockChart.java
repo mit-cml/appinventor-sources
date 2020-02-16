@@ -10,7 +10,6 @@ import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.runtime.PieChartView;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
@@ -62,7 +61,7 @@ public final class MockChart extends MockContainer {
    * @param editor editor of source file the component belongs to
    */
   public MockChart(SimpleEditor editor) {
-    super(editor, TYPE, images.image(), new MockChartLayout());
+    super(editor, TYPE, images.chart(), new MockChartLayout());
 
     // Since the Mock Chart component is not a container in a normal
     // sense (attached components should not be visible), the Chart Widget
