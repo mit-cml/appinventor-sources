@@ -39,7 +39,9 @@ public abstract class MockLineChartBaseDataModel<V extends MockLineChartViewBase
     if (dataSeries.getDataPoints().isEmpty()) {
       setDefaultElements();
     } else {
-      // Since we are dealing with a Scatter Data Series, sorting
+      // Since we are dealing with an underlying Scatter Data Series
+      // from the Charba library (which makes representing Line Charts
+      // more conveniently than using the Line Chart Data Series), sorting
       // is a must, because otherwise, the Chart will not look representative.
       // Consider adding: (1, 2), (5, 3), (2, 5). We want the x = 2
       // value to be continuous on the Line Chart, rather than

@@ -217,8 +217,8 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     // Only change the point shape of the Model if it is of
     // type ScatterChartDataModel (since only that model supports
     // the changing of the Point Shape)
-    if (chartDataModel instanceof MockScatterChartDataModel) {
-      ((MockScatterChartDataModel) chartDataModel).changePointShape(pointShape);
+    if (chartDataModel instanceof MockPointChartDataModel) {
+      ((MockPointChartDataModel) chartDataModel).changePointShape(pointShape);
     }
   }
 

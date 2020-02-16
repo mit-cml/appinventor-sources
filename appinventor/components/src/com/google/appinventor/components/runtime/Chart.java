@@ -314,6 +314,18 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
   }
 
   /**
+   * Returns a boolean indicating whether the legend is enabled
+   * on the Chart.
+   *
+   * @return True if legend is enabled, false otherwise
+   */
+  @SimpleProperty
+  public boolean LegendEnabled() {
+    return this.legendEnabled;
+  }
+
+
+  /**
    * Changes the visibility of the Chart's grid, if the
    * Chart View is a Chart with an Axis.
    *
@@ -334,18 +346,33 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
   }
 
   /**
+   * Returns a boolean indicating whether the grid is enabled
+   * on the Chart.
+   *
+   * @return True if grid is enabled, false otherwise
+   */
+  @SimpleProperty
+  public boolean GridEnabled() {
+    return this.gridEnabled;
+  }
+
+  /**
    * Changes the Chart's X axis labels to the specified List,
    * if the Chart View is a Chart with an Axis.
    * <p>
-   * The first entry of the List corresponds to the x value of 0,
-   * the second to the x value of 1, and so on.
+   * The first entry of the List corresponds to the minimum x value of the data,
+   * the second to the min x value + 1, and so on.
    * <p>
    * If a label is not specified for an x value, a default value
    * is used (usually the numeric value)
    *
    * @param labels List of labels to set to the X Axis of the Chart
    */
-  @SimpleProperty
+  @SimpleProperty(description = "Changes the Chart's X axis labels to the specified List of Strings, " +
+      " provided that the Chart Viewe is a Chart with an Axis (applies to Area, Bar, Line, Scatter Charts)." +
+      "The labels are applied in order, starting from the smallest x value on the Chart, and continuing in order." +
+      "If a label is not specified for an x value, a default value is used (the x value of the axis tick " +
+      "at that location)")
   public void Labels(YailList labels) {
     this.labels = labels;
 

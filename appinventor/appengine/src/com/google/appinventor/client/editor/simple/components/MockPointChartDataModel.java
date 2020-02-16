@@ -136,4 +136,18 @@ public abstract class MockPointChartDataModel<V extends MockPointChartView>
   public void clearEntries() {
     dataSeries.getDataPoints().clear();
   }
+
+  /**
+   * Changes the Point Shape of the Data Series.
+   * @param shape new Point Shape value (integer)
+   */
+  public void changePointShape(int shape) {
+    /*
+     * By default, no functionality should happen because not all
+     * Point Chart Data Models can yet support this functionality.
+     * Namely, the Line Chart Data Model cannot support it because
+     * the Android library does not yet support different point
+     * shapes for Line Charts.
+     */
+  }
 }

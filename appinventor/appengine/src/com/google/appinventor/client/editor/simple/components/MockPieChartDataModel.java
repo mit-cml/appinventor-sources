@@ -21,7 +21,7 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset, MockPi
   private List<String> colors = new ArrayList<String>();
   private List<String> labels = new ArrayList<String>();
   private String color = "";
-  
+
   /**
    * Creates a new Mock Pie Chart Model object instance, linking it with
    * the specified Chart View.

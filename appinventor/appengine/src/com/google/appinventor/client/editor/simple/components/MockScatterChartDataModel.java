@@ -57,6 +57,7 @@ public class MockScatterChartDataModel extends MockPointChartDataModel<MockScatt
    *
    * @param shape new Point Shape value (integer)
    */
+  @Override
   public void changePointShape(int shape) {
     switch (shape) {
       case ComponentConstants.CHART_POINT_STYLE_CIRCLE:
