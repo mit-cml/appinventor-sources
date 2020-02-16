@@ -20,6 +20,9 @@ import java.util.List;
 /**
  * Handles the data operations & model-specific styling for line-based
  * Chart data (i.e. Line and Area charts) for the Chart component.
+ *
+ * @param <V> Line Chart Base View type parameter. To be specialized by
+ *            extending subclasses.
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
 public abstract class LineChartBaseDataModel<V extends LineChartViewBase>
@@ -28,6 +31,7 @@ public abstract class LineChartBaseDataModel<V extends LineChartViewBase>
    * Initializes a new LineChartBaseDataModel object instance.
    *
    * @param data Line Chart Data object instance
+   * @param view Chart View to link model to
    */
   protected LineChartBaseDataModel(LineData data, V view) {
     super(data, view);

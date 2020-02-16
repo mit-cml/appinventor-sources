@@ -30,6 +30,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData, Bar
    * Initializes a new ChartDataModel object instance.
    *
    * @param data Chart data instance
+   * @param view Bar Chart View to link model to
    */
   protected BarChartDataModel(BarData data, BarChartView view) {
     super(data, view);

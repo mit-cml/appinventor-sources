@@ -14,6 +14,12 @@ import com.google.appinventor.components.runtime.util.YailList;
 /**
  * Handles the data operations & model-specific styling for point-based
  * Chart data (e.g. Scatter or Line data) for the Chart component.
+ *
+ * @param <T>  Point Chart Data Set object to be specialized by subclasses
+ *             (MPAndroidChart BarLineScatterCandleBubbleDataSet)
+ * @param <D>  Point Chart Data object to be specialized by subclasses
+ *             (MPAndroidChart BarLineScatterCandleBubbleData)
+ * @param <V>  Point Chart View type to be specialized by subclasses.
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
 public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDataSet,
@@ -23,6 +29,7 @@ public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDa
    * Initializes a new PointChartDataModel object instance.
    *
    * @param data Chart data instance
+   * @param view Chart View to link model to
    */
   protected PointChartDataModel(D data, V view) {
     super(data, view);

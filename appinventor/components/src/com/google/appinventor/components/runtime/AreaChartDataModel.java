@@ -19,6 +19,7 @@ public class AreaChartDataModel extends LineChartBaseDataModel<AreaChartView> {
    * Initializes a new AreaChartDataModel object instance.
    *
    * @param data Line Chart Data object instance
+   * @param view Area Chart View to link model tow
    */
   public AreaChartDataModel(LineData data, AreaChartView view) {
     super(data, view);

@@ -24,6 +24,7 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
    * Initializes a new ScatterChartDataModel object instance.
    *
    * @param data Chart data instance
+   * @param view Scatter Chart View to link model to
    */
   public ScatterChartDataModel(ScatterData data, ScatterChartView view) {
     super(data, view);

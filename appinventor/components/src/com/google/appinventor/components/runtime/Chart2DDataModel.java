@@ -19,6 +19,7 @@ import java.util.List;
  *
  * @param <T> Chart Dataset parameter (MPAndroidChart class for single data series)
  * @param <D> Chart Data parameter (MPAndroidChart class for collection of all data series)
+ * @param <V> (Chart) View that the model is compatible with (ChartView (sub)classes)
  */
 public abstract class Chart2DDataModel<T extends DataSet, D extends ChartData, V extends ChartView>
     extends ChartDataModel<T, D, V> {
@@ -26,6 +27,7 @@ public abstract class Chart2DDataModel<T extends DataSet, D extends ChartData, V
    * Initializes a new Chart2DDataModel object instance.
    *
    * @param data Chart data instance
+   * @param view Chart View to link model to
    */
   protected Chart2DDataModel(D data, V view) {
     super(data, view);
