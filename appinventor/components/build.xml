@@ -471,11 +471,14 @@
 
   <target name="dexExtension" depends="">
     <basename property="extensionType" file="${extension}" suffix=".jar"/>
-    <java jar="${lib.dir}/android/tools/dx.jar"
+    <java classname="com.android.tools.r8.D8"
           fork="true"
           failonerror="true">
-      <arg value="--dex"/>
-      <arg value="--no-strict"/>
+      <classpath>
+        <pathelement location="${lib.dir}/android/tools/d8.jar"/>
+      </classpath>
+<!--      TODO: add min api, android.jar lib, main dex list?-->
+      <arg value="--release"/>
       <arg value="--output"/>
       <arg value="${ExternalComponent.dir}/${extensionType}/classes.jar"/>
       <arg value="${ExternalComponent-class.dir}/${extensionType}.jar"/>
