@@ -1542,7 +1542,7 @@ public final class Compiler {
     // Android SDK's Dex Ant task
     File tmpDir = createDir(buildDir, "tmp");
     String dexedClassesDir = tmpDir.getAbsolutePath();
-    if (!compiler.runD8(classesDir, dexedClassesDir, false)) {
+    if (!compiler.runD8(classesDir, dexedClassesDir)) {
       return false;
     }
     if (reporter != null) {
