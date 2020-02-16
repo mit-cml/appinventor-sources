@@ -260,6 +260,7 @@ Blockly.TypeBlock.prototype.lazyLoadOfOptions_ = function () {
     this.needsReload.components = null;
   }
   this.loadGlobalVariables_();
+  this.loadLocalVariables_();
   this.loadProcedures_();
   this.reloadOptionsAfterChanges_();
 };
@@ -450,6 +451,62 @@ Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
     });
     return options;
   }
+};
+
+/**
+ * Loads all local variables in the scope of the selected block (if one exists).
+ * This is used lazily from show(). Call 'reloadOptionsAfterChanges_' after
+ * calling this function. The function lazyLoadOfOptions_ is an example of how
+ * to call this function.
+ * @private
+ */
+Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
+  // Remove any local vars from the list so that we can re-add them.
+  this.TBOptions_ = goog.object.filter(this.TBOptions_, function(option) {
+    return !option.isLocalVar;
+  });
+
+  var selected = Blockly.selected;
+  if (!selected) {
+    return;
+  }
+
+  var localVarNames = Blockly.FieldLexicalVariable
+      .getLexicalNamesInScope(selected).map(function (varNameArray) {
+        // Index 0 should be the translated name.
+        return varNameArray[0];
+      });
+  // getLexicalNamesInScope does not include names declared on the block passed.
+  if (selected.getVars) {
+    // TODO: This doesn't currently support variable prefixes, but I don't want
+    //  to duplicate all of the logic inside getLexicalNamesInScope(). If the
+    //  suggestion for #2033 gets accepted this will be an easy fix.
+    localVarNames = localVarNames.concat(
+        selected.getVars().map(function(varName) {
+          return selected.workspace.getTopWorkspace().getComponentDatabase()
+              .getInternationalizedParameterName(varName);
+        }));
+  }
+  goog.array.forEach(localVarNames, function(varName) {
+    var translatedGet = Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET + ' ' + varName;
+    this.TBOptions_[translatedGet] = {
+      canonicName: 'lexical_variable_get',
+      dropDown: {
+        titleName: 'VAR',
+        value: varName
+      },
+      isLocalVar: true
+    };
+    var translatedSet = Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET + ' ' + varName;
+    this.TBOptions_[translatedSet] = {
+      canonicName: 'lexical_variable_set',
+      dropDown: {
+        titleName: 'VAR',
+        value: varName
+      },
+      isLocalVar: true
+    }
+  }.bind(this));
 };
 
 /**
