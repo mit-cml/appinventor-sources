@@ -42,17 +42,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -209,6 +199,8 @@ public final class Compiler {
 
   @VisibleForTesting
   static final String YAIL_RUNTIME = RUNTIME_FILES_DIR + "runtime.scm";
+
+  private static final String MAIN_DEX_LIST = RUNTIME_FILES_DIR + "mainDexList.txt";
 
   private final ConcurrentMap<String, Set<String>> assetsNeeded =
       new ConcurrentHashMap<String, Set<String>>();
@@ -2280,39 +2272,40 @@ public final class Compiler {
 
     List<String> classes = getFilesWithExtensionRecursively(classesDir, ".class");
 
-    Set<String> jars = new LinkedHashSet<>();
-    jars.addAll(classes);
-    jars.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
-    jars.add(getResource(KAWA_RUNTIME));
-    jars.add(getResource(ACRA_RUNTIME));
+    Set<String> input = new LinkedHashSet<>(classes);
+    input.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
+    input.add(getResource(KAWA_RUNTIME));
+    input.add(getResource(ACRA_RUNTIME));
 
     for (String SUPPORT_JAR : SUPPORT_JARS) {
-      jars.add(getResource(SUPPORT_JAR));
+      input.add(getResource(SUPPORT_JAR));
     }
 
-    jars.addAll(uniqueLibsNeeded);
+    input.addAll(uniqueLibsNeeded);
 
     for (String type : extCompTypes) {
       String sourcePath = getExtCompDirPath(type) + SIMPLE_ANDROID_RUNTIME_JAR;
-      jars.add(sourcePath);
+      input.add(sourcePath);
     }
 
-    // d8 --release --no-desugaring --lib ANDROID_RUNTIME --output dexedClassesDir ...jars
-    List<String> commandLineList = new ArrayList<>();
-    commandLineList.add(System.getProperty("java.home") + "/bin/java");
-    commandLineList.add("-mx" + mx + "M");
-    commandLineList.add("-jar");
-    commandLineList.add(getResource(D8_JAR));
-    commandLineList.add("--release");
-    commandLineList.add("--no-desugaring");
-    commandLineList.add("--lib");
-    commandLineList.add(getResource(ANDROID_RUNTIME));
-    commandLineList.add("--output");
-    commandLineList.add(dexedClassesDir);
+    // d8 --release --lib ANDROID_RUNTIME --main-dex-list MAIN_DEX_LIST --output dexedClassesDir ...input
+    List<String> d8Command = new ArrayList<>();
+    d8Command.add(System.getProperty("java.home") + "/bin/java");
+    d8Command.add("-mx" + mx + "M");
+    d8Command.add("-jar");
+    d8Command.add(getResource(D8_JAR));
+    d8Command.add("--release");
+//    d8Command.add("--no-desugaring");
+    d8Command.add("--lib");
+    d8Command.add(getResource(ANDROID_RUNTIME));
+    d8Command.add("--main-dex-list");
+    d8Command.add(getResource(MAIN_DEX_LIST));
+    d8Command.add("--output");
+    d8Command.add(dexedClassesDir);
 
-    commandLineList.addAll(jars);
+    d8Command.addAll(input);
 
-    String[] d8CommandLine = commandLineList.toArray(new String[0]);
+    String[] d8CommandLine = d8Command.toArray(new String[0]);
 
     long startD8 = System.currentTimeMillis();
     if (!Execution.execute(null, d8CommandLine, System.out, System.err)) {
