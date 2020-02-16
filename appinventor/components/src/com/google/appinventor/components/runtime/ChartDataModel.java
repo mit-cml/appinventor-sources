@@ -81,7 +81,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
    *
    * @return Data Series object of the Data model
    */
-  public synchronized T getDataset() {
+  public T getDataset() {
     return dataset;
   }
 

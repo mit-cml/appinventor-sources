@@ -85,18 +85,6 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     super(container.$form());
     context = (Context) container.$context();
     Namespace(DEFAULT_NAMESPACE);
-  }
-
-  @SimpleProperty(description = "Namespace for storing data.", category = PropertyCategory.BEHAVIOR)
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = DEFAULT_NAMESPACE)
-  public void Namespace(String namespace) {
-    this.namespace = namespace;
-    sharedPreferences = context.getSharedPreferences(namespace, Context.MODE_PRIVATE);
-
-    // SharedPreferences listener currently exists; Unregister it
-    if (sharedPreferenceChangeListener != null) {
-      sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
-    }
 
     // Create a new SharedPreferences change listener
     sharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -106,6 +94,19 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
         notifyDataObservers(key, GetValue(key, null));
       }
     };
+  }
+
+  @SimpleProperty(description = "Namespace for storing data.", category = PropertyCategory.BEHAVIOR)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = DEFAULT_NAMESPACE)
+  public void Namespace(String namespace) {
+    this.namespace = namespace;
+
+    // SharedPreferences listener currently exists; Unregister it
+    if (sharedPreferenceChangeListener != null) {
+      sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+    }
+
+    sharedPreferences = context.getSharedPreferences(namespace, Context.MODE_PRIVATE);
 
     // Register the SharedPreferences change listener
     sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);

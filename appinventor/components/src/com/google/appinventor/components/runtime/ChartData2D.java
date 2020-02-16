@@ -123,8 +123,8 @@ public final class ChartData2D extends ChartDataBase {
    */
   @SimpleFunction(description = "Imports data from the specified DataFile component, given the names of the " +
       "X and Y value columns. Passing in empty text for any of the column parameters will result" +
-      " in the usage of the default option of entry 1 having the value of 0, entry 2 having the value of" +
-      " 1, and so forth.")
+      " in the usage of default values which are the indices of the entries. For the first entry, the " +
+      "default value would be the 1, for the second it would be 2, and so on.")
   public void ImportFromDataFile(final DataFile dataFile, String xValueColumn, String yValueColumn) {
     // Construct a YailList of columns from the specified parameters
     YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
@@ -142,7 +142,7 @@ public final class ChartData2D extends ChartDataBase {
   @SimpleFunction(description = "Imports data from the specified Web component, given the names of the " +
       "X and Y value columns. Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, ...). " +
       "In order for the data importing to be successful, first the Get block must be called on the Web component " +
-      "to load the data, after which this block can be executed. The usage of the gotValue event " +
+      "to load the data, and then this block should be used on that Web component. The usage of the gotValue event " +
       "in the Web component is unnecessary.")
   public void ImportFromWeb(final Web web, String xValueColumn, String yValueColumn) {
     // Construct a YailList of columns from the specified parameters

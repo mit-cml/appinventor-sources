@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -503,7 +504,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
             // Attempt to CSV Parse the specified String
             keyValues = CsvUtil.fromCsvRow(keyValue);
           } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(this.getClass().getName(), e.getMessage());
           }
 
           // Retrieve the List of columns to modify (DataFile columns if Data Source
@@ -586,9 +587,9 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
         }
       }).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      Log.e(this.getClass().getName(), e.getMessage());
     } catch (ExecutionException e) {
-      e.printStackTrace();
+      Log.e(this.getClass().getName(), e.getMessage());
     }
 
     // Undefined behavior: return empty List
@@ -614,9 +615,9 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
         }
       }).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      Log.e(this.getClass().getName(), e.getMessage());
     } catch (ExecutionException e) {
-      e.printStackTrace();
+      Log.e(this.getClass().getName(), e.getMessage());
     }
 
     return new YailList();
@@ -638,9 +639,9 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
         }
       }).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      Log.e(this.getClass().getName(), e.getMessage());
     } catch (ExecutionException e) {
-      e.printStackTrace();
+      Log.e(this.getClass().getName(), e.getMessage());
     }
 
     return new YailList();
@@ -701,9 +702,9 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
           chartDataModel.importFromList(listValue);
           refreshChart();
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          Log.e(this.getClass().getName(), e.getMessage());
         } catch (ExecutionException e) {
-          e.printStackTrace();
+          Log.e(this.getClass().getName(), e.getMessage());
         }
       }
     });
@@ -736,9 +737,9 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
           // the reading to be processed.
           dataResult = dataFileColumns.get();
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          Log.e(this.getClass().getName(), e.getMessage());
         } catch (ExecutionException e) {
-          e.printStackTrace();
+          Log.e(this.getClass().getName(), e.getMessage());
         }
 
         // Import from Data file with the specified parameters
@@ -774,9 +775,9 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
         try {
           dataColumns = webColumns.get();
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          Log.e(this.getClass().getName(), e.getMessage());
         } catch (ExecutionException e) {
-          e.printStackTrace();
+          Log.e(this.getClass().getName(), e.getMessage());
         }
 
         if (webComponent == dataSource) {
@@ -804,7 +805,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
 
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
-    return null;
+    return this.container.getDispatchDelegate();
   }
 
   /**
