@@ -736,10 +736,18 @@ public class LocationSensor extends AndroidNonvisibleComponent
     }
   }
 
+  /**
+   * Returns a data value corresponding to the provided key:
+   * latitude  - latitude value
+   * longitude - longitude value
+   * altitude  - altitude value
+   * speed     - speed value
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
   @Override
   public Float getDataValue(String key) {
-    // TODO: Add documentation for Key Value names
-
     switch (key) {
       case "latitude":
         return (float) latitude;

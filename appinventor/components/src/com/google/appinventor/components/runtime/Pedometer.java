@@ -527,10 +527,17 @@ public class Pedometer extends AndroidNonvisibleComponent
     }
   }
 
+  /**
+   * Returns a data value corresponding to the provided key:
+   * SimpleSteps - SimpleSteps value
+   * WalkSteps   - WalkSteps value
+   * Distance    - Distance value
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
   @Override
   public Float getDataValue(String key) {
-    // TODO: Add documentation for Key value names
-
     switch (key) {
       case "SimpleSteps":
         return (float) numStepsRaw;

@@ -114,6 +114,7 @@ public class ComponentConstants {
   public static final int CHART_TYPE_AREA = 2;
   public static final int CHART_TYPE_BAR = 3;
   public static final int CHART_TYPE_PIE = 4;
+  public static final int CHART_TYPES = 5; // Number of Chart Types
 
   public static final int CHART_POINT_STYLE_CIRCLE = 0;
   public static final int CHART_POINT_STYLE_SQUARE = 1;

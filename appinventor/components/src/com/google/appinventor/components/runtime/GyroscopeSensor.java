@@ -261,10 +261,17 @@ public class GyroscopeSensor extends AndroidNonvisibleComponent
     }
   }
 
+  /**
+   * Returns a data value corresponding to the provided key:
+   * X - x direction angular velocity
+   * Y - y direction angular velocity
+   * Z - z direction angular velocity
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
   @Override
   public Float getDataValue(String key) {
-    // TODO: Add documentation for X, Y and Z Data Source value names
-
     switch (key) {
       case "X":
         return xAngularVelocity;

@@ -458,10 +458,17 @@ public class OrientationSensor extends AndroidNonvisibleComponent
     }
   }
 
+  /**
+   * Returns a data value corresponding to the provided key:
+   * azimuth - azimuth value
+   * pitch   - pitch value
+   * roll    - roll value
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
   @Override
   public Float getDataValue(String key) {
-    // TODO: Add documentation for Key value names
-
     switch (key) {
       case "azimuth":
         return azimuth;

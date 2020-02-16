@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019-2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -14,8 +19,19 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+/**
+ * Base class for Chart Data components. Contains functionality common
+ * to any Chart Data component. The component corresponds to a single
+ * Data Series in a Chart, and can be attached to a Chart component.
+ * Right now, the only extension is the ChartData2D component, but the
+ * base class was created with future extensions (e.g. 3D data) in mind.
+ */
 @SimpleObject
 public abstract class ChartDataBase implements Component, OnBeforeInitializeListener, DataSourceChangeListener,
     DataSourceGetValueListener {
@@ -784,43 +800,6 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
     // Update the Chart with the Chart Data Model's current
     // data and refresh the Chart itself.
     container.getChartView().Refresh(chartDataModel);
-
-    // ORIGINAL SOLUTION (refreshing Chart directly via container.refresh())
-    // ISSUE: Causes exceptions/crashes upon quicker data adding & refreshing.
-
-    // Notify data set changes (needs to be invoked when changing
-    // values of the Data Set directly, which occurs in add/remove
-    // entry methods)
-    // chartDataModel.getDataset().notifyDataSetChanged();
-
-    // Refresh the Chart
-    // container.refresh();
-
-    // Newer solution to post a FutureTask and wait for it to finish
-    // if the thread is an async thread;
-    // ISSUE: Deadlocks can be caused (UI thread waits on async thread
-    // to finish, while async thread waits on the UI thread to finish)
-
-//        FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
-//            @Override
-//            public void run() {
-//                container.getChartView().Refresh(chartDataModel);
-//            }
-//        }, null);
-//
-//        container.getChartView().uiHandler.post(task);
-//
-//        if (Looper.getMainLooper() != Looper.myLooper()) {
-//            try {
-//                task.get();
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-//        container.getChartView().Refresh(chartDataModel);
   }
 
   @Override

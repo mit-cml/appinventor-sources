@@ -114,11 +114,6 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData> {
   }
 
   @Override
-  protected void setDefaultStylingProperties() {
-
-  }
-
-  @Override
   public void removeEntry(int index) {
     // Entry exists; remove it
     if (index >= 0) {

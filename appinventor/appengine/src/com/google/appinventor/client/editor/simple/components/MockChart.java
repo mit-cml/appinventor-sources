@@ -10,6 +10,7 @@ import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.runtime.PieChartView;
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
 
@@ -286,7 +287,7 @@ public final class MockChart extends MockContainer {
     // are set after the Data components are attached to
     // the Chart, and thus they need to be re-attached.
     for (MockComponent child : children) {
-      ((MockChartData) child).addToChart(MockChart.this);
+      ((MockChartData) child).addToChart(this);
     }
   }
 
@@ -338,7 +339,7 @@ public final class MockChart extends MockContainer {
       // TODO: More data component support
       MockChartData2D data = new MockChartData2D(editor);
       addComponent(data);
-      data.addToChart(MockChart.this);
+      data.addToChart(this);
 
       // Change the properties of the instantiated data component
       data.changeProperty("DataFileYColumn", column);
@@ -407,7 +408,7 @@ public final class MockChart extends MockContainer {
     // Pie Radius property should be invisible by default, since
     // the default Chart Type is a Line Chart
     if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
-      return false;
+      return type == ComponentConstants.CHART_TYPE_PIE;
     }
 
     return super.isPropertyVisible(propertyName);

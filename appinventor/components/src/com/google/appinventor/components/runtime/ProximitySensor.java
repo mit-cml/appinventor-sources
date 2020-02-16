@@ -253,6 +253,13 @@ public class ProximitySensor extends AndroidNonvisibleComponent
         }
     }
 
+    /**
+     * Returns a data value corresponding to the proximity.
+     * The key value is not used for the sensor.
+     *
+     * @param key identifier of the value (is not used)
+     * @return    Value corresponding to the proximity.
+     */
     @Override
     public Float getDataValue(String key) {
         return distance;

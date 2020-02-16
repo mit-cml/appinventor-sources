@@ -520,7 +520,13 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData> {
   /**
    * Sets the default styling properties of the Data Series.
    */
-  protected abstract void setDefaultStylingProperties();
+  protected void setDefaultStylingProperties() {
+    /*
+        The method body is left empty to not require data models
+        which do not need any default styling properties to override
+        the method by default.
+     */
+  }
 
   /**
    * Returns default tuple entry value to use when a value

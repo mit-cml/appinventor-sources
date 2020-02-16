@@ -514,10 +514,17 @@ public int getDeviceDefaultOrientation() {
     }
   }
 
+  /**
+   * Returns a data value corresponding to the provided key:
+   * X - x direction acceleration
+   * Y - y direction acceleration
+   * Z - z direction acceleration
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
   @Override
   public Float getDataValue(String key) {
-    // TODO: Add documentation for X, Y and Z Data Source value names
-
     switch (key) {
       case "X":
         return xAccel;
