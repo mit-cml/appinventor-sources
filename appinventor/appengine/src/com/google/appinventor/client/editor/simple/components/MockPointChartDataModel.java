@@ -5,12 +5,15 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.ErrorReporter;
 import org.pepstock.charba.client.data.Data;
 import org.pepstock.charba.client.data.DataPoint;
 import org.pepstock.charba.client.data.ScatterDataset;
 
 import java.util.Comparator;
 import java.util.Optional;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Data Model class for Point-based Charts for the Mock Chart component.
@@ -85,7 +88,7 @@ public abstract class MockPointChartDataModel extends MockChartDataModel<Scatter
       // Add an entry from the parsed values
       addEntryFromTuple(xValue, yValue);
     } catch (NumberFormatException e) {
-      // Wrong input. Do nothing.
+      ErrorReporter.reportInfo(MESSAGES.invalidChartDataEntry());
     }
   }
 

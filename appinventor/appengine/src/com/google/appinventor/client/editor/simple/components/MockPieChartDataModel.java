@@ -5,11 +5,14 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.ErrorReporter;
 import org.pepstock.charba.client.data.Data;
 import org.pepstock.charba.client.data.PieDataset;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
   // Local references of the colors and labels properties have to be
@@ -111,7 +114,7 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset> {
       // Add entry label (x value corresponds to the label)
       labels.add(x);
     } catch (NumberFormatException e) {
-      // Wrong input. Do nothing.
+      ErrorReporter.reportInfo(MESSAGES.invalidChartDataEntry());
     }
   }
 

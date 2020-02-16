@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.output.OdeLog;
 import org.pepstock.charba.client.data.BarDataset;
 import org.pepstock.charba.client.data.Data;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Chart Data Model for Bar Chart based views.
@@ -85,7 +88,7 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset> {
       // Add an entry from the parsed values
       addEntryFromTuple(xValue, yValue);
     } catch (NumberFormatException e) {
-      // Wrong input. Do nothing.
+      ErrorReporter.reportInfo(MESSAGES.invalidChartDataEntry());
     }
   }
 
