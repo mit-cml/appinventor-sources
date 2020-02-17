@@ -209,7 +209,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
 
         // Notify Data Observers of the changed distance (with null key, since
         // the key does not matter, since only one value is returned)
-        notifyDataObservers(null, distance);
+        notifyDataObservers("distance", distance);
 
         EventDispatcher.dispatchEvent(this, "ProximityChanged", this.distance);
     }
@@ -255,13 +255,17 @@ public class ProximitySensor extends AndroidNonvisibleComponent
 
     /**
      * Returns a data value corresponding to the proximity.
-     * The key value is not used for the sensor.
+     * distance - distance value
      *
-     * @param key identifier of the value (is not used)
-     * @return    Value corresponding to the proximity.
+     * @param key identifier of the value
+     * @return    Value corresponding to the key, or 0 if key is undefined.
      */
     @Override
     public Float getDataValue(String key) {
-        return distance;
+        if (key.equals("distance")) {
+            return distance;
+        } else {
+            return 0f;
+        }
     }
 }
