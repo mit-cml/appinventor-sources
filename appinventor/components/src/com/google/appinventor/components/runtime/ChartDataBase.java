@@ -291,9 +291,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       userVisible = false)
-  public void ElementsFromPairs(String elements) {
-    this.elements = elements;
-
+  public void ElementsFromPairs(final String elements) {
     // If the specified String is empty, ignore import.
     // If the Data component is not initialized, then ignore
     // the importing (because if there is a Source property specified,
@@ -302,8 +300,15 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
       return;
     }
 
-    chartDataModel.setElements(elements);
-    refreshChart();
+    // Import the specified data asynchronously
+    threadRunner.execute(new Runnable() {
+      @Override
+      public void run() {
+        changeElementsProperty(elements);
+        chartDataModel.setElements(elements);
+        refreshChart();
+      }
+    });
   }
 
   /**
@@ -964,5 +969,15 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
         lastDataSourceValue = newValue;
       }
     }
+  }
+
+  /**
+   * Helper method to change the Elements property.
+   * Used mainly to have this property be easier to change in async fashion.
+   * Used in the Elements SimpleProperty.
+   * @param elements  New Elements property
+   */
+  private synchronized void changeElementsProperty(final String elements) {
+    this.elements = elements;
   }
 }

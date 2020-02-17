@@ -405,11 +405,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     ByteArrayInputStream inputStream = new ByteArrayInputStream(source.getBytes());
     CsvParser csvParser = new CsvParser(inputStream);
 
-    for (int i = 0; i <= rows; ++i) {
-      if (!csvParser.hasNext()) { // No more rows exist; break
-        break;
-      }
-
+    for (int i = 0; i <= rows && csvParser.hasNext(); ++i) {
       // Parse next row
       List<String> row = csvParser.next();
 
