@@ -934,6 +934,14 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
         } else {
           final String responseContent = getResponseContent(connection);
 
+          // Dispatch the event.
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              GotText(webProps.urlString, responseCode, responseType, responseContent);
+            }
+          });
+
           // Update the locally stored columns list with the contents of the
           // retrieved response & response type.
           // TODO: Optimizations are possible here. Currently for projects which
@@ -948,14 +956,6 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
           // TODO: perhaps it would be worthwhile for the Web component to
           // TODO: have a different interface?
           notifyDataObservers(null, null);
-
-          // Dispatch the event.
-          activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              GotText(webProps.urlString, responseCode, responseType, responseContent);
-            }
-          });
         }
 
       } finally {
