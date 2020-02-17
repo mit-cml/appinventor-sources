@@ -15,7 +15,6 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.OnBeforeInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ import java.util.concurrent.Future;
  * base class was created with future extensions (e.g. 3D data) in mind.
  */
 @SimpleObject
-public abstract class ChartDataBase implements Component, OnBeforeInitializeListener, DataSourceChangeListener,
+public abstract class ChartDataBase implements Component, DataSourceChangeListener,
     DataSourceGetValueListener {
   protected Chart container;
   protected ChartDataModel chartDataModel;
@@ -104,7 +103,6 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
     DataSourceKey("");
 
     threadRunner = Executors.newSingleThreadExecutor();
-    container.$form().registerForOnBeforeInitialize(this);
   }
 
   /**
@@ -821,8 +819,7 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
    * are thrown if the Data is being imported before the component
    * is fully initialized.
    */
-  @Override
-  public void onBeforeInitialize() {
+  public void Initialize() {
     initialized = true;
 
     // Data Source should only be imported after the Screen

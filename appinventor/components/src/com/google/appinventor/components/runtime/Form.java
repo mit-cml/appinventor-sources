@@ -67,7 +67,6 @@ import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.OnBeforeInitializeListener;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
@@ -81,7 +80,6 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -215,10 +213,6 @@ public class Form extends AppInventorCompatActivity
 
   // AppInventor lifecycle: listeners for the Initialize Event
   private final Set<OnInitializeListener> onInitializeListeners = Sets.newHashSet();
-
-  // Listeners for events that occur after the app is initialized, but before
-  // the Initialize Event is dispatched.
-  private final Set<OnBeforeInitializeListener> onBeforeInitializeListeners = Sets.newHashSet();
 
   // Listeners for options menu.
   private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
@@ -756,15 +750,6 @@ public class Form extends AppInventorCompatActivity
     onInitializeListeners.add(component);
   }
 
-  /**
-   * Register a component to listen for the event when the app is initialized,
-   * but before the Screen Initialize event is invoked.
-   * @param component  Component to register as a Listener.
-   */
-  public void registerForOnBeforeInitialize(OnBeforeInitializeListener component) {
-    onBeforeInitializeListeners.add(component);
-  }
-
   @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
@@ -911,11 +896,6 @@ public class Form extends AppInventorCompatActivity
     androidUIHandler.post(new Runnable() {
       public void run() {
         if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
-          //  Call all apps registered to be notified when App is initialized
-          for (OnBeforeInitializeListener onBeforeInitializeListener : onBeforeInitializeListeners) {
-            onBeforeInitializeListener.onBeforeInitialize();
-          }
-
           EventDispatcher.dispatchEvent(Form.this, "Initialize");
           if (sCompatibilityMode) { // Make sure call to setLayout happens
             Sizing("Fixed");
@@ -2315,7 +2295,6 @@ public class Form extends AppInventorCompatActivity
     onPauseListeners.clear();
     onDestroyListeners.clear();
     onInitializeListeners.clear();
-    onBeforeInitializeListeners.clear();
     onCreateOptionsMenuListeners.clear();
     onOptionsItemSelectedListeners.clear();
     screenInitialized = false;
@@ -2348,9 +2327,6 @@ public class Form extends AppInventorCompatActivity
     }
     if (component instanceof OnInitializeListener) {
       onInitializeListeners.remove(component);
-    }
-    if (component instanceof OnBeforeInitializeListener) {
-      onBeforeInitializeListeners.remove(component);
     }
     if (component instanceof OnCreateOptionsMenuListener) {
       onCreateOptionsMenuListeners.remove(component);
