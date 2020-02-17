@@ -266,6 +266,9 @@ public final class ErrorMessages {
 
   //ChartData Errors
   public static final int ERROR_INVALID_CHART_ENTRY_VALUES = 3901;
+  public static final int ERROR_NULL_CHART_ENTRY_VALUES = 3902;
+  public static final int ERROR_INSUFFICIENT_CHART_ENTRY_VALUES = 3903;
+  public static final int ERROR_INVALID_CHART_DATA_COLOR = 3904;
 
   // Start the next group of errors at 4000
 
@@ -660,6 +663,11 @@ public final class ErrorMessages {
 
     //ChartData Errors
     errorMessages.put(ERROR_INVALID_CHART_ENTRY_VALUES, "Invalid Chart Entry Value(s): %1$s, %2$s");
+    errorMessages.put(ERROR_NULL_CHART_ENTRY_VALUES, "Undefined value was present in Chart Entry");
+    errorMessages.put(ERROR_INSUFFICIENT_CHART_ENTRY_VALUES, "Chart entry did not contain enough values; " +
+        "Expected %1$d, but was %2$d");
+    errorMessages.put(ERROR_INVALID_CHART_DATA_COLOR, "Invalid Chart Data color parameter specified: %1$s");
+
   }
 
   private ErrorMessages() {

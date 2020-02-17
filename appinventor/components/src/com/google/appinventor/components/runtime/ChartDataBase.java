@@ -14,6 +14,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.CsvUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.OnBeforeInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -183,6 +184,10 @@ public abstract class ChartDataBase implements Component, OnBeforeInitializeList
         resultColors.add(colorValue);
       } catch (NumberFormatException e) {
         // Skip invalid entry
+        this.container.$form().dispatchErrorOccurredEvent(this.container,
+            "Colors",
+            ErrorMessages.ERROR_INVALID_CHART_DATA_COLOR,
+            color);
       }
     }
 

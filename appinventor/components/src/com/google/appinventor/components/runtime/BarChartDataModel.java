@@ -110,10 +110,15 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData, Bar
             ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
             xValue, yValue);
       }
-    } catch (Exception e) {
-      // 2-tuples are invalid when null entries are present, or if
-      // the number of entries is not sufficient to form a pair.
-      // TODO: Show toast error notification
+    } catch (NullPointerException e) {
+      this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
+          "GetEntryFromTuple",
+          ErrorMessages.ERROR_NULL_CHART_ENTRY_VALUES);
+    } catch (IndexOutOfBoundsException e) {
+      this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
+          "GetEntryFromTuple",
+          ErrorMessages.ERROR_INSUFFICIENT_CHART_ENTRY_VALUES,
+          getTupleSize(), tuple.size());
     }
 
     return null;
