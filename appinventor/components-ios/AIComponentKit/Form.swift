@@ -403,6 +403,14 @@ import Toast_Swift
     }
   }
 
+  @objc open var Platform: String {
+    return "iOS"
+  }
+
+  @objc open var PlatformVersion: String {
+    return UIDevice.current.systemVersion
+  }
+
   @objc open var PrimaryColor: Int32 {
     get {
       return _primaryColor
