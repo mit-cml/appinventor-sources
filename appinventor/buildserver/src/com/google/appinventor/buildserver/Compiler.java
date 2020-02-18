@@ -42,7 +42,17 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -2305,7 +2315,15 @@ public final class Compiler {
     d8Command.add("--output");
     d8Command.add(dexedClassesDir);
 
-    d8Command.addAll(input);
+    File argfile = null;
+    try {
+      argfile = File.createTempFile("argfile", ".txt");
+      java.nio.file.Files.write(argfile.toPath(), input, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    if (argfile != null)
+      d8Command.add("@" + argfile.getAbsolutePath());
 
     String[] d8CommandLine = d8Command.toArray(new String[0]);
 
