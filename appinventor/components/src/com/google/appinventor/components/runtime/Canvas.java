@@ -8,6 +8,8 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Base64;
+import android.graphics.BitmapFactory;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -28,6 +30,7 @@ import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.YailList;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.content.Context;
@@ -563,6 +566,22 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       clearDrawingLayer();  // will call invalidate()
     }
 
+    @android.support.annotation.RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
+    void setBackgroundImageBase64(String imageUrl) {
+      backgroundImagePath = (imageUrl == null) ? "" : imageUrl;
+      backgroundDrawable = null;
+      scaledBackgroundBitmap = null;
+
+      if (!TextUtils.isEmpty(backgroundImagePath)) {
+        byte[] decodedString = Base64.decode(backgroundImagePath, Base64.DEFAULT);
+        android.graphics.Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        backgroundDrawable = new BitmapDrawable(decodedByte);
+      }
+
+      setBackground();
+      clearDrawingLayer();  // will call invalidate()
+    }
+
     private void setBackground() {
       Drawable setDraw = backgroundDrawable;
       if (backgroundImagePath != "" && backgroundDrawable != null) {
@@ -981,6 +1000,24 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty
   public void BackgroundImage(String path) {
     view.setBackgroundImage(path);
+  }
+
+  /**
+   * Specifies the back ground image in Base64 format
+   * imageUrl will be in format of: iVBORw0KG...s//f+4z/6Z
+   * @param imageUrl the base64 format for an image
+   */
+  @android.support.annotation.RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
+  @SimpleProperty (
+          description = "Set the back ground image in Base64 format. This requires API level >= 8. For devices with API level less than 8, setting this will end up with an empty back ground."
+  )
+  public void BackgroundImageinBase64(String imageUrl) {
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
+      view.setBackgroundImageBase64(imageUrl);
+    } else {
+      view.setBackgroundImageBase64("");
+    }
+
   }
 
   /**
