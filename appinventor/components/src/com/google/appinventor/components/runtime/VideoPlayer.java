@@ -132,6 +132,8 @@ public final class VideoPlayer extends AndroidViewComponent implements
 
   private boolean inFullScreen = false;
 
+  private int volume = 50;
+
   // The VideoView does not always start playing if Start is called
   // shortly after the source is set. These flags are used to fix this
   // problem.
@@ -232,6 +234,13 @@ public final class VideoPlayer extends AndroidViewComponent implements
     }
   }
 
+  @SimpleProperty(
+      description = "Returns the \"path\" to the video.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Source() {
+    return sourcePath;
+  }
+
   /**
    * Plays the media specified by the {@link #Source(String)}.
    *
@@ -254,9 +263,10 @@ public final class VideoPlayer extends AndroidViewComponent implements
     }
   }
 
-
-
-
+  @SimpleProperty(description = "Returns the volume", category = PropertyCategory.BEHAVIOR)
+  public int Volume() {
+    return volume;
+  }
 
   /**
    * Sets the volume property to a number between 0 and 100. Values less than 0
@@ -278,6 +288,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
     if (mPlayer != null) {
       mPlayer.setVolume(((float) vol) / 100, ((float) vol) / 100);
     }
+    this.volume = vol;
   }
 
 
@@ -402,6 +413,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
     mediaReady = true;
     delayedStart = false;
     mPlayer = newMediaPlayer;
+    mPlayer.setVolume(((float) volume) / 100, ((float) volume) / 100);
     videoView.setMediaPlayer(mPlayer, true);
     if (delayedStart) {
       Start();

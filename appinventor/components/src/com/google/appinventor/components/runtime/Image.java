@@ -209,6 +209,11 @@ public final class Image extends AndroidViewComponent {
       view.setScaleType(ImageView.ScaleType.FIT_CENTER);
   }
 
+  @SimpleProperty
+  public boolean ScalePictureToFit() {
+    return view.getScaleType() == ImageView.ScaleType.FIT_XY;
+  }
+
   /**
    * This is a limited form of animation that can attach a small number of motion types to images.
    * The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,

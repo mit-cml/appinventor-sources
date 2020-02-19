@@ -172,8 +172,8 @@ gravity.</li>
   <dd>Specifies whether the sensor should generate events.  If <code class="logic block highlighter-rouge">true</code>,
  the sensor will generate events.  Otherwise, no events are
  generated even if the device is accelerated or shaken.</dd>
-  <dt id="AccelerometerSensor.LegacyMode" class="boolean wo do"><em>LegacyMode</em></dt>
-  <dd>Prior to the release that added this property the AccelerometerSensor component passed through sensor values directly as received from the Android system. However these values do not compensate for tablets that default to Landscape mode, requiring the MIT App Inventor programmer to compensate. However compensating would result in incorrect results in Portrait mode devices such as phones. We now detect Landscape mode tablets and perform the compensation. However if your project is already compensating for the change, you will now get incorrect results. Although our preferred solution is for you to update your project, you can also just set this property to “true” and our compensation code will be deactivated. Note: We recommend that you update your project as we may remove this property in a future release.</dd>
+  <dt id="AccelerometerSensor.LegacyMode" class="boolean do"><em>LegacyMode</em></dt>
+  <dd>Property for LegacyMode</dd>
   <dt id="AccelerometerSensor.MinimumInterval" class="number"><em>MinimumInterval</em></dt>
   <dd>Specifies the minimum interval required between back-to-back <a href="#AccelerometerSensor.Shaking"><code class="highlighter-rouge">Shaking</code></a> events,
  in milliseconds.

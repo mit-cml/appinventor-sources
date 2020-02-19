@@ -31,8 +31,7 @@ public class LegoMindstormsEv3Sensor extends LegoMindstormsEv3Base {
   }
 
   @SimpleProperty(description = "The sensor port that the sensor is connected to.",
-                  category = PropertyCategory.BEHAVIOR,
-                  userVisible = false)
+                  category = PropertyCategory.BEHAVIOR)
   public String SensorPort() {
     return portNumberToSensorPortLetter(sensorPortNumber);
   }

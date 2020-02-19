@@ -416,9 +416,8 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Gets the latitude of the center of the Map. To change the latitude, use the
  [`PanTo`](#Map.PanTo) method.
 
-{:id="Map.LocationSensor" .component .wo} *LocationSensor*
-: Uses the provided [`LocationSensor`](sensors.html#LocationSensor) for user location data
- rather than the built-in location provider.
+{:id="Map.LocationSensor" .component} *LocationSensor*
+: Property for LocationSensor
 
 {:id="Map.Longitude" .number .ro .bo} *Longitude*
 : Gets the longitude of the center of the Map. To change the longitude, use the

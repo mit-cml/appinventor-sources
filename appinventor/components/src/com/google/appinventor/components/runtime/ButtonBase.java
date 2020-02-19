@@ -241,8 +241,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Left, center, or right.",
-      userVisible = false)
+      description = "Left, center, or right.")
   public int TextAlignment() {
     return textAlignment;
   }
@@ -259,7 +258,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
                     defaultValue = Component.ALIGNMENT_CENTER + "")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty
   public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
     TextViewUtil.setAlignment(view, alignment, true);
@@ -274,8 +273,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *          {@link Component#BUTTON_SHAPE_OVAL}
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public int Shape() {
     return shape;
   }
@@ -298,8 +296,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BUTTON_SHAPE,
       defaultValue = Component.BUTTON_SHAPE_DEFAULT + "")
   @SimpleProperty(description = "Specifies the shape of the %type% (default, rounded," +
-      " rectangular, oval). The shape will not be visible if an Image is being displayed.",
-      userVisible = false)
+      " rectangular, oval). The shape will not be visible if an Image is being displayed.")
   public void Shape(int shape) {
     this.shape = shape;
     updateAppearance();
@@ -652,8 +649,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Font family for %type% text.",
-      userVisible = false)
+      description = "Font family for %type% text.")
   public int FontTypeface() {
     return fontTypeface;
   }
@@ -669,8 +665,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
-  @SimpleProperty(
-      userVisible = false)
+  @SimpleProperty
   public void FontTypeface(int typeface) {
     fontTypeface = typeface;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);

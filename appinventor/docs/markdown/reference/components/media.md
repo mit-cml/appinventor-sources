@@ -119,7 +119,7 @@ A special-purpose button. When the user taps an `ImagePicker`, the device's imag
 {:id="ImagePicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `ImagePicker`, measured in sp(scale-independent pixels).
 
-{:id="ImagePicker.FontTypeface" .number .do} *FontTypeface*
+{:id="ImagePicker.FontTypeface" .number} *FontTypeface*
 : Specifies the text font face of the `ImagePicker` as default, serif, sans
  serif, or monospace.
 
@@ -137,7 +137,7 @@ A special-purpose button. When the user taps an `ImagePicker`, the device's imag
 {:id="ImagePicker.Selection" .text .ro .bo} *Selection*
 : Path to the file containing the image that was selected.
 
-{:id="ImagePicker.Shape" .number .do} *Shape*
+{:id="ImagePicker.Shape" .number} *Shape*
 : Specifies the shape of the `ImagePicker`. The valid values for this property are `0` (default),
  `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
  [`Image`](#ImagePicker.Image) is used.
@@ -149,7 +149,7 @@ A special-purpose button. When the user taps an `ImagePicker`, the device's imag
 {:id="ImagePicker.Text" .text} *Text*
 : Specifies the text displayed by the `ImagePicker`.
 
-{:id="ImagePicker.TextAlignment" .number .do} *TextAlignment*
+{:id="ImagePicker.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the `ImagePicker`'s text. Valid values are:
  `0` (normal; e.g., left-justified if text is written left to right),
  `1` (center), or
@@ -238,7 +238,7 @@ Multimedia component that plays audio and controls phone vibration. The name of 
 {:id="Player.Source" .text} *Source*
 : Sets the audio source.
 
-{:id="Player.Volume" .number .wo} *Volume*
+{:id="Player.Volume" .number} *Volume*
 : Sets the volume property to a number between 0 and 100.
 
 ### Events  {#Player-Events}
@@ -530,15 +530,14 @@ A multimedia component capable of playing videos. When the application is run, t
 : Specifies the `VideoPlayer`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
-{:id="VideoPlayer.Source" .text .wo} *Source*
-: Sets the "path" to the video. Usually, this will be the name of the video file, which should be
- added in the Designer.
+{:id="VideoPlayer.Source" .text} *Source*
+: Returns the "path" to the video.
 
 {:id="VideoPlayer.Visible" .boolean} *Visible*
 : Specifies whether the `VideoPlayer` should be visible on the screen.  Value is `true`{:.logic.block}
  if the `VideoPlayer` is showing and `false`{:.logic.block} if hidden.
 
-{:id="VideoPlayer.Volume" .number .wo} *Volume*
+{:id="VideoPlayer.Volume" .number} *Volume*
 : Sets the volume property to a number between 0 and 100. Values less than 0
  will be treated as 0, and values greater than 100 will be treated as 100.
 

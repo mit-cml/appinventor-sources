@@ -114,7 +114,7 @@ public class NxtLightSensor extends LegoMindstormsNxtSensor implements Deleteabl
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT,
       defaultValue = DEFAULT_SENSOR_PORT)
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty
   public void SensorPort(String sensorPortLetter) {
     setSensorPort(sensorPortLetter);
   }

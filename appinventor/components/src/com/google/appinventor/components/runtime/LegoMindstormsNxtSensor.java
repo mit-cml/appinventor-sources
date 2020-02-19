@@ -66,7 +66,7 @@ public abstract class LegoMindstormsNxtSensor extends LegoMindstormsNxtBase {
    * Returns the sensor port that the sensor is connected to.
    */
   @SimpleProperty(description = "The sensor port that the sensor is connected to.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
+      category = PropertyCategory.BEHAVIOR)
   public String SensorPort() {
     return sensorPortLetter;
   }

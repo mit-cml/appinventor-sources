@@ -1147,7 +1147,10 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
 
     // AI2: LegacyMode property was added.
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // AI2: LegacyMode property made visible in block editor.
+    5: "noUpgrade"
 
   }, // End Accelerometer upgraders
 
@@ -1300,7 +1303,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added TouchUp and TouchDown events;
     // FontSize, FontBold, FontItalic properties made visible in block editor
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: TextAlignment, Shape, FontTypeface, properties made visible in block editor.
+    7: "noUpgrade"
 
   }, // End BarcodeScanner upgraders
 
@@ -1393,7 +1399,11 @@ Blockly.Versioning.AllUpgradeMaps =
   "CheckBox": {
 
     // AI2: The Value property was renamed to Checked.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+
+    // AI2: FontBold, FontItalic, FontTypeface properties made visible in block editor.
+    3: "noUpgrade"
 
   }, // End CheckBox upgraders
 
@@ -1453,7 +1463,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI2:  Added ContactUri
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: TextAlignment, Shape, FontTypeface properties made visible in block editor.
+    7: "noUpgrade"
 
   }, // End ContactPicker upgraders
 
@@ -1468,7 +1481,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // AI2: SetDateToDisplayFromInstant method and Instant property are added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: TextAlignment, Shape, FontTypeface properties made visible in block editor.
+    4: "noUpgrade"
 
   }, // End DatePicker upgraders
 
@@ -1482,7 +1498,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
     // RequestFocus was added
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: TextAlignment, FontBold, FontItalic, FontTypeface properties made visible in block editor.
+    4: "noUpgrade"
 
   }, // End EmailPicker upgraders
 
@@ -1584,7 +1603,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Click event was added
     // The Clickable property was added.
-    4: "noUpgrade"
+   4: "noUpgrade",
+
+    // AI2: ScalePictureToFit property (getter only) made visible in block editor.
+    5: "noUpgrade"
 
   }, // End Image upgraders
 
@@ -1609,7 +1631,10 @@ Blockly.Versioning.AllUpgradeMaps =
     /* From BlockSaveFile.java:
       handlePropertyRename(componentName, "ImagePath", "Selection");
     */
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: TextAlignment, Shape, FontTypeface properties made visible in block editor.
+    6: "noUpgrade"
 
   }, // End ImagePicker upgraders
 
@@ -1662,7 +1687,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Add HTMLFormat property
     4: "noUpgrade",
 
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: TextAlignment, FontBold, FontItalic, FontTypeface, HTMLFormat properties made visible in block editor.
+    6: "noUpgrade"
 
   }, // End Label upgraders
 
@@ -1841,7 +1869,10 @@ Blockly.Versioning.AllUpgradeMaps =
     8: "noUpgrade",
 
     // AI2: Added  ItemTextColor and ItemBackgroundColor
-    9: "noUpgrade"
+    9: "noUpgrade",
+
+    // AI2: TextAlignment, Shape, FontTypeface properties made visible in block editor.
+    10: "noUpgrade"
 
   }, // End ListPicker upgraders
 
@@ -1900,7 +1931,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:
     // - The ScaleUnits and ShowScale properties were added to Map
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: LocationSensor property (getter only) made visible in block editor.
+    6: "noUpgrade"
 
   }, // End Map upgraders
 
@@ -1980,91 +2014,130 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // Added a PasswordDialog for masked text input.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: NotifierLength property (setter only), BackgroundColor property (getter only) made visible in block editor.
+    7: "noUpgrade"
 
   }, // End Notifier upgraders
 
   "NxtColorSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtColorSensor upgraders
 
   "NxtDirectCommands": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtDirectCommands upgraders
 
   "NxtDrive": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: DriveMotors property (getter only), WheelDiameter property (getter only), BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtDrive upgraders
 
   "NxtLightSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtLightSensor upgraders
 
   "NxtSoundSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtSoundSensor upgraders
 
   "NxtTouchSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtTouchSensor upgraders
 
   "NxtUltrasonicSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtUltrasonicSensor upgraders
 
   "Ev3Motors": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: MotorPorts, WheelDiameter property (getters only) made visible in block editor.
+    2: "noUpgrade"
 
   }, // End Ev3Motors upgraders
 
   "Ev3ColorSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort property (getter only) made visible in block editor.
+    2: "noUpgrade"
 
   }, // End Ev3ColorSensor upgraders
 
   "Ev3GyroSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort property (getter only) made visible in block editor.
+    2: "noUpgrade"
 
   }, // End Ev3GyroSensor upgraders
 
   "Ev3TouchSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort property (getter only) made visible in block editor.
+    2: "noUpgrade"
 
   }, // End Ev3TouchSensor upgraders
 
   "Ev3UltrasonicSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort property (getter only) made visible in block editor.
+    2: "noUpgrade"
 
   }, // End Ev3UltrasonicSensor upgraders
 
@@ -2118,7 +2191,10 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
 
     // PasswordVisible was added
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // AI2: TextAlignment, FontBold, FontItalic, FontTypeface properties made visible in block editor.
+    5: "noUpgrade"
 
   }, // End PasswordTextBox upgraders
 
@@ -2195,7 +2271,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: - The PlayInForeground property was added.
     // - The OtherPlayerStarted event was added.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: The Volume property (getter only) was added to the Player.
+    7: "noUpgrade"
 
   }, // End Player upgraders
 
@@ -2390,10 +2469,23 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End Spinner upgraders
 
+  "Switch": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    // AI2: FontBold, FontItalic, FontTypeface properties made visible in block editor.
+    2: "noUpgrade"
+
+  }, // End Switch upgraders
+
   "TableArrangement": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: Columns, Rows property (getters only) made visible in block editor.
+    2: "noUpgrade"
 
   }, // End TableArrangementupgraders
 
@@ -2421,7 +2513,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI3: Added ReadOnly property
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: TextAlignment, FontBold, FontItalic, FontTypeface properties made visible in block editor.
+    7: "noUpgrade"
 
   }, // End TextBox upgraders
 
@@ -2471,7 +2566,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // AI2: SetTimeToDisplayFromInstant method and Instant property are added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: TextAlignment, Shape, FontTypeface properties made visible in block editor.
+    4: "noUpgrade"
 
   }, // End TimePicker upgraders
 
@@ -2585,7 +2683,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI2: Stop method was added to the VideoPlayer.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: Source, Volume property (getters only) made visible in block editor.
+    7: "noUpgrade"
 
   }, // End VideoPlayer upgraders
 

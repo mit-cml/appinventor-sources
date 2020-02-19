@@ -83,7 +83,7 @@ public class NxtDrive extends LegoMindstormsNxtBase {
    */
   @SimpleProperty(description = "The motor ports that are used for driving: the left wheel's " +
       "motor port followed by the right wheel's motor port.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
+      category = PropertyCategory.BEHAVIOR)
   public String DriveMotors() {
     return driveMotors;
   }
@@ -112,7 +112,7 @@ public class NxtDrive extends LegoMindstormsNxtBase {
    * Returns the diameter of the wheels used for driving.
    */
   @SimpleProperty(description = "The diameter of the wheels used for driving.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
+      category = PropertyCategory.BEHAVIOR)
   public float WheelDiameter() {
     return (float) wheelDiameter;
   }
