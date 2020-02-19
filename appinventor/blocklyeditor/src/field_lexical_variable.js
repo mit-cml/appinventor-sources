@@ -1119,8 +1119,10 @@ Blockly.LexicalVariable.getEventParam = function (block) {
            return null; // Name is locally bound, not an event parameter.
          }
        } else if (type == 'controls_for_each_dict'
-           && parent.getInputTargetBlock('DO') == child
-           && parent.getVars().indexOf(name) != -1) {
+           && parent.getInputTargetBlock('DO') == child  // Only DO is in scope.
+           && parent.getVars().indexOf(name) != -1) {  // is the name defined by the loop?
+         // If the child is in the scope of the loop, and it is accessing a var
+         // defined on the loop return null to say it is not an event param.
          return null;
        }
       child = parent;
