@@ -83,8 +83,6 @@ function detectPoseInRealTime(video, net) {
 
     poses.forEach(({score, keypoints}) => {
       if (score >= minPoseConfidence) {
-        const dataURL = canvas.toDataURL();
-        PosenetExtension.reportImage(dataURL);
         PosenetExtension.reportResult(JSON.stringify(keypoints));
       }
     });
