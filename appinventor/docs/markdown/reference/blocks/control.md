@@ -6,6 +6,7 @@ layout: documentation
 * [if & else if](#if)
 * [for each number from to](#forrange)
 * [for each item in list](#foreach)
+* [for each key with value in dictionary](#foreachdict)
 * [while](#while)
 * [if then else](#choose)
 * [do with result](#doreturn)
