@@ -129,6 +129,7 @@ public class FroyoUtil {
     return new WebViewClient() {
       @Override
       public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        EventDispatcher.dispatchEvent(this, "BeforePageLoad", url);
         return !followLinks;
       }
 
