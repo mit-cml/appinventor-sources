@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.CookieManager;
 
 /**
  * Component for viewing Web pages.
@@ -205,9 +206,11 @@ public final class WebViewer extends AndroidViewComponent {
   // this do nothing will override the default WebView behavior.  Returning
   // false means to let the WebView handle the Url.  In other words, returning
   // true will not follow the link, and returning false will follow the link.
+  // 
   private class WebViewerClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+      BeforePageLoad(url);
       return !followLinks;
     }
 
@@ -422,6 +425,24 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
+   * Stop loading a page.
+   */
+  @SimpleFunction(
+      description = "Stop loading a page.")
+  public void StopLoading() {
+    webview.stopLoading();
+  }
+
+  /**
+   * Reload the current page.
+   */
+  @SimpleFunction(
+      description = "Reload the current page.")
+  public void Reload() {
+    webview.reload();
+  }
+
+  /**
    * Specifies whether or not this `WebViewer` can access the JavaScript
    * geolocation API.
    *
@@ -498,6 +519,20 @@ public final class WebViewer extends AndroidViewComponent {
     webview.clearCache(true);
   }
 
+   /**
+   * Clear the webview's cookies. This is useful if you want to
+   * sign the user out of a website that uses them to store logins.
+   */
+  @SimpleFunction(description = "Clear WebView cookies.")
+  public void ClearCookies() {
+    CookieManager cookieManager = CookieManager.getInstance();
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP) {
+      cookieManager.removeAllCookies(null);
+    } else {
+      cookieManager.removeAllCookie();
+    }
+  }
+
   /**
    * Event that runs when the `AppInventor.setWebViewString` method is called from JavaScript.
    * The new {@link #WebViewString()} is given by the `value`{:.variable.block} parameter.
@@ -506,6 +541,11 @@ public final class WebViewer extends AndroidViewComponent {
   @SimpleEvent(description = "When the JavaScript calls AppInventor.setWebViewString this event is run.")
   public void WebViewStringChange(String value) {
     EventDispatcher.dispatchEvent(this, "WebViewStringChange", value);
+  }
+
+  @SimpleEvent(description = "When a page is about to load this event is run.")
+  public void BeforePageLoad(String url) {
+    EventDispatcher.dispatchEvent(this, "BeforePageLoad", url);
   }
 
   @SimpleEvent(description = "When a page is finished loading this event is run.")
