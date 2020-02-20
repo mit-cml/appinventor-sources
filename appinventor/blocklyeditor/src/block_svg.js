@@ -228,26 +228,27 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
  * This is in contrast to render(), which renders a block and all its antecedents.
  */
 Blockly.BlockSvg.prototype.renderDown = function() {
-  if (Blockly.BlockSvg.isRenderingOn) {
-    goog.asserts.assertObject(this.svgGroup_,
-      ' Uninitialized block cannot be renderedDown.  Call block.initSvg()');
-    // Recursively renderDown all my children (as long as I'm not collapsed)
-    if (! (Blockly.Instrument.avoidRenderDownOnCollapsedSubblocks && this.isCollapsed())) {
-      var childBlocks = this.childBlocks_;
-      for (var c = 0, childBlock; childBlock = childBlocks[c]; c++) {
-        childBlock.renderDown();
-      }
-      this.renderHere();
-    } else {
-      // nextConnection is a "child" block, but needs to be rendered because it's not collapsed.
-      if (Blockly.Instrument.avoidRenderDownOnCollapsedSubblocks &&
-        this.nextConnection && this.nextConnection.targetBlock()) {
-        this.nextConnection.targetBlock().renderDown();
-      }
-      this.renderHere();
-    }
-    Blockly.Instrument.stats.renderDownCalls++; //***lyn
+  if (!Blockly.BlockSvg.isRenderingOn) {
+    return;
   }
+  goog.asserts.assertObject(this.svgGroup_,
+    ' Uninitialized block cannot be renderedDown.  Call block.initSvg()');
+
+  // Recursively renderDown all my children (as long as I'm not collapsed)
+  if (!this.isCollapsed() || !Blockly.Instrument
+      .avoidRenderDownOnCollapsedSubblocks) {
+    var childBlocks = this.getChildren();
+    for (var i = 0, childBlock; (childBlock = childBlocks[i]); i++) {
+      childBlock.renderDown();
+    }
+  } else {  // Always render next block.
+    var nextBlock = this.getNextBlock();
+    if (nextBlock) {
+      nextBlock.renderDown();
+    }
+  }
+  this.renderHere();
+  Blockly.Instrument.stats.renderDownCalls++; //***lyn
   // [lyn, 04/08/14] Because renderDown is recursive, doesn't make sense to track its time here.
 };
 
