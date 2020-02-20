@@ -37,6 +37,13 @@ Blockly.BlockSvg.prototype.error = null;
 Blockly.BlockSvg.prototype.isBad = false;
 
 /**
+ * This is to prevent any recursive render calls. It is not elegant in the
+ * least, but it is pretty future proof.
+ * @type {boolean}
+ */
+Blockly.BlockSvg.prototype.isRendering = false;
+
+/**
  * Returns a list of mutator, comment, and warning icons.
  * @return {!Array} List of icons.
  */
@@ -209,6 +216,10 @@ Blockly.BlockSvg.prototype.render = (function(func) {
 if (Blockly.Instrument.useRenderDown) {
 
 Blockly.BlockSvg.prototype.render = function(opt_bubble) {
+  if (this.isRendering) {
+    return;  // Don't allow recursive render calls.
+  }
+  this.isRendering = true;
   this.renderDown();
 
   // Render all blocks above this one (propagate a reflow).
@@ -218,9 +229,12 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
       while (top.parentBlock_) top = top.parentBlock_;
       top.render(false);
     } else {
+      // Top most block. Fire an event to allow scrollbars to resize.
       this.workspace.resizeContents();
     }
   }
+
+  this.isRendering = false;
 };
 
 /**
