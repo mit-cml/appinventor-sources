@@ -176,3 +176,36 @@ Blockly.Block.prototype.domToMutation = null;
  * @type {?function(this: Blockly.BlockSvg):!Element}
  */
 Blockly.Block.prototype.mutationToDom = null;
+
+/**
+ * Create a human-readable text representation of this block and any children.
+ * @param {number=} opt_maxLength Truncate the string to this length.
+ * @param {string=} opt_emptyToken The placeholder string used to denote an
+ *     empty field. If not specified, '?' is used.
+ * @return {string} Text of block.
+ */
+Blockly.Block.prototype.toString = function(opt_maxLength, opt_emptyToken) {
+  // This function is overridden so that it doesn't use the collapsed shortcut.
+  var text = [];
+  var emptyFieldPlaceholder = opt_emptyToken || '?';
+  for (var i = 0, input; (input = this.inputList[i]); i++) {
+    for (var j = 0, field; (field = input.fieldRow[j]); j++) {
+      text.push(field.getText());
+    }
+    if (input.connection) {
+      var child = input.connection.targetBlock();
+      if (child) {
+        text.push(child.toString(undefined, opt_emptyToken));
+      } else {
+        text.push(emptyFieldPlaceholder);
+      }
+    }
+  }
+  text = goog.string.trim(text.join(' ')) || '???';
+  if (opt_maxLength) {
+    // TODO (Blockly): Improve truncation so that text from this block is
+    //  given priority.
+    text = goog.string.truncate(text, opt_maxLength);
+  }
+  return text;
+};
