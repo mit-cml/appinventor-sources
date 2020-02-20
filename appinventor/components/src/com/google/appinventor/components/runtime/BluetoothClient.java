@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -60,7 +61,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
   private ScheduledExecutorService dataPollService;
 
   // Fixed polling rate for the Data Polling Service (in milliseconds)
-  private static final int POLLING_RATE = 10;
+  private int pollingRate = 10;
 
   /**
    * Creates a new BluetoothClient.
@@ -177,6 +178,29 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
     }
 
     return addressesAndNames;
+  }
+
+  @SimpleProperty(description = "Changes the polling rate in milliseconds when the Bluetooth Client is used " +
+      "as a Data Source in a Chart Data component. The minimum value is 1, and values of less than 1 will be " +
+      "automatically resolved to the value 1.")
+  @DesignerProperty(defaultValue = "10")
+  public void PollingRate(int rate) {
+    // Resolve polling rate values that are too small to the smallest possible value.
+    if (rate < 1) {
+      this.pollingRate = 1;
+    } else {
+      this.pollingRate = rate;
+    }
+  }
+
+  /**
+   * Returns the configured polling rate value of the Bluetooth Client.
+   * @return  polling rate value
+   */
+  @SimpleProperty(description = "The polling rate in milliseconds when the Bluetooth Client is used " +
+      "as a Data Source in a Chart Data component.")
+  public int PollingRate() {
+    return this.pollingRate;
   }
 
   /**
@@ -353,7 +377,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
           notifyDataObservers(null, value);
         }
       }
-    }, 0, POLLING_RATE, TimeUnit.MILLISECONDS);
+    }, 0, pollingRate, TimeUnit.MILLISECONDS);
   }
 
   @Override
