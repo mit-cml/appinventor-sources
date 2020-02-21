@@ -14,6 +14,7 @@ import GEOSwift
   @objc public init(_ container: MapFeatureContainer) {
     super.init(container: container)
     FillColor = colorToArgb(UIColor.red)
+    FillOpacity = 1
     Type = MapFeatureType.TYPE_RECTANGLE.rawValue
   }
 
@@ -135,6 +136,7 @@ import GEOSwift
     rectangle.copy(from: self)
     rectangle.updateBounds(north: NorthLatitude, west: WestLongitude, south: SouthLatitude, east: EastLongitude)
     rectangle.FillColor = FillColor
+    rectangle.FillOpacity = FillOpacity
   }
 
   fileprivate func validate(latitude: Double = 0, longitude: Double = 0, for methodName: String) -> Bool {

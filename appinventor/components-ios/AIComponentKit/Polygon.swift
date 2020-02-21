@@ -12,6 +12,7 @@ import GEOSwift
     super.init(container: container)
     Type = MapFeatureType.TYPE_POLYGON.rawValue
     FillColor = colorToArgb(UIColor.red)
+    FillOpacity = 1
   }
 
   // MARK: properties
@@ -178,6 +179,7 @@ import GEOSwift
     let polygon = Polygon(container)
     polygon.copy(from: self)
     polygon.FillColor = FillColor
+    polygon.FillOpacity = FillOpacity
     polygon.HolePoints = HolePoints
     polygon.Points = Points
   }

@@ -33,7 +33,9 @@ public protocol MapOverlayShape: MKOverlay {
    * They are not capitalized to differentiate
    */
   var fillColor: Int32 { get set }
+  var fillOpacity: Float { get set }
   var strokeColor: Int32 { get set }
+  var strokeOpacity: Float { get set }
   var strokeWidth: Int32 { get set }
   var visible: Bool { get set }
 }
@@ -45,8 +47,8 @@ public protocol MapOverlayShape: MKOverlay {
 public struct ShapeProperties {
   fileprivate weak var renderer: MKOverlayPathRenderer? = nil {
     didSet {
-      renderer?.fillColor = argbToColor(fillColor)
-      renderer?.strokeColor = argbToColor(strokeColor)
+      renderer?.fillColor = argbToColor(fillColor).withAlphaComponent(CGFloat(fillOpacity))
+      renderer?.strokeColor = argbToColor(strokeColor).withAlphaComponent(CGFloat(strokeOpacity))
       renderer?.lineWidth = CGFloat(strokeWidth)
       renderer?.alpha = visible ? 1: 0
     }
@@ -54,19 +56,31 @@ public struct ShapeProperties {
 
   fileprivate var fillColor: Int32 = 0 {
     didSet {
-      renderer?.fillColor = argbToColor(fillColor)
+      renderer?.fillColor = argbToColor(fillColor).withAlphaComponent(CGFloat(fillOpacity))
+    }
+  }
+  
+  fileprivate var fillOpacity: Float = 1.0 {
+    didSet {
+      renderer?.fillColor = argbToColor(fillColor).withAlphaComponent(CGFloat(fillOpacity))
     }
   }
 
   fileprivate var strokeColor: Int32 = 0 {
     didSet {
-      renderer?.strokeColor = argbToColor(strokeColor)
+      renderer?.strokeColor = argbToColor(strokeColor).withAlphaComponent(CGFloat(strokeOpacity))
     }
   }
 
   fileprivate var strokeWidth: Int32 = 0 {
     didSet {
       renderer?.lineWidth = CGFloat(strokeWidth)
+    }
+  }
+  
+  fileprivate var strokeOpacity: Float = 1 {
+    didSet {
+      renderer?.strokeColor = argbToColor(strokeColor).withAlphaComponent(CGFloat(strokeOpacity))
     }
   }
 
@@ -90,6 +104,15 @@ extension MapOverlayShape where Self: MKShape {
       props?.fillColor = color
     }
   }
+  
+  public var fillOpacity: Float {
+    get {
+      return props?.fillOpacity ?? 1
+    }
+    set(opacity) {
+      props?.fillOpacity = opacity
+    }
+  }
 
   public var strokeColor: Int32 {
     get {
@@ -97,6 +120,15 @@ extension MapOverlayShape where Self: MKShape {
     }
     set(color) {
       props?.strokeColor = color
+    }
+  }
+  
+  public var strokeOpacity: Float {
+    get {
+      return props?.strokeOpacity ?? 1
+    }
+    set(opacity) {
+      props?.strokeOpacity = opacity
     }
   }
 
@@ -157,6 +189,17 @@ extension MapOverlayShape where Self: MKShape {
       }
     }
   }
+  
+  open var fillOpacity: Float {
+    get {
+      return shapes.count == 0 ? 1: shapes[0].fillOpacity
+    }
+    set(opacity) {
+      for shape in shapes {
+        shape.fillOpacity = opacity
+      }
+    }
+  }
 
   open var strokeColor: Int32 {
     get {
@@ -165,6 +208,17 @@ extension MapOverlayShape where Self: MKShape {
     set(color) {
       for shape in shapes {
         shape.strokeColor = color
+      }
+    }
+  }
+  
+  open var strokeOpacity: Float {
+    get {
+      return shapes.count == 0 ? 1: shapes[0].strokeOpacity
+    }
+    set(opacity) {
+      for shape in shapes {
+        shape.strokeOpacity = opacity
       }
     }
   }
@@ -238,6 +292,14 @@ open class MapLineOverlay: MKPolyline, MapOverlayShape {
     }
     set(color) {}
   }
+  
+  // Lines don't have a fill color. We override it here to prevent unwanted settings
+  open var fillOpacity: Float {
+    get {
+      return 1
+    }
+    set(opacity) {}
+  }
 }
 
 /**
@@ -246,8 +308,10 @@ open class MapLineOverlay: MKPolyline, MapOverlayShape {
 open class MapPolygonOverlay: MKPolygon, MapOverlayShape {
   fileprivate weak var _renderer: MKPolygonRenderer? = nil
   fileprivate var _fillColor: Int32 = 0
+  fileprivate var _fillOpacity: Float = 1
   fileprivate var _strokeColor: Int32 = 0
   fileprivate var _strokeWidth: Int32 = 0
+  fileprivate var _strokeOpacity: Float = 1
   fileprivate var _visible: Bool = true
   open weak var feature: PolygonBase? = nil
   open weak var parentCollection: MapShapeCollection? = nil

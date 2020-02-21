@@ -41,10 +41,12 @@ open class GeoJSONUtil {
   fileprivate static let PROPERTY_DESCRIPTION = "description"
   fileprivate static let PROPERTY_DRAGGABLE = "draggable"
   fileprivate static let PROPERTY_FILL = "fill"
+  fileprivate static let PROPERTY_FILL_OPACITY = "fill-opacity"
   fileprivate static let PROPERTY_HEIGHT = "height"
   fileprivate static let PROPERTY_IMAGE = "image"
   fileprivate static let PROPERTY_INFOBOX = "infobox"
   fileprivate static let PROPERTY_STROKE = "stroke"
+  fileprivate static let PROPERTY_STROKE_OPACITY = "stroke-opacity"
   fileprivate static let PROPERTY_STROKE_WIDTH = "stroke-width"
   fileprivate static let PROPERTY_TITLE = "title"
   fileprivate static let PROPERTY_WIDTH = "width"
@@ -81,6 +83,11 @@ open class GeoJSONUtil {
         }
       }
     }
+    properties[PROPERTY_FILL_OPACITY] = { feature, value in
+      if var fill = feature as? HasFill {
+        fill.FillOpacity = try Float(parseIntegerOrString(value))
+      }
+    }
     properties[PROPERTY_HEIGHT] = { feature, value in
       if var marker = feature as? Marker {
         marker.Height = try Int32(parseIntegerOrString(value))
@@ -101,6 +108,11 @@ open class GeoJSONUtil {
         } else {
           stroke.StrokeColor = try Int32(parseColor(String(describing: value)))
         }
+      }
+    }
+    properties[PROPERTY_STROKE_OPACITY] = { feature, value in
+      if var stroke = feature as? HasStroke {
+        stroke.StrokeOpacity = try Float(parseIntegerOrString(value))
       }
     }
     properties[PROPERTY_STROKE_WIDTH] = { feature, value in
@@ -192,11 +204,12 @@ open class GeoJSONUtil {
   
   fileprivate static func write(stroke: HasStroke) -> String {
     return write(color: stroke.StrokeColor, PROPERTY_STROKE) +
+      write(property: PROPERTY_STROKE_OPACITY, stroke.StrokeOpacity) +
       write(property: PROPERTY_STROKE_WIDTH, stroke.StrokeWidth)
   }
 
   fileprivate static func write(fill: HasFill) -> String {
-    return write(color: fill.FillColor, PROPERTY_FILL)
+    return write(color: fill.FillColor, PROPERTY_FILL) + write(property: PROPERTY_FILL_OPACITY, fill.FillOpacity)
   }
 
   fileprivate static func write(points: [[Double]]) -> String {
@@ -306,6 +319,7 @@ open class GeoJSONUtil {
       write(feature: marker) +
       write(stroke: marker) +
       write(fill: marker) +
+      write(property: PROPERTY_FILL_OPACITY, marker.FillOpacity) +
       write(property: PROPERTY_ANCHOR_HORIZONTAL, marker.AnchorHorizontal) +
       write(property: PROPERTY_ANCHOR_VERTICAL, marker.AnchorVertical) +
       write(property: PROPERTY_HEIGHT, marker.Height) +

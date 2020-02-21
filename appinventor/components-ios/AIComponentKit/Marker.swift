@@ -52,6 +52,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
   fileprivate var _preferredHeight: CGFloat = kDefaultMarkerHeight
   fileprivate var _imagePath: String = "empty"
   fileprivate var _strokeColor: Int32 = colorToArgb(UIColor.black)
+  fileprivate var _strokeOpacity: Float = 1
   fileprivate var _strokeWidth: Int32 = 1
   fileprivate static let _lchelper = LCHelper()
 
@@ -67,6 +68,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
     AnchorVertical = VerticalGravity.bottom.rawValue
     ImageAsset = ""
     FillColor = colorToArgb(UIColor.red)
+    FillOpacity = 1
   }
 
   private func intializeConstraints() {
@@ -156,8 +158,18 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
       return colorToArgb(_pinView.pinTintColor)
     }
     set(color) {
-      _pinView.pinTintColor = argbToColor(color)
-      _imageView.backgroundColor = _imagePath == "" ? UIColor.clear: argbToColor(color)
+      _pinView.pinTintColor = argbToColor(color).withAlphaComponent(_pinView.pinTintColor.cgColor.alpha)
+      _imageView.backgroundColor = _imagePath == "" ? UIColor.clear: _pinView.pinTintColor
+    }
+  }
+  
+  @objc open var FillOpacity: Float {
+    get {
+      return Float(_pinView.pinTintColor.cgColor.alpha)
+    }
+    set(opacity) {
+      _pinView.pinTintColor = _pinView.pinTintColor.withAlphaComponent(CGFloat(opacity))
+      _imageView.backgroundColor = _imagePath == "" ? UIColor.clear: _pinView.pinTintColor
     }
   }
 
@@ -358,6 +370,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
     newMarker.AnchorHorizontal = _anchorHorizontal.rawValue
     newMarker.AnchorVertical = _anchorVertical.rawValue
     newMarker.FillColor = FillColor
+    newMarker.FillOpacity = FillOpacity
     newMarker.Height = _height
     newMarker.ImageAsset = _imagePath
     newMarker.Latitude = Latitude

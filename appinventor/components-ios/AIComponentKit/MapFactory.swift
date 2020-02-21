@@ -49,10 +49,12 @@ import GEOSwift
 
 public protocol HasFill {
   var FillColor: Int32 { get set }
+  var FillOpacity: Float { get set }
 }
 
 public protocol HasStroke {
   var StrokeColor: Int32 { get set }
+  var StrokeOpacity: Float { get set }
   var StrokeWidth: Int32 { get set }
 }
 

@@ -28,7 +28,9 @@ open class PolygonMarker: Marker {
   fileprivate var _calloutEnabled = false
   fileprivate var _marker: PolygonMarker
   fileprivate var _fillColor: Int32 = 0
+  fileprivate var _fillOpacity: Float = 1
   fileprivate var _strokeColor: Int32 = 0
+  fileprivate var _strokeOpacity: Float = 1
   fileprivate var _strokeWidth: Int32 = 0
   fileprivate var _visible: Bool = true
 
@@ -82,6 +84,16 @@ open class PolygonMarker: Marker {
       _fillColor = color
     }
   }
+  
+  @objc open var FillOpacity: Float {
+    get {
+      return _fillOpacity
+    }
+    set(opacity) {
+      _overlay?.fillOpacity = opacity
+      _fillOpacity = opacity
+    }
+  }
 
   @objc open override var StrokeColor: Int32 {
     get {
@@ -90,6 +102,16 @@ open class PolygonMarker: Marker {
     set(color) {
       _overlay?.strokeColor = color
       _strokeColor = color
+    }
+  }
+  
+  @objc open override var StrokeOpacity: Float {
+    get {
+      return _strokeOpacity
+    }
+    set(opacity) {
+      _overlay?.strokeOpacity = opacity
+      _strokeOpacity = opacity
     }
   }
 
@@ -130,7 +152,9 @@ open class PolygonMarker: Marker {
         let oldOverlay = self._overlay
         self._overlay = newOverlay
         self._overlay?.fillColor = self._fillColor
+        self._overlay?.fillOpacity = self._fillOpacity
         self._overlay?.strokeColor = self._strokeColor
+        self._overlay?.strokeOpacity = self._strokeOpacity
         self._overlay?.strokeWidth = self._strokeWidth
         self._overlay?.visible = self._visible
         self._overlay?.feature = self

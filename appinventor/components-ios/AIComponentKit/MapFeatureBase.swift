@@ -40,6 +40,7 @@ import GEOSwift
     Description = ""
     Visible = true
     StrokeColor = -16777216
+    StrokeOpacity = 1
     StrokeWidth = 1
     Draggable = false
     Title = ""
@@ -134,7 +135,21 @@ import GEOSwift
       }
       return colorToArgb(UIColor(cgColor: borderColor))
     } set(color) {
-      _view.layer.borderColor = argbToColor(color).cgColor
+      guard let opacity = _view.layer.borderColor?.alpha else {
+        return
+      }
+      _view.layer.borderColor = argbToColor(color).withAlphaComponent(opacity).cgColor
+    }
+  }
+  
+  @objc open var StrokeOpacity: Float {
+    get {
+      guard let borderColor = _view.layer.borderColor else {
+        return 0
+      }
+      return Float(borderColor.alpha)
+    } set(opacity) {
+      _view.layer.borderColor = _view.layer.borderColor?.copy(alpha: CGFloat(opacity))
     }
   }
 

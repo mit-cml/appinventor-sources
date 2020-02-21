@@ -15,6 +15,7 @@ let kNumCircleEdges = 60
     super.init(container: container)
     Type = MapFeatureType.TYPE_CIRCLE.rawValue
     FillColor = colorToArgb(UIColor.red)
+    FillOpacity = 1
   }
 
   // MARK: properties
