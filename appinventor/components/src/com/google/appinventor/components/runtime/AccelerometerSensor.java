@@ -7,18 +7,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -26,13 +14,22 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-
+import android.os.Build;
 import android.os.Handler;
-
 import android.util.Log;
-
 import android.view.Surface;
 import android.view.WindowManager;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -255,6 +252,11 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   }
 
 public int getDeviceDefaultOrientation() {
+    if (Build.VERSION.SDK_INT < SdkLevel.LEVEL_FROYO) {
+      // getRotation() is unavailable on versions of Android lower tha Froyo, so assume a default
+      // orientation of PORTRAIT (which was the implied assumption before we added this check).
+      return Configuration.ORIENTATION_PORTRAIT;
+    }
     Configuration config = resources.getConfiguration();
     int rotation = windowManager.getDefaultDisplay().getRotation();
     if (DEBUG) {
