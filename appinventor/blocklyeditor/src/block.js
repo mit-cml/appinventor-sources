@@ -189,6 +189,9 @@ Blockly.Block.prototype.toString = function(opt_maxLength, opt_emptyToken) {
   var text = [];
   var emptyFieldPlaceholder = opt_emptyToken || '?';
   for (var i = 0, input; (input = this.inputList[i]); i++) {
+    if (input.name == Blockly.BlockSvg.COLLAPSED_INPUT_NAME) {
+      continue;
+    }
     for (var j = 0, field; (field = input.fieldRow[j]); j++) {
       text.push(field.getText());
     }

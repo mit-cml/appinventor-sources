@@ -44,6 +44,18 @@ Blockly.BlockSvg.prototype.isBad = false;
 Blockly.BlockSvg.prototype.isRendering = false;
 
 /**
+ * The language-neutral id given to the collapsed input.
+ * @const {string}
+ */
+Blockly.BlockSvg.COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
+
+/**
+ * The language-neutral id given to the collapsed field.
+ * @const {string}
+ */
+Blockly.BlockSvg.COLLAPSED_FIELD_NAME = '_TEMP_COLLAPSED_FIELD';
+
+/**
  * Returns a list of mutator, comment, and warning icons.
  * @return {!Array} List of icons.
  */
@@ -274,6 +286,10 @@ Blockly.BlockSvg.prototype.renderHere = function(opt_bubble) {
   Blockly.Field.startCache();
   this.rendered = true;
 
+  if (this.isCollapsed()) {
+    this.updateCollapsed();
+  }
+
   // Now render me (even if I am collapsed, since still need to show collapsed block)
   var cursorX = Blockly.BlockSvg.SEP_SPACE_X;
   if (this.RTL) {
@@ -307,6 +323,39 @@ Blockly.BlockSvg.prototype.renderHere = function(opt_bubble) {
   Blockly.Instrument.stats.renderHereTime += timeDiff;
 };
 
+/**
+ * Makes sure that when the block is collapsed, it si rendered correctly for
+ * that state.
+ *
+ * Should only be called from renderHere.
+ */
+Blockly.BlockSvg.prototype.updateCollapsed = function() {
+  var collapsedInputName = Blockly.BlockSvg.COLLAPSED_INPUT_NAME;
+  var collapsedFieldName = Blockly.BlockSvg.COLLAPSED_FIELD_NAME;
+
+  for (var i = 0, input; (input = this.inputList[i]); i++) {
+    if (input.name == collapsedInputName) {
+      continue;
+    }
+    input.setVisible(false);
+  }
+  var icons = this.getIcons();
+  for (var i = 0, icon; (icon = icons[i]); i++) {
+    icon.setVisible(false);
+  }
+
+  var text = this.toString(Blockly.COLLAPSE_CHARS);
+  var field = this.getField(collapsedFieldName);
+  if (field) {
+    field.setValue(text);
+    return;
+  }
+
+  var input = this.getInput(collapsedInputName) ||
+      this.appendDummyInput(collapsedInputName);
+  input.appendField(new Blockly.FieldLabel(text), collapsedFieldName);
+};
+
   /**
    * Set whether the block is collapsed or not.
    * @param {boolean} collapsed True if collapsed.
@@ -315,37 +364,18 @@ Blockly.BlockSvg.prototype.renderHere = function(opt_bubble) {
     if (this.collapsed_ == collapsed) {
       return;
     }
-    var renderList = [];
-    // Show/hide the inputs.
-    for (var x = 0, input; input = this.inputList[x]; x++) {
-      // No need to collect renderList if rendering down.
-      input.setVisible(!collapsed);
-    }
-
-    var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
-    if (collapsed) {
+    this.collapsed_ = collapsed;
+    if (!collapsed) {
+      this.removeInput(Blockly.BlockSvg.COLLAPSED_INPUT_NAME);
+      for (var i = 0, input; (input = this.inputList[i]); i++) {
+        input.setVisible(true);
+      }
       var icons = this.getIcons();
-      for (var i = 0; i < icons.length; i++) {
-        icons[i].setVisible(false);
-      }
-      var text = this.toString(Blockly.COLLAPSE_CHARS);
-      this.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text).init();
-    } else {
-      this.removeInput(COLLAPSED_INPUT_NAME);
-      // Clear any warnings inherited from enclosed blocks.
-      this.setWarningText(null);
-    }
-    Blockly.BlockSvg.superClass_.setCollapsed.call(this, collapsed);
-
-    if (!renderList.length) {
-      // No child blocks, just render this block.
-      renderList[0] = this;
-    }
-    if (this.rendered) {
-      for (var i = 0, block; block = renderList[i]; i++) {
-        block.render();
+      for (var i = 0, icon; (icon = icons[i]); i++) {
+        icon.setVisible(true);
       }
     }
+    this.render();
   };
 }
 
