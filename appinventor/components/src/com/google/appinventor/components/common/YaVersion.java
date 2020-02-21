@@ -1284,7 +1284,10 @@ public class YaVersion {
   // - Added WebViewStringChange event
   //For WEBVIEWER_COMPONENT_VERSION 8:
   // - Added PageLoaded event
-  public static final int WEBVIEWER_COMPONENT_VERSION = 8;
+  // For WEBVIEWER_COMPONENT_VERSION 9:
+  // - Added BeforePageLoad event
+  // - Added Stop, Reload, and ClearCookies methods
+  public static final int WEBVIEWER_COMPONENT_VERSION = 9;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.
