@@ -287,7 +287,7 @@ Blockly.BlockSvg.prototype.renderHere = function(opt_bubble) {
   this.rendered = true;
 
   if (this.isCollapsed()) {
-    this.updateCollapsed();
+    this.updateCollapsed_();
   }
 
   // Now render me (even if I am collapsed, since still need to show collapsed block)
@@ -324,12 +324,12 @@ Blockly.BlockSvg.prototype.renderHere = function(opt_bubble) {
 };
 
 /**
- * Makes sure that when the block is collapsed, it si rendered correctly for
+ * Makes sure that when the block is collapsed, it is rendered correctly for
  * that state.
- *
- * Should only be called from renderHere.
+ * @private
  */
-Blockly.BlockSvg.prototype.updateCollapsed = function() {
+Blockly.BlockSvg.prototype.updateCollapsed_ = function() {
+  var collapsed = this.isCollapsed();
   var collapsedInputName = Blockly.BlockSvg.COLLAPSED_INPUT_NAME;
   var collapsedFieldName = Blockly.BlockSvg.COLLAPSED_FIELD_NAME;
 
@@ -337,11 +337,16 @@ Blockly.BlockSvg.prototype.updateCollapsed = function() {
     if (input.name == collapsedInputName) {
       continue;
     }
-    input.setVisible(false);
+    input.setVisible(!collapsed);
   }
   var icons = this.getIcons();
   for (var i = 0, icon; (icon = icons[i]); i++) {
-    icon.setVisible(false);
+    icon.setVisible(!collapsed);
+  }
+
+  if (!collapsed) {
+    this.removeInput(collapsedInputName);
+    return;
   }
 
   var text = this.toString(Blockly.COLLAPSE_CHARS);
@@ -350,7 +355,6 @@ Blockly.BlockSvg.prototype.updateCollapsed = function() {
     field.setValue(text);
     return;
   }
-
   var input = this.getInput(collapsedInputName) ||
       this.appendDummyInput(collapsedInputName);
   input.appendField(new Blockly.FieldLabel(text), collapsedFieldName);
@@ -366,14 +370,7 @@ Blockly.BlockSvg.prototype.updateCollapsed = function() {
     }
     this.collapsed_ = collapsed;
     if (!collapsed) {
-      this.removeInput(Blockly.BlockSvg.COLLAPSED_INPUT_NAME);
-      for (var i = 0, input; (input = this.inputList[i]); i++) {
-        input.setVisible(true);
-      }
-      var icons = this.getIcons();
-      for (var i = 0, icon; (icon = icons[i]); i++) {
-        icon.setVisible(true);
-      }
+      this.updateCollapsed_();
     }
     this.render();
   };
