@@ -14,6 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.errors.DispatchableError;
@@ -157,6 +158,24 @@ public class YailDictionaryTest {
     YailDictionary dict = (YailDictionary) JsonUtil.getObjectFromJson(TEST_JSON, true);
     assertNotNull(dict);
     dict.setValueForKeyPath(Arrays.asList((Object) "foo", -1), false);
+  }
+
+  @Test
+  public void testFString() {
+    YailDictionary target = new YailDictionary();
+    target.put("key", "value");
+    target.put(new FString("fstringkey"), new FString("fstringvalue"));
+    assertTrue(target.containsKey(new FString("key")));
+    assertTrue(target.containsValue(new FString("value")));
+    assertTrue(target.containsKey("fstringkey"));
+    assertTrue(target.containsValue("fstringvalue"));
+    assertEquals("value", target.get("key"));
+    assertEquals("value", target.get(new FString("key")));
+    assertEquals("fstringvalue", target.get("fstringkey"));
+    assertEquals("fstringvalue", target.get(new FString("fstringkey")));
+    target.remove(new FString("key"));
+    target.remove(new FString("fstringkey"));
+    assertTrue(target.isEmpty());
   }
 
   @Test
