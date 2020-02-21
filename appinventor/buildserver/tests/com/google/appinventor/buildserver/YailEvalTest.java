@@ -605,6 +605,48 @@ public class YailEvalTest extends TestCase {
     }
   }
 
+  public void testForEachDict() throws Throwable {
+    /* test for_each_dict block */
+    String schemeInputString = "(begin " +
+        "(def x 0) " +
+        "(foreach y " +
+        " (let " +
+        "   ( " +
+        "    ($key " +
+        "     (call-yail-primitive yail-list-get-item " +
+        "      (*list-for-runtime* (lexical-value y) 1) '(list number) \"select list item\" " +
+        "     ) " +
+        "    ) " +
+        "    ($value " +
+        "     (call-yail-primitive yail-list-get-item " +
+        "      (*list-for-runtime* (lexical-value y) 2) '(list number) \"select list item\" " +
+        "     ) " +
+        "    ) " +
+        "   ) " +
+        "   (set-var! x " +
+        "    (call-yail-primitive + " +
+        "     (*list-for-runtime* (get-var x) (lexical-value $key) (lexical-value $value) )" +
+        "     '(number number number ) \"+\"" +
+        "    ) " +
+        "   ) " +
+        "  ) " +
+        "  (call-yail-primitive make-yail-dictionary " +
+        "   (*list-for-runtime* " +
+        "    (call-yail-primitive make-dictionary-pair " +
+        "     (*list-for-runtime* 1 2 ) '(key any)  \"make a pair\" " +
+        "    ) " +
+        "    (call-yail-primitive make-dictionary-pair " +
+        "     (*list-for-runtime* 3 4 ) '(key any)  \"make a pair\" " +
+        "    ) " +
+        "   ) '(pair pair ) \"make a dictionary\"" +
+        "  ) " +
+        " ) " +
+        " (get-var x) " +
+        ") ";
+    String schemeResultString = "10";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
+  }
+
   public void testForRange() throws Throwable {
     /* test forrange */
     String schemeInputString = "(begin " +

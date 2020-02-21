@@ -269,6 +269,8 @@ Blockly.procedureParameterPrefix = "input"; // For names introduced by procedure
 Blockly.handlerParameterPrefix = "input"; // For names introduced by event handlers
 Blockly.localNamePrefix = "local"; // For names introduced by local variable declarations
 Blockly.loopParameterPrefix = "item"; // For names introduced by for loops
+Blockly.loopKeyParameterPrefix = 'key'; // For keys introduced by dict for loops.
+Blockly.loopValueParameterPrefix = 'value'; // For values introduced by dict for loops.
 Blockly.loopRangeParameterPrefix = "counter"; // For names introduced by for range loops
 
 Blockly.menuSeparator = " "; // Separate prefix from name with this. E.g., space in "param x"

@@ -212,6 +212,17 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Runs the blocks in the \'do\'  section for each item in '
         + 'the list.  Use the given variable name to refer to the current list item.';
 
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL = '/reference/blocks/control.html#foreachdict';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT = 'for each %1 with %2 in dictionary %3';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO = 'do';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY = 'key';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE = 'value';
+    // Used by the typeblock system.
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE = 'for each in dictionary';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP =
+        'Runs the blocks in the \'do\' section for each key-value entry in the dictionary.'
+        + ' Use the given variable names to refer to the key/value of the current dictionary item.';
+
     Blockly.Msg.LANG_CONTROLS_GET_HELPURL = '/reference/blocks/control.html#get';
 
 

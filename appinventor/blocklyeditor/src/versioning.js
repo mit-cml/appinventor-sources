@@ -1806,7 +1806,10 @@ Blockly.Versioning.AllUpgradeMaps =
     27: "noUpgrade",
 
     // AI2: Added dictionaries
-    28: "noUpgrade"
+    28: "noUpgrade",
+
+    // AI2: Added "for each in dictionary" block.
+    29: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -1925,7 +1928,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // - The FillOpacity and StrokeOpacity properties were added
     3: "noUpgrade"
   }, // End Marker upgraders
-  
+
   "Polygon": {
     // AI2:
     // - The FillOpacity and StrokeOpacity properties were added
@@ -2627,7 +2630,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added method XMLTextDecode
     4: "noUpgrade",
-      
+
     // AI2: Added method UriDecode
     5: "noUpgrade",
 

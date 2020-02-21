@@ -493,6 +493,8 @@ public class YaVersion {
   // - WEB_COMPONENT_VERSION was incremented to 7
   // For YOUNG_ANDROID_VERSION 198:
   // - IMAGE_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID)_VERSION 199:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 29
 
   public static final int YOUNG_ANDROID_VERSION = 198;
 
@@ -568,8 +570,10 @@ public class YaVersion {
   // - The text compare block was modified to include the not-equal operator
   // For BLOCKS_LANGUAGE_VERSION 28
   // - The dictionaries blocks were added.
+  // For BLOCKS_LANGUAGE_VERSION 29
+  // - The for-each-in-dictionary block was added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 28;
+  public static final int BLOCKS_LANGUAGE_VERSION = 29;
 
   // ................................. Target SDK Version Number ..................................
 
