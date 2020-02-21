@@ -862,7 +862,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   @Override
   public void onDataSourceValueChange(final DataSource component, final String key, final Object newValue) {
     if (component != dataSource // Calling component is not the attached Data Source. TODO: Un-observe?
-        || (isKeyValid(key))) { // The changed value is not the observed value
+        || (!isKeyValid(key))) { // The changed value is not the observed value
       return;
     }
 
