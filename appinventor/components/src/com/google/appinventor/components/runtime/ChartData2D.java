@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -105,9 +106,9 @@ public final class ChartData2D extends ChartDataBase {
         }
       }).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      Log.e(this.getClass().getName(), e.getMessage());
     } catch (ExecutionException e) {
-      e.printStackTrace();
+      Log.e(this.getClass().getName(), e.getMessage());
     }
 
     // Exceptions thrown (behavior undefined): Assume entry not found
