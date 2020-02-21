@@ -603,4 +603,10 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/chartData.png")
   ImageResource chartData2D();
+
+  /**
+   * Designer palette item: DataFile
+   */
+  @Source("com/google/appinventor/images/dataFile.png")
+  ImageResource dataFile();
 }

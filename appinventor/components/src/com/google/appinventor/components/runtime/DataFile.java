@@ -33,7 +33,7 @@ import java.util.concurrent.Future;
         "the file onto the Chart.",
     category = ComponentCategory.STORAGE,
     nonVisible = true,
-    iconName = "images/file.png")
+    iconName = "images/dataFile.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public class DataFile extends FileBase implements DataSource<YailList, Future<YailList>> {
