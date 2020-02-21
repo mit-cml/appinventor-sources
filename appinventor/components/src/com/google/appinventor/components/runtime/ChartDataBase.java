@@ -862,7 +862,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   @Override
   public void onDataSourceValueChange(final DataSource component, final String key, final Object newValue) {
     if (component != dataSource // Calling component is not the attached Data Source. TODO: Un-observe?
-        || (key != null && !key.equals(dataSourceKey))) { // The changed value is not the observed value
+        || (isKeyValid(key))) { // The changed value is not the observed value
       return;
     }
 
@@ -919,7 +919,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
     } else {
       // Check that the key of the value received matches the
       // Data Source value key
-      importData = key == null || key.equals(dataSourceKey);
+      importData = isKeyValid(key);
     }
 
     if (importData) {
@@ -958,9 +958,10 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * @param key      Key of the updated value
    * @param newValue The updated value
    */
-  private void updateCurrentDataSourceValue(DataSource source, Object key, Object newValue) {
-    if (source == dataSource // The source must be the same as the attached source
-        && (key == null || key.equals(dataSourceKey))) { // The key should equal the local key (or null)
+  private void updateCurrentDataSourceValue(DataSource source, String key, Object newValue) {
+    // The source must be the same as the attached source & the key must
+    // be valid in order to process the update.
+    if (source == dataSource && isKeyValid(key)) {
       if (source instanceof Web) {
         // Get the columns from the local webColumns properties
         YailList columns = ((Web) source).getColumns(YailList.makeList(webColumns));
@@ -974,5 +975,16 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
         lastDataSourceValue = newValue;
       }
     }
+  }
+
+  /**
+   * Checks whether the provided key is compatible based on the current set
+   * Data Source key.
+   * @param key  Key to check
+   * @return     True if the key is equivalent to the current Data Source key
+   */
+  private boolean isKeyValid(String key) {
+    // The key should either be equal to the local key, or null.
+    return (key == null || key.equals(dataSourceKey));
   }
 }
