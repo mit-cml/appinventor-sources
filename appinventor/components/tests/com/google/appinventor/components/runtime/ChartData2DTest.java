@@ -308,7 +308,7 @@ public class ChartData2DTest extends RobolectricTestBase {
    */
   @Test
   public void testSetElementsFromPairs() {
-    data.onBeforeInitialize();
+    data.Initialize();
     data.ElementsFromPairs("0,1,1,4,2,5");
     assertEquals(3, model.getDataset().getEntryCount());
   }
@@ -452,7 +452,7 @@ public class ChartData2DTest extends RobolectricTestBase {
     data.DataFileYColumn("Y");
 
     // Initialize Data component
-    data.onBeforeInitialize();
+    data.Initialize();
 
     // 5 entries are expected to be imported
     assertEquals(5, model.getDataset().getEntryCount());
@@ -496,7 +496,7 @@ public class ChartData2DTest extends RobolectricTestBase {
     data.Source(web);
 
     // Initialize Data component
-    data.onBeforeInitialize();
+    data.Initialize();
 
     // 3 entries are expected to be imported
     assertEquals(3, model.getDataset().getEntryCount());
@@ -545,7 +545,7 @@ public class ChartData2DTest extends RobolectricTestBase {
     data.DataSourceKey(expectedParameter);
 
     // Initialize Data component
-    data.onBeforeInitialize();
+    data.Initialize();
 
     // 4 entries are expected to be imported
     assertEquals(4, model.getDataset().getEntryCount());
@@ -615,7 +615,7 @@ public class ChartData2DTest extends RobolectricTestBase {
     data.WebYColumn("B");
 
     // Initialize Data component
-    data.onBeforeInitialize();
+    data.Initialize();
 
     // 3 entries are expected to be imported
     assertEquals(3, model.getDataset().getEntryCount());
@@ -650,7 +650,7 @@ public class ChartData2DTest extends RobolectricTestBase {
 
     data.DataSourceKey(keyValue);
     data.Source(sensor);
-    data.onBeforeInitialize();
+    data.Initialize();
 
     assertEquals(0, model.getDataset().getEntryCount());
 

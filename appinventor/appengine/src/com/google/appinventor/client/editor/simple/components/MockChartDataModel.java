@@ -120,10 +120,8 @@ public abstract class MockChartDataModel<D extends Dataset, V extends MockChartV
       // Create an array having the capacity to hold a tuple
       String[] tuple = new String[tupleSize];
 
-      // Set the appropriate elements to the tuple
-      for (int j = 0; j < tupleSize; ++j) {
-        tuple[j] = entries[i + j];
-      }
+      // Copy the appropriate elements to the tuple
+      System.arraycopy(entries, i, tuple, 0, tupleSize);
 
       // Add the tuple to the Data Model
       addEntryFromTuple(tuple);
