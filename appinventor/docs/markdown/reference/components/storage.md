@@ -9,6 +9,7 @@ title: Storage
 Table of Contents:
 
 * [CloudDB](#CloudDB)
+* [DataFile](#DataFile)
 * [File](#File)
 * [TinyDB](#TinyDB)
 * [TinyWebDB](#TinyWebDB)
@@ -100,6 +101,46 @@ The `CloudDB` component is a Non-visible component that allows you to store data
 {:id="CloudDB.StoreValue" class="method"} <i/> StoreValue(*tag*{:.text},*valueToStore*{:.any})
 : Asks `CloudDB` to store the given `value`{:.variable.block} under the given
  `tag`{:.text.block}.
+
+## DataFile  {#DataFile}
+
+Component for DataFile
+
+
+
+### Properties  {#DataFile-Properties}
+
+{:.properties}
+
+{:id="DataFile.ColumnNames" .list .ro .bo} *ColumnNames*
+: Retrieve the column names of the currently loaded Source file.
+ For CSV files, this will return a List of entries in the first row.
+ For JSON files, this will return a List of keys in the JSON object.
+
+{:id="DataFile.Columns" .list .ro .bo} *Columns*
+: Retrieve a List of columns of the currently loaded Source file.
+
+{:id="DataFile.Rows" .list .ro .bo} *Rows*
+: Retrieve a List of rows of the currently loaded Source file.
+
+{:id="DataFile.SourceFile" .text .wo .do} *SourceFile*
+: Sets the source file to parse data from, and then parses the
+ file asynchronously. The results are stored in the [`Columns`](#DataFile.Columns),
+ [`Rows`](#DataFile.Rows) and [`ColumnNames`](#DataFile.ColumnNames) properties.
+ The expected formatting of the file is either the CSV or JSON format.
+
+### Events  {#DataFile-Events}
+
+{:.events}
+None
+
+
+### Methods  {#DataFile-Methods}
+
+{:.methods}
+
+{:id="DataFile.ReadFile" class="method"} <i/> ReadFile(*source*{:.text})
+: Indicates source file to load data from.The expected format of the contents of the file are either CSV or JSON.Prefix the filename with / to read from a specific file on the SD card. for instance /myFile.txt will read the file /sdcard/myFile.txt. To read assets packaged with an application (also works for the Companion) start the filename with // (two slashes). If a filename does not start with a slash, it will be read from the applications private storage (for packaged apps) and from /sdcard/AppInventor/data for the Companion.The results of the reading are stored in the Rows, Columns and ColumnNames properties of the component.
 
 ## File  {#File}
 
