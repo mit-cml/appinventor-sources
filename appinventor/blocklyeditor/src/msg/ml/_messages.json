@@ -1,1 +1,23 @@
-{}
+{
+    "Blockly.Msg.HELP": "സഹായം",
+    "Blockly.Msg.ENABLE_BLOCK": "ബ്ലോക്ക് പ്രാപ്തമാക്കുക/Enable",
+    "Blockly.Msg.DISABLE_BLOCK": "ബ്ലോക്ക് അപ്രാപ്തമാക്കുക/Disable",
+    "Blockly.Msg.EXPAND_BLOCK": "ബ്ലോക്ക് വികസിപ്പിക്കുക",
+    "Blockly.Msg.COLLAPSE_BLOCK": "ബ്ലോക്ക് ചുരുക്കുക",
+    "Blockly.Msg.CLEAN_UP": "ബ്ലോക്കുകൾ ക്രമീകരിക്കുക",
+    "Blockly.Msg.DELETE_X_BLOCKS": "% 1 ബ്ലോക്കുകൾ ഇല്ലാതാക്കുക",
+    "Blockly.Msg.DELETE_BLOCK": "ബ്ലോക്ക് ഇല്ലാതാക്കുക",
+    "Blockly.Msg.DELETE_ALL_BLOCKS": "എല്ലാ% 1 ബ്ലോക്കുകളും ഇല്ലാതാക്കണോ?",
+    "Blockly.Msg.CONFIRM_DELETE": "ഇല്ലാതാക്കൽ സ്ഥിരീകരിക്കുക",
+    "Blockly.Msg.VERTICAL_PARAMETERS": "പാരാമീറ്ററുകൾ ലംബമായി/vertical ക്രമീകരിക്കുക",
+    "Blockly.Msg.HORIZONTAL_PARAMETERS": "പാരാമീറ്ററുകൾ തിരശ്ചീനമായി/Horizontal ക്രമീകരിക്കുക",
+    "Blockly.Msg.INLINE_INPUTS": "ഇൻലൈൻ ഇൻപുട്ടുകൾ",
+    "Blockly.Msg.EXTERNAL_INPUTS": "ബാഹ്യ ഇൻപുട്ടുകൾ",
+    "Blockly.Msg.ADD_COMMENT": "അഭിപ്രായം ചേർക്കുക",
+    "Blockly.Msg.REMOVE_COMMENT": "അഭിപ്രായം നീക്കംചെയ്യുക",
+    "Blockly.Msg.DUPLICATE_BLOCK": "Duplicate",
+    "Blockly.Msg.SHOW": "വർക്ക്‌സ്‌പെയ്‌സ് നിയന്ത്രണങ്ങൾ കാണിക്കുക",
+    "Blockly.Msg.HIDE": "വർക്ക്‌സ്‌പെയ്‌സ് നിയന്ത്രണങ്ങൾ മറയ്‌ക്കുക",
+    "Blockly.Msg.REDO": "വീണ്ടും ചെയ്യുക",
+    "Blockly.Msg.UNDO": "പഴയപടിയാക്കുക"
+}
