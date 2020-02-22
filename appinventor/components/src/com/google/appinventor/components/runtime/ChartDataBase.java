@@ -444,7 +444,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    *
    * @param dataSource Data Source to use for the Chart data.
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
   public void Source(DataSource dataSource) {
     // If the previous Data Source is an ObservableDataSource,

@@ -179,7 +179,7 @@ A ChartData2D component represents a single two dimensional Data Series in the C
  Data component is attached to a Chart that has the type set to
  the Scatter Chart. Valid types include circle, square, triangle, cross, x.
 
-{:id="ChartData2D.Source" .component .wo} *Source*
+{:id="ChartData2D.Source" .component .wo .do} *Source*
 : Sets the Source to use for the Data component. Valid choices
  include AccelerometerSensor, BluetoothClient, CloudDB, DataFile,
  GyroscopeSensor, LocationSesnro, OrientationSensor, Pedometer,
