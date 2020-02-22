@@ -19,6 +19,8 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import android.os.Handler;
 
 /**
+ * ![EV3 component icon](images/legoMindstormsEv3.png)
+ *
  * A component that provides a high-level interface to a color sensor on a
  * LEGO MINDSTORMS EV3 robot.
  *

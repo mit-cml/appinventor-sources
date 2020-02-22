@@ -5,23 +5,22 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import android.view.View;
 import com.google.appinventor.components.runtime.LocationSensor;
-import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
-import org.osmdroid.util.BoundingBox;
-
 import com.google.appinventor.components.runtime.util.MapFactory.HasFill;
 import com.google.appinventor.components.runtime.util.MapFactory.HasStroke;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapController;
 import com.google.appinventor.components.runtime.util.MapFactory.MapEventListener;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
+import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureCollection;
+import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
-import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
+import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
 import com.google.appinventor.components.runtime.util.MapFactory.MapType;
-
-import android.view.View;
+import org.osmdroid.util.BoundingBox;
 
 class DummyMapController implements MapController {
 
@@ -45,7 +44,7 @@ class DummyMapController implements MapController {
     throw new UnsupportedOperationException();
   }
 
-  public void setRotation(float Rotation) {
+  public void setRotation(float rotation) {
     throw new UnsupportedOperationException();
   }
 
@@ -201,6 +200,16 @@ class DummyMapController implements MapController {
 
   @Override
   public boolean isFeatureVisible(MapFeature feature) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean isFeatureCollectionVisible(MapFeatureCollection collection) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setFeatureCollectionVisible(MapFeatureCollection collection, boolean visible) {
     throw new UnsupportedOperationException();
   }
 

@@ -32,7 +32,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * BluetoothClient component
+ * Use `BluetoothClient` to connect your device to other devices using Bluetooth. This component
+ * uses the Serial Port Profile (SPP) for communication. If you are interested in using Bluetooth
+ * low energy, please see the
+ * [BluetoothLE](http://iot.appinventor.mit.edu/#/bluetoothle/bluetoothleintro) extension.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -153,6 +156,7 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
    * list is a String consisting of the device's address, a space, and the
    * device's name.
    *
+   * @internaldoc
    * This method calls isDeviceClassAcceptable to determine whether to include
    * a particular device in the returned list.
    *

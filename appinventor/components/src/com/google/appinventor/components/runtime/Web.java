@@ -6,6 +6,10 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.app.Activity;
+import android.support.annotation.VisibleForTesting;
+import android.text.TextUtils;
+import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -21,7 +25,10 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
+import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.errors.RequestTimeoutException;
+import com.google.appinventor.components.runtime.repackaged.org.json.XML;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.CsvUtil;
@@ -31,16 +38,15 @@ import com.google.appinventor.components.runtime.util.GingerbreadUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.XmlParser;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
-
-import android.app.Activity;
-import android.text.TextUtils;
-import android.util.Log;
-
+import com.google.appinventor.components.runtime.util.YailObject;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.XML;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -48,15 +54,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -67,8 +75,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 /**
- * The Original Web component provided functions for HTTP GET and POST requests.
- * This new version provides added PUT and DELETE requests.
+ * Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.
+ *
  * @author lizlooney@google.com (Liz Looney)
  * @author josmasflores@gmail.com (Jose Dominguez)
  */
@@ -141,6 +149,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
     final boolean allowCookies;
     final boolean saveResponse;
     final String responseFileName;
+    final int timeout;
     final Map<String, List<String>> requestHeaders;
     final Map<String, List<String>> cookies;
 
@@ -150,6 +159,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
       allowCookies = web.allowCookies;
       saveResponse = web.saveResponse;
       responseFileName = web.responseFileName;
+      timeout = web.timeout;
       requestHeaders = processRequestHeaders(web.requestHeaders);
 
       Map<String, List<String>> cookiesTemp = null;
@@ -194,6 +204,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   private YailList requestHeaders = new YailList();
   private boolean saveResponse;
   private String responseFileName = "";
+  private int timeout = 0;
 
   // Used to keep track of the last executed AsyncTask.
   // Used when retrieving Data Values for Chart data importing.
@@ -234,7 +245,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   }
 
   /**
-   * Returns the URL.
+   * The URL for the web request.
+   *
+   * @return the URL
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The URL for the web request.")
@@ -253,7 +266,11 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   }
 
   /**
-   * Returns the request headers.
+   * The request headers, as a list of two-element sublists. The first element of each sublist
+   * represents the request header field name. The second element of each sublist represents the
+   * request header field values, either a single value or a list containing multiple values.
+   *
+   * @return the request headers.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The request headers, as a list of two-element sublists. The first element " +
@@ -282,7 +299,10 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   }
 
   /**
-   * Returns whether cookies should be allowed
+   * Whether the cookies from a response should be saved and used in subsequent requests. Cookies
+   * are only supported on Android version 2.3 or greater.
+   *
+   * @return whether cookies should be allowed
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Whether the cookies from a response should be saved and used in subsequent " +
@@ -325,9 +345,10 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   }
 
   /**
-   * Returns the name of the file where the response should be saved.
-   * If SaveResponse is true and ResponseFileName is empty, then a new file
-   * name will be generated.
+   * The name of the file where the response should be saved. If SaveResponse is true and
+   * ResponseFileName is empty, then a new file name will be generated.
+   *
+   * @return the name of the file where the response should be saved
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The name of the file where the response should be saved. If SaveResponse " +
@@ -348,6 +369,31 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
     this.responseFileName = responseFileName;
   }
 
+  /**
+   * Returns the number of milliseconds that each request will wait for a response before they time out.
+   * If set to 0 (the default), then the request will wait for a response indefinitely.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "The number of milliseconds that a web request will wait for a response before giving up. " +
+          "If set to 0, then there is no time limit on how long the request will wait.")
+  public int Timeout() {
+    return timeout;
+  }
+
+  /**
+   * Returns the number of milliseconds that each request will wait for a response before they time out.
+   * If set to 0, then the request will wait for a response indefinitely.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = "0")
+  @SimpleProperty
+  public void Timeout(int timeout) {
+    if (timeout < 0){
+      throw new IllegalArgumentError("Web Timeout must be a non-negative integer.");
+    }
+    this.timeout = timeout;
+  }
+
   @SimpleFunction(description = "Clears all cookies for this Web component.")
   public void ClearCookies() {
     if (cookieHandler != null) {
@@ -360,11 +406,13 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
 
   /**
    * Performs an HTTP GET request using the Url property and retrieves the
-   * response.<br>
-   * If the SaveResponse property is true, the response will be saved in a file
+   * response.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a file
    * and the GotFile event will be triggered. The ResponseFileName property
-   * can be used to specify the name of the file.<br>
-   * If the SaveResponse property is false, the GotText event will be
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be
    * triggered.
    */
   @SimpleFunction
@@ -380,18 +428,21 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
     lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
-          try {
-            performRequest(webProps, null, null, "GET");
-          } catch (PermissionException e) {
-            form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
-          } catch (FileUtil.FileException e) {
-            form.dispatchErrorOccurredEvent(Web.this, METHOD,
-                e.getErrorMessageNumber());
-          } catch (Exception e) {
-            Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
-            form.dispatchErrorOccurredEvent(Web.this, METHOD,
-                ErrorMessages.ERROR_WEB_UNABLE_TO_GET, webProps.urlString);
-          }
+        try {
+          performRequest(webProps, null, null, "GET");
+        } catch (PermissionException e) {
+          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
+        } catch (FileUtil.FileException e) {
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
+              e.getErrorMessageNumber());
+        } catch (RequestTimeoutException e) {
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
+              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
+        } catch (Exception e) {
+          Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
+              ErrorMessages.ERROR_WEB_UNABLE_TO_GET, webProps.urlString);
+        }
       }
     }, null);
 
@@ -400,6 +451,14 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
 
   /**
    * Performs an HTTP POST request using the Url property and the specified text.
+   *
+   *   The characters of the text are encoded using UTF-8 encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The responseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
    *
    * @param text the text data for the POST request
    */
@@ -417,6 +476,14 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   /**
    * Performs an HTTP POST request using the Url property and the specified text.
    *
+   *   The characters of the text are encoded using the given encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The ResponseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
+   *
    * @param text the text data for the POST request
    * @param encoding the character encoding to use when sending the text. If
    *                 encoding is empty or null, UTF-8 encoding will be used.
@@ -433,8 +500,13 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   }
 
   /**
-   * Performs an HTTP POST request using the Url property and data from the
-   * specified file, and retrieves the response.
+   * Performs an HTTP POST request using the Url property and data from the specified file.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a file
+   * and the GotFile event will be triggered. The ResponseFileName property can be
+   * used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
    *
    * @param path the path of the file for the POST request
    */
@@ -463,6 +535,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
+        } catch (RequestTimeoutException e) {
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
+              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
@@ -475,6 +550,14 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
 
   /**
    * Performs an HTTP PUT request using the Url property and the specified text.
+   *
+   *   The characters of the text are encoded using UTF-8 encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The responseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
    *
    * @param text the text data for the PUT request
    */
@@ -492,6 +575,14 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   /**
    * Performs an HTTP PUT request using the Url property and the specified text.
    *
+   *   The characters of the text are encoded using the given encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The ResponseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
+   *
    * @param text the text data for the PUT request
    * @param encoding the character encoding to use when sending the text. If
    *                 encoding is empty or null, UTF-8 encoding will be used.
@@ -508,8 +599,13 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   }
 
   /**
-   * Performs an HTTP PUT request using the Url property and data from the
-   * specified file, and retrieves the response.
+   * Performs an HTTP PUT request using the Url property and data from the specified file.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a file
+   * and the GotFile event will be triggered. The ResponseFileName property can be
+   * used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
    *
    * @param path the path of the file for the PUT request
    */
@@ -538,6 +634,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
+        } catch (RequestTimeoutException e) {
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
+              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
@@ -550,11 +649,13 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
 
   /**
    * Performs an HTTP DELETE request using the Url property and retrieves the
-   * response.<br>
-   * If the SaveResponse property is true, the response will be saved in a file
+   * response.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a file
    * and the GotFile event will be triggered. The ResponseFileName property
-   * can be used to specify the name of the file.<br>
-   * If the SaveResponse property is false, the GotText event will be
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be
    * triggered.
    */
   @SimpleFunction
@@ -577,6 +678,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               e.getErrorMessageNumber());
+        } catch (RequestTimeoutException e) {
+          form.dispatchErrorOccurredEvent(Web.this, METHOD,
+              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, METHOD,
               ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
@@ -636,6 +740,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, functionName,
               e.getErrorMessageNumber());
+        } catch (RequestTimeoutException e) {
+          form.dispatchErrorOccurredEvent(Web.this, functionName,
+              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, functionName,
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT, text, webProps.urlString);
@@ -645,7 +752,6 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
 
     AsynchUtil.runAsynchronously(lastTask);
   }
-
 
   /**
    * Event indicating that a request has finished.
@@ -676,6 +782,16 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
     EventDispatcher.dispatchEvent(this, "GotFile", url, responseCode, responseType, fileName);
   }
 
+  /**
+   * Event indicating that a request has timed out.
+   *
+   * @param url the URL used for the request
+   */
+  @SimpleEvent
+  public void TimedOut(String url) {
+    // invoke the application's "TimedOut" event handler.
+    EventDispatcher.dispatchEvent(this, "TimedOut", url);
+  }
 
   /**
    * Converts a list of two-element sublists, representing name and value pairs, to a
@@ -750,7 +866,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
 
     
   /**
-   * Decodes the encoded text value.
+   * Decodes the encoded text value so that the values aren't URL encoded anymore.
    *
    * @param text the text to encode
    * @return the decoded text
@@ -767,12 +883,15 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
       return "";
     }
   }
-    
+
   /**
    * Decodes the given JSON encoded value to produce a corresponding AppInventor value.
-   * A JSON list [x, y, z] decodes to a list (x y z),  A JSON object with name A and value B,
-   * (denoted as A:B enclosed in curly braces) decodes to a list
-   * ((A B)), that is, a list containing the two-element list (A B).
+   * A JSON list `[x, y, z]` decodes to a list `(x y z)`,  A JSON object with key A and value B,
+   * (denoted as `{A:B}`) decodes to a list `((A B))`, that is, a list containing the two-element
+   * list `(A B)`.
+   *
+   *   Use the method [JsonTextDecodeWithDictionaries](#Web.JsonTextDecodeWithDictionaries) if you
+   * would prefer to get back dictionary objects rather than lists-of-lists in the result.
    *
    * @param jsonText the JSON text to decode
    * @return the decoded text
@@ -788,9 +907,28 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   // dictionaries
   public Object JsonTextDecode(String jsonText) {
     try {
-      return decodeJsonText(jsonText);
+      return decodeJsonText(jsonText, false);
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "JsonTextDecode",
+          ErrorMessages.ERROR_WEB_JSON_TEXT_DECODE_FAILED, jsonText);
+      return "";
+    }
+  }
+
+  /**
+   * Decodes the given JSON encoded value to produce a corresponding App Inventor value.
+   * A JSON list [x, y, z] decodes to a list (x y z). A JSON Object with name A and value B,
+   * denoted as \{a: b\} decodes to a dictionary with the key a and value b.
+   *
+   * @param jsonText The JSON text to decode.
+   * @return The decoded value.
+   */
+  @SimpleFunction
+  public Object JsonTextDecodeWithDictionaries(String jsonText) {
+    try {
+      return decodeJsonText(jsonText, true);
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "JsonTextDecodeWithDictionaries",
           ErrorMessages.ERROR_WEB_JSON_TEXT_DECODE_FAILED, jsonText);
       return "";
     }
@@ -800,53 +938,144 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
    * Decodes the given JSON encoded value.
    *
    * @param jsonText the JSON text to decode
+   * @param useDicts <code>true</code> to repesent JSON objects using YailDictionaries or false to
+   *                 represent JSON objects using associative lists
    * @return the decoded object
    * @throws IllegalArgumentException if the JSON text can't be decoded
    */
-  // VisibleForTesting
-  static Object decodeJsonText(String jsonText) throws IllegalArgumentException {
+  @VisibleForTesting
+  static Object decodeJsonText(String jsonText, boolean useDicts) throws IllegalArgumentException {
     try {
-      return JsonUtil.getObjectFromJson(jsonText);
+      return JsonUtil.getObjectFromJson(jsonText, useDicts);
     } catch (JSONException e) {
       throw new IllegalArgumentException("jsonText is not a legal JSON value");
     }
   }
 
   /**
-   * Decodes the given XML string to produce a list structure. <tag>string</tag> decodes to
+   * Decodes the given JSON encoded value.
+   *
+   * @param jsonText the JSON text to decode
+   * @return the decoded object
+   * @throws IllegalArgumentException if the JSON text can't be decoded
+   * @deprecated As of nb182. Use {@link #decodeJsonText(String, boolean)} instead.
+   */
+  @Deprecated
+  @VisibleForTesting
+  static Object decodeJsonText(String jsonText) throws IllegalArgumentException {
+    return decodeJsonText(jsonText, false);
+  }
+
+  /**
+   * Returns the value of a built-in type (i.e., boolean, number, text, list, dictionary)
+   * in its JavaScript Object Notation representation. If the value cannot be
+   * represented as JSON, the Screen's ErrorOccurred event will be run, if any,
+   * and the Web component will return the empty string.
+   *
+   * @param jsonObject the object to turn into JSON
+   * @return the stringified JSON value
+   */
+  @SimpleFunction
+  public String JsonObjectEncode(Object jsonObject) {
+    try {
+      return JsonUtil.encodeJsonObject(jsonObject);
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "JsonObjectEncode",
+          ErrorMessages.ERROR_WEB_JSON_TEXT_ENCODE_FAILED, jsonObject);
+      return "";
+    }
+  }
+
+  /**
+   * Decodes the given XML string to produce a dictionary structure. The dictionary includes the
+   * special keys `$tag`, `$localName`, `$namespace`, `$namespaceUri`, `$attributes`, and `$content`,
+   * as well as a key for each unique tag for every node, which points to a list of elements of
+   * the same structure as described here.
+   *
+   *   The `$tag` key is the full tag name, e.g., foo:bar. The `$localName` is the local portion of
+   * the name (everything after the colon `:` character). If a namespace is given (everything before
+   * the colon `:` character), it is provided in `$namespace` and the corresponding URI is given
+   * in `$namespaceUri`. The attributes are stored in a dictionary in `$attributes` and the
+   * child nodes are given as a list under `$content`.
+   *
+   *   **More Information on Special Keys**
+   *
+   *   Consider the following XML document:
+   *
+   *   ```xml
+   *     <ex:Book xmlns:ex="http://example.com/">
+   *       <ex:title xml:lang="en">On the Origin of Species</ex:title>
+   *       <ex:author>Charles Darwin</ex:author>
+   *     </ex:Book>
+   *   ```
+   *
+   *   When parsed, the `$tag` key will be `"ex:Book"`, the `$localName` key will be `"Book"`, the
+   * `$namespace` key will be `"ex"`, `$namespaceUri` will be `"http://example.com/"`, the
+   * `$attributes` key will be a dictionary `{}` (xmlns is removed for the namespace), and the
+   * `$content` will be a list of two items representing the decoded `<ex:title>` and `<ex:author>`
+   * elements. The first item, which corresponds to the `<ex:title>` element, will have an
+   * `$attributes` key containing the dictionary `{"xml:lang": "en"}`. For each `name=value`
+   * attribute on an element, a key-value pair mapping `name` to `value` will exist in the
+   * `$attributes` dictionary. In addition to these special keys, there will also be `"ex:title"`
+   * and `"ex:author"` to allow lookups faster than having to traverse the `$content` list.
+   *
+   * @param XmlText the JSON text to decode
+   * @return the decoded text
+   */
+  @SimpleFunction(description = "Decodes the given XML into a set of nested dictionaries that " +
+      "capture the structure and data contained in the XML. See the help for more details.")  public Object XMLTextDecodeAsDictionary(String XmlText) {
+    try {
+      XmlParser p = new XmlParser();
+      SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+      InputSource is = new InputSource(new StringReader(XmlText));
+      is.setEncoding("UTF-8");
+      parser.parse(is, p);
+      return p.getRoot();
+    } catch (Exception e) {
+      Log.e(LOG_TAG, e.getMessage());
+      form.dispatchErrorOccurredEvent(this, "XMLTextDecodeAsDictionary",
+          ErrorMessages.ERROR_WEB_JSON_TEXT_DECODE_FAILED, e.getMessage());
+      return new YailDictionary();
+    }
+  }
+
+  /**
+   * Decodes the given XML string to produce a list structure. `<tag>string</tag>` decodes to
    * a list that contains a pair of tag and string.  More generally, if obj1, obj2, ...
-   * are tag-delimited XML strings, then <tag>obj1 obj2 ...</tag> decodes to a list
+   * are tag-delimited XML strings, then `<tag>obj1 obj2 ...</tag>` decodes to a list
    * that contains a pair whose first element is tag and whose second element is the
-   * list of the decoded obj's, ordered alphabetically by tags.  Examples:
-   * <foo>123</foo> decodes to a one-item list containing the pair (foo, 123)
-   * <foo>1 2 3</foo> decodes to a one-item list containing the pair (foo,"1 2 3")
-   * <a><foo>1 2 3</foo><bar>456</bar></a> decodes to a list containing the pair
-   * (a,X) where X is a 2-item list that contains the pair (bar,123) and the pair (foo,"1 2 3").
-   * If the sequence of obj's mixes tag-delimited and non-tag-delimited
-   * items, then the non-tag-delimited items are pulled out of the sequence and wrapped
-   * with a "content" tag.  For example, decoding <a><bar>456</bar>many<foo>1 2 3</foo>apples</a>
+   * list of the decoded obj's, ordered alphabetically by tags.
+   *
+   *   Examples:
+   *   * `<foo><123/foo>` decodes to a one-item list containing the pair `(foo 123)`
+   *   * `<foo>1 2 3</foo>` decodes to a one-item list containing the pair `(foo "1 2 3")`
+   *   * `<a><foo>1 2 3</foo><bar>456</bar></a>` decodes to a list containing the pair `(a X)`
+   *     where X is a 2-item list that contains the pair `(bar 123)` and the pair `(foo "1 2 3")`.
+   *
+   *   If the sequence of obj's mixes tag-delimited and non-tag-delimited items, then the
+   * non-tag-delimited items are pulled out of the sequence and wrapped with a "content" tag.
+   * For example, decoding `<a><bar>456</bar>many<foo>1 2 3</foo>apples<a></code>`
    * is similar to above, except that the list X is a 3-item list that contains the additional pair
    * whose first item is the string "content", and whose second item is the list (many, apples).
    * This method signals an error and returns the empty list if the result is not well-formed XML.
    *
-   * @param jsonText the JSON text to decode
+   * @param XmlText the XML text to decode
    * @return the decoded text
    */
-   // This method works by by first converting the XML to JSON and then decoding the JSON.
-  @SimpleFunction(description = "Decodes the given XML string to produce a list structure.  " +
+  // This method works by by first converting the XML to JSON and then decoding the JSON.
+  @SimpleFunction(description = "Decodes the given XML string to produce a dictionary structure. " +
       "See the App Inventor documentation on \"Other topics, notes, and details\" for information.")
   // The above description string is punted because I can't figure out how to write the
   // documentation string in a way that will look work both as a tooltip and in the autogenerated
   // HTML for the component documentation on the Web.  It's too long for a tooltip, anyway.
   public Object XMLTextDecode(String XmlText) {
     try {
-      JSONObject json = XML.toJSONObject(XmlText);
-      return JsonTextDecode(json.toString());
-    } catch (JSONException e) {
+      return JsonTextDecode(XML.toJSONObject(XmlText).toString());
+    } catch (com.google.appinventor.components.runtime.repackaged.org.json.JSONException e) {
       // We could be more precise and signal different errors for the conversion to JSON
       // versus the decoding of that JSON, but showing the actual error message should
       // be good enough.
-      Log.e("Exception in XMLTextDecode", e.getMessage());
+      Log.e(LOG_TAG, e.getMessage());
       form.dispatchErrorOccurredEvent(this, "XMLTextDecode",
           ErrorMessages.ERROR_WEB_JSON_TEXT_DECODE_FAILED, e.getMessage());
       // This XMLTextDecode should always return a list, even in the case of an error
@@ -857,11 +1086,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
   /**
    * Decodes the given HTML text value.
    *
-   * <pre>
-   * HTML Character Entities such as &amp;, &lt;, &gt;, &apos;, and &quot; are
-   * changed to &, <, >, ', and ".
-   * Entities such as &#xhhhh, and &#nnnn are changed to the appropriate characters.
-   * </pre>
+   *   HTML Character Entities such as `&amp;`, `&lt;`, `&gt;`, `&apos;`, and `&quot;` are
+   * changed to `&`, `<`, `>`, `'`, and `"`.
+   * Entities such as `&#xhhhh;`, and `&#nnnn;` are changed to the appropriate characters.
    *
    * @param htmlText the HTML text to decode
    * @return the decoded text
@@ -903,7 +1130,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
    * @throws IOException
    */
   private void performRequest(final CapturedProperties webProps, byte[] postData, String postFile, String httpVerb)
-      throws IOException {
+      throws RequestTimeoutException, IOException {
 
     // Open the connection.
     HttpURLConnection connection = openConnection(webProps, httpVerb);
@@ -958,6 +1185,15 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
           notifyDataObservers(null, null);
         }
 
+      } catch (SocketTimeoutException e) {
+        // Dispatch timeout event.
+        activity.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            TimedOut(webProps.urlString);
+          }
+        });
+        throw new RequestTimeoutException();
       } finally {
         connection.disconnect();
       }
@@ -978,6 +1214,8 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
       throws IOException, ClassCastException, ProtocolException {
 
     HttpURLConnection connection = (HttpURLConnection) webProps.url.openConnection();
+    connection.setConnectTimeout(webProps.timeout);
+    connection.setReadTimeout(webProps.timeout);
 
     if (httpVerb.equals("PUT") || httpVerb.equals("DELETE")){
       // Set the Request Method; GET is the default, and if it is a POST, it will be marked as such
@@ -1123,14 +1361,16 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
     return file.getAbsolutePath();
   }
 
-  private static InputStream getConnectionStream(HttpURLConnection connection) {
+  private static InputStream getConnectionStream(HttpURLConnection connection) throws SocketTimeoutException {
     // According to the Android reference documentation for HttpURLConnection: If the HTTP response
     // indicates that an error occurred, getInputStream() will throw an IOException. Use
     // getErrorStream() to read the error response.
     try {
       return connection.getInputStream();
+    } catch (SocketTimeoutException e) {
+      throw e; //Rethrow exception - should not attempt to read stream for timeouts
     } catch (IOException e1) {
-      // Use the error response.
+      // Use the error response for all other IO Exceptions.
       return connection.getErrorStream();
     }
   }

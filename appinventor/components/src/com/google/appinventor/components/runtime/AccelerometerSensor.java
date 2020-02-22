@@ -40,6 +40,20 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
+ * Non-visible component that can detect shaking and measure acceleration approximately in three
+ * dimensions using SI units (m/s<sup>2</sup>). The components are:
+ *
+ * - **xAccel**: 0 when the phone is at rest on a flat surface, positive when the phone is tilted
+ *   to the right (i.e., its left side is raised), and negative when the phone is tilted to the
+ *   left (i.e., its right size is raised).
+ * - **yAccel**: 0 when the phone is at rest on a flat surface, positive when its bottom is raised,
+ *   and negative when its top is raised.
+ * - **zAccel**: Equal to -9.8 (earth's gravity in meters per second per second when the device is
+ *   at rest parallel to the ground with the display facing up, 0 when perpendicular to the ground,
+ *   and +9.8 when facing down. The value can also be affected by accelerating it with or against
+ *   gravity.
+ *
+ * @internaldoc
  * Physical world component that can detect shaking and measure
  * acceleration in three dimensions.  It is implemented using
  * android.hardware.SensorListener
@@ -79,7 +93,7 @@ import java.util.Set;
     iconName = "images/accelerometersensor.png")
 @SimpleObject
 public class AccelerometerSensor extends AndroidNonvisibleComponent
-    implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable,
+    implements OnPauseListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable,
     RealTimeDataSource<String, Float> {
 
   // Logging and Debugging
@@ -139,7 +153,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   public AccelerometerSensor(ComponentContainer container) {
     super(container.$form());
     form.registerForOnResume(this);
-    form.registerForOnStop(this);
+    form.registerForOnPause(this);
 
     enabled = true;
     resources = container.$context().getResources();
@@ -168,9 +182,9 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Specifies the minimum interval required between calls to Shaking(),
+   * Specifies the minimum interval required between back-to-back {@link #Shaking()} events,
    * in milliseconds.
-   * Once the phone starts being shaken, all further Shaking() calls will be ignored
+   * Once the phone starts being shaken, all further {@link #Shaking()} events will be ignored
    * until the interval has elapsed.
    * @param interval  minimum interval in ms
    */
@@ -199,8 +213,8 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Specifies the sensitivity of the accelerometer
-   * and checks that the argument is a legal value.
+   * Specifies the sensitivity of the accelerometer. Valid values are: `1` (weak), `2` (moderate),
+   * and `3` (strong).
    *
    * @param sensitivity one of {@link Component#ACCELEROMETER_SENSITIVITY_WEAK},
    *          {@link Component#ACCELEROMETER_SENSITIVITY_MODERATE} or
@@ -278,12 +292,13 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Available property getter method (read-only property).
+   * Returns whether the `AccelerometerSensor` hardware is available on the device.
    *
    * @return {@code true} indicates that an accelerometer sensor is available,
    *         {@code false} that it isn't
    */
   @SimpleProperty(
+      description = "Returns whether the accelerometer is available on the device.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Available() {
     List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
@@ -327,7 +342,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Specifies whether the sensor should generate events.  If true,
+   * Specifies whether the sensor should generate events.  If `true`{:.logic.block},
    * the sensor will generate events.  Otherwise, no events are
    * generated even if the device is accelerated or shaken.
    *
@@ -350,7 +365,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Returns the acceleration in the X-dimension in SI units (m/s^2).
+   * Returns the acceleration in the X-dimension in SI units (m/s²).
    * The sensor must be enabled to return meaningful values.
    *
    * @return  X acceleration
@@ -362,7 +377,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Returns the acceleration in the Y-dimension in SI units (m/s^2).
+   * Returns the acceleration in the Y-dimension in SI units (m/s²).
    * The sensor must be enabled to return meaningful values.
    *
    * @return  Y acceleration
@@ -374,7 +389,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Returns the acceleration in the Z-dimension in SI units (m/s^2).
+   * Returns the acceleration in the Z-dimension in SI units (m/s²).
    * The sensor must be enabled to return meaningful values.
    *
    * @return  Z acceleration
@@ -478,10 +493,10 @@ public int getDeviceDefaultOrientation() {
     }
   }
 
-  // OnStopListener implementation
+  // OnPauseListener implementation
 
   @Override
-  public void onStop() {
+  public void onPause() {
     if (enabled) {
       stopListening();
     }

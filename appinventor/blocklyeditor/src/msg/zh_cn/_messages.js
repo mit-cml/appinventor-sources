@@ -434,22 +434,18 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     // Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = '是否为二进制?';
     // Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP = '判断该对象是否为二进制数。';
 
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TITLE_CONVERT = '进制转换';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_HEX = '10进制转16进制';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_HEX = '';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_HEX = '返回一个十进制数的十六进制形式。';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TITLE_CONVERT = '进制转换';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_HEX = '10进制转16进制';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_HEX = '返回一个十进制数的十六进制形式。';
 
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_HEX_TO_DEC = '16进制转10进制';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_HEX_TO_DEC = '';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_HEX_TO_DEC = '返回一个十六进制数的十进制形式。';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_HEX_TO_DEC = '16进制转10进制';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_HEX_TO_DEC = '返回一个十六进制数的十进制形式。';
 
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_BIN = '10进制转2进制';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_BIN = '';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_BIN = '返回一个十进制数的二进制形式。';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_BIN = '10进制转2进制';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_BIN = '返回一个十进制数的二进制形式。';
 
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_BIN_TO_DEC = '2进制转10进制';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_BIN_TO_DEC = '';
-    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC = '返回一个二进制数的十进制形式。';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_BIN_TO_DEC = '2进制转10进制';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC = '返回一个二进制数的十进制形式。';
 
 // Text Blocks.
     Blockly.Msg.LANG_CATEGORY_TEXT = '文本';
@@ -478,6 +474,7 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
 
     Blockly.Msg.LANG_TEXT_COMPARE_LT = ' <';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = '字符串比较';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = '按字典顺序比较text1是否小于text2，\n'

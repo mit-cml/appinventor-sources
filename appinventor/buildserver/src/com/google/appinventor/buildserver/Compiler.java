@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,6 +9,7 @@ package com.google.appinventor.buildserver;
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
 import com.google.appinventor.components.common.ComponentDescriptorConstants;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -25,6 +26,10 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONTokener;
 
+import java.awt.Graphics2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -54,6 +59,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.lang.Math;
 
 import javax.imageio.ImageIO;
 
@@ -77,8 +83,6 @@ public final class Compiler {
    */
 
   public static int currentProgress = 10;
-
-  public static final int TARGET_SDK_VERSION = 28;
 
   // Kawa and DX processes can use a lot of memory. We only launch one Kawa or DX process at a time.
   private static final Object SYNC_KAWA_OR_DX = new Object();
@@ -138,6 +142,8 @@ public final class Compiler {
       "/tools/mac/zipalign";
   private static final String WINDOWS_AAPT_TOOL =
       "/tools/windows/aapt";
+  private static final String WINDOWS_PTHEAD_DLL =
+      "/tools/windows/libwinpthread-1.dll";
   private static final String WINDOWS_ZIPALIGN_TOOL =
       "/tools/windows/zipalign";
 
@@ -779,6 +785,43 @@ public final class Compiler {
     return true;
   }
 
+  // Writes ic_launcher.xml to initialize adaptive icon
+  private boolean writeICLauncher(File adaptiveIconFile, boolean isRound) {
+    String mainClass = project.getMainClass();
+    String packageName = Signatures.getPackageName(mainClass);
+    try {
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(adaptiveIconFile), "UTF-8"));
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<adaptive-icon " + "xmlns:android=\"http://schemas.android.com/apk/res/android\" " + ">\n");
+      out.write("<background android:drawable=\"@color/ic_launcher_background\" />\n");
+      out.write("<foreground android:drawable=\"@mipmap/ic_launcher_foreground\" />\n");
+      out.write("</adaptive-icon>\n");
+      out.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "ic launcher"));
+      return false;
+    }
+    return true;
+  }
+
+  // Writes ic_launcher_background.xml to indicate background color of adaptive icon
+  private boolean writeICLauncherBackground(File icBackgroundFile) {
+    try {
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(icBackgroundFile), "UTF-8"));
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<resources>\n");
+      out.write("<color name=\"ic_launcher_background\">#ffffff</color>\n");
+      out.write("</resources>\n");
+      out.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "ic launcher background"));
+      return false;
+    }
+    return true;
+  }
+
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
    */
@@ -854,11 +897,21 @@ public final class Compiler {
 
       // Remove Google's Forbidden Permissions
       // This code is crude because we had to do this on short notice
+      // List of permissions taken from
+      // https://support.google.com/googleplay/android-developer/answer/9047303#intended
       if (isForCompanion && !includeDangerousPermissions) {
+        // Default SMS handler
+        permissions.remove("android.permission.READ_SMS");
+        permissions.remove("android.permission.RECEIVE_MMS");
         permissions.remove("android.permission.RECEIVE_SMS");
+        permissions.remove("android.permission.RECEIVE_WAP_PUSH");
         permissions.remove("android.permission.SEND_SMS");
+        permissions.remove("android.permission.WRITE_SMS");
+        // Default Phone handler
         permissions.remove("android.permission.PROCESS_OUTGOING_CALLS");
         permissions.remove("android.permission.CALL_PHONE");
+        permissions.remove("android.permission.READ_CALL_LOG");
+        permissions.remove("android.permission.WRITE_CALL_LOG");
       }
 
       for (String permission : permissions) {
@@ -874,7 +927,7 @@ public final class Compiler {
       // the specified SDK version.  We right now support building for minSDK 4.
       // We might also want to allow users to specify minSdk version or targetSDK version.
       out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" android:targetSdkVersion=\"" +
-          TARGET_SDK_VERSION + "\" />\n");
+          YaVersion.TARGET_SDK_VERSION + "\" />\n");
 
       out.write("  <application ");
 
@@ -892,7 +945,8 @@ public final class Compiler {
         out.write("android:label=\"" + aName + "\" ");
       }
       out.write("android:networkSecurityConfig=\"@xml/network_security_config\" ");
-      out.write("android:icon=\"@drawable/ya\" ");
+      out.write("android:icon=\"@mipmap/ic_launcher\" ");
+      out.write("android:roundIcon=\"@mipmap/ic_launcher\" ");
       if (isForCompanion) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
       } else {
@@ -936,7 +990,8 @@ public final class Compiler {
 
         // The keyboard option prevents the app from stopping when a external (bluetooth)
         // keyboard is attached.
-        out.write("android:configChanges=\"orientation|screenSize|keyboardHidden|keyboard\">\n");
+        out.write("android:configChanges=\"orientation|screenSize|keyboardHidden|keyboard|"
+            + "screenLayout|smallestScreenSize\">\n");
 
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
@@ -1104,7 +1159,21 @@ public final class Compiler {
     out.println("________Preparing application icon");
     File resDir = createDir(buildDir, "res");
     File drawableDir = createDir(resDir, "drawable");
-    if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"))) {
+
+    // Create mipmap directories
+    File mipmapV26 = createDir(resDir, "mipmap-anydpi-v26");
+    File mipmapHdpi = createDir(resDir,"mipmap-hdpi");
+    File mipmapMdpi = createDir(resDir,"mipmap-mdpi");
+    File mipmapXhdpi = createDir(resDir,"mipmap-xhdpi");
+    File mipmapXxhdpi = createDir(resDir,"mipmap-xxhdpi");
+    File mipmapXxxhdpi = createDir(resDir,"mipmap-xxxhdpi");
+
+    // Create list of mipmaps for all icon types with respective sizes
+    List<File> mipmapDirectoriesForIcons = Arrays.asList(mipmapMdpi, mipmapHdpi, mipmapXhdpi, mipmapXxhdpi, mipmapXxxhdpi);
+    List<Integer> standardICSizesForMipmaps = Arrays.asList(48,72,96,144,192);
+    List<Integer> foregroundICSizesForMipmaps = Arrays.asList(108,162,216,324,432);
+
+    if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"), mipmapDirectoriesForIcons, standardICSizesForMipmaps, foregroundICSizesForMipmaps)) {
       return false;
     }
     if (reporter != null) {
@@ -1141,6 +1210,27 @@ public final class Compiler {
 
     out.println("________Creating network_security_config xml");
     if (!compiler.createNetworkConfigXml(providerDir)) {
+      return false;
+    }
+
+    // Generate ic_launcher.xml
+    out.println("________Generating adaptive icon file");
+    File icLauncher = new File(mipmapV26, "ic_launcher.xml");
+    if (!compiler.writeICLauncher(icLauncher, false)) {
+      return false;
+    }
+
+    // Generate ic_launcher_round.xml
+    out.println("________Generating round adaptive icon file");
+    File icLauncherRound = new File(mipmapV26, "ic_launcher_round.xml");
+    if (!compiler.writeICLauncher(icLauncherRound, true)) {
+      return false;
+    }
+
+    // Generate ic_launcher_background.xml
+    out.println("________Generating adaptive icon background file");
+    File icBackgroundColor = new File(styleDir, "ic_launcher_background.xml");
+    if (!compiler.writeICLauncherBackground(icBackgroundColor)) {
       return false;
     }
 
@@ -1629,9 +1719,76 @@ public final class Compiler {
   }
 
   /*
+   * Returns a resized image given a new width and height
+   */
+  private BufferedImage resizeImage(BufferedImage icon, int height, int width) {
+    Image tmp = icon.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+    BufferedImage finalResized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = finalResized.createGraphics();
+    g2.drawImage(tmp, 0, 0, null);
+    return finalResized;
+  }
+
+  /*
+   * Creates the circle image of an icon
+   */
+  private BufferedImage produceRoundIcon(BufferedImage icon) {
+    int imageWidth = icon.getWidth();
+    // Ratio of icon size to png image size for round icon is 0.80
+    double iconWidth = imageWidth * 0.80;
+    // Round iconWidth value to even int for a centered png
+    int intIconWidth = ((int)Math.round(iconWidth / 2) * 2);
+    Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);
+    int marginWidth = ((imageWidth - intIconWidth) / 2);
+    BufferedImage roundIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = roundIcon.createGraphics();
+    g2.setClip(new Ellipse2D.Float(marginWidth, marginWidth, intIconWidth, intIconWidth));
+    g2.drawImage(tmp, marginWidth, marginWidth, null);
+    return roundIcon;
+  }
+
+  /*
+   * Creates the image of an icon with rounded corners
+   */
+  private BufferedImage produceRoundedCornerIcon(BufferedImage icon) {
+    int imageWidth = icon.getWidth();
+    // Ratio of icon size to png image size for roundRect icon is 0.93
+    double iconWidth = imageWidth * 0.93;
+    // Round iconWidth value to even int for a centered png
+    int intIconWidth = ((int)Math.round(iconWidth / 2) * 2);
+    Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);
+    int marginWidth = ((imageWidth - intIconWidth) / 2);
+    // Corner radius of roundedCornerIcon needs to be 1/12 of width according to Android material guidelines
+    float cornerRadius = intIconWidth / 12;
+    BufferedImage roundedCornerIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = roundedCornerIcon.createGraphics();
+    g2.setClip(new RoundRectangle2D.Float(marginWidth, marginWidth, intIconWidth, intIconWidth, cornerRadius, cornerRadius));
+    g2.drawImage(tmp, marginWidth, marginWidth, null);
+    return roundedCornerIcon;
+  }
+
+  /*
+   * Creates the foreground image of an icon
+   */
+  private BufferedImage produceForegroundImageIcon(BufferedImage icon) {
+    int imageWidth = icon.getWidth();
+    // According to the adaptive icon documentation, both layers are 108x108dp but only the inner
+    // 72x72dp appears in the masked viewport, so we shrink down the size of the image accordingly.
+    double iconWidth = imageWidth * 72.0 / 108.0;
+    // Round iconWidth value to even int for a centered png
+    int intIconWidth = ((int)Math.round(iconWidth / 2) * 2);
+    Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);
+    int marginWidth = ((imageWidth - intIconWidth) / 2);
+    BufferedImage foregroundImageIcon = new BufferedImage(imageWidth, imageWidth, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = foregroundImageIcon.createGraphics();
+    g2.drawImage(tmp, marginWidth, marginWidth, null);
+    return foregroundImageIcon;
+  }
+
+  /*
    * Loads the icon for the application, either a user provided one or the default one.
    */
-  private boolean prepareApplicationIcon(File outputPngFile) {
+  private boolean prepareApplicationIcon(File outputPngFile, List<File> mipmapDirectories, List<Integer> standardICSizes, List<Integer> foregroundICSizes) {
     String userSpecifiedIcon = Strings.nullToEmpty(project.getIcon());
     try {
       BufferedImage icon;
@@ -1641,13 +1798,37 @@ public final class Compiler {
         if (icon == null) {
           // This can happen if the iconFile isn't an image file.
           // For example, icon is null if the file is a .wav file.
-          // TODO(lizlooney) - This happens if the user specifies a .ico file. We should fix that.
+          // TODO(lizlooney) - This happens if the user specifies a .ico file. We should
+          // fix that.
           userErrors.print(String.format(ICON_ERROR, userSpecifiedIcon));
           return false;
         }
       } else {
         // Load the default image.
         icon = ImageIO.read(Compiler.class.getResource(DEFAULT_ICON));
+      }
+
+      BufferedImage roundIcon = produceRoundIcon(icon);
+      BufferedImage roundRectIcon = produceRoundedCornerIcon(icon);
+      BufferedImage foregroundIcon = produceForegroundImageIcon(icon);
+
+      // For each mipmap directory, create all types of ic_launcher photos with respective mipmap sizes
+      for(int i=0; i < mipmapDirectories.size(); i++){
+        File mipmapDirectory = mipmapDirectories.get(i);
+        Integer standardSize = standardICSizes.get(i);
+        Integer foregroundSize = foregroundICSizes.get(i);
+
+        BufferedImage round = resizeImage(roundIcon,standardSize,standardSize);
+        BufferedImage roundRect = resizeImage(roundRectIcon,standardSize,standardSize);
+        BufferedImage foreground = resizeImage(foregroundIcon,foregroundSize,foregroundSize);
+
+        File roundIconPng = new File(mipmapDirectory,"ic_launcher_round.png");
+        File roundRectIconPng = new File(mipmapDirectory,"ic_launcher.png");
+        File foregroundPng = new File(mipmapDirectory,"ic_launcher_foreground.png");
+
+        ImageIO.write(round, "png", roundIconPng);
+        ImageIO.write(roundRect, "png", roundRectIconPng);
+        ImageIO.write(foreground, "png", foregroundPng);
       }
       ImageIO.write(icon, "png", outputPngFile);
     } catch (Exception e) {
@@ -2073,26 +2254,31 @@ public final class Compiler {
     }
   }
 
+  private void ensureLib(String tempdir, String name, String resource) {
+    try {
+      File outFile = new File(tempdir, name);
+      if (outFile.exists()) {
+        return;
+      }
+      File tmpLibDir = new File(tempdir);
+      tmpLibDir.mkdirs();
+      Files.copy(Resources.newInputStreamSupplier(Compiler.class.getResource(resource)), outFile);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   /*
-   * This code is only invoked on Linux. It copies libc++.so into /tmp/lib64. This
-   * is needed on linux to run the aapt tool.
+   * This code extracts platform specific dynamic libraries needed by the build tools. These
+   * libraries cannot be extracted using the usual mechanism as that assigns a random suffix,
+   * causing dynamic linking to fail.
    */
   private void libSetup() {
     String osName = System.getProperty("os.name");
-    if (!osName.equals("Linux")) {
-      return;                   // Nothing to do (yet) for MacOS and Windows
-    }
-    try {
-      File outFile = new File("/tmp/lib64/libc++.so");
-      if (outFile.exists()) {    // Don't do it more then once!
-        return;
-      }
-      File tmpLibDir = new File("/tmp/lib64");
-      tmpLibDir.mkdirs();
-      Files.copy(Resources.newInputStreamSupplier(Compiler.class.getResource("/tools/linux/lib64/libc++.so")),
-        outFile);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    if (osName.equals("Linux")) {
+      ensureLib("/tmp/lib64", "libc++.so", "/tools/linux/lib64/libc++.so");
+    } else if (osName.startsWith("Windows")) {
+      ensureLib(System.getProperty("java.io.tmpdir"), "libwinpthread-1.dll", WINDOWS_PTHEAD_DLL);
     }
   }
 
