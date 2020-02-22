@@ -218,6 +218,7 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = "PrimaryColorDark";
   private static final String PROPERTY_NAME_ACCENT_COLOR = "AccentColor";
   private static final String PROPERTY_NAME_THEME = "Theme";
+  private static final String PROPERTY_NAME_AUTOSCALE_IMAGES = "AutoscaleImages";
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -484,6 +485,8 @@ public final class MockForm extends MockContainer {
       case PROPERTY_NAME_SHOW_LISTS_AS_JSON:
       // The TutorialURL property actually applies to the application and is only visible on Screen1.
       case PROPERTY_NAME_TUTORIAL_URL:
+      // The AutoscaleImages property actually applies to the application and is only visible on Screen1.
+      case PROPERTY_NAME_AUTOSCALE_IMAGES:
       case PROPERTY_NAME_BLOCK_SUBSET:
       case PROPERTY_NAME_PRIMARY_COLOR:
       case PROPERTY_NAME_PRIMARY_COLOR_DARK:
@@ -612,6 +615,17 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON, asJson);
+    }
+  }
+
+  private void setAutoscaleImagesProperty(String autoscaleImages){
+    // This property actually applies to the application and is only visible on
+    // Screen1. When we load a form that is not Screen1, this method will be called with the
+    // default value for AutoscaleImagesProperty (false). We need to ignore that.
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_AUTOSCALE_IMAGES, autoscaleImages);
     }
   }
 
@@ -973,6 +987,8 @@ public final class MockForm extends MockContainer {
       setANameProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_AS_JSON)) {
       setShowListsAsJsonProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_AUTOSCALE_IMAGES)) {
+      setAutoscaleImagesProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
       setTutorialURLProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_BLOCK_SUBSET)) {
@@ -1024,8 +1040,8 @@ public final class MockForm extends MockContainer {
   @Override
   public EditableProperties getProperties() {
     // Before we return the Properties object, we make sure that the
-    // Sizing, ShowListsAsJson and TutorialURL properties have the
-    // value from the project's properties this is because these are
+    // Sizing, ShowListsAsJson, AutoscaleImages and TutorialURL properties
+    // have the value from the project's properties this is because these are
     // per project, not per Screen(Form) We only have to do this on
     // screens other then screen1 because screen1's value is
     // definitive.
@@ -1038,6 +1054,10 @@ public final class MockForm extends MockContainer {
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_AUTOSCALE_IMAGES,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_AUTOSCALE_IMAGES));
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,

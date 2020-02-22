@@ -457,7 +457,7 @@ public class Form extends AppInventorCompatActivity
     Theme(ComponentConstants.DEFAULT_THEME);
     ScreenOrientation("unspecified");
     BackgroundColor(Component.COLOR_DEFAULT);
-    AutoscaleImages(true);
+    AutoscaleImages(true); // Note: Only the Screen1 value is used as this is per-project
   }
 
   @Override
