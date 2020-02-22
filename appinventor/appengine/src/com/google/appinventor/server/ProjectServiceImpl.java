@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -59,7 +59,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   private static final long serialVersionUID = -8316312003804169166L;
 
-  private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   // RPC implementation for YoungAndroid projects
   private final transient YoungAndroidProjectService youngAndroidProject =
@@ -206,6 +206,28 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public void deleteProject(long projectId) {
     final String userId = userInfoProvider.getUserId();
     getProjectRpcImpl(userId, projectId).deleteProject(userId, projectId);
+  }
+
+  /**
+   * Moves the project to trash.
+   * @param projectId  project ID
+   */
+  @Override
+  public UserProject moveToTrash(long projectId) {
+      String userId = userInfoProvider.getUserId();
+      storageIo.setMoveToTrashFlag(userId,projectId,true);
+      return storageIo.getUserProject(userId,projectId);
+  }
+
+  /**
+   * Moves the project back to My Projects Tab.
+   * @param projectId  project ID
+   */
+  @Override
+  public UserProject restoreProject(long projectId) {
+      String userId = userInfoProvider.getUserId();
+      storageIo.setMoveToTrashFlag(userId,projectId,false);
+      return storageIo.getUserProject(userId,projectId);
   }
 
  /**

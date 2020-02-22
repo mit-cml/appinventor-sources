@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -103,7 +103,7 @@ public class ProjectServiceTest {
   @Before
   public void setUp() throws Exception {
     helper.setUp();
-    storageIo = StorageIoInstanceHolder.INSTANCE;
+    storageIo = StorageIoInstanceHolder.getInstance();
 
     PowerMock.mockStatic(LocalUser.class);
     localUserMock = PowerMock.createMock(LocalUser.class);
@@ -289,7 +289,7 @@ public class ProjectServiceTest {
 
     checkUserProjects(projectServiceImpl.getProjectInfos(),
         new UserProject(yaProject, PROJECT1_NAME,
-            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), 0L, 0L));
+            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), 0L, false));
     PowerMock.verifyAll();
   }
 
@@ -499,6 +499,7 @@ public class ProjectServiceTest {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"Fixed\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON + "\":\"false\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL + "\":\"\",\"" +
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET + "\":\"\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR + "\":\"false\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME + "\":\"AppTheme.Light.DarkActionBar\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR + "\":\"0\",\"" +

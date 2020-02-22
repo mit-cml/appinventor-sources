@@ -165,13 +165,21 @@ public class ExternalComponentGenerator {
     JSONArray buildInfos = new JSONArray();
     for (ExternalComponentInfo info : extensions) {
       JSONObject componentBuildInfo = info.buildInfo;
-      JSONArray librariesNeeded = componentBuildInfo.getJSONArray("libraries");
-      for (int j = 0; j < librariesNeeded.length(); ++j) { // Copy Library files for Unjar and Jaring
-        String library = librariesNeeded.getString(j);
-        copyFile(buildServerClassDirPath + File.separator + library,
-            extensionTempDirPath + File.separator + library);
+      try {
+        JSONArray librariesNeeded = componentBuildInfo.getJSONArray("libraries");
+        for (int j = 0; j < librariesNeeded.length(); ++j) {
+          // Copy Library files for Unjar and Jaring
+          String library = librariesNeeded.getString(j);
+          copyFile(buildServerClassDirPath + File.separator + library,
+              extensionTempDirPath + File.separator + library);
+        }
+        //empty the libraries meta-data to avoid redundancy
+        componentBuildInfo.put("libraries", new JSONArray());
+      } catch(JSONException e) {
+        // bad
+        throw new IllegalStateException("Unexpected JSON exception parsing simple_components.json",
+            e);
       }
-      componentBuildInfo.put("libraries", new JSONArray()); //empty the libraries meta-data to avoid redundancy
       buildInfos.put(componentBuildInfo);
     }
 
@@ -197,7 +205,7 @@ public class ExternalComponentGenerator {
     try {
       extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_info.json");
       extensionBuildInfoFile.write(buildInfos.get(0).toString());
-    } catch (IOException e) {
+    } catch (IOException|JSONException e) {
       e.printStackTrace();
     } finally {
       if (extensionBuildInfoFile != null) {
@@ -363,6 +371,9 @@ public class ExternalComponentGenerator {
    * {@code extensionPackage}, {@code false} otherwise
    */
   private static boolean isRelatedExternalClass(final String testClassAbsolutePath, final String extensionPackage ) {
+    if (!testClassAbsolutePath.endsWith(".class")) {  // Ignore things that aren't class files...
+      return false;
+    }
     String componentPackagePath = extensionPackage.replace(".", File.separator);
 
     String testClassPath = getClassPackage(testClassAbsolutePath);

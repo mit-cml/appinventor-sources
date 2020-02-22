@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -22,8 +23,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * Label containing a text string.
+ * Labels are components used to show text.
  *
+ * ![Example of a label](images/label.png)
+ *
+ * A label displays text which is specified by the `Text` property. Other properties, all of which
+ * can be set in the Designer or Blocks Editor, control the appearance and placement of the text.
  */
 @DesignerComponent(version = YaVersion.LABEL_COMPONENT_VERSION,
     description = "A Label displays a piece of text, which is " +
@@ -70,6 +75,9 @@ public final class Label extends AndroidViewComponent {
 
   // Label Format
   private boolean htmlFormat;
+
+  // HTML content of the label
+  private String htmlContent;
 
   /**
    * Creates a new Label component.
@@ -165,6 +173,7 @@ public final class Label extends AndroidViewComponent {
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -356,7 +365,7 @@ private void setLabelMargins(boolean hasMargins) {
    *
    * @param text  new caption for label
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
@@ -364,6 +373,22 @@ private void setLabelMargins(boolean hasMargins) {
       TextViewUtil.setTextHTML(view, text);
     } else {
       TextViewUtil.setText(view, text);
+    }
+    htmlContent = text;
+  }
+
+  /**
+   * Returns the content of the Label as HTML. This is only useful if the
+   * HTMLFormat property is true.
+   *
+   * @return the HTML content of the label
+   */
+  @SimpleProperty
+  public String HTMLContent() {
+    if (htmlFormat) {
+      return htmlContent;
+    } else {
+      return TextViewUtil.getText(view);
     }
   }
 
@@ -410,6 +435,7 @@ private void setLabelMargins(boolean hasMargins) {
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int TextColor() {
     return textColor;
   }

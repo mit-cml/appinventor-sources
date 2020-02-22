@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -80,15 +80,15 @@ import com.google.appengine.tools.cloudstorage.RetryParams;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.channels.Channels;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -799,7 +799,24 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
     }
+  }
 
+  @Override
+  public void setMoveToTrashFlag(final String userId, final long projectId, final boolean flag) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData projectData = datastore.find(projectKey(projectId));
+          if (projectData != null) {
+            projectData.projectMovedToTrashFlag = flag;
+            datastore.put(projectData);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
   }
 
   @Override
@@ -947,7 +964,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
           projectData.t.dateModified, projectData.t.galleryId,
-          projectData.t.attributionId);
+          projectData.t.attributionId, projectData.t.projectMovedToTrashFlag);
     }
   }
 
@@ -980,7 +997,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         uProjects.add(new UserProject(projectData.id, projectData.name,
             projectData.type, projectData.dateCreated,
             projectData.dateModified, projectData.galleryId,
-            projectData.attributionId));
+            projectData.attributionId, projectData.projectMovedToTrashFlag));
       }
       return uProjects;
     }
@@ -1996,6 +2013,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     // entity group.
     final List<FileData> fileData = new ArrayList<FileData>();
     final Result<String> projectName = new Result<String>();
+    final Map<String, Integer> screens = new HashMap<String, Integer>();
     projectName.t = null;
     String fileName = null;
 
@@ -2008,36 +2026,49 @@ public class ObjectifyStorageIo implements  StorageIo {
         @Override
         public void run(Objectify datastore) throws IOException {
           Key<ProjectData> projectKey = projectKey(projectId);
-          boolean foundFiles = false;
           for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
+            fileData.add(fd);
+            String fileName = fd.fileName;
+            if (fileName.startsWith("src/") && (fileName.endsWith(".scm") || fileName.endsWith(".bky") || fileName.endsWith(".yail"))) {
+              String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
+              int count = screens.containsKey(fileNameNoExt) ? screens.get(fileNameNoExt) + 1 : 1;
+              screens.put(fileNameNoExt, count);
+            }
+          }
+          Iterator<FileData> it = fileData.iterator();
+          while (it.hasNext()) {
+            FileData fd = it.next();
             String fileName = fd.fileName;
             if (fileName.startsWith("assets/external_comps") && forGallery) {
               throw new IOException("FATAL Error, external component in gallery app");
             }
-            if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
-              if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
-                // Skip legacy remix history files that were previous stored with the project
-                continue;
+            if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
+              it.remove();
+            } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) ||
+                      (fileName.startsWith("screenshots") && !includeScreenShots) ||
+                      (fileName.startsWith("src/") && fileName.endsWith(".yail") && !includeYail)) {
+              // Skip legacy remix history files that were previous stored with the project
+              // only include screenshots if asked ...
+              // Don't include YAIL files when exporting projects
+              // includeYail will be set to true when we are exporting the source
+              // to send to the buildserver or when the person exporting
+              // a project is an Admin (for debugging).
+              // Otherwise Yail files are confusing cruft. In the case of
+              // the Firebase Component they may contain secrets which we would
+              // rather not have leak into an export .aia file or into the Gallery
+              it.remove();
+            } else if (fileName.startsWith("src/") && (fileName.endsWith(".scm") || fileName.endsWith(".bky") || (fileName.endsWith(".yail") && includeYail))) {
+              String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
+              if ((Integer)screens.get(fileNameNoExt) < 3) {
+                LOG.log(Level.INFO, "Not adding file to build ", fileName);
+                it.remove();
+                if (fileName.endsWith(".yail")) {
+                  deleteFile(userId, projectId, fileName);
+                }
               }
-              if (fileName.startsWith("screenshots") && !includeScreenShots) {
-                // Only include screenshots if asked...
-                continue;
-              }
-              if (fileName.endsWith(".yail") && !includeYail) {
-                // Don't include YAIL files when exporting projects
-                // includeYail will be set to true when we are exporting the source
-                // to send to the buildserver or when the person exporting
-                // a project is an Admin (for debugging).
-                // Otherwise Yail files are confusing cruft. In the case of
-                // the Firebase Component they may contain secrets which we would
-                // rather not have leak into an export .aia file or into the Gallery
-                continue;
-              }
-              fileData.add(fd);
-              foundFiles = true;
             }
           }
-          if (foundFiles) {
+          if (fileData.size() > 0) {
             ProjectData pd = datastore.find(projectKey);
             projectName.t = pd.name;
             if (includeProjectHistory && !Strings.isNullOrEmpty(pd.history)) {
@@ -2939,6 +2970,27 @@ public class ObjectifyStorageIo implements  StorageIo {
       return 50;
     } else {
       return ival.intValue();
+    }
+  }
+
+  @Override
+  public void assertUserHasProject(final String userId, final long projectId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @SuppressWarnings("RedundantThrows")
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException, IOException {
+          Key<UserData> userKey = userKey(userId);
+          Key<UserProjectData> userProjectKey = userProjectKey(userKey, projectId);
+          UserProjectData data = datastore.find(userProjectKey);
+          if (data == null) {  // User doesn't have the corresponding project.
+            throw new SecurityException("Unauthorized access");
+          }
+          // User has data for project, so everything checks out.
+        }
+      }, false);
+    } catch(ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
     }
   }
 }

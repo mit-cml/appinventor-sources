@@ -64,6 +64,19 @@ Blockly.Drawer.PREFIX_ = 'cat_';
  */
 Blockly.Drawer.buildTree_ = function() {
   var tree = {};
+  var formName = Blockly.mainWorkspace.formName;
+  var screenName = formName.substring(formName.indexOf("_") + 1);
+
+  // Check to see if a Blocks Toolkit is defined. If so, use that to build the tree.
+  if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
+    var subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlocksToolkit");
+    if (subsetJsonString) {
+      var toolkitTree = Blockly.Drawer.buildToolkitTree_(subsetJsonString);
+      if (toolkitTree != undefined)
+        return toolkitTree;
+    }
+  }
+
   // Populate the tree structure.
   for (var name in Blockly.Blocks) {
     if (!Blockly.Blocks.hasOwnProperty(name)) continue;
@@ -77,6 +90,38 @@ Blockly.Drawer.buildTree_ = function() {
         tree[cat] = [name];
       }
     }
+  }
+  return tree;
+};
+
+/**
+ * Build the hierarchical tree of built-in block types using the JSON property BlocksToolkit
+ * @return {!Object} Tree object.
+ * @private
+ */
+Blockly.Drawer.buildToolkitTree_ = function(jsonToolkit) {
+  var tree = {};
+  var subsetArray = JSON.parse(jsonToolkit);
+  var subsetBlockArray = subsetArray["shownBlockTypes"];
+  try {
+    for (var key in subsetBlockArray) {
+      if (key != 'ComponentBlocks') {
+        var cat = "cat_" + key;
+        var catBlocks = subsetBlockArray[key];
+        for (var i = 0; i < catBlocks.length; i++) {
+          var block = catBlocks[i];
+          var name = block.type;
+          if (cat in tree) {
+            tree[cat].push(name);
+          } else {
+            tree[cat] = [name];
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    return undefined;
   }
   return tree;
 };
@@ -107,6 +152,7 @@ Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   if (!blockSet) {
     throw "no such drawer: " + drawerName;
   }
+  Blockly.hideChaff();
   var xmlList = this.blockListToXMLArray(blockSet);
   this.flyout_.show(xmlList);
 };
@@ -119,7 +165,7 @@ Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
 Blockly.Drawer.prototype.showComponent = function(instanceName) {
   var component = this.workspace_.getComponentDatabase().getInstance(instanceName);
   if (component) {
-    this.flyout_.hide();
+    Blockly.hideChaff();
     this.flyout_.show(this.instanceRecordToXMLArray(component));
     this.lastComponent = instanceName;
   } else {
@@ -137,8 +183,7 @@ Blockly.Drawer.prototype.showComponent = function(instanceName) {
  */
 Blockly.Drawer.prototype.showGeneric = function(typeName) {
   if (this.workspace_.getComponentDatabase().hasType(typeName)) {
-    this.flyout_.hide();
-
+    Blockly.hideChaff();
     var xmlList = this.componentTypeToXMLArray(typeName);
     this.flyout_.show(xmlList);
   } else {
@@ -178,44 +223,80 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   var typeName = instanceRecord.typeName;
   var componentInfo = this.workspace_.getComponentDatabase().getType(typeName);
 
-  //create event blocks
-  goog.object.forEach(componentInfo.eventDictionary, function(event, name) {
-    if (event.deprecated != 'true') {
-      Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
-        'component_type': typeName, 'instance_name': instanceRecord.name, 'event_name': name
-      }));
-    }
-  }, this);
-
-  //create non-generic method blocks
-  goog.object.forEach(componentInfo.methodDictionary, function(method, name) {
-    if (method.deprecated != 'true') {
-      Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_method', {
-        'component_type': typeName, 'instance_name': instanceRecord.name, 'method_name': name
-      }));
-    }
-  }, this);
-
-  //for each property
-  goog.object.forEach(componentInfo.properties, function(property, name) {
-    if (property.deprecated != 'true') {
-      var params = {'component_type': typeName, 'instance_name': instanceRecord.name,
-                    'property_name': name};
-      if ((property.mutability & Blockly.PROPERTY_READABLE) == Blockly.PROPERTY_READABLE) {
-        params['set_or_get'] = 'get';
-        Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
+  var formName = Blockly.mainWorkspace.formName;
+  var screenName = formName.substring(formName.indexOf("_") + 1);
+  var subsetJsonString = "";
+  if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
+    subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlocksToolkit");
+  }
+  if (subsetJsonString.length > 0) {
+    var subsetArray = [];
+    var subsetBlocks = [];
+    subsetArray = JSON.parse(subsetJsonString);
+    var subsetBlockArray = subsetArray["shownBlockTypes"]["ComponentBlocks"][typeName];
+    // The component type might not be in the json string if it was removed from the blocks toolkit
+    // after an instance was already created in the Designer. It's not entirely clear what behavior
+    // one would expect in this situation. I'm going to leave the flyout blank.
+    if (subsetBlockArray !== undefined) {
+      for (var i = 0; i < subsetBlockArray.length; i++) {
+        var obj = subsetBlockArray[i];
+        obj['mutatorNameToValue']['instance_name'] = instanceRecord.name;
+        obj['fieldNameToValue']['COMPONENT_SELECTOR'] = instanceRecord.name;
+        console.log("added obj");
+        console.log(obj);
+        var xml = bd.toolbox.ctr.blockObjectToXML(bd.toolbox.ctr.blockInfoToBlockObject(obj));
+        xmlArray.push(xml);
       }
-      if ((property.mutability & Blockly.PROPERTY_WRITEABLE) == Blockly.PROPERTY_WRITEABLE) {
-        params['set_or_get'] = 'set';
-        Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
-      }
+      //create component literal block
+      var obj = {type: "component_component_block"};
+      var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
+      obj['mutatorNameToValue'] = mutatorAttributes;
+      var xml = bd.toolbox.ctr.blockObjectToXML(bd.toolbox.ctr.blockInfoToBlockObject(obj));
+      //console.log(xml);
+      xmlArray.push(xml);
     }
-  }, this);
+  } else {
 
-  //create component literal block
-  var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
-  Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray("component_component_block",mutatorAttributes));
+    //create event blocks
+    goog.object.forEach(componentInfo.eventDictionary, function (event, name) {
+      if (event.deprecated != 'true' && event.deprecated !== true) {
+        Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
+          'component_type': typeName, 'instance_name': instanceRecord.name, 'event_name': name
+        }));
+      }
+    }, this);
 
+    //create non-generic method blocks
+    goog.object.forEach(componentInfo.methodDictionary, function (method, name) {
+      if (method.deprecated != 'true' && method.deprecated !== true) {
+        Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_method', {
+          'component_type': typeName, 'instance_name': instanceRecord.name, 'method_name': name
+        }));
+      }
+    }, this);
+
+    //for each property
+    goog.object.forEach(componentInfo.properties, function (property, name) {
+      if (property.deprecated != 'true' && property.deprecated !== true) {
+        var params = {
+          'component_type': typeName, 'instance_name': instanceRecord.name,
+          'property_name': name
+        };
+        if ((property.mutability & Blockly.PROPERTY_READABLE) == Blockly.PROPERTY_READABLE) {
+          params['set_or_get'] = 'get';
+          Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
+        }
+        if ((property.mutability & Blockly.PROPERTY_WRITEABLE) == Blockly.PROPERTY_WRITEABLE) {
+          params['set_or_get'] = 'set';
+          Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
+        }
+      }
+    }, this);
+
+    //create component literal block
+    var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
+    Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray("component_component_block", mutatorAttributes));
+  }
   return xmlArray;
 };
 
@@ -397,6 +478,18 @@ Blockly.Drawer.getDefaultXMLString = function(blockType,mutatorAttributes) {
 };
 
 Blockly.Drawer.defaultBlockXMLStrings = {
+  controls_if: {xmlString:
+  '<xml>' +
+    '<block type="controls_if">' +
+    '</block>' +
+    '<block type="controls_if">' +
+      '<mutation else="1"></mutation>' +
+    '</block>' +
+    '<block type="controls_if">' +
+      '<mutation elseif="1" else="1"></mutation>' +
+    '</block>' +
+  '</xml>' },
+
   controls_forRange: {xmlString:
   '<xml>' +
     '<block type="controls_forRange">' +
@@ -435,7 +528,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<mutation items="2"></mutation>' +
     '</block>' +
   '</xml>'},
-   lists_lookup_in_pairs: {xmlString:
+  lists_lookup_in_pairs: {xmlString:
   '<xml>' +
     '<block type="lists_lookup_in_pairs">' +
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
@@ -447,6 +540,29 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<value name="SEPARATOR"><block type="text"><title name="TEXT"></title></block></value>' +
       '</block>' +
     '</xml>'},
+  dictionaries_create_with: {xmlString:
+  '<xml>' +
+    '<block type="dictionaries_create_with">' +
+      '<mutation items="0"></mutation>' +
+    '</block>' +
+    '<block type="dictionaries_create_with">' +
+      '<mutation items="2"></mutation>' +
+      '<value name="ADD0"><block type="pair"></block></value>' +
+      '<value name="ADD1"><block type="pair"></block></value>' +
+    '</block>' +
+  '</xml>'},
+  dictionaries_lookup: {xmlString:
+  '<xml>' +
+    '<block type="dictionaries_lookup">' +
+    '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '</block>' +
+  '</xml>'},
+  dictionaries_recursive_lookup: {xmlString:
+  '<xml>' +
+    '<block type="dictionaries_recursive_lookup">' +
+    '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '</block>' +
+  '</xml>'},
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},

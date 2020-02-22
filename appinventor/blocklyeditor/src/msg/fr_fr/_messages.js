@@ -419,6 +419,7 @@ Blockly.Msg.fr.switch_language_to_french = {
     Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE = 'Retourne une copie de sa chaine de caractère en argument convertie en minuscule.';
     Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE = 'Retourne une copie de sa chaine de caractère en argument convertie en majuscule.';
     Blockly.Msg.LANG_TEXT_COMPARE_EQUAL = ' =';
+    Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'comparer textes';
     Blockly.Msg.LANG_TEXT_COMPARE_LT = ' <';

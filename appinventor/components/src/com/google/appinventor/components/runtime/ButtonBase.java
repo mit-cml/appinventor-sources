@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -91,6 +92,8 @@ public abstract class ButtonBase extends AndroidViewComponent
 
   // This is our handle on Android's nice 3-d default button.
   private Drawable defaultButtonDrawable;
+
+  private Drawable myBackgroundDrawable = null;
 
   // This is our handle in Android's default button color states;
   private ColorStateList defaultColorStateList;
@@ -192,43 +195,43 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Indicates when a button is touch down
+   * Indicates that the `%type%` was pressed down.
    */
-  @SimpleEvent(description = "Indicates that the button was pressed down.")
+  @SimpleEvent(description = "Indicates that the %type% was pressed down.")
   public void TouchDown() {
     EventDispatcher.dispatchEvent(this, "TouchDown");
   }
 
   /**
-   * Indicates when a button touch ends
+   * Indicates that the `%type%` has been released.
    */
-  @SimpleEvent(description = "Indicates that a button has been released.")
+  @SimpleEvent(description = "Indicates that the %type% has been released.")
   public void TouchUp() {
     EventDispatcher.dispatchEvent(this, "TouchUp");
   }
 
   /**
-   * Indicates the cursor moved over the button so it is now possible
+   * Indicates the cursor moved over the `%type%` so it is now possible
    * to click it.
    */
-  @SimpleEvent(description = "Indicates the cursor moved over the button so " +
+  @SimpleEvent(description = "Indicates the cursor moved over the %type% so " +
       "it is now possible to click it.")
   public void GotFocus() {
     EventDispatcher.dispatchEvent(this, "GotFocus");
   }
 
   /**
-   * Indicates the cursor moved away from the button so it is now no
+   * Indicates the cursor moved away from the `%type%` so it is now no
    * longer possible to click it.
    */
   @SimpleEvent(description = "Indicates the cursor moved away from " +
-      "the button so it is now no longer possible to click it.")
+      "the %type% so it is now no longer possible to click it.")
   public void LostFocus() {
     EventDispatcher.dispatchEvent(this, "LostFocus");
   }
 
   /**
-   * Returns the alignment of the button's text: center, normal
+   * Returns the alignment of the `%type%`'s text: center, normal
    * (e.g., left-justified if text is written left to right), or
    * opposite (e.g., right-justified if text is written left to right).
    *
@@ -245,9 +248,10 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the alignment of the button's text: center, normal
-   * (e.g., left-justified if text is written left to right), or
-   * opposite (e.g., right-justified if text is written left to right).
+   * Specifies the alignment of the `%type%`'s text. Valid values are:
+   * `0` (normal; e.g., left-justified if text is written left to right),
+   * `1` (center), or
+   * `2` (opposite; e.g., right-justified if text is written left to right).
    *
    * @param alignment  one of {@link Component#ALIGNMENT_NORMAL},
    *                   {@link Component#ALIGNMENT_CENTER} or
@@ -262,7 +266,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the style of the button.
+   * Returns the style of the `%type%`.
    *
    * @return  one of {@link Component#BUTTON_SHAPE_DEFAULT},
    *          {@link Component#BUTTON_SHAPE_ROUNDED},
@@ -277,7 +281,12 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the style the button. This does not check that the argument is a legal value.
+   * Specifies the shape of the `%type%`. The valid values for this property are `0` (default),
+   * `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
+   * {@link #Image()} is used.
+   *
+   * @internaldoc
+   * This does not check that the argument is a legal value.
    *
    * @param shape one of {@link Component#BUTTON_SHAPE_DEFAULT},
    *          {@link Component#BUTTON_SHAPE_ROUNDED},
@@ -288,7 +297,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BUTTON_SHAPE,
       defaultValue = Component.BUTTON_SHAPE_DEFAULT + "")
-  @SimpleProperty(description = "Specifies the button's shape (default, rounded," +
+  @SimpleProperty(description = "Specifies the shape of the %type% (default, rounded," +
       " rectangular, oval). The shape will not be visible if an Image is being displayed.",
       userVisible = false)
   public void Shape(int shape) {
@@ -297,7 +306,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the path of the button's image.
+   * Returns the path of the `%type%`'s image.
    *
    * @return  the path of the button's image
    */
@@ -309,8 +318,10 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the path of the button's image.
+   * Specifies the path of the `%type%`'s image. If there is both an `Image` and a
+   * {@link #BackgroundColor()} specified, only the `Image` will be visible.
    *
+   * @internaldoc
    * <p/>See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
@@ -318,7 +329,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
-  @SimpleProperty(description = "Specifies the path of the button's image.  " +
+  @SimpleProperty(description = "Specifies the path of the image of the %type%.  " +
       "If there is both an Image and a BackgroundColor, only the Image will be " +
       "visible.")
   public void Image(String path) {
@@ -349,7 +360,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the button's background color as an alpha-red-green-blue
+   * Returns the `%type%`'s background color as an alpha-red-green-blue
    * integer.
    *
    * @return  background RGB color with alpha
@@ -357,21 +368,24 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Returns the button's background color")
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
 
   /**
-   * Specifies the button's background color as an alpha-red-green-blue
-   * integer.  If the parameter is {@link Component#COLOR_DEFAULT}, the
-   * original beveling is restored.  If an Image has been set, the color
-   * change will not be visible until the Image is removed.
+   * Specifies the `%type%`'s background color as an alpha-red-green-blue
+   * integer.  If an {@link #Image(String)} has been set, the color
+   * change will not be visible until the {@link #Image(String)} is removed.
+   *
+   * @internaldoc
+   * If the parameter is {@link Component#COLOR_DEFAULT}, the original beveling is restored.
    *
    * @param argb background RGB color with alpha
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
                     defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
-  @SimpleProperty(description = "Specifies the button's background color. " +
+  @SimpleProperty(description = "Specifies the background color of the %type%. " +
       "The background color will not be visible if an Image is being displayed.")
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
@@ -393,13 +407,13 @@ public abstract class ButtonBase extends AndroidViewComponent
           // Clear the background image.
           ViewUtil.setBackgroundDrawable(view, null);
           //Now we set again the default drawable
-          ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+          ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
           view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
         } else {
           // Clear the background image.
           ViewUtil.setBackgroundDrawable(view, null);
           //Now we set again the default drawable
-          ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+          ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
           //@Author NMD (Next Mobile Development) [nmdofficialhelp@gmail.com]
           view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
         }
@@ -414,6 +428,26 @@ public abstract class ButtonBase extends AndroidViewComponent
       ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
       TextViewUtil.setMinSize(view, 0, 0);
     }
+  }
+
+  private Drawable getSafeBackgroundDrawable() {
+    if (myBackgroundDrawable == null) {
+      Drawable.ConstantState state = defaultButtonDrawable.getConstantState();
+      if (state != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+        try {
+          myBackgroundDrawable = state.newDrawable().mutate();
+        } catch (NullPointerException e) {
+          // We see this on SDK 7, but given we can't easily test every version
+          // this is meant as a safeguard.
+          Log.e(LOG_TAG, "Unable to clone button drawable", e);
+          myBackgroundDrawable = defaultButtonDrawable;
+        }
+      } else {
+        // Since we can't make a copy of the default we'll just use it directly
+        myBackgroundDrawable = defaultButtonDrawable;
+      }
+    }
+    return myBackgroundDrawable;
   }
 
   private ColorStateList createRippleState () {
@@ -466,19 +500,19 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns true if the button is active and clickable.
+   * If set, user can tap `%type%` to cause action.
    *
    * @return  {@code true} indicates enabled, {@code false} disabled
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      description = "If set, user can tap check box to cause action.")
+      description = "If set, user can tap %type% to cause action.")
   public boolean Enabled() {
     return TextViewUtil.isEnabled(view);
   }
 
   /**
-   * Specifies whether the button should be active and clickable.
+   * Specifies whether the `%type%` should be active and clickable.
    *
    * @param enabled  {@code true} for enabled, {@code false} disabled
    */
@@ -490,21 +524,21 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns true if the button's text should be bold.
-   * If bold has been requested, this property will return true, even if the
-   * font does not support bold.
+   * If set, the text of the `%type%` will attempt to use a bold font.
+   * If bold has been requested, this property will return `true`{:.logic.block}, even if the
+   * {@link #FontTypeface()} does not support bold.
    *
    * @return  {@code true} indicates bold, {@code false} normal
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "If set, button text is displayed in bold.")
+      description = "If set, %type% text is displayed in bold.")
   public boolean FontBold() {
     return bold;
   }
 
   /**
-   * Specifies whether the button's text should be bold.
+   * Specifies whether the text of the `%type%` should be bold.
    * Some fonts do not support bold.
    *
    * @param bold  {@code true} indicates bold, {@code false} normal
@@ -519,8 +553,8 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies if a visual feedback should be shown when a button with an assigned image
-   * is pressed.
+   * Specifies if a visual feedback should be shown when a `%type%` with an assigned
+   * {@link #Image()} is pressed.
    *
    * @param showFeedback  {@code true} enables showing feedback,
    *                 {@code false} disables it
@@ -528,43 +562,44 @@ public abstract class ButtonBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
           defaultValue = "True")
   @SimpleProperty(description = "Specifies if a visual feedback should be shown " +
-          " for a button that as an image as background.")
+          " for a %type% that has an image as background.")
 
   public void ShowFeedback(boolean showFeedback) {
     this.showFeedback =showFeedback;
   }
 
     /**
-     * Returns true if the button's text should be bold.
+     * Returns true if the text of the `%type%` should be bold.
      * If bold has been requested, this property will return true, even if the
      * font does not support bold.
      *
+     * @suppressdoc
      * @return {@code true} indicates visual feedback will be shown,
      *                 {@code false} visual feedback will not be shown
      */
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE,
-            description = "Returns the button's visual feedback state")
+            description = "Returns the visual feedback state of the %type%")
     public boolean ShowFeedback() {
         return showFeedback;
     }
 
     /**
-   * Returns true if the button's text should be italic.
-   * If italic has been requested, this property will return true, even if the
+   * If set, the text of the `%type%` will attempt to use an italic font.
+   * If italic has been requested, this property will return `true`{:.logic.block}, even if the
    * font does not support italic.
    *
    * @return  {@code true} indicates italic, {@code false} normal
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "If set, button text is displayed in italics.")
+      description = "If set, %type% text is displayed in italics.")
   public boolean FontItalic() {
     return italic;
   }
 
   /**
-   * Specifies whether the button's text should be italic.
+   * Specifies whether the text of the `%type%` should be italic.
    * Some fonts do not support italic.
    *
    * @param italic  {@code true} indicates italic, {@code false} normal
@@ -579,19 +614,22 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the button's text's font size, measured in sp(scale-independent pixels).
+   * The size of the font used for rendering the {@link #Text(String)}.
+   *
+   * @internaldoc
+   * Returns the text font size of the `%type%`, measured in sp(scale-independent pixels).
    *
    * @return  font size in sp(scale-independent pixels).
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Point size for button text.")
+      description = "Point size for %type% text.")
   public float FontSize() {
     return TextViewUtil.getFontSize(view, container.$context());
   }
 
   /**
-   * Specifies the button's text's font size, measured in sp(scale-independent pixels).
+   * Specifies the text font size of the `%type%`, measured in sp(scale-independent pixels).
    *
    * @param size  font size in sp(scale-independent pixels)
    */
@@ -604,8 +642,8 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the button's text's font face as default, serif, sans
-   * serif, or monospace.
+   * The text font face of the `%type%`. Valid values are `0` (default), `1` (serif), `2` (sans
+   * serif), or `3` (monospace).
    *
    * @return  one of {@link Component#TYPEFACE_DEFAULT},
    *          {@link Component#TYPEFACE_SERIF},
@@ -614,14 +652,14 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Font family for button text.",
+      description = "Font family for %type% text.",
       userVisible = false)
   public int FontTypeface() {
     return fontTypeface;
   }
 
   /**
-   * Specifies the button's text's font face as default, serif, sans
+   * Specifies the text font face of the `%type%` as default, serif, sans
    * serif, or monospace.
    *
    * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
@@ -639,19 +677,19 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the text displayed by the button.
+   * Returns the text displayed by the `%type%`.
    *
    * @return  button caption
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Text to display on button.")
+      description = "Text to display on %type%.")
   public String Text() {
     return TextViewUtil.getText(view);
   }
 
   /**
-   * Specifies the text displayed by the button.
+   * Specifies the text displayed by the `%type%`.
    *
    * @param text  new caption for button
    */
@@ -663,7 +701,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the button's text color as an alpha-red-green-blue
+   * Returns the text color of the `%type%` as an alpha-red-green-blue
    * integer.
    *
    * @return  text RGB color with alpha
@@ -671,12 +709,13 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Color for button text.")
+  @IsColor
   public int TextColor() {
     return textColor;
   }
 
   /**
-   * Specifies the button's text color as an alpha-red-green-blue
+   * Specifies the text color of the `%type%` as an alpha-red-green-blue
    * integer.
    *
    * @param argb  text RGB color with alpha
