@@ -97,19 +97,7 @@ public final class MockChart extends MockContainer {
       childrenReattached = true;
     }
   }
-
-  @Override
-  public void delete() {
-    // Fully remove all attached Data components before
-    // removing the Chart component
-    for (int i = children.size() - 1; i >= 0; --i) {
-      MockComponent child = children.get(i);
-      child.delete();
-    }
-
-    super.delete();
-  }
-
+  
   /**
    * Sets the type of the Chart to the newly specified value.
    *
