@@ -621,7 +621,7 @@ public final class MockForm extends MockContainer {
   private void setAutoscaleImagesProperty(String autoscaleImages){
     // This property actually applies to the application and is only visible on
     // Screen1. When we load a form that is not Screen1, this method will be called with the
-    // default value for AutoscaleImagesProperty (false). We need to ignore that.
+    // default value for AutoscaleImagesProperty (true). We need to ignore that.
     if (editor.isScreen1()) {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
