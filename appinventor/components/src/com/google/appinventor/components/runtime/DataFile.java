@@ -61,7 +61,7 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
   }
 
   /**
-   * Rows property getter method
+   * Retrieve a List of rows of the currently loaded Source file.
    *
    * @return a YailList representing the parsed rows of the Data file.
    */
@@ -78,7 +78,7 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
 
 
   /**
-   * Columns property getter method
+   * Retrieve a List of columns of the currently loaded Source file.
    *
    * @return a YailList representing the parsed columns of the Data file.
    */
@@ -94,9 +94,9 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
   }
 
   /**
-   * Column names property getter method.
-   * The intended use case of the method is for Data Files which contain
-   * the column names in the first row.
+   * Retrieve the column names of the currently loaded Source file.
+   * For CSV files, this will return a List of entries in the first row.
+   * For JSON files, this will return a List of keys in the JSON object.
    *
    * @return a YailList containing the elements of the first row.
    */
@@ -142,8 +142,9 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
 
   /**
    * Sets the source file to parse data from, and then parses the
-   * file asynchronously.
-   * The results are stored in the Columns, Rows and ColumnNames properties.
+   * file asynchronously. The results are stored in the {@link #Columns()},
+   * {@link #Rows()} and {@link #ColumnNames()} properties.
+   * The expected formatting of the file is either the CSV or JSON format.
    *
    * @param source Source file name
    */

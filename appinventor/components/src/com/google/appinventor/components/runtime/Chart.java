@@ -21,8 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Chart component with multiple types. The chart-specific
- * functionality is handled in the Model and View classes.
+ * The Chart component plots data originating from it's attached Data components. Five different
+ * Chart types are available, including Line, Area, Scatter, Bar and Pie, which can be changed by
+ * the {@link #Type(int)} property.
+ * The Chart component itself has various other properties that change the appearance
+ * of the Chart, such as {{@link #Description(String)}, {@link #GridEnabled(boolean)},
+ * @link #Labels(YailList)} and {@link #LegendEnabled(boolean)}.
  *
  * @see com.google.appinventor.components.runtime.ChartDataModel
  * @see com.google.appinventor.components.runtime.ChartView
@@ -134,7 +138,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
   }
 
   /**
-   * Specifies the type of the Chart. This does not check that the argument is a legal value.
+   * Specifies the type of the Chart, which determines how to visualize the data.
    *
    * @param type one of {@link ComponentConstants#CHART_TYPE_LINE},
    *             {@link ComponentConstants#CHART_TYPE_SCATTER},
@@ -145,8 +149,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE,
       defaultValue = ComponentConstants.CHART_TYPE_LINE + "")
-  @SimpleProperty(description = "Specifies the chart's type (line, scatter," +
-      "area, bar, pie).",
+  @SimpleProperty(description = "Specifies the chart's type (area, bar, " +
+      "pie, scatter), which determines how to visualize the data.",
       userVisible = false)
   public void Type(int type) {
     if (type >= 0 && type < ComponentConstants.CHART_TYPES) {
@@ -237,7 +241,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
   }
 
   /**
-   * Specifies the text displayed by the description label.
+   * Specifies the text displayed by the description label inside the Chart.
+   * Specifying an empty string ("") will not display any label.
    *
    * @param text description
    */
@@ -277,8 +282,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
 
   /**
    * Sets the Pie Radius of the Chart. If the current type is
-   * not the Pie Chart, the value is simply stored, but not
-   * processed.
+   * not the Pie Chart, the value has no effect.
    * <p>
    * The value is hidden in the blocks due to it being applicable
    * to a single Chart only. TODO: Might be better to change this in the future
@@ -289,7 +293,9 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_PIE_RADIUS,
       defaultValue = "100")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(description = "Sets the Pie Radius of a Pie Chart from 0% to 100%, where the percentage " +
+      "indicates the percentage of the hole fill. 100% means that a full Pie Chart " +
+      "is drawn, while values closer to 0% correspond to hollow Pie Charts.", userVisible = false)
   public void PieRadius(int percent) {
     this.pieRadius = percent;
 
@@ -298,6 +304,17 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     if (chartView instanceof PieChartView) {
       ((PieChartView) chartView).setPieRadius(percent);
     }
+  }
+
+  /**
+   * Returns a boolean indicating whether the legend is enabled
+   * on the Chart.
+   *
+   * @return True if legend is enabled, false otherwise
+   */
+  @SimpleProperty
+  public boolean LegendEnabled() {
+    return this.legendEnabled;
   }
 
   /**
@@ -314,20 +331,20 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
   }
 
   /**
-   * Returns a boolean indicating whether the legend is enabled
+   * Returns a boolean indicating whether the grid is enabled
    * on the Chart.
    *
-   * @return True if legend is enabled, false otherwise
+   * @return True if grid is enabled, false otherwise
    */
   @SimpleProperty
-  public boolean LegendEnabled() {
-    return this.legendEnabled;
+  public boolean GridEnabled() {
+    return this.gridEnabled;
   }
-
 
   /**
    * Changes the visibility of the Chart's grid, if the
-   * Chart View is a Chart with an Axis.
+   * Chart Type is set to a Chart with an Axis (applies for Area, Bar, Line,
+   * Scatter Chart types)
    *
    * @param enabled indicates whether the Chart's grid should be enabled.
    */
@@ -346,30 +363,29 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
   }
 
   /**
-   * Returns a boolean indicating whether the grid is enabled
-   * on the Chart.
+   * Returns a List of Labels set to the X Axis.
    *
-   * @return True if grid is enabled, false otherwise
+   * @return List of Labels used for the X Axis
    */
   @SimpleProperty
-  public boolean GridEnabled() {
-    return this.gridEnabled;
+  public YailList Labels() {
+    return labels;
   }
 
   /**
    * Changes the Chart's X axis labels to the specified List,
-   * if the Chart View is a Chart with an Axis.
+   * if the Chart's Type is set to a Chart with an Axis.
    * <p>
    * The first entry of the List corresponds to the minimum x value of the data,
    * the second to the min x value + 1, and so on.
    * <p>
    * If a label is not specified for an x value, a default value
-   * is used (usually the numeric value)
+   * is used (the x value of the axis tick at that location)
    *
    * @param labels List of labels to set to the X Axis of the Chart
    */
   @SimpleProperty(description = "Changes the Chart's X axis labels to the specified List of Strings, " +
-      " provided that the Chart Viewe is a Chart with an Axis (applies to Area, Bar, Line, Scatter Charts)." +
+      " provided that the Chart Type is set to a Chart with an Axis (applies to Area, Bar, Line, Scatter Charts)." +
       "The labels are applied in order, starting from the smallest x value on the Chart, and continuing in order." +
       "If a label is not specified for an x value, a default value is used (the x value of the axis tick " +
       "at that location)")
@@ -391,20 +407,12 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     }
   }
 
-  /**
-   * Returns a List of Labels set to the X Axis.
-   *
-   * @return List of Labels used for the X Axis
-   */
-  @SimpleProperty
-  public YailList Labels() {
-    return labels;
-  }
-
 
   /**
    * Specifies the labels to set to the Chart's X Axis, provided the current
-   * view is a Chart with an X Axis.
+   * view is a Chart with an X Axis. The labels are specified as a single comma-separated
+   * values String (meaning each value is separated by a comma). See {@link #Labels(YailList)}
+   * for more details on how the Labels are applied to the Chart.
    *
    * @param labels Comma-separated values, where each value represents a label (in order)
    * @see #Labels(YailList)

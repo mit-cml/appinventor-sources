@@ -18,8 +18,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Component corresponding to a 2D data series attachable to
- * the Chart component.
+ * A ChartData2D component represents a single two dimensional Data Series in the Chart component,
+ * for example, a single Line in the case of a Line Chart, or a single Bar in the case of a Bar Chart.
+ * The Data component is responsible for handling all of the data of the Chart. The entries of the Data
+ * component correspond of an x and a y value.
+ * The component is attached directly to a Chart component by dragging it onto the Chart.
  */
 @DesignerComponent(version = YaVersion.CHART_DATA_2D_COMPONENT_VERSION,
     description = "A component that holds (x, y)-coordinate based data",
@@ -37,12 +40,15 @@ public final class ChartData2D extends ChartDataBase {
   }
 
   /**
-   * Adds entry to the Data Series.
+   * Adds an entry with the specified x and y value. Values can be specified as text,
+   * or as numbers. For Line, Scatter, Area and Bar Charts, both values should represent a number.
+   * For Bar charts, the x value is rounded to the nearest integer.
+   * For Pie Charts, the x value is a text value.
    *
    * @param x - x value of entry
    * @param y - y value of entry
    */
-  @SimpleFunction(description = "Adds (x, y) point to the Coordinate Data.")
+  @SimpleFunction()
   public void AddEntry(final String x, final String y) {
     // Entry should be added via the Thread Runner asynchronously
     // to guarantee the order of data adding (e.g. CSV data
@@ -62,13 +68,13 @@ public final class ChartData2D extends ChartDataBase {
   }
 
   /**
-   * Removes an entry from the Data Series.
+   * Removes an entry with the specified x and y value, provided it exists.
+   * See {@link #AddEntry(String, String)} for an explanation of the valid entry values.
    *
    * @param x - x value of entry
    * @param y - y value of entry
    */
-  @SimpleFunction(description = "Removes the first matching (x, y) point from the " +
-      "Coordinate Data, if it exists.")
+  @SimpleFunction()
   public void RemoveEntry(final String x, final String y) {
     // Entry should be deleted via the Thread Runner asynchronously
     // to guarantee the order of data adding (e.g. CSV data
@@ -88,10 +94,14 @@ public final class ChartData2D extends ChartDataBase {
   }
 
   /**
-   * Checks whether an Entry exists in the Data Series.
+   * Returns a boolean value specifying whether an entry with the specified x and y
+   * values exists. The boolean value of true is returned if the value exists,
+   * and a false value otherwise. See {@link #AddEntry(String, String)}
+   * for an explanation of the valid entry values.
    *
    * @param x - x value of entry
    * @param y - y value of entry
+   * @return true if entry eexists
    */
   @SimpleFunction(description = "Checks whether an (x, y) entry exists in the Coordinate Data." +
       "Returns true if the Entry exists, and false otherwise.")
@@ -116,16 +126,19 @@ public final class ChartData2D extends ChartDataBase {
   }
 
   /**
-   * Imports data from a Data file component, with the specified column names.
+   * Imports data from the specified DataFile component by taking the specified x column
+   * for the x values, and the specified y column for the y values. The DataFile's source file
+   * is expected to be either a CSV or a JSON file.
+   * <p>
+   * Passing in empty test for any of the column parameters will result in the usage of
+   * default values which are the indices of the entries. For the first entry, the default
+   * value would be the 1, for the second it would be 2, and so on.
    *
    * @param dataFile     Data File component to import from
    * @param xValueColumn x-value column name
    * @param yValueColumn y-value column name
    */
-  @SimpleFunction(description = "Imports data from the specified DataFile component, given the names of the " +
-      "X and Y value columns. Passing in empty text for any of the column parameters will result" +
-      " in the usage of default values which are the indices of the entries. For the first entry, the " +
-      "default value would be the 1, for the second it would be 2, and so on.")
+  @SimpleFunction()
   public void ImportFromDataFile(final DataFile dataFile, String xValueColumn, String yValueColumn) {
     // Construct a YailList of columns from the specified parameters
     YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
@@ -134,7 +147,15 @@ public final class ChartData2D extends ChartDataBase {
   }
 
   /**
-   * Imports data from a Web component, with the specified column names.
+   * Imports data from the specified Web component by taking the specified x column
+   * for the x values, and the specified y column for the y values. Prior to calling this function,
+   * the Web component's Get method has to be called to load the data. The usage of the gotValue
+   * event in the Web component is unnecessary.
+   * <p>
+   * The expected response of the Web component is a JSON or CSV formatted file for this function to
+   * work.
+   * <p>
+   * Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
    *
    * @param web          Web component to import from
    * @param xValueColumn x-value column name
