@@ -1483,6 +1483,8 @@ having dark grey components.</li>
 <h3 id="WebViewer-Events">Events</h3>
 
 <dl class="events">
+  <dt id="WebViewer.BeforePageLoad">BeforePageLoad(<em class="text">url</em>)</dt>
+  <dd>When a page is about to load this event is run.</dd>
   <dt id="WebViewer.PageLoaded">PageLoaded(<em class="text">url</em>)</dt>
   <dd>When a page is finished loading this event is run.</dd>
   <dt id="WebViewer.WebViewStringChange">WebViewStringChange(<em class="text">value</em>)</dt>
@@ -1501,6 +1503,9 @@ having dark grey components.</li>
   <dd>Clear the internal webview cache, both ram and disk. This is useful
  when using the <code class="highlighter-rouge">WebViewer</code> to poll a page that may not be sending
  appropriate cache control headers.</dd>
+  <dt id="WebViewer.ClearCookies" class="method"><i></i> ClearCookies()</dt>
+  <dd>Clear the webview’s cookies. This is useful if you want to
+ sign the user out of a website that uses them to store logins.</dd>
   <dt id="WebViewer.ClearLocations" class="method"><i></i> ClearLocations()</dt>
   <dd>Clear Stored Location permissions. When the geolocation API is used in
  the <code class="highlighter-rouge">WebViewer</code>, the end user is prompted on a per URL basis for whether
@@ -1519,6 +1524,10 @@ Eclair, this function is a no-op on older phones.</p>
  home URL is changed.</dd>
   <dt id="WebViewer.GoToUrl" class="method"><i></i> GoToUrl(<em class="text">url</em>)</dt>
   <dd>Load the page at the given URL.</dd>
+  <dt id="WebViewer.Reload" class="method"><i></i> Reload()</dt>
+  <dd>Reload the current page.</dd>
+  <dt id="WebViewer.StopLoading" class="method"><i></i> StopLoading()</dt>
+  <dd>Stop loading a page.</dd>
 </dl>
 
 </article>
