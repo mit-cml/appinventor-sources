@@ -13,7 +13,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
   fileprivate let _view = UITextView(frame: CGRect.zero)
   private let _wrapper = UIView(frame: CGRect.zero)
   private var _numbersOnly = false
-  
+
   private var _multiLine = false
   private var _empty = true
 
@@ -141,7 +141,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
     set(acceptsNumbersOnly) {
       if acceptsNumbersOnly != _numbersOnly {
         _numbersOnly = acceptsNumbersOnly
-        let keyboardType: UIKeyboardType = acceptsNumbersOnly ? .numberPad : .default
+        let keyboardType: UIKeyboardType = acceptsNumbersOnly ? .decimalPad : .default
         _field.keyboardType = keyboardType
         _view.keyboardType = keyboardType
         _field.reloadInputViews()
@@ -220,15 +220,32 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
 
   fileprivate func processText(_ newText: String, range: NSRange) {
     if let range = Range(range, in: _field.text!) {
-      _field.text?.replaceSubrange(range, with: ensureNumber(newText))
+      var copyOfText = String(_field.text!)
+      copyOfText.replaceSubrange(range, with: newText)
+      _field.text = ensureNumber(copyOfText)
     }
     if let range = Range(range, in: _view.text!) {
-      _view.text?.replaceSubrange(range, with: ensureNumber(newText))
+      var copyOfText = String(_view.text!)
+      copyOfText.replaceSubrange(range, with: newText)
+      _view.text = ensureNumber(copyOfText)
     }
   }
 
   fileprivate func ensureNumber(_ text: String) -> String {
-    let result = _numbersOnly ? text.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression): text
+    let decimalSeparator = Locale.current.decimalSeparator ?? "."
+    let groupingSeparator = Locale.current.groupingSeparator ?? ","
+    let escapedDecimalSeparator = decimalSeparator == "." ? "\\." : ","
+    let escapedGroupingSeparator = groupingSeparator == "." ? "\\." : ","
+
+    // Ensure only arabic numerals, decimal separator, and grouping separator are present in the string.
+    let result = _numbersOnly ? text.replacingOccurrences(of: "[^0-9\(escapedDecimalSeparator)\(escapedGroupingSeparator)]", with: "", options: .regularExpression): text
+
+    // Ensure that only one decimal separator exists and no grouping separators appear after the decimal
+    if let firstRange = result.range(of: decimalSeparator) {
+      let result2 = result.replacingOccurrences(of: groupingSeparator, with: "", options: [], range: firstRange.upperBound..<result.endIndex)
+      return result2.replacingOccurrences(of: decimalSeparator, with: "", options: [], range: firstRange.upperBound..<result2.endIndex)
+    }
+
     return result
   }
 
