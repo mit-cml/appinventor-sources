@@ -493,10 +493,12 @@ public class YaVersion {
   // - WEB_COMPONENT_VERSION was incremented to 7
   // For YOUNG_ANDROID_VERSION 198:
   // - IMAGE_COMPONENT_VERSION was incremented to 4
-  // For YOUNG_ANDROID)_VERSION 199:
+  // For YOUNG_ANDROID_VERSION 199:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 29
+  // For YOUNG_ANDROID_VERSION 200:
+  // - FORM_COMPONENT_VERSION was incremented to 27.
 
-  public static final int YOUNG_ANDROID_VERSION = 198;
+  public static final int YOUNG_ANDROID_VERSION = 200;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -850,7 +852,9 @@ public class YaVersion {
   // - Sizing default value changed from Fixed to Responsive
   // For FORM_COMPONENT_VERSION 26:
   // - Updated the default value of ShowListsAsJson from false -> true
-  public static final int FORM_COMPONENT_VERSION = 26;
+  // For FORM_COMPONENT_VERSION 27:
+  // - Added the Platform and PlatformVersion read-only blocks
+  public static final int FORM_COMPONENT_VERSION = 27;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
