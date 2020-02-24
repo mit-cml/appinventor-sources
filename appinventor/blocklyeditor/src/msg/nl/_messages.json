@@ -628,5 +628,6 @@
     "Blockly.Msg.CONFIRM_DELETE": "Bevestig verwijdering",
     "Blockly.Msg.CLEAN_UP": "Blokken opschonen",
     "Blockly.Msg.REDO": "Opnieuw doen",
-    "Blockly.Msg.UNDO": "Ongedaan maken"
+    "Blockly.Msg.UNDO": "Ongedaan maken",
+    "Blockly.Msg.DIALOG_SUBMIT": "Versturen"
 }
