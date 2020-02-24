@@ -491,8 +491,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 197:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 28
   // - WEB_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 198
+  // - FORM_COMPONENT_VERSION was incremented to 27.
 
-  public static final int YOUNG_ANDROID_VERSION = 197;
+  public static final int YOUNG_ANDROID_VERSION = 198;
 
   // ............................... Blocks Language Version Number ...............................
 
