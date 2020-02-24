@@ -206,7 +206,6 @@ public final class WebViewer extends AndroidViewComponent {
   // this do nothing will override the default WebView behavior.  Returning
   // false means to let the WebView handle the Url.  In other words, returning
   // true will not follow the link, and returning false will follow the link.
-  // 
   private class WebViewerClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
