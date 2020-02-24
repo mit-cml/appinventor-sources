@@ -491,10 +491,14 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 197:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 28
   // - WEB_COMPONENT_VERSION was incremented to 7
-  // For YOUNG_ANDROID_VERSION 198
+  // For YOUNG_ANDROID_VERSION 198:
+  // - IMAGE_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 199:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 29
+  // For YOUNG_ANDROID_VERSION 200:
   // - FORM_COMPONENT_VERSION was incremented to 27.
 
-  public static final int YOUNG_ANDROID_VERSION = 198;
+  public static final int YOUNG_ANDROID_VERSION = 200;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -568,8 +572,10 @@ public class YaVersion {
   // - The text compare block was modified to include the not-equal operator
   // For BLOCKS_LANGUAGE_VERSION 28
   // - The dictionaries blocks were added.
+  // For BLOCKS_LANGUAGE_VERSION 29
+  // - The for-each-in-dictionary block was added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 28;
+  public static final int BLOCKS_LANGUAGE_VERSION = 29;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -878,7 +884,10 @@ public class YaVersion {
   // - The RotationAngle property was added.
   // For IMAGE_COMPONENT_VERSION 3:
   // - Scaling Property added, but hidden for now
-  public static final int IMAGE_COMPONENT_VERSION = 3;
+  // For IMAGE_COMPONENT_VERSION 4:
+  // - The Click event was added.
+  // - The Clickable property was added.
+  public static final int IMAGE_COMPONENT_VERSION = 4;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1345,11 +1354,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.57a";
+  public static final String PREFERRED_COMPANION = "2.57b";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.57a", "2.57au" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.57b", "2.57bu" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

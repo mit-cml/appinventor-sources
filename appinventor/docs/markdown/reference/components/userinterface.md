@@ -367,6 +367,9 @@ Component for displaying images and basic animations.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
  `ScrollLeftSlow`, `ScrollLeft`, `ScrollLeftFast`, and `Stop`.
 
+{:id="Image.Clickable" .boolean} *Clickable*
+: Specifies whether the image should be clickable or not.
+
 {:id="Image.Height" .number .bo} *Height*
 : Specifies the `Image`'s vertical height, measured in pixels.
 
@@ -400,8 +403,9 @@ Component for displaying images and basic animations.
 ### Events  {#Image-Events}
 
 {:.events}
-None
 
+{:id="Image.Click"} Click()
+: An event that occurs when an image is clicked.
 
 ### Methods  {#Image-Methods}
 
@@ -1143,6 +1147,10 @@ This class is used to display a `Slider`.
 : Specifies the color of the slider bar to the right of the thumb as an alpha-red-green-blue
  integer, i.e., `0xAARRGGBB`.  An alpha of `00`
  indicates fully transparent and `FF` means opaque.
+
+{:id="Slider.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `Slider`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Slider.MaxValue" .number} *MaxValue*
 : Sets the maximum value of slider. If the new maximum is less than the

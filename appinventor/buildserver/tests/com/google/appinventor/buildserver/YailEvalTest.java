@@ -32,13 +32,15 @@ import java.util.Map;
 public class YailEvalTest extends TestCase {
   private Scheme scheme;
 
-  private static final String YAIL_SCHEME_TESTS = TestUtils.APP_INVENTOR_ROOT_DIR +
+  private static final String YAIL_SCHEME_TESTS =
+      TestUtils.windowsToUnix(TestUtils.APP_INVENTOR_ROOT_DIR) +
       "/buildserver/tests/com/google/appinventor/buildserver/YailEvalTest.scm";
 
   @Override
   public void setUp() throws Exception {
     scheme = new Scheme();
     String yailRuntimeLibrary = Compiler.getResource(Compiler.YAIL_RUNTIME);
+    yailRuntimeLibrary = TestUtils.windowsToUnix(yailRuntimeLibrary);
     try {
       scheme.eval("(load \"" + yailRuntimeLibrary + "\")");
       scheme.eval("(load \"" + YAIL_SCHEME_TESTS + "\")");
@@ -603,6 +605,48 @@ public class YailEvalTest extends TestCase {
     } catch (YailRuntimeError e) {
       // this is expected
     }
+  }
+
+  public void testForEachDict() throws Throwable {
+    /* test for_each_dict block */
+    String schemeInputString = "(begin " +
+        "(def x 0) " +
+        "(foreach y " +
+        " (let " +
+        "   ( " +
+        "    ($key " +
+        "     (call-yail-primitive yail-list-get-item " +
+        "      (*list-for-runtime* (lexical-value y) 1) '(list number) \"select list item\" " +
+        "     ) " +
+        "    ) " +
+        "    ($value " +
+        "     (call-yail-primitive yail-list-get-item " +
+        "      (*list-for-runtime* (lexical-value y) 2) '(list number) \"select list item\" " +
+        "     ) " +
+        "    ) " +
+        "   ) " +
+        "   (set-var! x " +
+        "    (call-yail-primitive + " +
+        "     (*list-for-runtime* (get-var x) (lexical-value $key) (lexical-value $value) )" +
+        "     '(number number number ) \"+\"" +
+        "    ) " +
+        "   ) " +
+        "  ) " +
+        "  (call-yail-primitive make-yail-dictionary " +
+        "   (*list-for-runtime* " +
+        "    (call-yail-primitive make-dictionary-pair " +
+        "     (*list-for-runtime* 1 2 ) '(key any)  \"make a pair\" " +
+        "    ) " +
+        "    (call-yail-primitive make-dictionary-pair " +
+        "     (*list-for-runtime* 3 4 ) '(key any)  \"make a pair\" " +
+        "    ) " +
+        "   ) '(pair pair ) \"make a dictionary\"" +
+        "  ) " +
+        " ) " +
+        " (get-var x) " +
+        ") ";
+    String schemeResultString = "10";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
   }
 
   public void testForRange() throws Throwable {

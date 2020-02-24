@@ -1081,6 +1081,11 @@ public final class YoungAndroidFormUpgrader {
       // }
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+     // The Click event was added.
+     // The Clickable property was added.
+     srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
