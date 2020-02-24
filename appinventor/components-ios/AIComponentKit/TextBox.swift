@@ -203,50 +203,27 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
   }
 
   func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-    processText(string, range: range)
-    if let cursorLocation = textField.position(from: textField.beginningOfDocument, offset: (range.location + string.count)) {
-      textField.selectedTextRange = textField.textRange(from: cursorLocation, to: cursorLocation)
+    if _numbersOnly {
+      let decimalSeparator = Locale.current.decimalSeparator ?? "."
+      let escapedDecimalSeparator = decimalSeparator == "." ? "\\." : ","
+      var copyOfText = String(textField.text ?? "")
+      copyOfText = copyOfText.replacingCharacters(in: Range(range, in: copyOfText)!, with: string)
+      let express = try! NSRegularExpression(pattern: "^[-+]?([0-9]*\(escapedDecimalSeparator))[0-9]*$", options: [])
+      return express.numberOfMatches(in: copyOfText, options: [], range: NSRange(0..<copyOfText.count)) == 1
     }
-    return false
+    return true
   }
 
   func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-    processText(text, range: range)
-    if let cursorLocation = textView.position(from: textView.beginningOfDocument, offset: (range.location + text.count)) {
-      textView.selectedTextRange = textView.textRange(from: cursorLocation, to: cursorLocation)
+    if _numbersOnly {
+      let decimalSeparator = Locale.current.decimalSeparator ?? "."
+      let escapedDecimalSeparator = decimalSeparator == "." ? "\\." : ","
+      var copyOfText = String(textView.text ?? "")
+      copyOfText = copyOfText.replacingCharacters(in: Range(range, in: copyOfText)!, with: text)
+      let express = try! NSRegularExpression(pattern: "^[-+]?([0-9]*\(escapedDecimalSeparator))?[0-9]*$", options: [])
+      return express.numberOfMatches(in: copyOfText, options: [], range: NSRange(0..<copyOfText.count)) == 1
     }
-    return false
-  }
-
-  fileprivate func processText(_ newText: String, range: NSRange) {
-    if let range = Range(range, in: _field.text!) {
-      var copyOfText = String(_field.text!)
-      copyOfText.replaceSubrange(range, with: newText)
-      _field.text = ensureNumber(copyOfText)
-    }
-    if let range = Range(range, in: _view.text!) {
-      var copyOfText = String(_view.text!)
-      copyOfText.replaceSubrange(range, with: newText)
-      _view.text = ensureNumber(copyOfText)
-    }
-  }
-
-  fileprivate func ensureNumber(_ text: String) -> String {
-    let decimalSeparator = Locale.current.decimalSeparator ?? "."
-    let groupingSeparator = Locale.current.groupingSeparator ?? ","
-    let escapedDecimalSeparator = decimalSeparator == "." ? "\\." : ","
-    let escapedGroupingSeparator = groupingSeparator == "." ? "\\." : ","
-
-    // Ensure only arabic numerals, decimal separator, and grouping separator are present in the string.
-    let result = _numbersOnly ? text.replacingOccurrences(of: "[^0-9\(escapedDecimalSeparator)\(escapedGroupingSeparator)]", with: "", options: .regularExpression): text
-
-    // Ensure that only one decimal separator exists and no grouping separators appear after the decimal
-    if let firstRange = result.range(of: decimalSeparator) {
-      let result2 = result.replacingOccurrences(of: groupingSeparator, with: "", options: [], range: firstRange.upperBound..<result.endIndex)
-      return result2.replacingOccurrences(of: decimalSeparator, with: "", options: [], range: firstRange.upperBound..<result2.endIndex)
-    }
-
-    return result
+    return true
   }
 
   @objc func dismissKeyboard() {
