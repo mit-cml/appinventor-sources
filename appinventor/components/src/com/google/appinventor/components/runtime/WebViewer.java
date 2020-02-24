@@ -26,6 +26,7 @@ import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
+import android.graphics.Bitmap;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -209,8 +210,12 @@ public final class WebViewer extends AndroidViewComponent {
   private class WebViewerClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-      BeforePageLoad(url);
       return !followLinks;
+    }
+
+    @Override
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+      BeforePageLoad(url);
     }
 
     @Override
