@@ -1692,6 +1692,9 @@ Component for viewing Web pages.
 {:id="WebViewer.BeforePageLoad"} BeforePageLoad(*url*{:.text})
 : When a page is about to load this event is run.
 
+{:id="WebViewer.ErrorOccurred"} ErrorOccurred(*errorCode*{:.number},*description*{:.text},*failingUrl*{:.text})
+: When an error occurs this event is run.
+
 {:id="WebViewer.PageLoaded"} PageLoaded(*url*{:.text})
 : When a page is finished loading this event is run.
 
@@ -1742,6 +1745,9 @@ Component for viewing Web pages.
 
 {:id="WebViewer.Reload" class="method"} <i/> Reload()
 : Reload the current page.
+
+{:id="WebViewer.RunJavaScript" class="method"} <i/> RunJavaScript(*js*{:.text})
+: Run JavaScript in the current page.
 
 {:id="WebViewer.StopLoading" class="method"} <i/> StopLoading()
 : Stop loading a page.
