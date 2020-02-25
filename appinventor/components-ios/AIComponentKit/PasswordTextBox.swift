@@ -1,17 +1,12 @@
-//
-//  PasswordTextBox.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 12/1/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
-fileprivate class TextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelegate {
+class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelegate {
   fileprivate let _field = UITextField(frame: CGRect.zero)
 
-  fileprivate override init() {
+  override init() {
     _field.translatesAutoresizingMaskIntoConstraints = false
     _field.isSecureTextEntry = true
     super.init()
@@ -101,7 +96,7 @@ fileprivate class TextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFie
 }
 
 open class PasswordTextBox: TextBoxBase {
-  fileprivate let _adapter = TextBoxAdapter()
+  private let _adapter = PasswordTextBoxAdapter()
 
   @objc public init(_ parent: ComponentContainer) {
     super.init(parent, _adapter)

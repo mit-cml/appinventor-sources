@@ -1,14 +1,14 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import Contacts
 
-fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
+class EmailPickerAdapter: AbstractMethodsForTextBox {
   fileprivate let _field = UITextField(frame: CGRect.zero)
   fileprivate let _wrapper = UIView(frame: CGRect.zero)
 
-  fileprivate init() {
+  init() {
     _field.translatesAutoresizingMaskIntoConstraints = false
     _wrapper.translatesAutoresizingMaskIntoConstraints = false
     makeSingleLine()
@@ -210,7 +210,7 @@ fileprivate struct Tree {
 
 //MARK: Has one single trie for all emails, not updated if contacts change while the app is open
 open class EmailPicker: TextBoxBase, EmailPickerProtocol {
-  fileprivate let _adapter = TextBoxAdapter()
+  fileprivate let _adapter = EmailPickerAdapter()
   fileprivate static var tree = Tree()
   fileprivate var _accView = UIInputView(frame: CGRect(x: 0, y: 0, width: 10, height: 80), inputViewStyle: .keyboard)
   fileprivate var _toolBar = UIToolbar()

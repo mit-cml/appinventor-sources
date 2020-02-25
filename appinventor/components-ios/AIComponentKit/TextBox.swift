@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -8,7 +8,7 @@ let kDefaultPlaceholderColor = UIColor(red: 0, green: 0, blue: 25/255, alpha: 0.
 fileprivate protocol TextBoxDelegate: AbstractMethodsForTextBox, UITextFieldDelegate, UITextViewDelegate {
 }
 
-fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
+class TextBoxAdapter: NSObject, TextBoxDelegate {
   private let _field = UITextField(frame: CGRect.zero)
   fileprivate let _view = UITextView(frame: CGRect.zero)
   private let _wrapper = UIView(frame: CGRect.zero)
@@ -17,7 +17,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
   private var _multiLine = false
   private var _empty = true
 
-  fileprivate override init() {
+  override init() {
     super.init()
     _field.translatesAutoresizingMaskIntoConstraints = false
     _view.translatesAutoresizingMaskIntoConstraints = false
