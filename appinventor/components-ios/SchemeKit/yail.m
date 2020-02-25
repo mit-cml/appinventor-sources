@@ -797,9 +797,9 @@ id yail_to_native(pic_state *pic, pic_value result) {
     return [NSNumber numberWithInteger:pic_int(pic, result)];
   } else if (pic_float_p(pic, result)) {
     return [NSNumber numberWithDouble:pic_float(pic, result)];
-  } else if (pic_true_value(pic)) {
+  } else if (pic_true_p(pic, result)) {
     return [NSNumber numberWithBool:YES];
-  } else if (pic_false_value(pic)) {
+  } else if (pic_false_p(pic, result)) {
     return [NSNumber numberWithBool:NO];
   } else if (yail_native_instance_p(pic, result)) {
     __unsafe_unretained id unsafeId = yail_native_instance_ptr(pic, result)->object_;

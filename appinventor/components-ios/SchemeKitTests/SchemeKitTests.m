@@ -10,6 +10,8 @@
 #import <SchemeKit/SchemeKit.h>
 #import "SchemeKitTests-Swift.h"
 
+id yail_to_native(pic_state *pic, pic_value result);
+
 extern char *picrin_native_stack_start;
 
 void
@@ -604,6 +606,52 @@ typedef union {
   XCTAssertNil(interpreter.exception);
   XCTAssertNotNil(result);
   XCTAssertEqualObjects(@"-1", result);
+}
+
+- (void)testYailToNative {
+  char t;
+  pic_state *pic;
+  pic_value e;
+  id result;
+  picrin_native_stack_start = &t;
+  pic = pic_open(pic_default_allocf, NULL);
+
+  pic_try {
+    pic_init_picrin(pic);
+    size_t ai = pic_enter(pic);
+
+    result = yail_to_native(pic, pic_true_value(pic));
+    XCTAssertNotNil(result);
+    XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
+    XCTAssertTrue([(NSNumber *)result boolValue]);
+
+    result = yail_to_native(pic, pic_false_value(pic));
+    XCTAssertNotNil(result);
+    XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
+    XCTAssertFalse([(NSNumber *)result boolValue]);
+
+    result = yail_to_native(pic, pic_cstr_value(pic, "test"));
+    XCTAssertNotNil(result);
+    XCTAssertTrue([result isKindOfClass:[NSString class]]);
+    XCTAssertEqualObjects(@"test", result);
+
+    result = yail_to_native(pic, pic_int_value(pic, 42));
+    XCTAssertNotNil(result);
+    XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
+    XCTAssertEqual(42, [(NSNumber *)result integerValue]);
+
+    result = yail_to_native(pic, pic_float_value(pic, 12.5));
+    XCTAssertNotNil(result);
+    XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
+    XCTAssertEqualWithAccuracy(12.5, [(NSNumber *)result doubleValue], 0.0000001);
+
+    pic_leave(pic, ai);
+  } pic_catch(e) {
+    pic_print_error(pic, pic_stderr(pic), e);
+    XCTFail("Picrin exception was thrown");
+  }
+
+  pic_close(pic);
 }
 
 @end
