@@ -2661,7 +2661,10 @@ Blockly.Versioning.AllUpgradeMaps =
     8: "noUpgrade",
       
     // AI2: Added BeforePageLoad event and Stop, Reload, and ClearCookies methods
-    9: "noUpgrade"
+    9: "noUpgrade",
+
+    // AI2: Added ErrorOccurred event and RunJavaScript method
+    10: "noUpgrade"
 
   }, // End WebViewer upgraders
 
