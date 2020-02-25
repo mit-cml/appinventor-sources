@@ -730,7 +730,9 @@ public class YaVersion {
   // - DrawShape & DrawArc was added
   // For CANVAS_COMPONENT_VERSION 12
   // - ExtendMovesOutsideCanvas was added
-  public static final int CANVAS_COMPONENT_VERSION = 12;
+  // For CANVAS_COMPONENT_VERSION 13
+  // - BackgroundImageinBase64 was added
+  public static final int CANVAS_COMPONENT_VERSION = 13;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
