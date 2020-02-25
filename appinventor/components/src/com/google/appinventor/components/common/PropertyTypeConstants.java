@@ -315,4 +315,10 @@ public class PropertyTypeConstants {
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor}
    */
   public static final String PROPERTY_TYPE_THEME = "theme";
+
+  /**
+   * Choices of color value.
+   * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorValuePropertyEditor}
+   */
+  public static final String PROPERTY_TYPE_COLOR_VALUE = "color_value";
 }

@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.google.appinventor.components.runtime.util.ViewUtil;
 
 /**
  * Labels are components used to show text.
@@ -57,6 +58,9 @@ public final class Label extends AndroidViewComponent {
 
   // Backing for background color
   private int backgroundColor;
+
+  // Backing for opacity
+  private int opacity;
 
   // Backing for font typeface
   private int fontTypeface;
@@ -118,6 +122,7 @@ public final class Label extends AndroidViewComponent {
     TextColor(Component.COLOR_DEFAULT);
     HTMLFormat(false);
     HasMargins(true);
+    Opacity(255);
   }
 
   // put this in the right file
@@ -189,11 +194,34 @@ public final class Label extends AndroidViewComponent {
   @SimpleProperty
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
-    if (argb != Component.COLOR_DEFAULT) {
-      TextViewUtil.setBackgroundColor(view, argb);
-    } else {
-      TextViewUtil.setBackgroundColor(view, Component.COLOR_NONE);
-    }
+    updateBackgroundColor();
+  }
+
+  /**
+   * Returns the opacity of the label's background color.
+   * The value is in between the range 0 to 255, where 0 is invisible,
+   * and 255 is fully visible.
+   *
+   * @return  Opacity as an integer value in range [0, 255]
+   */
+  @SimpleProperty(
+    category = PropertyCategory.APPEARANCE)
+  public int Opacity() {
+    return opacity;
+  }
+
+  /**
+   * Specifies the opacity of the label's background color.
+   * The value is in between the range 0 to 255, where 0 is invisible,
+   * and 255 is fully visible.
+   *
+   * @param opacity  Opacity as an integer value in range [0, 255]
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR_VALUE,
+      defaultValue = "255")
+  public void Opacity(int opacity) {
+    this.opacity = opacity;
+    updateBackgroundColor();
   }
 
   /**
@@ -455,6 +483,20 @@ private void setLabelMargins(boolean hasMargins) {
       TextViewUtil.setTextColor(view, argb);
     } else {
       TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK);
+    }
+  }
+
+  /**
+   * Update the background color by first applying opacity and
+   * then applying the resulting background color.
+   */
+  private void updateBackgroundColor() {
+    backgroundColor = ViewUtil.applyOpacityToColor(backgroundColor, opacity);
+
+    if (backgroundColor != Component.COLOR_DEFAULT) {
+      TextViewUtil.setBackgroundColor(view, backgroundColor);
+    } else {
+      TextViewUtil.setBackgroundColor(view, Component.COLOR_NONE);
     }
   }
 }

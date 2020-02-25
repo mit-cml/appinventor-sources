@@ -467,6 +467,11 @@ Labels are components used to show text.
 : Specifies the `Label`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Label.Opacity" .number .ro} *Opacity*
+: Returns the opacity of the label's background color.
+ The value is in between the range 0 to 255, where 0 is invisible,
+ and 255 is fully visible.
+
 {:id="Label.Text" .text} *Text*
 : Specifies the text displayed by the label.
 
