@@ -30,3 +30,6 @@ jobs:
         with:
           name: MIT AI2 Companion
           path: appinventor/build/buildserver/MIT AI2 Companion.apk
+      - name: 'Run Tests'
+        run: ant tests
+        working-directory: appinventor
