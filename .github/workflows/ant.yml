@@ -28,5 +28,5 @@ jobs:
       - name: 'Upload Companion to Artifacts'
         uses: actions/upload-artifact@v1.0.0
         with:
-          name: MIT AI2 Companion.apk
+          name: MIT AI2 Companion
           path: appinventor/build/buildserver/MIT AI2 Companion.apk
