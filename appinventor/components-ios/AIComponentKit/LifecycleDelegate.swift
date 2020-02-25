@@ -3,9 +3,9 @@
 
 import Foundation
 
-public protocol LifecycleDelegate {
-  func onResume()
-  func onPause()
-  func onDelete()
-  func onDestroy()
+@objc public protocol LifecycleDelegate {
+  @objc optional func onResume()
+  @objc optional func onPause()
+  @objc optional func onDelete()
+  @objc optional func onDestroy()
 }

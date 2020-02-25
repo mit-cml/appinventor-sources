@@ -159,11 +159,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     Height = kMapPreferredHeight
   }
 
-  public func onResume() {}
-
-  public func onPause() {}
-
-  public func onDelete() {
+  @objc public func onDelete() {
     _features = []
     switch mapView.mapType {
     case .standard:
@@ -178,7 +174,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     _mapView = nil
   }
 
-  public func onDestroy() {
+  @objc public func onDestroy() {
     _features = []
     switch mapView.mapType {
     case .standard:

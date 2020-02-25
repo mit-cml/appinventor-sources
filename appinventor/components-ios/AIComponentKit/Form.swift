@@ -194,7 +194,7 @@ import Toast_Swift
   @objc public func onResume() {
     for component in _components {
       if let delegate = component as? LifecycleDelegate {
-        delegate.onResume()
+        delegate.onResume?()
       }
     }
     Notifier.notices.setPausedState(false)
@@ -203,7 +203,7 @@ import Toast_Swift
   @objc open func onPause() {
     for component in _components {
       if let delegate = component as? LifecycleDelegate {
-        delegate.onPause()
+        delegate.onPause?()
       }
     }
     Notifier.notices.setPausedState(true)
@@ -212,7 +212,7 @@ import Toast_Swift
   @objc open func onDelete() {
     for component in _components {
       if let delegate = component as? LifecycleDelegate {
-        delegate.onDelete()
+        delegate.onDelete?()
       }
     }
     Notifier.notices.clearNotices()
@@ -221,7 +221,7 @@ import Toast_Swift
   @objc public func onDestroy() {
     for component in _components {
       if let delegate = component as? LifecycleDelegate {
-        delegate.onDestroy()
+        delegate.onDestroy?()
       }
     }
     Notifier.notices.clearNotices()

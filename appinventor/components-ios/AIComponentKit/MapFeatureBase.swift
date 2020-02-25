@@ -54,22 +54,18 @@ import GEOSwift
     }
   }
 
-  public func onResume() {
-
-  }
-
-  public func onPause() {
+  @objc public func onPause() {
     if let timer = _dragTimer,  timer.isValid {
       StopDrag()
     }
     stopDrag()
   }
 
-  public func onDelete() {
+  @objc public func onDelete() {
     stopDrag()
   }
 
-  public func onDestroy() {
+  @objc public func onDestroy() {
     stopDrag()
   }
 

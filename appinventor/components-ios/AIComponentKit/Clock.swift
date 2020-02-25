@@ -3,7 +3,7 @@
 
 import Foundation
 
-open class Clock: NonvisibleComponent {
+open class Clock: NonvisibleComponent, LifecycleDelegate {
   fileprivate var _timer: Timer?
   fileprivate var _interval: Int32 = 1000
   fileprivate var _enabled = false
@@ -14,6 +14,10 @@ open class Clock: NonvisibleComponent {
   public override init(_ container: ComponentContainer) {
     super.init(container)
     TimerEnabled = true
+    if container is ReplForm {
+      // If we are in the REPL then we may not get an onResume call as the REPL is already active
+      _onScreen = true
+    }
   }
 
   // MARK: Clock Properties
@@ -262,6 +266,15 @@ open class Clock: NonvisibleComponent {
     if (_alwaysFires || _onScreen) {
       EventDispatcher.dispatchEvent(of: self, called: "Timer")
     }
+  }
+
+  // MARK: LifecycleDelegate implementation
+  @objc public func onPause() {
+    _onScreen = false
+  }
+
+  @objc public func onResume() {
+    _onScreen = true
   }
 
   // MARK: Private implementation
