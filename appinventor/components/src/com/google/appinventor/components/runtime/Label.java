@@ -219,6 +219,7 @@ public final class Label extends AndroidViewComponent {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR_VALUE,
       defaultValue = "255")
+  @SimpleProperty
   public void Opacity(int opacity) {
     this.opacity = opacity;
     updateBackgroundColor();
