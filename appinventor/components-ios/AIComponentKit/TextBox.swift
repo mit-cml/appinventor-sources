@@ -208,7 +208,7 @@ fileprivate class TextBoxAdapter: NSObject, TextBoxDelegate {
       let escapedDecimalSeparator = decimalSeparator == "." ? "\\." : ","
       var copyOfText = String(textField.text ?? "")
       copyOfText = copyOfText.replacingCharacters(in: Range(range, in: copyOfText)!, with: string)
-      let express = try! NSRegularExpression(pattern: "^[-+]?([0-9]*\(escapedDecimalSeparator))[0-9]*$", options: [])
+      let express = try! NSRegularExpression(pattern: "^[-+]?([0-9]*\(escapedDecimalSeparator))?[0-9]*$", options: [])
       return express.numberOfMatches(in: copyOfText, options: [], range: NSRange(0..<copyOfText.count)) == 1
     }
     return true
