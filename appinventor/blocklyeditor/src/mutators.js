@@ -42,7 +42,7 @@ Blockly.domToMutation = function(container) {
   }
 
   if (this.itemCount_ == 0) {
-    if(this.emptyInputName != null) {
+    if (this.emptyInputName != null) {
       this.removeInput(this.emptyInputName);
     }
   } else {
