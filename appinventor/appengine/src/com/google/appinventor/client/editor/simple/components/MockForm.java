@@ -128,6 +128,7 @@ public final class MockForm extends MockContainer {
     // UI elements
     private DockPanel bar;
     private Image phoneBarImage;
+    private String backgroundColor;
 
     /*
      * Creates a new phone status bar.
@@ -144,6 +145,11 @@ public final class MockForm extends MockContainer {
       setStylePrimaryName("ode-SimpleMockFormPhoneBar");
       setSize("100%", HEIGHT + "px");
     }
+
+    void setBackgroundColor(String color) {
+        this.backgroundColor = color;
+        MockComponentsUtil.setWidgetBackgroundColor(phoneBar.bar, color);
+    }
   }
 
   /*
@@ -155,6 +161,7 @@ public final class MockForm extends MockContainer {
 
     // UI elements
     private AbsolutePanel bar;
+    private String backgroundColor;
 
     /*
      * Creates a new phone navigation bar; Shows at the bottom of the viewer.
@@ -169,6 +176,11 @@ public final class MockForm extends MockContainer {
 
     public int getHeight() {
       return HEIGHT;
+    }
+
+    void setBackgroundColor(String color) {
+        this.backgroundColor = color;
+        MockComponentsUtil.setWidgetBackgroundColor(navigationBar.bar, color);
     }
   }
 
@@ -222,6 +234,8 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_PRIMARY_COLOR = "PrimaryColor";
   private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = "PrimaryColorDark";
   private static final String PROPERTY_NAME_ACCENT_COLOR = "AccentColor";
+  private static final String PROPERTY_NAME_STATUS_BAR_COLOR = "StatusBarColor";
+  private static final String PROPERTY_NAME_NAVIGATION_BAR_COLOR = "NavigationBarColor";
   private static final String PROPERTY_NAME_THEME = "Theme";
 
   // Form UI components
@@ -231,6 +245,7 @@ public final class MockForm extends MockContainer {
 
   ScrollPanel scrollPanel;
   private TitleBar titleBar;
+  private PhoneBar phoneBar;
   private NavigationBar navigationBar;
   private MockComponent selectedComponent;
 
@@ -280,7 +295,8 @@ public final class MockForm extends MockContainer {
     responsivePanel = new AbsolutePanel();
 
     // Initialize mock form UI by adding the phone bar and title bar.
-    responsivePanel.add(new PhoneBar());
+    phoneBar = new PhoneBar();
+    responsivePanel.add(phoneBar);
     titleBar = new TitleBar();
     responsivePanel.add(titleBar);
 
@@ -493,6 +509,8 @@ public final class MockForm extends MockContainer {
       case PROPERTY_NAME_PRIMARY_COLOR:
       case PROPERTY_NAME_PRIMARY_COLOR_DARK:
       case PROPERTY_NAME_ACCENT_COLOR:
+      case PROPERTY_NAME_STATUS_BAR_COLOR:
+      case PROPERTY_NAME_NAVIGATION_BAR_COLOR:
       case PROPERTY_NAME_THEME: {
         return editor.isScreen1();
       }
@@ -698,6 +716,24 @@ public final class MockForm extends MockContainer {
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, color);
     }
+  }
+
+  private void setStatusBarColor(String color) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR, color);
+    }
+    phoneBar.setBackgroundColor(color);
+  }
+
+  private void setNavigationBarColor(String color) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_NAVIGATION_BAR_COLOR, color);
+    }
+    navigationBar.setBackgroundColor(color);
   }
 
   private void setTheme(String theme) {
@@ -1013,6 +1049,10 @@ public final class MockForm extends MockContainer {
       setPrimaryColorDark(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ACCENT_COLOR)) {
       setAccentColor(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_STATUS_BAR_COLOR)) {
+      setStatusBarColor(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_NAVIGATION_BAR_COLOR)) {
+      setNavigationBarColor(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {
       myLayout.setHAlignmentFlags(newValue);
       refreshForm();
@@ -1087,6 +1127,14 @@ public final class MockForm extends MockContainer {
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_NAVIGATION_BAR_COLOR,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_NAVIGATION_BAR_COLOR));
     }
     return properties;
   }
