@@ -38,6 +38,49 @@ public final class MockComponentsUtil {
   }
 
   /**
+   * Sets the background color for the given widget, taking the provided opacity into account.
+   *
+   * @param widget  widget to change background color for
+   * @param color   new color (RGB value)
+   * @param opacity new opacity (value in range 0 to 255)
+   */
+  static void setWidgetBackgroundColor(Widget widget, String color, int opacity) {
+    if (isNoneColor(color)) {
+      DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "transparent");
+    } else {
+      // Construct #RRGGBBAA string
+      String colorString = "#" + getHexString(color, 6) + convertToHex(opacity, 2);
+      DOM.setStyleAttribute(widget.getElement(), "backgroundColor", colorString);
+    }
+  }
+
+  /**
+   * Converts a specified integer to a hex value with the specified number
+   * of digits. If the integer value is too big, a hex string with more
+   * digits will be returned.
+   *
+   * @param value   Integer value to convert
+   * @param digits  Number of digits that should be present in the hex string
+   * @return  Formatted hex string
+   */
+  static String convertToHex(int value, int digits) {
+    StringBuilder builder = new StringBuilder();
+
+    // Parse integer to hex
+    String hexString = Integer.toHexString(value);
+
+    // Pad with 0s to match digit length
+    int remainingLength = digits - hexString.length();
+    for (int i = 0; i < remainingLength; ++i) {
+      builder.append("0");
+    }
+
+    // Append hex string to pre-padded string & return final result
+    builder.append(hexString);
+    return builder.toString();
+  }
+
+  /**
    * Clears the background color of a widget to its default by CSS rules.
    *
    * @param widget  widget to remove the background color for
