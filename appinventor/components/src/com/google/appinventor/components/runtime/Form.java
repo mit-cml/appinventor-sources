@@ -138,6 +138,8 @@ public class Form extends AppInventorCompatActivity
 
   private static final int DEFAULT_PRIMARY_COLOR_DARK = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR);
   private static final int DEFAULT_ACCENT_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
+  private static final int DEFAULT_STATUS_BAR_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_STATUS_BAR_COLOR);
+  private static final int DEFAULT_NAVIGATION_BAR_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_NAVIGATION_BAR_COLOR);
 
   // Keep track of the current form object.
   // activeForm always holds the Form that is currently handling event dispatching so runtime.scm
@@ -192,10 +194,12 @@ public class Form extends AppInventorCompatActivity
   private String openAnimType;
   private String closeAnimType;
 
-  // Syle information
+  // Style information
   private int primaryColor = DEFAULT_PRIMARY_COLOR;
   private int primaryColorDark = DEFAULT_PRIMARY_COLOR_DARK;
   private int accentColor = DEFAULT_ACCENT_COLOR;
+  private int statusBarColor = DEFAULT_STATUS_BAR_COLOR;
+  private int navigationBarColor = DEFAULT_NAVIGATION_BAR_COLOR;
 
   private FrameLayout frameLayout;
   private boolean scrollable;
@@ -455,6 +459,8 @@ public class Form extends AppInventorCompatActivity
     AccentColor(DEFAULT_ACCENT_COLOR);
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
+    StatusBarColor(DEFAULT_STATUS_BAR_COLOR);
+    NavigationBarColor(DEFAULT_NAVIGATION_BAR_COLOR);
     Theme(ComponentConstants.DEFAULT_THEME);
     ScreenOrientation("unspecified");
     BackgroundColor(Component.COLOR_DEFAULT);
@@ -1877,6 +1883,50 @@ public class Form extends AppInventorCompatActivity
   @IsColor
   public int AccentColor() {
     return accentColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = ComponentConstants.DEFAULT_STATUS_BAR_COLOR)
+  @SimpleProperty(userVisible = false, description = "This is the color used for the status bar " + 
+    "in Android Lollipop (5.0) and later.", category = PropertyCategory.APPEARANCE)
+  public void StatusBarColor(int color) {
+    statusBarColor = color;
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_LOLLIPOP) {
+      // setStatusBarColor is available on SDK 21 or higher
+      return;
+    }
+    getWindow().setStatusBarColor(statusBarColor);
+  }
+
+  /**
+   * This is the color used for the status bar in Android Lollipop (5.0) and later.
+   */
+  @SimpleProperty()
+  @IsColor
+  public int StatusBarColor() {
+    return statusBarColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = ComponentConstants.DEFAULT_NAVIGATION_BAR_COLOR)
+  @SimpleProperty(userVisible = false, description = "This is the color used for the navigation bar " + 
+    "in Android Lollipop (5.0) and later.", category = PropertyCategory.APPEARANCE)
+  public void NavigationBarColor(int color) {
+    navigationBarColor = color;
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_LOLLIPOP) {
+      // setNavigationBarColor is available on SDK 21 or higher
+      return;
+    }
+    getWindow().setNavigationBarColor(navigationBarColor);
+  }
+
+  /**
+   * This is the color used for the status bar in Android Lollipop (5.0) and later.
+   */
+  @SimpleProperty()
+  @IsColor
+  public int NavigationBarColor() {
+    return navigationBarColor;
   }
 
   /**
