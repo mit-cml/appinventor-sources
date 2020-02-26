@@ -497,8 +497,10 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 29
   // For YOUNG_ANDROID_VERSION 200:
   // - FORM_COMPONENT_VERSION was incremented to 27.
+  // For YOUNG_ANDROID_VERSION 201:
+  // - CANVAS_COMPONENT_VERSION was incremented to 13
 
-  public static final int YOUNG_ANDROID_VERSION = 200;
+  public static final int YOUNG_ANDROID_VERSION = 201;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -730,7 +732,9 @@ public class YaVersion {
   // - DrawShape & DrawArc was added
   // For CANVAS_COMPONENT_VERSION 12
   // - ExtendMovesOutsideCanvas was added
-  public static final int CANVAS_COMPONENT_VERSION = 12;
+  // For CANVAS_COMPONENT_VERSION 13
+  // - BackgroundImageinBase64 was added
+  public static final int CANVAS_COMPONENT_VERSION = 13;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
