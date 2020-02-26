@@ -16,6 +16,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
 
   private var _multiLine = false
   private var _empty = true
+  private var _readOnly = false
 
   override init() {
     super.init()
@@ -105,6 +106,16 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
       if _empty {
         _view.text = text
       }
+    }
+  }
+
+  @objc open var readOnly: Bool {
+    get {
+      return _readOnly
+    }
+    set (ro) {
+      _readOnly = ro
+      _view.isEditable = !ro
     }
   }
 
@@ -203,6 +214,9 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   }
 
   func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    guard !_readOnly else {
+      return false
+    }
     if _numbersOnly {
       let decimalSeparator = Locale.current.decimalSeparator ?? "."
       let escapedDecimalSeparator = decimalSeparator == "." ? "\\." : ","

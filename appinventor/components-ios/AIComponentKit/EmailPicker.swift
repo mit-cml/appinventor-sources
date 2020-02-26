@@ -4,12 +4,15 @@
 import Foundation
 import Contacts
 
-class EmailPickerAdapter: AbstractMethodsForTextBox {
+class EmailPickerAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelegate {
   fileprivate let _field = UITextField(frame: CGRect.zero)
   fileprivate let _wrapper = UIView(frame: CGRect.zero)
+  private var _readOnly = false
 
-  init() {
+  override init() {
+    super.init()
     _field.translatesAutoresizingMaskIntoConstraints = false
+    _field.delegate = self
     _wrapper.translatesAutoresizingMaskIntoConstraints = false
     makeSingleLine()
   }
@@ -65,6 +68,15 @@ class EmailPickerAdapter: AbstractMethodsForTextBox {
     }
   }
 
+  open var readOnly: Bool {
+    get {
+      return _readOnly
+    }
+    set (ro) {
+      _readOnly = ro
+    }
+  }
+
   open var text: String? {
     get {
       return _field.text
@@ -72,6 +84,10 @@ class EmailPickerAdapter: AbstractMethodsForTextBox {
     set(text) {
       _field.text = text
     }
+  }
+
+  open func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    return !_readOnly
   }
 
   private func makeSingleLine() {

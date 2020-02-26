@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -10,6 +10,7 @@ public protocol AbstractMethodsForTextBox: AbstractMethodsForViewComponent {
   var font: UIFont { get set }
   var placeholderText: String? { get set }
   var text: String? { get set }
+  var readOnly: Bool { get set }
 }
 
 // method for creating toolbar to allow users to dismiss keyboard
@@ -148,6 +149,15 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     set(hint) {
       _hint = hint
       _delegate?.placeholderText = hint
+    }
+  }
+
+  @objc open var ReadOnly: Bool {
+    get {
+      return _delegate?.readOnly ?? false
+    }
+    set (ro) {
+      _delegate?.readOnly = ro
     }
   }
   

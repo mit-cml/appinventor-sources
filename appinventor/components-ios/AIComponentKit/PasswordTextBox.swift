@@ -5,6 +5,7 @@ import Foundation
 
 class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelegate {
   fileprivate let _field = UITextField(frame: CGRect.zero)
+  private var _readOnly = false
 
   override init() {
     _field.translatesAutoresizingMaskIntoConstraints = false
@@ -65,6 +66,15 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
     }
   }
 
+  open var readOnly: Bool {
+    get {
+      return _readOnly
+    }
+    set (ro) {
+      _readOnly = ro
+    }
+  }
+
   open var text: String? {
     get {
       return _field.text
@@ -80,6 +90,9 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
 
   // prevents clearing of password field when changing 
   func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    guard !_readOnly else {
+      return false
+    }
     if let range = Range(range, in: textField.text ?? "") {
       textField.text?.replaceSubrange(range, with: string)
     }
