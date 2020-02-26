@@ -1033,11 +1033,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   /**
    * Specifies the backgound image in Base64 format
    * imageUrl will be in format of: iVBORw0KG...s//f+4z/6Z
+   * @suppressdoc
    * @param imageUrl the base64 format for an image
    */
   @android.support.annotation.RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
   @SimpleProperty (
-          description = "Set the background image in Base64 format. This requires API level >= 8. For devices with API level less than 8, setting this will end up with an empty background."
+      description = "Set the background image in Base64 format. This requires API level >= 8. For "
+          + "devices with API level less than 8, setting this will end up with an empty background."
   )
   public void BackgroundImageinBase64(String imageUrl) {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
