@@ -77,6 +77,73 @@ public final class FileExporterImpl implements FileExporter {
   }
 
   @Override
+  public ProjectSourceZip exportSelectedProjectsSourceZip(String userId,
+      String zipName, List<Long> projectIds) throws IOException {
+      // Create a zip file for each project's sources.
+    if (projectIds.size() == 0) {
+      throw new IllegalArgumentException("No projects to download");
+    }
+
+    ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
+    ZipOutputStream out = new ZipOutputStream(zipFile);
+    int count = 0;
+    String metadata = "";
+    for (Long projectId : projectIds) {
+      try {
+        ProjectSourceZip projectSourceZip =
+            exportProjectSourceZip(userId, projectId, false, false, null, false, false, false, false);
+        byte[] data = projectSourceZip.getContent();
+        String name = projectSourceZip.getFileName();
+
+        // If necessary, renae duplicate projects
+        while (true) {
+          try {
+            out.putNextEntry(new ZipEntry(name));
+            break;
+          } catch (IOException e) {
+            name = "duplicate-" + name;
+          }
+        }
+        metadata += projectSourceZip.getMetadata() + "\n";
+
+        out.write(data, 0, data.length);
+        out.closeEntry();
+        count++;
+      } catch (IllegalArgumentException e) {
+        System.err.println("No files found for userid: " + userId +
+            " for projectid: " + projectId);
+      } catch (IOException e) {
+        System.err.println("IOException while reading files found for userid: " +
+            userId + " for projectid: " + projectId);
+        continue;
+      }
+    }
+    if (count == 0) {
+      throw new IllegalArgumentException("No files to download");
+    }
+
+    List<String> userFiles = storageIo.getUserFiles(userId);
+    if (userFiles.contains(StorageUtil.ANDROID_KEYSTORE_FILENAME)) {
+      byte[] androidKeystoreBytes =
+          storageIo.downloadRawUserFile(userId, StorageUtil.ANDROID_KEYSTORE_FILENAME);
+      if (androidKeystoreBytes.length > 0) {
+        out.putNextEntry(new ZipEntry(StorageUtil.ANDROID_KEYSTORE_FILENAME));
+        out.write(androidKeystoreBytes, 0, androidKeystoreBytes.length);
+        out.closeEntry();
+        count++;
+      }
+    }
+
+    out.close();
+
+    // Package the big zip file up as a ProjectSourceZip and return it.
+    byte[] content = zipFile.toByteArray();
+    ProjectSourceZip projectSourceZip = new ProjectSourceZip(zipName, content, count);
+    projectSourceZip.setMetadata(metadata);
+    return projectSourceZip;
+  }
+
+  @Override
   public ProjectSourceZip exportAllProjectsSourceZip(String userId,
       String zipName) throws IOException {
     // Create a zip file for each project's sources.
