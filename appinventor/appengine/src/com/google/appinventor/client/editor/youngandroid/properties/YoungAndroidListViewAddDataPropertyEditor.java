@@ -9,6 +9,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.properties.PropertyEditor;
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -35,6 +36,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ListDataProvider;
 
+import javax.xml.ws.handler.MessageContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,8 +57,8 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
   private YaFormEditor editor;
 
   public YoungAndroidListViewAddDataPropertyEditor(final YaFormEditor editor) {
-    items = new ArrayList<>();
-    itemsCopy = new ArrayList<>();
+    items = new ArrayList<JSONObject>();
+    itemsCopy = new ArrayList<JSONObject>();
     addData = new Button("Click to Add/Delete Data");
     this.editor = editor;
 
@@ -156,7 +158,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
     Column<JSONObject, String> createImageSelectionDropDown(final String columnKey) {
       Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
       YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
-      List<String> choices = new ArrayList<>();
+      List<String> choices = new ArrayList<String>();
       choices.add(0, "None");
       if (assetsFolder != null) {
         for (ProjectNode node : assetsFolder.getChildren()) {
@@ -188,15 +190,15 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
       verticalPanel = new VerticalPanel();
       actionButtons = new HorizontalPanel();
-      itemsCopy = new ArrayList<>();
+      itemsCopy = new ArrayList<JSONObject>();
       model = new ListDataProvider(itemsCopy);
-      table = new CellTable<>();
+      table = new CellTable<JSONObject>();
       rows = new JSONArray();
       add  = new Button("Click to Add Row Data");
       save = new Button("SAVE");
       cancel = new Button("CANCEL");
 
-      setText("Add Data to the ListView");
+      setText(MESSAGES.listDataAddDataTitle());
 
       for (int i = 0; i < items.size(); ++i) {
         itemsCopy.add(i, items.get(i));
@@ -209,18 +211,18 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
        * create table columns and type of each column according to the type of ListView layout
        */
       if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {
-        table.addColumn(createTextBoxes("Text1"), "MainText");
+        table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
       } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT ||
             layoutValue == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
-        table.addColumn(createTextBoxes("Text1"), "MainText");
-        table.addColumn(createTextBoxes("Text2"), "DetailText");
+        table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
+        table.addColumn(createTextBoxes("Text2"), MESSAGES.listDataDetailTextHeader());
       } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
-        table.addColumn(createTextBoxes("Text1"), "MainText");
-        table.addColumn(createImageSelectionDropDown("Image"), "Image");
+        table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
+        table.addColumn(createImageSelectionDropDown("Image"), MESSAGES.listDataImageHeader());
       } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
-        table.addColumn(createTextBoxes("Text1"), "MainText");
-        table.addColumn(createTextBoxes("Text2"), "DetailText");
-        table.addColumn(createImageSelectionDropDown("Image"), "Image");
+        table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
+        table.addColumn(createTextBoxes("Text2"), MESSAGES.listDataDetailTextHeader());
+        table.addColumn(createImageSelectionDropDown("Image"), MESSAGES.listDataImageHeader());
       }
 
       table.addColumn(createDeleteButton());
@@ -327,10 +329,10 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
     Cancel(){
       verticalPanel = new VerticalPanel();
       buttonPanel = new HorizontalPanel();
-      setText("Cancel");
-      verticalPanel.add(new Label("Are you sure you want to exit without saving data?"));
-      yes = new Button("YES");
-      no = new Button("NO");
+      setText(MESSAGES.cancelButton());
+      verticalPanel.add(new Label(MESSAGES.listDataConcelConfirm()));
+      yes = new Button(MESSAGES.okButton());
+      no = new Button(MESSAGES.cancelButton());
       buttonPanel.add(yes);
       buttonPanel.add(no);
       buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);

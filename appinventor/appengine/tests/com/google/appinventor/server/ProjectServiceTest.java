@@ -289,7 +289,7 @@ public class ProjectServiceTest {
 
     checkUserProjects(projectServiceImpl.getProjectInfos(),
         new UserProject(yaProject, PROJECT1_NAME,
-            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), 0L, 0L));
+            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), 0L, false));
     PowerMock.verifyAll();
   }
 

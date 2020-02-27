@@ -71,7 +71,8 @@ public class BlocklyPanel extends HTMLPanel {
     exportMethodsToJavascript();
     // Tell the blockly world about companion versions.
     setLanguageVersion(YaVersion.YOUNG_ANDROID_VERSION, YaVersion.BLOCKS_LANGUAGE_VERSION);
-    setPreferredCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.COMPANION_UPDATE_URL,
+    setPreferredCompanion(MESSAGES.useCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.PREFERRED_COMPANION + "u"),
+      YaVersion.COMPANION_UPDATE_URL,
       YaVersion.COMPANION_UPDATE_URL1,
       YaVersion.COMPANION_UPDATE_EMULATOR_URL);
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
@@ -264,12 +265,16 @@ public class BlocklyPanel extends HTMLPanel {
    * @throws YailGenerationException if there was a problem generating the Yail
    */
   public void sendComponentData(String formJson, String packageName) throws YailGenerationException {
+    sendComponentData(formJson, packageName, false);
+  }
+
+  public void sendComponentData(String formJson, String packageName, boolean force) throws YailGenerationException {
     if (!currentForm.equals(formName)) { // Not working on the current form...
       OdeLog.log("Not working on " + currentForm + " (while sending for " + formName + ")");
       return;
     }
     try {
-      doSendJson(formJson, packageName);
+      doSendJson(formJson, packageName, force);
     } catch (JavaScriptException e) {
       throw new YailGenerationException(e.getDescription(), formName);
     }
@@ -804,9 +809,13 @@ public class BlocklyPanel extends HTMLPanel {
       .getFormYail(formJson, packageName);
   }-*/;
 
-  public native void doSendJson(String formJson, String packageName) /*-{
+  public void doSendJson(String formJson, String packageName) {
+    doSendJson(formJson, packageName, false);
+  };
+
+  public native void doSendJson(String formJson, String packageName, boolean force) /*-{
     Blockly.ReplMgr.sendFormData(formJson, packageName,
-      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace, force);
   }-*/;
 
   public native void doResetYail() /*-{

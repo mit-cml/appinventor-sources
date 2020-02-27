@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Storage</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Storage</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="storage">Storage</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#CloudDB">CloudDB</a></li>
+  <li><a href="#File">File</a></li>
+  <li><a href="#TinyDB">TinyDB</a></li>
+  <li><a href="#TinyWebDB">TinyWebDB</a></li>
+</ul>
+
+<h2 id="CloudDB">CloudDB</h2>
+
+<p>The <code class="highlighter-rouge">CloudDB</code> component is a Non-visible component that allows you to store data on a Internet
+ connected database server (using Redis software). This allows the users of your App to share
+ data with each other. By default data will be stored in a server maintained by MIT, however you
+ can setup and run your own server. Set the <a href="#CloudDB.RedisServer"><code class="highlighter-rouge">RedisServer</code></a> property and
+ <a href="#CloudDB.RedisPort"><code class="highlighter-rouge">RedisPort</code></a> property to access your own server.</p>
+
+<h3 id="CloudDB-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="CloudDB.ProjectID" class="text ro"><em>ProjectID</em></dt>
+  <dd>Gets the ProjectID for this CloudDB project.</dd>
+  <dt id="CloudDB.RedisPort" class="number ro"><em>RedisPort</em></dt>
+  <dd>The Redis Server port to use. Defaults to 6381</dd>
+  <dt id="CloudDB.RedisServer" class="text ro"><em>RedisServer</em></dt>
+  <dd>The Redis Server to use to store data. A setting of “DEFAULT” means that the MIT server will be used.</dd>
+  <dt id="CloudDB.Token" class="text ro do"><em>Token</em></dt>
+  <dd>This field contains the authentication token used to login to the backed Redis server. For the
+ “DEFAULT” server, do not edit this value, the system will fill it in for you. A system
+ administrator may also provide a special value to you which can be used to share data between
+ multiple projects from multiple people. If using your own Redis server, set a password in the
+ server’s config and enter it here.</dd>
+  <dt id="CloudDB.UseSSL" class="boolean ro do"><em>UseSSL</em></dt>
+  <dd>Set to true to use SSL to talk to CloudDB/Redis server. This should be set to True for the “DEFAULT” server.</dd>
+</dl>
+
+<h3 id="CloudDB-Events">Events</h3>
+
+<dl class="events">
+  <dt id="CloudDB.CloudDBError">CloudDBError(<em class="text">message</em>)</dt>
+  <dd>Indicates that an error occurred while communicating with the CloudDB Redis server.</dd>
+  <dt id="CloudDB.DataChanged">DataChanged(<em class="text">tag</em>,<em class="any">value</em>)</dt>
+  <dd>Indicates that the data in the CloudDB project has changed. Launches an event with the
+ <code class="text block highlighter-rouge">tag</code> that has been updated and the <code class="variable block highlighter-rouge">value</code> it now has.</dd>
+  <dt id="CloudDB.FirstRemoved">FirstRemoved(<em class="any">value</em>)</dt>
+  <dd>Event triggered by the <a href="#CloudDB.RemoveFirstFromList"><code class="highlighter-rouge">RemoveFirstFromList</code></a> function. The argument
+ <code class="variable block highlighter-rouge">value</code> is the object that was the first in the list, and which is now
+ removed.</dd>
+  <dt id="CloudDB.GotValue">GotValue(<em class="text">tag</em>,<em class="any">value</em>)</dt>
+  <dd>Indicates that a <a href="#CloudDB.GetValue"><code class="highlighter-rouge">GetValue</code></a> request has succeeded.</dd>
+  <dt id="CloudDB.TagList">TagList(<em class="list">value</em>)</dt>
+  <dd>Event triggered when we have received the list of known tags. Run in response to a call to the
+ <a href="#CloudDB.GetTagList"><code class="highlighter-rouge">GetTagList</code></a> function.</dd>
+</dl>
+
+<h3 id="CloudDB-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="CloudDB.AppendValueToList" class="method"><i></i> AppendValueToList(<em class="text">tag</em>,<em class="any">itemToAdd</em>)</dt>
+  <dd>Append a value to the end of a list atomically. If two devices use this function simultaneously, both will be appended and no data lost.</dd>
+  <dt id="CloudDB.ClearTag" class="method"><i></i> ClearTag(<em class="text">tag</em>)</dt>
+  <dd>Remove the tag from CloudDB.</dd>
+  <dt id="CloudDB.CloudConnected" class="method returns boolean"><i></i> CloudConnected()</dt>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if we are on the network and will likely be able to connect to
+ the <code class="highlighter-rouge">CloudDB</code> server.</dd>
+  <dt id="CloudDB.GetTagList" class="method"><i></i> GetTagList()</dt>
+  <dd>Asks <code class="highlighter-rouge">CloudDB</code> to retrieve all the tags belonging to this project. The
+ resulting list is returned in the event <a href="#CloudDB.TagList"><code class="highlighter-rouge">TagList</code></a>.</dd>
+  <dt id="CloudDB.GetValue" class="method"><i></i> GetValue(<em class="text">tag</em>,<em class="any">valueIfTagNotThere</em>)</dt>
+  <dd><code class="highlighter-rouge">GetValue</code> asks <code class="highlighter-rouge">CloudDB</code> to get the value stored under the given tag.
+ It will pass the result to the <a href="#CloudDB.GotValue"><code class="highlighter-rouge">GotValue</code></a> will be given.</dd>
+  <dt id="CloudDB.RemoveFirstFromList" class="method"><i></i> RemoveFirstFromList(<em class="text">tag</em>)</dt>
+  <dd>Obtain the first element of a list and atomically remove it. If two devices use this function
+ simultaneously, one will get the first element and the the other will get the second element,
+ or an error if there is no available element. When the element is available, the
+ <a href="#CloudDB.FirstRemoved"><code class="highlighter-rouge">FirstRemoved</code></a> event will be triggered.</dd>
+  <dt id="CloudDB.StoreValue" class="method"><i></i> StoreValue(<em class="text">tag</em>,<em class="any">valueToStore</em>)</dt>
+  <dd>Asks <code class="highlighter-rouge">CloudDB</code> to store the given <code class="variable block highlighter-rouge">value</code> under the given
+ <code class="text block highlighter-rouge">tag</code>.</dd>
+</dl>
+
+<h2 id="File">File</h2>
+
+<p>Non-visible component for storing and retrieving files. Use this component to write or read files
+ on the device. The default behavior is to write files to the private data directory associated
+ with the app. The Companion writes files to <code class="highlighter-rouge">/sdcard/AppInventor/data</code> for easy debugging. If
+ the file path starts with a slash (<code class="highlighter-rouge">/</code>), then the file is created relative to <code class="highlighter-rouge">/sdcard</code>.
+ For example, writing a file to <code class="highlighter-rouge">/myFile.txt</code> will write the file in <code class="highlighter-rouge">/sdcard/myFile.txt</code>.</p>
+
+<h3 id="File-Properties">Properties</h3>
+
+<p class="properties">None</p>
+
+<h3 id="File-Events">Events</h3>
+
+<dl class="events">
+  <dt id="File.AfterFileSaved">AfterFileSaved(<em class="text">fileName</em>)</dt>
+  <dd>Event indicating that the contents of the file have been written.</dd>
+  <dt id="File.GotText">GotText(<em class="text">text</em>)</dt>
+  <dd>Event indicating that the contents from the file have been read.</dd>
+</dl>
+
+<h3 id="File-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="File.AppendToFile" class="method"><i></i> AppendToFile(<em class="text">text</em>,<em class="text">fileName</em>)</dt>
+  <dd>Appends text to the end of a file. Creates the file if it does not already exist. See the help
+ text under <a href="#File.SaveFile"><code class="highlighter-rouge">SaveFile</code></a> for information about where files are written.
+ On success, the <a href="#File.AfterFileSaved"><code class="highlighter-rouge">AfterFileSaved</code></a> event will run.</dd>
+  <dt id="File.Delete" class="method"><i></i> Delete(<em class="text">fileName</em>)</dt>
+  <dd>Deletes a file from storage. Prefix the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">/</code> to delete a specific
+ file in the SD card (for example, <code class="highlighter-rouge">/myFile.txt</code> will delete the file <code class="highlighter-rouge">/sdcard/myFile.txt</code>).
+ If the <code class="text block highlighter-rouge">fileName</code> does not begin with a <code class="highlighter-rouge">/</code>, then the file located in the
+ program’s private storage will be deleted. Starting the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">//</code> is
+ an error because asset files cannot be deleted.</dd>
+  <dt id="File.ReadFrom" class="method"><i></i> ReadFrom(<em class="text">fileName</em>)</dt>
+  <dd>Reads text from a file in storage. Prefix the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">/</code> to read from a
+ specific file on the SD card (for example, <code class="highlighter-rouge">/myFile.txt</code> will read the file
+ <code class="highlighter-rouge">/sdcard/myFile.txt</code>). To read assets packaged with an application (also works for the
+ Companion) start the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">//</code> (two slashes). If a
+ <code class="text block highlighter-rouge">fileName</code> does not start with a slash, it will be read from the application’s
+ private storage (for packaged apps) and from <code class="highlighter-rouge">/sdcard/AppInventor/data</code> for the Companion.</dd>
+  <dt id="File.SaveFile" class="method"><i></i> SaveFile(<em class="text">text</em>,<em class="text">fileName</em>)</dt>
+  <dd>Saves text to a file. If the <code class="text block highlighter-rouge">fileName</code> begins with a slash (<code class="highlighter-rouge">/</code>) the file is
+ written to the sdcard (for example, writing to <code class="highlighter-rouge">/myFile.txt</code> will write the file to
+ <code class="highlighter-rouge">/sdcard/myFile.txt</code>). If the <code class="text block highlighter-rouge">fileName</code> does not start with a slash, it will be
+ written in the program’s private data directory where it will not be accessible to other
+ programs on the phone. There is a special exception for the AI Companion where these files are
+ written to <code class="highlighter-rouge">/sdcard/AppInventor/data</code> to facilitate debugging.
+
+    <p>Note that this block will overwrite a file if it already exists. If you want to add content
+ to an existing file use the <a href="#File.AppendToFile"><code class="highlighter-rouge">AppendToFile</code></a> method.</p>
+  </dd>
+</dl>
+
+<h2 id="TinyDB">TinyDB</h2>
+
+<p><code class="highlighter-rouge">TinyDB</code> is a non-visible component that stores data for an app.</p>
+
+<p>Apps created with App Inventor are initialized each time they run. This means that if an app
+ sets the value of a variable and the user then quits the app, the value of that variable will
+ not be remembered the next time the app is run. In contrast, TinyDB is a persistent data store
+ for the app. The data stored in a <code class="highlighter-rouge">TinyDB</code> will be available each time the app is run. An
+ example might be a game that saves the high score and retrieves it each time the game is played.</p>
+
+<p>Data items consist of tags and values. To store a data item, you specify the tag it should be
+ stored under. The tag must be a text block, giving the data a name. Subsequently, you can
+ retrieve the data that was stored under a given tag.</p>
+
+<p>You cannot use the <code class="highlighter-rouge">TinyDB</code> to pass data between two different apps on the phone, although you
+ can use the <code class="highlighter-rouge">TinyDB</code> to share data between the different screens of a multi-screen app.</p>
+
+<p>When you are developing apps using the AI Companion, all the apps using that Companion will
+ share the same <code class="highlighter-rouge">TinyDB</code>. That sharing will disappear once the apps are packaged and installed on
+ the phone. During development you should be careful to clear the Companion app’s data each time
+ you start working on a new app.</p>
+
+<h3 id="TinyDB-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="TinyDB.Namespace" class="text"><em>Namespace</em></dt>
+  <dd>Namespace for storing data.</dd>
+</dl>
+
+<h3 id="TinyDB-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="TinyDB-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="TinyDB.ClearAll" class="method"><i></i> ClearAll()</dt>
+  <dd>Clear the entire data store.</dd>
+  <dt id="TinyDB.ClearTag" class="method"><i></i> ClearTag(<em class="text">tag</em>)</dt>
+  <dd>Clear the entry with the given <code class="text block highlighter-rouge">tag</code>.</dd>
+  <dt id="TinyDB.GetTags" class="method returns any"><i></i> GetTags()</dt>
+  <dd>Return a list of all the tags in the data store.</dd>
+  <dt id="TinyDB.GetValue" class="method returns any"><i></i> GetValue(<em class="text">tag</em>,<em class="any">valueIfTagNotThere</em>)</dt>
+  <dd>Retrieve the value stored under the given <code class="text block highlighter-rouge">tag</code>.  If there’s no such tag, then
+ return <code class="variable block highlighter-rouge">valueIfTagNotThere</code>.</dd>
+  <dt id="TinyDB.StoreValue" class="method"><i></i> StoreValue(<em class="text">tag</em>,<em class="any">valueToStore</em>)</dt>
+  <dd>Store the given <code class="variable block highlighter-rouge">valueToStore</code> under the given <code class="text block highlighter-rouge">tag</code>.
+ The storage persists on the phone when the app is restarted.</dd>
+</dl>
+
+<h2 id="TinyWebDB">TinyWebDB</h2>
+
+<p>The <code class="highlighter-rouge">TinyWebDB</code> component communicates with a Web service to store
+ and retrieve information.  Although this component is usable, it is
+ very limited and meant primarily as a demonstration for people who
+ would like to create their own components that talk to the Web.
+ The accompanying Web service is at
+ (http://tinywebdb.appinventor.mit.edu).  The component has methods to
+ <a href="#TinyWebDB.StoreValue">store a value</a> under a tag and to
+ <a href="#TinyWebDB.GetValue">retrieve the value</a> associated with
+ the tag.  The interpretation of what “store” and “retrieve” means
+ is up to the Web service.  In this implementation, all tags and
+ values are strings (text).  This restriction may be relaxed in
+ future versions.</p>
+
+<h3 id="TinyWebDB-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="TinyWebDB.ServiceURL" class="text"><em>ServiceURL</em></dt>
+  <dd>Specifies the URL of the  Web service.
+ The default value is the demo service running on App Engine.</dd>
+</dl>
+
+<h3 id="TinyWebDB-Events">Events</h3>
+
+<dl class="events">
+  <dt id="TinyWebDB.GotValue">GotValue(<em class="text">tagFromWebDB</em>,<em class="any">valueFromWebDB</em>)</dt>
+  <dd>Indicates that a <a href="#TinyWebDB.GetValue"><code class="highlighter-rouge">GetValue</code></a> server request has succeeded.</dd>
+  <dt id="TinyWebDB.ValueStored">ValueStored()</dt>
+  <dd>Event indicating that a <a href="#TinyWebDB.StoreValue"><code class="highlighter-rouge">StoreValue</code></a>  server request has succeeded.</dd>
+  <dt id="TinyWebDB.WebServiceError">WebServiceError(<em class="text">message</em>)</dt>
+  <dd>Indicates that the communication with the Web service signaled an error.</dd>
+</dl>
+
+<h3 id="TinyWebDB-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="TinyWebDB.GetValue" class="method"><i></i> GetValue(<em class="text">tag</em>)</dt>
+  <dd><code class="highlighter-rouge">GetValue</code> asks the Web service to get the value stored under the given <code class="text block highlighter-rouge">tag</code>.
+ It is up to the Web service what to return if there is no value stored under the
+ <code class="text block highlighter-rouge">tag</code>.  This component just accepts whatever is returned. The
+ <a href="#TinyWebDB.GotValue"><code class="highlighter-rouge">GotValue</code></a> event will be run on completion.</dd>
+  <dt id="TinyWebDB.StoreValue" class="method"><i></i> StoreValue(<em class="text">tag</em>,<em class="any">valueToStore</em>)</dt>
+  <dd>Sends a request to the Web service to store the given <code class="variable block highlighter-rouge">valueToStore</code> under
+ the given <code class="text block highlighter-rouge">tag</code>. The <a href="#TinyWebDB.ValueStored"><code class="highlighter-rouge">ValueStored</code></a> event will be run on completion.</dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+		<div>
+		    <div>
+			<span>GitHub:</span>
+			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                           target="_blank">mit-cml</a>
+			<div>
+			</div>
+	            </div>
+	        </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

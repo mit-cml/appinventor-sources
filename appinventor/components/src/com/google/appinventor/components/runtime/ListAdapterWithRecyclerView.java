@@ -11,11 +11,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.graphics.drawable.Drawable;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+import com.google.appinventor.components.runtime.util.YailDictionary;
+
 
 
 @SimpleObject
@@ -27,11 +32,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
   private static ClickListener clickListener;
 
-  private String[] firstItem;
-  private String[] secondItem;
   public Boolean[] selection;
-  private ArrayList<Drawable> images;
-  private Context context;
   private int textMainColor;
   private int textMainSize;
   private int textDetailColor;
@@ -43,16 +44,16 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
   private int imageWidth;
   private CardView[] itemViews;
   private boolean multiSelect;
+  private List<YailDictionary> items;
+  protected final ComponentContainer container;
 
   public boolean isSelected = false;
 
   private int idFirst = -1, idSecond = -1, idImages = -1, idCard = 1;
 
-  public ListAdapterWithRecyclerView(Context context, int size, String[] first, String[] second, ArrayList<Drawable> images, int textMainColor, int textDetailColor, int textMainSize, int textDetailSize, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
-    this.firstItem = first;
-    this.secondItem = second;
-    this.images = images;
-    this.context = context;
+  public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, int textMainSize, int textDetailSize, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
+    this.items = items;
+    this.container = container;
     this.textMainSize = textMainSize;
     this.textMainColor = textMainColor;
     this.textDetailColor = textDetailColor;
@@ -62,16 +63,17 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     this.selectionColor = selectionColor;
     this.imageHeight = imageHeight;
     this.imageWidth = imageWidth;
-    this.itemViews = new CardView[size];
+    this.itemViews = new CardView[items.size()];
     this.multiSelect = multiSelect;
 
-    this.selection = new Boolean[size];
+    this.selection = new Boolean[items.size()];
     Arrays.fill(selection, Boolean.FALSE);
   }
 
   public void selectFromText(String text1) {
     for (int i = 0; i < itemViews.length; i++) {
-      if (firstItem[i] == text1) {
+      YailDictionary d = items.get(i);
+      if (d.get("Text1") == text1) {
         selection[i] = true;
         itemViews[i].setBackgroundColor(selectionColor);
         break;
@@ -109,7 +111,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
   @Override
   public RvViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
 
-    CardView cardView = new CardView(context);
+    CardView cardView = new CardView(container.$context());
     cardView.setUseCompatPadding(true);
     cardView.setContentPadding(10, 10, 10, 10);
     cardView.setPreventCornerOverlap(true);
@@ -127,7 +129,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     ViewCompat.setElevation(cardView, 20);
 
     // All layouts have a textview containing MainText
-    TextView textViewFirst = new TextView(context);
+    TextView textViewFirst = new TextView(container.$context());
     idFirst = ViewCompat.generateViewId();
     textViewFirst.setId(idFirst);
     LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -202,33 +204,24 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         holder.onClick(v);
       }
     });
+    YailDictionary dictItem = items.get(position);
+    String first = dictItem.get("Text1").toString();
+    String second = dictItem.get("Text2").toString();
     if (layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
-      String first = firstItem[position];
       holder.textViewFirst.setText(first);
     } else if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT) {
-      String first = firstItem[position];
-      String second = secondItem[position];
-
       holder.textViewFirst.setText(first);
       holder.textViewSecond.setText(second);
     } else if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
-      String first = firstItem[position];
-      String second = secondItem[position];
-
       holder.textViewFirst.setText(first);
       holder.textViewSecond.setText(second);
     } else if (layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
-      String first = firstItem[position];
-      Drawable drawable = images.get(position);
+      Drawable drawable = MediaUtil.getBitmapDrawable(container.$form(), dictItem.get("Image"));
       ViewUtil.setImage(holder.imageVieww, drawable);
-
       holder.textViewFirst.setText(first);
     } else if (layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
-      String first = firstItem[position];
-      String second = secondItem[position];
-      Drawable drawable = images.get(position);
+      Drawable drawable = MediaUtil.getBitmapDrawable(container.$form(), dictItem.get("Image"));
       ViewUtil.setImage(holder.imageVieww, drawable);
-
       holder.textViewFirst.setText(first);
       holder.textViewSecond.setText(second);
     }
@@ -238,7 +231,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
 
   @Override
   public int getItemCount() {
-    return (firstItem.length);
+    return (itemViews.length);
   }
 
   class RvViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -290,7 +283,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     String selectedItems = new String();
     for (int i = 0; i < selection.length; ++i) {
       if (selection[i]) {
-        selectedItems += "," + firstItem[i];
+        YailDictionary dictItem = items.get(i);
+        selectedItems += "," + dictItem.get("Text1").toString();
       }
     }
     return selectedItems.length() > 0 ? selectedItems.substring(1) : "";

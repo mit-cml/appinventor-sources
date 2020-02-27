@@ -47,7 +47,7 @@ public final class MockCheckBox extends MockToggleBase<CheckBox> {
       // Get the Element from the CheckBox.
       // Call DOM.clone to make a deep clone of that element.
       // Pass that cloned element to the super constructor.
-      super(DOM.clone(ptb.getElement(), true));
+      super(DOM.clone(ptb.getElement().getFirstChildElement(), true));
     }
   }
 

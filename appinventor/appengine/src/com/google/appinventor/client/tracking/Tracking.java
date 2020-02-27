@@ -25,8 +25,14 @@ public class Tracking {
       "New-YA";
   public static final String PROJECT_ACTION_DELETE_PROJECT_YA = PROJECT_ACTION_PREFIX +
       "DeleteProject-YA";
+  public static final String PROJECT_ACTION_RESTORE_PROJECT_YA = PROJECT_ACTION_PREFIX +
+      "RestoreProject-YA";
+  public static final String PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA = PROJECT_ACTION_PREFIX +
+      "MoveToTrashProject-YA";
   public static final String PROJECT_ACTION_DELETE_FILE_YA = PROJECT_ACTION_PREFIX +
       "DeleteFile-YA";
+  public static final String PROJECT_ACTION_PREVIEW_FILE_YA = PROJECT_ACTION_PREFIX +
+      "PreviewFile-YA";
   public static final String PROJECT_ACTION_BUILD_BARCODE_YA = PROJECT_ACTION_PREFIX +
       "BuildBarcode-YA";
   public static final String PROJECT_ACTION_BUILD_DOWNLOAD_YA = PROJECT_ACTION_PREFIX +

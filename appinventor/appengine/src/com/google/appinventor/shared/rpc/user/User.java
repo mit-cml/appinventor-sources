@@ -262,7 +262,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    return obj instanceof User && ((User) obj).id == id;
+    return obj instanceof User && id.equals(((User) obj).id);
   }
 
   @Override
