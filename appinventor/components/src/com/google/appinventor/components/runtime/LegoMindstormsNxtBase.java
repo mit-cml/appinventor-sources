@@ -111,6 +111,7 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
 
   /**
    * Specifies the BluetoothClient component that should be used for communication.
+   * **Must be set in the Designer.**
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BLUETOOTHCLIENT,
       defaultValue = "")

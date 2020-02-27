@@ -273,16 +273,6 @@
   <!-- targets that build dependencies -->
 
   <!-- ====================================================================
-       blockseditor_BlocksEditor builds:
-       - build/blockseditor/BlocksEditor.jar
-       ==================================================================== -->
-  
-  <target name="blockseditor_BlocksEditor">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blockseditor"
-         target="BlocksEditor"/>
-  </target>
-
-  <!-- ====================================================================
        blocklyeditor_BlocklyCompile builds:
        - build/blockly-all.js
        ==================================================================== -->
@@ -290,36 +280,6 @@
   <target name="blocklyeditor_BlocklyCompile">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blocklyeditor"
          target="BlocklyCompile"/>
-  </target>
-
-  <!-- ====================================================================
-       components_ComponentTranslation builds:
-       common/build/src/com/google/appinventor/ComponentsTranslation.java
-       ==================================================================== -->
-
-  <target name="components_ComponentTranslation">
-    <ant inheritAll="false" useNativeBaseDir="true" dir="${appinventor.dir}/components"
-         target="ComponentTranslation"/>
-  </target>
-
-  <!-- ====================================================================
-       buildserver_StarterApp builds:
-       - build/buildserver/AppInventorPhoneApp.apk
-       ==================================================================== -->
-  
-  <target name="buildserver_StarterApp">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/buildserver"
-         target="StarterApp"/>
-  </target>
-
-  <!-- ====================================================================
-       common_CommonTranslations builds:
-       - build/common/CommonTranslations.jar
-       ==================================================================== -->
-  
-  <target name="common_CommonTranslations">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
-         target="CommonTranslations"/>
   </target>
 
   <!-- ====================================================================
@@ -365,16 +325,6 @@
   </target>
 
   <!-- ====================================================================
-       components_Barcode builds:
-       - build/components/Barcode.jar
-       ==================================================================== -->
-  
-  <target name="components_Barcode">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
-         target="Barcode"/>
-  </target>
-
-  <!-- ====================================================================
        components_CommonConstants builds:
        - build/components/CommonConstants.jar
        - build/components/CommonConstants-gwt.jar
@@ -383,27 +333,6 @@
   <target name="components_CommonConstants">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
          target="CommonConstants"/>
-  </target>
-
-  <!-- ====================================================================
-       components_ComponentList builds:
-       - build/components/simple_components.txt
-       - build/components/simple_components_build_info.json
-       ==================================================================== -->
-  
-  <target name="components_ComponentList">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
-         target="ComponentList"/>
-  </target>
-
-  <!-- ====================================================================
-       components_JsonComponentDescription builds:
-       - build/components/simple_components.json
-       ==================================================================== -->
-  
-  <target name="components_JsonComponentDescription">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
-         target="JsonComponentDescription"/>
   </target>
 
 </project>

@@ -67,12 +67,13 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Available property getter method (read-only property).
+   * Specifies whether or not the device has the hardware to support the `%type%` component.
    *
-   * @return {@code true} indicates that a hygrometer is available,
+   * @return {@code true} indicates that the sensor is available,
    *         {@code false} that it isn't
    */
-  @SimpleProperty(description = "Specifies whether or not the device has an ambient air pressure sensor.")
+  @SimpleProperty(description = "Specifies whether or not the device has the "
+      + "hardware to support the %type% component.")
   public boolean Available() {
     return isAvailable();
   }
@@ -90,7 +91,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Specifies whether the sensor should generate events.  If true,
+   * Specifies whether the sensor should generate events.  If `true`{:.logic.block},
    * the sensor will generate events.  Otherwise, no events are
    * generated.
    *
@@ -107,11 +108,12 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   /**
    * RefreshTime property getter method.
    *
+   * @suppressdoc
    * @return time in ms between updates
    */
   @SimpleProperty(
       description = "The requested minimum time in milliseconds between " +
-      "changes in air pressure being reported. Android is not guaranteed to honor the request. " +
+      "changes in readings being reported. Android is not guaranteed to honor the request. " +
       "Setting this property has no effect on pre-Gingerbread devices.")
   public int RefreshTime() {
     return refreshTime;
@@ -120,6 +122,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   /**
    * RefreshTime property setter method.
    *
+   * @suppressdoc
    * @param time in ms between updates
    */
   @DesignerProperty(

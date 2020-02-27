@@ -32,6 +32,41 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 /**
+ * Component for viewing Web pages.
+ *
+ * ![WebViewer icon](images/webviewer.png)
+ *
+ * The {@link #HomeUrl()} can be specified in the Designer or in the Blocks Editor. The view can be
+ * set to follow links when they are tapped, and users can fill in Web forms.
+ *
+ * **Warning:** This is not a full browser. For example, pressing the phone's hardware Back key
+ * will exit the app, rather than move back in the browser history.
+ *
+ * You can use the {@link #WebViewString(String)} property to communicate between your app and
+ * Javascript code running in the `WebViewer` page. In the app, you get and set
+ * {@link #WebViewString(String). In the `WebViewer`, you include Javascript that references the
+ * `window.AppInventor` object, using the methods `getWebViewString()` and `setWebViewString(text)`.
+ *
+ * For example, if the `WebViewer` opens to a page that contains the Javascript command
+ * ```javascript
+ * document.write("The answer is" + window.AppInventor.getWebViewString());
+ * ```
+ * and if you set {@link #WebViewString(String)} to "hello", then the web page will show
+ * ```
+ * The answer is hello.
+ * ```
+ * And if the Web page contains Javascript that executes the command
+ * ```javascript
+ * windowAppInventor.setWebViewString("hello from Javascript"),
+ * ```
+ * then the value of the {@link #WebViewString()} property will be
+ * ```
+ * hello from Javascript.
+ * ```
+ * Calling `setWebViewString` from JavaScript will also run the {@link #WebViewStringChange(String)}
+ * event so that the blocks can handle when the {@link #WebViewString(String)} property changes.
+ *
+ * @internaldoc
  * Component for displaying web pages
  * This is a very limited form of browser.  You can view web pages and
  * click on links. It also handles  Javascript. There are lots of things that could be added,
@@ -104,7 +139,7 @@ public final class WebViewer extends AndroidViewComponent {
     webview.getSettings().setJavaScriptEnabled(true);
     webview.setFocusable(true);
     // adds a way to send strings to the javascript
-    wvInterface = new WebViewInterface(webview.getContext());
+    wvInterface = new WebViewInterface();
     webview.addJavascriptInterface(wvInterface, "AppInventor");
     // enable pinch zooming and zoom controls
     webview.getSettings().setBuiltInZoomControls(true);
@@ -138,7 +173,8 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
-   * Gets the web view string
+   * Gets the `WebView`'s String, which is viewable through Javascript in the `WebView` as the
+   * `window.AppInventor` object.
    *
    * @return string
    */
@@ -151,6 +187,8 @@ public final class WebViewer extends AndroidViewComponent {
 
   /**
    * Sets the web view string
+   *
+   * @suppressdoc
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void WebViewString(String newString) {
@@ -164,7 +202,7 @@ public final class WebViewer extends AndroidViewComponent {
 
   // Create a class so we can override the default link following behavior.
   // The handler doesn't do anything on its own.  But returning true means that
-  // this do nothing will override the default WebVew behavior.  Returning
+  // this do nothing will override the default WebView behavior.  Returning
   // false means to let the WebView handle the Url.  In other words, returning
   // true will not follow the link, and returning false will follow the link.
   private class WebViewerClient extends WebViewClient {
@@ -172,10 +210,20 @@ public final class WebViewer extends AndroidViewComponent {
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
       return !followLinks;
     }
+
+    @Override
+    public void onPageFinished(WebView view, String url) {
+      PageLoaded(url);
+    }
   }
 
   // Components don't normally override Width and Height, but we do it here so that
   // the automatic width and height will be fill parent.
+
+  /**
+   * Specifies the horizontal width of the `%type%`, measured in pixels.
+   * @param  width in pixels
+   */
   @Override
   @SimpleProperty()
   public void Width(int width) {
@@ -185,6 +233,10 @@ public final class WebViewer extends AndroidViewComponent {
     super.Width(width);
   }
 
+  /**
+   * Specifies the `%type%`'s vertical height, measured in pixels.
+   * @param  height in pixels
+   */
   @Override
   @SimpleProperty()
   public void Height(int height) {
@@ -209,7 +261,8 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
-   * Specifies the URL of the page the WebVewier should load
+   * Specifies the URL of the page the `WebViewer` should initially open to. Setting this will
+   * load the page.
    *
    * @param url URL of the page the WebVewier should load
    */
@@ -224,7 +277,8 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
-   * Returns the URL currently being viewed
+   * Returns the URL currently being viewed. This could be different from the {@link #HomeUrl()}
+   * if new pages were visited by following links.
    *
    * @return URL of the page being viewed
    */
@@ -261,8 +315,9 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
 
-  /** Determines whether to follow links when they are tapped
-   *
+  /**
+   * Determines whether to follow links when they are tapped in the `WebViewer`. If you follow
+   * links, you can use {@link #GoBack()} and {@link #GoForward()} to navigate the browser history.
    * @param follow
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
@@ -274,7 +329,8 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
-   * Determines whether SSL Errors are ignored. Set to true to use self signed certificates
+   * Determine whether or not to ignore SSL errors. Set to `true`{:.logic.block} to ignore errors.
+   * Use this to accept self signed certificates from websites.
    *
    * @return true or false
    *
@@ -290,7 +346,8 @@ public final class WebViewer extends AndroidViewComponent {
   /**
    * Determines whether or not to ignore SSL Errors
    *
-   * @param ignoreErrors set to true to ignore SSL errors
+   * @suppressdoc
+   * @param ignoreSslErrors set to true to ignore SSL errors
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
@@ -312,7 +369,7 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
-   *  Go back to the previously viewed page.
+   * Go back to the previous page in the history list. Does nothing if there is no previous page.
    */
   @SimpleFunction(
       description = "Go back to the previous page in the history list.  " +
@@ -324,7 +381,7 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
-   *  Go forward in the history list
+   * Go forward to the next page in the history list. Does nothing if there is no next page.
    */
   @SimpleFunction(
       description = "Go forward to the next page in the history list.   " +
@@ -356,7 +413,7 @@ public final class WebViewer extends AndroidViewComponent {
 
 
   /**
-   *  Load the given URL
+   * Load the page at the given URL.
    */
   @SimpleFunction(
       description = "Load the page at the given URL.")
@@ -365,8 +422,8 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
-   * Specifies whether or not this WebViewer can access the JavaScript
-   * Location API.
+   * Specifies whether or not this `WebViewer` can access the JavaScript
+   * geolocation API.
    *
    * @param uses -- Whether or not the API is available
    */
@@ -394,7 +451,9 @@ public final class WebViewer extends AndroidViewComponent {
 
   /**
    * Determine if the user should be prompted for permission to use the geolocation API while in
-   * the webviewer.
+   * the `WebViewer`. If `true`{:.logic.block}, prompt the user of the `WebViewer` to give
+   * permission to access the geolocation API. If `false`{:.logic.block}, assume permission is
+   * granted.
    *
    * @param prompt set to true to require prompting. False assumes permission is granted.
    */
@@ -408,14 +467,13 @@ public final class WebViewer extends AndroidViewComponent {
 
   /**
    * Clear Stored Location permissions. When the geolocation API is used in
-   * the WebViewer, the end user is prompted on a per URL basis for whether
+   * the `WebViewer`, the end user is prompted on a per URL basis for whether
    * or not permission should be granted to access their location. This
    * function clears this information for all locations.
    *
-   * As the permissions interface is not available on phones older then
-   * Eclair, this function is a no-op on older phones.
+   *  As the permissions interface is not available on phones older then
+   *  Eclair, this function is a no-op on older phones.
    */
-
   @SimpleFunction(description = "Clear stored location permissions.")
   public void ClearLocations() {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
@@ -431,20 +489,28 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
-   * Clear the webview cache, both ram and disk. This is useful
-   * when using the webviewer to poll a page that may not be sending
-   * appropriate cache control headers. This is particularly useful
-   * when using the webviwer to look at a Fusion Table.
+   * Clear the internal webview cache, both ram and disk. This is useful
+   * when using the `WebViewer` to poll a page that may not be sending
+   * appropriate cache control headers.
    */
-
   @SimpleFunction(description = "Clear WebView caches.")
   public void ClearCaches() {
     webview.clearCache(true);
   }
 
+  /**
+   * Event that runs when the `AppInventor.setWebViewString` method is called from JavaScript.
+   * The new {@link #WebViewString()} is given by the `value`{:.variable.block} parameter.
+   * @param value
+   */
   @SimpleEvent(description = "When the JavaScript calls AppInventor.setWebViewString this event is run.")
   public void WebViewStringChange(String value) {
     EventDispatcher.dispatchEvent(this, "WebViewStringChange", value);
+  }
+
+  @SimpleEvent(description = "When a page is finished loading this event is run.")
+  public void PageLoaded(String url) {
+    EventDispatcher.dispatchEvent(this, "PageLoaded", url);
   }
 
   private void loadUrl(final String caller, final String url) {
@@ -472,12 +538,10 @@ public final class WebViewer extends AndroidViewComponent {
    * in the WebView
    */
   public class WebViewInterface {
-    Context mContext;
     String webViewString;
 
-    /** Instantiate the interface and set the context */
-    WebViewInterface(Context c) {
-      mContext = c;
+    /** Instantiate the interface */
+    WebViewInterface() {
       webViewString = " ";
     }
 

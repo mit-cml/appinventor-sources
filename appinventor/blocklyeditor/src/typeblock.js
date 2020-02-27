@@ -260,6 +260,7 @@ Blockly.TypeBlock.prototype.lazyLoadOfOptions_ = function () {
     this.needsReload.components = null;
   }
   this.loadGlobalVariables_();
+  this.loadLocalVariables_();
   this.loadProcedures_();
   this.reloadOptionsAfterChanges_();
 };
@@ -306,7 +307,8 @@ Blockly.TypeBlock.prototype.generateOptions = function() {
           if(dd.mutatorAttributes) {
             mutatorAttributes = dd.mutatorAttributes;
           }
-          listOfOptions[dd.translatedName] = {
+          // We remove the Blockly placeholders, e.g., %1, since they aren't useful here.
+          listOfOptions[dd.translatedName.replace(/%[0-9]+/g, '')] = {
             canonicName: canonicName,
             dropDown: dropDownValues,
             mutatorAttributes: mutatorAttributes
@@ -400,55 +402,94 @@ Blockly.TypeBlock.prototype.loadProcedures_ = function(){
  * example of how to call this function.
  */
 Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
-  //clean up any previous procedures in the list
-  this.TBOptions_ = goog.object.filter(this.TBOptions_,
-      function(opti){ return !opti.isGlobalvar;});
-
-  var globalVarNames = createTypeBlockForVariables_.call(this);
-  var self = this;
-  goog.array.forEach(globalVarNames, function(varName){
-    var canonicalN;
-    if (varName.translatedName.substring(0,3) === 'get')
-      canonicalN = 'lexical_variable_get';
-    else
-      canonicalN = 'lexical_variable_set';
-    self.TBOptions_[varName.translatedName] = {
-      canonicName: canonicalN,
-      dropDown: varName.dropDown,
-      isGlobalvar: true
-    };
+  // Remove any global vars from the list so that we can re-add them.
+  this.TBOptions_ = goog.object.filter(this.TBOptions_, function(option) {
+    return !option.isGlobalvar;
   });
 
-  /**
-   * Create TypeBlock options for global variables (a setter and a getter for each).
-   * @returns {Array} array of global var options
-   */
-  function createTypeBlockForVariables_() {
-    var options = [];
-    var varNames = Blockly.FieldLexicalVariable.getGlobalNames();
-    // Make a setter and a getter for each of the names
-    goog.array.forEach(varNames, function(varName){
-      options.push(
-          {
-            translatedName: 'get global ' + varName,
-            dropDown: {
-              titleName: 'VAR',
-              value: 'global ' + varName
-            }
-          }
-      );
-      options.push(
-          {
-            translatedName: 'set global ' + varName,
-            dropDown: {
-              titleName: 'VAR',
-              value: 'global ' + varName
-            }
-          }
-      );
-    });
-    return options;
+  var globalVarNames = Blockly.FieldLexicalVariable.getGlobalNames();
+  goog.array.forEach(globalVarNames, function(varName) {
+    var prefixedName = Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX  +
+        ' ' + varName;
+    var translatedGet = Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET +
+        ' ' + prefixedName;
+    // We can leave 'global' as 'global' inside the value property because
+    // (I believe) the FieldLexicalVariable translates that later.
+    this.TBOptions_[translatedGet] = {
+      canonicName: 'lexical_variable_get',
+      dropDown: {
+        titleName: 'VAR',
+        value: 'global ' + varName
+      },
+      isGlobalvar: true
+    };
+    var translatedSet = Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET +
+        ' ' + prefixedName;
+    this.TBOptions_[translatedSet] = {
+      canonicName: 'lexical_variable_set',
+      dropDown: {
+        titleName: 'VAR',
+        value: 'global ' + varName
+      },
+      isGlobalvar: true
+    }
+  }.bind(this));
+};
+
+/**
+ * Loads all local variables in the scope of the selected block (if one exists).
+ * This is used lazily from show(). Call 'reloadOptionsAfterChanges_' after
+ * calling this function. The function lazyLoadOfOptions_ is an example of how
+ * to call this function.
+ * @private
+ */
+Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
+  // Remove any local vars from the list so that we can re-add them.
+  this.TBOptions_ = goog.object.filter(this.TBOptions_, function(option) {
+    return !option.isLocalVar;
+  });
+
+  var selected = Blockly.selected;
+  if (!selected) {
+    return;
   }
+
+  var localVarNames = Blockly.FieldLexicalVariable
+      .getLexicalNamesInScope(selected).map(function (varNameArray) {
+        // Index 0 should be the translated name.
+        return varNameArray[0];
+      });
+  // getLexicalNamesInScope does not include names declared on the block passed.
+  if (selected.getVars) {
+    // TODO: This doesn't currently support variable prefixes, but I don't want
+    //  to duplicate all of the logic inside getLexicalNamesInScope(). If the
+    //  suggestion for #2033 gets accepted this will be an easy fix.
+    localVarNames = localVarNames.concat(
+        selected.getVars().map(function(varName) {
+          return selected.workspace.getTopWorkspace().getComponentDatabase()
+              .getInternationalizedParameterName(varName);
+        }));
+  }
+  goog.array.forEach(localVarNames, function(varName) {
+    var translatedGet = Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET + ' ' + varName;
+    this.TBOptions_[translatedGet] = {
+      canonicName: 'lexical_variable_get',
+      dropDown: {
+        titleName: 'VAR',
+        value: varName
+      },
+      isLocalVar: true
+    };
+    var translatedSet = Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET + ' ' + varName;
+    this.TBOptions_[translatedSet] = {
+      canonicName: 'lexical_variable_set',
+      dropDown: {
+        titleName: 'VAR',
+        value: varName
+      },
+      isLocalVar: true
+    }
+  }.bind(this));
 };
 
 /**
@@ -484,7 +525,7 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
         var numberMatch = numberReg.exec(blockName);
         var textReg = new RegExp('^[\"|\']+', 'g');
         var textMatch = textReg.exec(blockName);
-        if (numberMatch && numberMatch.length > 0){
+        if (numberMatch && numberMatch.length > 0) {
           blockToCreate = {
             canonicName: 'math_number',
             dropDown: {
@@ -492,8 +533,7 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
               value: blockName
             }
           };
-        }
-        else if (textMatch && textMatch.length === 1){
+        } else if (textMatch && textMatch.length === 1) {
           blockToCreate = {
             canonicName: 'text',
             dropDown: {
@@ -501,74 +541,78 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
               value: blockName.substring(1)
             }
           };
-        }
-        else
+        } else {
           return; // block does not exist: return
+        }
       }
 
       var blockToCreateName = '';
       var block;
-      if (blockToCreate.dropDown){ //All blocks should have a dropDown property, even if empty
-        blockToCreateName = blockToCreate.canonicName;
-        // components have mutator attributes we need to deal with. We can also add these for special blocks
-        //   e.g., this is done for create empty list
-        if(!goog.object.isEmpty(blockToCreate.mutatorAttributes)) {
-          //construct xml
-          var xmlString = '<xml><block type="' + blockToCreateName + '"><mutation ';
-          for(var attributeName in blockToCreate.mutatorAttributes) {
-            xmlString += attributeName + '="' + blockToCreate.mutatorAttributes[attributeName] + '" ';
+      Blockly.Events.setGroup(true);
+      try {
+        if (blockToCreate.dropDown) { //All blocks should have a dropDown property, even if empty
+          blockToCreateName = blockToCreate.canonicName;
+          // components have mutator attributes we need to deal with. We can also add these for special blocks
+          //   e.g., this is done for create empty list
+          if (!goog.object.isEmpty(blockToCreate.mutatorAttributes)) {
+            //construct xml
+            var xmlString = '<xml><block type="' + blockToCreateName + '"><mutation ';
+            for (var attributeName in blockToCreate.mutatorAttributes) {
+              xmlString += attributeName + '="' + blockToCreate.mutatorAttributes[attributeName] + '" ';
+            }
+
+            xmlString += '>';
+            xmlString += '</mutation></block></xml>';
+            var xml = Blockly.Xml.textToDom(xmlString);
+            block = Blockly.Xml.domToBlock(xml.firstChild, self.workspace_);
+          } else {
+            block = self.workspace_.newBlock(blockToCreateName);
+            block.initSvg(); //Need to init the block before doing anything else
+            if (block.type && (block.type == "procedures_callnoreturn" || block.type == "procedures_callreturn")) {
+              //Need to make sure Procedure Block inputs are updated
+              Blockly.FieldProcedure.onChange.call(block.getField("PROCNAME"), blockToCreate.dropDown.value);
+            }
           }
 
-          xmlString += '>';
-          xmlString += '</mutation></block></xml>';
-          var xml = Blockly.Xml.textToDom(xmlString);
-          block = Blockly.Xml.domToBlock(xml.firstChild, self.workspace_);
+          if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value) {
+            block.setFieldValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
+            // change type checking for split blocks
+            if (blockToCreate.dropDown.value == 'SPLITATFIRST' || blockToCreate.dropDown.value == 'SPLIT') {
+              block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT));
+            } else if (blockToCreate.dropDown.value == 'SPLITATFIRSTOFANY' || blockToCreate.dropDown.value == 'SPLITATANY') {
+              block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT));
+            }
+          }
         } else {
-          block = self.workspace_.newBlock(blockToCreateName);
-          block.initSvg(); //Need to init the block before doing anything else
-          if (block.type && (block.type == "procedures_callnoreturn" || block.type == "procedures_callreturn")) {
-            //Need to make sure Procedure Block inputs are updated
-            Blockly.FieldProcedure.onChange.call(block.getField("PROCNAME"), blockToCreate.dropDown.value);
+          throw new Error('Type Block not correctly set up for: ' + blockToCreateName);
+        }
+        block.render();
+        var blockSelected = Blockly.selected;
+        var selectedX, selectedY, selectedXY;
+        if (blockSelected) {
+          selectedXY = blockSelected.getRelativeToSurfaceXY();
+          selectedX = selectedXY.x;
+          selectedY = selectedXY.y;
+          self.connectIfPossible(blockSelected, block);
+          if (!block.parentBlock_) {
+            //Place it close but a bit out of the way from the one we created.
+            block.moveBy(Blockly.selected.getRelativeToSurfaceXY().x + 110,
+                Blockly.selected.getRelativeToSurfaceXY().y + 50);
           }
+          block.select();
+        } else {
+          //calculate positions relative to the view and the latest click
+          var left = self.workspace_.latestClick.x;
+          var top = self.workspace_.latestClick.y;
+          block.moveBy(left, top);
+          block.select();
         }
-
-        if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
-          block.setFieldValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
-          // change type checking for split blocks
-          if(blockToCreate.dropDown.value == 'SPLITATFIRST' || blockToCreate.dropDown.value == 'SPLIT') {
-            block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT));
-          } else if(blockToCreate.dropDown.value == 'SPLITATFIRSTOFANY' || blockToCreate.dropDown.value == 'SPLITATANY') {
-            block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT));
-          }
-        }
-      } else {
-        throw new Error('Type Block not correctly set up for: ' + blockToCreateName);
+        self.workspace_.requestErrorChecking(block);
+        self.hide();
+        self.workspace_.getParentSvg().parentNode.focus();  // refocus workspace div
+      } finally {
+        Blockly.Events.setGroup(false);
       }
-      block.render();
-      var blockSelected = Blockly.selected;
-      var selectedX, selectedY, selectedXY;
-      if (blockSelected) {
-        selectedXY = blockSelected.getRelativeToSurfaceXY();
-        selectedX = selectedXY.x;
-        selectedY = selectedXY.y;
-        self.connectIfPossible(blockSelected, block);
-        if(!block.parentBlock_){
-          //Place it close but a bit out of the way from the one we created.
-          block.moveBy(Blockly.selected.getRelativeToSurfaceXY().x + 110,
-              Blockly.selected.getRelativeToSurfaceXY().y + 50);
-        }
-        block.select();
-      }
-      else {
-        //calculate positions relative to the view and the latest click
-        var left = self.workspace_.latestClick.x;
-        var top = self.workspace_.latestClick.y;
-        block.moveBy(left, top);
-        block.select();
-      }
-      self.workspace_.requestErrorChecking(block);
-      self.hide();
-      self.workspace_.getParentSvg().parentNode.focus();  // refocus workspace div
     }
   );
 };
@@ -600,8 +644,10 @@ Blockly.TypeBlock.prototype.connectIfPossible = function(blockSelected, createdB
             }
         }
       }
-      else {
+      // Only attempt a connection if the input is empty
+      else if (!inputList[i].connection.isConnected()) {
         createdBlock.previousConnection.connect(inputList[i].connection);
+        break;
       }
     } catch(e) {
       //We can ignore these exceptions; they happen when connecting two blocks

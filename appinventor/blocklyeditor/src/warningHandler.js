@@ -386,10 +386,20 @@ Blockly.WarningHandler.prototype["checkIsNotInLoop"] = function(block) {
   }
 };
 
-Blockly_loopBlockTypes =
-  // add more later
-  ["controls_forEach", "controls_forRange", "controls_while"] ;
+// TODO: Maybe change this to a property of the block, instead of maintaining
+//   a list. Check how this interacts with extensions first.
+Blockly_loopBlockTypes = [
+    "controls_forEach",
+    "controls_for_each_dict",
+    "controls_forRange",
+    "controls_while"
+];
 
+// TODO: Maybe place this on an object. Options:
+//   - block.js
+//   - warningHandler.js
+//   - a utilities file.
+//  Check how blockly core handles this.
 Blockly_containedInLoop = function(block) {
   var enclosingBlock = block.getSurroundParent();
   if (enclosingBlock == null) {
@@ -602,6 +612,29 @@ Blockly.WarningHandler.prototype.checkDisposedBlock = function(block){
     delete this.errorIdHash[block.id];
     this.updateWarningErrorCount();
   }
+};
+
+Blockly.WarningHandler.prototype['checkEmptySetterSocket'] = function(block) {
+  if (block.setOrGet === 'set') {
+    var value = block.getInputTargetBlock('VALUE');
+    if (!value) {
+      block.setErrorIconText(Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE);
+      return true;
+    }
+  }
+  return false;
+};
+
+Blockly.WarningHandler.prototype['checkGenericComponentSocket'] = function(block) {
+  if (block.isGeneric) {
+    var value = block.getInputTargetBlock('COMPONENT');
+    if (!value) {
+      block.setErrorIconText(Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT
+        .replace(/%1/, block.genericComponentInput));
+      return true;
+    }
+  }
+  return false;
 };
 
 //Warnings

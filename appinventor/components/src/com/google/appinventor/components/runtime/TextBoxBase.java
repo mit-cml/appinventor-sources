@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -119,19 +120,21 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Event raised when the %type% is selected for input, such as by
+   * Event raised when the `%type%` is selected for input, such as by
    * the user touching it.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Event raised when the %type% is selected for input, such as by "
+      + "the user touching it.")
   public void GotFocus() {
     EventDispatcher.dispatchEvent(this, "GotFocus");
   }
 
   /**
-   * Event raised when the %type% is no longer selected for input, such
+   * Event raised when the `%type%` is no longer selected for input, such
    * as if the user touches a different text box.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Event raised when the %type% is no longer selected for input, such "
+      + "as if the user touches a different text box.")
   public void LostFocus() {
     EventDispatcher.dispatchEvent(this, "LostFocus");
   }
@@ -147,7 +150,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   */
 
   /**
-   * Returns the alignment of the textbox's text: center, normal
+   * Returns the alignment of the `%type%`'s text: center, normal
    * (e.g., left-justified if text is written left to right), or
    * opposite (e.g., right-justified if text is written left to right).
    *
@@ -165,9 +168,10 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the alignment of the textbox's text: center, normal
-   * (e.g., left-justified if text is written left to right), or
-   * opposite (e.g., right-justified if text is written left to right).
+   * Specifies the alignment of the `%type%`'s text. Valid values are:
+   * `0` (normal; e.g., left-justified if text is written left to right),
+   * `1` (center), or
+   * `2` (opposite; e.g., right-justified if text is written left to right).
    *
    * @param alignment  one of {@link Component#ALIGNMENT_NORMAL},
    *                   {@link Component#ALIGNMENT_CENTER} or
@@ -193,12 +197,17 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "The background color of the input box.  You can choose " +
       "a color by name in the Designer or in the Blocks Editor.  The " +
       "default background color is 'default' (shaded 3-D look).")
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
 
   /**
-   * Specifies the background color of the %type% as an alpha-red-green-blue
+   * The background color of the `%type%``. You can choose a color by name in the Designer or in
+   * the Blocks Editor. The default background color is 'default' (shaded 3-D look).
+   *
+   * @internaldoc
+   * Specifies the background color of the `%type%` as an alpha-red-green-blue
    * integer.
    *
    * @param argb  background RGB color with alpha
@@ -229,6 +238,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
+   * If set, user can enter text into the `%type%`.
+   *
+   * @internaldoc
    * Specifies whether the %type% should be active and usable.
    *
    * @param enabled  {@code true} for enabled, {@code false} disabled
@@ -257,7 +269,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies whether the text of the %type% should be bold.
+   * Specifies whether the text of the `%type%` should be bold.
    * Some fonts do not support bold.
    *
    * @param bold  {@code true} indicates bold, {@code false} normal
@@ -288,7 +300,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies whether the text of the %type% should be italic.
+   * Specifies whether the text of the `%type%` should be italic.
    * Some fonts do not support italic.
    *
    * @param italic  {@code true} indicates italic, {@code false} normal
@@ -315,7 +327,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the text font size of the %type%, measured in sp(scale-independent pixels).
+   * Specifies the text font size of the `%type%`, measured in sp(scale-independent pixels).
    *
    * @param size  font size in pixel
    */
@@ -345,8 +357,8 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the text font face of the %type% as default, serif, sans
-   * serif, or monospace.
+   * The text font face of the `%type%`. Valid values are `0` (default), `1` (serif), `2` (sans
+   * serif), or `3` (monospace).
    *
    * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
    *                  {@link Component#TYPEFACE_SERIF},
@@ -371,12 +383,15 @@ public abstract class TextBoxBase extends AndroidViewComponent
       category = PropertyCategory.APPEARANCE,
       description = "Text that should appear faintly in the %type% to " +
       "provide a hint as to what the user should enter.  This can only be " +
-      "seen if the <code>Text</code> property is empty.")
+      "seen if the Text property is empty.")
   public String Hint() {
     return hint;
   }
 
   /**
+   * `%type%` hint for the user.
+   *
+   * @internaldoc
    * Hint property setter method.
    *
    * @param hint  hint text
@@ -401,11 +416,12 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Specifies the %type% contents.
+   * The text in the `%type%`, which can be set by the programmer in the Designer or Blocks Editor,
+   * or it can be entered by the user (unless the {@link #Enabled(boolean)} property is false).
    *
    * @param text  new text in text box
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
   @SimpleProperty(
       // This kind of breaks the appearance/behavior dichotomy
@@ -428,12 +444,13 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "The color for the text.  You can choose a color by name " +
       "in the Designer or in the Blocks Editor.  The default text color is " +
       "black.")
+  @IsColor
   public int TextColor() {
     return textColor;
   }
 
   /**
-   * Specifies the text color of the %type% as an alpha-red-green-blue
+   * Specifies the text color of the `%type%` as an alpha-red-green-blue
    * integer.
    *
    * @param argb  text RGB color with alpha
@@ -451,7 +468,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Request focus to current %type%.
+   * Request focus to current `%type%`.
    */
   @SimpleFunction(
     description = "Sets the %type% active.")

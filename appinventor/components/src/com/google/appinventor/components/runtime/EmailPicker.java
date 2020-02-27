@@ -17,12 +17,23 @@ import android.Manifest;
 import android.widget.AutoCompleteTextView;
 
 /**
- * Text box using auto-completion to pick out an email address from contacts.
+ * An `EmailPicker` is a kind of text box. If the user begins entering the name or email address of
+ * a contact, the phone will show a dropdown menu of choices that complete the entry. If there are
+ * many contacts, the dropdown can take several seconds to appear, and can show intermediate
+ * results while the matches are being computed.
+ *
+ * The initial contents of the text box and the contents< after user entry is in the {@link #Text()}
+ * property. If the {@link #Text()} property is initially empty, the contents of the {@link #Hint()}
+ * property will be faintly shown in the text box as a hint to the user.
+ *
+ * Other properties affect the appearance of the text box ({@link #TextAlignment()},
+ * {@link #BackgroundColor()}, etc.) and whether it can be used ({@link #Enabled()}).
+ *
+ * Text boxes like this are usually used with [`Button`](userinterface.html#Button) components, with
+ * the user clicking on the button when text entry is complete.
  *
  * @author sharon@google.com (Sharon Perl)
  */
-
-
 @DesignerComponent(version = YaVersion.EMAILPICKER_COMPONENT_VERSION,
     description = "An EmailPicker is a kind of text box.  " +
     "If the user begins entering the name " +
@@ -72,7 +83,7 @@ public class EmailPicker extends TextBoxBase {
   }
 
   /**
-   * Event raised when this component is selected for input, such as by
+   * Event raised when the `%type%` is selected for input, such as by
    * the user touching it.
    */
   @SimpleEvent

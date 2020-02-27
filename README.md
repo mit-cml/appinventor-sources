@@ -23,7 +23,42 @@ If you have skipped this step and have gone ahead and made your changes already,
 
 Check out our open source [site](http://appinventor.mit.edu/appinventor-sources/) to find a lot more information about the project and how to contribute to it.
 
-## Setup instructions
+## Setup instructions (Vagrant)
+
+The easiest way to get a development environment up and running is to use the provided Vagrantfile. Install [Vagrant](https://vagrantup.com) and open a terminal in the root directory of this repository. Run the following commands
+
+```bash
+vagrant plugin install vagrant-vbguest  # optionally for virtualbox users, and only once
+vagrant up                              # initializes the VM
+```
+
+It may take a few minutes for Vagrant to initialize as it will pull down a virtual machine image from the Internet and configure it with all of the App Inventor dependencies. Subsequent start-ups will be faster. Next, enter the virtual machine by running:
+
+```bash
+vagrant ssh
+```
+
+This should open up a terminal within the virtual machine in the directory `/vagrant/appinventor`. This directory is the same as the `appinventor` directory in this repository, shared between your host machine and the virtual machine. Any changes made on one side will be visible in the other. This allows you to edit files on your host machine with your preferred editor, while keeping the build environment relegated to the virtual machine. To build App Inventor, you may now run:
+
+```bash
+ant
+```
+
+and to run App Inventor:
+
+```bash
+start_appinventor
+```
+
+Press Ctrl+C to quit the server. Enter exit at the prompt to leave the virtual machine. To reclaim resources when you are not actively developing, you can run `vagrant halt` to stop the virtual machine. To completely remove the virtual machine, run `vagrant destroy`. If you destroy the VM, you will need to start these instructions from the top.
+
+Note 1: For macOS users, if you are using VirtualBox and get any error while initializing the VM it may be due to security restrictions in System Preferences, consider reading [this](https://medium.com/@Aenon/mac-virtualbox-kernel-driver-error-df39e7e10cd8) article. 
+
+Note 2: If it seems like none of the dependencies are installed in the VM, run ```vagrant provision```.
+
+For better performance, consider using the manual instructions.
+
+## Setup instructions (manual)
 
 This is a quick guide to get started with the sources. More detailed instructions can be found [here](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc), a slide show can be seen [here](http://josmas.github.io/contributingToAppInventor2/#/), and all the [documentation](http://appinventor.mit.edu/appinventor-sources/#documentation) for the project is available in our [site](http://appinventor.mit.edu/appinventor-sources/).
 
@@ -74,7 +109,7 @@ For developers who will be working on Blocky within the context of App Inventor,
 
 If you need to switch back to a branch that does contains the Blockly and Closure Library sources in the tree, you will need to run the command:
 
-    $ git submodule deinit .
+    $ git submodule deinit --all
 
 to clear out the submodules ___before switching branches___. When switching back, you will need to repeat the initialization and update procedure above.
 
@@ -119,6 +154,21 @@ Before entering or scanning the QR code in the Companion, check the box labeled 
 The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you install it and add it to your path. After that, you can run all tests by typing the following in a terminal window:
 
     $ ant tests
+    
+### Hot-reloading GWT code with 'Super Dev Mode'
+1. Run `ant devmode`
+2. [Run the main server](#running-the-main-server).
+3. Open http://localhost:9876 (*GWT CodeServer*) and drag the two bookmarklets (*Dev Mode On & Off*) to the bookmarks bar.
+4. Open http://localhost:8888 (*App Engine server*)
+5. To see changes "live":
+   1. Save your changes in file.
+   2. Click on the *"Dev Mode On"* bookmarklet.
+   3. A popup will be shown with a button to compile `ode` module.
+   4. Press that button to compile. (That button is actually a bookmarklet. So you can drag this button to the bookmarks bar as well. This will come handy for subsequent compilations)
+   5. After that, *GWT CodeServer* will compile the module incrementally.
+   6. Refresh the page and that's it! The changes are live.
+
+Logs can be found at http://localhost:9876/log/ode and SourceMaps at http://localhost:9876/sourcemaps/ode
 
 ## Need help?
-Contact us through our [Google Group](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev).
+Join [our community](https://community.appinventor.mit.edu/).

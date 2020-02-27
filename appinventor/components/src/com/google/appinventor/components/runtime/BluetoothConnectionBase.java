@@ -129,7 +129,8 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns true if Bluetooth is available on the device, false otherwise.
+   * Returns `true`{:.logic.block} if Bluetooth is available on the device,
+   * `false`{:.logic.block} otherwise.
    *
    * @return true if Bluetooth is available on the device, false otherwise
    */
@@ -144,7 +145,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns true if Bluetooth is enabled, false otherwise.
+   * Returns `true`{:.logic.block} if Bluetooth is enabled, `false`{:.logic.block} otherwise.
    *
    * @return true if Bluetooth is enabled, false otherwise
    */
@@ -189,7 +190,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns true if a connection to a Bluetooth device has been made.
+   * Returns `frue`{:.logic.block} if a connection to a Bluetooth device has been made.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public final boolean IsConnected() {
@@ -197,7 +198,11 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns whether a secure connection should be used.
+   * Whether to invoke SSP (Simple Secure Pairing), which is supported on devices with Bluetooth
+   * v2.1 or higher. When working with embedded Bluetooth devices, this property may need to be set
+   * to False. For Android 2.0-2.2, this property setting will be ignored.
+   *
+   * @return whether a secure connection should be used.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Whether to invoke SSP (Simple Secure Pairing), which is supported on " +
@@ -221,8 +226,9 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns true if numbers are sent and received with the most significant
-   * byte first.
+   * Returns `true`{:.logic.block} if numbers are sent and received with the most significant
+   * byte first (big endian). If `false`{:.logic.block}, the least significant byte in a
+   * multibyte value is sent or received first (little endian).
    *
    * @return  {@code true} for high byte first, {@code false} for low byte
    *          first
@@ -247,7 +253,8 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   }
 
   /**
-   * Sets the character encoding to use when sending and receiving text.
+   * Sets the character encoding to use when sending and receiving text. The
+   * default value is `"UTF-8"`{:.text.block}.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "UTF-8")
   @SimpleProperty
@@ -273,7 +280,9 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   /**
    * Sets the delimiter byte to use when passing a negative number for the
    * numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
-   * ReceiveUnsignedBytes.
+   * ReceiveUnsignedBytes. Those functions will continue to read bytes until
+   * they encounter the value specified here. The default delimiter is 0, the
+   * null byte.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "0")
@@ -326,7 +335,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
    * Decodes the given number String to an integer and writes it as one byte
    * to the output stream.
    *
-   * If the number could not be decoded to an integer, or the integer would not
+   *   If the number could not be decoded to an integer, or the integer would not
    * fit in one byte, then the Form's ErrorOccurred event is triggered and this
    * method returns without writing any bytes to the output stream.
    *
@@ -357,7 +366,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
    * Decodes the given number String to an integer and writes it as two bytes
    * to the output stream.
    *
-   * If the number could not be decoded to an integer, or the integer would not
+   *   If the number could not be decoded to an integer, or the integer would not
    * fit in two bytes, then the Form's ErrorOccurred event is triggered and this
    * method returns without writing any bytes to the output stream.
    *
@@ -397,7 +406,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
    * Decodes the given number String to an integer and writes it as four bytes
    * to the output stream.
    *
-   * If the number could not be decoded to an integer, or the integer would not
+   *   If the number could not be decoded to an integer, or the integer would not
    * fit in four bytes, then the Form's ErrorOccurred event is triggered and this
    * method returns without writing any bytes to the output stream.
    *
@@ -445,7 +454,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
    * Takes each element from the given list, converts it to a String, decodes
    * the String to an integer, and writes it as one byte to the output stream.
    *
-   * If an element could not be decoded to an integer, or the integer would not
+   *   If an element could not be decoded to an integer, or the integer would not
    * fit in one byte, then the Form's ErrorOccurred event is triggered and this
    * method returns without writing any bytes to the output stream.
    *
@@ -549,7 +558,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   /**
    * Reads a number of bytes from the input stream and converts them to text.
    *
-   * If numberOfBytes is negative, read until a delimiter byte value is read.
+   *   If numberOfBytes is negative, read until a delimiter byte value is read.
    *
    * @param numberOfBytes the number of bytes to read; a negative number
    *        indicates to read until a delimiter byte value is read
@@ -687,7 +696,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
    * Reads a number of signed bytes from the input stream and returns them as
    * a List.
    *
-   * If numberOfBytes is negative, this method reads until a delimiter byte
+   *   If numberOfBytes is negative, this method reads until a delimiter byte
    * value is read. The delimiter byte value is included in the returned list.
    *
    * @param numberOfBytes the number of bytes to read; a negative number
@@ -710,7 +719,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
    * Reads a number of unsigned bytes from the input stream and returns them as
    * a List.
    *
-   * If numberOfBytes is negative, this method reads until a delimiter byte
+   *   If numberOfBytes is negative, this method reads until a delimiter byte
    * value is read. The delimiter byte value is included in the returned list.
    *
    * @param numberOfBytes the number of bytes to read; a negative number

@@ -93,6 +93,57 @@ Blockly.Yail['controls_forEach'] = function() {
          + listCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 };
 
+Blockly.Yail['controls_for_each_dict'] = function() {
+  var yail = Blockly.Yail;
+  var generator = Blockly.Yail['controls_for_each_dict'];
+
+  var prefix = Blockly.usePrefixInYail ? 'local_' : '';
+  var keyName = yail.YAIL_LOCAL_VAR_TAG + prefix + this.getFieldValue('KEY');
+  var valueName = yail.YAIL_LOCAL_VAR_TAG + prefix + this.getFieldValue('VALUE');
+
+  var loopIndexName = 'item';
+  var loopIndexCommandAndName = yail.getVariableCommandAndName(loopIndexName);
+  loopIndexName = loopIndexCommandAndName[1];
+
+  var getListCode = loopIndexCommandAndName[0] + loopIndexName +
+      yail.YAIL_CLOSE_COMBINATION;
+  var getKeyCode = generator.generateGetListItemCode(getListCode, 1);
+  var getValueCode = generator.generateGetListItemCode(getListCode, 2);
+  var setKeyCode = generator.generateSetVarCode(keyName, getKeyCode);
+  var setValueCode = generator.generateSetVarCode(valueName, getValueCode);
+  var letCode = yail.YAIL_LET + yail.YAIL_OPEN_COMBINATION + yail.YAIL_SPACER
+      + setKeyCode + yail.YAIL_SPACER + setValueCode
+      + yail.YAIL_CLOSE_COMBINATION;
+  var bodyCode = yail.statementToCode(this, 'DO') || yail.YAIL_FALSE;
+  var dictionaryCode = yail.valueToCode(this, 'DICT', yail.ORDER_NONE)
+      || yail.YAIL_EMPTY_DICT;
+
+  return yail.YAIL_FOREACH + loopIndexName + yail.YAIL_SPACER
+      + letCode + bodyCode + yail.YAIL_CLOSE_COMBINATION
+      + yail.YAIL_SPACER + dictionaryCode + yail.YAIL_CLOSE_COMBINATION;
+};
+
+Blockly.Yail['controls_for_each_dict'].generateGetListItemCode =
+  function(getListCode, index) {
+    var yail = Blockly.Yail;
+    return yail.YAIL_CALL_YAIL_PRIMITIVE + 'yail-list-get-item' + yail.YAIL_SPACER
+        + yail.YAIL_OPEN_COMBINATION + yail.YAIL_LIST_CONSTRUCTOR
+        + yail.YAIL_SPACER + getListCode
+        + yail.YAIL_SPACER + index.toString() + yail.YAIL_CLOSE_COMBINATION
+        + yail.YAIL_SPACER + yail.YAIL_QUOTE + yail.YAIL_OPEN_COMBINATION
+        + 'list number' + yail.YAIL_CLOSE_COMBINATION + yail.YAIL_SPACER
+        + yail.YAIL_DOUBLE_QUOTE + 'select list item' + yail.YAIL_DOUBLE_QUOTE
+        + yail.YAIL_CLOSE_COMBINATION;
+  };
+
+Blockly.Yail['controls_for_each_dict'].generateSetVarCode =
+    function(varName, getVarCode) {
+      var yail = Blockly.Yail;
+      return yail.YAIL_OPEN_COMBINATION
+          + varName + yail.YAIL_SPACER + getVarCode
+          + yail.YAIL_CLOSE_COMBINATION;
+    };
+
 // In general break could take a value to return from the loop, but
 // none of our block language loops return values, so we won't use that capability.
 

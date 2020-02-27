@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -36,8 +37,12 @@ public abstract class MapFeatureBaseWithFill extends MapFeatureBase implements H
     map.getController().updateFeatureFill(this);
   }
 
+  /**
+   * Sets or gets the color used to fill in the `%type%`.
+   */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The paint color used to fill in the %type%.")
+  @IsColor
   @Override
   public int FillColor() {
     return fillColor;
@@ -53,6 +58,10 @@ public abstract class MapFeatureBaseWithFill extends MapFeatureBase implements H
     map.getController().updateFeatureFill(this);
   }
 
+  /**
+   * Sets or gets the opacity of the color used to fill the `%type%`. A value of 0.0 will be
+   * completely invisible and a value of 1.0 will be completely opaque.
+   */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The opacity of the interior of the map feature.")
   @Override

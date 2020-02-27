@@ -729,6 +729,10 @@ public final class YoungAndroidFormUpgrader {
       // The ExtendMovesOutsideCanvas property was added in version 12.
       srcCompVersion = 12;
     }
+    if (srcCompVersion < 13) {
+      // The BackgroundImageinBase64 property was added in version 13.
+      srcCompVersion = 13;
+    }
     return srcCompVersion;
   }
 
@@ -1018,6 +1022,11 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 26;
     }
 
+    if (srcCompVersion < 27) {
+      // Platform and PlatformVersion blocks were added.
+      srcCompVersion = 27;
+    }
+
     return srcCompVersion;
   }
 
@@ -1075,6 +1084,11 @@ public final class YoungAndroidFormUpgrader {
       //   }
       // }
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+     // The Click event was added.
+     // The Clickable property was added.
+     srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -1586,12 +1600,18 @@ public final class YoungAndroidFormUpgrader {
       // timeout behavior.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7)  {
+      // The JsonTextDecodeWithDictionaries was added to parse JSON using dictionaries.
+      // The XMLTextDecodeAsDictionary was added to provide a more robust representation
+      // of XML using dictionaries.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 7) {
+    if (srcCompVersion < 8) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
@@ -1601,7 +1621,8 @@ public final class YoungAndroidFormUpgrader {
       // IgnoreSslError property added (version 5)
       // ClearCaches method was added (version 6)
       // WebViewStringChange event was added (version 7)
-      srcCompVersion = 7;
+      // PageLoaded event was added (version 8)
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -1624,6 +1645,10 @@ public final class YoungAndroidFormUpgrader {
       // The step sensing algorithm was updated to be more accurate.
       // The GPS related functionality was removed.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The Resume and Pause methods were removed.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
