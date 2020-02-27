@@ -94,7 +94,7 @@ class NotifierArray: NSObject {
   }
 
   private func startAlert(_ notice: (String, TimeInterval)) {
-    form?.view.window?.makeToast(notice.0, duration: notice.1, position: ToastPosition.center)
+    form?.view.makeToast(notice.0, duration: notice.1, position: ToastPosition.center)
     DispatchQueue.main.asyncAfter(deadline: .now() + notice.1) {
       self.requests.removeFirst()
       self.syncQueue.sync {

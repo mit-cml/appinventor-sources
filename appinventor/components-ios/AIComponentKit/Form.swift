@@ -55,10 +55,14 @@ import Toast_Swift
   open override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     Form.activeForm = self
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
   }
 
   open override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
+    NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+    NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     if isMovingFromParent {
       if let vcs = navigationController?.viewControllers, let parent = vcs.last as? Form {
         parent.lastFormName = formName
@@ -804,6 +808,26 @@ import Toast_Swift
    */
   open func runOnUiThread(_ code: @escaping () -> ()) {
     DispatchQueue.main.async(execute: code)
+  }
+
+  // MARK: Keyboard handling
+
+  @objc public func keyboardWillShow(_ notification: NSNotification) {
+    if let userInfo = notification.userInfo,
+        let frame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+      let height = frame.height
+      view.frame = CGRect(x: view.frame.origin.x, y: view.frame.origin.y,
+                          width: view.frame.size.width, height: view.frame.size.height - height)
+    }
+  }
+
+  @objc public func keyboardWillHide(_ notification: NSNotification) {
+    if let userInfo = notification.userInfo,
+        let frame = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+      let height = frame.height
+      view.frame = CGRect(x: view.frame.origin.x, y: view.frame.origin.y,
+                          width: view.frame.size.width, height: view.frame.size.height + height)
+    }
   }
 }
 
