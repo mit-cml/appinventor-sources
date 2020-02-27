@@ -75,5 +75,11 @@ public final class YoungAndroidSettings extends Settings {
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, "&HFF00728A",
         EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR, "&HFF41521C",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NAVIGATION_BAR_COLOR, "&H00000000",
+        EditableProperty.TYPE_INVISIBLE));
   }
 }
