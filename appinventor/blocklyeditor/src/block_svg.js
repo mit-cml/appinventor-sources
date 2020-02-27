@@ -339,14 +339,15 @@ Blockly.BlockSvg.prototype.updateCollapsed_ = function() {
     }
     input.setVisible(!collapsed);
   }
-  var icons = this.getIcons();
-  for (var i = 0, icon; (icon = icons[i]); i++) {
-    icon.setVisible(!collapsed);
-  }
 
   if (!collapsed) {
     this.removeInput(collapsedInputName);
     return;
+  }
+
+  var icons = this.getIcons();
+  for (var i = 0, icon; (icon = icons[i]); i++) {
+    icon.setVisible(false);
   }
 
   var text = this.toString(Blockly.COLLAPSE_CHARS);
