@@ -11,7 +11,6 @@ var oldConnect = Blockly.RenderedConnection.prototype.connect_;
 
 Blockly.RenderedConnection.prototype.connect_ = function(childConnection) {
   oldConnect.call(this, childConnection);
-  console.log('got here');
 
   var input = this.getInput();
   if (!input) {
