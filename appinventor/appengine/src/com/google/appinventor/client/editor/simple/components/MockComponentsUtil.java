@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -44,6 +45,40 @@ public final class MockComponentsUtil {
    * @param color   new color (RGB value)
    * @param opacity new opacity (value in range 0 to 255)
    */
+  static void setWidgetBackgroundColor(Widget widget, String color, float opacity) {
+    if (isNoneColor(color)) {
+      DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "transparent");
+    } else {
+      // Construct #RRGGBBAA string
+      String colorString = applyOpacityToColor(color, opacity);
+      DOM.setStyleAttribute(widget.getElement(), "backgroundColor", colorString);
+    }
+  }
+
+  /**
+   * Applies the opacity multiplier to the specified alpha value.
+   * @param color    Color to apply alpha multiplier to.
+   * @param opacity  Opacity multiplier in range [0, 1]
+   * @return         New Color String in form &HRRGGBBAA
+   */
+  static String applyOpacityToColor(String color, float opacity) {
+    // Get alpha portion of the color, is the first 2 digits
+    String alpha = getHexString(color, 8).substring(0, 2);
+
+    // Parse alpha hex to an integer representation in range [0, 255]
+    // Then, apply the opacity multiplier to the current alpha.
+    int alphaColor = Integer.parseInt(alpha, 16);
+    int newAlpha = Math.round(alphaColor * opacity);
+
+    // Convert the newly computed alpha value to the hex representation of "AA"
+    String newAlphaDigits = convertToHex(newAlpha, 2);
+
+    // Return the color with the re-applied alpha value
+    return "#" + getHexString(color, 6) + newAlphaDigits;
+  }
+
+  // TODO: Older solution; TO be removed.
+  /*
   static void setWidgetBackgroundColor(Widget widget, String color, int opacity) {
     if (isNoneColor(color)) {
       DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "transparent");
@@ -52,7 +87,7 @@ public final class MockComponentsUtil {
       String colorString = "#" + getHexString(color, 6) + convertToHex(opacity, 2);
       DOM.setStyleAttribute(widget.getElement(), "backgroundColor", colorString);
     }
-  }
+  }*/
 
   /**
    * Converts a specified integer to a hex value with the specified number

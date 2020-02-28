@@ -34,7 +34,7 @@ public final class MockLabel extends MockVisibleComponent {
                                      // text to/from html we have the text
                                      // to set
 
-  private int opacity = 255; // Current opacity
+  private float opacity = 1f; // Current opacity
 
   /**
    * Creates a new MockLabel component.
@@ -73,9 +73,11 @@ public final class MockLabel extends MockVisibleComponent {
 
     // Update alpha value; The String format is in &HAARRGGBB, so we extract
     // the alpha portion and update the opacity property with it.
-    String alphaValue = Integer.toString(Integer.parseInt(text.substring(2, 4), 16));
-    properties.changePropertyValue(PROPERTY_NAME_OPACITY, alphaValue);
+    //String alphaValue = Integer.toString(Integer.parseInt(text.substring(2, 4), 16));
+    //float alphaFloat = Integer.parseInt(alphaValue) / 255f; // Convert to [0, 1] ranged value
+    //properties.changePropertyValue(PROPERTY_NAME_OPACITY, Float.toString(alphaFloat));
 
+    // Update background color with regards to the current color and the set opacity color.
     MockComponentsUtil.setWidgetBackgroundColor(labelWidget, text, opacity);
   }
 
@@ -83,7 +85,14 @@ public final class MockLabel extends MockVisibleComponent {
    * Sets the labels' opacity property to a new value.
    */
   private void setOpacityProperty(String text) {
-    int newOpacity = Integer.parseInt(text);
+    this.opacity = Float.parseFloat(text);
+
+    // Update background color to respond to current opacity
+    String backgroundColor = properties.getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR);
+    MockComponentsUtil.setWidgetBackgroundColor(labelWidget, backgroundColor, opacity);
+
+    // TODO: Previous solution; To be removed/adapted.
+    /*int newOpacity = Integer.parseInt(text);
 
     // Update opacity only if the value is a new value.
     // This is required to prevent infinite recursion when
@@ -101,7 +110,7 @@ public final class MockLabel extends MockVisibleComponent {
       // the background color. The reason it is done this way is to also update
       // the color picker value in Designer to be representative.
       properties.changePropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR, newValue);
-    }
+    }*/
   }
 
   /*
