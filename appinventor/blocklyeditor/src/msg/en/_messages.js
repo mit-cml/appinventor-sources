@@ -1332,6 +1332,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL = "/reference/components/maps.html#FeatureCollection";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL = "/reference/components/maps.html#LineString";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL = "/reference/components/maps.html#Marker";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL = "/reference/components/maps.html#Navigation";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL = "/reference/components/maps.html#Polygon";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL = "/reference/components/maps.html#Rectangle";
 

@@ -271,6 +271,8 @@ public final class ErrorMessages {
 
   // Navigation Errors
   public static final int ERROR_INVALID_API_KEY = 3901;
+  public static final int ERROR_UNABLE_TO_REQUEST_DIRECTIONS = 3902;
+  public static final int ERROR_ROUTING_SERVICE_ERROR = 3903;
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -673,6 +675,9 @@ public final class ErrorMessages {
 
     // Navigation Errors
     errorMessages.put(ERROR_INVALID_API_KEY, "No api key provided");
+    errorMessages.put(ERROR_UNABLE_TO_REQUEST_DIRECTIONS,
+        "Unable to request directions. Reason: %s");
+    errorMessages.put(ERROR_ROUTING_SERVICE_ERROR, "Routing service failed with status %d %s");
   }
 
   private ErrorMessages() {

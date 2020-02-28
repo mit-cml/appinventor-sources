@@ -997,6 +997,8 @@ public class YaVersion {
   // - Added fill and stroke opacity properties
   public static final int MARKER_COMPONENT_VERSION = 3;
 
+  // For NAVIGATION_COMPONENT_VERSION 1:
+  // - Initial Navigation implementation
   public static final int NAVIGATION_COMPONENT_VERSION = 1;
 
   // For NEARFIELD_COMPONENT_VERSION 1:

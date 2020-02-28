@@ -15,10 +15,10 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class YoungAndroidNavigationMethodChoicePropertyEditor extends ChoicePropertyEditor {
 
   private static final Choice[] methods = new Choice[] {
-    new Choice(MESSAGES.Walking(), MESSAGES.Walking()),
-    new Choice(MESSAGES.Driving(), MESSAGES.Driving()),
-    new Choice(MESSAGES.Cycling(), MESSAGES.Cycling()),
-    new Choice (MESSAGES.Wheelchair(), MESSAGES.Wheelchair())
+    new Choice(MESSAGES.WalkingNavMethod(), "foot-walking"),
+    new Choice(MESSAGES.DrivingNavMethod(), "driving-car"),
+    new Choice(MESSAGES.CyclingNavMethod(), "cycling-regular"),
+    new Choice (MESSAGES.WheelchairNavMethod(), "wheelchair")
   };
 
   public YoungAndroidNavigationMethodChoicePropertyEditor() {

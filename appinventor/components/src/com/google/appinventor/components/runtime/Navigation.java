@@ -5,11 +5,12 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.app.Activity;
-import android.util.Log;
+import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
+import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
+import static com.google.appinventor.components.runtime.util.YailDictionary.ALL;
+import static java.util.Arrays.asList;
 
-import com.google.appinventor.components.annotations.UsesLibraries;
-import com.google.appinventor.components.annotations.UsesPermissions;
+import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -17,6 +18,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -24,29 +26,25 @@ import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeoJSONUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
-import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureContainer;
-import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
+import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
-import com.google.appinventor.components.runtime.Web;
-
 import java.io.BufferedOutputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
-
-import org.osmdroid.util.GeoPoint;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.osmdroid.util.GeoPoint;
 
-import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
-import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
-
+/**
+ * The Navigation component generates directions between two locations using a service called
+ * [OpenRouteService](https://openrouteservice.org). You must provide a valid API key from that
+ * service in order for this component to work.
+ */
+@SuppressWarnings("TryFinallyCanBeTryWithResources")
 @DesignerComponent(version = YaVersion.NAVIGATION_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
     description = "Navigation",
@@ -58,12 +56,15 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
 
   private static final String TAG = "Navigation";
 
-  public static final String OPEN_ROUTE_SERVICE_URL = "https://api.openrouteservice.org/v2/directions/%s/geojson/";
+  public static final String OPEN_ROUTE_SERVICE_URL =
+      "https://api.openrouteservice.org/v2/directions/";
   private String apiKey;
   private GeoPoint startLocation;
   private GeoPoint endLocation;
   private TransportMethod method;
-  private Web web;
+  private String serviceUrl = OPEN_ROUTE_SERVICE_URL;
+  private String language = "en";
+  private YailDictionary lastResponse = YailDictionary.makeDictionary();
 
   enum TransportMethod {
     DEFAULT ("foot-walking"),
@@ -91,20 +92,29 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
   public Navigation(ComponentContainer container) {
     super(container.$form());
     apiKey = "";
-    startLocation = new GeoPoint(0, 0);
-    endLocation = new GeoPoint(0, 0);
+    startLocation = new GeoPoint(0.0, 0.0);
+    endLocation = new GeoPoint(0.0, 0.0);
     method = TransportMethod.DEFAULT;
   }
 
-  @SimpleFunction(description = "")
+  /**
+   * Request directions from the routing service using the values of {@link #StartLatitude()},
+   * {@link #StartLongitude()}, {@link #EndLatitude()}, and {@link #EndLongitude()}. On success,
+   * the {@link #GotDirections(YailList, YailList, double, double)} event block will run. If an
+   * error occurs, the error will be reported via the
+   * [`Screen's ErrorOccurred`](userinterface.html#Screen.ErrorOccurred) event.
+   */
+  @SimpleFunction(description = "Request directions from the routing service.")
   public void RequestDirections() {
     if (apiKey.equals("")) {
       form.dispatchErrorOccurredEvent(this, "Authorization", ErrorMessages.ERROR_INVALID_API_KEY);
+      return;
     }
     final GeoPoint startLocation = this.startLocation;
     final GeoPoint endLocation = this.endLocation;
     final TransportMethod method = this.method;
     AsynchUtil.runAsynchronously(new Runnable() {
+      @SuppressWarnings("TryWithIdenticalCatches")
       @Override
       public void run() {
         try {
@@ -120,74 +130,22 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     });
   }
 
-  private void performRequest(GeoPoint start, GeoPoint end, TransportMethod method) throws IOException, JSONException {
-    final String finalURL = String.format(OPEN_ROUTE_SERVICE_URL, method.method());
-    URL url = new URL(finalURL);
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setDoInput(true);
-    connection.setDoOutput(true);
-    connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-    connection.setRequestMethod("POST");
-    connection.setRequestProperty("Authorization", apiKey);
-    if (connection != null) {
-      try {
-        String coords = "{\"coordinates\": " + JsonUtil.getJsonRepresentation(getCoordinates(start, end)) + "}";
-        byte[] postData = coords.getBytes(StandardCharsets.UTF_8);
-        connection.setFixedLengthStreamingMode(postData.length);
-        BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
-        try {
-          out.write(postData, 0, postData.length);
-          out.flush();
-        } finally {
-          out.close();
-        }
-        
-        final String geoJson = getResponseContent(connection);
-        Log.d(TAG, geoJson);
-        final List<YailList> geoJsonYail = GeoJSONUtil.getGeoJSONFeatures(TAG, geoJson);
-        final YailList coordinates = getLineStringCoords(geoJsonYail.get(0));
-
-        form.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            GotDirections(coordinates);
-          }
-        });
-      } catch (Exception e) {
-        form.dispatchErrorOccurredEvent(this, "RequestDirections",
-              ErrorMessages.ERROR_DEFAULT);
-      } finally {
-        connection.disconnect();
-      }
-    }
+  /**
+   * Reserved for future use in case we decide to run our own service some day.
+   */
+  @SimpleProperty(userVisible = false)
+  public void ServiceURL(String url) {
+    this.serviceUrl = url;
   }
 
-  private static String getResponseContent(HttpURLConnection connection) throws IOException {
-    String encoding = connection.getContentEncoding();
-    if (encoding == null) {
-      encoding = "UTF-8";
-    }
-    Log.d(TAG, Integer.toString(connection.getResponseCode()));
-    InputStreamReader reader = new InputStreamReader(connection.getInputStream(), encoding);
-    try {
-      int contentLength = connection.getContentLength();
-      StringBuilder sb = (contentLength != -1)
-          ? new StringBuilder(contentLength)
-          : new StringBuilder();
-      char[] buf = new char[1024];
-      int read;
-      while ((read = reader.read(buf)) != -1) {
-        sb.append(buf, 0, read);
-      }
-      return sb.toString();
-    } finally {
-      reader.close();
-    }
-  }
-
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
-  @SimpleProperty
+  /**
+   * API Key for Open Route Service. Obtain an API key at
+   * [https://openrouteservice.org](https://openrouteservice.org).
+   *
+   * @param key the API key to use for authentication requests
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(description = "API Key for Open Route Service.")
   public void ApiKey(String key) {
     apiKey = key;
   }
@@ -228,8 +186,11 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     return startLocation.getLongitude();
   }
 
-  @SimpleFunction(description = "Set the start location.")
-  public void SetStartLocation(double latitude, double longitude) {
+  @SimpleProperty(description = "Set the start location.")
+  public void StartLocation(MapFeature feature) {
+    GeoPoint point = feature.getCentroid();
+    double latitude = point.getLatitude();
+    double longitude = point.getLongitude();
     if (!isValidLatitude(latitude)) {
       getDispatchDelegate().dispatchErrorOccurredEvent(this, "SetStartLocation",
           ErrorMessages.ERROR_INVALID_LATITUDE, latitude);
@@ -277,9 +238,24 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     return endLocation.getLongitude();
   }
 
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public String TransportationMethod() {
+    return method.method();
+  }
+
+  /**
+   * The transportation method used for determining the route. Valid options are:
+   *
+   *  - `foot-walking`: Route based on walking paths
+   *  - `driving-car`: Route based on vehicle paths
+   *  - `cycling-regular`: Route based on bicycle paths
+   *  - `wheelchair`: Route based on wheelchair accessible paths
+   *
+   * @param method the method to use
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NAVIGATION_METHOD,
       defaultValue = "foot-walking")
-  @SimpleProperty
+  @SimpleProperty(description = "The transportation method used for determining the route.")
   public void TransportationMethod(String method) {
     for (TransportMethod t : TransportMethod.values()) {
       if (method.equals(t.method())) {
@@ -288,14 +264,11 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     }
   }
 
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "The longitude of the end location.")
-  public String TransportationMethod() {
-    return method.method();
-  }
-
-  @SimpleFunction(description = "Set the end location.")
-  public void SetEndLocation(double latitude, double longitude) {
+  @SimpleProperty(description = "Set the end location.")
+  public void EndLocation(MapFeature feature) {
+    GeoPoint point = feature.getCentroid();
+    double latitude = point.getLatitude();
+    double longitude = point.getLongitude();
     if (!isValidLatitude(latitude)) {
       getDispatchDelegate().dispatchErrorOccurredEvent(this, "SetEndLocation",
           ErrorMessages.ERROR_INVALID_LATITUDE, latitude);
@@ -304,6 +277,140 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
           ErrorMessages.ERROR_INVALID_LONGITUDE, longitude);
     } else {
       endLocation.setCoords(latitude, longitude);
+    }
+  }
+
+  /**
+   * The language to use for textual directions. Default is "en" for English.
+   *
+   * @param language the language to use for generating directions
+   */
+  @SimpleProperty(description = "The language to use for textual directions.")
+  @DesignerProperty(defaultValue = "en")
+  public void Language(String language) {
+    this.language = language;
+  }
+
+  @SimpleProperty
+  public String Language() {
+    return language;
+  }
+
+  /**
+   * The raw response from the server. This can be used to access more details beyond what the
+   * {@link #GotDirections(YailList, YailList, double, double)} event provides.
+   *
+   * @return the content of the response
+   */
+  @SimpleProperty(description = "Content of the last response as a dictionary.")
+  public YailDictionary ResponseContent() {
+    return lastResponse;
+  }
+
+  /**
+   * Event indicating that a request has finished and has returned data. The following parameters
+   * are provided:
+   *
+   *  - `directions`: A list of text directions, such as "Turn left at Massachusetts Avenue".
+   *  - `points`: A list of (latitude, longitude) points that represent the path to take. This can
+   *    be passed to {@link LineString#Points(YailList)} to draw the line on a {@link Map}.
+   *  - `distance`: Estimated distance for the route, in meters.
+   *  - `duration`: Estimated duration for the route, in seconds.
+   *
+   * @param directions a list of navigation statements
+   * @param points a YailList containing the coordinates of a geojson LineString of the path
+   * @param distance the distance of the route, in meters
+   * @param duration the estimated duration to travel the route, in seconds
+   */
+  @SimpleEvent(description = "Event triggered when the Openrouteservice returns the directions.")
+  public void GotDirections(YailList directions, YailList points, double distance,
+      double duration) {
+    Log.d(TAG, "GotDirections");
+    EventDispatcher.dispatchEvent(this, "GotDirections", directions, points, distance, duration);
+  }
+
+  // MARK: Private implementation
+
+  private void performRequest(GeoPoint start, GeoPoint end, TransportMethod method)
+      throws IOException, JSONException {
+    final String finalURL = serviceUrl + method.method() + "/geojson/";
+    URL url = new URL(finalURL);
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setDoInput(true);
+    connection.setDoOutput(true);
+    connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+    connection.setRequestMethod("POST");
+    connection.setRequestProperty("Authorization", apiKey);
+    try {
+      String coords = "{\"coordinates\": "
+          + JsonUtil.getJsonRepresentation(getCoordinates(start, end)) + ", \"language\": \""
+          + language + "\"}";
+      byte[] postData = coords.getBytes(StandardCharsets.UTF_8);
+      connection.setFixedLengthStreamingMode(postData.length);
+      BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
+      try {
+        out.write(postData, 0, postData.length);
+        out.flush();
+      } finally {
+        out.close();
+      }
+
+      if (connection.getResponseCode() != 200) {
+        form.dispatchErrorOccurredEvent(this, "RequestDirections",
+            ErrorMessages.ERROR_ROUTING_SERVICE_ERROR, connection.getResponseCode(),
+            connection.getResponseMessage());
+        return;
+      }
+      final String geoJson = getResponseContent(connection);
+      Log.d(TAG, geoJson);
+      final YailDictionary response = (YailDictionary) JsonUtil.getObjectFromJson(geoJson, true);
+      YailList features = (YailList) response.get("features");
+      if (features.size() > 0) {
+        YailDictionary feature = (YailDictionary) features.getObject(0);
+        YailDictionary summary =
+            (YailDictionary) feature.getObjectAtKeyPath(asList("properties", "summary"));
+        final double distance = (Double) summary.get("distance");
+        final double duration = (Double) summary.get("duration");
+        final YailList directions = YailList.makeList(getDirections(feature));
+        final YailList coordinates = getLineStringCoords(feature);
+
+        form.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            lastResponse = response;
+            GotDirections(directions, coordinates, distance, duration);
+          }
+        });
+      }
+    } catch (Exception e) {
+      form.dispatchErrorOccurredEvent(this, "RequestDirections",
+          ErrorMessages.ERROR_UNABLE_TO_REQUEST_DIRECTIONS, e.getMessage());
+      e.printStackTrace();
+    } finally {
+      connection.disconnect();
+    }
+  }
+
+  private static String getResponseContent(HttpURLConnection connection) throws IOException {
+    String encoding = connection.getContentEncoding();
+    if (encoding == null) {
+      encoding = "UTF-8";
+    }
+    Log.d(TAG, Integer.toString(connection.getResponseCode()));
+    InputStreamReader reader = new InputStreamReader(connection.getInputStream(), encoding);
+    try {
+      int contentLength = connection.getContentLength();
+      StringBuilder sb = (contentLength != -1)
+          ? new StringBuilder(contentLength)
+          : new StringBuilder();
+      char[] buf = new char[1024];
+      int read;
+      while ((read = reader.read(buf)) != -1) {
+        sb.append(buf, 0, read);
+      }
+      return sb.toString();
+    } finally {
+      reader.close();
     }
   }
 
@@ -316,29 +423,14 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     return coords;
   }
 
-  private YailList getLineStringCoords(YailList geoJson) {
-    for (int i = 0; i < geoJson.size(); i++) {
-      if (((YailList) geoJson.getObject(i)).getObject(0).equals("geometry")) {
-        YailList geometry = (YailList) ((YailList) geoJson.getObject(i)).getObject(1);
-        for (int j = 0; j < geometry.size(); j++) {
-          if (((YailList) geometry.getObject(j)).getObject(0).equals("coordinates")) {
-            YailList coordinates = (YailList) ((YailList) geometry.getObject(j)).getObject(1);
-            return coordinates;
-          }
-        }
-      }
-    }
-    return YailList.makeEmptyList();
+  private YailList getLineStringCoords(YailDictionary feature) {
+    YailList coords =
+        (YailList) feature.getObjectAtKeyPath(asList("geometry", "coordinates"));
+    return GeoJSONUtil.swapCoordinates(coords);
   }
 
-  /**
-   * Event indicating that a request has finished and has returned data (directions).
-   *
-   * @param directions a YailList containing the coordinates of a geojson LineString of the path
-   */
-  @SimpleEvent(description = "Event triggered when the Openrouteservice returns the directions.")
-  public void GotDirections(List<YailList> directions) {
-    Log.d(TAG, "GotDirections");
-    EventDispatcher.dispatchEvent(this, "GotDirections", directions);
+  private List<?> getDirections(YailDictionary feature) {
+    return YailDictionary.walkKeyPath(feature,
+        asList("properties", "segments", ALL, "steps", ALL, "instruction"));
   }
 }

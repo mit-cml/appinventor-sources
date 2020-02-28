@@ -800,6 +800,15 @@ public final class GeoJSONUtil {
     return coordinates;
   }
 
+  public static <E> List<List<E>> swapCoordinates2(List<List<E>> coordinates) {
+    for (List<E> point : coordinates) {
+      E temp = point.get(0);
+      point.set(0, point.get(1));
+      point.set(1, temp);
+    }
+    return coordinates;
+  }
+
   public static LList swapNestedCoordinates(LList coordinates) {
     LList it = coordinates;
     while (!it.isEmpty()) {
