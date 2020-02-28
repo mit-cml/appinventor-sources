@@ -89,6 +89,7 @@ public class ComponentConstants {
   public static final String DEFAULT_PRIMARY_DARK_COLOR = "&HFF303F9F";
   public static final String DEFAULT_ACCENT_COLOR = "&HFFFF4081";
   public static final String DEFAULT_STATUS_BAR_COLOR = "&HFF303F9F";
+  public static final Boolean DEFAULT_LIGHT_STATUS_BAR = false;
   public static final String DEFAULT_NAVIGATION_BAR_COLOR = "&H00000000";
 
   /**

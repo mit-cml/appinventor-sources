@@ -128,17 +128,22 @@ public final class MockForm extends MockContainer {
     // UI elements
     private DockPanel bar;
     private Image phoneBarImage;
+    private Image phoneBarLightImage;
     private String backgroundColor;
+    private Boolean lightStatusBar;
 
     /*
      * Creates a new phone status bar.
      */
     PhoneBar() {
       phoneBarImage = new Image(images.phonebar());
+      phoneBarLightImage = new Image(images.phonebarLight());
 
       bar = new DockPanel();
       bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
       bar.add(phoneBarImage, DockPanel.EAST);
+      bar.add(phoneBarLightImage, DockPanel.EAST);
+      phoneBarLightImage.setVisible(false);
 
       initWidget(bar);
 
@@ -149,6 +154,17 @@ public final class MockForm extends MockContainer {
     void setBackgroundColor(String color) {
         this.backgroundColor = color;
         MockComponentsUtil.setWidgetBackgroundColor(phoneBar.bar, color);
+    }
+
+    void setLightStatusBar(Boolean light) {
+        this.lightStatusBar = light;
+        if (light) {
+            phoneBar.phoneBarImage.setVisible(false);
+            phoneBar.phoneBarLightImage.setVisible(true);
+        } else {
+            phoneBar.phoneBarLightImage.setVisible(false);
+            phoneBar.phoneBarImage.setVisible(true);
+        }
     }
   }
 
@@ -235,6 +251,7 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = "PrimaryColorDark";
   private static final String PROPERTY_NAME_ACCENT_COLOR = "AccentColor";
   private static final String PROPERTY_NAME_STATUS_BAR_COLOR = "StatusBarColor";
+  private static final String PROPERTY_NAME_LIGHT_STATUS_BAR = "LightStatusBar";
   private static final String PROPERTY_NAME_NAVIGATION_BAR_COLOR = "NavigationBarColor";
   private static final String PROPERTY_NAME_THEME = "Theme";
 
@@ -510,6 +527,7 @@ public final class MockForm extends MockContainer {
       case PROPERTY_NAME_PRIMARY_COLOR_DARK:
       case PROPERTY_NAME_ACCENT_COLOR:
       case PROPERTY_NAME_STATUS_BAR_COLOR:
+      case PROPERTY_NAME_LIGHT_STATUS_BAR:
       case PROPERTY_NAME_NAVIGATION_BAR_COLOR:
       case PROPERTY_NAME_THEME: {
         return editor.isScreen1();
@@ -725,6 +743,15 @@ public final class MockForm extends MockContainer {
           SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR, color);
     }
     phoneBar.setBackgroundColor(color);
+  }
+
+  private void setLightStatusBar(String light) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_STATUS_BAR, light);
+    }
+    phoneBar.setLightStatusBar(Boolean.valueOf(light));
   }
 
   private void setNavigationBarColor(String color) {
@@ -1051,6 +1078,8 @@ public final class MockForm extends MockContainer {
       setAccentColor(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_STATUS_BAR_COLOR)) {
       setStatusBarColor(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_LIGHT_STATUS_BAR)) {
+      setLightStatusBar(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_NAVIGATION_BAR_COLOR)) {
       setNavigationBarColor(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {
@@ -1131,6 +1160,10 @@ public final class MockForm extends MockContainer {
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_STATUS_BAR,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_STATUS_BAR));
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_NAVIGATION_BAR_COLOR,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,

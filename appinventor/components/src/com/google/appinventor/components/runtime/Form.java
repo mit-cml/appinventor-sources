@@ -139,6 +139,7 @@ public class Form extends AppInventorCompatActivity
   private static final int DEFAULT_PRIMARY_COLOR_DARK = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR);
   private static final int DEFAULT_ACCENT_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
   private static final int DEFAULT_STATUS_BAR_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_STATUS_BAR_COLOR);
+  private static final Boolean DEFAULT_LIGHT_STATUS_BAR = ComponentConstants.DEFAULT_LIGHT_STATUS_BAR;
   private static final int DEFAULT_NAVIGATION_BAR_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_NAVIGATION_BAR_COLOR);
 
   // Keep track of the current form object.
@@ -199,6 +200,7 @@ public class Form extends AppInventorCompatActivity
   private int primaryColorDark = DEFAULT_PRIMARY_COLOR_DARK;
   private int accentColor = DEFAULT_ACCENT_COLOR;
   private int statusBarColor = DEFAULT_STATUS_BAR_COLOR;
+  private Boolean lightStatusBar = DEFAULT_LIGHT_STATUS_BAR;
   private int navigationBarColor = DEFAULT_NAVIGATION_BAR_COLOR;
 
   private FrameLayout frameLayout;
@@ -460,6 +462,7 @@ public class Form extends AppInventorCompatActivity
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
     StatusBarColor(DEFAULT_STATUS_BAR_COLOR);
+    LightStatusBar(DEFAULT_LIGHT_STATUS_BAR);
     NavigationBarColor(DEFAULT_NAVIGATION_BAR_COLOR);
     Theme(ComponentConstants.DEFAULT_THEME);
     ScreenOrientation("unspecified");
@@ -1905,6 +1908,34 @@ public class Form extends AppInventorCompatActivity
   @IsColor
   public int StatusBarColor() {
     return statusBarColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false, description = "This sets the text color used in the status bar " + 
+    "in Android Marshmallow (6.0) and later.", category = PropertyCategory.APPEARANCE)
+  public void LightStatusBar(boolean light) {
+    lightStatusBar = light;
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_MARSHMALLOW) {
+      // setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) is available on SDK 23 or higher
+      return;
+    }
+    View v1 = getWindow().getDecorView();
+    int flags = v1.getSystemUiVisibility();
+    if (light) {
+      flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+    } else {
+      flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+    }
+    v1.setSystemUiVisibility(flags);
+  }
+
+  /**
+   * This sets the text color used in the status bar in Android Marshmallow (6.0) and later.
+   */
+  @SimpleProperty()
+  public boolean LightStatusBar() {
+    return lightStatusBar;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,

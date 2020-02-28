@@ -974,6 +974,9 @@ Top-level component containing all other components in the program.
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
  The build server will generate images of standard dimensions for Android devices.
 
+{:id="Screen.LightStatusBar" .boolean .do} *LightStatusBar*
+: This sets the text color used in the status bar in Android Marshmallow (6.0) and later.
+
 {:id="Screen.NavigationBarColor" .color .do} *NavigationBarColor*
 : This is the color used for the status bar in Android Lollipop (5.0) and later.
 
