@@ -12,7 +12,6 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
     super.setDelegate(self)
     _view.titleLabel?.text = NSLocalizedString("ContactPicker", comment: "The class name of the contact picker.") + "1"
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
-    parent.add(self)
   }
 
   // MARK: Properties

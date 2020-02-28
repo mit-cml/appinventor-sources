@@ -191,6 +191,7 @@ open class ButtonBase: ViewComponent {
     self._view.translatesAutoresizingMaskIntoConstraints = false
     self._view.addTarget(self, action: #selector(TouchDown), for: UIControl.Event.touchDown)
     self._view.addTarget(self, action: #selector(TouchUp), for: UIControl.Event.touchUpInside)
+    parent.add(self)
     BackgroundColor = Int32(Color.default.rawValue)
     Enabled = true
     ShowFeedback = true
@@ -202,6 +203,8 @@ open class ButtonBase: ViewComponent {
     Text = ""
     TextAlignment = Alignment.center.rawValue
     TextColor = Int32(Color.default.rawValue)
+    Height = kLengthPreferred
+    Width = kLengthPreferred
   }
 
   internal func setDelegate(_ delegate: AbstractMethodsForButton) {

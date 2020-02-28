@@ -1,10 +1,5 @@
-//
-//  Button.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/21/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -16,7 +11,6 @@ public final class Button: ButtonBase, AbstractMethodsForButton {
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(Button.longPress(_:)))
     _view.addGestureRecognizer(longPressGesture)
-    parent.add(self)
   }
 
   @objc public func click() {

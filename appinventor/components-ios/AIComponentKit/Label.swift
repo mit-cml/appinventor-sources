@@ -23,6 +23,8 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     super.init(parent)
     super.setDelegate(self)
     parent.add(self)
+    Height = kLengthPreferred
+    Width = kLengthPreferred
   }
   
   public override var view: UIView {

@@ -13,7 +13,6 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
     super.init(parent)
     super.setDelegate(self)
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
-    parent.add(self)
   }
   
   //MARK: ImagePicker Properties

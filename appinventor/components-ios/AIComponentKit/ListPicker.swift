@@ -57,7 +57,6 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     super.setDelegate(self)
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     _viewController = ListPickerActivity(delegate: self, dataSource: self, cancelTarget: self, cancelAction: #selector(cancelPicking(_:)))
-    parent.add(self)
   }
 
   // MARK: ListPicker Properties
