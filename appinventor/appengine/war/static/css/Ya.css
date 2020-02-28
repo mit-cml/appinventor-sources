@@ -1121,11 +1121,16 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockFormNavigationBarPortrait {
-  min-height: 44px;
+  min-height: 48px;
   min-width: 100%;
-  background-image: url(../images/navigationbarPortrait.png);
+  background-image: url(../images/navigationbarPortrait@2x.png);
+  background-size: 360px 48px;
   background-repeat: no-repeat;
   background-position: center top;
+}
+
+.ode-SimpleMockFormNavigationBarPortrait.light {
+  background-image: url(../images/navigationbarPortraitLight@2x.png);
 }
 
 .ode-SimpleMockFormNavigationBarLandscape {
