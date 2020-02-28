@@ -91,6 +91,12 @@ public final class MockLabel extends MockVisibleComponent {
     String backgroundColor = properties.getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR);
     MockComponentsUtil.setWidgetBackgroundColor(labelWidget, backgroundColor, opacity);
 
+    // Update text color to respond to current opacity
+    if (properties.hasProperty(PROPERTY_NAME_TEXTCOLOR)) {
+      String textColor = properties.getPropertyValue(PROPERTY_NAME_TEXTCOLOR);
+      MockComponentsUtil.setWidgetTextColor(labelWidget, textColor, opacity);
+    }
+
     // TODO: Previous solution; To be removed/adapted.
     /*int newOpacity = Integer.parseInt(text);
 
@@ -166,7 +172,7 @@ public final class MockLabel extends MockVisibleComponent {
     if (MockComponentsUtil.isDefaultColor(text)) {
       text = "&HFF000000";  // black
     }
-    MockComponentsUtil.setWidgetTextColor(labelWidget, text);
+    MockComponentsUtil.setWidgetTextColor(labelWidget, text, opacity);
   }
 
   // PropertyChangeListener implementation

@@ -206,6 +206,21 @@ public final class MockComponentsUtil {
   }
 
   /**
+   * Sets the text color for the given widget.
+   *
+   * @param widget  widget to change text color for
+   * @param color  new color (RGB value)
+   */
+  static void setWidgetTextColor(Widget widget, String color, float opacity) {
+    if (isNoneColor(color)) {
+      DOM.setStyleAttribute(widget.getElement(), "color", "transparent");
+    } else {
+      String colorString = applyOpacityToColor(color, opacity);
+      DOM.setStyleAttribute(widget.getElement(), "color", colorString);
+    }
+  }
+
+  /**
    * Clears the text color of a widget to its default by CSS rules
    *
    * @param widget  widget to remove the text color for

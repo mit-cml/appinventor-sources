@@ -194,7 +194,13 @@ public final class Label extends AndroidViewComponent {
   @SimpleProperty
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
-    updateBackgroundColor();
+    int newBackgroundColor = ViewUtil.applyOpacityToColor(backgroundColor, opacity);
+
+    if (backgroundColor != Component.COLOR_DEFAULT) {
+      TextViewUtil.setBackgroundColor(view, newBackgroundColor);
+    } else {
+      TextViewUtil.setBackgroundColor(view, Component.COLOR_NONE);
+    }
   }
 
   /**
@@ -222,7 +228,10 @@ public final class Label extends AndroidViewComponent {
   @SimpleProperty
   public void Opacity(float opacity) {
     this.opacity = opacity;
-    updateBackgroundColor();
+
+    // Apply opacity to colors
+    BackgroundColor(backgroundColor);
+    TextColor(textColor);
   }
 
   /**
@@ -480,24 +489,12 @@ private void setLabelMargins(boolean hasMargins) {
   @SimpleProperty
   public void TextColor(int argb) {
     textColor = argb;
+    int newTextColor = ViewUtil.applyOpacityToColor(textColor, opacity);
+
     if (argb != Component.COLOR_DEFAULT) {
-      TextViewUtil.setTextColor(view, argb);
+      TextViewUtil.setTextColor(view, newTextColor);
     } else {
       TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK);
-    }
-  }
-
-  /**
-   * Update the background color by first applying opacity and
-   * then applying the resulting background color.
-   */
-  private void updateBackgroundColor() {
-    int newBackgroundColor = ViewUtil.applyOpacityToColor(backgroundColor, opacity);
-
-    if (backgroundColor != Component.COLOR_DEFAULT) {
-      TextViewUtil.setBackgroundColor(view, newBackgroundColor);
-    } else {
-      TextViewUtil.setBackgroundColor(view, Component.COLOR_NONE);
     }
   }
 }
