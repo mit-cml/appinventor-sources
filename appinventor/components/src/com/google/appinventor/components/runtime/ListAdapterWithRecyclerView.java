@@ -1,33 +1,38 @@
 package com.google.appinventor.components.runtime;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.graphics.drawable.Drawable;
+import java.io.IOException;
 
-import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import android.util.Log;
 
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
-
+import com.google.appinventor.components.runtime.util.YailList;
 
 
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
         "android.permission.READ_EXTERNAL_STORAGE")
 public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> {
-
+// public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> implements Filterable {
   private static final String TAG = "ListAdapterWithRecyclerView";
 
   private static ClickListener clickListener;
@@ -45,12 +50,12 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
   private CardView[] itemViews;
   private boolean multiSelect;
   private List<YailDictionary> items;
+  private List<YailDictionary> filterItems;
   protected final ComponentContainer container;
 
   public boolean isSelected = false;
 
   private int idFirst = -1, idSecond = -1, idImages = -1, idCard = 1;
-
   public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, int textMainSize, int textDetailSize, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
     this.items = items;
     this.container = container;
@@ -70,10 +75,37 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     Arrays.fill(selection, Boolean.FALSE);
   }
 
+  public ListAdapterWithRecyclerView(ComponentContainer container, YailList stringItems, int textMainColor, int textMainSize, int backgroundColor, int selectionColor) {
+    // Legacy Support
+    this.container = container;
+    this.textMainSize = textMainSize;
+    this.textMainColor = textMainColor;
+    this.textDetailColor = textMainColor;
+    this.textDetailSize = 0;
+    this.layoutType = Component.LISTVIEW_LAYOUT_SINGLE_TEXT;
+    this.backgroundColor = backgroundColor;
+    this.selectionColor = selectionColor;
+    this.imageHeight = 0;
+    this.imageWidth = 0;
+    this.multiSelect = false;
+    this.itemViews = new CardView[stringItems.size()];
+    this.selection = new Boolean[stringItems.size()];
+    Arrays.fill(selection, Boolean.FALSE);
+
+    // Build the list of strings into a list of dictionaries
+    this.items = new ArrayList<>();
+    for(int i = 0; i <2; ++i) {
+      String itemString = YailList.YailListElementToString(stringItems.get(i));
+      YailDictionary itemDict = new YailDictionary();
+      itemDict.put("Text1", "fred");
+      this.items.add(itemDict);
+    }
+  }
+
   public void selectFromText(String text1) {
     for (int i = 0; i < itemViews.length; i++) {
       YailDictionary d = items.get(i);
-      if (d.get("Text1") == text1) {
+      if (d.get("Text1").toString() == text1) {
         selection[i] = true;
         itemViews[i].setBackgroundColor(selectionColor);
         break;
@@ -137,29 +169,27 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     textViewFirst.setLayoutParams(layoutParams1);
     textViewFirst.setTextSize(textMainSize);
     textViewFirst.setTextColor(textMainColor);
-    LinearLayout linearLayout1 = new LinearLayout(context);
+    LinearLayout linearLayout1 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     linearLayout1.setLayoutParams(layoutParamslinear1);
     linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
 
     if (layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT || layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
       // Create ImageView for layouts containing an image
-      ImageView imageView = new ImageView(context);
+      ImageView imageView = new ImageView(container.$context());
       idImages = ViewCompat.generateViewId();
       imageView.setId(idImages);
       LinearLayout.LayoutParams layoutParamsImage = new LinearLayout.LayoutParams(imageWidth, imageHeight);
       imageView.setLayoutParams(layoutParamsImage);
-
       linearLayout1.addView(imageView);
     }
 
     if (layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT || layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
       // All layouts containing just MainText
       linearLayout1.addView(textViewFirst);
-
     } else {
       // All layouts containing MainText and DetailText
-      TextView textViewSecond = new TextView(context);
+      TextView textViewSecond = new TextView(container.$context());
       idSecond = ViewCompat.generateViewId();
       textViewSecond.setId(idSecond);
       LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -169,7 +199,7 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
         layoutParams2.topMargin = 10;
         textViewSecond.setLayoutParams(layoutParams2);
 
-        LinearLayout linearLayout2 = new LinearLayout(context);
+        LinearLayout linearLayout2 = new LinearLayout(container.$context());
         LinearLayout.LayoutParams layoutParamslinear2 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2);
         linearLayout2.setLayoutParams(layoutParamslinear2);
         linearLayout2.setOrientation(LinearLayout.VERTICAL);
@@ -206,7 +236,8 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     });
     YailDictionary dictItem = items.get(position);
     String first = dictItem.get("Text1").toString();
-    String second = dictItem.get("Text2").toString();
+//    String second = dictItem.get("Text2").toString();
+    String second = "dictItem.get(-Text2-).toString()";
     if (layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
       holder.textViewFirst.setText(first);
     } else if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT) {
@@ -216,14 +247,28 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
       holder.textViewFirst.setText(first);
       holder.textViewSecond.setText(second);
     } else if (layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
-      Drawable drawable = MediaUtil.getBitmapDrawable(container.$form(), dictItem.get("Image"));
-      ViewUtil.setImage(holder.imageVieww, drawable);
+      String imageName = dictItem.get("Image").toString();
+      Drawable drawable = new BitmapDrawable();
+      try {
+        drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
+      } catch (IOException ioe) {
+        Log.e("Image", "Unable to load " + imageName + ": " + ioe.getMessage());
+      }
       holder.textViewFirst.setText(first);
-    } else if (layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
-      Drawable drawable = MediaUtil.getBitmapDrawable(container.$form(), dictItem.get("Image"));
       ViewUtil.setImage(holder.imageVieww, drawable);
+    } else if (layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
+      String imageName = dictItem.get("Image").toString();
+      Drawable drawable = new BitmapDrawable();
+      try {
+        drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
+      } catch (IOException ioe) {
+        Log.e("Image", "Unable to load " + imageName + ": " + ioe.getMessage());
+      }
       holder.textViewFirst.setText(first);
       holder.textViewSecond.setText(second);
+      ViewUtil.setImage(holder.imageVieww, drawable);
+    } else {
+      holder.textViewFirst.setText("Something is wrong");
     }
     itemViews[position] = holder.cardView;
   }
@@ -289,4 +334,47 @@ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapte
     }
     return selectedItems.length() > 0 ? selectedItems.substring(1) : "";
   }
+//
+//  @Override
+//  public Filter getFilter() {
+//    Filter filter = new Filter() {
+//      @Override
+//      protected FilterResults performFiltering(CharSequence charSequence) {
+//        String filterQuery = charSequence.toString().toLowerCase();
+//        FilterResults results = new FilterResults();
+//
+//        if(filterQuery == null || filterQuery.length() == 0) {
+//          List<YailDictionary> arrayList = new ArrayList<>(items);
+//          results.count = items.size();
+//          results.values = arrayList;
+//        } else {
+//          List<YailDictionary> filteredList = new ArrayList<>();
+//          for(int i = 0; i < items.size(); ++i) {
+//            YailDictionary itemDict = items.get(i);
+//            String filterString = itemDict.get("Text1").toString() + " " + itemDict.get("Text2").toString();
+//            if (filterString.toLowerCase().contains(filterQuery)) {
+//              filteredList.add(itemDict);
+//            }
+//          }
+//          results.count = filteredList.size();
+//          results.values = filteredList;
+//        }
+//        return results;
+//      }
+//
+//      @Override
+//      protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+//        filterItems = (List<YailDictionary>) filterResults.values;
+//        for(int i = 0; i < items.size(); ++i) {
+//          if (filterItems.contains(items.get(i))) {
+//            itemViews[i].setVisibility(View.VISIBLE);
+//          } else {
+//            itemViews[i].setVisibility(View.GONE);
+//          }
+//        }
+//      }
+//    };
+//    return filter;
+//  }
+
 };

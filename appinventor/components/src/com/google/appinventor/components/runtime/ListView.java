@@ -7,20 +7,18 @@
 package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextWatcher;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.LayoutParams;
 
 import android.widget.LinearLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -28,6 +26,8 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
+import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -66,19 +66,18 @@ import java.util.List;
     nonVisible = false,
     iconName = "images/listView.png")
 @SimpleObject
+@UsesLibraries(libraries ="RecyclerView.jar, CardView.jar, CardView.aar")
+@UsesPermissions(permissionNames = "android.permission.INTERNET," +
+        "android.permission.READ_EXTERNAL_STORAGE")
 public final class ListView extends AndroidViewComponent implements AdapterView.OnItemClickListener {
 
   private static final String LOG_TAG = "ListView";
 
-  private final android.widget.ListView view;
   private EditText txtSearchBox;
   protected final ComponentContainer container;
-  private final LinearLayout listViewLayout;
+  private final LinearLayout linearLayout;
 
-  // The adapter contains spannables rather than strings, since we will be changing the item
-  // colors using ForegroundColorSpan
-  private ArrayAdapter<Spannable> adapter;
-  private ArrayAdapter<Spannable> adapterCopy;
+  private RecyclerView recyclerView;
   private ListAdapterWithRecyclerView listAdapterWithRecyclerView;
   private YailList stringItems;
   private List<YailDictionary> dictItems;
@@ -87,6 +86,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private String selectionDetailText;
   private boolean showFilter = false;
   private static final boolean DEFAULT_ENABLED = false;
+  private int orientation;
 
   private int backgroundColor;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_BLACK;
@@ -112,32 +112,29 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int layout;
   private String propertyValue;  // JSON string representing data entered through the Designer
 
-  private ArrayAdapter<YailDictionary> itemAdapter;
-  /*
-   * the copy is maintained to get the actual index of the selected item from the original list
-   * while the filter is applied, which filters the original list
-   */
-  private ArrayAdapter<YailDictionary> itemAdapterCopy;
-
   /**
    * Creates a new ListView component.
    *
    * @param container container that the component will be placed in
    */
   public ListView(ComponentContainer container) {
+
     super(container);
     this.container = container;
     stringItems = YailList.makeEmptyList();
     dictItems = new ArrayList<>();
+
+    linearLayout = new LinearLayout(container.$context());
+    linearLayout.setOrientation(LinearLayout.VERTICAL);
+    orientation = ComponentConstants.LAYOUT_ORIENTATION_VERTICAL;
+    layout = ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT;
+
+    recyclerView = new RecyclerView(container.$context());
+    recyclerView.setBackgroundColor(Color.WHITE);
+    LayoutParams paramms = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+    recyclerView.setLayoutParams(paramms);
     // initialize selectionIndex which also sets selection
     SelectionIndex(0);
-    view = new android.widget.ListView(container.$context());
-    view.setOnItemClickListener(this);
-    view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
-    view.setScrollingCacheEnabled(false);
-    view.setTextFilterEnabled(true);
-    listViewLayout = new LinearLayout(container.$context());
-    listViewLayout.setOrientation(LinearLayout.VERTICAL);
 
     txtSearchBox = new EditText(container.$context());
     txtSearchBox.setSingleLine(true);
@@ -154,12 +151,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       @Override
       public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
         // When user changed the Text
-        if (!dictItems.isEmpty()) {
-          setAdapterData();
-          itemAdapter.getFilter().filter(cs.toString());
-        } else {
-          adapter.getFilter().filter(cs);
-        }
+        setAdapterData();
+        // TODO: Implement filter
+//        listAdapterWithRecyclerView.getFilter().filter(cs.toString());
       }
 
       @Override
@@ -189,31 +183,31 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     SelectionColor(DEFAULT_SELECTION_COLOR);
 
     textColor = DEFAULT_TEXT_COLOR;
-    TextColor(textColor);
+//    TextColor(textColor);
     detailTextColor = DEFAULT_TEXT_COLOR;
-    TextColorDetail(detailTextColor);
+//    TextColorDetail(detailTextColor);
     textSize = DEFAULT_TEXT_SIZE;
     detailTextSize = DEFAULT_TEXT_SIZE;
-    TextSize(textSize);
-    TextSizeDetail(detailTextSize);
+//    TextSize(textSize);
+//    TextSizeDetail(detailTextSize);
     imageWidth = DEFAULT_IMAGE_WIDTH;
     // initially assuming that the image is of square shape
     imageHeight = DEFAULT_IMAGE_WIDTH;
-    ImageWidth(imageWidth);
-    ImageHeight(imageHeight);
+//    ImageWidth(imageWidth);
+//    ImageHeight(imageHeight);
     ElementsFromString("");
+    ListData("");
 
-    listViewLayout.addView(txtSearchBox);
-    listViewLayout.addView(view);
-    listViewLayout.requestLayout();
+    linearLayout.addView(txtSearchBox);
+    linearLayout.addView(recyclerView);
+    linearLayout.requestLayout();
     container.$add(this);
     ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
-    ListData("");
   }
 
   @Override
   public View getView() {
-    return listViewLayout;
+    return linearLayout;
   }
 
   /**
@@ -359,46 +353,28 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           AfterPicking();
         }
       });
-      view.setAdapter(itemAdapter);
-      for (int i = 0; i < itemAdapter.getCount(); ++i) {
-        itemAdapterCopy.insert(itemAdapter.getItem(i), i);
-      }
+      LinearLayoutManager layoutManager;
+      GridLayoutManager gridlayoutManager;
+
+      if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
+        layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+      } else { // if (orientation == ComponentConstants.LAYOUT_ORIENTATION_VERTICAL) {
+        layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+      } //else {
+//        gridlayoutManager = new GridLayoutManager(container.$context(), gridCount, GridLayoutManager.VERTICAL, false);
+//        recyclerView.setLayoutManager(gridlayoutManager);
+        // TODO: Grid Layout
+ //     }
+
+      recyclerView.setAdapter(listAdapterWithRecyclerView);
     } else {
-      // if the data is not available in AddData property but is available in ElementsFromString property
-      adapter = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1,
-              itemsToColoredText());
-      view.setAdapter(adapter);
+      // Legacy Support: if the data is not available in AddData property but is available in ElementsFromString property
+      listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, stringItems, textColor, textSize, backgroundColor, selectionColor);
 
-      adapterCopy = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1);
-      for (int i = 0; i < adapter.getCount(); ++i) {
-        adapterCopy.insert(adapter.getItem(i), i);
-      }
+      recyclerView.setAdapter(listAdapterWithRecyclerView);
     }
-  }
-
-  public Spannable[] itemsToColoredText() {
-    // TODO(hal): Generalize this so that different stringItems could have different
-    // colors and even fonts and sizes
-    int size = stringItems.size();
-    int displayTextSize = textSize;
-    Spannable[] objects = new Spannable[size];
-    for (int i = 1; i <= size; i++) {
-      // Note that the ListPicker and otherPickers pickers convert Yail lists to string by calling
-      // YailList.ToStringArray.
-      // ListView however, does the string conversion via the adapter, so we must ensure
-      // that the adapter uses YailListElementToSring
-      String itemString = YailList.YailListElementToString(stringItems.get(i));
-      // Is there a more efficient way to do conversion to spannable strings that does not
-      // need to allocate new objects?
-      Spannable chars = new SpannableString(itemString);
-      chars.setSpan(new ForegroundColorSpan(textColor), 0, chars.length(), 0);
-      if (!container.$form().getCompatibilityMode()) {
-        displayTextSize = (int) (textSize * container.$form().deviceDensity());
-      }
-      chars.setSpan(new AbsoluteSizeSpan(displayTextSize), 0, chars.length(), 0);
-      objects[i - 1] = chars;
-    }
-    return objects;
   }
 
   /**
@@ -500,16 +476,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    if (!dictItems.isEmpty()) {
-      YailDictionary item = (YailDictionary) parent.getAdapter().getItem(position);
-      this.selection = ElementsUtil.toStringEmptyIfNull(item.get("Text1"));
-      this.selectionDetailText = ElementsUtil.toStringEmptyIfNull(item.get("Text2"));
-      this.selectionIndex = itemAdapterCopy.getPosition(item) + 1;
-    } else {
-      Spannable item = (Spannable) parent.getAdapter().getItem(position);
-      this.selection = item.toString();
-      this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
-    }
+    YailDictionary item = (YailDictionary) parent.getAdapter().getItem(position);
+    this.selection = ElementsUtil.toStringEmptyIfNull(item.get("Text1"));
+    this.selectionDetailText = ElementsUtil.toStringEmptyIfNull(item.get("Text2"));
+    this.selectionIndex = position + 1;
     AfterPicking();
   }
 
@@ -531,10 +501,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   public void setBackgroundColor(int color) {
     backgroundColor = color;
-    view.setBackgroundColor(backgroundColor);
-    listViewLayout.setBackgroundColor(backgroundColor);
+    recyclerView.setBackgroundColor(backgroundColor);
+    linearLayout.setBackgroundColor(backgroundColor);
     // Keeps background color behind list elements correct when scrolling through listView
-    view.setCacheColorHint(backgroundColor);
+//    view.setCacheColorHint(backgroundColor);
   }
 
   /**
@@ -600,9 +570,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void SelectionColor(int argb) {
     selectionColor = argb;
-    view.setSelector(new GradientDrawable(
-            GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb}
-    ));
   }
 
   /**
@@ -796,6 +763,33 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
+   * Returns the style of the button.
+   *
+   * @return one of {@link Component#VERTICAL_ORIENTATION},
+   * {@link Component#HORISONTAL_ORIENTATION},
+   */
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE)
+  public int Orientation() {
+    return orientation;
+  }
+
+  /**
+   * Specifies the style the button. This does not check that the argument is a legal value.
+   *
+   * @param shape one of {@link Component#VERTICAL_ORIENTATION},
+   *              {@link Component#HORISONTAL_ORIENTATION},
+   * @throws IllegalArgumentException if orientation is not a legal value.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION,
+          defaultValue = Component.VERTICAL_ORIENTATION + "")
+  @SimpleProperty(description = "Specifies the layout's orientation (vertical, horisontal). ")
+  public void Orientation(int orientation) {
+    this.orientation = orientation;
+    setAdapterData();
+  }
+
+  /**
    * Returns the data to be displayed in the ListView as a JsonString. Designer only property.
    *
    * @return string form of the array of JsonObject
@@ -830,6 +824,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       } catch (JSONException e) {
         Log.e(LOG_TAG, "Malformed JSON in ListView.ListData", e);
         container.$form().dispatchErrorOccurredEvent(this, "ListView.ListData", ErrorMessages.ERROR_DEFAULT, e.getMessage());
+        YailDictionary dictItem = new YailDictionary();
+        dictItem.put("Text1", "Error");
+        dictItems.add(dictItem);
       }
     }
     setAdapterData();
