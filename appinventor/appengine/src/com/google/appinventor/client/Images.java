@@ -63,10 +63,16 @@ public interface Images extends Resources {
   ImageResource close();
 
   /**
-   * Phone status bar shown above the form in the visual designer
+   * Phone status bar image shown above the form in the visual designer
    */
   @Source("com/google/appinventor/images/phonebar.png")
   ImageResource phonebar();
+
+  /**
+   * Phone status bar image for a light status bar color in the visual designer
+   */
+  @Source("com/google/appinventor/images/phonebar-light.png")
+  ImageResource phonebarLight();
 
   /**
    * Spinning/wait graphic to indicate long-running operations.
