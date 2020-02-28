@@ -13,10 +13,31 @@ Blockly.RenderedConnection.prototype.connect_ = function(childConnection) {
   oldConnect.call(this, childConnection);
   console.log('got here');
 
-  // Make sure visibility matches input.
+  var input = this.getInput();
+  if (!input) {
+    return;
+  }
+
+  var visible = input.isVisible();
   var block = childConnection.getSourceBlock();
-  var visible = this.getSourceBlock().getInputWithBlock(block).isVisible();
-  console.log('visible: ', visible);
   block.getSvgRoot().style.display = visible ? 'block' : 'none';
   block.rendered = visible;
+};
+
+Blockly.RenderedConnection.prototype.input_;
+
+Blockly.RenderedConnection.prototype.getInput = function() {
+  if (this.input_ !== undefined) {
+    return this.input_;
+  }
+
+  var inputs = this.sourceBlock_.inputList;
+  for (var i = 0, input; (input = inputs[i]); i++) {
+    if (input.connection == this) {
+      this.input_ = input;
+      return input;
+    }
+  }
+  this.input_ = null;
+  return null;
 };
