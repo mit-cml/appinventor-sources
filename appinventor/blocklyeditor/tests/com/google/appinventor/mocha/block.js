@@ -2,10 +2,8 @@
 
 /**
  * @license
- * @fileoverview Visual blocks editor for MIT App Inventor
- * Instrumentation extensions to Blockly SVG
+ * @fileoverview Block behavior tests. Not related to code generation.
  *
- * @author ewpatton@mit.edu (Evan W. Patton)
  */
 
 suite('Blocks', function() {

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2016 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2020 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @license
