@@ -499,7 +499,7 @@ suite('Blocks', function() {
           .appendField(new Blockly.FieldLabel(string), 'LABEL');
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
-    test ('First Row Less Than Blockly.CollapsedChars', function() {
+    test('First Row Less Than Blockly.CollapsedChars', function() {
       var stringA = '#'.repeat(10);
       var stringB = '*'.repeat(30);
       var expectedString = '#'.repeat(10) + ' ' + '*'.repeat(16) + '...';
@@ -568,6 +568,66 @@ suite('Blocks', function() {
     test('Block Empty', function() {
       var expectedString = '???';
       var blockA = this.createBlock('empty_block');
+      chai.assert.equal(blockA.toString(this.chars), expectedString)
+    });
+    test('All Children Less Than Blockly.CollapsedChars', function() {
+      var stringA = '#'.repeat(10);
+      var stringB = '*'.repeat(10);
+      var expectedString = '#'.repeat(10) + ' ' + '*'.repeat(10);
+
+      var blockA = this.createBlock('row_block');
+      var blockB = this.createBlock('empty_block');
+      blockA.getInput('INPUT')
+          .appendField(new Blockly.FieldLabel(stringA), 'LABEL');
+      blockB.appendDummyInput()
+          .appendField(new Blockly.FieldLabel(stringB), 'LABEL');
+      blockB.setOutput(true);
+      blockA.getInput('INPUT').connection.connect(blockB.outputConnection);
+      chai.assert.equal(blockA.toString(this.chars), expectedString)
+    });
+    test('All Children Exactly Blockly.CollapsedChars', function() {
+      var stringA = '#'.repeat(15);
+      var stringB = '*'.repeat(14);
+      var expectedString = '#'.repeat(15) + ' ' + '*'.repeat(14);
+
+      var blockA = this.createBlock('row_block');
+      var blockB = this.createBlock('empty_block');
+      blockA.getInput('INPUT')
+          .appendField(new Blockly.FieldLabel(stringA), 'LABEL');
+      blockB.appendDummyInput()
+          .appendField(new Blockly.FieldLabel(stringB), 'LABEL');
+      blockB.setOutput(true);
+      blockA.getInput('INPUT').connection.connect(blockB.outputConnection);
+      chai.assert.equal(blockA.toString(this.chars), expectedString)
+    });
+    test('All Children Blockly.CollapsedChars Minus 1', function() {
+      var stringA = '#'.repeat(15);
+      var stringB = '*'.repeat(13);
+      var expectedString = '#'.repeat(15) + ' ' + '*'.repeat(13);
+
+      var blockA = this.createBlock('row_block');
+      var blockB = this.createBlock('empty_block');
+      blockA.getInput('INPUT')
+          .appendField(new Blockly.FieldLabel(stringA), 'LABEL');
+      blockB.appendDummyInput()
+          .appendField(new Blockly.FieldLabel(stringB), 'LABEL');
+      blockB.setOutput(true);
+      blockA.getInput('INPUT').connection.connect(blockB.outputConnection);
+      chai.assert.equal(blockA.toString(this.chars), expectedString)
+    });
+    test('All Children Blockly.CollapsedChars Plus 1', function() {
+      var stringA = '#'.repeat(15);
+      var stringB = '*'.repeat(15);
+      var expectedString = '#'.repeat(15) + ' ' + '*'.repeat(11) + '...';
+
+      var blockA = this.createBlock('row_block');
+      var blockB = this.createBlock('empty_block');
+      blockA.getInput('INPUT')
+          .appendField(new Blockly.FieldLabel(stringA), 'LABEL');
+      blockB.appendDummyInput()
+          .appendField(new Blockly.FieldLabel(stringB), 'LABEL');
+      blockB.setOutput(true);
+      blockA.getInput('INPUT').connection.connect(blockB.outputConnection);
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
   });
