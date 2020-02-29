@@ -8,7 +8,6 @@
  */
 
 var oldConnect = Blockly.RenderedConnection.prototype.connect_;
-
 Blockly.RenderedConnection.prototype.connect_ = function(childConnection) {
   oldConnect.call(this, childConnection);
 
@@ -39,4 +38,15 @@ Blockly.RenderedConnection.prototype.getInput = function() {
   }
   this.input_ = null;
   return null;
+};
+
+var oldDisconnectInternal = Blockly.RenderedConnection.
+    prototype.disconnectInternal_;
+Blockly.RenderedConnection.prototype.disconnectInternal_ = function(parentBlock,
+    childBlock) {
+  oldDisconnectInternal.call(this, parentBlock, childBlock);
+  console.log('called');
+
+  // Reset visibility, since this block is now a top block.
+  childBlock.getSvgRoot().style.display = 'block';
 };
