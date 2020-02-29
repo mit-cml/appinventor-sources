@@ -19,7 +19,6 @@ Blockly.RenderedConnection.prototype.connect_ = function(childConnection) {
   var visible = input.isVisible();
   var block = childConnection.getSourceBlock();
   block.getSvgRoot().style.display = visible ? 'block' : 'none';
-  block.rendered = visible;
 };
 
 Blockly.RenderedConnection.prototype.input_;
