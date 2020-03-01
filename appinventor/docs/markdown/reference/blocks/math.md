@@ -4,6 +4,7 @@ layout: documentation
 ---
 
 * [0 (basic number block)](#number)
+* [0 (radix number block)](#number-radix)
 * [=](#=)
 * [≠](#not=)
 * [>](#gt)
@@ -80,6 +81,23 @@ convert radians to degrees, convert degrees to radians
 ![](images/math/number.png)
 
 Can be used as any positive or negative number (decimals included). Clicking on the "0" in the block will allow you to change the number.
+
+
+### Radix Number Block {#number-radix}
+
+![](images/math/numberradix.png)
+
+Represents a base-10 number. Clicking on the "0" will allow you to change the number.
+
+Clicking the dropdown will allow you to input a number in a different number base (aka radix). The number will then be "translated" into decimal (aka base-10).
+
+For example, these three blocks are equivalent:
+
+![](images/math/numberradix_equivalent.png)
+
+The dropdown supports: decimal (base-10), binary (base-2), octal (base-8), and hexadecimal (base-16) input formats.
+
+Decimal mode allows you to input any positive or negative number (e.g. 2, -12, 2.12). The other modes only allow you to input a whole number (aka any positive number, or zero).
 
 ### =   {#=}
 
