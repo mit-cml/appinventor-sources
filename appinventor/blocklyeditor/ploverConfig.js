@@ -143,6 +143,7 @@
     "./src/language_switch.js",
     "./src/warning.js",
     "./src/toolboxController.js",
+    "./src/field.js",
 
     // Dialog Utiltiy
     "./src/util.js",
