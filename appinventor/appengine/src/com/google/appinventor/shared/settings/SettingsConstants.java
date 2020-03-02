@@ -62,6 +62,7 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR = "StatusBarColor";
   public static final String YOUNG_ANDROID_SETTINGS_LIGHT_STATUS_BAR = "LightStatusBar";
   public static final String YOUNG_ANDROID_SETTINGS_NAVIGATION_BAR_COLOR = "NavigationBarColor";
+  public static final String YOUNG_ANDROID_SETTINGS_LIGHT_NAVIGATION_BAR = "LightNavigationBar";
   public static final String YOUNG_ANDROID_SETTINGS_ACCENT_COLOR = "AccentColor";
   public static final String YOUNG_ANDROID_SETTINGS_THEME = "Theme";
 

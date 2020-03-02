@@ -140,6 +140,7 @@ public class Form extends AppInventorCompatActivity
   private static final int DEFAULT_ACCENT_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
   private static final int DEFAULT_STATUS_BAR_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_STATUS_BAR_COLOR);
   private static final Boolean DEFAULT_LIGHT_STATUS_BAR = ComponentConstants.DEFAULT_LIGHT_STATUS_BAR;
+  private static final Boolean DEFAULT_LIGHT_NAVIGATION_BAR = ComponentConstants.DEFAULT_LIGHT_NAVIGATION_BAR;
   private static final int DEFAULT_NAVIGATION_BAR_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_NAVIGATION_BAR_COLOR);
 
   // Keep track of the current form object.
@@ -202,6 +203,7 @@ public class Form extends AppInventorCompatActivity
   private int statusBarColor = DEFAULT_STATUS_BAR_COLOR;
   private Boolean lightStatusBar = DEFAULT_LIGHT_STATUS_BAR;
   private int navigationBarColor = DEFAULT_NAVIGATION_BAR_COLOR;
+  private Boolean lightNavigationBar = DEFAULT_LIGHT_NAVIGATION_BAR;
 
   private FrameLayout frameLayout;
   private boolean scrollable;
@@ -464,6 +466,7 @@ public class Form extends AppInventorCompatActivity
     StatusBarColor(DEFAULT_STATUS_BAR_COLOR);
     LightStatusBar(DEFAULT_LIGHT_STATUS_BAR);
     NavigationBarColor(DEFAULT_NAVIGATION_BAR_COLOR);
+    LightNavigationBar(DEFAULT_LIGHT_NAVIGATION_BAR);
     Theme(ComponentConstants.DEFAULT_THEME);
     ScreenOrientation("unspecified");
     BackgroundColor(Component.COLOR_DEFAULT);
@@ -1952,12 +1955,40 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * This is the color used for the status bar in Android Lollipop (5.0) and later.
+   * This is the color used for the navigation bar in Android Lollipop (5.0) and later.
    */
   @SimpleProperty()
   @IsColor
   public int NavigationBarColor() {
     return navigationBarColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false, description = "This sets the text color used in the navigation bar " + 
+    "in Android Oreo (8.0) and later.", category = PropertyCategory.APPEARANCE)
+  public void LightNavigationBar(boolean light) {
+    lightNavigationBar = light;
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_OREO) {
+      // setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR) is available on SDK 26 or higher
+      return;
+    }
+    View v1 = getWindow().getDecorView();
+    int flags = v1.getSystemUiVisibility();
+    if (light) {
+      flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+    } else {
+      flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+    }
+    v1.setSystemUiVisibility(flags);
+  }
+
+  /**
+   * This sets the text color used in the navigation bar in Android Oreo (8.0) and later.
+   */
+  @SimpleProperty()
+  public boolean LightNavigationBar() {
+    return lightNavigationBar;
   }
 
   /**
