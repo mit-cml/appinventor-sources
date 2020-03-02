@@ -303,8 +303,6 @@ public class LinearView: UIView {
       }
     } else if length == .Automatic {
       length.constraint = _inner.widthAnchor.constraint(greaterThanOrEqualTo: view.widthAnchor)
-//      length.constraint = view.widthAnchor.constraint(equalToConstant: view.intrinsicContentSize.width)
-//      length.constraint?.priority = UILayoutPriority.defaultLow
     } else if length.isPercent {
       length.constraint = view.widthAnchor.constraint(equalTo: length.view.widthAnchor, multiplier: length.cgFloat)
     } else {
@@ -362,8 +360,6 @@ public class LinearView: UIView {
       }
     } else if length == .Automatic {
       length.constraint = _inner.heightAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor)
-//      length.constraint = view.heightAnchor.constraint(equalToConstant: view.intrinsicContentSize.height)
-//      length.constraint?.priority = UILayoutPriority.defaultLow
     } else if length.isPercent {
       length.constraint = view.heightAnchor.constraint(equalTo: length.view.heightAnchor, multiplier: length.cgFloat)
     } else {
