@@ -31,7 +31,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
         "android.permission.READ_EXTERNAL_STORAGE")
- public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> {
+ public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> implements Filterable {
   private static final String TAG = "ListAdapterWithRecyclerView";
 
   private static ClickListener clickListener;
@@ -182,7 +182,7 @@ import com.google.appinventor.components.runtime.util.YailList;
     textViewFirst.setLayoutParams(layoutParams1);
     textViewFirst.setTextSize(textMainSize);
     textViewFirst.setTextColor(textMainColor);
-//    TextViewUtil.setFontTypeface(textViewFirst, textMainFont, false, false);
+    TextViewUtil.setFontTypeface(textViewFirst, textMainFont, false, false);
     Log.e("LISTVIEW-ADAPTER", "Create ViewHolder - TextView1");
     LinearLayout linearLayout1 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -212,7 +212,7 @@ import com.google.appinventor.components.runtime.util.YailList;
       textViewSecond.setId(idSecond);
       LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
       textViewSecond.setTextSize(textDetailSize);
-//      TextViewUtil.setFontTypeface(textViewSecond, textDetailFont, false, false);
+      TextViewUtil.setFontTypeface(textViewSecond, textDetailFont, false, false);
       textViewSecond.setTextColor(textDetailColor);
       if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT || layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
         Log.e("LISTVIEW-ADAPTER", "Create ViewHolder - Two stacked text");

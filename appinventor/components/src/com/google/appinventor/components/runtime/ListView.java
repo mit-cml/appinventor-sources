@@ -91,9 +91,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int backgroundColor;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_BLACK;
 
-  // The text color of the ListView's stringItems.  All stringItems have the same text color
   private int textColor;
-  // The color of secondary text of ListView's stringItems. All secondary text stringItems have same text color
   private int detailTextColor;
 
   private int selectionColor;
@@ -129,7 +127,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     layout = ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT;
 
     recyclerView = new RecyclerView(container.$context());
-//    recyclerView.setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
     LayoutParams paramms = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
     recyclerView.setLayoutParams(paramms);
     // initialize selectionIndex which also sets selection
@@ -644,7 +641,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @SuppressWarnings("JavadocReference")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-          defaultValue = Component.FONT_DEFAULT_SIZE + "")
+          defaultValue = "22.0")
   @SimpleProperty
   public void FontSize(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
