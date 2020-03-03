@@ -6,7 +6,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -130,7 +129,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     layout = ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT;
 
     recyclerView = new RecyclerView(container.$context());
-    recyclerView.setBackgroundColor(Color.WHITE);
+//    recyclerView.setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
     LayoutParams paramms = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
     recyclerView.setLayoutParams(paramms);
     // initialize selectionIndex which also sets selection
@@ -142,7 +141,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     txtSearchBox.setPadding(10, 10, 10, 10);
     txtSearchBox.setHint("Search list...");
     if (!AppInventorCompatActivity.isClassicMode()) {
-      txtSearchBox.setBackgroundColor(Color.WHITE);
+      txtSearchBox.setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
     }
 
     //set up the listener
@@ -178,12 +177,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     // adapter
 
     Width(Component.LENGTH_FILL_PARENT);
-    BackgroundColor(Component.COLOR_NONE);
+    BackgroundColor(Component.COLOR_BLACK);
     SelectionColor(Component.COLOR_LTGRAY);
-
-    TextColor(Component.COLOR_DEFAULT);
-    TextColorDetail(Component.COLOR_DEFAULT);
-    FontSize(Component.FONT_DEFAULT_SIZE);
+    TextColor(Component.COLOR_WHITE);
+    TextColorDetail(Component.COLOR_WHITE);
+    FontSize(22.0f);  // This was the original size of ListView text.
     FontSizeDetail(Component.FONT_DEFAULT_SIZE);
     FontTypeface(Component.TYPEFACE_DEFAULT);
     FontTypefaceDetail(Component.TYPEFACE_DEFAULT);
@@ -499,19 +497,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     EventDispatcher.dispatchEvent(this, "AfterPicking");
   }
 
-  /**
-   * Assigns a value to the backgroundColor
-   *
-   * @param color an alpha-red-green-blue integer for a color
-   */
 
-  public void setBackgroundColor(int color) {
-    backgroundColor = color;
-    recyclerView.setBackgroundColor(backgroundColor);
-    linearLayout.setBackgroundColor(backgroundColor);
-    // Keeps background color behind list elements correct when scrolling through listView
-//    view.setCacheColorHint(backgroundColor);
-  }
 
   /**
    * Returns the listview's background color as an alpha-red-green-blue
@@ -543,7 +529,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
-    setBackgroundColor(backgroundColor);
+    recyclerView.setBackgroundColor(backgroundColor);
+    linearLayout.setBackgroundColor(backgroundColor);
+//    setBackgroundColor(backgroundColor);
   }
 
   /**

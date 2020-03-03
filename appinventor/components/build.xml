@@ -139,6 +139,9 @@
     <copy toFile="${public.deps.dir}/httpmime.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
     <copy toFile="${public.deps.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${public.deps.dir}/firebase.jar" file="${lib.dir}/firebase/firebase-client-android-2.5.0.jar" />
+    <copy toFile="${public.deps.dir}/CardView.jar" file="${lib.dir}/cardview/classes.jar" />
+    <copy toFile="${public.deps.dir}/CardView.aar" file="${lib.dir}/cardview/cardviewv7-26.1.0.aar" />
+    <copy toFile="${public.deps.dir}/RecyclerView.jar" file="${lib.dir}/recyclerview/RecyclerView.jar" />
     <copy toFile="${public.deps.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
     <copy toFile="${public.deps.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
     <copy toFile="${public.deps.dir}/google-api-client-android2-beta.jar" file="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
