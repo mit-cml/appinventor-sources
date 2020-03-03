@@ -668,6 +668,20 @@ This is a visible component that allows to place a list of text elements in your
 {:id="ListView.ElementsFromString" .text .wo} *ElementsFromString*
 : Set the list of choices from a string of comma-separated values.
 
+{:id="ListView.FontSize" .number} *FontSize*
+: Specifies the `ListView` item's text font size
+
+{:id="ListView.FontSizeDetail" .number} *FontSizeDetail*
+: Specifies the `ListView` item's text font size
+
+{:id="ListView.FontTypeface" .number .do} *FontTypeface*
+: Specifies the label's text's font face as default, serif, sans
+ serif, or monospace.
+
+{:id="ListView.FontTypefaceDetail" .number .do} *FontTypefaceDetail*
+: Specifies the label's text's font face as default, serif, sans
+ serif, or monospace.
+
 {:id="ListView.Height" .number .bo} *Height*
 : Specifies the `ListView`'s vertical height, measured in pixels.
 
@@ -714,12 +728,6 @@ This is a visible component that allows to place a list of text elements in your
 
 {:id="ListView.TextColorDetail" .color} *TextColorDetail*
 : Specifies the color of the secondary text in a ListView layout
-
-{:id="ListView.TextSize" .number} *TextSize*
-: Specifies the `ListView` item's text font size
-
-{:id="ListView.TextSizeDetail" .number} *TextSizeDetail*
-: Specifies the ListView item's secondary-text font size
 
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}

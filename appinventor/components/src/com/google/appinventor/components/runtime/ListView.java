@@ -35,6 +35,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,14 +96,13 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int textColor;
   // The color of secondary text of ListView's stringItems. All secondary text stringItems have same text color
   private int detailTextColor;
-  private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
 
   private int selectionColor;
-  private static final int DEFAULT_SELECTION_COLOR = Component.COLOR_LTGRAY;
 
-  private int textSize;
-  private int detailTextSize;
-  private static final int DEFAULT_TEXT_SIZE = 22;
+  private float fontSizeMain;
+  private float fontSizeDetail;
+  private int fontTypeface;
+  private int fontTypeDetail;
 
   private int imageWidth;
   private int imageHeight;
@@ -152,8 +152,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
         // When user changed the Text
         setAdapterData();
-        // TODO: Implement filter
-//        listAdapterWithRecyclerView.getFilter().filter(cs.toString());
+        listAdapterWithRecyclerView.getFilter().filter(cs.toString());
       }
 
       @Override
@@ -179,22 +178,18 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     // adapter
 
     Width(Component.LENGTH_FILL_PARENT);
-    BackgroundColor(DEFAULT_BACKGROUND_COLOR);
-    SelectionColor(DEFAULT_SELECTION_COLOR);
+    BackgroundColor(Component.COLOR_NONE);
+    SelectionColor(Component.COLOR_LTGRAY);
 
-    textColor = DEFAULT_TEXT_COLOR;
-//    TextColor(textColor);
-    detailTextColor = DEFAULT_TEXT_COLOR;
-//    TextColorDetail(detailTextColor);
-    textSize = DEFAULT_TEXT_SIZE;
-    detailTextSize = DEFAULT_TEXT_SIZE;
-//    TextSize(textSize);
-//    TextSizeDetail(detailTextSize);
-    imageWidth = DEFAULT_IMAGE_WIDTH;
+    TextColor(Component.COLOR_DEFAULT);
+    TextColorDetail(Component.COLOR_DEFAULT);
+    FontSize(Component.FONT_DEFAULT_SIZE);
+    FontSizeDetail(Component.FONT_DEFAULT_SIZE);
+    FontTypeface(Component.TYPEFACE_DEFAULT);
+    FontTypefaceDetail(Component.TYPEFACE_DEFAULT);
     // initially assuming that the image is of square shape
-    imageHeight = DEFAULT_IMAGE_WIDTH;
-//    ImageWidth(imageWidth);
-//    ImageHeight(imageHeight);
+    ImageWidth(DEFAULT_IMAGE_WIDTH);
+    ImageHeight(DEFAULT_IMAGE_WIDTH);
     ElementsFromString("");
     ListData("");
 
@@ -295,7 +290,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           } else {
             // Support strings mixed in with the Dictionary elements because somebody will end up doing this.
             YailDictionary yailItem = new YailDictionary();
-            yailItem.put("Text1", YailList.YailListElementToString(o));
+            yailItem.put(Component.LISTVIEW_KEY_MAIN_TEXT, YailList.YailListElementToString(o));
             dictItems.add(i, yailItem);
           }
         }
@@ -341,10 +336,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Sets the stringItems of the ListView through an adapter
    */
   public void setAdapterData() {
+    LinearLayoutManager layoutManager;
     if (!dictItems.isEmpty()) {
       // if the data is available in AddData property
-
-      listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, dictItems, textColor, detailTextColor, textSize, detailTextSize, layout, backgroundColor, selectionColor, imageWidth, imageHeight, false);
+      listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, dictItems, textColor, detailTextColor, fontSizeMain, fontSizeDetail, fontTypeface, fontTypeDetail, layout, backgroundColor, selectionColor, imageWidth, imageHeight, false);
 
       listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
         @Override
@@ -353,28 +348,39 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           AfterPicking();
         }
       });
-      LinearLayoutManager layoutManager;
       GridLayoutManager gridlayoutManager;
 
       if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
+        Log.e("LISTVIEW-Component", "Horizontal orientation");
         layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
       } else { // if (orientation == ComponentConstants.LAYOUT_ORIENTATION_VERTICAL) {
+        Log.e("LISTVIEW-Component", "Vertical orientation");
         layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
       } //else {
 //        gridlayoutManager = new GridLayoutManager(container.$context(), gridCount, GridLayoutManager.VERTICAL, false);
 //        recyclerView.setLayoutManager(gridlayoutManager);
-        // TODO: Grid Layout
- //     }
+      // TODO: Grid Layout
+      //     }
 
       recyclerView.setAdapter(listAdapterWithRecyclerView);
     } else {
       // Legacy Support: if the data is not available in AddData property but is available in ElementsFromString property
-      listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, stringItems, textColor, textSize, backgroundColor, selectionColor);
-
-      recyclerView.setAdapter(listAdapterWithRecyclerView);
+      Log.e("LISTVIEW-Component", "Legacy string adapter");
+      listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, stringItems, textColor, fontSizeMain, fontTypeface, backgroundColor, selectionColor);
     }
+    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
+      @Override
+      public void onItemClick(int position, View v) {
+        listAdapterWithRecyclerView.toggleSelection(position);
+        AfterPicking();
+      }
+    });
+    layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
+    recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setAdapter(listAdapterWithRecyclerView);
+    Log.e("LISTVIEW-Component", "Completed setAdapterData");
   }
 
   /**
@@ -410,8 +416,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   public void SelectionIndex(int index) {
     if (!dictItems.isEmpty()) {
       selectionIndex = ElementsUtil.selectionIndex(index, YailList.makeList(dictItems));
-      selection = dictItems.get(selectionIndex - 1).get("Text1").toString();
-      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1));
+      selection = dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
+      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get("Text2").toString());
     } else {
       selectionIndex = ElementsUtil.selectionIndex(index, stringItems);
       // Now, we need to change Selection to correspond to SelectionIndex.
@@ -445,7 +451,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     if (!dictItems.isEmpty()) {
       for (int i = 0; i < dictItems.size(); ++i) {
         YailDictionary item = dictItems.get(i);
-        if (item.get("Text1").toString() == value) {
+        if (item.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString() == value) {
           selectionIndex = i + 1;
           selectionDetailText = ElementsUtil.toStringEmptyIfNull(item.get("Text2"));
           break;
@@ -477,7 +483,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     YailDictionary item = (YailDictionary) parent.getAdapter().getItem(position);
-    this.selection = ElementsUtil.toStringEmptyIfNull(item.get("Text1"));
+    this.selection = ElementsUtil.toStringEmptyIfNull(item.get(Component.LISTVIEW_KEY_MAIN_TEXT));
     this.selectionDetailText = ElementsUtil.toStringEmptyIfNull(item.get("Text2"));
     this.selectionIndex = position + 1;
     AfterPicking();
@@ -639,8 +645,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
           description = "The text size of the listview stringItems.",
           category = PropertyCategory.APPEARANCE)
-  public int TextSize() {
-    return textSize;
+  public float FontSize() {
+    return fontSizeMain;
   }
 
   /**
@@ -649,46 +655,112 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param integer value for font size
    */
   @SuppressWarnings("JavadocReference")
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-          defaultValue = DEFAULT_TEXT_SIZE + "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+          defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
-  public void TextSize(int fontSize) {
+  public void FontSize(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
-      textSize = 999;
+      fontSizeMain = 999;
     else
-      textSize = fontSize;
+      fontSizeMain = fontSize;
     setAdapterData();
   }
-
   /**
-   * Returns the listview's secondary-text font Size
+   * Returns the listview's text font Size
    *
    * @return text size as an float
    */
   @SimpleProperty(
-          description = "The detailText size of the listview stringItems.",
+          description = "The text size of the listview stringItems.",
           category = PropertyCategory.APPEARANCE)
-  public int TextSizeDetail() {
-    return detailTextSize;
+  public float FontSizeDetail() {
+    return fontSizeDetail;
   }
 
   /**
-   * Specifies the ListView item's secondary-text font size
+   * Specifies the `ListView` item's text font size
    *
    * @param integer value for font size
    */
   @SuppressWarnings("JavadocReference")
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-          defaultValue = DEFAULT_TEXT_SIZE + "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+          defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
-  public void TextSizeDetail(int fontSize) {
+  public void FontSizeDetail(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
-      detailTextSize = 999;
+      fontSizeDetail = 999;
     else
-      detailTextSize = fontSize;
+      fontSizeDetail = fontSize;
     setAdapterData();
   }
 
+  /**
+   * Returns the label's text's font face as default, serif, sans
+   * serif, or monospace.
+   *
+   * @return  one of {@link Component#TYPEFACE_DEFAULT},
+   *          {@link Component#TYPEFACE_SERIF},
+   *          {@link Component#TYPEFACE_SANSSERIF} or
+   *          {@link Component#TYPEFACE_MONOSPACE}
+   */
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          userVisible = false)
+  public int FontTypeface() {
+    return fontTypeface;
+  }
+
+  /**
+   * Specifies the label's text's font face as default, serif, sans
+   * serif, or monospace.
+   *
+   * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
+   *                  {@link Component#TYPEFACE_SERIF},
+   *                  {@link Component#TYPEFACE_SANSSERIF} or
+   *                  {@link Component#TYPEFACE_MONOSPACE}
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
+          defaultValue = Component.TYPEFACE_DEFAULT + "")
+  @SimpleProperty(
+          userVisible = false)
+  public void FontTypeface(int typeface) {
+    fontTypeface = typeface;
+    setAdapterData();
+  }
+
+  /**
+   * Returns the label's text's font face as default, serif, sans
+   * serif, or monospace.
+   *
+   * @return  one of {@link Component#TYPEFACE_DEFAULT},
+   *          {@link Component#TYPEFACE_SERIF},
+   *          {@link Component#TYPEFACE_SANSSERIF} or
+   *          {@link Component#TYPEFACE_MONOSPACE}
+   */
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          userVisible = false)
+  public int FontTypefaceDetail() {
+    return fontTypeDetail;
+  }
+
+  /**
+   * Specifies the label's text's font face as default, serif, sans
+   * serif, or monospace.
+   *
+   * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
+   *                  {@link Component#TYPEFACE_SERIF},
+   *                  {@link Component#TYPEFACE_SANSSERIF} or
+   *                  {@link Component#TYPEFACE_MONOSPACE}
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
+          defaultValue = Component.TYPEFACE_DEFAULT + "")
+  @SimpleProperty(
+          userVisible = false)
+  public void FontTypefaceDetail(int typeface) {
+    fontTypeDetail = typeface;
+    setAdapterData();
+  }
   /**
    * Returns the image width of ListView layouts containing images
    *
@@ -816,17 +888,14 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
         for (int i = 0; i < arr.length(); ++i) {
           JSONObject jsonItem = arr.getJSONObject(i);
           YailDictionary dictItem = new YailDictionary();
-          dictItem.put("Text1", jsonItem.has("Text1") ? jsonItem.getString("Text1") : "");
-          dictItem.put("Text2", jsonItem.has("Text1") ? jsonItem.getString("Text2") : "");
+          dictItem.put(Component.LISTVIEW_KEY_MAIN_TEXT, jsonItem.has("Text1") ? jsonItem.getString("Text1") : "");
+          dictItem.put("Text2", jsonItem.has("Text2") ? jsonItem.getString("Text2") : "");
           dictItem.put("Image", jsonItem.has("Image") ? jsonItem.getString("Image") : "");
           dictItems.add(dictItem);
         }
       } catch (JSONException e) {
         Log.e(LOG_TAG, "Malformed JSON in ListView.ListData", e);
         container.$form().dispatchErrorOccurredEvent(this, "ListView.ListData", ErrorMessages.ERROR_DEFAULT, e.getMessage());
-        YailDictionary dictItem = new YailDictionary();
-        dictItem.put("Text1", "Error");
-        dictItems.add(dictItem);
       }
     }
     setAdapterData();
@@ -843,7 +912,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleFunction(description = "Create a ListView entry.")
   public YailDictionary CreateElement(final String mainText, final String detailText, final String imageName) {
     YailDictionary dictItem = new YailDictionary();
-    dictItem.put("Text1", mainText);
+    dictItem.put(Component.LISTVIEW_KEY_MAIN_TEXT, mainText);
     dictItem.put("Text2", detailText);
     dictItem.put("Image", imageName);
     return dictItem;
@@ -851,7 +920,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   @SimpleFunction(description = "Get the Main Text of a ListView element.")
   public String GetMainText(final YailDictionary listElement) {
-    return listElement.get("Text1").toString();
+    return listElement.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
   }
 
   @SimpleFunction(description = "Get the Detail Text of a ListView element.")
