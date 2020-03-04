@@ -485,7 +485,6 @@
          basedir="${ExternalComponent.dir}"
          includes="${extensionType}/"
     />
-
   </target>
 
   <target name="extensions" depends="ExternalComponentGenerator, jarAllExtensions, dexAllExtensions">
