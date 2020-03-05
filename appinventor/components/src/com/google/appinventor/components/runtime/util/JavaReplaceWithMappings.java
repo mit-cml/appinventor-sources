@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
  * See runtime.scm
  *
  * TODO: Might be better to re-implement this in Scheme/Kawa in the future.
+ * TODO: Add unit tests
  */
 public final class JavaReplaceWithMappings {
   /**
@@ -27,19 +28,19 @@ public final class JavaReplaceWithMappings {
    * @param mappings  Map containing mappings
    * @return Text with the mappings applied
    */
-  public static String replaceWithMappings(String text, Map<String, Object> mappings)
+  public static String replaceWithMappings(String text, Map<Object, Object> mappings)
   {
     // We will construct a regex pattern
     StringBuilder patternBuilder = new StringBuilder();
 
     // Iterate over all the mappings
-    Iterator<Map.Entry<String, Object>> it = mappings.entrySet().iterator();
+    Iterator<Map.Entry<Object, Object>> it = mappings.entrySet().iterator();
 
     while (it.hasNext()) {
-      Map.Entry<String, Object> current = it.next();
+      Map.Entry<Object, Object> current = it.next();
 
       // Append mapping that we want to replace to the regex pattern
-      patternBuilder.append(current.getKey());
+      patternBuilder.append(current.getKey().toString());
 
       // If there is still another mapping, then we append the union (OR) operator
       if (it.hasNext()) {
