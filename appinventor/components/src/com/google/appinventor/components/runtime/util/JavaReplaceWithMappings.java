@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -36,11 +37,20 @@ public final class JavaReplaceWithMappings {
     // Iterate over all the mappings
     Iterator<Map.Entry<Object, Object>> it = mappings.entrySet().iterator();
 
+    // Construct a new map for <String, String> mappings in order to support
+    // look-ups for non-pure String values (e.g. numbers)
+    Map<String, String> stringMappings = new HashMap<>();
+
     while (it.hasNext()) {
       Map.Entry<Object, Object> current = it.next();
 
+      // Get Key & Value, and update string mappings map
+      String key = current.getKey().toString();
+      String value = current.getValue().toString();
+      stringMappings.put(key, value);
+
       // Append mapping that we want to replace to the regex pattern
-      patternBuilder.append(current.getKey().toString());
+      patternBuilder.append(key);
 
       // If there is still another mapping, then we append the union (OR) operator
       if (it.hasNext()) {
@@ -65,8 +75,8 @@ public final class JavaReplaceWithMappings {
       // but we add it as a safe-guard just in case something goes wrong)
       String replace = found;
 
-      if (mappings.containsKey(found)) {
-        replace = mappings.get(found).toString();
+      if (stringMappings.containsKey(found)) {
+        replace = stringMappings.get(found).toString();
       }
 
       // Replace the found pattern with the mapped string
