@@ -758,6 +758,14 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING = 'thing';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = 'Returns true if <code>thing</code> is a string.';
 
+    Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_HELPURL = '/reference/blocks/text.html#replacemappings';
+    Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_INPUT_TEXT = 'text';
+    Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TITLE_REPLACE_WITH_MAPPINGS = 'replace with mappings';
+    Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_INPUT_REPLACEMENT = 'replacement';
+    Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_INPUT = 'replace with mappings text %1 mappings %2';
+    Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TOOLTIP = 'Returns a new text obtained by replacing all occurrences\n'
+        + 'defined by the input dictionary keys with the values of the corresponding keys.';
+
 // Lists Blocks.
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Lists';
 //Blockly.Msg.LANG_LISTS_CREATE_EMPTY_HELPURL = 'http://en.wikipedia.org/wiki/Linked_list.html#Empty_lists';

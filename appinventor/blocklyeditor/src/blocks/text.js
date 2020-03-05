@@ -497,3 +497,22 @@ Blockly.Blocks['text_is_string'] = {
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE}]
 };
+
+Blockly.Blocks['text_replace_mappings'] = {
+  // Replace all occurrences in mappings with their corresponding replacement
+  category: 'Text',
+  helpUrl: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_HELPURL, // TODO: Add new help URL
+  init: function () {
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
+    var checkTypeMap = Blockly.Blocks.Utilities.YailTypeToBlocklyType("dictionary", Blockly.Blocks.Utilities.INPUT);
+    this.interpolateMsg(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_INPUT,
+        ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
+        ['MAPPINGS', checkTypeMap, Blockly.ALIGN_RIGHT],
+        Blockly.ALIGN_RIGHT);
+    this.setTooltip(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TOOLTIP); // TODO: Replace tooltip
+    this.setInputsInline(false);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TITLE_REPLACE_WITH_MAPPINGS}] // TODO: Replace typeblock message
+};

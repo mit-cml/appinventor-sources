@@ -318,3 +318,27 @@ Blockly.Yail['text_is_string'] = function() {
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "is a string?" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
+
+Blockly.Yail['text_replace_mappings'] = function() {
+    // String replace with segment
+    var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
+    var argument1 = Blockly.Yail.valueToCode(this, 'MAPPINGS', Blockly.Yail.ORDER_NONE) || "\"\"";
+    var code = "(1)"
+
+    // TODO: Implement code construction
+
+    // var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-replace-all"
+    //     + Blockly.Yail.YAIL_SPACER;
+    // code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
+    //     + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
+    //     + argument0 + Blockly.Yail.YAIL_SPACER + argument1
+    //     + Blockly.Yail.YAIL_SPACER + argument2
+    //     + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    // code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
+    //     + Blockly.Yail.YAIL_OPEN_COMBINATION + "text text text"
+    //     + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+    // code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "replace all"
+    //     + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    
+    return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  };
