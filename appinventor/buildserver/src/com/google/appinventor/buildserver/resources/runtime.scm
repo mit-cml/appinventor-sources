@@ -980,6 +980,7 @@
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
 (define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
 (define-alias JavaJoinListOfStrings <com.google.appinventor.components.runtime.util.JavaJoinListOfStrings>)
+(define-alias JavaReplaceWithMappings <com.google.appinventor.components.runtime.util.JavaReplaceWithMappings>)
 
 (define-alias JavaCollection <java.util.Collection>)
 (define-alias JavaIterator <java.util.Iterator>)
