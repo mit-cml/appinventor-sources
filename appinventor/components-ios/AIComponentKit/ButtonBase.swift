@@ -56,6 +56,22 @@ fileprivate let CLASSIC_DEFAULT_BUTTON_DISABLED_TEXTCOLOR = argbToColor(Int32(-2
       ovalLayer.path = UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: frame.width, height: frame.height)).cgPath
     }
   }
+
+  override public var intrinsicContentSize: CGSize {
+    // The intrinsic content size for UIButton doesn't account for line wrapping in the title label
+    // We perform this here so that automatic sizing works when the label needs to wrap.
+    // TODO(ewpatton): Do we also need to account for the background image here?
+    if let titleFrame = titleLabel?.frame,
+       let labelSize = titleLabel?.sizeThatFits(CGSize(width: frame.width, height: frame.height)) {
+      let insetWidth = titleEdgeInsets.left + titleEdgeInsets.right + contentEdgeInsets.left +
+        contentEdgeInsets.right
+      let insetHeight = titleEdgeInsets.top + titleEdgeInsets.bottom + contentEdgeInsets.top +
+        contentEdgeInsets.bottom
+      return CGSize(width: max(titleFrame.width, labelSize.width) + insetWidth,
+                    height: max(titleFrame.height, labelSize.height) + insetHeight)
+    }
+    return super.intrinsicContentSize
+  }
 }
 
 enum ButtonStylePipeline: Int {
@@ -127,6 +143,7 @@ open class ButtonBase: ViewComponent {
     }
     CLASSIC_DEFAULT_PIPELINE[.DefaultShape] = {
       $0._view.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 11.0, bottom: 11.0, right: 11.0)
+      $0._view.titleEdgeInsets = UIEdgeInsets(top: 7.0, left: 0.0, bottom: 6.0, right: 0.0)
       if $0._shape == .normal {
         var bg = ButtonBase._classicButton, bgd = ButtonBase._classicButtonDisabled, bgh = ButtonBase._classicButtonPressed
         if $0._backgroundColor != kDefaultColor {
@@ -143,6 +160,7 @@ open class ButtonBase: ViewComponent {
         $0._view.setBackgroundImage(bg, for: .normal)
         $0._view.setBackgroundImage(bgd, for: .disabled)
         $0._view.setBackgroundImage($0.ShowFeedback ? bgh : bg, for: .highlighted)
+        $0._view.invalidateIntrinsicContentSize()
         return false
       }
       return true
@@ -188,6 +206,8 @@ open class ButtonBase: ViewComponent {
     _defaultHighlightColor = self._view.titleColor(for: .highlighted)
     _stylePipeline = ButtonBase.CLASSIC_DEFAULT_PIPELINE
     super.init(parent)
+    self._view.titleLabel?.lineBreakMode = .byWordWrapping
+    self._view.titleLabel?.textAlignment = .center
     self._view.translatesAutoresizingMaskIntoConstraints = false
     self._view.addTarget(self, action: #selector(TouchDown), for: UIControl.Event.touchDown)
     self._view.addTarget(self, action: #selector(TouchUp), for: UIControl.Event.touchUpInside)
