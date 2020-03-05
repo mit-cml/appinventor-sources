@@ -501,7 +501,7 @@ Blockly.Blocks['text_is_string'] = {
 Blockly.Blocks['text_replace_mappings'] = {
   // Replace all occurrences in mappings with their corresponding replacement
   category: 'Text',
-  helpUrl: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_HELPURL, // TODO: Add new help URL
+  helpUrl: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
@@ -511,8 +511,8 @@ Blockly.Blocks['text_replace_mappings'] = {
         ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
         ['MAPPINGS', checkTypeMap, Blockly.ALIGN_RIGHT],
         Blockly.ALIGN_RIGHT);
-    this.setTooltip(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TOOLTIP); // TODO: Replace tooltip
+    this.setTooltip(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TOOLTIP);
     this.setInputsInline(false);
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TITLE_REPLACE_WITH_MAPPINGS}] // TODO: Replace typeblock message
+  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TITLE_REPLACE_WITH_MAPPINGS}]
 };
