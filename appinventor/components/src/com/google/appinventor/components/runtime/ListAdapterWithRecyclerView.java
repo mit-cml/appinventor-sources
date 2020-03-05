@@ -80,7 +80,6 @@ import com.google.appinventor.components.runtime.util.YailList;
   }
 
   public ListAdapterWithRecyclerView(ComponentContainer container, YailList stringItems, int textMainColor, float textMainSize, int textMainFont, int backgroundColor, int selectionColor) {
-
     // Legacy Support
     this.container = container;
     this.textMainSize = textMainSize;
@@ -105,13 +104,9 @@ import com.google.appinventor.components.runtime.util.YailList;
     for(int i = 1; i <= stringItems.size(); ++i) {
       String itemString = YailList.YailListElementToString(stringItems.get(i));
       YailDictionary itemDict = new YailDictionary();
-//      itemDict.put(Component.LISTVIEW_KEY_MAIN_TEXT, itemString);
-      Log.e("LISTVIEW-ADAPTER", "String Constructor item " + i + ": " + itemString );
-      itemDict.put("Text1", itemString);
+      itemDict.put(Component.LISTVIEW_KEY_MAIN_TEXT, itemString);
       this.items.add(itemDict);
-      Log.e("LISTVIEW-ADAPTER", "String Constructor added item, length " + this.items.size() );
     }
-    Log.e("LISTVIEW-ADAPTER", "Completed string constructor");
   }
 
   public void selectFromText(String text1) {
@@ -154,7 +149,6 @@ import com.google.appinventor.components.runtime.util.YailList;
 
   @Override
   public RvViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
-    Log.e("LISTVIEW-ADAPTER", "Create ViewHolder-BEGIN");
     CardView cardView = new CardView(container.$context());
     cardView.setUseCompatPadding(true);
     cardView.setContentPadding(10, 10, 10, 10);
@@ -169,7 +163,6 @@ import com.google.appinventor.components.runtime.util.YailList;
 
     CardView.LayoutParams params1 = new CardView.LayoutParams(CardView.LayoutParams.FILL_PARENT, CardView.LayoutParams.WRAP_CONTENT);
     params1.setMargins(0, 0, 0, 0);
-    Log.e("LISTVIEW-ADAPTER", "Create ViewHolder - CardView Params");
 
     ViewCompat.setElevation(cardView, 20);
 
@@ -183,14 +176,12 @@ import com.google.appinventor.components.runtime.util.YailList;
     textViewFirst.setTextSize(textMainSize);
     textViewFirst.setTextColor(textMainColor);
     TextViewUtil.setFontTypeface(textViewFirst, textMainFont, false, false);
-    Log.e("LISTVIEW-ADAPTER", "Create ViewHolder - TextView1");
     LinearLayout linearLayout1 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     linearLayout1.setLayoutParams(layoutParamslinear1);
     linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
 
     if (layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT || layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
-      Log.e("LISTVIEW-ADAPTER", "Create ViewHolder - Image");
       // Create ImageView for layouts containing an image
       ImageView imageView = new ImageView(container.$context());
       idImages = ViewCompat.generateViewId();
@@ -201,11 +192,9 @@ import com.google.appinventor.components.runtime.util.YailList;
     }
 
     if (layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT || layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
-      Log.e("LISTVIEW-ADAPTER", "Create ViewHolder - Single Text");
       // All layouts containing just MainText
       linearLayout1.addView(textViewFirst);
     } else {
-      Log.e("LISTVIEW-ADAPTER", "Create ViewHolder - Two Text");
       // All layouts containing MainText and DetailText
       TextView textViewSecond = new TextView(container.$context());
       idSecond = ViewCompat.generateViewId();
@@ -215,7 +204,6 @@ import com.google.appinventor.components.runtime.util.YailList;
       TextViewUtil.setFontTypeface(textViewSecond, textDetailFont, false, false);
       textViewSecond.setTextColor(textDetailColor);
       if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT || layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
-        Log.e("LISTVIEW-ADAPTER", "Create ViewHolder - Two stacked text");
         layoutParams2.topMargin = 10;
         textViewSecond.setLayoutParams(layoutParams2);
 
@@ -229,7 +217,6 @@ import com.google.appinventor.components.runtime.util.YailList;
         linearLayout1.addView(linearLayout2);
 
       } else if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
-        Log.e("LISTVIEW-ADAPTER", "Create ViewHolder - Two Text side-by-side");
         // Unlike the other two text layouts, linear does not wrap
         layoutParams2.setMargins(50, 10, 0, 0);
         textViewSecond.setLayoutParams(layoutParams2);
@@ -243,7 +230,6 @@ import com.google.appinventor.components.runtime.util.YailList;
     cardView.setLayoutParams(params1);
     cardView.addView(linearLayout1);
 
-    Log.e("LISTVIEW-ADAPTER", "CreateViewHolder return view holder.");
     return new RvViewHolder(cardView);
   }
 
@@ -257,30 +243,22 @@ import com.google.appinventor.components.runtime.util.YailList;
       }
     });
 
-    Log.e("LISTVIEW-ADAPTER", "onBindViewHolder position " + position + ".");
     YailDictionary dictItem = items.get(position);
-//    String first = dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
-    String first = dictItem.get("Text1").toString();
-    Log.e("LISTVIEW-ADAPTER", "onBindViewHolder Text1 " + first + ".");
+    String first = dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
     String second = "";
-    if (dictItem.containsKey("Text2")) {
+    if (dictItem.containsKey(Component.LISTVIEW_KEY_DESCRIPTION)) {
       second = dictItem.get("Text2").toString();
     }
-    Log.e("LISTVIEW-ADAPTER", "onBindViewHolder Text2 " + second + ".");
     if (layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
-      Log.e("LISTVIEW-ADAPTER", "Layout Single Text");
       holder.textViewFirst.setText(first);
     } else if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT) {
-      Log.e("LISTVIEW-ADAPTER", "Layout Two Text");
       holder.textViewFirst.setText(first);
       holder.textViewSecond.setText(second);
     } else if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
-      Log.e("LISTVIEW-ADAPTER", "Layout Two Text Linear");
       holder.textViewFirst.setText(first);
       holder.textViewSecond.setText(second);
     } else if (layoutType == Component.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
-      Log.e("LISTVIEW-ADAPTER", "Layout Image Single Text");
-      String imageName = dictItem.get("Image").toString();
+      String imageName = dictItem.get(Component.LISTVIEW_KEY_IMAGE).toString();
       Drawable drawable = new BitmapDrawable();
       try {
         drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
@@ -290,8 +268,7 @@ import com.google.appinventor.components.runtime.util.YailList;
       holder.textViewFirst.setText(first);
       ViewUtil.setImage(holder.imageVieww, drawable);
     } else if (layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
-      Log.e("LISTVIEW-ADAPTER", "Layout Image Two Text");
-      String imageName = dictItem.get("Image").toString();
+      String imageName = dictItem.get(Component.LISTVIEW_KEY_IMAGE).toString();
       Drawable drawable = new BitmapDrawable();
       try {
         drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
@@ -302,10 +279,8 @@ import com.google.appinventor.components.runtime.util.YailList;
       holder.textViewSecond.setText(second);
       ViewUtil.setImage(holder.imageVieww, drawable);
     } else {
-      Log.e("LISTVIEW-ADAPTER", "No Layout matches??");
-      holder.textViewFirst.setText("Something is wrong");
+      Log.e("ListView Adapter", "Layout not recognized: " + layoutType);
     }
-    Log.e("LISTVIEW-ADAPTER", "Finish BindViewHolder");
     itemViews[position] = holder.cardView;
   }
 
@@ -324,7 +299,6 @@ import com.google.appinventor.components.runtime.util.YailList;
 
     public RvViewHolder(View view) {
       super(view);
-      Log.e("LISTVIEW-ADAPTER", "RvViewHolder-BEGIN");
 
       view.setOnClickListener(this);
 
@@ -338,9 +312,7 @@ import com.google.appinventor.components.runtime.util.YailList;
       if (idImages != -1) {
         imageVieww = view.findViewById(idImages);
       }
-      Log.e("LISTVIEW-ADAPTER", "RvViewHolder-END");
     }
-
 
     @Override
     public void onClick(View v) {
@@ -373,20 +345,18 @@ import com.google.appinventor.components.runtime.util.YailList;
     return selectedItems.length() > 0 ? selectedItems.substring(1) : "";
   }
 
-  //@Override
+  @Override
   public Filter getFilter() {
     Filter filter = new Filter() {
       @Override
       protected FilterResults performFiltering(CharSequence charSequence) {
         String filterQuery = charSequence.toString().toLowerCase();
         FilterResults results = new FilterResults();
+        List<YailDictionary> filteredList = new ArrayList<>();
 
         if(filterQuery == null || filterQuery.length() == 0) {
-          List<YailDictionary> arrayList = new ArrayList<>(items);
-          results.count = items.size();
-          results.values = arrayList;
+          filteredList = new ArrayList<>(items);
         } else {
-          List<YailDictionary> filteredList = new ArrayList<>();
           for(int i = 0; i < items.size(); ++i) {
             YailDictionary itemDict = items.get(i);
             String filterString = itemDict.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString() + " " + itemDict.get("Text2").toString();
@@ -394,25 +364,29 @@ import com.google.appinventor.components.runtime.util.YailList;
               filteredList.add(itemDict);
             }
           }
-          results.count = filteredList.size();
-          results.values = filteredList;
         }
+        results.count = filteredList.size();
+        results.values = filteredList;
         return results;
       }
 
       @Override
       protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
         filterItems = (List<YailDictionary>) filterResults.values;
+        // Usually GUI objects take up no screen space when set to invisible, but setting a CardView object to invisible
+        // was displaying an empty object. Therefore, set the height to 0 as well.
+        // Setting visibility on individual entries will keep the selected index(ices) the same regardless of filter.
         for(int i = 0; i < items.size(); ++i) {
-          if (filterItems.contains(items.get(i))) {
+          if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
             itemViews[i].setVisibility(View.VISIBLE);
-          } else {
+            itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+         } else {
             itemViews[i].setVisibility(View.GONE);
+            itemViews[i].getLayoutParams().height = 0;
           }
         }
       }
     };
     return filter;
   }
-
 };

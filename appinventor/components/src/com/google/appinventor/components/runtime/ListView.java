@@ -147,8 +147,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       @Override
       public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
         // When user changed the Text
-        setAdapterData();
-        listAdapterWithRecyclerView.getFilter().filter(cs.toString());
+        if (cs.length() == 0) {
+          setAdapterData();
+        } else {
+          listAdapterWithRecyclerView.getFilter().filter(cs.toString());
+        }
       }
 
       @Override
@@ -346,11 +349,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       GridLayoutManager gridlayoutManager;
 
       if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
-        Log.e("LISTVIEW-Component", "Horizontal orientation");
         layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
       } else { // if (orientation == ComponentConstants.LAYOUT_ORIENTATION_VERTICAL) {
-        Log.e("LISTVIEW-Component", "Vertical orientation");
         layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
       } //else {
@@ -362,7 +363,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       recyclerView.setAdapter(listAdapterWithRecyclerView);
     } else {
       // Legacy Support: if the data is not available in AddData property but is available in ElementsFromString property
-      Log.e("LISTVIEW-Component", "Legacy string adapter");
       listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, stringItems, textColor, fontSizeMain, fontTypeface, backgroundColor, selectionColor);
     }
     listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
@@ -375,7 +375,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setAdapter(listAdapterWithRecyclerView);
-    Log.e("LISTVIEW-Component", "Completed setAdapterData");
   }
 
   /**
@@ -874,8 +873,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           JSONObject jsonItem = arr.getJSONObject(i);
           YailDictionary dictItem = new YailDictionary();
           dictItem.put(Component.LISTVIEW_KEY_MAIN_TEXT, jsonItem.has("Text1") ? jsonItem.getString("Text1") : "");
-          dictItem.put("Text2", jsonItem.has("Text2") ? jsonItem.getString("Text2") : "");
-          dictItem.put("Image", jsonItem.has("Image") ? jsonItem.getString("Image") : "");
+          dictItem.put(Component.LISTVIEW_KEY_DESCRIPTION, jsonItem.has("Text2") ? jsonItem.getString("Text2") : "");
+          dictItem.put(Component.LISTVIEW_KEY_IMAGE, jsonItem.has("Image") ? jsonItem.getString("Image") : "");
           dictItems.add(dictItem);
         }
       } catch (JSONException e) {
