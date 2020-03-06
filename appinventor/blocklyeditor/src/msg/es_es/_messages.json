@@ -590,5 +590,6 @@
     "Blockly.Msg.DELETE_ALL_BLOCKS": "¿Borrar todos los bloques %1 ?",
     "Blockly.Msg.CONFIRM_DELETE": "Confirmar borrado",
     "Blockly.Msg.REDO": "Rehacer",
-    "Blockly.Msg.UNDO": "Deshacer"
+    "Blockly.Msg.UNDO": "Deshacer",
+    "Blockly.Msg.REPL_COMPANION_WRONG_PACKAGE": "El Companion que estás usando fue hecho para una instancia diferente de App Inventor. Para obtener el Companion correcto, busca en la pantalla de App inventor, en el menú Ayuda->Información de Companion."
 }
