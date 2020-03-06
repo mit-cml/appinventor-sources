@@ -507,12 +507,69 @@ Blockly.Blocks['text_replace_mappings'] = {
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
     var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
     var checkTypeMap = Blockly.Blocks.Utilities.YailTypeToBlocklyType("dictionary", Blockly.Blocks.Utilities.INPUT);
-    this.interpolateMsg(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_INPUT,
-        ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
-        ['MAPPINGS', checkTypeMap, Blockly.ALIGN_RIGHT],
-        Blockly.ALIGN_RIGHT);
+
+    this.appendValueInput('MAPPINGS')
+      .setCheck(checkTypeMap)
+      .appendField("replace all mappings")
+      .setAlign(Blockly.ALIGN_RIGHT)
+
+    this.appendValueInput('TEXT')
+      .setCheck(checkTypeText)
+      .appendField("in text")
+      .setAlign(Blockly.ALIGN_RIGHT)
+
+    this.appendDummyInput()
+        .appendField("preferring")
+        .appendField(new Blockly.FieldDropdown(this.OPERATORS, Blockly.Blocks.text_split.dropdown_onchange), 'OP')
+        .setAlign(Blockly.ALIGN_RIGHT)
+
+
     this.setTooltip(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TOOLTIP);
     this.setInputsInline(false);
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TITLE_REPLACE_WITH_MAPPINGS}]
+  //typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TITLE_REPLACE_WITH_MAPPINGS}]
+  typeblock: [{
+    translatedName: Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT,
+    dropDown: {
+      titleName: 'OP',
+      value: 'LONGEST_STRING_FIRST'
+    }
+  }, {
+    translatedName: Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST,
+    dropDown: {
+      titleName: 'OP',
+      value: 'DICTIONARY_ORDER'
+    }
+  }, {
+    translatedName : Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST,
+    dropDown: {
+        titleName: 'OP',
+        value: 'EARLIEST_OCCURRENCE'
+    }
+  }]
+};
+
+// The order here determines the order in the dropdown
+Blockly.Blocks.text_replace_mappings.OPERATORS = function () {
+  return [
+    ['longest string', 'LONGEST_STRING_FIRST'],
+    ['dictionary', 'DICTIONARY_ORDER'],
+    ['earliest occurrence', 'EARLIEST_OCCURRENCE']
+  ]
+};
+
+Blockly.Blocks.text_replace_mappings.TOOLTIPS = function () {
+  return {
+    LONGEST_STRING_FIRST : "tooltip",
+    DICTIONARY_ORDER : "tooltip",
+    EARLIEST_OCCURRENCE : "tooltip"
+  }
+};
+
+Blockly.Blocks.text_replace_mappings.HELPURLS = function () {
+  return {
+    LONGEST_STRING_FIRST : "help",
+    DICTIONARY_ORDER : "help",
+    EARLIEST_OCCURRENCE : "help"
+  }
 };

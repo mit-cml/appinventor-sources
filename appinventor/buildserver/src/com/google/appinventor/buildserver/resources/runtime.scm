@@ -2651,12 +2651,12 @@ Dictionary implementation.
              (b4 (bitwise-and (bitwise-xor b3 (char->integer (string-ref lc i))) 255)))
         (set! acc (cons b4 acc))))))
 
-(define (string-replace-mappings text mappings)
+(define (string-replace-mappings text mappings mode)
   ;; NOTE: The keys & values in the YailDictionary should be <String, String>.
   ;; However, this might not necessarily be the case, so we pass in an <Object, Object>
   ;; map instead to the Java call.
   ;; See JavaReplaceWithMappings in components/runtime/utils
-  (JavaReplaceWithMappings:replaceWithMappings text mappings))
+  (JavaReplaceWithMappings:replaceWithMappings text mappings mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Text implementation

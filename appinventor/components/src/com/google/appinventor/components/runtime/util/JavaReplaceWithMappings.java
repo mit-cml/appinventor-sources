@@ -24,12 +24,18 @@ public final class JavaReplaceWithMappings {
    * Replaces the specified text string with the specified mappings,
    * which is a map containing Key Value pairs where the key is the
    * substring to replace, and the value is the value to replace the substring with.
+   * A mode parameter is also specified to indicate the order of mapping application:
+   * 0 - longest string first
+   * 1 - dictionary order
+   * 2 - earliest string first
+   *
    *
    * @param text      Text to apply mappings to
    * @param mappings  Map containing mappings
+   * @param mode      Mode to use for replacing mappings
    * @return Text with the mappings applied
    */
-  public static String replaceWithMappings(String text, Map<Object, Object> mappings)
+  public static String replaceWithMappings(String text, Map<Object, Object> mappings, int mode)
   {
     // We will construct a regex pattern
     StringBuilder patternBuilder = new StringBuilder();
