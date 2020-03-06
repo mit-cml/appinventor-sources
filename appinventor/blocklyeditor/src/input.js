@@ -1,6 +1,9 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright © 2020 Massachusetts Institute of Technology. All rights reserved.
 
+// Copyright 2012 Google LLC
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * @license
  * @fileoverview Visual blocks editor for MIT App Inventor
