@@ -232,21 +232,25 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
     return;  // Don't allow recursive render calls.
   }
   this.isRendering = true;
-  this.renderDown();
 
-  // Render all blocks above this one (propagate a reflow).
-  if (opt_bubble !== false) {
-    if (this.parentBlock_) {
-      var top = this.parentBlock_;
-      while (top.parentBlock_) top = top.parentBlock_;
-      top.render(false);
-    } else {
-      // Top most block. Fire an event to allow scrollbars to resize.
-      this.workspace.resizeContents();
+  // Make sure we set isRendering back to false if something goes wrong.
+  try {
+    this.renderDown();
+
+    // Render all blocks above this one (propagate a reflow).
+    if (opt_bubble !== false) {
+      if (this.parentBlock_) {
+        var top = this.parentBlock_;
+        while (top.parentBlock_) top = top.parentBlock_;
+        top.render(false);
+      } else {
+        // Top most block. Fire an event to allow scrollbars to resize.
+        this.workspace.resizeContents();
+      }
     }
+  } finally {
+    this.isRendering = false;
   }
-
-  this.isRendering = false;
 };
 
 /**
