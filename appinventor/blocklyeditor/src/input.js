@@ -1,8 +1,14 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright © 2020 Massachusetts Institute of Technology. All rights reserved.
 
-// Copyright 2012 Google LLC
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * Copyright 2012 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ * Statement of Changes:
+ * - Changed the source to set the field visibility to match
+ *   the input visibility when appending a field. This supports modifying
+ *   collapsed blocks.
+ */
 
 /**
  * @license
