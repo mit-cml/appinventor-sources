@@ -1,1 +1,5 @@
-{}
+{
+    "Blockly.Msg.CLEAN_UP": "ブロックを消去",
+    "Blockly.Msg.REDO": "やり直し",
+    "Blockly.Msg.UNDO": "元に戻す"
+}
