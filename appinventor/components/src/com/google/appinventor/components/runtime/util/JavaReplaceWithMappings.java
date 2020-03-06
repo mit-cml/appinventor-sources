@@ -95,7 +95,11 @@ public final class JavaReplaceWithMappings {
     return applyMappings(matcher, stringMappings);
   }
 
-  private static void sortKeysOnLargestSizeFirst(List<String> keys) {
+  /**
+   * Sort the given List of keys in order of largest length first.
+   * @param keys  Keys (List of Strings) to sort
+   */
+  private static void sortKeysOnLargestSizeFirst(final List<String> keys) {
     Collections.sort(keys, new Comparator<String>() {
       @Override
       public int compare(String s, String t1) {
@@ -105,9 +109,15 @@ public final class JavaReplaceWithMappings {
     });
   }
 
-  private static void sortKeysOnEarliestOccurrenceFirst(String text, List<String> keys) {
+  /**
+   * Sort the given List of keys in order of earliest occurrence first in the
+   * text string.
+   * @param text  Text string
+   * @param keys  Keys 9List of Strings) to sort
+   */
+  private static void sortKeysOnEarliestOccurrenceFirst(final String text, final List<String> keys) {
     // Construct a map for first index of occurrence for String
-    Map<String, Integer> occurrenceIndices = new HashMap<>();
+    final Map<String, Integer> occurrenceIndices = new HashMap<>();
 
     // TODO: Can we optimize the O(mn) loop with m = length of text,
     // TODO: n = number of keys?
