@@ -2308,10 +2308,15 @@ public final class Compiler {
 //    d8Command.add("--no-desugaring");
     d8Command.add("--lib");
     d8Command.add(getResource(ANDROID_RUNTIME));
-    d8Command.add("--main-dex-list");
-    d8Command.add(getResource(MAIN_DEX_LIST));
     d8Command.add("--min-api");
     d8Command.add(minSdkForCompilation + "");
+
+    // D8 does not require main-dex for APIs >= 21
+    if (minSdkForCompilation < 21) {
+      d8Command.add("--main-dex-list");
+      d8Command.add(getResource(MAIN_DEX_LIST));
+    }
+
     d8Command.add("--output");
     d8Command.add(dexedClassesDir);
 
