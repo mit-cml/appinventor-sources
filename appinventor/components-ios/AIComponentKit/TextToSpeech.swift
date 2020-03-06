@@ -158,8 +158,10 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
 
   // MARK: Methods
 
-  @objc open func Speak(_ message: String) {
+  @objc open func Speak(_ message: String) throws {
     BeforeSpeaking()
+    try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+    try AVAudioSession.sharedInstance().setActive(true)
     let utterance = AVSpeechUtterance(string: message)
     utterance.pitchMultiplier = _pitch
     utterance.rate = _speechRate
