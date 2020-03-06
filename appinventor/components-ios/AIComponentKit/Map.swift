@@ -1006,6 +1006,14 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   public func setChildWidth(of component: ViewComponent, to width: Int32) {}
 
   public func setChildHeight(of component: ViewComponent, to height: Int32) {}
+
+  public func isVisible(component: ViewComponent) -> Bool {
+    return !component.view.isHidden
+  }
+
+  public func setVisible(component: ViewComponent, to visibility: Bool) {
+    component.view.isHidden = !visibility
+  }
 }
 
 

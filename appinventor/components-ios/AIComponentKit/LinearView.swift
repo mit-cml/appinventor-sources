@@ -247,6 +247,18 @@ public class LinearView: UIView {
     _items.append(item)
   }
 
+  open func removeItem(_ view: UIView) {
+    _inner.removeArrangedSubview(view)
+    view.removeFromSuperview()
+    _items.removeAll { (item) -> Bool in
+      item.view == view
+    }
+  }
+
+  open func contains(_ item: UIView) -> Bool {
+    return _inner.arrangedSubviews.contains(item)
+  }
+
   open override var backgroundColor: UIColor? {
     get {
       return super.backgroundColor

@@ -152,6 +152,25 @@ import Toast_Swift
     _linearView.setNeedsLayout()
   }
 
+  open func isVisible(component: ViewComponent) -> Bool {
+    return _linearView.contains(component.view)
+  }
+
+  open func setVisible(component: ViewComponent, to visibility: Bool) {
+    let visible = isVisible(component: component)
+    if visible == visibility {
+      return
+    }
+    if visibility {
+      _linearView.addItem(LinearViewItem(component.view))
+      // Replay width/height properties
+      setChildHeight(of: component, to: component._lastSetHeight)
+      setChildWidth(of: component, to: component._lastSetWidth)
+    } else {
+      _linearView.removeItem(component.view)
+    }
+  }
+
   open var scaleFrameLayout: ScaleFrameLayout {
     return _scaleFrameLayout
   }

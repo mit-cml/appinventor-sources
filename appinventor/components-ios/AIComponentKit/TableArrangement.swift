@@ -375,4 +375,12 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
       _view.update(column: component.Column, row: component.Row, for: .height)
     }
   }
+
+  public func isVisible(component: ViewComponent) -> Bool {
+    return !component.view.isHidden
+  }
+
+  public func setVisible(component: ViewComponent, to visibility: Bool) {
+    component.view.isHidden = !visibility
+  }
 }

@@ -915,6 +915,15 @@ extension Canvas: ComponentContainer {
   public func setChildHeight(of component: ViewComponent, to height: Int32) {
     // unsupported
   }
+
+  public func isVisible(component: ViewComponent) -> Bool {
+    // unsupported
+    return false
+  }
+
+  public func setVisible(component: ViewComponent, to visibility: Bool) {
+    // unsupported
+  }
 }
 
 // MARK: Custom Drag Gesture Recognizer

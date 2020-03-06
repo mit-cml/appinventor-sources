@@ -8,18 +8,22 @@ import XCTest
 
 class ImageTests: XCTestCase {
 
+  var form: Form!
   var image: Image!
 
   override func setUp() {
-    image = Image(Form())
+    form = Form()
+    form.Scrollable = false
+    form.Sizing = "Responsive"
+    image = Image(form)
   }
 
   // Tests the fix for appinventor-sources-ios#310
   func testVisible() {
     XCTAssert(image.Visible)
-    XCTAssertFalse(image.view.isHidden)
+    XCTAssert(image.view.isDescendant(of: form.view))
     image.Visible = false
     XCTAssertFalse(image.Visible)
-    XCTAssert(image.view.isHidden)
+    XCTAssertFalse(image.view.isDescendant(of: form.view))
   }
 }

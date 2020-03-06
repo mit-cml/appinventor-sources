@@ -77,6 +77,25 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     _view.setNeedsLayout()
   }
 
+  open func isVisible(component: ViewComponent) -> Bool {
+    return _view.contains(component.view)
+  }
+
+  open func setVisible(component: ViewComponent, to visibility: Bool) {
+    let visible = isVisible(component: component)
+    if visibility == visible {
+      return
+    }
+    if visibility {
+      _view.addItem(LinearViewItem(component.view))
+      // Replay width/height properties
+      setChildHeight(of: component, to: component._lastSetHeight)
+      setChildWidth(of: component, to: component._lastSetWidth)
+    } else {
+      _view.removeItem(component.view)
+    }
+  }
+
   // MARK: HVArrangement Properties
   @objc open var AlignHorizontal: Int32 {
     get {
