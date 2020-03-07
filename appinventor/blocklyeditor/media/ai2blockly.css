@@ -36,8 +36,3 @@
 .blocklyZoomButton:hover {
   cursor: pointer;
 }
-
-.dyslexic .blocklyText,
-.dyslexic .blocklyFieldParameter {
-  font-family: OpenDyslexic, Helvetica, Arial, sans-serif;
-}
