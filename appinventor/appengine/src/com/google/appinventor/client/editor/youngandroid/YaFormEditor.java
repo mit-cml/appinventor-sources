@@ -403,7 +403,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
           for (MockComponent selectedComponent : selectedComponents) {
             for (EditableProperty property : selectedComponent.getProperties()) {
               String propertyName = property.getName();
-              if (propertyName == "Uuid") {
+              if ("Uuid".equals(propertyName)) {
                 continue;
               }
               if (isIntersectedProperty(propertyName)) {
@@ -451,7 +451,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public boolean isSelectedComponent(MockComponent component) {
     String name = component.getName();
     for (MockComponent selectedComponent : selectedComponents) {
-      if (selectedComponent.getName() == name) {
+      if (selectedComponent.getName().equals(name)) {
         return true;
       }
     }
@@ -485,7 +485,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
           EditableProperties propertyIntersection = new EditableProperties(true);
           for (EditableProperty property : componentProperties) {
             String propertyName = property.getName();
-            if (propertyName == "Uuid") {
+            if ("Uuid".equals(propertyName)) {
               continue;
             }
             if (selectedProperties.hasProperty(propertyName)) {
@@ -512,7 +512,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         EditableProperties propertyIntersection = new EditableProperties(true);
         for (EditableProperty property : selectedComponents.get(0).getProperties()) {
           String propertyName = property.getName();
-          if (propertyName == "Uuid") {
+          if ("Uuid".equals(propertyName)) {
             continue;
           }
           if (isIntersectedProperty(propertyName)) {

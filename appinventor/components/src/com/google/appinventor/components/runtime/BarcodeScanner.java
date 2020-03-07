@@ -31,7 +31,7 @@ import android.content.ComponentName;
 import android.Manifest;
 
 /**
- * Component for scanning a barcode and getting back the resulting string.
+ * Component for scanning a QR code and getting back the resulting string.
  *
  * @author sharon@google.com (Sharon Perl)
  */
@@ -77,7 +77,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   }
 
   /**
-   * Result property getter method.
+   * Gets the text result of the previous scan.
    */
   @SimpleProperty(description = "Text result of the previous scan.",
       category = PropertyCategory.BEHAVIOR)
@@ -165,7 +165,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   /**
    * Set whether or not you wish to use an External Scanning program such as
    * Bar Code Scanner. If false a version of ZXing integrated into App Inventor
-   * Will be used.
+   * will be used.
    *
    * @param useExternalScanner  Set true to use an external scanning program,
    *                            false to use internal copy of ZXing.

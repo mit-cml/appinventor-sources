@@ -133,6 +133,10 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     map.getView().invalidate();
   }
 
+  /**
+   * Specifies whether the `%type%` should be visible on the screen.  Value is `true`{:.logic.block}
+   * if the `%type%` is showing and `false`{:.logic.block} if hidden.
+   */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Specifies whether the %type% should be visible on the screen. "
           + "Value is true if the component is showing and false if hidden.")
@@ -149,6 +153,9 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     map.getController().updateFeatureStroke(this);
   }
 
+  /**
+   * Sets or gets the color used to outline the `%type%`.
+   */
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The paint color used to outline the %type%.")
@@ -167,6 +174,10 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     map.getController().updateFeatureStroke(this);
   }
 
+  /**
+   * Sets or gets the opacity of the outline of the `%type%`. A value of 0.0 will be invisible and
+   * a value of 1.0 will be opaque.
+   */
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "The opacity of the stroke used to outline the map feature.")
@@ -183,6 +194,9 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     map.getController().updateFeatureStroke(this);
   }
 
+  /**
+   * Sets or gets the width of the stroke used to outline the `%type%`.
+   */
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The width of the stroke used to outline the %type%.")
@@ -199,6 +213,10 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     map.getController().updateFeatureDraggable(this);
   }
 
+  /**
+   * Sets or gets whether or not the user can drag a map feature. This feature is accessed by
+   * long-pressing and then dragging the `%type%` to a new location.
+   */
   @Override
   @SimpleProperty(description = "The Draggable property is used to set whether or not the user " +
       "can drag the %type% by long-pressing and then dragging the %type% to a new location.")
@@ -214,6 +232,10 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     map.getController().updateFeatureText(this);
   }
 
+  /**
+   * Sets or gets the title displayed in the info window that appears when the user clicks on the
+   * map feature.
+   */
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The title displayed in the info window that appears when the user clicks " +
@@ -230,6 +252,10 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     map.getController().updateFeatureText(this);
   }
 
+  /**
+   * Sets or gets the description displayed in the info window. The info window appears when the
+   * user taps on the `%type%`.
+   */
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The description displayed in the info window that appears when the user " +
@@ -247,6 +273,9 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     map.getController().updateFeatureText(this);
   }
 
+  /**
+   * Enables or disables the infobox window display when the user taps the `%type%`.
+   */
   @Override
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
   description = "Enable or disable the infobox window display when the user taps the %type%.")
@@ -254,6 +283,10 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     return infobox;
   }
 
+  /**
+   * Shows the info box for the `%type%` if it is not visible. Otherwise, this method has no effect.
+   * This method can be used to show the info box even if {@link #EnableInfobox()} is false.
+   */
   @Override
   @SimpleFunction(description = "Show the infobox for the %type%. This will show the infobox " +
       "even if EnableInfobox is set to false.")
@@ -261,6 +294,9 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     map.getController().showInfobox(this);
   }
 
+  /**
+   * Hides the `%type%`'s info box if it is visible. Otherwise, no action is taken.
+   */
   @Override
   @SimpleFunction(description = "Hide the infobox if it is shown. If the infobox is not " +
       "visible this function has no effect.")
@@ -273,6 +309,20 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     return GeometryUtil.asYailList(getCentroid());
   }
 
+  /**
+   * Computes the distance between the `%type%` and the given `latitude` and `longitude`. If
+   * `centroids` is `true`{:.logic.block}, the distance is computed from the center of the `%type%`
+   * to the given point. Otherwise, the distance is computed from the closest point on the `%type%`
+   * to the given point. Further, this method will return 0 if `centroids` is `false`{:.logic.block}
+   * and the point is in the `%type%`. If an error occurs, -1 will be returned.
+   *
+   * @param latitude The latitude of the point to compute the distance to
+   * @param longitude The longitude of the point to compute the distance to
+   * @param centroid A flag to indicate whether the distance should be computed from the centroid
+   *                 of the feature (true) or from the edge (false).
+   * @return The distance from the feature to the (latitude, longitude) point, or -1 if there was
+   *         an error.
+   */
   @SuppressWarnings("squid:S00100")
   @SimpleFunction(description = "Compute the distance, in meters, between a %type% and a " +
       "latitude, longitude point.")
@@ -280,6 +330,18 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     return accept(distanceToPoint, new GeoPoint(latitude, longitude), centroid);
   }
 
+  /**
+   * Computes the distance between the `%type%` and the given `mapFeature`. If `centroids` is
+   * `true`{:.logic.block}, the computation is done between the centroids of the two features.
+   * Otherwise, the distance will be computed between the two features based on the closest points.
+   * Further, when `centroids` is `false`{:.logic.block}, this method will return 0 if the `%type%`
+   * intersects or contains the `mapFeature`. If an error occurs, this method will return -1.
+   *
+   * @param mapFeature The feature to compute the distance to
+   * @param centroids A flag to indicate whether the distance should be computed from the centroids
+   *                  of the two features (true) or from the edges of the two features (false).
+   * @return The distance in meters between the two features or -1 if there is an error.
+   */
   @SuppressWarnings("squid:S00100")
   @SimpleFunction(description = "Compute the distance, in meters, between two map features.")
   public double DistanceToFeature(MapFeature mapFeature, final boolean centroids) {
@@ -287,6 +349,10 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
   }
 
   // Component Events
+
+  /**
+   * The `Click` event runs when the user taps on the `%type%`.
+   */
   @Override
   @SimpleEvent(description = "The user clicked on the %type%.")
   public void Click() {
@@ -294,6 +360,11 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     container.FeatureClick(this);
   }
 
+  /**
+   * The `LongClick` event runs when the user presses and holds the `%type%` and then releases it.
+   * This event will only trigger if {@link #Draggable()} is `false`{:.logic.block} because it
+   * uses the same gesture as {@link #StartDrag()}.
+   */
   @Override
   @SimpleEvent(description = "The user long-pressed on the %type%. This event will only " +
       "trigger if Draggable is false.")
@@ -302,6 +373,11 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     container.FeatureLongClick(this);
   }
 
+  /**
+   * The `StartDrag` event runs when the user presses and holds the `%type%` and then proceeds to
+   * move their finger on the screen. It will be followed by the {@link #Drag()} and
+   * {@link #StopDrag()} events.
+   */
   @Override
   @SimpleEvent(description = "The user started a drag operation.")
   public void StartDrag() {
@@ -309,6 +385,9 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     container.FeatureStartDrag(this);
   }
 
+  /**
+   * The `Drag` event runs in response to position updates of the `%type%` as the user drags it.
+   */
   @Override
   @SimpleEvent(description = "The user dragged the %type%.")
   public void Drag() {
@@ -316,6 +395,9 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     container.FeatureDrag(this);
   }
 
+  /**
+   * The `StopDrag` event runs when the user releases the `%type%` at the end of a drag.
+   */
   @Override
   @SimpleEvent(description = "The user stopped a drag operation.")
   public void StopDrag() {

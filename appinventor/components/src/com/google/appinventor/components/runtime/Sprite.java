@@ -155,7 +155,7 @@ public abstract class Sprite extends VisibleComponent
   // is a property of Ball only.
 
   /**
-   * Enabled property getter method.
+   * Controls whether the `%type%` moves when its speed is non-zero.
    *
    * @return  {@code true} indicates a running timer, {@code false} a stopped
    *          timer
@@ -170,6 +170,7 @@ public abstract class Sprite extends VisibleComponent
   /**
    * Enabled property setter method: starts or stops the timer.
    *
+   * @suppressdoc
    * @param enabled  {@code true} starts the timer, {@code false} stops it
    */
   @DesignerProperty(
@@ -181,10 +182,25 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
+   * The `%type%`'s heading in degrees above the positive x-axis. Zero degrees is toward the right
+   * of the screen; 90 degrees is toward the top of the screen.
+   *
+   * @return degrees above the positive x-axis
+   */
+  @SimpleProperty(
+      description = "Returns the %type%'s heading in degrees above the positive " +
+          "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
+          "top of the screen.")
+  public double Heading() {
+    return userHeading;
+  }
+
+  /**
    * Sets heading in which sprite should move.  In addition to changing the
    * local variables {@link #userHeading} and {@link #heading}, this
    * sets {@link #headingCos}, {@link #headingSin}, and {@link #headingRadians}.
    *
+   * @suppressdoc
    * @param userHeading degrees above the positive x-axis
    */
   @SimpleProperty
@@ -203,20 +219,9 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Returns the heading of the sprite.
-   *
-   * @return degrees above the positive x-axis
-   */
-  @SimpleProperty(
-    description = "Returns the %type%'s heading in degrees above the positive " +
-        "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
-        "top of the screen.")
-  public double Heading() {
-    return userHeading;
-  }
-
-  /**
-   * Interval property getter method.
+   * The interval in milliseconds at which the `%type%`'s position is updated. For example, if the
+   * `Interval` is 50 and the {@link #Speed(float)} is 10, then the `%type%` will move 10 pixels
+   * every 50 milliseconds.
    *
    * @return  timer interval in ms
    */
@@ -231,6 +236,7 @@ public abstract class Sprite extends VisibleComponent
   /**
    * Interval property setter method: sets the interval between timer events.
    *
+   * @suppressdoc
    * @param interval  timer interval in ms
    */
   @DesignerProperty(
@@ -242,7 +248,8 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Sets the speed with which this sprite should move.
+   * The speed at which the `%type%` moves. The `%type%` moves this many pixels every
+   * {@link #Interval()} milliseconds if {@link #Enabled(boolean)} is `true`{:.logic.block}.
    *
    * @param speed the magnitude (in pixels) to move every {@link #interval}
    * milliseconds
@@ -259,6 +266,7 @@ public abstract class Sprite extends VisibleComponent
   /**
    * Gets the speed with which this sprite moves.
    *
+   * @suppressdoc
    * @return the magnitude (in pixels) the sprite moves every {@link #interval}
    *         milliseconds.
    */
@@ -270,7 +278,8 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Gets whether sprite is visible.
+   * The `Visible` property determines whether the %type% is visible (`true`{:.logic.block}) or
+   * invisible (`false`{:.logic.block}).
    *
    * @return  {@code true} if the sprite is visible, {@code false} otherwise
    */
@@ -360,8 +369,8 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Sets the layer of the sprite, indicating whether it will appear in
-   * front of or behind other sprites.
+   * How the `%type%` should be layered relative to other {@link Ball}s and {@link ImageSprite}s,
+   * with higher-numbered layers appearing in front of lower-numbered layers.
    *
    * @param layer higher numbers indicate that this sprite should appear
    *        in front of ones with lower numbers; if values are equal for
@@ -414,8 +423,8 @@ public abstract class Sprite extends VisibleComponent
 
   // TODO(halabelson): Fix collision detection for rotated sprites.
   /**
-   * Event handler called when two enabled sprites (Balls or ImageSprites)
-   * collide. Note that checking for collisions with a rotated ImageSprite currently
+   * Event handler called when two enabled sprites ({@link Ball}s or {@link ImageSprite}s)
+   * collide. Note that checking for collisions with a rotated `ImageSprite` currently
    * checks against its unrotated position. Therefore, collision
    * checking will be inaccurate for tall narrow or short wide sprites that are
    * rotated.
@@ -431,14 +440,14 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Handler for Dragged events.  On all calls, the starting coordinates
+   * Event handler for Dragged events.  On all calls, the starting coordinates
    * are where the screen was first touched, and the "current" coordinates
    * describe the endpoint of the current line segment.  On the first call
    * within a given drag, the "previous" coordinates are the same as the
    * starting coordinates; subsequently, they are the "current" coordinates
-   * from the prior call. Note that the Sprite won't actually move
-   * anywhere in response to the Dragged event unless MoveTo is
-   * specifically called.
+   * from the prior call. Note that the `%type%` won't actually move
+   * anywhere in response to the Dragged event unless
+   * {@link #MoveTo(double, double)} is specifically called.
    *
    * @param startX the starting x-coordinate
    * @param startY the starting y-coordinate
@@ -465,9 +474,11 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Event handler called when the sprite reaches an edge of the screen.
-   * If Bounce is then called with that edge, the sprite will appear to
-   * bounce off of the edge it reached.
+   * Event handler called when the `%type%` reaches an `edge`{:.variable.block} of the screen.
+   * If {@link #Bounce(int)} is then called with that edge, the sprite will appear to bounce off
+   * of the edge it reached. Edge here is represented as an integer that indicates one of eight
+   * directions north(1), northeast(2), east(3), southeast(4), south (-1), southwest(-2), west(-3),
+   * and northwest(-4).
    */
   @SimpleEvent(
       description = "Event handler called when the %type% reaches an edge of the screen. " +
@@ -486,8 +497,10 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Handler for NoLongerCollidingWith events, called when a pair of sprites
-   * cease colliding.  This also registers the removal of the collision to a
+   * Event indicating that a pair of sprites are no longer colliding.
+   *
+   * @internaldoc
+   * This also registers the removal of the collision to a
    * private variable {@link #registeredCollisions} so that
    * {@link #CollidedWith(Sprite)} and this event are only raised once per
    * beginning and ending of a collision.
@@ -577,10 +590,8 @@ public abstract class Sprite extends VisibleComponent
   // Bounce, CollidingWith, MoveIntoBounds, MoveTo, PointTowards.
 
   /**
-   * Makes this sprite bounce, as if off of a wall by changing the
-   * {@link #heading} (unless the sprite is not traveling toward the specified
-   * direction).  This also calls {@link #MoveIntoBounds()} in case the
-   * sprite is out of bounds.
+   * Makes this `%type%` bounce, as if off a wall. For normal bouncing, the `edge` argument should
+   * be the one returned by {@link #EdgeReached}.
    *
    * @param edge the direction of the object (real or imaginary) to bounce off
    *             of; this should be one of
@@ -633,8 +644,8 @@ public abstract class Sprite extends VisibleComponent
   // one {@link #CollidedWith(Sprite)} event per collision but is also
   // made available to the Simple programmer.
   /**
-   * Indicates whether a collision has been registered between this sprite
-   * and the passed sprite.
+   * Indicates whether a collision has been registered between this `%type%`
+   * and the passed `other` sprite.
    *
    * @param other the sprite to check for collision with this sprite
    * @return {@code true} if a collision event has been raised for the pair of
@@ -666,7 +677,7 @@ public abstract class Sprite extends VisibleComponent
 
   // Description is different for Ball and ImageSprite so overridden and described in subclasses.
   /**
-   * Moves sprite directly to specified point.
+   * Moves the %type% so that its left top corner is at the specified x and y coordinates.
    *
    * @param x the x-coordinate
    * @param y the y-coordinate
@@ -678,7 +689,8 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Turns this sprite to point towards a given other sprite.
+   * Turns this `%type%` to point towards a given `target` sprite. The new heading will be parallel
+   * to the line joining the centerpoints of the two sprites.
    *
    * @param target the other sprite to point towards
    */
@@ -691,7 +703,7 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Turns this sprite to point towards a given point.
+   * Turns this `%type%` to point toward the point with the coordinates `(x, y)`.
    *
    * @param x parameter of the point to turn to
    * @param y parameter of the point to turn to

@@ -13,10 +13,9 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 
 /**
- * Button with the ability to launch events on initialization, focus
- * change, or a user click.  It is implemented using
- * {@link android.widget.Button}.
- *
+ * Button with the ability to detect clicks. Many aspects of its appearance can be changed, as well
+ * as whether it is clickable (`Enabled`). Its properties can be changed in the Designer or in the
+ * Blocks Editor.
  */
 @DesignerComponent(version = YaVersion.BUTTON_COMPONENT_VERSION,
     category = ComponentCategory.USERINTERFACE,
@@ -44,7 +43,7 @@ public final class Button extends ButtonBase {
   }
 
   /**
-   * Indicates a user has clicked on the button.
+   * Indicates that the user tapped and released the `Button`.
    */
   @SimpleEvent(description = "User tapped and released the button.")
   public void Click() {
@@ -59,7 +58,7 @@ public final class Button extends ButtonBase {
   }
 
   /**
-   * Indicates a user has long clicked on the button.
+   * Indicates that the user held the `Button` down.
    */
   @SimpleEvent(description = "User held the button down.")
   public boolean LongClick() {

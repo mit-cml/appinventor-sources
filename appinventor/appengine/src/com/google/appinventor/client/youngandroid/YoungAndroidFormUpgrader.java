@@ -729,6 +729,10 @@ public final class YoungAndroidFormUpgrader {
       // The ExtendMovesOutsideCanvas property was added in version 12.
       srcCompVersion = 12;
     }
+    if (srcCompVersion < 13) {
+      // The BackgroundImageinBase64 property was added in version 13.
+      srcCompVersion = 13;
+    }
     return srcCompVersion;
   }
 
@@ -1020,6 +1024,11 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 26;
     }
 
+    if (srcCompVersion < 27) {
+      // Platform and PlatformVersion blocks were added.
+      srcCompVersion = 27;
+    }
+
     return srcCompVersion;
   }
 
@@ -1077,6 +1086,11 @@ public final class YoungAndroidFormUpgrader {
       //   }
       // }
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+     // The Click event was added.
+     // The Clickable property was added.
+     srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -1587,6 +1601,12 @@ public final class YoungAndroidFormUpgrader {
       // Timeout defaults to 0, so prior components will maintain the same web request
       // timeout behavior.
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7)  {
+      // The JsonTextDecodeWithDictionaries was added to parse JSON using dictionaries.
+      // The XMLTextDecodeAsDictionary was added to provide a more robust representation
+      // of XML using dictionaries.
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }
