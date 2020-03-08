@@ -320,7 +320,7 @@ Blockly.Yail['text_is_string'] = function() {
 };
 
 Blockly.Yail['text_replace_mappings'] = function() {
-    // String replace with segment
+    // Replace all occurrences in mappings with their corresponding replacement
     var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
     var argument1 = Blockly.Yail.valueToCode(this, 'MAPPINGS', Blockly.Yail.ORDER_NONE) || "\"\"";
     var mode = this.getFieldValue('OP');
