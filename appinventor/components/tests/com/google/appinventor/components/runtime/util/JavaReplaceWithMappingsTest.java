@@ -159,4 +159,22 @@ public class JavaReplaceWithMappingsTest {
 
     assertEquals(expected, result);
   }
+
+  /**
+   * Test case to verify that the union character gets escaped
+   * rather than interpreted in the regex pattern from the mapping
+   * when replacing a String with mappings.
+   */
+  @Test
+  public void testEscapeUnionCharacter() {
+    final String text = "a b c d";
+    Map<Object, Object> mappings = new LinkedHashMap<>();
+    mappings.put("a|b", "x");
+    mappings.put("c", "y");
+
+    final String result = JavaReplaceWithMappings.replaceWithMappings(text, mappings, 0);
+    final String expected = "a b y d";
+
+    assertEquals(expected, result);
+  }
 }

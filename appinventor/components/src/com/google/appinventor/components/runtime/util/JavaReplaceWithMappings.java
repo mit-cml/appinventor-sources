@@ -75,7 +75,9 @@ public final class JavaReplaceWithMappings {
     StringBuilder patternBuilder = new StringBuilder();
 
     for (int i = 0; i < keys.size(); ++i) {
-      String key = keys.get(i);
+      // Escape the key string so that any regex characters not get
+      // interpreted directly.
+      String key = Pattern.quote(keys.get(i));
 
       // Append mapping that we want to replace to the regex pattern
       patternBuilder.append(key);
