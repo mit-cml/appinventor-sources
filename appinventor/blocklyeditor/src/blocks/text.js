@@ -501,7 +501,10 @@ Blockly.Blocks['text_is_string'] = {
 Blockly.Blocks['text_replace_mappings'] = {
   // Replace all occurrences in mappings with their corresponding replacement
   category: 'Text',
-  helpUrl: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_HELPURL,
+  helpUrl: function () {
+    var mode = this.getFieldValue('OP');
+    return Blockly.Blocks.text_replace_mappings.HELPURLS()[mode];
+  },
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
@@ -520,12 +523,18 @@ Blockly.Blocks['text_replace_mappings'] = {
 
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_INPUT_ORDER_PREFIX)
-        .appendField(new Blockly.FieldDropdown(this.OPERATORS, Blockly.Blocks.text_split.dropdown_onchange), 'OP')
+        .appendField(new Blockly.FieldDropdown(this.OPERATORS, Blockly.Blocks.text_replace_mappings.onchange), 'OP')
         .appendField(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_INPUT_ORDER)
         .setAlign(Blockly.ALIGN_RIGHT)
 
-    this.setTooltip(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TOOLTIP);
     this.setInputsInline(false);
+
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      var mode = thisBlock.getFieldValue('OP');
+      return Blockly.Blocks.text_replace_mappings.TOOLTIPS()[mode];
+    });
   },
   typeblock: [{
     translatedName: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST,
