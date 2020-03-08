@@ -181,14 +181,14 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
     // commands to aid in debugging while the component is being
     // developed, and then commenting them out when the component is
     // deployed.
-    // Log.w(LOG_TAG, "postStoreValue: sending tag = " +
+    // Log.w(LOG_TAG_JOIN_STRINGS, "postStoreValue: sending tag = " +
     // tag + " and value = " + valueToStore);
     // Here we define the AsyncCallbackPair, myCallback.
     AsyncCallbackPair<String> myCallback = new AsyncCallbackPair<String>() {
       public void onSuccess(String response) {
         // the result here will be the JSON-encoded list ["STORED", tag, value]
         // but the component ignores this
-        // Log.w(LOG_TAG, "postStoreValue: got result " + result);
+        // Log.w(LOG_TAG_JOIN_STRINGS, "postStoreValue: got result " + result);
         androidUIHandler.post(new Runnable() {
             public void run() {
               // Signal an event to indicate that the value was
@@ -269,7 +269,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
   }
 
   private void postGetValue(final String tag) {
-    // Log.w(LOG_TAG, "postGetValue: sending tag = " + tag);
+    // Log.w(LOG_TAG_JOIN_STRINGS, "postGetValue: sending tag = " + tag);
     AsyncCallbackPair<JSONArray> myCallback = new AsyncCallbackPair<JSONArray>() {
       public void onSuccess(JSONArray result) {
         if (result == null) {
@@ -284,7 +284,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
           return;
         } else {
           try {
-            // Log.w(LOG_TAG, "postGetValue: got result " + result);
+            // Log.w(LOG_TAG_JOIN_STRINGS, "postGetValue: got result " + result);
             // The Web service is designed to return the JSON encoded list ["VALUE", tag, value]
             final String tagFromWebDB = result.getString(1);
             String value = result.getString(2);
@@ -353,7 +353,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
   @SimpleEvent
   public void WebServiceError(String message) {
     // Invoke the application's "WebServiceError" event handler
-    // Log.w(LOG_TAG, "calling error event handler: " + message);
+    // Log.w(LOG_TAG_JOIN_STRINGS, "calling error event handler: " + message);
     EventDispatcher.dispatchEvent(this, "WebServiceError", message);
   }
 }

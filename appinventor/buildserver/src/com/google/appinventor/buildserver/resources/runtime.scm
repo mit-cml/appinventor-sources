@@ -979,8 +979,7 @@
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
 (define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
-(define-alias JavaJoinListOfStrings <com.google.appinventor.components.runtime.util.JavaJoinListOfStrings>)
-(define-alias JavaReplaceWithMappings <com.google.appinventor.components.runtime.util.JavaReplaceWithMappings>)
+(define-alias JavaStringUtils <com.google.appinventor.components.runtime.util.JavaStringUtils>)
 
 (define-alias JavaCollection <java.util.Collection>)
 (define-alias JavaIterator <java.util.Iterator>)
@@ -1534,8 +1533,8 @@
 (define (join-strings list-of-strings separator)
   ;; NOTE: The elements in list-of-strings should be Kawa strings
   ;; but they might not be Java strings, since some (all?) Kawa strings
-  ;; are FStrings.  See JavaJoinListOfStrings in components/runtime/utils
-  (JavaJoinListOfStrings:joinStrings list-of-strings separator))
+  ;; are FStrings.  See JavaStringUtils in components/runtime/utils
+  (JavaStringUtils:joinStrings list-of-strings separator))
 
 ;;; end of join-strings
 
@@ -2655,8 +2654,8 @@ Dictionary implementation.
   ;; NOTE: The keys & values in the YailDictionary should be <String, String>.
   ;; However, this might not necessarily be the case, so we pass in an <Object, Object>
   ;; map instead to the Java call.
-  ;; See JavaReplaceWithMappings in components/runtime/utils
-  (JavaReplaceWithMappings:replaceWithMappings text mappings mode))
+  ;; See JavaStringUtils in components/runtime/utils
+  (JavaStringUtils:replaceWithMappings text mappings mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Text implementation

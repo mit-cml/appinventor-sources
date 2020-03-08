@@ -1,9 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2020  MIT, All rights reserve
+// Copyright 2017-2020  MIT, All rights reserve
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
+
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,14 +18,59 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Java implementation of replace-with-mappings. Used for ease
- * of reasoning about the solution.
+ * Java implementation of string utility methods for use in Scheme calls.
+ * Used for ease of reasoning about the solution or to address issues
+ * with Kawa (e.g. memory problems).
  * See runtime.scm
- * <p>
- * TODO: Might be better to re-implement this in Scheme/Kawa in the future.
- * TODO: Add unit tests
  */
-public final class JavaReplaceWithMappings {
+public class JavaStringUtils {
+  public static final String LOG_TAG_JOIN_STRINGS = "JavaJoinListOfStrings";
+  private static final boolean DEBUG = false;
+
+
+  // Implements the following operation
+
+  // (define join-strings (strings separator)
+  //    (JavaJoinListOfStrings:joinStrings strings separator))
+
+  // I'm writing this in Java, rather than using Kawa in runtime.scm
+  // because Kawa seems to blow out memory (or stack?) on small-memory systems
+  // and large lists.
+
+  /**
+   * Java implementation of join-strings since the Kawa version appears to run of space.
+   * See runtime.scm
+   *
+   * The elements in listOString are Kawa strings, but these are
+   * not necessarily Java Strings.   They might be FStrings.   So we
+   * accept a list of Objects and use toString to do a conversion.
+   *
+   *
+   * @author halabelson@google.com (Hal Abelson)
+   */
+  public static String joinStrings(List<Object> listOfStrings, String separator) {
+    // We would use String.join, but that is Java 8
+    if (DEBUG) {
+      Log.i(LOG_TAG_JOIN_STRINGS, "calling joinStrings");
+    }
+    return join(listOfStrings, separator);
+  }
+
+  private static String join(List<Object> list, String separator)
+  {
+    StringBuilder sb = new StringBuilder();
+    boolean first = true;
+    for (Object item : list)
+    {
+      if (first)
+        first = false;
+      else
+        sb.append(separator);
+      sb.append(item.toString());
+    }
+    return sb.toString();
+  }
+
   /**
    * Replaces the specified text string with the specified mappings,
    * which is a map containing Key Value pairs where the key is the
@@ -32,6 +79,8 @@ public final class JavaReplaceWithMappings {
    * 0 - longest string first
    * 1 - dictionary order
    * 2 - earliest string first
+   *
+   * TODO: Might be better to re-implement this in Scheme/Kawa in the future.
    *
    * @param text     Text to apply mappings to
    * @param mappings Map containing mappings
