@@ -513,18 +513,18 @@ Blockly.Blocks['text_replace_mappings'] = {
 
     this.appendValueInput('MAPPINGS')
       .setCheck(checkTypeMap)
-      .appendField(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TITLE)
+      .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE)
       .setAlign(Blockly.ALIGN_RIGHT)
 
     this.appendValueInput('TEXT')
       .setCheck(checkTypeText)
-      .appendField(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_INPUT_TEXT)
+      .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT)
       .setAlign(Blockly.ALIGN_RIGHT)
 
     this.appendDummyInput()
-        .appendField(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_INPUT_ORDER_PREFIX)
+        .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX)
         .appendField(new Blockly.FieldDropdown(this.OPERATORS, Blockly.Blocks.text_replace_mappings.onchange), 'OP')
-        .appendField(Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_INPUT_ORDER)
+        .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER)
         .setAlign(Blockly.ALIGN_RIGHT)
 
     this.setInputsInline(false);
@@ -537,13 +537,13 @@ Blockly.Blocks['text_replace_mappings'] = {
     });
   },
   typeblock: [{
-    translatedName: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST,
+    translatedName: Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST,
     dropDown: {
       titleName: 'OP',
       value: 'LONGEST_STRING_FIRST'
     }
   }, {
-    translatedName: Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_OPERATOR_DICTIONARY_ORDER,
+    translatedName: Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER,
     dropDown: {
       titleName: 'OP',
       value: 'DICTIONARY_ORDER'
@@ -562,24 +562,24 @@ Blockly.Blocks['text_replace_mappings'] = {
 // The order here determines the order in the dropdown
 Blockly.Blocks.text_replace_mappings.OPERATORS = function () {
   return [
-    [Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST, 'LONGEST_STRING_FIRST'],
-    [Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_OPERATOR_DICTIONARY_ORDER, 'DICTIONARY_ORDER']
+    [Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST, 'LONGEST_STRING_FIRST'],
+    [Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER, 'DICTIONARY_ORDER']
     //['earliest occurrence', 'EARLIEST_OCCURRENCE']
   ]
 };
 
 Blockly.Blocks.text_replace_mappings.TOOLTIPS = function () {
   return {
-    LONGEST_STRING_FIRST : Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST,
-    DICTIONARY_ORDER : Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_TOOLTIP_DICTIONARY_ORDER
+    LONGEST_STRING_FIRST : Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST,
+    DICTIONARY_ORDER : Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER
     //EARLIEST_OCCURRENCE : "tooltip"
   }
 };
 
 Blockly.Blocks.text_replace_mappings.HELPURLS = function () {
   return {
-    LONGEST_STRING_FIRST : Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_HELPURL_LONGEST_STRING_FIRST,
-    DICTIONARY_ORDER : Blockly.Msg.LANG_TEXT_REPLACE_WITH_MAPPINGS_HELPURL_DICTIONARY_ORDER
+    LONGEST_STRING_FIRST : Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_LONGEST_STRING_FIRST,
+    DICTIONARY_ORDER : Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_DICTIONARY_ORDER
     //EARLIEST_OCCURRENCE : "help"
   }
 };

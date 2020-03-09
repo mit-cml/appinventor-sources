@@ -2655,13 +2655,13 @@ Dictionary implementation.
 ;; map instead to the Java call.
 ;; See JavaStringUtils in components/runtime/utils
 (define (string-replace-mappings-dictionary text mappings)
-  (JavaStringUtils:replaceWithMappingsDictionaryOrder text mappings))
+  (JavaStringUtils:replaceAllMappingsDictionaryOrder text mappings))
 
 (define (string-replace-mappings-longest-string text mappings)
-  (JavaStringUtils:replaceWithMappingsLongestStringOrder text mappings))
+  (JavaStringUtils:replaceAllMappingsLongestStringOrder text mappings))
 
 (define (string-replace-mappings-earliest-occurrence text mappings)
-  (JavaStringUtils:replaceWithMappingsEarliestOccurrenceOrder text mappings))
+  (JavaStringUtils:replaceAllMappingsEarliestOccurrenceOrder text mappings))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Text implementation

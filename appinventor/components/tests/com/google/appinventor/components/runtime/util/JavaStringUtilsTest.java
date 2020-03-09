@@ -21,11 +21,11 @@ public class JavaStringUtilsTest {
    * The String should not be modified.
    */
   @Test
-  public void testReplaceWithMappingsNone() {
+  public void testreplaceAllMappingsNone() {
     final String text = "this is a test string";
     Map<Object, Object> mappings = new LinkedHashMap<>();
 
-    final String result = JavaStringUtils.replaceWithMappingsDictionaryOrder(text, mappings);
+    final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
 
     assertEquals(result, text);
   }
@@ -36,14 +36,14 @@ public class JavaStringUtilsTest {
    * The String should not be modified.
    */
   @Test
-  public void testReplaceWithMappingsNoMatches() {
+  public void testreplaceAllMappingsNoMatches() {
     final String text = "this is a test string";
     Map<Object, Object> mappings = new LinkedHashMap<>();
     mappings.put("abc", "def");
     mappings.put("tset", "test");
     mappings.put("strxng", "string");
 
-    final String result = JavaStringUtils.replaceWithMappingsDictionaryOrder(text, mappings);
+    final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
 
     assertEquals(result, text);
   }
@@ -55,12 +55,12 @@ public class JavaStringUtilsTest {
    * of that single mapping.
    */
   @Test
-  public void testReplaceWithMappingsSingleMapping() {
+  public void testreplaceAllMappingsSingleMapping() {
     final String text = "this is a tset string, testing, tseting";
     Map<Object, Object> mappings = new LinkedHashMap<>();
     mappings.put("tset", "test");
 
-    final String result = JavaStringUtils.replaceWithMappingsDictionaryOrder(text, mappings);
+    final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
     final String expected = "this is a test string, testing, testing";
 
     assertEquals(expected, result);
@@ -77,7 +77,7 @@ public class JavaStringUtilsTest {
     mappings.put("item1", "item2");
     mappings.put("item2", "item3");
 
-    final String result = JavaStringUtils.replaceWithMappingsDictionaryOrder(text, mappings);
+    final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
     final String expected = "Substitute item2 to item3, and then item3 to item3";
 
     // Note how in the expected result, item1 -> item2, rather than
@@ -96,7 +96,7 @@ public class JavaStringUtilsTest {
     mappings.put(5, 4);
     mappings.put(7,5);
 
-    final String result = JavaStringUtils.replaceWithMappingsDictionaryOrder(text, mappings);
+    final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
     final String expected = "1, 2, 3 and 4, 5, 6";
 
     assertEquals(expected, result);
@@ -112,7 +112,7 @@ public class JavaStringUtilsTest {
     Map<Object, Object> mappings = new LinkedHashMap<>();
     mappings.put(3.14159f, 3.14f);
 
-    final String result = JavaStringUtils.replaceWithMappingsDictionaryOrder(text, mappings);
+    final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
     final String expected = "Pi: 3.14";
 
     assertEquals(expected, result);
@@ -133,7 +133,7 @@ public class JavaStringUtilsTest {
     mappings.put("ab", "bc");
     mappings.put("ba", "cb");
 
-    final String result = JavaStringUtils.replaceWithMappingsLongestStringOrder(text, mappings);
+    final String result = JavaStringUtils.replaceAllMappingsLongestStringOrder(text, mappings);
     final String expected = "bc cb d e";
 
     assertEquals(expected, result);
@@ -154,7 +154,7 @@ public class JavaStringUtilsTest {
     mappings.put("ab", "bc");
     mappings.put("ba", "cb");
 
-    final String result = JavaStringUtils.replaceWithMappingsEarliestOccurrenceOrder(text, mappings);
+    final String result = JavaStringUtils.replaceAllMappingsEarliestOccurrenceOrder(text, mappings);
     final String expected = "bc ed d e";
 
     assertEquals(expected, result);
@@ -172,7 +172,7 @@ public class JavaStringUtilsTest {
     mappings.put("a|b", "x");
     mappings.put("c", "y");
 
-    final String result = JavaStringUtils.replaceWithMappingsLongestStringOrder(text, mappings);
+    final String result = JavaStringUtils.replaceAllMappingsLongestStringOrder(text, mappings);
     final String expected = "a b y d";
 
     assertEquals(expected, result);

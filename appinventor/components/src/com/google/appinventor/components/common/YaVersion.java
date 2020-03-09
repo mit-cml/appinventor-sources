@@ -577,7 +577,7 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 29
   // - The for-each-in-dictionary block was added.
   // For BLOCKS_LANGUAGE_VERSION 30
-  // - The replace-with-mappings block was added.
+  // - The replace-all-mappings block was added.
 
   public static final int BLOCKS_LANGUAGE_VERSION = 30;
 

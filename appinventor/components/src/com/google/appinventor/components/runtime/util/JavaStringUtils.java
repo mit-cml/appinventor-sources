@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  */
 public class JavaStringUtils {
   /**
-   * Auxiliary class for ReplaceWithMappings that defines
+   * Auxiliary class for replaceAllMappings that defines
    * the mapping application order for a given List of keys.
    * Default option is to do nothing with the order, which represents
    * the dictionary order.
@@ -106,7 +106,7 @@ public class JavaStringUtils {
 
   /**
    * Since mapping orders do not have state, we initialize
-   * fixed final MappingOrders to use for ReplaceWithMappings.
+   * fixed final MappingOrders to use for replaceAllMappings.
    */
   private static final MappingOrder mappingOrderDictionary;
   private static final MappingOrder mappingOrderLongestStringFirst;
@@ -165,42 +165,42 @@ public class JavaStringUtils {
    * Replaces the specified text string with the specified mappings in
    * dictionary element order.
    *
-   * @see #replaceWithMappings(String, Map, MappingOrder)
+   * @see #replaceAllMappings(String, Map, MappingOrder)
    * @see MappingOrder
    * @param text      Text to apply mappings to
    * @param mappings  Map containing mappings
    * @return Text with the mappings applied
    */
-  public static String replaceWithMappingsDictionaryOrder(String text, Map<Object, Object> mappings) {
-    return replaceWithMappings(text, mappings, mappingOrderDictionary);
+  public static String replaceAllMappingsDictionaryOrder(String text, Map<Object, Object> mappings) {
+    return replaceAllMappings(text, mappings, mappingOrderDictionary);
   }
 
   /**
    * Replaces the specified text string with the specified mappings in
    * longest string first order.
    *
-   * @see #replaceWithMappings(String, Map, MappingOrder)
+   * @see #replaceAllMappings(String, Map, MappingOrder)
    * @see MappingLongestStringFirstOrder
    * @param text      Text to apply mappings to
    * @param mappings  Map containing mappings
    * @return Text with the mappings applied
    */
-  public static String replaceWithMappingsLongestStringOrder(String text, Map<Object, Object> mappings) {
-    return replaceWithMappings(text, mappings, mappingOrderLongestStringFirst);
+  public static String replaceAllMappingsLongestStringOrder(String text, Map<Object, Object> mappings) {
+    return replaceAllMappings(text, mappings, mappingOrderLongestStringFirst);
   }
 
   /**
    * Replaces the specified text string with the specified mappings in
    * earliest occurrence first order.
    *
-   * @see #replaceWithMappings(String, Map, MappingOrder)
+   * @see #replaceAllMappings(String, Map, MappingOrder)
    * @see MappingEarliestOccurrenceFirstOrder
    * @param text      Text to apply mappings to
    * @param mappings  Map containing mappings
    * @return Text with the mappings applied
    */
-  public static String replaceWithMappingsEarliestOccurrenceOrder(String text, Map<Object, Object> mappings) {
-    return replaceWithMappings(text, mappings, mappingOrderEarliestOccurrence);
+  public static String replaceAllMappingsEarliestOccurrenceOrder(String text, Map<Object, Object> mappings) {
+    return replaceAllMappings(text, mappings, mappingOrderEarliestOccurrence);
   }
 
   /**
@@ -216,7 +216,7 @@ public class JavaStringUtils {
    * @param order    Order to use for replacing mappings
    * @return Text with the mappings applied
    */
-  public static String replaceWithMappings(String text, Map<Object, Object> mappings, MappingOrder order) {
+  public static String replaceAllMappings(String text, Map<Object, Object> mappings, MappingOrder order) {
     // Iterate over all the mappings
     Iterator<Map.Entry<Object, Object>> it = mappings.entrySet().iterator();
 
@@ -230,13 +230,20 @@ public class JavaStringUtils {
     while (it.hasNext()) {
       Map.Entry<Object, Object> current = it.next();
 
-      // Get Key & Value, and update string mappings map
+      // Get Key & Value as strings
+      // This is needed to convert any non-String values to a String,
+      // e.g. numbers to String literals
       String key = current.getKey().toString();
       String value = current.getValue().toString();
-      stringMappings.put(key, value);
 
-      // Add key
-      keys.add(key);
+      // Add key only if it was not added before (to reduce potential
+      // redundancy on potentially duplicate keys)
+      if (!stringMappings.containsKey(key)) {
+        keys.add(key);
+      }
+
+      // Update map
+      stringMappings.put(key, value);
     }
 
     // Change the order of the keys based on the given Order object
@@ -272,7 +279,7 @@ public class JavaStringUtils {
       String replace = found;
 
       if (mappings.containsKey(found)) {
-        replace = mappings.get(found).toString();
+        replace = mappings.get(found);
       }
 
       // Replace the found pattern with the mapped string
