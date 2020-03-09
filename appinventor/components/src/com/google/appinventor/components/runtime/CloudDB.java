@@ -1328,10 +1328,10 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(keyStore);
         // // DEBUG
-        // Log.d(LOG_TAG_JOIN_STRINGS, "And now for something completely different...");
+        // Log.d(LOG_TAG, "And now for something completely different...");
         // X509TrustManager tm = (X509TrustManager) tmf.getTrustManagers()[0];
         // for (X509Certificate cert : tm.getAcceptedIssuers()) {
-        //   Log.d(LOG_TAG_JOIN_STRINGS, cert.getSubjectX500Principal().getName());
+        //   Log.d(LOG_TAG, cert.getSubjectX500Principal().getName());
         // }
         // // END DEBUG
         SSLContext ctx = SSLContext.getInstance("TLS");

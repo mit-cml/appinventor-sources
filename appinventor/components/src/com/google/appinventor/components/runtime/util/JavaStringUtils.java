@@ -104,15 +104,20 @@ public class JavaStringUtils {
   public static final String LOG_TAG_JOIN_STRINGS = "JavaJoinListOfStrings";
   private static final boolean DEBUG = false;
 
+  /**
+   * Since mapping orders do not have state, we initialize
+   * fixed final MappingOrders to use for ReplaceWithMappings.
+   */
+  private static final MappingOrder mappingOrderDictionary;
+  private static final MappingOrder mappingOrderLongestStringFirst;
+  private static final MappingOrder mappingOrderEarliestOccurrence;
 
-  // Implements the following operation
+  static {
+    mappingOrderDictionary = new MappingOrder();
+    mappingOrderLongestStringFirst = new MappingLongestStringFirstOrder();
+    mappingOrderEarliestOccurrence = new MappingEarliestOccurrenceFirstOrder();
+  }
 
-  // (define join-strings (strings separator)
-  //    (JavaJoinListOfStrings:joinStrings strings separator))
-
-  // I'm writing this in Java, rather than using Kawa in runtime.scm
-  // because Kawa seems to blow out memory (or stack?) on small-memory systems
-  // and large lists.
 
   /**
    * Java implementation of join-strings since the Kawa version appears to run of space.
@@ -122,6 +127,14 @@ public class JavaStringUtils {
    * not necessarily Java Strings.   They might be FStrings.   So we
    * accept a list of Objects and use toString to do a conversion.
    *
+   * Implements the following operation
+   *
+   * (define join-strings (strings separator)
+   *    (JavaJoinListOfStrings:joinStrings strings separator))
+   *
+   * I'm writing this in Java, rather than using Kawa in runtime.scm
+   * because Kawa seems to blow out memory (or stack?) on small-memory systems
+   * and large lists.
    *
    * @author halabelson@google.com (Hal Abelson)
    */
@@ -159,7 +172,7 @@ public class JavaStringUtils {
    * @return Text with the mappings applied
    */
   public static String replaceWithMappingsDictionaryOrder(String text, Map<Object, Object> mappings) {
-    return replaceWithMappings(text, mappings, new MappingOrder());
+    return replaceWithMappings(text, mappings, mappingOrderDictionary);
   }
 
   /**
@@ -173,7 +186,7 @@ public class JavaStringUtils {
    * @return Text with the mappings applied
    */
   public static String replaceWithMappingsLongestStringOrder(String text, Map<Object, Object> mappings) {
-    return replaceWithMappings(text, mappings, new MappingLongestStringFirstOrder());
+    return replaceWithMappings(text, mappings, mappingOrderLongestStringFirst);
   }
 
   /**
@@ -187,7 +200,7 @@ public class JavaStringUtils {
    * @return Text with the mappings applied
    */
   public static String replaceWithMappingsEarliestOccurrenceOrder(String text, Map<Object, Object> mappings) {
-    return replaceWithMappings(text, mappings, new MappingEarliestOccurrenceFirstOrder());
+    return replaceWithMappings(text, mappings, mappingOrderEarliestOccurrence);
   }
 
   /**

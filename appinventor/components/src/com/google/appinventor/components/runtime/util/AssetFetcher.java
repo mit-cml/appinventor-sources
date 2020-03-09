@@ -101,7 +101,7 @@ public class AssetFetcher {
     //           intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     //           form.startActivity(intent);
     //         } catch (Exception e) {
-    //           Log.e(LOG_TAG_JOIN_STRINGS, "ERROR_UNABLE_TO_GET", e);
+    //           Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
     //           RetValManager.sendError("Unable to Install new Companion Package.");
     //         }
     //       }
