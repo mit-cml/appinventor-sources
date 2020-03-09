@@ -24,6 +24,83 @@ import java.util.regex.Pattern;
  * See runtime.scm
  */
 public class JavaStringUtils {
+  /**
+   * Auxiliary class for ReplaceWithMappings that defines
+   * the mapping application order for a given List of keys.
+   * Default option is to do nothing with the order, which represents
+   * the dictionary order.
+   */
+  private static class MappingOrder {
+    /**
+     * Changes the order of the specified key list
+     * @param keys  List of keys
+     * @param text  Text in which to search for keys
+     */
+    public void changeOrder(List<String> keys, String text) {
+      // Default option: Do nothing (dictionary order)
+    }
+  }
+
+  /**
+   * Changes the key order in descending order of key length.
+   */
+  private static class MappingLongestStringFirstOrder extends MappingOrder {
+    @Override
+    public void changeOrder(List<String> keys, String text) {
+      Collections.sort(keys, new Comparator<String>() {
+        @Override
+        public int compare(String s, String t1) {
+          // Sort in descending order of string length
+          return Integer.compare(t1.length(), s.length());
+        }
+      });
+    }
+  }
+
+  /**
+   * Changes the key order based on the earliest occurrences in the original
+   * text string.
+   */
+  private static class MappingEarliestOccurrenceFirstOrder extends MappingOrder {
+    @Override
+    public void changeOrder(List<String> keys, String text) {
+      // Construct a map for first index of occurrence for String
+      final Map<String, Integer> occurrenceIndices = new HashMap<>();
+
+      // TODO: Can we optimize the O(mn) loop with m = length of text,
+      // TODO: n = number of keys?
+      for (String key : keys) {
+        int firstIndex = text.indexOf(key);
+
+        // No first index; Key should gain less priority than
+        // other occurrences (this value can be arbitrary)
+        if (firstIndex == -1) {
+          firstIndex = text.length() + occurrenceIndices.size();
+        }
+
+        // Map key to first index of occurrence
+        occurrenceIndices.put(key, firstIndex);
+      }
+
+      Collections.sort(keys, new Comparator<String>() {
+        @Override
+        public int compare(String s, String t1) {
+          // Sort in ascending order by first index in String
+          int id1 = occurrenceIndices.get(s);
+          int id2 = occurrenceIndices.get(t1);
+
+          if (id1 == id2) {
+            // Use longer string instead if indices equal
+            return Integer.compare(t1.length(), s.length());
+          } else {
+            // Take smaller index first
+            return Integer.compare(id1, id2);
+          }
+        }
+      });
+    }
+  }
+
   public static final String LOG_TAG_JOIN_STRINGS = "JavaJoinListOfStrings";
   private static final boolean DEBUG = false;
 
@@ -72,22 +149,61 @@ public class JavaStringUtils {
   }
 
   /**
+   * Replaces the specified text string with the specified mappings in
+   * dictionary element order.
+   *
+   * @see #replaceWithMappings(String, Map, MappingOrder)
+   * @see MappingOrder
+   * @param text      Text to apply mappings to
+   * @param mappings  Map containing mappings
+   * @return Text with the mappings applied
+   */
+  public static String replaceWithMappingsDictionaryOrder(String text, Map<Object, Object> mappings) {
+    return replaceWithMappings(text, mappings, new MappingOrder());
+  }
+
+  /**
+   * Replaces the specified text string with the specified mappings in
+   * longest string first order.
+   *
+   * @see #replaceWithMappings(String, Map, MappingOrder)
+   * @see MappingLongestStringFirstOrder
+   * @param text      Text to apply mappings to
+   * @param mappings  Map containing mappings
+   * @return Text with the mappings applied
+   */
+  public static String replaceWithMappingsLongestStringOrder(String text, Map<Object, Object> mappings) {
+    return replaceWithMappings(text, mappings, new MappingLongestStringFirstOrder());
+  }
+
+  /**
+   * Replaces the specified text string with the specified mappings in
+   * earliest occurrence first order.
+   *
+   * @see #replaceWithMappings(String, Map, MappingOrder)
+   * @see MappingEarliestOccurrenceFirstOrder
+   * @param text      Text to apply mappings to
+   * @param mappings  Map containing mappings
+   * @return Text with the mappings applied
+   */
+  public static String replaceWithMappingsEarliestOccurrenceOrder(String text, Map<Object, Object> mappings) {
+    return replaceWithMappings(text, mappings, new MappingEarliestOccurrenceFirstOrder());
+  }
+
+  /**
    * Replaces the specified text string with the specified mappings,
    * which is a map containing Key Value pairs where the key is the
    * substring to replace, and the value is the value to replace the substring with.
-   * A mode parameter is also specified to indicate the order of mapping application:
-   * 0 - longest string first
-   * 1 - dictionary order
-   * 2 - earliest string first
+   * An order parameter is specified to indicate the order of mapping applications.
    *
    * TODO: Might be better to re-implement this in Scheme/Kawa in the future.
    *
    * @param text     Text to apply mappings to
    * @param mappings Map containing mappings
-   * @param mode     Mode to use for replacing mappings
+   * @param order    Order to use for replacing mappings
    * @return Text with the mappings applied
    */
-  public static String replaceWithMappings(String text, Map<Object, Object> mappings, int mode) {
+  public static String replaceWithMappings(String text, Map<Object, Object> mappings, MappingOrder order) {
     // Iterate over all the mappings
     Iterator<Map.Entry<Object, Object>> it = mappings.entrySet().iterator();
 
@@ -110,97 +226,16 @@ public class JavaStringUtils {
       keys.add(key);
     }
 
-    // TODO: Should probably refactor this somehow so it's less hardcoded.
-    // TODO: Maybe create new function defs in scheme instead, and map mode -> function call?
-    // Note: We do not check mode: 1 since that's the default order
-    // that the keys were inserted in (the dictionary order)
-    if (mode == 0) {
-      sortKeysOnLargestSizeFirst(keys);
-    } else if (mode == 2) {
-      sortKeysOnEarliestOccurrenceFirst(text, keys);
-    }
-
-    // We will construct a union regex pattern from the keys
-    StringBuilder patternBuilder = new StringBuilder();
-
-    for (int i = 0; i < keys.size(); ++i) {
-      // Escape the key string so that any regex characters not get
-      // interpreted directly.
-      String key = Pattern.quote(keys.get(i));
-
-      // Append mapping that we want to replace to the regex pattern
-      patternBuilder.append(key);
-
-      // If there is still another mapping, then we append the union (OR) operator
-      if ((i+1) < keys.size()) {
-        patternBuilder.append("|");
-      }
-    }
+    // Change the order of the keys based on the given Order object
+    order.changeOrder(keys, text);
 
     // Construct pattern from the constructed pattern string
     // We will then create a matcher from the constructed pattern.
-    String patternString = patternBuilder.toString();
+    String patternString = buildUnionFromStrings(keys);
     Pattern pattern = Pattern.compile(patternString);
     Matcher matcher = pattern.matcher(text);
 
     return applyMappings(matcher, stringMappings);
-  }
-
-  /**
-   * Sort the given List of keys in order of largest length first.
-   * @param keys  Keys (List of Strings) to sort
-   */
-  private static void sortKeysOnLargestSizeFirst(final List<String> keys) {
-    Collections.sort(keys, new Comparator<String>() {
-      @Override
-      public int compare(String s, String t1) {
-        // Sort in descending order of string length
-        return Integer.compare(t1.length(), s.length());
-      }
-    });
-  }
-
-  /**
-   * Sort the given List of keys in order of earliest occurrence first in the
-   * text string.
-   * @param text  Text string
-   * @param keys  Keys 9List of Strings) to sort
-   */
-  private static void sortKeysOnEarliestOccurrenceFirst(final String text, final List<String> keys) {
-    // Construct a map for first index of occurrence for String
-    final Map<String, Integer> occurrenceIndices = new HashMap<>();
-
-    // TODO: Can we optimize the O(mn) loop with m = length of text,
-    // TODO: n = number of keys?
-    for (String key : keys) {
-      int firstIndex = text.indexOf(key);
-
-      // No first index; Key should gain less priority than
-      // other occurrences (this value can be arbitrary)
-      if (firstIndex == -1) {
-        firstIndex = text.length() + occurrenceIndices.size();
-      }
-
-      // Map key to first index of occurrence
-      occurrenceIndices.put(key, firstIndex);
-    }
-
-    Collections.sort(keys, new Comparator<String>() {
-      @Override
-      public int compare(String s, String t1) {
-        // Sort in ascending order by first index in String
-        int id1 = occurrenceIndices.get(s);
-        int id2 = occurrenceIndices.get(t1);
-
-        if (id1 == id2) {
-          // Use longer string instead if indices equal
-          return Integer.compare(t1.length(), s.length());
-        } else {
-          // Take smaller index first
-          return Integer.compare(id1, id2);
-        }
-      }
-    });
   }
 
   /**
@@ -236,5 +271,34 @@ public class JavaStringUtils {
 
     // Return result of mappings applied
     return sb.toString();
+  }
+
+  /**
+   * Auxiliary function to build a String of keys combined via
+   * regex union operators.
+   * The keys are escaped to prevent them being interpreted as regex.
+   *
+   * @param keys  List of keys to union together
+   * @return  Single Regex String of keys combined by unions
+   */
+  private static String buildUnionFromStrings(List<String> keys) {
+    // We will construct a union regex pattern from the keys
+    StringBuilder patternBuilder = new StringBuilder();
+
+    for (int i = 0; i < keys.size(); ++i) {
+      // Escape the key string so that any regex characters not get
+      // interpreted directly.
+      String key = Pattern.quote(keys.get(i));
+
+      // Append mapping that we want to replace to the regex pattern
+      patternBuilder.append(key);
+
+      // If there is still another mapping, then we append the union (OR) operator
+      if ((i+1) < keys.size()) {
+        patternBuilder.append("|");
+      }
+    }
+
+    return patternBuilder.toString();
   }
 }
