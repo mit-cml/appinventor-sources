@@ -349,7 +349,11 @@ public class ProjectServiceTest {
         "theme=AppTheme.Light.DarkActionBar\n" +
         "color.primary=0\n" +
         "color.primary.dark=0\n" +
-        "color.accent=0\n");
+        "color.accent=0\n" +
+        "color.statusbar=0\n" +
+        "lightstatusbar=false\n" +
+        "color.navigationbar=0\n" +
+        "lightnavigationbar=false\n");
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.scm",
         YOUNG_ANDROID_PROJECT_SCM_SOURCE);
     assertEquals(expectedYaFiles2, getTextFiles(USER_ID_ONE, yaProject2));
@@ -504,7 +508,11 @@ public class ProjectServiceTest {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME + "\":\"AppTheme.Light.DarkActionBar\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR + "\":\"0\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK + "\":\"0\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR + "\":\"0\"}}",
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR + "\":\"0\",\"" +
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR + "\":\"0\",\"" +
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_STATUS_BAR + "\":\"false\",\"" +
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NAVIGATION_BAR_COLOR + "\":\"0\",\"" +
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_NAVIGATION_BAR + "\":\"false\"}}" ,
         loadedSettings);
 
     String storedSettings =
