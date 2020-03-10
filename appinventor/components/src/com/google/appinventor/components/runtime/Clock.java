@@ -83,7 +83,7 @@ public class Clock extends AndroidNonvisibleComponent
   private boolean timerAlwaysFires = true;
   private boolean onScreen = false;
 
-  private List<String> timezones = null;
+  private static List<String> timezones = null;
 
   /**
    * Creates a new Clock component.
