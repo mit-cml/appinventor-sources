@@ -399,11 +399,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       if (previousView != null) {
         previousView.requestFocus();
       }
-    } else {
-      // Un-set selected drawable from the last selected item
-      lastSelected.setBackgroundDrawable(UNSELECTED_DRAWABLE);
-      lastSelected = null;
-    }
+    } else if (lastSelected != null) {
+        // Un-set selected drawable from the last selected item
+        lastSelected.setBackgroundDrawable(UNSELECTED_DRAWABLE);
+        lastSelected = null;
+      }
   }
 
   /**
