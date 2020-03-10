@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -1969,6 +1969,31 @@ public class Form extends AppInventorCompatActivity
   public void BlocksToolkit(String json) {
     // We don't actually do anything. This property is stored in the
     // project properties file
+  }
+
+  /**
+   * Gets the name of the underlying platform running the app. Currently, this is the text
+   * "Android". Other platforms may be supported in the future.
+   *
+   * @return The platform running the app
+   */
+  @SimpleProperty(description = "The platform the app is running on, for example \"Android\" or "
+      + "\"iOS\".")
+  public String Platform() {
+    return "Android";
+  }
+
+  /**
+   * Gets the version number of the platform running the app. This is typically a dotted version
+   * number, such as 10.0. Any value can be returned, however, so you should take care to handle
+   * unexpected data. If the platform version is unavailable, the empty text will be returned.
+   *
+   * @return The version of the platform running the app
+   */
+  @SimpleProperty(description = "The dotted version number of the platform, such as 4.2.2 or 10.0. "
+      + "This is platform specific and there is no guarantee that it has a particular format.")
+  public String PlatformVersion() {
+    return Build.VERSION.RELEASE;
   }
 
   /**

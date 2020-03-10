@@ -729,6 +729,10 @@ public final class YoungAndroidFormUpgrader {
       // The ExtendMovesOutsideCanvas property was added in version 12.
       srcCompVersion = 12;
     }
+    if (srcCompVersion < 13) {
+      // The BackgroundImageinBase64 property was added in version 13.
+      srcCompVersion = 13;
+    }
     return srcCompVersion;
   }
 
@@ -1016,6 +1020,11 @@ public final class YoungAndroidFormUpgrader {
         componentProperties.put("ShowListsAsJson", new ClientJsonString("False"));
       }
       srcCompVersion = 26;
+    }
+
+    if (srcCompVersion < 27) {
+      // Platform and PlatformVersion blocks were added.
+      srcCompVersion = 27;
     }
 
     return srcCompVersion;

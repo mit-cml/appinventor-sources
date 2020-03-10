@@ -1386,7 +1386,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // ExtendMovesOutsideCanvas was added
     // No blocks need to be modified to upgrade to version 12.
-    12: "noUpgrade"
+    12: "noUpgrade",
+
+    //  BackgroundImageinBase64 was added
+    // No blocks need to be modified to upgrade to version 13.
+    13: "noUpgrade"
 
   }, // End Canvas upgraders
 
@@ -2329,7 +2333,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERISON 26:
     // - ShowListsAsJson default value changed from False to True
-    26: "noUpgrade"
+    26: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 27:
+    // - Platform and PlatformVersion read-only blocks were added
+    27: "noUpgrade"
 
 
   }, // End Screen
