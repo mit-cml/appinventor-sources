@@ -499,8 +499,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 27.
   // For YOUNG_ANDROID_VERSION 201:
   // - CANVAS_COMPONENT_VERSION was incremented to 13
+  // For YOUNG_ANDROID_VERSION 202:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 30
 
-  public static final int YOUNG_ANDROID_VERSION = 201;
+  public static final int YOUNG_ANDROID_VERSION = 202;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -576,8 +578,10 @@ public class YaVersion {
   // - The dictionaries blocks were added.
   // For BLOCKS_LANGUAGE_VERSION 29
   // - The for-each-in-dictionary block was added.
+  // For BLOCKS_LANGUAGE_VERSION 30:
+  // - The Reverse Text block was added
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 29;
+  public static final int BLOCKS_LANGUAGE_VERSION = 30;
 
   // ................................. Target SDK Version Number ..................................
 

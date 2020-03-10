@@ -77,6 +77,12 @@ public class YailEvalTest extends TestCase {
                  scheme.eval(thunkify(schemeString)).toString());
   }
 
+  public void testStringReverse() throws Throwable {
+    assertEquals("raboof", (scheme.eval("(string-reverse \"foobar\")")).toString());
+    assertEquals("\uD83D\uDE43\uD83D\uDE0F\uD83E\uDD29\uD83D\uDE02\uD83D\uDC4F\uD83D\uDE03\uD83D\uDC4D\uD83D\uDE18",
+        (scheme.eval("(string-reverse \"\uD83D\uDE18\uD83D\uDC4D\uD83D\uDE03\uD83D\uDC4F\uD83D\uDE02\uD83E\uDD29\uD83D\uDE0F\uD83D\uDE43\")")).toString());
+  }
+
   /**
    * This is mostly here as a workaround for some strange behavior with top-level try-catch
    * expressions in Kawa.
