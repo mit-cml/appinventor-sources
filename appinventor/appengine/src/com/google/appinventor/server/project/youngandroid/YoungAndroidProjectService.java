@@ -133,7 +133,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   public static String getProjectSettings(String icon, String vCode, String vName,
     String useslocation, String aName, String sizing, String showListsAsJson, String tutorialURL, String subsetJSON,
-    String actionBar, String theme, String primaryColor, String primaryColorDark, String accentColor) {
+    String actionBar, String theme, String primaryColor, String primaryColorDark, String accentColor, String statusBarColor, String lightStatusBar, String navigationBarColor, String lightNavigationBar) {
     icon = Strings.nullToEmpty(icon);
     vCode = Strings.nullToEmpty(vCode);
     vName = Strings.nullToEmpty(vName);
@@ -148,6 +148,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     primaryColor = Strings.nullToEmpty(primaryColor);
     primaryColorDark = Strings.nullToEmpty(primaryColorDark);
     accentColor = Strings.nullToEmpty(accentColor);
+    statusBarColor = Strings.nullToEmpty(statusBarColor);
+    lightStatusBar = Strings.nullToEmpty(lightStatusBar);
+    navigationBarColor = Strings.nullToEmpty(navigationBarColor);
+    lightNavigationBar = Strings.nullToEmpty(lightNavigationBar);
     return "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":{" +
         "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" + icon +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"" + vCode +
@@ -163,6 +167,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR + "\":\"" + primaryColor +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK + "\":\"" + primaryColorDark +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR + "\":\"" + accentColor +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR + "\":\"" + statusBarColor +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_STATUS_BAR + "\":\"" + lightStatusBar +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_NAVIGATION_BAR_COLOR + "\":\"" + navigationBarColor +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_NAVIGATION_BAR + "\":\"" + lightNavigationBar +
         "\"}}";
   }
 
@@ -179,7 +187,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   public static String getProjectPropertiesFileContents(String projectName, String qualifiedName,
     String icon, String vcode, String vname, String useslocation, String aname,
     String sizing, String showListsAsJson, String tutorialURL, String subsetJSON, String actionBar, String theme,
-    String primaryColor, String primaryColorDark, String accentColor) {
+    String primaryColor, String primaryColorDark, String accentColor, String statusBarColor, String lightStatusBar, String navigationBarColor, String lightNavigationBar) {
     String contents = "main=" + qualifiedName + "\n" +
         "name=" + projectName + '\n' +
         "assets=../" + ASSETS_FOLDER + "\n" +
@@ -226,6 +234,18 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
     if (accentColor != null && !accentColor.isEmpty()) {
       contents += "color.accent=" + accentColor + "\n";
+    }
+    if (statusBarColor != null && !statusBarColor.isEmpty()) {
+      contents += "color.statusbar=" + statusBarColor + "\n";
+    }
+    if (lightStatusBar != null && !lightStatusBar.isEmpty()) {
+      contents += "lightstatusbar=" + lightStatusBar + "\n";
+    }
+    if (navigationBarColor != null && !navigationBarColor.isEmpty()) {
+      contents += "color.navigationbar=" + navigationBarColor + "\n";
+    }
+    if (lightNavigationBar != null && !lightNavigationBar.isEmpty()) {
+      contents += "lightnavigationbar=" + lightNavigationBar + "\n";
     }
     return contents;
   }
@@ -320,6 +340,18 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String newAccentColor = Strings.nullToEmpty(settings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
+    String newStatusBarColor = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR));
+    String newLightStatusBar = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_STATUS_BAR));
+    String newNavigationBarColor = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NAVIGATION_BAR_COLOR));
+    String newLightNavigationBar = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_NAVIGATION_BAR));
 
     // Extract the old icon from the project.properties file from storageIo.
     String projectProperties = storageIo.downloadFile(userId, projectId,
@@ -346,6 +378,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldPrimaryColor = Strings.nullToEmpty(properties.getProperty("color.primary"));
     String oldPrimaryColorDark = Strings.nullToEmpty(properties.getProperty("color.primary.dark"));
     String oldAccentColor = Strings.nullToEmpty(properties.getProperty("color.accent"));
+    String oldStatusBarColor = Strings.nullToEmpty(properties.getProperty("color.statusbar"));
+    String oldLightStatusBar = Strings.nullToEmpty(properties.getProperty("lightstatusbar"));
+    String oldNavigationBarColor = Strings.nullToEmpty(properties.getProperty("color.navigationbar"));
+    String oldLightNavigationBar = Strings.nullToEmpty(properties.getProperty("lightnavigationbar"));
 
     if (!newIcon.equals(oldIcon) || !newVCode.equals(oldVCode) || !newVName.equals(oldVName)
       || !newUsesLocation.equals(oldUsesLocation) ||
@@ -353,13 +389,14 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       !newShowListsAsJson.equals(oldShowListsAsJson) ||
         !newTutorialURL.equals(oldTutorialURL) || !newSubsetJSON.equals(oldSubsetJSON) || !newActionBar.equals(oldActionBar) ||
         !newTheme.equals(oldTheme) || !newPrimaryColor.equals(oldPrimaryColor) ||
-        !newPrimaryColorDark.equals(oldPrimaryColorDark) || !newAccentColor.equals(oldAccentColor)) {
+        !newPrimaryColorDark.equals(oldPrimaryColorDark) || !newAccentColor.equals(oldAccentColor) || 
+        !newStatusBarColor.equals(oldStatusBarColor) || !newLightStatusBar.equals(oldLightStatusBar) || !newNavigationBarColor.equals(oldNavigationBarColor) || !newLightNavigationBar.equals(oldLightNavigationBar)) {
       // Recreate the project.properties and upload it to storageIo.
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
       String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon,
         newVCode, newVName, newUsesLocation, newAName, newSizing, newShowListsAsJson, newTutorialURL, newSubsetJSON,
-        newActionBar, newTheme, newPrimaryColor, newPrimaryColorDark, newAccentColor);
+        newActionBar, newTheme, newPrimaryColor, newPrimaryColorDark, newAccentColor, newStatusBarColor, newLightStatusBar, newNavigationBarColor, newLightNavigationBar);
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
@@ -379,7 +416,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String propertiesFileName = PROJECT_PROPERTIES_FILE_NAME;
     String propertiesFileContents = getProjectPropertiesFileContents(projectName,
       qualifiedFormName, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null);
+        null, null, null, null, null, null);
 
     String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
@@ -400,7 +437,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     // Create new project
     return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false",
-        projectName, "Fixed", "false", "", "", "false", "AppTheme.Light.DarkActionBar","0", "0", "0"));
+        projectName, "Fixed", "false", "", "", "false", "AppTheme.Light.DarkActionBar","0", "0", "0", "0", "false","0", "false"));
   }
 
   @Override
@@ -451,6 +488,18 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String accentColor = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
+    String statusBarColor = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS_BAR_COLOR);
+    String lightStatusBar = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_STATUS_BAR);
+    String navigationBarColor = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NAVIGATION_BAR_COLOR);
+    String lightNavigationBar = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LIGHT_NAVIGATION_BAR);
 
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
@@ -471,7 +520,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
             storageIo.getUser(userId).getUserEmail(), newName);
         newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode,
           vname, useslocation, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar,
-          theme, primaryColor, primaryColorDark, accentColor);
+          theme, primaryColor, primaryColorDark, accentColor, statusBarColor, lightStatusBar, navigationBarColor, lightNavigationBar);
       } else {
         // This is some file other than the project properties file.
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
@@ -496,7 +545,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // Create the new project and return the new project's id.
     return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname,
         useslocation, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar, theme, primaryColor,
-        primaryColorDark, accentColor));
+        primaryColorDark, accentColor, statusBarColor, lightStatusBar, navigationBarColor, lightNavigationBar));
   }
 
   @Override
