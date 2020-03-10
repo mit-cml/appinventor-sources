@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,12 +8,19 @@ package com.google.appinventor.buildserver;
 
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
-
+import com.google.appinventor.components.runtime.util.YailDictionary;
+import com.google.appinventor.components.runtime.util.YailList;
+import gnu.kawa.functions.Arithmetic;
 import gnu.math.DFloNum;
 import gnu.math.IntNum;
-import junit.framework.Assert;
+import gnu.math.Numeric;
 import junit.framework.TestCase;
 import kawa.standard.Scheme;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Tests the evaluation of various YAIL code.
@@ -22,34 +29,21 @@ import kawa.standard.Scheme;
  *
  * @author markf@google.com (Mark Friedman)
  */
-
 public class YailEvalTest extends TestCase {
-  Scheme scheme;
+  private Scheme scheme;
 
-  private static final String YAIL_SCHEME_TESTS = TestUtils.APP_INVENTOR_ROOT_DIR +
+  private static final String YAIL_SCHEME_TESTS =
+      TestUtils.windowsToUnix(TestUtils.APP_INVENTOR_ROOT_DIR) +
       "/buildserver/tests/com/google/appinventor/buildserver/YailEvalTest.scm";
-
-  private static final String OPEN = "<<";
-  private static final String ID = ":";
-  private static final String TAG = "@@";
-  private static final String RESULT = "==";
-  private static final String CLOSE = ">>";
-  private static final String SUCCESS = "Success";
-  private static final String FAILURE = "Failure";
-
-  private static final String ESCAPE = "&";
-  private static final String ENCODED_ESCAPE = "&0";
-  private static final String ENCODED_OPEN = "&1";
-  private static final String ENCODED_CLOSE = "&2";
 
   @Override
   public void setUp() throws Exception {
     scheme = new Scheme();
     String yailRuntimeLibrary = Compiler.getResource(Compiler.YAIL_RUNTIME);
-    String yailSchemeTests = YAIL_SCHEME_TESTS;
+    yailRuntimeLibrary = TestUtils.windowsToUnix(yailRuntimeLibrary);
     try {
       scheme.eval("(load \"" + yailRuntimeLibrary + "\")");
-      scheme.eval("(load \"" + yailSchemeTests + "\")");
+      scheme.eval("(load \"" + YAIL_SCHEME_TESTS + "\")");
       scheme.eval("(set! *testing* #t)");
     } catch (Exception e) {
       throw e;
@@ -360,7 +354,7 @@ public class YailEvalTest extends TestCase {
   }
 
 
-  public void deepCopyTest() throws Throwable {
+  public void testDeepCopy() throws Throwable {
     // check that yail-list-copy does a deep copy
     String schemeInputString = "(begin " +
         "(define list1 (make-yail-list (make-yail-list \"a\" \"b\") \"c\" \"d\" ))" +
@@ -1094,15 +1088,9 @@ public class YailEvalTest extends TestCase {
       String expression = "(" + funName + " " + args[i] + ")";
       Object result = scheme.eval(expression);
       if (result instanceof DFloNum) {
-        Assert.assertEquals(expression,
-                            vals[i],
-                            ((DFloNum) result).doubleValue(),
-                            DELTA);
+        assertEquals(expression, vals[i], ((DFloNum) result).doubleValue(), DELTA);
       } else {
-        Assert.assertEquals(expression,
-                            vals[i],
-                            (Double) result,
-                            DELTA);
+        assertEquals(expression, vals[i], (Double) result, DELTA);
       }
     }
   }
@@ -1147,9 +1135,9 @@ public class YailEvalTest extends TestCase {
    }
 
   // These constant definitions make the below tests more readable.
-  static final double PI = Math.PI;
-  static final double PI_2 = PI / 2;
-  static final double PI_4 = PI / 4;
+  private static final double PI = Math.PI;
+  private static final double PI_2 = PI / 2;
+  private static final double PI_4 = PI / 4;
 
   public void testDegreesToRadians() throws Throwable {
     double[] args = {   -45, 0,   45,   90,   270, 360, 720 };
@@ -1170,9 +1158,7 @@ public class YailEvalTest extends TestCase {
       throws Throwable {
     for (int i = 0; i < args1.length; i++) {
       String expression = "(" + funName + " " + args1[i] + " " + args2[i] + ")";
-      Assert.assertEquals(vals[i],
-                          ((DFloNum) scheme.eval(expression)).doubleValue(),
-                          DELTA);
+      assertEquals(vals[i], ((DFloNum) scheme.eval(expression)).doubleValue(), DELTA);
     }
   }
 
@@ -1264,5 +1250,40 @@ public class YailEvalTest extends TestCase {
     String schemeString = "(define zero :: java.lang.Double (java.lang.Double 0)) " +
         "(coerce-to-string (sanitize-component-data zero))";
     assertEquals("0", scheme.eval(schemeString).toString());
+  }
+
+  public void testJavaMapToYailDictionaryEmpty() throws Throwable {
+    Map<String, Object> input = new HashMap<>();
+    Object sym = scheme.eval("(gentemp)");
+    scheme.define(sym.toString(), input);
+    Object result = scheme.eval("(java-map->yail-dictionary " + sym + ")");
+    assertNotNull(result);
+    assertTrue(result instanceof YailDictionary);
+    assertEquals(0, ((YailDictionary) result).size());
+  }
+
+  public void testJavaMapToYailDictionary() throws Throwable {
+    Map<String, Object> nested = new HashMap<>();
+    nested.put("a", "b");
+    Map<String, Object> input = new HashMap<>();
+    input.put("number", 1);
+    input.put("string", "name");
+    input.put("boolean", false);
+    input.put("list", Arrays.asList(1, 2, 3));
+    input.put("dictionary", nested);
+    Object sym = scheme.eval("(gentemp)");
+    scheme.define(sym.toString(), input);
+    Object result = scheme.eval("(java-map->yail-dictionary " + sym + ")");
+    assertNotNull(result);
+    assertTrue(result instanceof YailDictionary);
+    YailDictionary asdict = (YailDictionary) result;
+    assertEquals(5, asdict.size());
+    assertEquals(1, ((Numeric) asdict.get("number")).intValue());
+    assertEquals("name", asdict.get("string"));
+    assertEquals(false, asdict.get("boolean"));
+    assertEquals(YailList.makeList(Arrays.asList(Arithmetic.asNumeric(1),
+        Arithmetic.asNumeric(2), Arithmetic.asNumeric(3))),
+        asdict.get("list"));
+    assertEquals(YailDictionary.makeDictionary("a", "b"), asdict.get("dictionary"));
   }
 }

@@ -80,7 +80,7 @@ Blockly.ReplStateObj.prototype = {
     'count' : 0,                        // Count of number of reads from rendezvous server
     'didversioncheck' : false,
     'isUSB' : false,            // True if using a USB connection
-    'rendezvous2' : 'http://rendezvous.appinventor.mit.edu/rendezvous2/',
+    'rendezvous2' : 'https://rendezvous.appinventor.mit.edu/rendezvous2/',
     'iceservers' : { 'iceServers' : [ { 'urls' : ['turn:turn.appinventor.mit.edu:3478'],
                                         'username' : 'oh',
                                         'credential' : 'boy' }]}
@@ -99,8 +99,9 @@ Blockly.ReplMgr.isConnected = function() {
 /**
  * Build YAIL for sending to the companion.
  * @param {Blockly.WorkspaceSvg} workspace
+ * @param {boolean=} opt_force
  */
-Blockly.ReplMgr.buildYail = function(workspace) {
+Blockly.ReplMgr.buildYail = function(workspace, opt_force) {
     var phoneState;
     var code = [];
     var blocks;
@@ -157,7 +158,7 @@ Blockly.ReplMgr.buildYail = function(workspace) {
 
         code = code.join('\n');
 
-        if (phoneState.componentYail != code) {
+        if (phoneState.componentYail != code || opt_force) {
             // We need to send all of the component cruft (sorry)
             needinitialize = true;
             phoneState.blockYail = {}; // Sorry, have to send the blocks again.
@@ -180,13 +181,38 @@ Blockly.ReplMgr.buildYail = function(workspace) {
         this.block.replError = message;
         this.block.workspace.getWarningHandler().checkAllBlocksForWarningsAndErrors();
     };
+    var componentEventMap = {};
+    var componentGenericEventMap = {};
+
+    function willEmitEvent(block) {
+        if (block.isGeneric) {
+            if (!componentGenericEventMap[block.typeName]) {
+                componentGenericEventMap[block.typeName] = {};
+            }
+            componentGenericEventMap[block.typeName][block.eventName] = true;
+        } else {
+            if (!componentEventMap[block.instanceName]) {
+                componentEventMap[block.instanceName] = {};
+            }
+            componentEventMap[block.instanceName][block.eventName] = true;
+        }
+    }
+
+    function didEmitEvent(block) {
+        if (block.isGeneric && componentGenericEventMap[block.typeName] &&
+          componentGenericEventMap[block.typeName][block.eventName]) {
+            return true;
+        }
+        if (!block.isGeneric && componentEventMap[block.instanceName] &&
+          componentEventMap[block.instanceName][block.eventName]) {
+            return true;
+        }
+        return false;
+    }
 
     for (var x = 0; (block = blocks[x]); x++) {
-        if (!block.category || (block.hasError && !block.replError)) { // Don't send blocks with
-            continue;           // Errors, unless they were errors signaled by the repl
-        }
         if (block.disabled) {
-            if (block.type == 'component_event') {
+            if (block.type == 'component_event' && !didEmitEvent(block)) {
                 // We do need do remove disabled event handlers, though
                 var code = Blockly.Yail.disabledEventBlockToCode(block);
                 if (phoneState.blockYail[block.id] != code) {
@@ -197,11 +223,17 @@ Blockly.ReplMgr.buildYail = function(workspace) {
             // Skip normal code generation for disabled blocks
             continue;
         }
+        if (!block.category || (block.hasError && !block.replError)) { // Don't send blocks with
+            continue;           // Errors, unless they were errors signaled by the repl
+        }
         if (block.blockType != "event" &&
             block.type != "global_declaration" &&
             block.type != "procedures_defnoreturn" &&
             block.type != "procedures_defreturn")
             continue;
+        if (block.type == 'component_event') {
+            willEmitEvent(block);
+        }
         var tempyail = Blockly.Yail.blockToCode(block);
         if (phoneState.blockYail[block.id] != tempyail) { // Only send changed yail
             this.putYail(tempyail, block, success, failure);
@@ -215,13 +247,13 @@ Blockly.ReplMgr.buildYail = function(workspace) {
     }
 };
 
-Blockly.ReplMgr.sendFormData = function(formJson, packageName, workspace) {
+Blockly.ReplMgr.sendFormData = function(formJson, packageName, workspace, opt_force) {
     top.ReplState.phoneState.formJson = formJson;
     top.ReplState.phoneState.packageName = packageName;
     var context = this;
     var poller = function() {   // Keep track of "this"
         context.polltimer = null;
-        return context.pollYail.call(context, workspace);
+        return context.pollYail.call(context, workspace, opt_force);
     };
     if (this.polltimer) {       // We have one running, punt it.
         clearTimeout(this.polltimer);
@@ -229,7 +261,7 @@ Blockly.ReplMgr.sendFormData = function(formJson, packageName, workspace) {
     this.polltimer = setTimeout(poller, 500);
 };
 
-Blockly.ReplMgr.pollYail = function(workspace) {
+Blockly.ReplMgr.pollYail = function(workspace, opt_force) {
     var RefreshAssets = top.AssetManager_refreshAssets;
     try {
         if (window === undefined)    // If window is gone, then we are a zombie timer firing
@@ -237,11 +269,13 @@ Blockly.ReplMgr.pollYail = function(workspace) {
     } catch (err) {                  // We get an error on FireFox when window is gone.
         return;
     }
+    var self = this;
     if (top.ReplState.state == this.rsState.CONNECTED) {
-        this.buildYail(workspace);
-    }
-    if (top.ReplState.state == this.rsState.CONNECTED) {
-        RefreshAssets(function() {});
+        RefreshAssets(function() {
+            if (top.ReplState.state == self.rsState.CONNECTED) {
+                self.buildYail(workspace, opt_force);
+            }
+        });
     }
 };
 
@@ -1390,7 +1424,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
     var poller = function() {                                     // So "this" is correct when called
         context.rendPoll.call(context);                           // from setTimeout
     };
-    xmlhttp.open('GET', 'http://' + top.rendezvousServer + '/rendezvous/' + rs.rendezvouscode, true);
+    xmlhttp.open('GET', 'https://' + top.rendezvousServer + '/rendezvous/' + rs.rendezvouscode, true);
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && this.status == 200) {
             try {
@@ -1440,6 +1474,28 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                         me.putYail(); // This starts the whole negotiation process!
                         return;         // And we are done here.
                     }
+                    // At this point we are going to use Legacy Mode. Check to see if we
+                    // are loaded over https. If we are, then Legacy Mode will fail. So
+                    // shutdown the whole thing here and put up a dialog box explaining
+                    // the problem.
+                    if (window.location.protocol === 'https:') {
+                      // Reset State to initial
+                      rs.state = Blockly.ReplMgr.rsState.IDLE;
+                      rs.connection = null;
+                      rs.didversioncheck = false;
+                      rs.isUSB = false;
+                      context.resetYail(false);
+                      top.BlocklyPanel_indicateDisconnect();
+                      top.ConnectProgressBar_hide();
+                      // Show dialog
+                      var dialog = new Blockly.Util.Dialog(Blockly.REPL_CONNECTION_FAILURE1,
+                                                           Blockly.Msg.REPL_NO_LEGACY, Blockly.Msg.REPL_OK,
+                                                           false, null, 0, function() {
+                                                             dialog.hide();
+                                                           });
+                      return;   // We're done
+                    };
+
                     rs.state = Blockly.ReplMgr.rsState.CONNECTED;
 
                     RefreshAssets(function() {
@@ -1573,7 +1629,15 @@ Blockly.ReplMgr.makeDialogMessage = function(code) {
         qr.make();
     }
     var img = qr.createImgTag(6);
-    var retval = '<table><tr><td>' + img + '</td><td><font size="+1">' + Blockly.Msg.REPL_YOUR_CODE_IS + ':<br /><br /><font size="+1"><b>' + code + '</b></font></font></td></tr></table>';
+    var retval = '<table><tr><td>' + img + '</td><td><font size="+1">' + Blockly.Msg.REPL_YOUR_CODE_IS + ':<br /><br /><font size="+1"><b>' + code + '</b></font></font></td></tr>';
+    if (window.location.protocol === 'https:') { // Are we on a secure connection?
+        retval += '<tr><td colspan=2>' +
+          Blockly.Msg.REPL_SECURE_CONNECTION +
+          ' <a href="https://appinventor.mit.edu/ai2/aboutsecurity" target="_blank">' +
+          Blockly.Msg.REPL_MORE_INFORMATION +
+          '</a>.</td></tr>';
+    }
+    retval += '</table>';
     return retval;
 };
 

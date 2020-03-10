@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2016-2018 MIT, All rights reserved
+// Copyright 2016-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,6 +7,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -25,7 +26,10 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper {
     super(editor, type, icon);
   }
 
-  abstract protected Widget createClonedWidget();
+  protected final Widget createClonedWidget() {
+    // We override updatePreferredSize directly, so this shouldn't be called.
+    throw new UnsupportedOperationException();
+  }
 
   @Override
   public void onCreateFromPalette() {
@@ -135,5 +139,10 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper {
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
     }
+  }
+
+  protected void updatePreferredSize() {
+    preferredSize = MockComponentsUtil
+        .getPreferredSizeOfElement(DOM.clone(toggleWidget.getElement(), true));
   }
 }

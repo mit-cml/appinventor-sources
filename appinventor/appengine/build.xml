@@ -65,43 +65,118 @@
 
   <property name="build.war.dir" location="${local.build.dir}/war" />
   <property name="build.extra.dir" location="${local.build.dir}/extra" />
+  <property name="build.static.dir" location="${build.war.dir}/static" />
+
+  <!-- =====================================================================
+       Check whether or not the documentation needs to be (re-)compiled
+       ===================================================================== -->
+  <target name="CheckDocs">
+    <uptodate property="Docs.uptodate">
+      <srcfiles dir="${appinventor.dir}/docs/markdown">
+        <include name="reference/**/*" />
+      </srcfiles>
+      <firstmatchmapper>
+        <globmapper from="*.md" to="${appinventor.dir}/docs/html/*.html" />
+        <globmapper from="*" to="${appinventor.dir}/docs/html/*" />
+      </firstmatchmapper>
+    </uptodate>
+  </target>
+
+  <!-- =====================================================================
+       Builds the documentation from the corresponding Markdown files.
+       ===================================================================== -->
+  <target name="BuildDocs" depends="components_AndroidRuntime,CheckDocs"
+          unless="Docs.uptodate">
+    <!-- Jenkins will pass -Dforce.builddocs=true to ensure docs build correctly -->
+    <property name="force.builddocs" value="false" />
+    <!-- We set failifexecutionfails to false so the whole build doesn't fail
+         if the developer doesn't have Jekyll set up -->
+    <exec executable="bundle" failonerror="${force.builddocs}"
+          failifexecutionfails="${force.builddocs}"
+          dir="${docs.dir}/markdown" >
+      <arg value="install" />
+      <arg value="--path" />
+      <arg value="vendor/bundle" />
+    </exec>
+    <exec executable="bundle" failonerror="${force.builddocs}"
+          failifexecutionfails="${force.builddocs}"
+          dir="${docs.dir}/markdown" >
+      <arg value="exec" />
+      <arg value="jekyll" />
+      <arg value="build" />
+      <arg value="-d" />
+      <arg value="${docs.dir}/html" />
+    </exec>
+  </target>
 
   <!-- =====================================================================
        Copy static files to <build>/war, from war and elsewhere
        ===================================================================== -->
   <target name="CopyToBuildWar"
           description="Create and populate build/war directory structure"
-          depends="init,blocklyeditor_BlocklyCompile">
+          depends="init,blocklyeditor_BlocklyCompile,BuildDocs">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
-      <fileset dir="war">
-        <exclude name="blocklyframe.html"/>
+      <fileset dir="war" />
+      <fileset dir="${docs.dir}">
+        <include name="companions/*"/>
       </fileset>
-      <fileset dir="src/${appinventor.pkg}">
-        <!-- canvas is a special case (see MockCanvas.java) -->
-        <include name="images/canvas.png" />
+      <fileset dir="${docs.dir}/html">
+        <include name="index.html"/>
+        <include name="reference/**/*"/>
+        <exclude name="static/*"/>
+        <exclude name="assets/*"/>
+        <exclude name="images/*"/>
+        <exclude name="js/*"/>
+        <exclude name="css/*"/>
+        <!-- Jekyll generates this even if we don't include the plugin -->
+        <exclude name="feed.xml"/>
       </fileset>
-      <fileset dir="${docs.dir}"/>
     </copy>
-    <mkdir dir="${build.war.dir}/assets/" />
-    <copy todir="${build.war.dir}/assets/" flatten="true">
+    <copy todir="${build.static.dir}/css" flatten="true">
+      <fileset dir="${lib.dir}/blockly">
+        <include name="**/*.css"/>
+      </fileset>
+      <fileset dir="${appinventor.dir}/blocklyeditor">
+        <include name="media/*.css"/>
+      </fileset>
+      <fileset dir="${docs.dir}/html/static/css">
+        <include name="*"/>
+      </fileset>
+    </copy>
+    <mkdir dir="${build.static.dir}/media"/>
+    <copy todir="${build.static.dir}/media" flatten="true">
       <fileset dir="${lib.dir}/blockly">
         <include name="media/*"/>
-        <include name="**/*.css"/>
+        <exclude name="media/*.css"/>
         <exclude name="demo/**"/>
       </fileset>
       <fileset dir="${appinventor.dir}/blocklyeditor">
         <include name="media/*"/>
+        <exclude name="media/*.css"/>
       </fileset>
     </copy>
     <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/blockly.js" />
-    <copy todir="${build.war.dir}/">
+    <copy todir="${build.static.dir}">
+      <fileset dir="src/${appinventor.pkg}">
+        <!-- canvas is a special case (see MockCanvas.java) -->
+        <include name="images/canvas.png" />
+      </fileset>
       <fileset dir="${lib.dir}">
-        <include name="closure-library/**/*"/>
+        <include name="closure-library/closure/goog/base.js"/>
+        <include name="closure-library/closure/goog/css/dialog.css"/>
+        <include name="closure-library/closure/goog/css/hsvapalette.css"/>
+        <include name="closure-library/closure/goog/deps.js"/>
+      </fileset>
+      <fileset dir="${docs.dir}/html/static">
+        <include name="js/*"/>
+      </fileset>
+      <fileset dir="src/${appinventor.pkg}">
+        <include name="images/help.png"/>
       </fileset>
     </copy>
     <!-- Resources for Maps designer view -->
-    <copy todir="${build.war.dir}/">
+    <copy todir="${build.static.dir}/">
       <fileset dir="${lib.dir}">
         <include name="leaflet/**/*"/>
         <include name="font-awesome/**/*"/>
@@ -117,7 +192,7 @@
   <target name="CheckKeystore">
     <!-- If build/war/keystore/1 exists, set keystore.present to true.
          Otherwise, set keystore.present to false -->
-    <available file="${build.war.dir}/keystore/1" property="keystore.present"/>
+    <available file="${build.war.dir}/WEB-INF/keystore/1" property="keystore.present"/>
   </target>
 
   <target name="Keystore"
@@ -125,15 +200,15 @@
           depends="CheckKeystore,CopyToBuildWar"
           unless="keystore.present">
     <echo message="Using KeyczarTool to generate keystore"/>
-    <mkdir dir="${build.war.dir}/keystore"/>
+    <mkdir dir="${build.war.dir}/WEB-INF/keystore"/>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="create --location=${build.war.dir}/keystore --purpose=crypt"/>
+      <arg line="create --location=${build.war.dir}/WEB-INF/keystore --purpose=crypt"/>
     </java>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="addkey --location=${build.war.dir}/keystore"/>
+      <arg line="addkey --location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="promote --location=${build.war.dir}/keystore --version=1"/>
+      <arg line="promote --location=${build.war.dir}/WEB-INF/keystore --version=1"/>
     </java>
   </target>
 
@@ -420,7 +495,7 @@
        ===================================================================== -->
   <target name="AiClientLib"
           description="App Inventor Client library - compile java source to bytecode"
-          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription,components_ComponentTranslation">
+          depends="components_AndroidRuntime">
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
@@ -500,13 +575,50 @@
         <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
       </classpath>
       <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
-      <jvmarg value="-Xmx1G"/>
+      <jvmarg value="-Xmx2G"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg line="-war"/>
       <arg value="${build.war.dir}"/>
       <arg line="-logLevel INFO -extra ${build.extra.dir} -style pretty"/>
       <arg value="com.google.appinventor.YaClient"/>
+    </java>
+  </target>
+
+  <target name="devmode"
+          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
+          description="Run development mode">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.codeserver.CodeServer">
+      <classpath>
+        <pathelement location="src" />
+        <pathelement location="${build.dir}/components/ComponentTranslation/src" />
+        <pathelement location="${build.war.dir}/WEB-INF/classes" />
+        <pathelement location="${local.build.dir}/AiRebindLib.jar" />
+        <pathelement location="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
+        <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
+        <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
+        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
+        <!-- external libs -->
+        <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
+        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
+        <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
+        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+        <!-- gwt libs -->
+        <pathelement location="${gwt.sdk}/gwt-codeserver.jar" />
+        <pathelement location="${gwt.sdk}/gwt-dev.jar" />
+        <pathelement location="${gwt.sdk}/gwt-user.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+      </classpath>
+      <jvmarg value="-Xmx1G" />
+      <arg line="-style PRETTY -logLevel INFO" />
+      <arg value="com.google.appinventor.YaClient" />
+      <arg value="-bindAddress"/>
+      <arg value="0.0.0.0"/>
     </java>
   </target>
 

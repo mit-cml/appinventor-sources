@@ -16,7 +16,9 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Image;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class representing a drop-down button with its associated menu. Note
@@ -26,6 +28,7 @@ import java.util.List;
 public class DropDownButton extends TextButton {
 
   private final ContextMenu menu;
+  private final Map<String, MenuItem> itemsById = new HashMap<>();
   private final List<MenuItem> items;
   private final boolean rightAlign;
 
@@ -184,7 +187,26 @@ public class DropDownButton extends TextButton {
   }
 
   public void addItem(DropDownItem item) {
-    items.add(menu.addItem(item.caption, true, item.command));
+    if (item == null) {
+      menu.addSeparator();
+    } else {
+      MenuItem menuItem = menu.addItem(item.caption, true, item.command);
+      itemsById.put(item.widgetName, menuItem);
+      items.add(menuItem);
+    }
+  }
+
+  /**
+   * Removes a menu item identified by {@code id} if it exists.
+   *
+   * @param id the identifier of the menu item
+   */
+  public void removeItemById(String id) {
+    if (itemsById.containsKey(id)) {
+      MenuItem item = itemsById.remove(id);
+      items.remove(item);
+      menu.removeItem(item);
+    }
   }
 
   public void removeItem(String itemName) {
@@ -194,6 +216,19 @@ public class DropDownButton extends TextButton {
         items.remove(item);
         break;
       }
+    }
+  }
+
+  /**
+   * Enables or disables a menu item identified by {@code id}.
+   *
+   * @param id the identifier of the menu item
+   * @param enabled true if the menu item should be enabled, false for disabled
+   */
+  public void setItemEnabledById(String id, boolean enabled) {
+    MenuItem item = itemsById.get(id);
+    if (item != null) {
+      item.setEnabled(enabled);
     }
   }
 
@@ -210,6 +245,19 @@ public class DropDownButton extends TextButton {
     menu.removeItem(items.get(items.size()-1));
     items.remove(items.size()-1);
     items.add(menu.addItem(item.caption, true, item.command));
+  }
+
+  /**
+   * Sets the HTML content of a menu item, identified by {@code id}, to the given {@code html}.
+   *
+   * @param id the identifier of the menu item
+   * @param html the HTML content to use for the menu item
+   */
+  public void setItemHtmlById(String id, String html) {
+    MenuItem item = itemsById.get(id);
+    if (item != null) {
+      item.setHTML(html);
+    }
   }
 
   public void setCaption(String caption) {
