@@ -670,7 +670,7 @@ public class Clock extends AndroidNonvisibleComponent
     if (timezone == null) throw new YailRuntimeError("No timezones available.", "Runtime Error");
 
     if (timezones.contains(timezone)) {
-      return instant.setTimeZone(TimeZone.getTimeZone(timezone));
+      instant.setTimeZone(TimeZone.getTimeZone(timezone));
     } else {
       for (String tz : timezones) {
         if (tz.equalsIgnoreCase(timezone))
@@ -678,6 +678,7 @@ public class Clock extends AndroidNonvisibleComponent
       }
       throw new YailRuntimeError("Your given timezone is not a valid timezone.", "Sorry to be so picky");
     }
+    return instant;
   }
 
   /**
