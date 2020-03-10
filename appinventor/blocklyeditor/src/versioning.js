@@ -2319,8 +2319,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERISON 26:
     // - ShowListsAsJson default value changed from False to True
-    26: "noUpgrade"
+    26: "noUpgrade",
 
+    // For FORM_COMPONENT_VERSION 27:
+    // - Added StatusBarColor, LightStatusBar, NavigationBarColor, and LightNavigationBar properties
+    27: "noUpgrade"
 
   }, // End Screen
 

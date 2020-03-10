@@ -1018,6 +1018,26 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 26;
     }
 
+    if (srcCompVersion < 27) {
+      // Infer StatusBarColor and NavigationBarColor from PrimaryColorDark and PrimaryColor, respectively.
+      if (componentProperties.containsKey("PrimaryColorDark")) {
+        final String value = componentProperties.get("PrimaryColorDark").asString().getString();
+        componentProperties.put("StatusBarColor", new ClientJsonString(value));
+      }
+      if (componentProperties.containsKey("PrimaryColor")) {
+        final String value = componentProperties.get("PrimaryColor").asString().getString();
+        componentProperties.put("NavigationBarColor", new ClientJsonString(value));
+      }
+      // Assume that if the theme "Black Title Text" ("AppTheme.Light") is selected,
+      // the status bar and navigation bar will have a light background,
+      // so set LightStatusBar and LightNavigationBar to true.
+      if (componentProperties.containsKey("Theme") && "AppTheme.Light".equals(componentProperties.get("Theme").asString().toString())) {
+        componentProperties.put("LightStatusBar", new ClientJsonString("True"));
+        componentProperties.put("LightNavigationBar", new ClientJsonString("True"));
+      }
+      srcCompVersion = 27;
+    }
+
     return srcCompVersion;
   }
 

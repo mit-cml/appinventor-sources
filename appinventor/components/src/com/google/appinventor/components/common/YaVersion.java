@@ -844,7 +844,9 @@ public class YaVersion {
   // - Sizing default value changed from Fixed to Responsive
   // For FORM_COMPONENT_VERSION 26:
   // - Updated the default value of ShowListsAsJson from false -> true
-  public static final int FORM_COMPONENT_VERSION = 26;
+  // For FORM_COMPONENT_VERSION 27:
+  // - Added StatusBarColor, LightStatusBar, NavigationBarColor, and LightNavigationBar properties
+  public static final int FORM_COMPONENT_VERSION = 27;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
