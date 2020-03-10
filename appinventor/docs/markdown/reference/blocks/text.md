@@ -162,7 +162,7 @@ Returns the text with the mappings appllied.
 If the dictionary order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
 is based on the entry order in the dictionary (the earliest one gets replaced first).
 
-#### longest string first order (#replaceallmappingslongeststring)
+#### longest string first order {#replaceallmappingslongeststring}
 
 If the longest string order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
 is the one which is longer.
