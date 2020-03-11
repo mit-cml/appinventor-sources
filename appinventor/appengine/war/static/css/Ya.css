@@ -46,7 +46,7 @@ body {
 }
 
 .dyslexic * {
-  font-family: OpenDyslexic, Roboto, Helvetica, Arial, sans-serif !important;
+  font-family: OpenDyslexic, Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* For the TOS Form*/
