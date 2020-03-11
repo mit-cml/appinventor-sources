@@ -66,14 +66,15 @@ public class EclairUtil {
   }
 
   /**
-   * Setup Dialog Box to request location permission from end-user for the Javascript
-   * location (navigator.geolocation.getCurrentLocation()) API.
+   * Setup Dialog Box to request geo-location permission from end-user for the Javascript
+   * location (navigator.geolocation.getCurrentLocation()) API or other permissions (e.g. camera
+   * or microphone).
    *
    * @param webview - The WebView component running the Javascript engine that needs permission
    * @param activity - Its containing activity used for placing the dialog box
    */
 
-  public static void setupWebViewGeoLoc(final WebViewer caller, WebView webview, final Activity activity) {
+  public static void setupWebViewPermissions(final WebViewer caller, WebView webview, final Activity activity) {
     webview.getSettings().setGeolocationDatabasePath(activity.getFilesDir().getAbsolutePath());
     webview.getSettings().setDatabaseEnabled(true);
 
