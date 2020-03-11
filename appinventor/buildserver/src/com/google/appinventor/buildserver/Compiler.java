@@ -298,14 +298,23 @@ public final class Compiler {
     try {
       loadJsonInfo(permissionsNeeded, ComponentDescriptorConstants.PERMISSIONS_TARGET);
       if (project != null) {    // Only do this if we have a project (testing doesn't provide one :-( ).
+        Set<String> webViewerPermissions = Sets.newHashSet(); // via a Property.
+
         LOG.log(Level.INFO, "usesLocation = " + project.getUsesLocation());
         if (project.getUsesLocation().equals("True")) { // Add location permissions if any WebViewer requests it
-          Set<String> locationPermissions = Sets.newHashSet(); // via a Property.
           // See ProjectEditor.recordLocationSettings()
-          locationPermissions.add("android.permission.ACCESS_FINE_LOCATION");
-          locationPermissions.add("android.permission.ACCESS_COARSE_LOCATION");
-          locationPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
-          permissionsNeeded.put("com.google.appinventor.components.runtime.WebViewer", locationPermissions);
+          webViewerPermissions.add("android.permission.ACCESS_FINE_LOCATION");
+          webViewerPermissions.add("android.permission.ACCESS_COARSE_LOCATION");
+          webViewerPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
+        }
+
+        Log.log(Level.INFO, "usesCamera = " + propect.getUsesCamera());
+        if (project.getUsesCamera().equals("True")) { // Add camera permissions if any WebViewer requests it
+        webViewerPermissions.add("android.permission.CAMERA");
+        }
+
+        if (!webViewerPermissions.isEmpty()) {
+          permissionsNeeded.put("com.google.appinventor.components.runtime.WebViewer", webViewerPermissions);
         }
       }
     } catch (IOException e) {

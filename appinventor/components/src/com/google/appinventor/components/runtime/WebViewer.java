@@ -437,6 +437,20 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
+   * Specifies whether or not this 'WebViewer' can access the Camera of the phone.
+   * 
+   * @param uses  True if the Camera may be accessed
+   */
+   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+   @SimpleProperty(userVisible = false,
+        description = "Whether or not to give the application permission to use the phone's Camera. " +
+          "This property is available only in the designer.")
+  public void UsesCamera(boolean uses) {
+    // We don't actually do anything here (the work is in the MockWebViewer)
+  }
+
+  /**
    * Determine if the user should be prompted for permission to use the geolocation API while in
    * the webviewer.
    *

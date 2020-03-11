@@ -50,6 +50,7 @@ public abstract class ProjectEditor extends Composite {
   private final Map<String, FileEditor> openFileEditors;
   protected final List<String> fileIds; 
   private final HashMap<String,String> locationHashMap = new HashMap<String,String>();
+  private final HashMap<String, String> cameraHashMap = new HashMap<String,String>();
   private final DeckPanel deckPanel;
   private FileEditor selectedFileEditor;
   private final TreeMap<String, Boolean> screenHashMap = new TreeMap<String, Boolean>();
@@ -309,26 +310,50 @@ public abstract class ProjectEditor extends Composite {
   public final void recordLocationSetting(String componentName, String newValue) {
     OdeLog.log("ProjectEditor: recordLocationSetting(" + componentName + "," + newValue + ")");
     locationHashMap.put(componentName, newValue);
-    recomputeLocationPermission();
+    recomputePermission(locationHashMap, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION);
   }
 
-  private final void recomputeLocationPermission() {
-    String usesLocation = "False";
-    for (String c : locationHashMap.values()) {
-      OdeLog.log("ProjectEditor:recomputeLocationPermission: " + c);
+  public final void recordCameraSetting(String componentName, String newValue) {
+    OdeLog.log("ProjectEditor: recordCameraSetting(" + componentName + "," + newValue + ")");
+    cameraHashMap.put(componentName, newValue);
+    recomputePermission(cameraHashMap, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_CAMERA);
+  }
+
+  private final void recomputePermission(Map<String,String> componentMap, String permissionName) {
+    String usesPermission = "False";
+    for (String c : componentMap.values()) {
+      OdeLog.log(permissionName + ": " + c);
       if (c.equals("True")) {
-        usesLocation = "True";
+        usesPermission = "True";
         break;
       }
     }
-    changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION,
-      usesLocation);
+    changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, permissionName, usesPermission);
   }
+
+  // private final void recomputeLocationPermission() {
+  //   String usesLocation = "False";
+  //   for (String c : locationHashMap.values()) {
+  //     OdeLog.log("ProjectEditor:recomputeLocationPermission: " + c);
+  //     if (c.equals("True")) {
+  //       usesLocation = "True";
+  //       break;
+  //     }
+  //   }
+  //   changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION,
+  //     usesLocation);
+  // }
 
   public void clearLocation(String componentName) {
     OdeLog.log("ProjectEditor:clearLocation: clearing " + componentName);
     locationHashMap.remove(componentName);
-    recomputeLocationPermission();
+    recomputePermission(locationHashMap, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION);
+  }
+
+  public void clearCamera(String componentName) {
+    OdeLog.log("ProjectEditor:clearCamera: clearing " + componentName);
+    cameraHashMap.remove(componentName);
+    recomputePermission(cameraHashMap, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_CAMERA);
   }
 
   /**
