@@ -671,8 +671,14 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     for (String buildOutputFile : buildOutputFiles) {
       storageIo.deleteFile(userId, projectId, buildOutputFile);
     }
+
+    // Initialize variables
     URL buildServerUrl = null;
     ProjectSourceZip zipFile = null;
+    int responseCode = 0;
+    int maxAiaSize = 10;  // in mb
+    String errMsg="";
+    int zipFileLength = -1;
     try {
       buildServerUrl = new URL(getBuildServerUrlStr(
           user.getUserEmail(),
@@ -712,7 +718,19 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       bufferedOutputStream.flush();
       bufferedOutputStream.close();
 
-      int responseCode = 0;
+
+      // Computer project filesize
+      zipFileLength = zipFile == null ? -1 : zipFile.getContent().length;
+      String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
+
+      // Pre-check to see if we pass our max aia size.
+      errMsg = "Sorry, can't package projects larger than " + maxAiaSize +
+              "MB. Yours is " + lengthMbs + "MB. Please consider shrinking assets and/or reducing number of screens";
+      if (zipFileLength >= (maxAiaSize * 1024 * 1024) ) {
+        return new RpcResult(false, "", errMsg);
+      }
+
+      // our project is below the limit
       responseCode = connection.getResponseCode();
       if (responseCode != HttpURLConnection.HTTP_OK) {
         // Put the HTTP response code into the RpcResult so the client code in BuildCommand.java
@@ -764,12 +782,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     } catch (IOException e) {
       // As of App Engine 1.9.0 we get these when UrlFetch is asked to send too much data
       Throwable wrappedException = e;
-      int zipFileLength = zipFile == null ? -1 : zipFile.getContent().length;
-      if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
-        String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
-        wrappedException = new IllegalArgumentException(
-          "Sorry, can't package projects larger than 5MB."
-          + " Yours is " + lengthMbs + "MB.", e);
+      // Was this due to reaching max aia size?
+      if (zipFileLength >= maxAiaSize * 1024 * 1024 ) {
+        wrappedException = new IllegalArgumentException(errMsg, e);
       }
       CrashReport.createAndLogError(LOG, null,
           buildErrorMsg("IOException", buildServerUrl, userId, projectId), wrappedException);
@@ -783,12 +798,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       // big) and ApiProxyException. There may be others.
       Throwable wrappedException = e;
       if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
-        int zipFileLength = zipFile.getContent().length;
-        if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
-          String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
-          wrappedException = new IllegalArgumentException(
-              "Sorry, can't package projects larger than 5MB."
-              + " Yours is " + lengthMbs + "MB.", e);
+        if (zipFileLength >= maxAiaSize * 1024 * 1024 ) {
+          wrappedException = new IllegalArgumentException(errMsg, e);
         } else {
           wrappedException = new IllegalArgumentException(
               "Sorry, project was too large to package (" + zipFileLength + " bytes)");
