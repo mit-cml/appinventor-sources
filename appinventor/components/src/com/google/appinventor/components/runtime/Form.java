@@ -253,6 +253,8 @@ public class Form extends AppInventorCompatActivity
   private ProgressDialog progress;
   private static boolean _initialized = false;
 
+  private static boolean autoscaleImages = true; // Note: Only the Screen1 value is used as this is per-project
+
   // It should be changed from 100000 to 65535 if the functionality to extend
   // FragmentActivity is added in future.
   public static final int MAX_PERMISSION_NONCE = 100000;
@@ -1207,6 +1209,30 @@ public class Form extends AppInventorCompatActivity
         }
       }
     });
+  }
+
+  /**
+   * AutoscaleImages Property Setter
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false,
+    description = "If true, App Inventor will scale the images down by computing "
+      + "a scaling factor. Users can disable this feature to use high resolution "
+      + "images in their apps.")
+  public void AutoscaleImages(boolean scaleImages) {
+    autoscaleImages = scaleImages;
+    if (frameLayout != null) {
+      frameLayout.invalidate();
+    }
+  }
+
+  /**
+   * AutoscaleImages Property Getter
+   */
+  @SimpleProperty(category =  PropertyCategory.APPEARANCE, userVisible = false)
+  public boolean AutoscaleImages() {
+    return autoscaleImages;
   }
 
   /**

@@ -585,8 +585,10 @@ public class MediaUtil {
     }
 
     int sampleSize = 1;
-    while ((imageWidth / sampleSize > maxWidth) && (imageHeight / sampleSize > maxHeight)) {
-      sampleSize *= 2;
+    if (form.AutoscaleImages()) {
+      while ((imageWidth / sampleSize > maxWidth) && (imageHeight / sampleSize > maxHeight)) {
+        sampleSize *= 2;
+      }
     }
     options = new BitmapFactory.Options();
     Log.d(LOG_TAG, "getBitmapOptions: sampleSize = " + sampleSize + " mediaPath = " + mediaPath
