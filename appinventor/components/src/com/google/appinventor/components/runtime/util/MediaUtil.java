@@ -585,7 +585,7 @@ public class MediaUtil {
     }
 
     int sampleSize = 1;
-    if(form.AutoscaleImages()) {
+    if (form.AutoscaleImages()) {
       while ((imageWidth / sampleSize > maxWidth) && (imageHeight / sampleSize > maxHeight)) {
         sampleSize *= 2;
       }
