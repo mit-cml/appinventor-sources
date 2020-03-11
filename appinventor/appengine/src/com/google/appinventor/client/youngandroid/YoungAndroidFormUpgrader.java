@@ -1018,6 +1018,11 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 26;
     }
 
+    if (srcCompVersion < 27) {
+      // The AutoscaleImages Property was added
+      srcCompVersion = 27;
+    }
+
     return srcCompVersion;
   }
 

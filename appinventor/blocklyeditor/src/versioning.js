@@ -2316,7 +2316,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERISON 26:
     // - ShowListsAsJson default value changed from False to True
-    26: "noUpgrade"
+    26: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 27:
+    // - The Screen1.AutoscaleImages property was added and no block needs to be changed.
+    27: "noUpgrade"
 
 
   }, // End Screen
