@@ -310,7 +310,7 @@ public final class Compiler {
 
         LOG.log(Level.INFO, "usesCamera = " + project.getUsesCamera());
         if (project.getUsesCamera().equals("True")) { // Add camera permissions if any WebViewer requests it
-        webViewerPermissions.add("android.permission.CAMERA");
+          webViewerPermissions.add("android.permission.CAMERA");
         }
 
         if (!webViewerPermissions.isEmpty()) {
