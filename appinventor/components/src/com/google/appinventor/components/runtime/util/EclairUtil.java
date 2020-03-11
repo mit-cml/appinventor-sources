@@ -12,11 +12,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import android.net.Uri;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.GeolocationPermissions;
 import android.webkit.GeolocationPermissions.Callback;
+import android.webkit.PermissionRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
@@ -57,6 +59,35 @@ public class EclairUtil {
     webview.getSettings().setGeolocationDatabasePath(activity.getFilesDir().getAbsolutePath());
     webview.getSettings().setDatabaseEnabled(true);
     webview.setWebChromeClient(new WebChromeClient() {
+        @Override
+        public void onPermissionRequest(final PermissionRequest request) {
+          if (!caller.PromptforPermission()) {
+            request.grant(request.getResources());
+            return;
+          }
+
+          String origin = request.getOrigin().toString();
+
+          AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+          alertDialog.setTitle("Permission Request");
+          if (origin.equals("file://"))
+            origin = "This Application";
+          alertDialog.setMessage(origin + " would like to access your camera.");
+          alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Allow",
+            new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+                request.grant(request.getResources());
+              }
+            });
+          alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Refuse",
+            new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+                request.deny();
+              }
+            });
+          alertDialog.show();
+        }
+
         @Override
         public void onGeolocationPermissionsShowPrompt(String origin,
           Callback callback) {

@@ -252,7 +252,7 @@ public final class Project {
    * @return useslocation property
    */
   public String getUsesLocation() {
-    return getOptionalBooleanProperty(propertyName);
+    return getOptionalBooleanProperty(USESLOCATIONTAG);
   }
 
   /**
@@ -261,7 +261,7 @@ public final class Project {
    * @return usescamera property
    */
   public String getUsesCamera() {
-    return getOptionalBooleanProperty(propertyName);
+    return getOptionalBooleanProperty(USESCAMERATAG);
   }
 
   /**

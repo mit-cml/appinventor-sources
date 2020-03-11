@@ -308,7 +308,7 @@ public final class Compiler {
           webViewerPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
         }
 
-        Log.log(Level.INFO, "usesCamera = " + propect.getUsesCamera());
+        LOG.log(Level.INFO, "usesCamera = " + project.getUsesCamera());
         if (project.getUsesCamera().equals("True")) { // Add camera permissions if any WebViewer requests it
         webViewerPermissions.add("android.permission.CAMERA");
         }

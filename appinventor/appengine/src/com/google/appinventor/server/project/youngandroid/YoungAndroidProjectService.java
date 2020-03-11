@@ -388,7 +388,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String propertiesFileName = PROJECT_PROPERTIES_FILE_NAME;
     String propertiesFileContents = getProjectPropertiesFileContents(projectName,
       qualifiedFormName, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null);
+        null, null, null);
 
     String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
@@ -408,7 +408,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     project.addTextFile(new TextFile(yailFileName, yailFileContents));
 
     // Create new project
-    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false",
+    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false", "false",
         projectName, "Fixed", "false", "", "", "false", "AppTheme.Light.DarkActionBar","0", "0", "0"));
   }
 
