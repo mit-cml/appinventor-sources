@@ -1,12 +1,15 @@
 // -*- Mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Utilities for Components that display a number of options on Screen such as ListPicker,
@@ -51,8 +54,9 @@ public class ElementsUtil {
   }
 
   public static String setSelectionFromIndex(int index, YailList items){
-    if (index == 0)
+    if (index == 0) {
       return "";
+    }
     // YailLists are 0-based, but we want to be 1-based.
     return items.getString(index - 1);
   }
@@ -66,6 +70,48 @@ public class ElementsUtil {
       // The comparison is case-sensitive to be consistent with yail-equal?.
       if (items.getString(i).equals(value)) {
         return i + 1;
+      }
+    }
+    return 0;
+  }
+
+  public static int selectionIndex(List<JSONObject> items, int index ) {
+    if (index<=0 || index > items.size()) {
+      return 0;
+    } else {
+      return index;
+    }
+  }
+
+  public static String setSelectionFromIndex(int index, JSONObject item) {
+    if (index == 0) {
+      return "";
+    }
+    return item.has("Text1") ? item.getString("Text1") : "";
+  }
+
+  public static String setDetailSelectionFromIndex(int index, JSONObject item) {
+    if (index == 0) {
+      return "";
+    }
+    return item.has("Text2") ? item.getString("Text2") : "";
+  }
+
+  public static int setSelectedIndexFromValue(List<JSONObject> items, String value) {
+    for (int i = 0; i < items.size(); ++i) {
+      JSONObject item = items.get(i);
+      if (item.has("Text1") && item.getString("Text1").equals(value)) {
+        return i+1;
+      }
+    }
+    return 0;
+  }
+
+  public static int setSelectedIndexFromDetailTextValue(List<JSONObject> items, String value) {
+    for (int i = 0; i < items.size(); ++i) {
+      JSONObject item = items.get(i);
+      if (item.has("Text2") && item.getString("Text2").equals(value)) {
+        return i+1;
       }
     }
     return 0;
