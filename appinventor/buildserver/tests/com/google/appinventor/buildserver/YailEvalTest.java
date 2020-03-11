@@ -77,6 +77,12 @@ public class YailEvalTest extends TestCase {
                  scheme.eval(thunkify(schemeString)).toString());
   }
 
+  public void testStringReverse() throws Throwable {
+    assertEquals("raboof", (scheme.eval("(string-reverse \"foobar\")")).toString());
+    assertEquals("\uD83D\uDE43\uD83D\uDE0F\uD83E\uDD29\uD83D\uDE02\uD83D\uDC4F\uD83D\uDE03\uD83D\uDC4D\uD83D\uDE18",
+        (scheme.eval("(string-reverse \"\uD83D\uDE18\uD83D\uDC4D\uD83D\uDE03\uD83D\uDC4F\uD83D\uDE02\uD83E\uDD29\uD83D\uDE0F\uD83D\uDE43\")")).toString());
+  }
+
   /**
    * This is mostly here as a workaround for some strange behavior with top-level try-catch
    * expressions in Kawa.
@@ -605,6 +611,48 @@ public class YailEvalTest extends TestCase {
     } catch (YailRuntimeError e) {
       // this is expected
     }
+  }
+
+  public void testForEachDict() throws Throwable {
+    /* test for_each_dict block */
+    String schemeInputString = "(begin " +
+        "(def x 0) " +
+        "(foreach y " +
+        " (let " +
+        "   ( " +
+        "    ($key " +
+        "     (call-yail-primitive yail-list-get-item " +
+        "      (*list-for-runtime* (lexical-value y) 1) '(list number) \"select list item\" " +
+        "     ) " +
+        "    ) " +
+        "    ($value " +
+        "     (call-yail-primitive yail-list-get-item " +
+        "      (*list-for-runtime* (lexical-value y) 2) '(list number) \"select list item\" " +
+        "     ) " +
+        "    ) " +
+        "   ) " +
+        "   (set-var! x " +
+        "    (call-yail-primitive + " +
+        "     (*list-for-runtime* (get-var x) (lexical-value $key) (lexical-value $value) )" +
+        "     '(number number number ) \"+\"" +
+        "    ) " +
+        "   ) " +
+        "  ) " +
+        "  (call-yail-primitive make-yail-dictionary " +
+        "   (*list-for-runtime* " +
+        "    (call-yail-primitive make-dictionary-pair " +
+        "     (*list-for-runtime* 1 2 ) '(key any)  \"make a pair\" " +
+        "    ) " +
+        "    (call-yail-primitive make-dictionary-pair " +
+        "     (*list-for-runtime* 3 4 ) '(key any)  \"make a pair\" " +
+        "    ) " +
+        "   ) '(pair pair ) \"make a dictionary\"" +
+        "  ) " +
+        " ) " +
+        " (get-var x) " +
+        ") ";
+    String schemeResultString = "10";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
   }
 
   public void testForRange() throws Throwable {

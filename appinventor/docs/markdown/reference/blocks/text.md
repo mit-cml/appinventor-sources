@@ -22,6 +22,7 @@ layout: documentation
 * [replace all](#replaceall)
 * [obfuscated text](#obfuscatetext)
 * [is a string?](#isstring)
+* [reverse](#reverse)
 
 ### " " (string block)   {#string}
 
@@ -148,3 +149,9 @@ Produces text, like a text block.  The difference is that th etext is not easily
 ![](images/text/isstring.png)
 
 Returns true if *thing* is a text object, otherwise false.
+
+### reverse   {#reverse}
+
+![](images/text/text_reverse.png)
+
+Reverse the given text. For example, "reverse" would become "esrever".

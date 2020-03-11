@@ -729,6 +729,10 @@ public final class YoungAndroidFormUpgrader {
       // The ExtendMovesOutsideCanvas property was added in version 12.
       srcCompVersion = 12;
     }
+    if (srcCompVersion < 13) {
+      // The BackgroundImageinBase64 property was added in version 13.
+      srcCompVersion = 13;
+    }
     return srcCompVersion;
   }
 
@@ -1019,6 +1023,7 @@ public final class YoungAndroidFormUpgrader {
     }
 
     if (srcCompVersion < 27) {
+      // Platform and PlatformVersion blocks were added.
       // Infer StatusBarColor and NavigationBarColor from PrimaryColorDark and PrimaryColor, respectively.
       if (componentProperties.containsKey("PrimaryColorDark")) {
         final String value = componentProperties.get("PrimaryColorDark").asString().getString();
@@ -1095,6 +1100,11 @@ public final class YoungAndroidFormUpgrader {
       //   }
       // }
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+     // The Click event was added.
+     // The Clickable property was added.
+     srcCompVersion = 4;
     }
     return srcCompVersion;
   }
