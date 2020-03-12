@@ -844,7 +844,11 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Ode.getInstance().setUserDyslexicFont(true);
-      Window.Location.reload();
+      // Window.Location.reload();
+      // Note: We used to reload here, but this causes
+      // a race condition with the saving of the user
+      // settings. So we now reload in the callback to
+      // saveSettings (in Ode.java)
     }
   }
 
@@ -852,7 +856,8 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Ode.getInstance().setUserDyslexicFont(false);
-      Window.Location.reload();
+      // Window.Location.reload();
+      // Not: See above comment
     }
   }
 

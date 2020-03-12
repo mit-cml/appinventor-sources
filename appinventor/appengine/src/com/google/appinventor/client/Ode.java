@@ -1574,7 +1574,17 @@ public class Ode implements EntryPoint {
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
             changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT,
                     "" + dyslexicFont);
-    userSettings.saveSettings(null);
+    userSettings.saveSettings(new Command() {
+        @Override
+        public void execute() {
+          // Reload for the new font to take effect. We
+          // do this here because we need to make sure that
+          // the user settings were saved before we terminate
+          // this browsing session. This is particularly important
+          // for Firefox
+          Window.Location.reload();
+        }
+      });
   }
 
   /**
