@@ -1559,7 +1559,11 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // - The Scrollable property was added
+    // No blocks need to be modified to upgrade to version 4.
+    4: "noUpgrade"
 
   }, // End HorizontalArrangement upgraders
 
@@ -2546,7 +2550,11 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // - The Scrollable property was added
+    // No blocks need to be modified to upgrade to version 4.
+    4: "noUpgrade"
 
   }, // End VerticalArrangement upgraders
 

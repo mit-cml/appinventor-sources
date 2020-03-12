@@ -491,8 +491,12 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 197:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 28
   // - WEB_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 198:
+  // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 4
+  // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 197;
+
+  public static final int YOUNG_ANDROID_VERSION = 198;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -866,7 +870,9 @@ public class YaVersion {
   // - The AlignVertical property was added
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 3:
   // - Added background color & image
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
+  // - The Scrollable property was added
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
 
   public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 1;
 
@@ -1232,7 +1238,9 @@ public class YaVersion {
   // - The AlignVertical property was added
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 3:
   // - Added background color & image
-  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 3;
+  // For VERTICALARRANGEMENT_COMPONENT_VERSION 4:
+  // - The Scrollable property was added
+  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 4;
 
   public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 1;
 
