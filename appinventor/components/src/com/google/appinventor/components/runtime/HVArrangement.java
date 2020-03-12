@@ -97,7 +97,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     alignmentSetter.setHorizontalAlignment(horizontalAlignment);
     alignmentSetter.setVerticalAlignment(verticalAlignment);
 
-    Scrollable(false);
+    Scrollable(scrollable);
     BackgroundColor(Component.COLOR_DEFAULT);
 
   }
