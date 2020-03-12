@@ -86,7 +86,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     context = container.$context();
 
     this.orientation = orientation;
-    this.scrollable = scrollable;
     viewLayout = new LinearLayout(context, orientation,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
@@ -98,31 +97,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     alignmentSetter.setHorizontalAlignment(horizontalAlignment);
     alignmentSetter.setVerticalAlignment(verticalAlignment);
 
-    if (scrollable) {
-      switch (orientation) {
-      case LAYOUT_ORIENTATION_VERTICAL:
-        Log.d(LOG_TAG, "Setting up frameContainer = ScrollView()");
-        frameContainer = new ScrollView(context);
-        break;
-      case LAYOUT_ORIENTATION_HORIZONTAL:
-        Log.d(LOG_TAG, "Setting up frameContainer = HorizontalScrollView()");
-        frameContainer = new HorizontalScrollView(context);
-        break;
-      }
-    } else {
-      Log.d(LOG_TAG, "Setting up frameContainer = FrameLayout()");
-      frameContainer = new FrameLayout(context);
-    }
-
-    frameContainer.setLayoutParams(new ViewGroup.LayoutParams(ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH, ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT));
-    frameContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT));
-
-      // Save the default values in case the user wants them back later.
-    defaultButtonDrawable = getView().getBackground();
-
-    container.$add(this);
+    Scrollable(scrollable);
     BackgroundColor(Component.COLOR_DEFAULT);
 
   }
@@ -365,6 +340,65 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         // Update the appearance based on the new value of backgroundImageDrawable.
         updateAppearance();
     }
+
+  /**
+   * Scrollable Property Getter method
+   *
+   * @return true if the frameContainer is scrollable.
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+          description = "When checked, the horizontal/vertical view will be scrollable."
+                  + "i.e the height/width of the view can exceed the physical height/width of"
+                  + "the device. When unchecked, the view's height/width is constrained to the"
+                  + "height/width of the device.")
+  public boolean Scrollable() {
+    return scrollable;
+  }
+
+  /**
+   * Scrollable property setter method.
+   *
+   * @param scrollable  true if the view should be scrollable
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty
+  public void Scrollable(boolean scrollable) {
+    this.scrollable = scrollable;
+    recomputeLayout();
+  }
+
+  private void recomputeLayout() {
+    if(frameContainer != null) {
+      frameContainer.removeAllViews();
+    }
+
+    if (scrollable) {
+      switch (orientation) {
+        case LAYOUT_ORIENTATION_VERTICAL:
+          Log.d(LOG_TAG, "Setting up frameContainer = ScrollView()");
+          frameContainer = new ScrollView(context);
+          break;
+        case LAYOUT_ORIENTATION_HORIZONTAL:
+          Log.d(LOG_TAG, "Setting up frameContainer = HorizontalScrollView()");
+          frameContainer = new HorizontalScrollView(context);
+          break;
+      }
+    } else {
+      Log.d(LOG_TAG, "Setting up frameContainer = FrameLayout()");
+      frameContainer = new FrameLayout(context);
+    }
+
+    frameContainer.setLayoutParams(new ViewGroup.LayoutParams(ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH, ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT));
+    frameContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT));
+
+    // Save the default values in case the user wants them back later.
+    defaultButtonDrawable = getView().getBackground();
+
+    container.$add(this);
+  }
 
 
   // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.

@@ -6,9 +6,12 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 /**
@@ -34,6 +37,14 @@ public class HorizontalScrollArrangement extends HVArrangement {
   public HorizontalScrollArrangement(ComponentContainer container) {
     super(container, ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL,
       ComponentConstants.SCROLLABLE_ARRANGEMENT);
+  }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "True")
+  @SimpleProperty
+  public void Scrollable(boolean scrollable) {
+    super.Scrollable(scrollable);
   }
 
 }
