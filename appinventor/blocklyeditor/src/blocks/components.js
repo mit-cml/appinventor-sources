@@ -530,6 +530,7 @@ Blockly.Blocks.component_event = {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
     Blockly.ComponentBlock.addGenericOption(this, options);
     Blockly.BlocklyEditor.addPngExportOption(this, options);
+    Blockly.BlocklyEditor.addGenerateYailOption(this, options);
   },
 
   // check if the block corresponds to an event inside componentTypes[typeName].eventDictionary
