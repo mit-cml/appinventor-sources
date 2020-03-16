@@ -73,10 +73,7 @@
   <target name="CheckDocs">
     <uptodate property="Docs.uptodate">
       <srcfiles dir="${appinventor.dir}/docs/markdown">
-        <exclude name="_layouts/*" />
-        <exclude name="Gemfile*" />
-        <exclude name="_config.yml" />
-        <exclude name=".sass-cache/**/*" />
+        <include name="reference/**/*" />
       </srcfiles>
       <firstmatchmapper>
         <globmapper from="*.md" to="${appinventor.dir}/docs/html/*.html" />
@@ -88,19 +85,21 @@
   <!-- =====================================================================
        Builds the documentation from the corresponding Markdown files.
        ===================================================================== -->
-  <target name="BuildDocs" depends="components_Markdown,CheckDocs"
+  <target name="BuildDocs" depends="components_AndroidRuntime,CheckDocs"
           unless="Docs.uptodate">
+    <!-- Jenkins will pass -Dforce.builddocs=true to ensure docs build correctly -->
+    <property name="force.builddocs" value="false" />
     <!-- We set failifexecutionfails to false so the whole build doesn't fail
          if the developer doesn't have Jekyll set up -->
-    <exec executable="bundle" failonerror="true"
-          failifexecutionfails="false"
+    <exec executable="bundle" failonerror="${force.builddocs}"
+          failifexecutionfails="${force.builddocs}"
           dir="${docs.dir}/markdown" >
       <arg value="install" />
       <arg value="--path" />
       <arg value="vendor/bundle" />
     </exec>
-    <exec executable="bundle" failonerror="true"
-          failifexecutionfails="false"
+    <exec executable="bundle" failonerror="${force.builddocs}"
+          failifexecutionfails="${force.builddocs}"
           dir="${docs.dir}/markdown" >
       <arg value="exec" />
       <arg value="jekyll" />
@@ -496,7 +495,7 @@
        ===================================================================== -->
   <target name="AiClientLib"
           description="App Inventor Client library - compile java source to bytecode"
-          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription,components_ComponentTranslation">
+          depends="components_AndroidRuntime">
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
@@ -618,6 +617,8 @@
       <jvmarg value="-Xmx1G" />
       <arg line="-style PRETTY -logLevel INFO" />
       <arg value="com.google.appinventor.YaClient" />
+      <arg value="-bindAddress"/>
+      <arg value="0.0.0.0"/>
     </java>
   </target>
 

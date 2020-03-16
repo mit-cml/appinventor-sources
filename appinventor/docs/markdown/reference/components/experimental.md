@@ -12,12 +12,19 @@ Table of Contents:
 
 ## FirebaseDB  {#FirebaseDB}
 
+The Firebase component communicates with a Web service to store
+ and retrieve information.  The component has methods to
+ store a value under a tag and to retrieve the value associated with
+ the tag. It also possesses a listener to fire events when stored
+ values are changed.
+
+ [Additional Information](../other/firebase.html)
+
+
+
 ### Properties  {#FirebaseDB-Properties}
 
 {:.properties}
-
-{:id="FirebaseDB.DefaultURL" .text .wo .do} *DefaultURL*
-: 
 
 {:id="FirebaseDB.DeveloperBucket" .text .do} *DeveloperBucket*
 : Getter for the DeveloperBucket.
@@ -26,13 +33,16 @@ Table of Contents:
 : Getter for the FirebaseToken.
 
 {:id="FirebaseDB.FirebaseURL" .text .do} *FirebaseURL*
-: Gets the URL for this FirebaseDB.
+: Specifies the URL for the Firebase.
+
+ The default value is currently my private Firebase URL, but this will
+ eventually changed once the App Inventor Candle plan is activated.
 
 {:id="FirebaseDB.Persist" .boolean .wo .do} *Persist*
 : If true, variables will retain their values when off-line and the App exits. Values will be uploaded to Firebase the next time the App is run while connected to the network. This is useful for applications which will gather data while not connected to the network. Note: AppendValue and RemoveFirst will not work correctly when off-line, they require a network connection.<br/><br/> <i>Note</i>: If you set Persist on any Firebase component, on any screen, it makes all Firebase components on all screens persistent. This is a limitation of the low level Firebase library. Also be aware that if you want to set persist to true, you should do so before connecting the Companion for incremental development.
 
 {:id="FirebaseDB.ProjectBucket" .text} *ProjectBucket*
-: Gets the ProjectBucket for this FirebaseDB.
+: Getter for the ProjectBucket.
 
 ### Events  {#FirebaseDB-Events}
 
@@ -62,7 +72,7 @@ Table of Contents:
 : Append a value to the end of a list atomically. If two devices use this function simultaneously, both will be appended and no data lost.
 
 {:id="FirebaseDB.ClearTag" class="method"} <i/> ClearTag(*tag*{:.text})
-: Remove the tag from Firebase
+: Asks Firebase to forget (delete or set to "null") a given tag.
 
 {:id="FirebaseDB.GetTagList" class="method"} <i/> GetTagList()
 : Get the list of tags for this application. When complete a "TagList" event will be triggered with the list of known tags.
@@ -79,4 +89,20 @@ Table of Contents:
 : Asks Firebase to store the given value under the given tag.
 
 {:id="FirebaseDB.Unauthenticate" class="method"} <i/> Unauthenticate()
-: If you are having difficulty with the Companion and you are switching between different Firebase accounts, you may need to use this function to clear internal Firebase caches. You can just use the "Do It" function on this block in the blocks editor. Note: You should not normally need to use this block as part of an application.
+: Unauthenticate from Firebase.
+
+   Firebase keeps track of credentials in a cache in shared_prefs
+ It will re-use these credentials as long as they are valid. Given
+ That we retrieve a FirebaseToken with a version long life, this will
+ effectively be forever. Shared_prefs survive an application update
+ and depending on how backup is configured on a device, it might survive
+ an application removal and reinstallation.
+
+   Normally this is not a problem, however if we change the credentials
+ used, for example the App author is switching from one Firebase account
+ to another, or invalided their firebase.secret, this cached credential
+ is invalid, but will continue to be used, which results in errors.
+
+   This function permits us to unauthenticate, which tosses the cached
+ credentials. The next time authentication is needed we will use our
+ current FirebaseToken and get fresh credentials.

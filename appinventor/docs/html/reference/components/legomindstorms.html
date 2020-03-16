@@ -150,27 +150,40 @@
 
 <h2 id="Ev3ColorSensor">Ev3ColorSensor</h2>
 
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to a color sensor on a
+ LEGO MINDSTORMS EV3 robot.</p>
+
 <h3 id="Ev3ColorSensor-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Ev3ColorSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
-  <dd>Whether the AboveRange event should fire when the light level goes above the TopOfRange.</dd>
+  <dd>Specifies whether the AboveRange event should fire when the light level
+ goes above the TopOfRange.</dd>
   <dt id="Ev3ColorSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
-  <dd>Whether the BelowRange event should fire when the light level goes below the BottomOfRange.</dd>
+  <dd>Specifies whether the BelowRange event should fire when the light level
+ goes below the BottomOfRange.</dd>
   <dt id="Ev3ColorSensor.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
   <dt id="Ev3ColorSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
-  <dd>The bottom of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
   <dt id="Ev3ColorSensor.ColorChangedEventEnabled" class="boolean"><em>ColorChangedEventEnabled</em></dt>
-  <dd>Whether the ColorChanged event should fire when the Mode property is set to “color” and the detected color changes.</dd>
+  <dd>Specifies whether the ColorChanged event should fire when the DetectColor
+ property is set to True and the detected color changes</dd>
   <dt id="Ev3ColorSensor.Mode" class="text"><em>Mode</em></dt>
-  <dd>Specifies the mode of the sensor.</dd>
+  <dd>Returns the mode of the sensor.</dd>
   <dt id="Ev3ColorSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
-  <dd>The sensor port that the sensor is connected to.</dd>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="Ev3ColorSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
-  <dd>The top of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
   <dt id="Ev3ColorSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
-  <dd>Whether the WithinRange event should fire when the light level goes between the BottomOfRange and the TopOfRange.</dd>
+  <dd>Specifies whether the WithinRange event should fire when the light level
+ goes between the BottomOfRange and the TopOfRange.</dd>
 </dl>
 
 <h3 id="Ev3ColorSensor-Events">Events</h3>
@@ -181,7 +194,7 @@
   <dt id="Ev3ColorSensor.BelowRange">BelowRange()</dt>
   <dd>Light level has gone below the range.</dd>
   <dt id="Ev3ColorSensor.ColorChanged">ColorChanged(<em class="number">colorCode</em>,<em class="text">colorName</em>)</dt>
-  <dd>Called when the detected color has changed. The ColorChanged event will occur if the Mode property is set to “color” and the ColorChangedEventEnabled property is set to True.</dd>
+  <dd>Called when the detected color has changed.</dd>
   <dt id="Ev3ColorSensor.WithinRange">WithinRange()</dt>
   <dd>Light level has gone within the range.</dd>
 </dl>
@@ -190,11 +203,11 @@
 
 <dl class="methods">
   <dt id="Ev3ColorSensor.GetColorCode" class="method returns number"><i></i> GetColorCode()</dt>
-  <dd>It returns the color code from 0 to 7 corresponding to no color, black, blue, green, yellow, red, white and brown.</dd>
+  <dd>It returns the color code for the detected color.</dd>
   <dt id="Ev3ColorSensor.GetColorName" class="method returns text"><i></i> GetColorName()</dt>
-  <dd>Return the color name in one of “No Color”, “Black”, “Blue”, “Green”, “Yellow”, “Red”, “White”, “Brown”.</dd>
+  <dd>Returns the name of the detected color.</dd>
   <dt id="Ev3ColorSensor.GetLightLevel" class="method returns number"><i></i> GetLightLevel()</dt>
-  <dd>It returns the light level in percentage, or -1 when the light level cannot be read.</dd>
+  <dd>It returns the light level in percentage.</dd>
   <dt id="Ev3ColorSensor.SetAmbientMode" class="method"><i></i> SetAmbientMode()</dt>
   <dd>Make the sensor read the light level without reflected light.</dd>
   <dt id="Ev3ColorSensor.SetColorMode" class="method"><i></i> SetColorMode()</dt>
@@ -205,12 +218,22 @@
 
 <h2 id="Ev3Commands">Ev3Commands</h2>
 
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a low-level interface to a LEGO MINDSTORMS EV3
+ robot, with functions to send system or direct commands to EV3 robots.</p>
+
 <h3 id="Ev3Commands-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Ev3Commands.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
 </dl>
+
+<h3 id="Ev3Commands-Events">Events</h3>
+
+<p class="events">None</p>
 
 <h3 id="Ev3Commands-Methods">Methods</h3>
 
@@ -235,17 +258,24 @@
 
 <h2 id="Ev3GyroSensor">Ev3GyroSensor</h2>
 
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to a gyro sensor on a LEGO
+ MINDSTORMS EV3 robot.</p>
+
 <h3 id="Ev3GyroSensor-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Ev3GyroSensor.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
   <dt id="Ev3GyroSensor.Mode" class="text"><em>Mode</em></dt>
-  <dd>Specifies the mode of the sensor.</dd>
+  <dd>Returns the mode of the sensor.</dd>
   <dt id="Ev3GyroSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
-  <dd>The sensor port that the sensor is connected to.</dd>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="Ev3GyroSensor.SensorValueChangedEventEnabled" class="boolean"><em>SensorValueChangedEventEnabled</em></dt>
-  <dd>Whether the SensorValueChanged event should fire when the sensor value changed.</dd>
+  <dd>Returns whether the SensorValueChanged event should fire when the sensor value changed.</dd>
 </dl>
 
 <h3 id="Ev3GyroSensor-Events">Events</h3>
@@ -259,32 +289,39 @@
 
 <dl class="methods">
   <dt id="Ev3GyroSensor.GetSensorValue" class="method returns number"><i></i> GetSensorValue()</dt>
-  <dd>Returns the current angle or rotation speed based on current mode, or -1 if the value cannot be read from sensor.</dd>
+  <dd>Returns the current angle or rotation speed based on current mode,
+ or -1 if the value cannot be read from sensor.</dd>
   <dt id="Ev3GyroSensor.SetAngleMode" class="method"><i></i> SetAngleMode()</dt>
-  <dd>Measures the orientation of the sensor.</dd>
+  <dd>Make the sensor read the angle.</dd>
   <dt id="Ev3GyroSensor.SetRateMode" class="method"><i></i> SetRateMode()</dt>
-  <dd>Measures the angular velocity of the sensor.</dd>
+  <dd>Make the sensor read the rotation rate.</dd>
 </dl>
 
 <h2 id="Ev3Motors">Ev3Motors</h2>
+
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides both high- and low-level interfaces to
+ control the motors on LEGO MINDSTORMS EV3.</p>
 
 <h3 id="Ev3Motors-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Ev3Motors.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
   <dt id="Ev3Motors.EnableSpeedRegulation" class="boolean"><em>EnableSpeedRegulation</em></dt>
-  <dd>Specifies whether to keep motor rotation at constant speed.</dd>
+  <dd>Returns whether to keep motor rotation at constant speed.</dd>
   <dt id="Ev3Motors.MotorPorts" class="text do"><em>MotorPorts</em></dt>
-  <dd>The motor ports that the motors are connected to. The ports are specified by a sequence of port letters.</dd>
+  <dd>Specifies the motor port.</dd>
   <dt id="Ev3Motors.ReverseDirection" class="boolean"><em>ReverseDirection</em></dt>
-  <dd>Set whether the direction of motors is reversed or not.</dd>
+  <dd>Returns if the direction of the motors is reversed.</dd>
   <dt id="Ev3Motors.StopBeforeDisconnect" class="boolean"><em>StopBeforeDisconnect</em></dt>
-  <dd>Whether to stop the motor before disconnecting.</dd>
+  <dd>Specifies whether to stop the drive motors before disconnecting.</dd>
   <dt id="Ev3Motors.TachoCountChangedEventEnabled" class="boolean"><em>TachoCountChangedEventEnabled</em></dt>
-  <dd>Whether the TachoCountChanged event should fire when the angle is changed.</dd>
+  <dd>Returns whether the TachoCountChanged event should fire when the motor angle is increaing.</dd>
   <dt id="Ev3Motors.WheelDiameter" class="number do"><em>WheelDiameter</em></dt>
-  <dd>Specifies the diameter of the wheels attached on motors.</dd>
+  <dd>Returns the diameter of the wheels attached on motors.</dd>
 </dl>
 
 <h3 id="Ev3Motors-Events">Events</h3>
@@ -325,12 +362,22 @@
 
 <h2 id="Ev3Sound">Ev3Sound</h2>
 
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to a LEGO MINDSTORMS EV3
+ robot, which provides sound functionalities.</p>
+
 <h3 id="Ev3Sound-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Ev3Sound.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
 </dl>
+
+<h3 id="Ev3Sound-Events">Events</h3>
+
+<p class="events">None</p>
 
 <h3 id="Ev3Sound-Methods">Methods</h3>
 
@@ -343,18 +390,26 @@
 
 <h2 id="Ev3TouchSensor">Ev3TouchSensor</h2>
 
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to a touch sensor on a LEGO
+ MINDSTORMS EV3 robot.</p>
+
 <h3 id="Ev3TouchSensor-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Ev3TouchSensor.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
   <dt id="Ev3TouchSensor.PressedEventEnabled" class="boolean"><em>PressedEventEnabled</em></dt>
-  <dd>Specifies whether the Pressed event should fire when the touch sensor is
+  <dd>Returns whether the Pressed event should fire when the touch sensor is
  pressed.</dd>
   <dt id="Ev3TouchSensor.ReleasedEventEnabled" class="boolean"><em>ReleasedEventEnabled</em></dt>
-  <dd>Whether the Released event should fire when the touch sensor is released.</dd>
+  <dd>Specifies whether the Released event should fire when the touch sensor is
+ released.</dd>
   <dt id="Ev3TouchSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
-  <dd>The sensor port that the sensor is connected to.</dd>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
 </dl>
 
 <h3 id="Ev3TouchSensor-Events">Events</h3>
@@ -375,12 +430,22 @@
 
 <h2 id="Ev3UI">Ev3UI</h2>
 
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to a LEGO MINDSTORMS EV3
+ robot, which provides graphic functionalities.</p>
+
 <h3 id="Ev3UI-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Ev3UI.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
 </dl>
+
+<h3 id="Ev3UI-Events">Events</h3>
+
+<p class="events">None</p>
 
 <h3 id="Ev3UI-Methods">Methods</h3>
 
@@ -401,25 +466,37 @@
 
 <h2 id="Ev3UltrasonicSensor">Ev3UltrasonicSensor</h2>
 
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to an ultrasonic sensor on a LEGO
+ MINDSTORMS EV3 robot.</p>
+
 <h3 id="Ev3UltrasonicSensor-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Ev3UltrasonicSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
-  <dd>Whether the AboveRange event should fire when the distance goes above the TopOfRange.</dd>
+  <dd>Specifies whether the AboveRange event should fire when the distance
+ goes above the TopOfRange.</dd>
   <dt id="Ev3UltrasonicSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
-  <dd>Whether the BelowRange event should fire when the distance goes below the BottomOfRange.</dd>
+  <dd>Specifies whether the BelowRange event should fire when the distance
+ goes below the BottomOfRange.</dd>
   <dt id="Ev3UltrasonicSensor.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
   <dt id="Ev3UltrasonicSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
-  <dd>The bottom of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
   <dt id="Ev3UltrasonicSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
-  <dd>The sensor port that the sensor is connected to.</dd>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="Ev3UltrasonicSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
-  <dd>The top of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
   <dt id="Ev3UltrasonicSensor.Unit" class="text"><em>Unit</em></dt>
-  <dd>Specifies the unit of distance.</dd>
+  <dd>Returns the unit of distance.</dd>
   <dt id="Ev3UltrasonicSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
-  <dd>Whether the WithinRange event should fire when the distance goes between the BottomOfRange and the TopOfRange.</dd>
+  <dd>Specifies whether the WithinRange event should fire when the distance
+ goes between the BottomOfRange and the TopOfRange.</dd>
 </dl>
 
 <h3 id="Ev3UltrasonicSensor-Events">Events</h3>
@@ -446,29 +523,48 @@
 
 <h2 id="NxtColorSensor">NxtColorSensor</h2>
 
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to a color sensor on a LEGO
+ MINDSTORMS NXT robot.</p>
+
 <h3 id="NxtColorSensor-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="NxtColorSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
-  <dd>Whether the AboveRange event should fire when the DetectColor property is set to False and the light level goes above the TopOfRange.</dd>
+  <dd>Specifies whether the AboveRange event should fire when the DetectColor
+ property is set to False and the light level goes above the TopOfRange.</dd>
   <dt id="NxtColorSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
-  <dd>Whether the BelowRange event should fire when the DetectColor property is set to False and the light level goes below the BottomOfRange.</dd>
+  <dd>Specifies whether the BelowRange event should fire when the DetectColor
+ property is set to False and the light level goes below the BottomOfRange.</dd>
   <dt id="NxtColorSensor.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="NxtColorSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
-  <dd>The bottom of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
   <dt id="NxtColorSensor.ColorChangedEventEnabled" class="boolean"><em>ColorChangedEventEnabled</em></dt>
-  <dd>Whether the ColorChanged event should fire when the DetectColor property is set to True and the detected color changes.</dd>
+  <dd>Specifies whether the ColorChanged event should fire when the DetectColor
+ property is set to True and the detected color changes</dd>
   <dt id="NxtColorSensor.DetectColor" class="boolean"><em>DetectColor</em></dt>
-  <dd>Whether the sensor should detect color or light. True indicates that the sensor should detect color; False indicates that the sensor should detect light. If the DetectColor property is set to True, the BelowRange, WithinRange, and AboveRange events will not occur and the sensor will not generate color. If the DetectColor property is set to False, the ColorChanged event will not occur.</dd>
+  <dd>Specifies whether the sensor should detect color light. True indicates
+ that the sensor should detect color; False indicates that the sensor
+ should detect light.</dd>
   <dt id="NxtColorSensor.GenerateColor" class="number"><em>GenerateColor</em></dt>
-  <dd>The color that should generated by the sensor. Only None, Red, Green, or Blue are valid values. The sensor will not generate color when the DetectColor property is set to True.</dd>
+  <dd>Specifies the color that should generated by the sensor.
+ Only None, Red, Green, or Blue are valid values.
+ The sensor will not generate color when the DetectColor property is set to
+ True.</dd>
   <dt id="NxtColorSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
-  <dd>The sensor port that the sensor is connected to.</dd>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="NxtColorSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
-  <dd>The top of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
   <dt id="NxtColorSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
-  <dd>Whether the WithinRange event should fire when the DetectColor property is set to False and the light level goes between the BottomOfRange and the TopOfRange.</dd>
+  <dd>Specifies whether the WithinRange event should fire when the DetectColor
+ property is set to False and the light level goes between the
+ BottomOfRange and the TopOfRange.</dd>
 </dl>
 
 <h3 id="NxtColorSensor-Events">Events</h3>
@@ -495,12 +591,22 @@
 
 <h2 id="NxtDirectCommands">NxtDirectCommands</h2>
 
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a low-level interface to a LEGO MINDSTORMS NXT
+ robot, with functions to send NXT Direct Commands.</p>
+
 <h3 id="NxtDirectCommands-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="NxtDirectCommands.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
 </dl>
+
+<h3 id="NxtDirectCommands-Events">Events</h3>
+
+<p class="events">None</p>
 
 <h3 id="NxtDirectCommands-Methods">Methods</h3>
 
@@ -509,6 +615,13 @@
   <dd>Delete a file on the robot.</dd>
   <dt id="NxtDirectCommands.DownloadFile" class="method"><i></i> DownloadFile(<em class="text">source</em>,<em class="text">destination</em>)</dt>
   <dd>Download a file to the robot.</dd>
+</dl>
+
+<p />
+<p>See <a href="#MediaUtil.determineMediaSource"><code class="highlighter-rouge">MediaUtil</code>’s <code class="highlighter-rouge">determineMediaSource</code></a> for information about what
+ a path can be.</p>
+
+<dl>
   <dt id="NxtDirectCommands.GetBatteryLevel" class="method returns number"><i></i> GetBatteryLevel()</dt>
   <dd>Get the battery level for the robot. Returns the voltage in millivolts.</dd>
   <dt id="NxtDirectCommands.GetBrickName" class="method returns text"><i></i> GetBrickName()</dt>
@@ -559,18 +672,28 @@
 
 <h2 id="NxtDrive">NxtDrive</h2>
 
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to a LEGO MINDSTORMS NXT
+ robot, with functions that can move and turn the robot.</p>
+
 <h3 id="NxtDrive-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="NxtDrive.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="NxtDrive.DriveMotors" class="text do"><em>DriveMotors</em></dt>
-  <dd>The motor ports that are used for driving: the left wheel’s motor port followed by the right wheel’s motor port.</dd>
+  <dd>Specifies the motor ports that are used for driving.</dd>
   <dt id="NxtDrive.StopBeforeDisconnect" class="boolean"><em>StopBeforeDisconnect</em></dt>
-  <dd>Whether to stop the drive motors before disconnecting.</dd>
+  <dd>Specifies whether to stop the drive motors before disconnecting.</dd>
   <dt id="NxtDrive.WheelDiameter" class="number do"><em>WheelDiameter</em></dt>
-  <dd>The diameter of the wheels used for driving.</dd>
+  <dd>Returns the diameter of the wheels used for driving.</dd>
 </dl>
+
+<h3 id="NxtDrive-Events">Events</h3>
+
+<p class="events">None</p>
 
 <h3 id="NxtDrive-Methods">Methods</h3>
 
@@ -593,25 +716,37 @@
 
 <h2 id="NxtLightSensor">NxtLightSensor</h2>
 
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to a light sensor on a LEGO
+ MINDSTORMS NXT robot.</p>
+
 <h3 id="NxtLightSensor-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="NxtLightSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
-  <dd>Whether the AboveRange event should fire when the light level goes above the TopOfRange.</dd>
+  <dd>Specifies whether the AboveRange event should fire when the light level
+ goes above the TopOfRange.</dd>
   <dt id="NxtLightSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
-  <dd>Whether the BelowRange event should fire when the light level goes below the BottomOfRange.</dd>
+  <dd>Specifies whether the BelowRange event should fire when the light level
+ goes below the BottomOfRange.</dd>
   <dt id="NxtLightSensor.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="NxtLightSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
-  <dd>The bottom of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
   <dt id="NxtLightSensor.GenerateLight" class="boolean"><em>GenerateLight</em></dt>
-  <dd>Whether the light sensor should generate light.</dd>
+  <dd>Specifies whether the light sensor should generate light.</dd>
   <dt id="NxtLightSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
-  <dd>The sensor port that the sensor is connected to.</dd>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be specified in the Designer.</strong></dd>
   <dt id="NxtLightSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
-  <dd>The top of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
   <dt id="NxtLightSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
-  <dd>Whether the WithinRange event should fire when the light level goes between the BottomOfRange and the TopOfRange.</dd>
+  <dd>Specifies whether the WithinRange event should fire when the light level
+ goes between the BottomOfRange and the TopOfRange.</dd>
 </dl>
 
 <h3 id="NxtLightSensor-Events">Events</h3>
@@ -634,23 +769,35 @@
 
 <h2 id="NxtSoundSensor">NxtSoundSensor</h2>
 
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to a sound sensor on a LEGO
+ MINDSTORMS NXT robot.</p>
+
 <h3 id="NxtSoundSensor-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="NxtSoundSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
-  <dd>Whether the AboveRange event should fire when the sound level goes above the TopOfRange.</dd>
+  <dd>Specifies whether the AboveRange event should fire when the sound level
+ goes above the TopOfRange.</dd>
   <dt id="NxtSoundSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
-  <dd>Whether the BelowRange event should fire when the sound level goes below the BottomOfRange.</dd>
+  <dd>Specifies whether the BelowRange event should fire when the sound level
+ goes below the BottomOfRange.</dd>
   <dt id="NxtSoundSensor.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="NxtSoundSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
-  <dd>The bottom of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
   <dt id="NxtSoundSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
-  <dd>The sensor port that the sensor is connected to.</dd>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="NxtSoundSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
-  <dd>The top of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
   <dt id="NxtSoundSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
-  <dd>Whether the WithinRange event should fire when the sound level goes between the BottomOfRange and the TopOfRange.</dd>
+  <dd>Specifies whether the WithinRange event should fire when the sound level
+ goes between the BottomOfRange and the TopOfRange.</dd>
 </dl>
 
 <h3 id="NxtSoundSensor-Events">Events</h3>
@@ -673,17 +820,26 @@
 
 <h2 id="NxtTouchSensor">NxtTouchSensor</h2>
 
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to a touch sensor on a LEGO
+ MINDSTORMS NXT robot.</p>
+
 <h3 id="NxtTouchSensor-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="NxtTouchSensor.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="NxtTouchSensor.PressedEventEnabled" class="boolean"><em>PressedEventEnabled</em></dt>
-  <dd>Whether the Pressed event should fire when the touch sensor is pressed.</dd>
+  <dd>Specifies whether the Pressed event should fire when the touch sensor is
+ pressed.</dd>
   <dt id="NxtTouchSensor.ReleasedEventEnabled" class="boolean"><em>ReleasedEventEnabled</em></dt>
-  <dd>Whether the Released event should fire when the touch sensor is released.</dd>
+  <dd>Specifies whether the Released event should fire when the touch sensor is
+ released.</dd>
   <dt id="NxtTouchSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
-  <dd>The sensor port that the sensor is connected to.</dd>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
 </dl>
 
 <h3 id="NxtTouchSensor-Events">Events</h3>
@@ -704,23 +860,35 @@
 
 <h2 id="NxtUltrasonicSensor">NxtUltrasonicSensor</h2>
 
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to an ultrasonic sensor on a LEGO
+ MINDSTORMS NXT robot.</p>
+
 <h3 id="NxtUltrasonicSensor-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="NxtUltrasonicSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
-  <dd>Whether the AboveRange event should fire when the distance goes above the TopOfRange.</dd>
+  <dd>Specifies whether the AboveRange event should fire when the distance
+ goes above the TopOfRange.</dd>
   <dt id="NxtUltrasonicSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
-  <dd>Whether the BelowRange event should fire when the distance goes below the BottomOfRange.</dd>
+  <dd>Specifies whether the BelowRange event should fire when the distance
+ goes below the BottomOfRange.</dd>
   <dt id="NxtUltrasonicSensor.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
-  <dd>The BluetoothClient component that should be used for communication.</dd>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="NxtUltrasonicSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
-  <dd>The bottom of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
   <dt id="NxtUltrasonicSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
-  <dd>The sensor port that the sensor is connected to.</dd>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
   <dt id="NxtUltrasonicSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
-  <dd>The top of the range used for the BelowRange, WithinRange, and AboveRange events.</dd>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
   <dt id="NxtUltrasonicSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
-  <dd>Whether the WithinRange event should fire when the distance goes between the BottomOfRange and the TopOfRange.</dd>
+  <dd>Specifies whether the WithinRange event should fire when the distance
+ goes between the BottomOfRange and the TopOfRange.</dd>
 </dl>
 
 <h3 id="NxtUltrasonicSensor-Events">Events</h3>

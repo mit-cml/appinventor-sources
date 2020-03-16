@@ -35,13 +35,14 @@ import org.json.JSONException;
 // comments will become included in the automatically-generated system
 // documentation, except for lines starting with tags (such as @author).
 /**
- * The TinyWebDB component communicates with a Web service to store
+ * The {@code TinyWebDB} component communicates with a Web service to store
  * and retrieve information.  Although this component is usable, it is
  * very limited and meant primarily as a demonstration for people who
  * would like to create their own components that talk to the Web.
  * The accompanying Web service is at
  * (http://tinywebdb.appinventor.mit.edu).  The component has methods to
- * store a value under a tag and to retrieve the value associated with
+ * [store a value](#TinyWebDB.StoreValue) under a tag and to
+ * [retrieve the value](#TinyWebDB.GetValue) associated with
  * the tag.  The interpretation of what "store" and "retrieve" means
  * is up to the Web service.  In this implementation, all tags and
  * values are strings (text).  This restriction may be relaxed in
@@ -110,10 +111,11 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
   // where the component is created.
 
   /**
-   * Returns the URL of the web service database.
+   * The URL to the database with which the component should communicate.
    */
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR,
+      description = "The URL of the web service database.")
   public String ServiceURL() {
     return serviceURL;
   }
@@ -141,13 +143,14 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
   // for part (b) to run in a separate thread.
 
   /**
-   * Asks the Web service to store the given value under the given tag
+   * Sends a request to the Web service to store the given `valueToStore`{:.variable.block} under
+   * the given `tag`{:.text.block}. The {@link #ValueStored()} event will be run on completion.
    *
    * @param tag The tag to use
    * @param valueToStore The value to store. Can be any type of value (e.g.
    * number, text, boolean or list).
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Asks the Web service to store the given value under the given tag")
   // The @SimpleFunction annotation arranges for this to be a
   // function (StoreValue)  associated with the component.
   public void StoreValue(final String tag, final Object valueToStore) {
@@ -225,9 +228,9 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
   // a confirmation to the end user.
 
   /**
-   * Event indicating that a StoreValue server request has succeeded.
+   * Event indicating that a {@link #StoreValue(String, Object)}  server request has succeeded.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Event indicating that a StoreValue server request has succeeded.")
   public void ValueStored() {
     // invoke the application's "ValueStored" event handler.
     EventDispatcher.dispatchEvent(this, "ValueStored");
@@ -250,13 +253,16 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
   // StoreValue.
 
   /**
-   * GetValue asks the Web service to get the value stored under the given tag.
-   * It is up to the Web service what to return if there is no value stored
-   * under the tag.  This component just accepts whatever is returned.
+   * `GetValue` asks the Web service to get the value stored under the given `tag`{:.text.block}.
+   * It is up to the Web service what to return if there is no value stored under the
+   * `tag`{:.text.block}.  This component just accepts whatever is returned. The
+   * {@link #GotValue(String, Object)} event will be run on completion.
    *
    * @param tag The tag whose value is to be retrieved.
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Sends a request to the Web service to get the value stored under "
+      + "the given tag. The Web service must decide what to return if there is no value stored "
+      + "under the tag. This component accepts whatever is returned.")
   public void GetValue(final String tag) {
     final Runnable call = new Runnable() { public void run() { postGetValue(tag); }};
     AsynchUtil.runAsynchronously(call);
@@ -284,7 +290,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
             String value = result.getString(2);
             // If there's no entry with tag as a key then return the empty string.
             final Object valueFromWebDB = (value.length() == 0) ? "" :
-                JsonUtil.getObjectFromJson(value);
+                JsonUtil.getObjectFromJson(value, true);
             androidUIHandler.post(new Runnable() {
               public void run() {
                 // signal an event to indicate that a good value was returned.  Note
@@ -328,19 +334,19 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Indicates that a GetValue server request has succeeded.
+   * Indicates that a {@link #GetValue(String)} server request has succeeded.
    *
    * @param valueFromWebDB the value that was returned. Can be any type of value
    * (e.g. number, text, boolean or list).
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Indicates that a GetValue server request has succeeded.")
   public void GotValue(String tagFromWebDB, Object valueFromWebDB) {
     // Invoke the application's "GotValue" event handler
     EventDispatcher.dispatchEvent(this, "GotValue", tagFromWebDB, valueFromWebDB);
   }
 
   /**
-   * Indicates that the communication with the Web service signaled an error
+   * Indicates that the communication with the Web service signaled an error.
    *
    * @param message the error message
    */

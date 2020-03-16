@@ -1586,6 +1586,12 @@ public final class YoungAndroidFormUpgrader {
       // timeout behavior.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7)  {
+      // The JsonTextDecodeWithDictionaries was added to parse JSON using dictionaries.
+      // The XMLTextDecodeAsDictionary was added to provide a more robust representation
+      // of XML using dictionaries.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 

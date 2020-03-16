@@ -186,7 +186,10 @@ public class TopToolbar extends Composite {
     boolean allowExport = numSelectedProjects > 0;
     boolean allowExportAll = numProjects > 0;
     fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
-    fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), allowExport);
+    String exportProjectLabel = numSelectedProjects > 1 ?
+        MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects) : MESSAGES.exportProjectMenuItem();
+    fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
+    fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);
     fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
   }
 
@@ -571,6 +574,8 @@ public class TopToolbar extends Composite {
         //If we are in the projects view
         if (selectedProjects.size() == 1) {
           exportProject(selectedProjects.get(0));
+        } else if (selectedProjects.size() > 1) {
+          exportSelectedProjects(selectedProjects);
         } else {
           // The user needs to select only one project.
           ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
@@ -583,10 +588,24 @@ public class TopToolbar extends Composite {
 
     private void exportProject(Project project) {
       Tracking.trackEvent(Tracking.PROJECT_EVENT,
-          Tracking.PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA, project.getProjectName());
+        Tracking.PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA, project.getProjectName());
 
       Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
-          ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+        ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+    }
+
+    private void exportSelectedProjects(List<Project> projects) {
+      Tracking.trackEvent(Tracking.PROJECT_EVENT,
+              Tracking.PROJECT_ACTION_DOWNLOAD_SELECTED_PROJECTS_SOURCE_YA);
+
+      String selectedProjPath = ServerLayout.DOWNLOAD_SERVLET_BASE +
+              ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE + "/";
+
+      for (Project project : projects) {
+        selectedProjPath += project.getProjectId() + "-";
+      }
+
+      Downloader.getInstance().download(selectedProjPath);
     }
   }
 
@@ -798,7 +817,11 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Ode.getInstance().setUserDyslexicFont(true);
-      Window.Location.reload();
+      // Window.Location.reload();
+      // Note: We used to reload here, but this causes
+      // a race condition with the saving of the user
+      // settings. So we now reload in the callback to
+      // saveSettings (in Ode.java)
     }
   }
 
@@ -806,7 +829,8 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Ode.getInstance().setUserDyslexicFont(false);
-      Window.Location.reload();
+      // Window.Location.reload();
+      // Not: See above comment
     }
   }
 
@@ -1041,8 +1065,8 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(),
           ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-              ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
-      fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
+      ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, false);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
@@ -1052,8 +1076,8 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-              ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
-      fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
+      ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, true);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);

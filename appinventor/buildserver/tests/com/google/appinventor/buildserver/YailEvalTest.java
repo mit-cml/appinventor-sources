@@ -8,10 +8,19 @@ package com.google.appinventor.buildserver;
 
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+import com.google.appinventor.components.runtime.util.YailDictionary;
+import com.google.appinventor.components.runtime.util.YailList;
+import gnu.kawa.functions.Arithmetic;
 import gnu.math.DFloNum;
 import gnu.math.IntNum;
+import gnu.math.Numeric;
 import junit.framework.TestCase;
 import kawa.standard.Scheme;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Tests the evaluation of various YAIL code.
@@ -23,13 +32,15 @@ import kawa.standard.Scheme;
 public class YailEvalTest extends TestCase {
   private Scheme scheme;
 
-  private static final String YAIL_SCHEME_TESTS = TestUtils.APP_INVENTOR_ROOT_DIR +
+  private static final String YAIL_SCHEME_TESTS =
+      TestUtils.windowsToUnix(TestUtils.APP_INVENTOR_ROOT_DIR) +
       "/buildserver/tests/com/google/appinventor/buildserver/YailEvalTest.scm";
 
   @Override
   public void setUp() throws Exception {
     scheme = new Scheme();
     String yailRuntimeLibrary = Compiler.getResource(Compiler.YAIL_RUNTIME);
+    yailRuntimeLibrary = TestUtils.windowsToUnix(yailRuntimeLibrary);
     try {
       scheme.eval("(load \"" + yailRuntimeLibrary + "\")");
       scheme.eval("(load \"" + YAIL_SCHEME_TESTS + "\")");
@@ -1239,5 +1250,40 @@ public class YailEvalTest extends TestCase {
     String schemeString = "(define zero :: java.lang.Double (java.lang.Double 0)) " +
         "(coerce-to-string (sanitize-component-data zero))";
     assertEquals("0", scheme.eval(schemeString).toString());
+  }
+
+  public void testJavaMapToYailDictionaryEmpty() throws Throwable {
+    Map<String, Object> input = new HashMap<>();
+    Object sym = scheme.eval("(gentemp)");
+    scheme.define(sym.toString(), input);
+    Object result = scheme.eval("(java-map->yail-dictionary " + sym + ")");
+    assertNotNull(result);
+    assertTrue(result instanceof YailDictionary);
+    assertEquals(0, ((YailDictionary) result).size());
+  }
+
+  public void testJavaMapToYailDictionary() throws Throwable {
+    Map<String, Object> nested = new HashMap<>();
+    nested.put("a", "b");
+    Map<String, Object> input = new HashMap<>();
+    input.put("number", 1);
+    input.put("string", "name");
+    input.put("boolean", false);
+    input.put("list", Arrays.asList(1, 2, 3));
+    input.put("dictionary", nested);
+    Object sym = scheme.eval("(gentemp)");
+    scheme.define(sym.toString(), input);
+    Object result = scheme.eval("(java-map->yail-dictionary " + sym + ")");
+    assertNotNull(result);
+    assertTrue(result instanceof YailDictionary);
+    YailDictionary asdict = (YailDictionary) result;
+    assertEquals(5, asdict.size());
+    assertEquals(1, ((Numeric) asdict.get("number")).intValue());
+    assertEquals("name", asdict.get("string"));
+    assertEquals(false, asdict.get("boolean"));
+    assertEquals(YailList.makeList(Arrays.asList(Arithmetic.asNumeric(1),
+        Arithmetic.asNumeric(2), Arithmetic.asNumeric(3))),
+        asdict.get("list"));
+    assertEquals(YailDictionary.makeDictionary("a", "b"), asdict.get("dictionary"));
   }
 }

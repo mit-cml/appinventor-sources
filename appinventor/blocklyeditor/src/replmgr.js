@@ -80,7 +80,7 @@ Blockly.ReplStateObj.prototype = {
     'count' : 0,                        // Count of number of reads from rendezvous server
     'didversioncheck' : false,
     'isUSB' : false,            // True if using a USB connection
-    'rendezvous2' : 'http://rendezvous.appinventor.mit.edu/rendezvous2/',
+    'rendezvous2' : 'https://rendezvous.appinventor.mit.edu/rendezvous2/',
     'iceservers' : { 'iceServers' : [ { 'urls' : ['turn:turn.appinventor.mit.edu:3478'],
                                         'username' : 'oh',
                                         'credential' : 'boy' }]}
@@ -269,11 +269,13 @@ Blockly.ReplMgr.pollYail = function(workspace, opt_force) {
     } catch (err) {                  // We get an error on FireFox when window is gone.
         return;
     }
+    var self = this;
     if (top.ReplState.state == this.rsState.CONNECTED) {
-        this.buildYail(workspace, opt_force);
-    }
-    if (top.ReplState.state == this.rsState.CONNECTED) {
-        RefreshAssets(function() {});
+        RefreshAssets(function() {
+            if (top.ReplState.state == self.rsState.CONNECTED) {
+                self.buildYail(workspace, opt_force);
+            }
+        });
     }
 };
 
@@ -1422,7 +1424,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
     var poller = function() {                                     // So "this" is correct when called
         context.rendPoll.call(context);                           // from setTimeout
     };
-    xmlhttp.open('GET', 'http://' + top.rendezvousServer + '/rendezvous/' + rs.rendezvouscode, true);
+    xmlhttp.open('GET', 'https://' + top.rendezvousServer + '/rendezvous/' + rs.rendezvouscode, true);
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && this.status == 200) {
             try {
@@ -1472,6 +1474,28 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                         me.putYail(); // This starts the whole negotiation process!
                         return;         // And we are done here.
                     }
+                    // At this point we are going to use Legacy Mode. Check to see if we
+                    // are loaded over https. If we are, then Legacy Mode will fail. So
+                    // shutdown the whole thing here and put up a dialog box explaining
+                    // the problem.
+                    if (window.location.protocol === 'https:') {
+                      // Reset State to initial
+                      rs.state = Blockly.ReplMgr.rsState.IDLE;
+                      rs.connection = null;
+                      rs.didversioncheck = false;
+                      rs.isUSB = false;
+                      context.resetYail(false);
+                      top.BlocklyPanel_indicateDisconnect();
+                      top.ConnectProgressBar_hide();
+                      // Show dialog
+                      var dialog = new Blockly.Util.Dialog(Blockly.REPL_CONNECTION_FAILURE1,
+                                                           Blockly.Msg.REPL_NO_LEGACY, Blockly.Msg.REPL_OK,
+                                                           false, null, 0, function() {
+                                                             dialog.hide();
+                                                           });
+                      return;   // We're done
+                    };
+
                     rs.state = Blockly.ReplMgr.rsState.CONNECTED;
 
                     RefreshAssets(function() {
@@ -1605,7 +1629,15 @@ Blockly.ReplMgr.makeDialogMessage = function(code) {
         qr.make();
     }
     var img = qr.createImgTag(6);
-    var retval = '<table><tr><td>' + img + '</td><td><font size="+1">' + Blockly.Msg.REPL_YOUR_CODE_IS + ':<br /><br /><font size="+1"><b>' + code + '</b></font></font></td></tr></table>';
+    var retval = '<table><tr><td>' + img + '</td><td><font size="+1">' + Blockly.Msg.REPL_YOUR_CODE_IS + ':<br /><br /><font size="+1"><b>' + code + '</b></font></font></td></tr>';
+    if (window.location.protocol === 'https:') { // Are we on a secure connection?
+        retval += '<tr><td colspan=2>' +
+          Blockly.Msg.REPL_SECURE_CONNECTION +
+          ' <a href="https://appinventor.mit.edu/ai2/aboutsecurity" target="_blank">' +
+          Blockly.Msg.REPL_MORE_INFORMATION +
+          '</a>.</td></tr>';
+    }
+    retval += '</table>';
     return retval;
 };
 

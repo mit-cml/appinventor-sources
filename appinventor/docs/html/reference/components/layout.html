@@ -140,124 +140,295 @@
 
 <h2 id="HorizontalArrangement">HorizontalArrangement</h2>
 
+<p><img src="images/horizontalarrangement.png" alt="HorizontalArrangement icon" /></p>
+
+<p>Use a horizontal arrangement component to display a group of components laid out from left to
+ right.</p>
+
+<p>This component is a formatting element in which you place components that should be displayed
+ from left to right. If you want to have components displayed one over another, use
+ <a href="#VerticalArrangement"><code class="highlighter-rouge">VerticalArrangement</code></a> instead.</p>
+
+<p>In a <code class="highlighter-rouge">HorizontalArrangement</code>, components are arranged along the horizontal axis, vertically
+ center-aligned.</p>
+
+<p>If a <code class="highlighter-rouge">HorizontalArrangement</code>’s <a href="#HorizontalArrangement.Height"><code class="highlighter-rouge">Height</code></a> property is set to <code class="highlighter-rouge">Automatic</code>, the actual
+ height of the arrangement is determined by the tallest component in the arrangement whose
+ <a href="#HorizontalArrangement.Height"><code class="highlighter-rouge">Height</code></a> property is not set to <code class="highlighter-rouge">Fill Parent</code>. If a <code class="highlighter-rouge">HorizontalArrangment</code>’s
+ <a href="#HorizontalArrangement.Height"><code class="highlighter-rouge">Height</code></a> property is set to <code class="highlighter-rouge">Automatic</code> and it contains only components whose <code class="highlighter-rouge">Height</code>
+ properties are set to <code class="highlighter-rouge">Fill Parent</code>, the actual height of the arrangement is calculated using
+ the automatic heights of the components. If a <code class="highlighter-rouge">HorizontalArrangement</code>’s <a href="#HorizontalArrangement.Height"><code class="highlighter-rouge">Height</code></a>
+ property is set to <code class="highlighter-rouge">Automatic</code> and it is empty, the <a href="#HorizontalArrangement.Height"><code class="highlighter-rouge">Height</code></a> will be 100.</p>
+
+<p>If a <code class="highlighter-rouge">HorizontalArrangement</code>’s <a href="#HorizontalArrangement.Width"><code class="highlighter-rouge">Width</code></a> property is set to <code class="highlighter-rouge">Automatic</code>, the actual width
+ of the arrangement is determined by the sum of the widths of the components. <strong>If a
+ <code class="highlighter-rouge">HorizontalArrangement</code>’s <a href="#HorizontalArrangement.Width"><code class="highlighter-rouge">Width</code></a> property is set to <code class="highlighter-rouge">Automatic</code>, any components whose
+ <a href="#HorizontalArrangement.Width"><code class="highlighter-rouge">Width</code></a> properties are set to <code class="highlighter-rouge">Fill Parent</code> will behave as if they were set to
+ <code class="highlighter-rouge">Automatic</code>.</strong></p>
+
+<p>If a <code class="highlighter-rouge">HorizontalArrangement</code>’s <a href="#HorizontalArrangement.Width"><code class="highlighter-rouge">Width</code></a> properties are set to <code class="highlighter-rouge">Fill Parent</code> will equally
+ take up the width not occupied by other components.</p>
+
 <h3 id="HorizontalArrangement-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="HorizontalArrangement.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
-  <dd>A number that encodes how contents of the HorizontalArrangement are aligned  horizontally. The choices are: 1 = left aligned, 2 = right aligned,  3 = horizontally centered.  Alignment has no effect if the arrangement’s width is automatic.</dd>
+  <dd>A number that encodes how contents of the <code class="highlighter-rouge">HorizontalArrangement</code> are aligned horizontally. The choices
+ are: <code class="highlighter-rouge">1</code> = left aligned, <code class="highlighter-rouge">2</code> = right aligned, <code class="highlighter-rouge">3</code> = horizontally centered. Alignment has no
+ effect if the <code class="highlighter-rouge">HorizontalArrangement</code>’s <a href="#HorizontalArrangement.Width"><code class="highlighter-rouge">Width</code></a> is <code class="highlighter-rouge">Automatic</code>.</dd>
   <dt id="HorizontalArrangement.AlignVertical" class="number"><em>AlignVertical</em></dt>
-  <dd>A number that encodes how the contents of the HorizontalArrangement are aligned  vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.  Alignment has no effect if the arrangement’s height is automatic.</dd>
+  <dd>A number that encodes how the contents of the <code class="highlighter-rouge">HorizontalArrangement</code> are aligned vertically. The choices
+ are: <code class="highlighter-rouge">1</code> = aligned at the top, <code class="highlighter-rouge">2</code> = aligned at the bottom, <code class="highlighter-rouge">3</code> = vertically centered.
+ Alignment has no effect if the <code class="highlighter-rouge">HorizontalArrangement</code>’s <a href="#HorizontalArrangement.Height"><code class="highlighter-rouge">Height</code></a> is <code class="highlighter-rouge">Automatic</code>.</dd>
   <dt id="HorizontalArrangement.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
-  <dd>Returns the background color of the HorizontalArrangement</dd>
+  <dd>Specifies the background color of the HorizontalArrangement as an alpha-red-green-blue
+ integer.  If an Image has been set, the color change will not be visible
+ until the Image is removed.</dd>
   <dt id="HorizontalArrangement.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the vertical height of the HorizontalArrangement, measured in pixels.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">HorizontalArrangement</code>’s vertical height, measured in pixels.</dd>
   <dt id="HorizontalArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the vertical height of the HorizontalArrangement as a percentage of the height of the Screen.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">HorizontalArrangement</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="HorizontalArrangement.Image" class="text"><em>Image</em></dt>
-  <dd>Returns the path of the background image of the HorizontalArrangement.</dd>
+  <dd>Specifies the path of the background image of the <code class="highlighter-rouge">HorizontalArrangement</code>.</dd>
   <dt id="HorizontalArrangement.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Returns true iff the HorizontalArrangement is visible.</dd>
+  <dd>Specifies whether the <code class="highlighter-rouge">HorizontalArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">HorizontalArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="HorizontalArrangement.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the HorizontalArrangement, measured in pixels.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">HorizontalArrangement</code>, measured in pixels.</dd>
   <dt id="HorizontalArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the HorizontalArrangement as a percentage of the width of the Screen.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">HorizontalArrangement</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
 </dl>
 
+<h3 id="HorizontalArrangement-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="HorizontalArrangement-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
 <h2 id="HorizontalScrollArrangement">HorizontalScrollArrangement</h2>
+
+<p>A formatting element in which to place components that should be displayed from left to right.
+ If you wish to have components displayed one over another, use <a href="#VerticalScrollArrangement"><code class="highlighter-rouge">VerticalScrollArrangement</code></a>
+ instead.</p>
+
+<p>This version is scrollable.</p>
 
 <h3 id="HorizontalScrollArrangement-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="HorizontalScrollArrangement.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
-  <dd>A number that encodes how contents of the HorizontalScrollArrangement are aligned  horizontally. The choices are: 1 = left aligned, 2 = right aligned,  3 = horizontally centered.  Alignment has no effect if the arrangement’s width is automatic.</dd>
+  <dd>A number that encodes how contents of the <code class="highlighter-rouge">HorizontalScrollArrangement</code> are aligned horizontally. The choices
+ are: <code class="highlighter-rouge">1</code> = left aligned, <code class="highlighter-rouge">2</code> = right aligned, <code class="highlighter-rouge">3</code> = horizontally centered. Alignment has no
+ effect if the <code class="highlighter-rouge">HorizontalScrollArrangement</code>’s <a href="#HorizontalScrollArrangement.Width"><code class="highlighter-rouge">Width</code></a> is <code class="highlighter-rouge">Automatic</code>.</dd>
   <dt id="HorizontalScrollArrangement.AlignVertical" class="number"><em>AlignVertical</em></dt>
-  <dd>A number that encodes how the contents of the HorizontalScrollArrangement are aligned  vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.  Alignment has no effect if the arrangement’s height is automatic.</dd>
+  <dd>A number that encodes how the contents of the <code class="highlighter-rouge">HorizontalScrollArrangement</code> are aligned vertically. The choices
+ are: <code class="highlighter-rouge">1</code> = aligned at the top, <code class="highlighter-rouge">2</code> = aligned at the bottom, <code class="highlighter-rouge">3</code> = vertically centered.
+ Alignment has no effect if the <code class="highlighter-rouge">HorizontalScrollArrangement</code>’s <a href="#HorizontalScrollArrangement.Height"><code class="highlighter-rouge">Height</code></a> is <code class="highlighter-rouge">Automatic</code>.</dd>
   <dt id="HorizontalScrollArrangement.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
-  <dd>Returns the background color of the HorizontalScrollArrangement</dd>
+  <dd>Specifies the background color of the HorizontalScrollArrangement as an alpha-red-green-blue
+ integer.  If an Image has been set, the color change will not be visible
+ until the Image is removed.</dd>
   <dt id="HorizontalScrollArrangement.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the vertical height of the HorizontalScrollArrangement, measured in pixels.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">HorizontalScrollArrangement</code>’s vertical height, measured in pixels.</dd>
   <dt id="HorizontalScrollArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the vertical height of the HorizontalScrollArrangement as a percentage of the height of the Screen.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">HorizontalScrollArrangement</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="HorizontalScrollArrangement.Image" class="text"><em>Image</em></dt>
-  <dd>Returns the path of the background image of the HorizontalScrollArrangement.</dd>
+  <dd>Specifies the path of the background image of the <code class="highlighter-rouge">HorizontalScrollArrangement</code>.</dd>
   <dt id="HorizontalScrollArrangement.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Returns true iff the HorizontalScrollArrangement is visible.</dd>
+  <dd>Specifies whether the <code class="highlighter-rouge">HorizontalScrollArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">HorizontalScrollArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="HorizontalScrollArrangement.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the HorizontalScrollArrangement, measured in pixels.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">HorizontalScrollArrangement</code>, measured in pixels.</dd>
   <dt id="HorizontalScrollArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the HorizontalScrollArrangement as a percentage of the width of the Screen.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">HorizontalScrollArrangement</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
 </dl>
 
+<h3 id="HorizontalScrollArrangement-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="HorizontalScrollArrangement-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
 <h2 id="TableArrangement">TableArrangement</h2>
+
+<p>Use a table arrangement component to display a group of components in a tabular fashion.</p>
+
+<p>This component is a formatting element in which you place components that should be displayed
+ in tabular form.</p>
+
+<p>In a <code class="highlighter-rouge">TableArrangement</code>, components are arranged in a grid of rows and columns, with not more
+ than one component visible in each cell. <strong>If multiple components occupy the same cell, only the
+ last one will be visible.</strong></p>
+
+<p>Within each row, components are vertically center-aligned.</p>
+
+<p>The width of a column is determined by the widest component in that column. When calculating
+ column width, the automatic width is used for components whose <a href="#TableArrangement.Width"><code class="highlighter-rouge">Width</code></a> property is set
+ to <code class="highlighter-rouge">Fill Parent</code>. <strong>However, each component will always fill the full width of the column that it
+ occupies.</strong></p>
+
+<p>The height of a row is determined by the tallest component in that row whose <a href="#TableArrangement.Height"><code class="highlighter-rouge">Height</code></a>
+ property is not set to <code class="highlighter-rouge">Fill Parent</code>. If a row contains only components whose <a href="#TableArrangement.Height"><code class="highlighter-rouge">Height</code></a>
+ properties are set to <code class="highlighter-rouge">Fill Parent</code>, the height of the row is calculated using the automatic
+ heights of the components.</p>
 
 <h3 id="TableArrangement-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="TableArrangement.Columns" class="number do"><em>Columns</em></dt>
-  <dd>Columns property getter method.</dd>
+  <dd>Determines the number of columns in the table.</dd>
   <dt id="TableArrangement.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the vertical height of the TableArrangement, measured in pixels.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">TableArrangement</code>’s vertical height, measured in pixels.</dd>
   <dt id="TableArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the vertical height of the TableArrangement as a percentage of the height of the Screen.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">TableArrangement</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="TableArrangement.Rows" class="number do"><em>Rows</em></dt>
-  <dd>Rows property getter method.</dd>
+  <dd>Determines the number of rows in the table.</dd>
   <dt id="TableArrangement.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Returns true iff the TableArrangement is visible.</dd>
+  <dd>Specifies whether the <code class="highlighter-rouge">TableArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">TableArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="TableArrangement.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the TableArrangement, measured in pixels.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">TableArrangement</code>, measured in pixels.</dd>
   <dt id="TableArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the TableArrangement as a percentage of the width of the Screen.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">TableArrangement</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
 </dl>
 
+<h3 id="TableArrangement-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="TableArrangement-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
 <h2 id="VerticalArrangement">VerticalArrangement</h2>
+
+<p><img src="images/verticalarrangement.png" alt="VerticalArrangement icon" /></p>
+
+<p>Use a <code class="highlighter-rouge">VerticalArrangement</code> component to display a group of components laid out from top to
+ bottom, left-aligned.</p>
+
+<p>This component is a formatting element in which you place components that should be displayed
+ one below another. The first child component is stored on top, the second beneath it, and so on.
+ If you want to have components displayed next to one another, use <a href="#HorizontalArrangement"><code class="highlighter-rouge">HorizontalArrangement</code></a>
+ instead.</p>
+
+<p>In a <code class="highlighter-rouge">VerticalArrangement</code>, components are arranged along the vertical axis, left-aligned.</p>
+
+<p>If a <code class="highlighter-rouge">VerticalArrangement</code>’s <a href="#VerticalArrangement.Width"><code class="highlighter-rouge">Width</code></a> property is set to <code class="highlighter-rouge">Automatic</code>, the actual width
+ of the arrangement is determined by the widest component in the arrangement whose
+ <a href="#VerticalArrangement.Width"><code class="highlighter-rouge">Width</code></a> property is not set to <code class="highlighter-rouge">Fill Parent</code>. If a <code class="highlighter-rouge">VerticalArrangement</code>’s
+ <a href="#VerticalArrangement.Width"><code class="highlighter-rouge">Width</code></a> property is set to <code class="highlighter-rouge">Automatic</code> and it contains only components whose
+ <a href="#VerticalArrangement.Width"><code class="highlighter-rouge">Width</code></a> properties are set to <code class="highlighter-rouge">Fill Parent</code>, the actual width of the arrangement is
+ calculated using the automatic widths of the components. If a <code class="highlighter-rouge">VerticalArrangement</code>’s
+ <a href="#VerticalArrangement.Width"><code class="highlighter-rouge">Width</code></a> property is set to <code class="highlighter-rouge">Automatic</code> and it is empty, the width will be 100.</p>
+
+<p>If a <code class="highlighter-rouge">VerticalArrangement</code>’s <a href="#VerticalArrangement.Height"><code class="highlighter-rouge">Height</code></a> property is set to <code class="highlighter-rouge">Automatic</code>, the actual height
+ of the arrangement is determined by the sum of the heights of the components. <strong>If a
+ <code class="highlighter-rouge">VerticalArrangement</code>’s <a href="#VerticalArrangement.Height"><code class="highlighter-rouge">Height</code></a> property is set to <code class="highlighter-rouge">Automatic</code>, any components whose
+ <code class="highlighter-rouge">Height</code> properties are set to <code class="highlighter-rouge">Fill Parent</code> will behave as if they were set to <code class="highlighter-rouge">Automatic</code>.</strong></p>
+
+<p>If a <code class="highlighter-rouge">VerticalArrangement</code>’s <a href="#VerticalArrangement.Height"><code class="highlighter-rouge">Height</code></a> property is set to <code class="highlighter-rouge">Fill Parent</code> or specified in
+ pixels, any components whose Height properties are set to <code class="highlighter-rouge">Fill Parent</code> will equally take up the
+ height not occupied by other components.</p>
 
 <h3 id="VerticalArrangement-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="VerticalArrangement.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
-  <dd>A number that encodes how contents of the VerticalArrangement are aligned  horizontally. The choices are: 1 = left aligned, 2 = right aligned,  3 = horizontally centered.  Alignment has no effect if the arrangement’s width is automatic.</dd>
+  <dd>A number that encodes how contents of the <code class="highlighter-rouge">VerticalArrangement</code> are aligned horizontally. The choices
+ are: <code class="highlighter-rouge">1</code> = left aligned, <code class="highlighter-rouge">2</code> = right aligned, <code class="highlighter-rouge">3</code> = horizontally centered. Alignment has no
+ effect if the <code class="highlighter-rouge">VerticalArrangement</code>’s <a href="#VerticalArrangement.Width"><code class="highlighter-rouge">Width</code></a> is <code class="highlighter-rouge">Automatic</code>.</dd>
   <dt id="VerticalArrangement.AlignVertical" class="number"><em>AlignVertical</em></dt>
-  <dd>A number that encodes how the contents of the VerticalArrangement are aligned  vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.  Alignment has no effect if the arrangement’s height is automatic.</dd>
+  <dd>A number that encodes how the contents of the <code class="highlighter-rouge">VerticalArrangement</code> are aligned vertically. The choices
+ are: <code class="highlighter-rouge">1</code> = aligned at the top, <code class="highlighter-rouge">2</code> = aligned at the bottom, <code class="highlighter-rouge">3</code> = vertically centered.
+ Alignment has no effect if the <code class="highlighter-rouge">VerticalArrangement</code>’s <a href="#VerticalArrangement.Height"><code class="highlighter-rouge">Height</code></a> is <code class="highlighter-rouge">Automatic</code>.</dd>
   <dt id="VerticalArrangement.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
-  <dd>Returns the background color of the VerticalArrangement</dd>
+  <dd>Specifies the background color of the VerticalArrangement as an alpha-red-green-blue
+ integer.  If an Image has been set, the color change will not be visible
+ until the Image is removed.</dd>
   <dt id="VerticalArrangement.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the vertical height of the VerticalArrangement, measured in pixels.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">VerticalArrangement</code>’s vertical height, measured in pixels.</dd>
   <dt id="VerticalArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the vertical height of the VerticalArrangement as a percentage of the height of the Screen.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">VerticalArrangement</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="VerticalArrangement.Image" class="text"><em>Image</em></dt>
-  <dd>Returns the path of the background image of the VerticalArrangement.</dd>
+  <dd>Specifies the path of the background image of the <code class="highlighter-rouge">VerticalArrangement</code>.</dd>
   <dt id="VerticalArrangement.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Returns true iff the VerticalArrangement is visible.</dd>
+  <dd>Specifies whether the <code class="highlighter-rouge">VerticalArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">VerticalArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="VerticalArrangement.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the VerticalArrangement, measured in pixels.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">VerticalArrangement</code>, measured in pixels.</dd>
   <dt id="VerticalArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the VerticalArrangement as a percentage of the width of the Screen.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">VerticalArrangement</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
 </dl>
 
+<h3 id="VerticalArrangement-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="VerticalArrangement-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
 <h2 id="VerticalScrollArrangement">VerticalScrollArrangement</h2>
+
+<p>A formatting element in which to place components that should be displayed one below another.
+ (The first child component is stored on top, the second beneath it, etc.) If you wish to have
+ components displayed next to one another, use <a href="#HorizontalScrollArrangement"><code class="highlighter-rouge">HorizontalScrollArrangement</code></a> instead.</p>
+
+<p>This version is scrollable.</p>
 
 <h3 id="VerticalScrollArrangement-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="VerticalScrollArrangement.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
-  <dd>A number that encodes how contents of the VerticalScrollArrangement are aligned  horizontally. The choices are: 1 = left aligned, 2 = right aligned,  3 = horizontally centered.  Alignment has no effect if the arrangement’s width is automatic.</dd>
+  <dd>A number that encodes how contents of the <code class="highlighter-rouge">VerticalScrollArrangement</code> are aligned horizontally. The choices
+ are: <code class="highlighter-rouge">1</code> = left aligned, <code class="highlighter-rouge">2</code> = right aligned, <code class="highlighter-rouge">3</code> = horizontally centered. Alignment has no
+ effect if the <code class="highlighter-rouge">VerticalScrollArrangement</code>’s <a href="#VerticalScrollArrangement.Width"><code class="highlighter-rouge">Width</code></a> is <code class="highlighter-rouge">Automatic</code>.</dd>
   <dt id="VerticalScrollArrangement.AlignVertical" class="number"><em>AlignVertical</em></dt>
-  <dd>A number that encodes how the contents of the VerticalScrollArrangement are aligned  vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.  Alignment has no effect if the arrangement’s height is automatic.</dd>
+  <dd>A number that encodes how the contents of the <code class="highlighter-rouge">VerticalScrollArrangement</code> are aligned vertically. The choices
+ are: <code class="highlighter-rouge">1</code> = aligned at the top, <code class="highlighter-rouge">2</code> = aligned at the bottom, <code class="highlighter-rouge">3</code> = vertically centered.
+ Alignment has no effect if the <code class="highlighter-rouge">VerticalScrollArrangement</code>’s <a href="#VerticalScrollArrangement.Height"><code class="highlighter-rouge">Height</code></a> is <code class="highlighter-rouge">Automatic</code>.</dd>
   <dt id="VerticalScrollArrangement.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
-  <dd>Returns the background color of the VerticalScrollArrangement</dd>
+  <dd>Specifies the background color of the VerticalScrollArrangement as an alpha-red-green-blue
+ integer.  If an Image has been set, the color change will not be visible
+ until the Image is removed.</dd>
   <dt id="VerticalScrollArrangement.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the vertical height of the VerticalScrollArrangement, measured in pixels.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">VerticalScrollArrangement</code>’s vertical height, measured in pixels.</dd>
   <dt id="VerticalScrollArrangement.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the vertical height of the VerticalScrollArrangement as a percentage of the height of the Screen.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">VerticalScrollArrangement</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="VerticalScrollArrangement.Image" class="text"><em>Image</em></dt>
-  <dd>Returns the path of the background image of the VerticalScrollArrangement.</dd>
+  <dd>Specifies the path of the background image of the <code class="highlighter-rouge">VerticalScrollArrangement</code>.</dd>
   <dt id="VerticalScrollArrangement.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Returns true iff the VerticalScrollArrangement is visible.</dd>
+  <dd>Specifies whether the <code class="highlighter-rouge">VerticalScrollArrangement</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">VerticalScrollArrangement</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="VerticalScrollArrangement.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the VerticalScrollArrangement, measured in pixels.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">VerticalScrollArrangement</code>, measured in pixels.</dd>
   <dt id="VerticalScrollArrangement.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the VerticalScrollArrangement as a percentage of the width of the Screen.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">VerticalScrollArrangement</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
 </dl>
+
+<h3 id="VerticalScrollArrangement-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="VerticalScrollArrangement-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
 
 </article>
 <script>

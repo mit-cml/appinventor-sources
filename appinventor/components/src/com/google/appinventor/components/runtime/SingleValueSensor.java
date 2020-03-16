@@ -67,7 +67,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Available property getter method (read-only property).
+   * Specifies whether or not the device has the hardware to support the `%type%` component.
    *
    * @return {@code true} indicates that the sensor is available,
    *         {@code false} that it isn't
@@ -91,7 +91,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Specifies whether the sensor should generate events.  If true,
+   * Specifies whether the sensor should generate events.  If `true`{:.logic.block},
    * the sensor will generate events.  Otherwise, no events are
    * generated.
    *
@@ -108,6 +108,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   /**
    * RefreshTime property getter method.
    *
+   * @suppressdoc
    * @return time in ms between updates
    */
   @SimpleProperty(
@@ -121,6 +122,7 @@ public abstract class SingleValueSensor extends AndroidNonvisibleComponent
   /**
    * RefreshTime property setter method.
    *
+   * @suppressdoc
    * @param time in ms between updates
    */
   @DesignerProperty(

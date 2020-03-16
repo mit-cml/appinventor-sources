@@ -33,7 +33,11 @@ import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
 /**
- * Component enabling a user to select an image from the phone's gallery.
+ * A special-purpose button. When the user taps an `ImagePicker`, the device's image gallery
+ * appears, and the user can choose an image. After an image is picked, it is saved, and the
+ * {@link #Selection()} property will be the name of the file where the image is stored. In order
+ * to not fill up storage, a maximum of 10 images will be stored. Picking more images will delete
+ * previous images, in order from oldest to newest.
  *
  * @author halabelson@google.com (Hal Abelson)
  */

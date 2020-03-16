@@ -20,6 +20,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
@@ -42,7 +44,7 @@ public class DownloadServlet extends OdeServlet {
   // Constants for accessing split URI
   /*
    * Download kind can be: "project-output", "project-source",
-   * "all-projects-source", "file", or "userfile".
+   * "selected-projects-source", "all-projects-source", "file", or "userfile".
    * Constants for these are defined in ServerLayout.
    */
   private static final int DOWNLOAD_KIND_INDEX = 3;
@@ -164,14 +166,14 @@ public class DownloadServlet extends OdeServlet {
           projectName = storageIo.getProjectName(projectUserId, projectId);
         } catch (NumberFormatException e) {
           // assume we got a name instead
-          for (Long pid: storageIo.getProjects(projectUserId)) {
+          for (Long pid : storageIo.getProjects(projectUserId)) {
             if (storageIo.getProjectName(projectUserId, pid).equals(projectIdOrName)) {
               projectId = pid;
             }
           }
           if (projectId == 0) {
             // didn't find project by name
-            throw new IllegalArgumentException("Can't find a project named " 
+            throw new IllegalArgumentException("Can't find a project named "
                 + projectIdOrName + " for user id " + projectUserId);
           } else {
             projectName = projectIdOrName;
@@ -186,7 +188,15 @@ public class DownloadServlet extends OdeServlet {
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(projectUserId,
           projectId, /* include history*/ true, /* include keystore */ true, zipName, true, true, false, false);
         downloadableFile = zipFile.getRawFile();
-
+      } else if (downloadKind.equals(ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE)) {
+        String[] projectIdStrings = uriComponents[PROJECT_ID_INDEX].split("-");
+        List<Long> projectIds = new ArrayList<Long>();
+        for (String projectId : projectIdStrings) {
+          projectIds.add(Long.valueOf(projectId));
+        }
+        ProjectSourceZip zipFile = fileExporter.exportSelectedProjectsSourceZip(
+          userId, "selected-projects.zip", projectIds);
+        downloadableFile = zipFile.getRawFile();
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE)) {
         // Download all project source files as a zip of zips.
         ProjectSourceZip zipFile = fileExporter.exportAllProjectsSourceZip(
