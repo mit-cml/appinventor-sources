@@ -4,5 +4,6 @@
     "Blockly.Msg.UNDO": "元に戻す",
     "Blockly.Msg.ADD_COMMENT": "コメント追加",
     "Blockly.Msg.REMOVE_COMMENT": "コメント削除",
-    "Blockly.Msg.DUPLICATE_BLOCK": "複製"
+    "Blockly.Msg.DUPLICATE_BLOCK": "複製",
+    "Blockly.Msg.CONFIRM_DELETE": "本当にブロック削除していいですか？"
 }
