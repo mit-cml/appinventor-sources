@@ -89,7 +89,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     sortOrder = SortOrder.DESCENDING;
 
     // Initialize UI
-    table = new Grid(1, 5); // The table initially contains just the header row.
+    table = new Grid(3, 5); // The table initially contains just the header row.
     table.addStyleName("ode-ProjectTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
@@ -285,8 +285,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   public void refreshTable(boolean needToSort, boolean isInTrash) {
-    // TODO (SMRL): This is a first-pass refactor and probably not what
-    // we want the final to look like.
     if (needToSort) {
       // Sort the projects.
       Comparator<Project> comparator;
@@ -319,7 +317,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     refreshSortIndicators();
 
     // Refill the table.
-    table.resize(2, 5);
+    int previous_rowmax = table.getRowCount() - 1;
     int row = 0;
     for (Project project : projects) {
       if (project.isInTrash() == isInTrash) {
@@ -333,7 +331,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           pw.checkBox.setValue(false);
         }
         pw.checkBox.setName(String.valueOf(row));
-        table.insertRow(row + 1);
+        if (row >= previous_rowmax) {
+          table.insertRow(row + 1);
+        }
         table.setWidget(row, 0, pw.checkBox);
         table.setWidget(row, 1, pw.nameLabel);
         table.setWidget(row, 2, pw.dateCreatedLabel);
