@@ -1334,4 +1334,20 @@ public class YailEvalTest extends TestCase {
         asdict.get("list"));
     assertEquals(YailDictionary.makeDictionary("a", "b"), asdict.get("dictionary"));
   }
+
+  public void testDictToListCoercion() throws Throwable {
+    /* Tests that coercion to a list only coerces the top-level dictionary */
+    String schemeInputString = "(call-yail-primitive yail-list-get-item " +
+    "  (*list-for-runtime* (call-yail-primitive make-yail-dictionary " +
+    "    (*list-for-runtime* (call-yail-primitive make-dictionary-pair " +
+    "      (*list-for-runtime* " +
+    "        \"key\" " +
+    "        (call-yail-primitive make-yail-dictionary " +
+    "          (*list-for-runtime* ) '() \"make a dictionary\") ) " +
+    "      '(key any)  \"make a pair\") ) " +
+    "    '(pair ) \"make a dictionary\") " +
+    "  1) '(list number) \"select list item\")";
+    String schemeResultString = "(key {})";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
+  }
 }
