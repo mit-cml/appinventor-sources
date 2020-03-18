@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime.util;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -174,6 +175,99 @@ public class JavaStringUtilsTest {
 
     final String result = JavaStringUtils.replaceAllMappingsLongestStringOrder(text, mappings);
     final String expected = "a b y d";
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to verify that conflicting orders are treated properly
+   * upon replacing a string with mappings in longest string first order
+   * for which we have keys that share some part of a string.
+   */
+  @Test
+  public void testReplaceLongestStringFirstOrderTest() {
+    final String text = "that you were good";
+    Map<Object, Object> mappings = new LinkedHashMap<>();
+    mappings.put("you were", "I was");
+    mappings.put("you", "I");
+    mappings.put("at you", "at me");
+
+    final String result = JavaStringUtils.replaceAllMappingsLongestStringOrder(text, mappings);
+    final String expected = "that I was good";
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to verify that conflicting orders are treated properly
+   * upon replacing a string with mappings in dictionary order
+   * for which we have keys that share some part of a string.
+   */
+  @Test
+  public void testReplaceDictionaryOrderOrderTest() {
+    final String text = "abcdef";
+    Map<Object, Object> mappings = new LinkedHashMap<>();
+    mappings.put("cd", "g");
+    mappings.put("abc", "h");
+    mappings.put("ab", "i");
+    mappings.put("g", "x");
+
+    final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
+    final String expected = "igef";
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to verify that replacing mappings in an empty String
+   * with nothing to replace causes no issues.
+   */
+  @Test
+  public void testReplaceMappingsEmptyString() {
+    final String text = "";
+    Map<Object, Object> mappings = new LinkedHashMap<>();
+    mappings.put("x", "y");
+    mappings.put("a", "d");
+
+    final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
+    final String expected = "";
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to verify that replacing mappings in an empty String
+   * with a mapping that maps the empty String to some substring
+   * correctly replaces it.
+   */
+  @Test
+  public void testReplaceMappingsEmptyStringReplaced() {
+    final String text = "";
+    Map<Object, Object> mappings = new LinkedHashMap<>();
+    mappings.put("abc", "d");
+    mappings.put("", "abc");
+
+    final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
+    final String expected = "abc";
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to verify that replacing mappings in a non-empty
+   * String with a mapping that maps an empty string to some String
+   * replaces all gaps in the String.
+   *
+   * TODO: Is this expected behavior?
+   */
+  @Test
+  public void testReplaceMappingsEmptyStringMapping() {
+    final String text = "ax";
+    Map<Object, Object> mappings = new LinkedHashMap<>();
+    mappings.put("", "_");
+
+    final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
+    final String expected = "_a_x_";
 
     assertEquals(expected, result);
   }

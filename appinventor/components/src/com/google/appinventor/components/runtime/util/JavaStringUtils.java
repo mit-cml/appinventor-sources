@@ -14,8 +14,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.common.collect.Range;
+import com.google.common.collect.RangeSet;
+import com.google.common.collect.TreeRangeSet;
 
 /**
  * Java implementation of string utility methods for use in Scheme calls.
@@ -60,6 +65,11 @@ public class JavaStringUtils {
   /**
    * Changes the key order based on the earliest occurrences in the original
    * text string.
+   *
+   * TODO: If we do re-implement earliest occurrence at any time, it should
+   * TODO: probably take the regex order (so that the keys are replaced in
+   * TODO: order of actual occurrence variably) rather than the current
+   * TODO: static order implemented here.
    */
   private static class MappingEarliestOccurrenceFirstOrder extends MappingOrder {
     @Override
@@ -209,8 +219,6 @@ public class JavaStringUtils {
    * substring to replace, and the value is the value to replace the substring with.
    * An order parameter is specified to indicate the order of mapping applications.
    *
-   * TODO: Might be better to re-implement this in Scheme/Kawa in the future.
-   *
    * @param text     Text to apply mappings to
    * @param mappings Map containing mappings
    * @param order    Order to use for replacing mappings
@@ -247,15 +255,114 @@ public class JavaStringUtils {
     }
 
     // Change the order of the keys based on the given Order object
+    // TODO: If we have stream support, we can sort the stringMappings map
+    // TODO: directly provided we initialize it to a LinkedHashMap.
+    // TODO: It could save some memory in the long run.
     order.changeOrder(keys, text);
 
-    // Construct pattern from the constructed pattern string
-    // We will then create a matcher from the constructed pattern.
-    String patternString = buildUnionFromStrings(keys);
-    Pattern pattern = Pattern.compile(patternString);
-    Matcher matcher = pattern.matcher(text);
+    // Apply mappings owith re-ordered keys and mappings
+    return applyMappings(text, stringMappings, keys);
+  }
 
-    return applyMappings(matcher, stringMappings);
+  /**
+   * Auxiliary function to apply the mappings provided in the form of a map
+   * to the given text string. A supplementary keys list is provided to specify
+   * key order (the first element in the list is the first key to replace,
+   * the second is the second and so on).
+   *
+   * The method applies mappings by making use of a range set that keeps track of
+   * which indices have been replaced to avoid conflicts. Each key is traversed
+   * one by one, and the ranges of replacement are updated, provided that the
+   * range is not already overlapped/enclosed by other ranges. Finally, once
+   * we have all the ranges, the ranges are replaced in order of descending
+   * end point of the range so as to keep the previous range end points invariable
+   * (if we replace the largest end point, and there are no overlaps, no range
+   * will ever hit the start point of the last range, therefore all indices
+   * of the previous range remain unaffected)
+   *
+   * TODO: By optimizing the way strings are replaced (reducing substrings
+   * TODO: to use on smaller strings), we can achieve better runtime complexity
+   * TODO: on this end.
+   *
+   * @param text      Text to apply mappings to
+   * @param mappings  Mappings in the form {String -> String}
+   * @param keys      List of keys to replace (all values must exist in the mappings map)
+   * @return  String with the mappings applied
+   */
+  private static String applyMappings(String text, Map<String, String> mappings, List<String> keys) {
+    // Create a set of ranges to keep track of which index ranges in the
+    // original text string are already set for replacement.
+    RangeSet<Integer> ranges = TreeRangeSet.create();
+
+    // Map to map Range to String to replace with.
+    // E.g. [1, 3) -> 'abcd' indicates that the substring from 1 to 3 exclusive should
+    // be replaced with the string 'ab'.
+    // Note that the length of the string does not matter.
+    Map<Range<Integer>, String> replacements = new TreeMap<>(new Comparator<Range<Integer>>() {
+      @Override
+      public int compare(Range<Integer> r1, Range<Integer> r2) {
+        // Sort in descending order
+        return Integer.compare(r2.upperEndpoint(), r1.upperEndpoint());
+      }
+    });
+
+    // Range construction step: Iterate through all the keys,
+    // and fill in ranges set & replacements map.
+    for (String key : keys) {
+      // Convert key to pattern, and create a matcher to find all
+      // occurrences of the current string.
+      Pattern keyPattern = Pattern.compile(Pattern.quote(key));
+      Matcher matcher =  keyPattern.matcher(text);
+
+      // Keep track of the String to replace key with
+      String replacement = mappings.get(key);
+
+      // Iterate until the key can no longer be found in text.
+      while (matcher.find()) {
+        // Get start & end indices of the string to be replaced.
+        int startId = matcher.start();
+        int endId = matcher.end();
+
+        // Create a closed open range (closed since startId is inclusive,
+        // and open because endId is exclusive)
+        Range<Integer> range = Range.closedOpen(startId, endId);
+
+        // Check for overlap. If startId & (endId - 1) are already contained
+        // in our ranges, that means we overlap with the current ranges,
+        // and should not consider this range.
+        boolean inRange = ranges.contains(startId) || ranges.contains(endId - 1);
+
+        // No overlap; Update ranges set & replacements map
+        if (!inRange) {
+          ranges.add(range);
+          replacements.put(range, replacement);
+        }
+      }
+    }
+
+    // Go through each entry that we want to replace. Since we used
+    // a TreeMap, we have an order that will not break things;
+    // We first replace the substring with the largest end index, which,
+    // because of overlap, will not affect the previous range indices
+    // because no ranges overlap in our range set.
+    // If we did not have this order, then we would have to update all indices
+    // of all ranges upon replacement.
+    for (Map.Entry<Range<Integer>, String> replaceEntry : replacements.entrySet()) {
+      // Get range end points
+      int startId = replaceEntry.getKey().lowerEndpoint();
+      int endId = replaceEntry.getKey().upperEndpoint();
+
+      // Combine strings: L + M + R, where:
+      // L - substring from start of string until endpoint
+      // M - middle string (the one that we use as replacement)
+      // R - remainder of the string after replacement
+      String left = text.substring(0, startId);
+      String middle = replaceEntry.getValue();
+      String end = text.substring(endId);
+      text = left + middle + end;
+    }
+
+    return text;
   }
 
   /**
@@ -266,7 +373,7 @@ public class JavaStringUtils {
    * @param mappings String -> String mappings to replace from Key to Value
    * @return String with mappings applied
    */
-  private static String applyMappings(Matcher matcher, Map<String, String> mappings) {
+  /*private static String applyMappings(Matcher matcher, Map<String, String> mappings) {
     StringBuffer sb = new StringBuffer();
 
     // Iterate until no more regex matches exist
@@ -291,7 +398,7 @@ public class JavaStringUtils {
 
     // Return result of mappings applied
     return sb.toString();
-  }
+  }*/
 
   /**
    * Auxiliary function to build a String of keys combined via
@@ -301,7 +408,7 @@ public class JavaStringUtils {
    * @param keys  List of keys to union together
    * @return  Single Regex String of keys combined by unions
    */
-  private static String buildUnionFromStrings(List<String> keys) {
+  /*private static String buildUnionFromStrings(List<String> keys) {
     // We will construct a union regex pattern from the keys
     StringBuilder patternBuilder = new StringBuilder();
 
@@ -320,5 +427,5 @@ public class JavaStringUtils {
     }
 
     return patternBuilder.toString();
-  }
+  }*/
 }
