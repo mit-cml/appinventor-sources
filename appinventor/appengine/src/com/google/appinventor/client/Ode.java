@@ -244,7 +244,6 @@ public class Ode implements EntryPoint {
   private TopToolbar topToolbar;
   private VerticalPanel pVertPanel;
   private HorizontalPanel projectListPanel = new HorizontalPanel();
-  private HorizontalPanel projectListPane2= new HorizontalPanel();
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -1031,7 +1030,6 @@ public class Ode implements EntryPoint {
       };
     pVertPanel.setWidth("100%");
     pVertPanel.setSpacing(0);
-    projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
     projectToolbar = new ProjectToolbar();
     projectListPanel.add(ProjectListBox.getProjectListBox());

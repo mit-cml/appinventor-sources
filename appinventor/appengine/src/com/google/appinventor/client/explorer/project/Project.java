@@ -227,19 +227,19 @@ public final class Project {
 
   public void moveToTrash() {
     Tracking.trackEvent(Tracking.PROJECT_EVENT,
-            Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, getProjectName());
+        Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, getProjectName());
     Ode.getInstance().getProjectService().moveToTrash(getProjectId(),
-            new OdeAsyncCallback<UserProject>(
-                    // failure message
-                    MESSAGES.moveToTrashProjectError()) {
-                @Override
-                public void onSuccess(UserProject project) {
-                  if (project.getProjectId() == projectInfo.getProjectId()) {
-                    projectInfo.moveToTrash();
-                    Ode.getInstance().getProjectManager().trashProjecct(getProjectId());
-                  }
-                }
-              });
+        new OdeAsyncCallback<UserProject>(
+            // failure message
+            MESSAGES.moveToTrashProjectError()) {
+          @Override
+          public void onSuccess(UserProject project) {
+            if (project.getProjectId() == projectInfo.getProjectId()) {
+              projectInfo.moveToTrash();
+              Ode.getInstance().getProjectManager().trashProject(getProjectId());
+            }
+          }
+        });
   }
 
 

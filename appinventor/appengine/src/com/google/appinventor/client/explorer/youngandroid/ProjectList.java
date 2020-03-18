@@ -292,23 +292,23 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         default:
         case NAME:
           comparator = (sortOrder == SortOrder.ASCENDING)
-                  ? ProjectComparators.COMPARE_BY_NAME_ASCENDING
-                  : ProjectComparators.COMPARE_BY_NAME_DESCENDING;
+              ? ProjectComparators.COMPARE_BY_NAME_ASCENDING
+              : ProjectComparators.COMPARE_BY_NAME_DESCENDING;
           break;
         case DATE_CREATED:
           comparator = (sortOrder == SortOrder.ASCENDING)
-                  ? ProjectComparators.COMPARE_BY_DATE_CREATED_ASCENDING
-                  : ProjectComparators.COMPARE_BY_DATE_CREATED_DESCENDING;
+              ? ProjectComparators.COMPARE_BY_DATE_CREATED_ASCENDING
+              : ProjectComparators.COMPARE_BY_DATE_CREATED_DESCENDING;
           break;
         case DATE_MODIFIED:
           comparator = (sortOrder == SortOrder.ASCENDING)
-                  ? ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING
-                  : ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
+              ? ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING
+              : ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
           break;
         case PUBLISHED:
           comparator = (sortOrder == SortOrder.ASCENDING)
-                  ? ProjectComparators.COMPARE_BY_PUBLISHED_ASCENDING
-                  : ProjectComparators.COMPARE_BY_PUBLISHED_DESCENDING;
+              ? ProjectComparators.COMPARE_BY_PUBLISHED_ASCENDING
+              : ProjectComparators.COMPARE_BY_PUBLISHED_DESCENDING;
           break;
       }
       Collections.sort(projects, comparator);
@@ -318,6 +318,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
     // Refill the table.
     int previous_rowmax = table.getRowCount() - 1;
+    table.resizeRows(Integer.max(3, previous_rowmax + 1));
     int row = 0;
     for (Project project : projects) {
       if (project.isInTrash() == isInTrash) {
@@ -348,7 +349,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         }
       }
     }
-    table.resizeRows(row + 1);
+    table.resizeRows( row + 1);
 
     if (isInTrash && table.getRowCount() == 1) {
       Ode.getInstance().createEmptyTrashDialog(true);

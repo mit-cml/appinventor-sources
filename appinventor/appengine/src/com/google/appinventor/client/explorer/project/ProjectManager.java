@@ -110,7 +110,6 @@ public final class ProjectManager {
     return projectsMap.get(projectId);
   }
 
-
   /**
    * Adds a new project to this project manager.
    *
@@ -146,7 +145,7 @@ public final class ProjectManager {
     fireTrashProjectRestored(project);
   }
 
-  public void trashProjecct(long projectId) {
+  public void trashProject(long projectId) {
     Project project = projectsMap.get(projectId);
     fireProjectTrashed(project);
   }

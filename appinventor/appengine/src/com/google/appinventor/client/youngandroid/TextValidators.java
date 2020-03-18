@@ -63,8 +63,11 @@ public final class TextValidators {
 
     // Check that project does not already exist
     if (Ode.getInstance().getProjectManager().getProject(projectName) != null) {
-      Window.alert(MESSAGES.duplicateProjectNameError(projectName));
-      //       Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));  TODO: SMRL check for trash
+      if (Ode.getInstance().getProjectManager().getProject(projectName).isInTrash()) {
+        Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));
+      } else {
+        Window.alert(MESSAGES.duplicateProjectNameError(projectName));
+      }
       return false;
     }
 

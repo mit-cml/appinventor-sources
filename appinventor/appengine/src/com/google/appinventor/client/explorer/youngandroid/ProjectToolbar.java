@@ -105,14 +105,14 @@ public class ProjectToolbar extends Toolbar {
     }
   }
 
-  private class MoveToTrashAction implements Command {
+  private static class MoveToTrashAction implements Command {
     @Override
     public void execute() {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
         @Override
         public void execute() {
           List<Project> selectedProjects =
-                  ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
           if (selectedProjects.size() > 0) {
             // Show one confirmation window for selected projects.
             if (deleteConfirmation(selectedProjects)) {
@@ -130,32 +130,32 @@ public class ProjectToolbar extends Toolbar {
         }
       });
     }
-  }
 
-  private boolean deleteConfirmation(List<Project> projects) {
-    String message;
-    GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
-    if (projects.size() == 1) {
-      if (projects.get(0).isPublished()) {
-        message = MESSAGES.confirmDeleteSinglePublishedProjectWarning(projects.get(0).getProjectName());
+    private boolean deleteConfirmation(List<Project> projects) {
+      String message;
+      GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
+      if (projects.size() == 1) {
+        if (projects.get(0).isPublished()) {
+          message = MESSAGES.confirmDeleteSinglePublishedProjectWarning(projects.get(0).getProjectName());
+        } else {
+          message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
+        }
       } else {
-        message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
+        StringBuilder sb = new StringBuilder();
+        String separator = "";
+        for (Project project : projects) {
+          sb.append(separator).append(project.getProjectName());
+          separator = ", ";
+        }
+        String projectNames = sb.toString();
+        if (!gallerySettings.galleryEnabled()) {
+          message = MESSAGES.confirmMoveToTrash(projectNames);
+        } else {
+          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
+        }
       }
-    } else {
-      StringBuilder sb = new StringBuilder();
-      String separator = "";
-      for (Project project : projects) {
-        sb.append(separator).append(project.getProjectName());
-        separator = ", ";
-      }
-      String projectNames = sb.toString();
-      if (!gallerySettings.galleryEnabled()) {
-        message = MESSAGES.confirmMoveToTrash(projectNames);
-      } else {
-        message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
-      }
+      return Window.confirm(message);
     }
-    return Window.confirm(message);
   }
 
   //implementing trash method this method will show the Trash Tab
