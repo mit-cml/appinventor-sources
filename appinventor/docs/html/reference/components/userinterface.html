@@ -414,6 +414,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are <code class="highlighter-rouge">ScrollRightSlow</code>, <code class="highlighter-rouge">ScrollRight</code>, <code class="highlighter-rouge">ScrollRightFast</code>,
  <code class="highlighter-rouge">ScrollLeftSlow</code>, <code class="highlighter-rouge">ScrollLeft</code>, <code class="highlighter-rouge">ScrollLeftFast</code>, and <code class="highlighter-rouge">Stop</code>.</dd>
+  <dt id="Image.Clickable" class="boolean"><em>Clickable</em></dt>
+  <dd>Specifies whether the image should be clickable or not.</dd>
   <dt id="Image.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">Image</code>’s vertical height, measured in pixels.</dd>
   <dt id="Image.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
@@ -439,7 +441,10 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <h3 id="Image-Events">Events</h3>
 
-<p class="events">None</p>
+<dl class="events">
+  <dt id="Image.Click">Click()</dt>
+  <dd>An event that occurs when an image is clicked.</dd>
+</dl>
 
 <h3 id="Image-Methods">Methods</h3>
 
@@ -896,6 +901,13 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="Screen.OpenScreenAnimation" class="text"><em>OpenScreenAnimation</em></dt>
   <dd>The animation for switching to another screen. Valid options are <code class="highlighter-rouge">default</code>, <code class="highlighter-rouge">fade</code>, <code class="highlighter-rouge">zoom</code>,
  <code class="highlighter-rouge">slidehorizontal</code>, <code class="highlighter-rouge">slidevertical</code>, and <code class="highlighter-rouge">none</code>.</dd>
+  <dt id="Screen.Platform" class="text ro bo"><em>Platform</em></dt>
+  <dd>Gets the name of the underlying platform running the app. Currently, this is the text
+ “Android”. Other platforms may be supported in the future.</dd>
+  <dt id="Screen.PlatformVersion" class="text ro bo"><em>PlatformVersion</em></dt>
+  <dd>Gets the version number of the platform running the app. This is typically a dotted version
+ number, such as 10.0. Any value can be returned, however, so you should take care to handle
+ unexpected data. If the platform version is unavailable, the empty text will be returned.</dd>
   <dt id="Screen.PrimaryColor" class="color do"><em>PrimaryColor</em></dt>
   <dd>This is the primary color used as part of the Android theme, including coloring the <code class="highlighter-rouge">Screen</code>’s
  title bar.</dd>

@@ -1386,7 +1386,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // ExtendMovesOutsideCanvas was added
     // No blocks need to be modified to upgrade to version 12.
-    12: "noUpgrade"
+    12: "noUpgrade",
+
+    //  BackgroundImageinBase64 was added
+    // No blocks need to be modified to upgrade to version 13.
+    13: "noUpgrade"
 
   }, // End Canvas upgraders
 
@@ -1580,7 +1584,11 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // Scaling property was added (but not in use yet)
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // Click event was added
+    // The Clickable property was added.
+    4: "noUpgrade"
 
   }, // End Image upgraders
 
@@ -1802,7 +1810,13 @@ Blockly.Versioning.AllUpgradeMaps =
     27: "noUpgrade",
 
     // AI2: Added dictionaries
-    28: "noUpgrade"
+    28: "noUpgrade",
+
+    // AI2: Added "for each in dictionary" block.
+    29: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 30, The Reverse Text block was added
+    30: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -1921,7 +1935,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // - The FillOpacity and StrokeOpacity properties were added
     3: "noUpgrade"
   }, // End Marker upgraders
-  
+
   "Polygon": {
     // AI2:
     // - The FillOpacity and StrokeOpacity properties were added
@@ -2319,7 +2333,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERISON 26:
     // - ShowListsAsJson default value changed from False to True
-    26: "noUpgrade"
+    26: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 27:
+    // - Platform and PlatformVersion read-only blocks were added
+    27: "noUpgrade"
 
 
   }, // End Screen
@@ -2623,7 +2641,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added method XMLTextDecode
     4: "noUpgrade",
-      
+
     // AI2: Added method UriDecode
     5: "noUpgrade",
 

@@ -18,6 +18,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import android.Manifest;
@@ -158,26 +159,22 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Start() {
-      // Need to check if we have RECORD_AUDIO permission
+    // Need to check if we have RECORD_AUDIO and WRITE_EXTERNAL permissions
     if (!havePermission) {
       final SoundRecorder me = this;
       form.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            form.askPermission(Manifest.permission.RECORD_AUDIO,
-              new PermissionResultHandler() {
-                @Override
-                public void HandlePermissionResponse(String permission, boolean granted) {
-                  if (granted) {
-                    me.havePermission = true;
-                    me.Start();
-                  } else {
-                    form.dispatchPermissionDeniedEvent(me, "Start", Manifest.permission.RECORD_AUDIO);
-                  }
-                }
-              });
-          }
-        });
+        @Override
+        public void run() {
+          form.askPermission(new BulkPermissionRequest(me, "Start",
+                  Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+            @Override
+            public void onGranted() {
+              me.havePermission = true;
+              me.Start();
+            }
+          });
+        }
+      });
       return;
     }
 

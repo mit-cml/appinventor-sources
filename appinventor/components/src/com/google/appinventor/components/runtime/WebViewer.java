@@ -29,6 +29,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.CookieManager;
