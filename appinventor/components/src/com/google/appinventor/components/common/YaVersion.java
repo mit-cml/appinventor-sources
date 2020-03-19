@@ -501,8 +501,10 @@ public class YaVersion {
   // - CANVAS_COMPONENT_VERSION was incremented to 13
   // For YOUNG_ANDROID_VERSION 202:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 30
+  // For YOUNG_ANDROID_VERSION 203:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 9
 
-  public static final int YOUNG_ANDROID_VERSION = 202;
+  public static final int YOUNG_ANDROID_VERSION = 203;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1305,7 +1307,10 @@ public class YaVersion {
   // - Added WebViewStringChange event
   //For WEBVIEWER_COMPONENT_VERSION 8:
   // - Added PageLoaded event
-  public static final int WEBVIEWER_COMPONENT_VERSION = 8;
+  // For WEBVIEWER_COMPONENT_VERSION 9:
+  // - Added BeforePageLoad event
+  // - Added Stop, Reload, and ClearCookies methods
+  public static final int WEBVIEWER_COMPONENT_VERSION = 9;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.
