@@ -1872,6 +1872,21 @@
 (define (string-to-lower-case s)
   (String:toLowerCase (s:toString)))
 
+(define (unicode-string->list str :: <string>) :: <list>
+  (let loop ((result :: <list> '()) (i :: <int> (string-length str)))
+    (set! i (- i 1))
+    (if (< i 0) result
+        (if (and (>= i 1)
+              (let ((c (string-ref str i))
+                    (c1 (string-ref str (- i 1))))
+                (and (char>=? c #\xD800) (char<=? c #\xDFFF)
+                     (char>=? c1 #\xD800) (char<=? c1 #\xDFFF))))
+            (loop (make <pair> (string-ref str i) (make <pair> (string-ref str (- i 1)) result)) (- i 1))
+          (loop (make <pair> (string-ref str i) result) i)))))
+
+(define (string-reverse s)
+  (list->string (reverse (unicode-string->list s))))
+
 ;;; returns a string that is the number formatted with a
 ;;; specified number of decimal places
 (define (format-as-decimal number places)

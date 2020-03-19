@@ -497,3 +497,18 @@ Blockly.Blocks['text_is_string'] = {
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE}]
 };
+
+Blockly.Blocks['text_reverse'] = {
+  // String reverse.
+  category: 'Text',
+  helpUrl: Blockly.Msg.LANG_TEXT_REVERSE_HELPURL,
+  init: function () {
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('VALUE')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_TEXT_REVERSE_INPUT);
+    this.setTooltip(Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_REVERSE_INPUT}]
+};

@@ -386,10 +386,20 @@ Blockly.WarningHandler.prototype["checkIsNotInLoop"] = function(block) {
   }
 };
 
-Blockly_loopBlockTypes =
-  // add more later
-  ["controls_forEach", "controls_forRange", "controls_while"] ;
+// TODO: Maybe change this to a property of the block, instead of maintaining
+//   a list. Check how this interacts with extensions first.
+Blockly_loopBlockTypes = [
+    "controls_forEach",
+    "controls_for_each_dict",
+    "controls_forRange",
+    "controls_while"
+];
 
+// TODO: Maybe place this on an object. Options:
+//   - block.js
+//   - warningHandler.js
+//   - a utilities file.
+//  Check how blockly core handles this.
 Blockly_containedInLoop = function(block) {
   var enclosingBlock = block.getSurroundParent();
   if (enclosingBlock == null) {

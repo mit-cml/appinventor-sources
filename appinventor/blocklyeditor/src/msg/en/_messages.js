@@ -212,6 +212,17 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Runs the blocks in the \'do\'  section for each item in '
         + 'the list.  Use the given variable name to refer to the current list item.';
 
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL = '/reference/blocks/control.html#foreachdict';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT = 'for each %1 with %2 in dictionary %3';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO = 'do';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY = 'key';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE = 'value';
+    // Used by the typeblock system.
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE = 'for each in dictionary';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP =
+        'Runs the blocks in the \'do\' section for each key-value entry in the dictionary.'
+        + ' Use the given variable names to refer to the key/value of the current dictionary item.';
+
     Blockly.Msg.LANG_CONTROLS_GET_HELPURL = '/reference/blocks/control.html#get';
 
 
@@ -363,6 +374,14 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_MATH_NUMBER_HELPURL = '/reference/blocks/math.html#number';
     Blockly.Msg.LANG_MATH_NUMBER_TOOLTIP = 'Report the number shown.';
     Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER = 'number';
+
+    Blockly.Msg.LANG_MATH_DECIMAL_FORMAT = 'decimal';
+    Blockly.Msg.LANG_MATH_BINARY_FORMAT = 'binary';
+    Blockly.Msg.LANG_MATH_OCTAL_FORMAT = 'octal';
+    Blockly.Msg.LANG_MATH_HEXADECIMAL_FORMAT = 'hexadecimal';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_HELPURL = '/reference/blocks/math.html#number-radix';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TOOLTIP = 'Report the number shown in decimal (base-10) format.';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE = 'number radix';
 
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL = '';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_EQ = '/reference/blocks/math.html#=';
@@ -746,6 +765,10 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE = 'is a string?';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING = 'thing';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = 'Returns true if <code>thing</code> is a string.';
+
+    Blockly.Msg.LANG_TEXT_REVERSE_HELPURL = '/reference/blocks/text.html#reverse';
+    Blockly.Msg.LANG_TEXT_REVERSE_INPUT = 'reverse';
+    Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP = 'Reverse the given text.';
 
 // Lists Blocks.
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Lists';

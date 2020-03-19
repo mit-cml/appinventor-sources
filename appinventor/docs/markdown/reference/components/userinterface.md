@@ -367,6 +367,9 @@ Component for displaying images and basic animations.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
  `ScrollLeftSlow`, `ScrollLeft`, `ScrollLeftFast`, and `Stop`.
 
+{:id="Image.Clickable" .boolean} *Clickable*
+: Specifies whether the image should be clickable or not.
+
 {:id="Image.Height" .number .bo} *Height*
 : Specifies the `Image`'s vertical height, measured in pixels.
 
@@ -400,8 +403,9 @@ Component for displaying images and basic animations.
 ### Events  {#Image-Events}
 
 {:.events}
-None
 
+{:id="Image.Click"} Click()
+: An event that occurs when an image is clicked.
 
 ### Methods  {#Image-Methods}
 
@@ -977,6 +981,15 @@ Top-level component containing all other components in the program.
 {:id="Screen.OpenScreenAnimation" .text} *OpenScreenAnimation*
 : The animation for switching to another screen. Valid options are `default`, `fade`, `zoom`,
  `slidehorizontal`, `slidevertical`, and `none`.
+
+{:id="Screen.Platform" .text .ro .bo} *Platform*
+: Gets the name of the underlying platform running the app. Currently, this is the text
+ "Android". Other platforms may be supported in the future.
+
+{:id="Screen.PlatformVersion" .text .ro .bo} *PlatformVersion*
+: Gets the version number of the platform running the app. This is typically a dotted version
+ number, such as 10.0. Any value can be returned, however, so you should take care to handle
+ unexpected data. If the platform version is unavailable, the empty text will be returned.
 
 {:id="Screen.PrimaryColor" .color .do} *PrimaryColor*
 : This is the primary color used as part of the Android theme, including coloring the `Screen`'s
