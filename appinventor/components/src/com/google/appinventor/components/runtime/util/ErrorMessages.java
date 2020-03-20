@@ -270,10 +270,12 @@ public final class ErrorMessages {
   public static final int ERROR_SPEECH_TIMEOUT = 3809;
 
   // Navigation Errors
-  public static final int ERROR_INVALID_API_KEY = 3901;
-  public static final int ERROR_UNABLE_TO_REQUEST_DIRECTIONS = 3902;
-  public static final int ERROR_ROUTING_SERVICE_ERROR = 3903;
-  public static final int ERROR_NO_ROUTE_FOUND = 3904;
+  public static final int ERROR_INVALID_API_KEY = 4001;
+  public static final int ERROR_UNABLE_TO_REQUEST_DIRECTIONS = 4002;
+  public static final int ERROR_ROUTING_SERVICE_ERROR = 4003;
+  public static final int ERROR_NO_ROUTE_FOUND = 4004;
+
+  // Start the next group of errors at 4100
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
