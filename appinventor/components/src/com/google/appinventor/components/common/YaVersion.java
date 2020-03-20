@@ -677,7 +677,9 @@ public class YaVersion {
   // - The BluetoothClient.DelimiterByte property was added.
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 5:
   // - The BluetoothClient.Secure property was added.
-  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 5;
+  // For BLUETOOTHCLIENT_COMPONENT_VERSION 6:
+  // - The BluetoothClient.DisconnectOnError property was added.
+  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 6;
 
   // For BLUETOOTHSERVER_COMPONENT_VERSION 2:
   // - The BluetoothServer.Enabled property was added.

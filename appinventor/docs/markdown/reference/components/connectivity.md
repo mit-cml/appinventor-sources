@@ -140,6 +140,9 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
  numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
  ReceiveUnsignedBytes.
 
+{:id="BluetoothClient.DisconnectOnError" .boolean} *DisconnectOnError*
+: Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.
+
 {:id="BluetoothClient.Enabled" .boolean .ro .bo} *Enabled*
 : Returns `true`{:.logic.block} if Bluetooth is enabled, `false`{:.logic.block} otherwise.
 
