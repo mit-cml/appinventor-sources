@@ -249,8 +249,6 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       var newArguments = procDecl.arguments_;
       newArguments[paramIndex] = newParamName;
 
-      var procName = procDecl.getFieldValue('NAME');
-
       // 1. Change all callers so label reflects new name
       Blockly.Procedures.mutateCallers(procDecl);
 
