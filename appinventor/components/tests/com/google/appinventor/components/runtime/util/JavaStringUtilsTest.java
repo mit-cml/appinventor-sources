@@ -257,8 +257,6 @@ public class JavaStringUtilsTest {
    * Test case to verify that replacing mappings in a non-empty
    * String with a mapping that maps an empty string to some String
    * replaces all gaps in the String.
-   *
-   * TODO: Is this expected behavior?
    */
   @Test
   public void testReplaceMappingsEmptyStringMapping() {
