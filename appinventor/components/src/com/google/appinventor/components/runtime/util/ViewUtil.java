@@ -6,6 +6,9 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.ComponentContainer;
+
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
@@ -15,14 +18,13 @@ import android.widget.LinearLayout;
 import android.widget.TableRow;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
-import com.google.appinventor.components.runtime.Component;
-import com.google.appinventor.components.runtime.ComponentContainer;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
  * Helper methods for manipulating {@link View} objects.
+ *
  */
 public final class ViewUtil {
 
@@ -33,8 +35,7 @@ public final class ViewUtil {
    * Calculate the device dependent pixels to render this view. The size in the designer is given
    * in Density Independent Pixels, and we need to transform that to real pixels depending on the
    * device running the app. The formula is simple: "pixel_size * density".
-   *
-   * @param view     the view is needed to grab the Context object
+   * @param view the view is needed to grab the Context object
    * @param sizeInDP the size (in DP) specified in the designer
    * @return size in Pixels for the particular device running the app.
    */
