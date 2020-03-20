@@ -19,7 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
 
 /**
@@ -292,7 +291,7 @@ public class JavaStringUtils {
   private static String applyMappings(String text, Map<String, String> mappings, List<String> keys) {
     // Create a set of ranges to keep track of which index ranges in the
     // original text string are already set for replacement.
-    RangeSet<Integer> ranges = TreeRangeSet.create();
+    TreeRangeSet<Integer> ranges = TreeRangeSet.create();
 
     // Map to map Range to String to replace with.
     // E.g. [1, 3) -> 'abcd' indicates that the substring from 1 to 3 exclusive should
