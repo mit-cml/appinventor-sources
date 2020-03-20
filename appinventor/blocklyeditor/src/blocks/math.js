@@ -28,11 +28,23 @@ Blockly.Blocks['math_number'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER}]
 };
 
+/**
+ * Ensures that only a number may be entered into the text field. Supports
+ * decimal, binary, octal, and hex.
+ * @param {string} text The text to check the validity of.
+ * @return {string} Validated text.
+ */
 Blockly.Blocks.math_number.validator = function (text) {
-  // Ensure that only a number may be entered.
   // TODO: Handle cases like 'o', 'ten', '1,234', '3,14', etc.
-  var n = window.parseFloat(text || 0);
-  return window.isNaN(n) ? null : String(n);
+  var n = Number(text || 0);  // Number() supports binary, hex, etc.
+  if (window.isNaN(n)) {
+    // Fall back to old method. This is just UI-Behavior that doesn't affect
+    // the generated code, but we might as well keep it the same.
+    n = window.parseFloat(text || 0);
+    return window.isNaN(n) ? null : String(n);
+  }
+  // Don't convert n to string, because that always returns decimal.
+  return text;
 };
 
 Blockly.Blocks['math_compare'] = {

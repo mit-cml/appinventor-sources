@@ -79,7 +79,12 @@ convert radians to degrees, convert degrees to radians
 
 ![](images/math/number.png)
 
-Can be used as any positive or negative number (decimals included). Clicking on the "0" in the block will allow you to change the number.
+Can be used as any positive or negative number. Clicking on the "0" in the block will allow you to change the number.
+
+The block supports normal base-10 numbers (for example: 2, 12, and 2.12), as well as C-like prefixes for other number bases. It supports:
+* Base-2 (binary) numbers, e.g. 0b10 (decimal 2)
+* Base-8 (octal) numbers, e.g. 0o14 (decimal 12)
+* Base-16 (hexadecimal) numbers, e.g. 0xd4 (decimal 212)
 
 ### =   {#=}
 

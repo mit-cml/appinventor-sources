@@ -12,8 +12,9 @@
 goog.provide('Blockly.Yail.math');
 
 Blockly.Yail['math_number'] = function() {
-  // Numeric value.
-  var code = window.parseFloat(this.getFieldValue('NUM'));
+  // Use Number() instead of parseFloat because it automatically
+  // converts hex, binary, and octal to decimal.
+  var code = Number(this.getFieldValue('NUM'));
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 
