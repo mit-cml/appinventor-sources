@@ -1815,8 +1815,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added "for each in dictionary" block.
     29: "noUpgrade",
 
+    // AI2: In BLOCKS_LANGUAGE_VERSION 30, The Reverse Text block was added
+    30: "noUpgrade",
+
     // AI2: Added "replace all mappings" block
-    30: "noUpgrade"
+    31: "noUpgrade"
 
   }, // End Language upgraders
 

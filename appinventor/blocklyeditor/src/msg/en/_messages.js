@@ -775,6 +775,9 @@ Blockly.Msg.en.switch_language_to_english = {
         + 'In case of a choice between replacing one key or the other, the element that occurs first \n'
         + 'in the dictionary is replaced first.';
 
+    Blockly.Msg.LANG_TEXT_REVERSE_HELPURL = '/reference/blocks/text.html#reverse';
+    Blockly.Msg.LANG_TEXT_REVERSE_INPUT = 'reverse';
+    Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP = 'Reverse the given text.';
 
 // Lists Blocks.
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Lists';
