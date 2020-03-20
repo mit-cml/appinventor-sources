@@ -381,6 +381,10 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
             GotDirections(directions, coordinates, distance, duration);
           }
         });
+      } else {
+        // No response
+        form.dispatchErrorOccurredEvent(this, "RequestDirections",
+            ErrorMessages.ERROR_NO_ROUTE_FOUND);
       }
     } catch (Exception e) {
       form.dispatchErrorOccurredEvent(this, "RequestDirections",
