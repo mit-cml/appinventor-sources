@@ -524,6 +524,12 @@ public interface Images extends Resources {
   ImageResource lists();
 
   /**
+   * Built in drawer item: dictionaries
+   */
+  @Source("com/google/appinventor/images/dictionaries.png")
+  ImageResource dictionaries();
+
+  /**
    * Built in drawer item: colors
    */
   @Source("com/google/appinventor/images/colors.png")
@@ -619,6 +625,12 @@ public interface Images extends Resources {
   ImageResource rectangle();
 
   /**
+   * Codi Logo
+   */
+   @Source("com/google/appinventor/images/logo.png")
+   ImageResource logo();
+
+  /**
    * Media icon: image
    */
   @Source("com/google/appinventor/images/mediaIcon_img.png")
@@ -636,4 +648,27 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/mediaIcon_video.png")
   ImageResource mediaIconVideo();
 
+  /**
+   * Designer palette item:
+   */
+  @Source("com/google/appinventor/images/navigation.png")
+  ImageResource navigationComponent();
+
+  /**
+  * Wilson Logo 
+  */
+  @Source("com/google/appinventor/images/wilson.png")
+  ImageResource wilson();
+
+  /**
+  * Talk to Me Logo
+  */
+  @Source("com/google/appinventor/images/talkToMeLogo.png")
+  ImageResource talkToMeLogo();
+
+  /**
+  * YR Media Logo
+  */
+  @Source("com/google/appinventor/images/YRLogo.png")
+  ImageResource YRLogo();
 }

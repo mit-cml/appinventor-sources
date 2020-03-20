@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.http.SslError;
 import android.view.Display;
@@ -16,6 +17,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.EventDispatcher;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.Player;
 
@@ -140,6 +142,16 @@ public class FroyoUtil {
           form.dispatchErrorOccurredEvent(component, "WebView",
             ErrorMessages.ERROR_WEBVIEW_SSL_ERROR);
         }
+      }
+
+      @Override
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        EventDispatcher.dispatchEvent(component, "BeforePageLoad", url);
+      }
+
+      @Override
+      public void onPageFinished(WebView view, String url) {
+        EventDispatcher.dispatchEvent(component, "PageLoaded", url);
       }
     };
   }

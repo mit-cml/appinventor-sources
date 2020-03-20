@@ -18,6 +18,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import android.Manifest;
@@ -30,8 +31,9 @@ import android.util.Log;
 import java.io.IOException;
 
 /**
- * Multimedia component that records audio using
- * {@link android.media.MediaRecorder}.
+ * ![SoundRecorder icon](images/soundrecorder.png)
+ *
+ * Multimedia component that records audio.
  *
  */
 @DesignerComponent(version = YaVersion.SOUND_RECORDER_COMPONENT_VERSION,
@@ -121,13 +123,16 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
 
 
   /**
-   * Returns the path to the saved recording
+   * Specifies the path to the file where the recording should be stored. If this property is the
+   * empty string, then starting a recording will create a file in an appropriate location. If the
+   * property is not the empty string, it should specify a complete path to a file in an existing
+   * directory, including a file name with the extension .3gp.
    *
    * @return  savedRecording path to recording
    */
   @SimpleProperty(
       description = "Specifies the path to the file where the recording should be stored. " +
-          "If this proprety is the empty string, then starting a recording will create a file in " +
+          "If this property is the empty string, then starting a recording will create a file in " +
           "an appropriate location.  If the property is not the empty string, it should specify " +
           "a complete path to a file in an existing directory, including a file name with the " +
           "extension .3gp." ,
@@ -139,6 +144,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
   /**
    * Specifies the path to the saved recording displayed by the label.
    *
+   * @suppressdoc
    * @param pathName  path to saved recording
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
@@ -153,26 +159,22 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Start() {
-      // Need to check if we have RECORD_AUDIO permission
+    // Need to check if we have RECORD_AUDIO and WRITE_EXTERNAL permissions
     if (!havePermission) {
       final SoundRecorder me = this;
       form.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            form.askPermission(Manifest.permission.RECORD_AUDIO,
-              new PermissionResultHandler() {
-                @Override
-                public void HandlePermissionResponse(String permission, boolean granted) {
-                  if (granted) {
-                    me.havePermission = true;
-                    me.Start();
-                  } else {
-                    form.dispatchPermissionDeniedEvent(me, "Start", Manifest.permission.RECORD_AUDIO);
-                  }
-                }
-              });
-          }
-        });
+        @Override
+        public void run() {
+          form.askPermission(new BulkPermissionRequest(me, "Start",
+                  Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+            @Override
+            public void onGranted() {
+              me.havePermission = true;
+              me.Start();
+            }
+          });
+        }
+      });
       return;
     }
 

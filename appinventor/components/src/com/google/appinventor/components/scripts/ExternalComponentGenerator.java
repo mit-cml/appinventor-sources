@@ -371,6 +371,9 @@ public class ExternalComponentGenerator {
    * {@code extensionPackage}, {@code false} otherwise
    */
   private static boolean isRelatedExternalClass(final String testClassAbsolutePath, final String extensionPackage ) {
+    if (!testClassAbsolutePath.endsWith(".class")) {  // Ignore things that aren't class files...
+      return false;
+    }
     String componentPackagePath = extensionPackage.replace(".", File.separator);
 
     String testClassPath = getClassPackage(testClassAbsolutePath);

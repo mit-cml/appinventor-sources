@@ -76,7 +76,9 @@ public final class BlockSelectorBox extends Box {
   // Starts out not visible. call setVisible(true) to make it visible
   private static final BlockSelectorBox INSTANCE = new BlockSelectorBox();
 
-  private static final Set<String> BUILTIN_DRAWER_NAMES = new HashSet<String>(Arrays.asList("Control", "Logic", "Math", "Text", "Lists", "Colors", "Variables", "Procedures"));
+  private static final Set<String> BUILTIN_DRAWER_NAMES = new HashSet<String>(
+      Arrays.asList("Control", "Logic", "Math", "Text", "Lists", "Dictionaries", "Colors",
+          "Variables", "Procedures"));
 
   private static final Images images = Ode.getImageBundle();
   private static final Map<String, ImageResource> bundledImages = Maps.newHashMap();
@@ -138,6 +140,7 @@ public final class BlockSelectorBox extends Box {
     bundledImages.put("Colors", images.colors());
     bundledImages.put("Variables", images.variables());
     bundledImages.put("Procedures", images.procedures());
+    bundledImages.put("Dictionaries", images.dictionaries());
   }
 
   /**
@@ -199,6 +202,8 @@ public final class BlockSelectorBox extends Box {
        name = MESSAGES.builtinVariablesLabel();
     } else if (drawerName.equals("Procedures")) {
        name = MESSAGES.builtinProceduresLabel();
+    } else if (drawerName.equals("Dictionaries")) {
+       name = MESSAGES.builtinDictionariesLabel();
     } else {
        name = drawerName;
     }

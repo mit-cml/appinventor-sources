@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -45,6 +45,7 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -94,9 +95,12 @@ import java.util.Set;
 
 
 /**
+ * Top-level component containing all other components in the program.
+ *
+ * @internaldoc
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
  *
- * <p>This is the root container of any Android activity and also the
+ * This is the root container of any Android activity and also the
  * superclass for Simple/Android UI applications.
  *
  * The main form is always named "Screen1".
@@ -109,7 +113,7 @@ import java.util.Set;
  */
 
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
-    category = ComponentCategory.LAYOUT,
+    category = ComponentCategory.USERINTERFACE,
     description = "Top-level component containing all other components in the program",
     androidMinSdk = 7,
     showOnPalette = false)
@@ -439,7 +443,6 @@ public class Form extends AppInventorCompatActivity
     }
     Scrollable(false);       // frameLayout is created in Scrollable()
     Sizing("Responsive");    // Note: Only the Screen1 value is used as this is per-project
-    BackgroundImage("");
     AboutScreen("");
     BackgroundImage("");
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
@@ -557,22 +560,14 @@ public class Form extends AppInventorCompatActivity
 
   /*
    * Here we override the hardware back button, just to make sure
-   * that the closing screen animation is applied. (In API level
-   * 5, we can simply override the onBackPressed method rather
-   * than bothering with onKeyDown)
+   * that the closing screen animation is applied.
    */
   @Override
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK) {
-      if (!BackPressed()) {
-        boolean handled = super.onKeyDown(keyCode, event);
-        AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
-        return handled;
-      } else {
-        return true;
-      }
+  public void onBackPressed() {
+    if (!BackPressed()) {
+      AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
     }
-    return super.onKeyDown(keyCode, event);
+    super.onBackPressed();
   }
 
   @SimpleEvent(description = "Device back button pressed.")
@@ -625,7 +620,7 @@ public class Form extends AppInventorCompatActivity
     Log.i(LOG_TAG, "decodeJSONStringForForm -- decoding JSON representation:" + jsonString);
     Object valueFromJSON = "";
     try {
-      valueFromJSON = JsonUtil.getObjectFromJson(jsonString);
+      valueFromJSON = JsonUtil.getObjectFromJson(jsonString, true);
       Log.i(LOG_TAG, "decodeJSONStringForForm -- got decoded JSON:" + valueFromJSON.toString());
     } catch (JSONException e) {
       activeForm.dispatchErrorOccurredEvent(activeForm, functionName,
@@ -889,10 +884,8 @@ public class Form extends AppInventorCompatActivity
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * Initialize event handler.
-   */
-  @SimpleEvent(description = "Screen starting")
+  @SimpleEvent(description = "The Initialize event is run when the Screen starts and is only run "
+      + "once per screen.")
   public void Initialize() {
     // Dispatch the Initialize event only after the screen's width and height are no longer zero.
     androidUIHandler.post(new Runnable() {
@@ -926,9 +919,6 @@ public class Form extends AppInventorCompatActivity
     EventDispatcher.dispatchEvent(this, "ScreenOrientationChanged");
   }
 
-  /**
-   * ErrorOccurred event handler.
-   */
   @SimpleEvent(
       description = "Event raised when an error occurs. Only some errors will " +
       "raise this condition.  For those errors, the system will show a notification " +
@@ -1069,11 +1059,13 @@ public class Form extends AppInventorCompatActivity
 
   /**
    * Event to handle when the app user has granted a needed permission. This event is only run when permission is
-   * granted in response to the AskForPermission method.
+   * granted in response to the {@link #AskForPermission(String)} method.
    *
    * @param permissionName The name of the permission that was granted by the user.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Event to handle when the app user has granted a needed permission. "
+      + "This event is only run when permission is granted in response to the AskForPermission "
+      + "method.")
   public void PermissionGranted(String permissionName) {
     if (permissionName.startsWith("android.permission.")) {
       // Forward compatibility with iOS so that we don't have to pass around Android-specific names
@@ -1083,10 +1075,20 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * Ask the user to grant access to a dangerous permission.
+   * Ask the user to grant access to a sensitive permission, such as `ACCESS_FINE_LOCATION`. This
+   * block is typically used as part of a {@link #PermissionDenied(Component, String, String)}
+   * event to ask for permission. If the user grants permission, the
+   * {@link #PermissionGranted(String)} event will be run. If the user denies permission, the
+   * {@link #PermissionDenied(Component, String, String)} event will be run.
+   *
+   *   **Note:** It is a best practice to only ask for permissions at the time they are needed,
+   * which App Inventor components will do when necessary. You should not use `AskForPermission`
+   * in your {@link #Initialize()} event unless access to that permission is critical to the
+   * behavior of your app and is needed up front, such as location services for a navigation app.
+   *
    * @param permissionName The name of the permission to request from the user.
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Ask the user to grant access to a dangerous permission.")
   public void AskForPermission(String permissionName) {
     if (!permissionName.contains(".")) {
       permissionName = "android.permission." + permissionName;
@@ -1118,7 +1120,9 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * Scrollable property setter method.
+   * When checked, there will be a vertical scrollbar on the screen, and the height of the
+   * application can exceed the physical height of the device. When unchecked, the application
+   * height is constrained to the height of the device.
    *
    * @param scrollable  true if the screen should be vertically scrollable
    */
@@ -1211,12 +1215,15 @@ public class Form extends AppInventorCompatActivity
    * @return  background RGB color with alpha
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
 
   /**
-   * BackgroundColor property setter method.
+   * Specifies the `%type%`'s background color as an alpha-red-green-blue
+   * integer.  If an {@link #BackgroundImage(String)} has been set, the color
+   * change will not be visible until the {@link #BackgroundImage(String)} is removed.
    *
    * @param argb  background RGB color with alpha
    */
@@ -1248,9 +1255,11 @@ public class Form extends AppInventorCompatActivity
 
 
   /**
-   * Specifies the path of the background image.
+   * Specifies the path of the `%type%`'s background image. If there is both an `BackgroundImage`
+   * and a {@link #BackgroundColor()} specified, only the `BackgroundImage` will be visible.
    *
-   * <p/>See {@link MediaUtil#determineMediaSource} for information about what
+   * @internaldoc
+   * See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
    * @param path the path of the background image
@@ -1316,8 +1325,9 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * AboutScreen property setter method: sets a new aboutApp string for the form in the
-   * form's "About this application" menu.
+   * Information about the screen. It appears when "About this Application" is selected from the
+   * system menu. Use it to tell users about your app. In multiple screen apps, each screen has its
+   * own `AboutScreen` info.
    *
    * @param aboutScreen content to be displayed in aboutApp
    */
@@ -1340,7 +1350,8 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * TitleVisible property setter method.
+   * The title bar is the top gray bar on the screen. This property reports whether the title bar
+   * is visible.
    *
    * @param show boolean
    */
@@ -1370,7 +1381,8 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * ShowStatusBar property setter method.
+   * The status bar is the topmost bar on the screen. This property reports whether the status bar
+   * is visible.
    *
    * @param show boolean
    */
@@ -1438,8 +1450,10 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * ScreenOrientation property setter method: sets the screen orientation for
-   * the form.
+   * Declares the requested screen orientation, specified as a text value. Commonly used values are
+   * `landscape`, `portrait`, `sensor`, `user` and `unspecified`. See the Android developer
+   * documentation for the complete list of possible
+   * [options](https://developer.android.com/reference/android/R.attr.html#screenOrientation).
    *
    * @param screenOrientation  the screen orientation as a string
    */
@@ -1523,6 +1537,10 @@ public class Form extends AppInventorCompatActivity
  }
 
  /**
+  * A number that encodes how contents of the screen are aligned horizontally. The choices are:
+  * `1` (left aligned), `2` (horizontally centered), `3` (right aligned).
+  *
+  * @internaldoc
   * Sets the horizontal alignment for contents of the screen
   *
   * @param alignment
@@ -1557,6 +1575,11 @@ public class Form extends AppInventorCompatActivity
  }
 
  /**
+  * A number that encodes how the contents of the arrangement are aligned vertically. The choices
+  * are: `1` (aligned at the top), `2` (vertically centered), `3` (aligned at the bottom). Vertical
+  * alignment has no effect if the screen is scrollable.
+  *
+  * @internaldoc
   * Sets the vertical alignment for contents of the screen
   *
   * @param alignment
@@ -1590,7 +1613,8 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * Sets the animation type for the transition to another screen.
+   * The animation for switching to another screen. Valid options are `default`, `fade`, `zoom`,
+   * `slidehorizontal`, `slidevertical`, and `none`.
    *
    * @param animType the type of animation to use for the transition
    */
@@ -1609,8 +1633,8 @@ public class Form extends AppInventorCompatActivity
   }
 
  /**
-  * Returns the type of close screen animation (default, fade, zoom, slidehorizontal,
-  * slidevertical and none).
+  * The animation for closing current screen and returning to the previous screen. Valid options
+  * are `default`, `fade`, `zoom`, `slidehorizontal`, `slidevertical`, and `none`.
   *
   * @return open screen animation
   */
@@ -1651,7 +1675,9 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * Specifies the name of the application icon.
+   * The image used for your App's display icon should be a square png or jpeg image with dimensions
+   * up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
+   * The build server will generate images of standard dimensions for Android devices.
    *
    * @param name the name of the application icon
    */
@@ -1663,7 +1689,8 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * Specifies the Version Code.
+   * An integer value which must be incremented each time a new Android Application Package File
+   * (APK) is created for the Google Play Store.
    *
    * @param vCode the version name of the application
    */
@@ -1677,7 +1704,8 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * Specifies the Version Name.
+   * A string which can be changed to allow Google Play Store users to distinguish between
+   * different versions of the App.
    *
    * @param vName the version name of the application
    */
@@ -1691,9 +1719,13 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * Sizing Property Setter
+   * If set to responsive (the default), screen layouts will use the actual resolution of the
+   * device. See the [documentation on responsive design](../other/responsiveDesign.html) in App
+   * Inventor for more information.
+   * If set to fixed, screen layouts will be created for a single fixed-size screen and autoscaled.
    *
-   * @param
+   *   **Note:** This property appears on Screen1 only and controls the sizing for all screens in
+   * the app.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
       defaultValue = "Responsive", alwaysSend = true)
@@ -1756,14 +1788,22 @@ public class Form extends AppInventorCompatActivity
     showListsAsJson = asJson;
   }
 
-
+  /**
+   * If `true`{:.logic.block} (the default), lists will be shown as strings in JSON/Python notation
+   * for example [1, "a", true]. If `false`{:.logic.block}, lists will be shown in the LISP
+   * notation, for example (1 a true).
+   *
+   *   **Note:** This property appears only in Screen1 and the value for Screen1 determines the
+   * behavior for all screens in the app.
+   */
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
   public boolean ShowListsAsJson() {
     return showListsAsJson;
   }
 
   /**
-   * Specifies the App Name.
+   * This is the display name of the installed application in the phone. If the `AppName` is blank,
+   * it will be set to the name of the project when the project is built.
    *
    * @param aName the display name of the installed application in the phone
    */
@@ -1784,7 +1824,12 @@ public class Form extends AppInventorCompatActivity
     setPrimaryColor(color);
   }
 
-  @SimpleProperty()
+  /**
+   * This is the primary color used as part of the Android theme, including coloring the `%type%`'s
+   * title bar.
+   */
+  @SimpleProperty
+  @IsColor
   public int PrimaryColor() {
     return primaryColor;
   }
@@ -1797,7 +1842,12 @@ public class Form extends AppInventorCompatActivity
     primaryColorDark = color;
   }
 
+  /**
+   * This is the primary color used when the Theme property is specified to be Dark. It applies to
+   * a number of elements, including the `%type%`'s title bar.
+   */
   @SimpleProperty()
+  @IsColor
   public int PrimaryColorDark() {
     return primaryColorDark;
   }
@@ -1810,11 +1860,28 @@ public class Form extends AppInventorCompatActivity
     accentColor = color;
   }
 
-  @SimpleProperty()
+  /**
+   * This is the accent color used for highlights and other user interface accents in newer
+   * versions of Android. Components affected by this property include dialogs created by the
+   * {@link Notifier}, the {@link DatePicker}, and others.
+   */
+  @SimpleProperty
+  @IsColor
   public int AccentColor() {
     return accentColor;
   }
 
+  /**
+   * Selects the theme for the application. Theme can only be set at compile time and the Companion
+   * will approximate changes during live development. Possible options are:
+   *
+   *   * `Classic`, which is the same as older versions of App Inventor;
+   *   * `Device Default`, which gives the same theme as the version of Android running on the
+   *     device and uses PrimaryColor for the Action Bar and has light buttons;
+   *   * `Black Title Text`, which is the `Device Default` theme but with black title text; and
+   *   * `Dark`, which is a dark version of the `Device Default` theme using `PrimaryColorDark` and
+   *     having dark grey components.
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_THEME,
       defaultValue = ComponentConstants.DEFAULT_THEME)
   @SimpleProperty(userVisible = false, description = "Sets the theme used by the application.")
@@ -1846,7 +1913,7 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * Width property getter method.
+   * Returns the Screen width in pixels (x-size).
    *
    * @return  width property used by the layout
    */
@@ -1858,7 +1925,7 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
-   * Height property getter method.
+   * Returns the Screen height in pixels (y-size).
    *
    * @return  height property used by the layout
    */
@@ -1869,6 +1936,12 @@ public class Form extends AppInventorCompatActivity
     return formHeight;
   }
 
+  /**
+   * A URL which will be opened on the left side panel (which can be toggled once it is open). This
+   * is intended for projects that have an in-line tutorial as part of the project. For security
+   * reasons, only tutorials hosted on http://appinventor.mit.edu or linked to from our URL
+   * shortener (http://appinv.us) may be used here. Other URLs will be silently ignored.
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
     defaultValue = "")
   @SimpleProperty(userVisible = false,
@@ -1882,10 +1955,37 @@ public class Form extends AppInventorCompatActivity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON,
     defaultValue = "")
   @SimpleProperty(userVisible = false,
-    description = "A JSON string representing the subset for the screen")
+    description = "A JSON string representing the subset for the screen. Authors of template apps "
+      + "can use this to control what components, designer properties, and blocks are available "
+      + "in the project.")
   public void BlocksToolkit(String json) {
     // We don't actually do anything. This property is stored in the
     // project properties file
+  }
+
+  /**
+   * Gets the name of the underlying platform running the app. Currently, this is the text
+   * "Android". Other platforms may be supported in the future.
+   *
+   * @return The platform running the app
+   */
+  @SimpleProperty(description = "The platform the app is running on, for example \"Android\" or "
+      + "\"iOS\".")
+  public String Platform() {
+    return "Android";
+  }
+
+  /**
+   * Gets the version number of the platform running the app. This is typically a dotted version
+   * number, such as 10.0. Any value can be returned, however, so you should take care to handle
+   * unexpected data. If the platform version is unavailable, the empty text will be returned.
+   *
+   * @return The version of the platform running the app
+   */
+  @SimpleProperty(description = "The dotted version number of the platform, such as 4.2.2 or 10.0. "
+      + "This is platform specific and there is no guarantee that it has a particular format.")
+  public String PlatformVersion() {
+    return Build.VERSION.RELEASE;
   }
 
   /**
