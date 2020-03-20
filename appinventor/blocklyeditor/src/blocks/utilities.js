@@ -84,6 +84,7 @@ Blockly.Blocks.Utilities.wrapSentence = function(str, len) {
 Blockly.Blocks.Utilities.MAX_COLLAPSE = 4;
 
 Blockly.Blocks.Utilities.renameCollapsed = function(block, n) {
+  return; //test
   if(n > Blockly.Blocks.Utilities.MAX_COLLAPSE) return;
   if (block.isCollapsed()) {
     var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';

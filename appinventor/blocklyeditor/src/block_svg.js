@@ -228,25 +228,25 @@ Blockly.BlockSvg.prototype.render = (function(func) {
 if (Blockly.Instrument.useRenderDown) {
 
 Blockly.BlockSvg.prototype.render = function(opt_bubble) {
-  if (this.isRendering) {
-    return;  // Don't allow recursive render calls.
+  if (opt_bubble !== false) {
+    var root = this.getRootBlock();
+    if (root != this) {  // If 'this' is not the top.
+      root.render(false);
+      return;
+    }
   }
+  if (this.isRendering || !Blockly.BlockSvg.isRenderingOn) {
+    return;
+  }
+  goog.asserts.assertObject(this.svgGroup_,
+    ' Uninitialized block cannot be rendered. Call block.initSvg()');
+
   this.isRendering = true;
-
-  // Make sure we set isRendering back to false if something goes wrong.
-  try {
-    this.renderDown();
-
-    // Render all blocks above this one (propagate a reflow).
-    if (opt_bubble !== false) {
-      if (this.parentBlock_) {
-        var top = this.parentBlock_;
-        while (top.parentBlock_) top = top.parentBlock_;
-        top.render(false);
-      } else {
-        // Top most block. Fire an event to allow scrollbars to resize.
-        this.workspace.resizeContents();
-      }
+  try {  // Make sure we set isRendering back to false if something goes wrong.
+    this.renderDown_();
+    if (!this.getParent()) {  // This is a top level block.
+      // Fire an event so the scrollbars can resize.
+      this.workspace.resizeContents();
     }
   } finally {
     this.isRendering = false;
@@ -256,36 +256,32 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
 /**
  * [lyn, 04/01/14] Render a tree of blocks from top down rather than bottom up.
  * This is in contrast to render(), which renders a block and all its antecedents.
+ * @private Should only be called from render.
  */
-Blockly.BlockSvg.prototype.renderDown = function() {
-  if (!Blockly.BlockSvg.isRenderingOn) {
-    return;
-  }
-  goog.asserts.assertObject(this.svgGroup_,
-    ' Uninitialized block cannot be renderedDown.  Call block.initSvg()');
-
+Blockly.BlockSvg.prototype.renderDown_ = function() {
   // Recursively renderDown all my children (as long as I'm not collapsed)
   if (!this.isCollapsed() || !Blockly.Instrument
       .avoidRenderDownOnCollapsedSubblocks) {
-    var childBlocks = this.getChildren();
+    var childBlocks = this.getChildren();  // Includes next block.
     for (var i = 0, childBlock; (childBlock = childBlocks[i]); i++) {
-      childBlock.renderDown();
+      childBlock.render(false);
     }
   } else {  // Always render next block.
     var nextBlock = this.getNextBlock();
     if (nextBlock) {
-      nextBlock.renderDown();
+      nextBlock.render(false);
     }
   }
-  this.renderHere();
+  this.renderHere_();
   Blockly.Instrument.stats.renderDownCalls++; //***lyn
   // [lyn, 04/08/14] Because renderDown is recursive, doesn't make sense to track its time here.
 };
 
 /**
  * Render this block. Assumes descendants have already been rendered.
+ * @private Should only be called from renderDown_.
  */
-Blockly.BlockSvg.prototype.renderHere = function(opt_bubble) {
+Blockly.BlockSvg.prototype.renderHere_ = function() {
   var start = new Date().getTime();
   Blockly.Field.startCache();
   this.rendered = true;
@@ -376,8 +372,7 @@ Blockly.BlockSvg.prototype.updateCollapsed_ = function() {
     this.collapsed_ = collapsed;
     if (!collapsed) {
       this.updateCollapsed_();
-    }
-    if (this.rendered) {
+    } else if (this.rendered) {
       this.render();
     }
   };
