@@ -652,7 +652,6 @@ public class TopToolbar extends Composite {
               if (deleteConfirmation(selectedProjects)) {
                 for (Project project : selectedProjects) {
                   project.moveToTrash();
-//                  moveToTrash(project);
                 }
               }
             } else {
@@ -666,7 +665,6 @@ public class TopToolbar extends Composite {
             selectedProjects.add(currentProject);
             if (deleteConfirmation(selectedProjects)) {
               currentProject.moveToTrash();
-//              moveToTrash(currentProject);
               //Add the command to stop this current project from saving
             }
           }

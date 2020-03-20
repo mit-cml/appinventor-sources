@@ -194,16 +194,16 @@ public class Ode implements EntryPoint {
   private AssetManager assetManager;
 
   // Remembers the current View
-  static final int DESIGNER = 0;
-  static final int PROJECTS = 1;
-  private static final int GALLERY = 2;
-  private static final int GALLERYAPP = 3;
-  private static final int USERPROFILE = 4;
-  private static final int PRIVATEUSERPROFILE = 5;
-  private static final int MODERATIONPAGE = 6;
-  private static final int USERADMIN = 7;
-  private static final int TRASHCAN = 8;
-  private static int currentView = DESIGNER;
+  public static final int DESIGNER = 0;
+  public static final int PROJECTS = 1;
+  public static final int GALLERY = 2;
+  public static final int GALLERYAPP = 3;
+  public static final int USERPROFILE = 4;
+  public static final int PRIVATEUSERPROFILE = 5;
+  public static final int MODERATIONPAGE = 6;
+  public static final int USERADMIN = 7;
+  public static final int TRASHCAN = 8;
+  public static int currentView = DESIGNER;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:

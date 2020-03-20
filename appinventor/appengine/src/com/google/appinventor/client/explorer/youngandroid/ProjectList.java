@@ -277,7 +277,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   // ProjectManagerEventListener interface that this is the
   // implementation of.
   public void refreshTable(boolean needToSort) {
-    if (Ode.getInstance().getCurrentView() == 8) {
+    if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN) {
       refreshTable(needToSort, true);
     } else {
       refreshTable(needToSort, false);
