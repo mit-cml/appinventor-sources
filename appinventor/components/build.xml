@@ -166,6 +166,7 @@
     <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${public.deps.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
     <copy toFile="${public.deps.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
+    <copy tofile="${public.deps.dir}/glide.jar" file="${lib.dir}/glide/glide-3.8.0.jar" />
 
     <!-- Add extension libraries here -->
     <!-- Example: <copy toFile"${public.deps.dir}/my-dependency.jar" file="${lib.dir}/my-dependency/my-dependency-1.0.0.jar" /> -->
