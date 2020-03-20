@@ -505,6 +505,7 @@ public class YaVersion {
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 9
   // For YOUNG_ANDROID_VERSION 204:
   // - NAVIGATION_COMPONENT_VERSION was initialized to 1
+  // - SERIAL_COMPONENT_VERSION was initialized to 1
 
   public static final int YOUNG_ANDROID_VERSION = 204;
 
