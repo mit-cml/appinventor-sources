@@ -377,7 +377,9 @@ Blockly.BlockSvg.prototype.updateCollapsed_ = function() {
     if (!collapsed) {
       this.updateCollapsed_();
     }
-    this.render();
+    if (this.rendered) {
+      this.render();
+    }
   };
 }
 
