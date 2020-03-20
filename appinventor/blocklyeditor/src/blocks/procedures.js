@@ -254,12 +254,6 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       // 1. Change all callers so label reflects new name
       Blockly.Procedures.mutateCallers(procDecl);
 
-      var callers = Blockly.Procedures.getCallers(procName, procWorkspace);
-      for (var x = 0; x < callers.length; x++) {
-        var block = callers[x];
-        Blockly.Blocks.Utilities.renameCollapsed(block, 0);
-      }
-
       // 2. If there's an open mutator, change the name in the corresponding slot.
       if (procDecl.mutator && procDecl.mutator.rootBlock_) {
         // Iterate through mutatorarg param blocks and change name of one at paramIndex
@@ -694,7 +688,6 @@ Blockly.Blocks['procedures_callnoreturn'] = {
   renameProcedure: function(oldName, newName) {
     if (Blockly.Names.equals(oldName, this.getFieldValue('PROCNAME'))) {
       this.setFieldValue(newName, 'PROCNAME');
-      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
     }
   },
   // [lyn, 10/27/13] Renamed "fromChange" parameter to "startTracking", because it should be true in any situation
