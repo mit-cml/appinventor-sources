@@ -17,6 +17,16 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import java.util.List;
 
+/**
+ * A sensor component that can measure the proximity of an object (in cm) relative to the view
+ * screen of a device. This sensor is typically used to determine whether a handset is being held
+ * up to a persons ear; i.e. lets you determine how far away an object is from a device. Many
+ * devices return the absolute distance, in cm, but some return only near and far values. In this
+ * case, the sensor usually reports its maximum range value in the far state and a lesser value
+ * in the near state. It reports the following value:
+ *
+ *  - **Distance**: The distance from the object to the device
+ */
 @DesignerComponent(version = YaVersion.PROXIMITYSENSOR_COMPONENT_VERSION,
         description = "<p>Non-visible component that can measures the proximity of an object in cm " +
                 "relative to the view screen of a device. This sensor is typically used to determine " +
@@ -64,10 +74,11 @@ public class ProximitySensor extends AndroidNonvisibleComponent
     /**
      * Used to determine if the device has ProximitySensor
      *
+     * @suppressdoc
      * @return {@code true} indicates that an proximity sensor is available,
      *         {@code false} that it isn't
      */
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Reports whether or not the device has a proximity sensor")
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Reports whether or not the device has a proximity sensor.")
     public boolean Available() {
         List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_PROXIMITY);
         return (sensors.size() > 0);
@@ -145,7 +156,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
 
     /**
      * If true, the sensor will generate events.  Otherwise, no events
-     * are generated .
+     * are generated.
      *
      * @return {@code true} indicates that the sensor generates events,
      *         {@code false} that it doesn't
@@ -161,9 +172,10 @@ public class ProximitySensor extends AndroidNonvisibleComponent
      *
      * @param enabled  {@code true} enables sensor event generation,
      *                 {@code false} disables it
+     * @suppressdoc
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
-    @SimpleProperty (description = "If enabled, then device will listen for changes in proximity")
+    @SimpleProperty (description = "If enabled, then device will listen for changes in proximity.")
     public void Enabled(boolean enabled) {
         if (this.enabled == enabled) {
             return;
@@ -179,6 +191,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
 
     /**
      * Returns value of keepRunningWhenOnPause
+     * @suppressdoc
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR)
     public boolean KeepRunningWhenOnPause() {
@@ -189,6 +202,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
      * Specifies if sensor should still be listening when activity is not active
      *
      * @param enabled
+     * @suppressdoc
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
     @SimpleProperty (description = "If set to true, it will keep sensing for proximity changes even when the app is not visible")
@@ -204,7 +218,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
     }
 
     /**
-     * Returns the distance.
+     * Returns the distance from the object to the device.
      * The sensor must be enabled to return meaningful values.
      *
      * @return  distance

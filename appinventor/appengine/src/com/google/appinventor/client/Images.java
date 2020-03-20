@@ -524,6 +524,12 @@ public interface Images extends Resources {
   ImageResource lists();
 
   /**
+   * Built in drawer item: dictionaries
+   */
+  @Source("com/google/appinventor/images/dictionaries.png")
+  ImageResource dictionaries();
+
+  /**
    * Built in drawer item: colors
    */
   @Source("com/google/appinventor/images/colors.png")
@@ -649,6 +655,12 @@ public interface Images extends Resources {
   ImageResource mediaIconVideo();
 
   /**
+   * Designer palette item:
+   */
+  @Source("com/google/appinventor/images/navigation.png")
+  ImageResource navigationComponent();
+
+  /**
   * Wilson Logo 
   */
   @Source("com/google/appinventor/images/wilson.png")
@@ -665,5 +677,4 @@ public interface Images extends Resources {
   */
   @Source("com/google/appinventor/images/YRLogo.png")
   ImageResource YRLogo();
-
 }

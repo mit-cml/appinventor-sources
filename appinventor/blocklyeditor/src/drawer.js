@@ -478,6 +478,18 @@ Blockly.Drawer.getDefaultXMLString = function(blockType,mutatorAttributes) {
 };
 
 Blockly.Drawer.defaultBlockXMLStrings = {
+  controls_if: {xmlString:
+  '<xml>' +
+    '<block type="controls_if">' +
+    '</block>' +
+    '<block type="controls_if">' +
+      '<mutation else="1"></mutation>' +
+    '</block>' +
+    '<block type="controls_if">' +
+      '<mutation elseif="1" else="1"></mutation>' +
+    '</block>' +
+  '</xml>' },
+
   controls_forRange: {xmlString:
   '<xml>' +
     '<block type="controls_forRange">' +
@@ -516,7 +528,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<mutation items="2"></mutation>' +
     '</block>' +
   '</xml>'},
-   lists_lookup_in_pairs: {xmlString:
+  lists_lookup_in_pairs: {xmlString:
   '<xml>' +
     '<block type="lists_lookup_in_pairs">' +
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
@@ -528,6 +540,29 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<value name="SEPARATOR"><block type="text"><title name="TEXT"></title></block></value>' +
       '</block>' +
     '</xml>'},
+  dictionaries_create_with: {xmlString:
+  '<xml>' +
+    '<block type="dictionaries_create_with">' +
+      '<mutation items="0"></mutation>' +
+    '</block>' +
+    '<block type="dictionaries_create_with">' +
+      '<mutation items="2"></mutation>' +
+      '<value name="ADD0"><block type="pair"></block></value>' +
+      '<value name="ADD1"><block type="pair"></block></value>' +
+    '</block>' +
+  '</xml>'},
+  dictionaries_lookup: {xmlString:
+  '<xml>' +
+    '<block type="dictionaries_lookup">' +
+    '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '</block>' +
+  '</xml>'},
+  dictionaries_recursive_lookup: {xmlString:
+  '<xml>' +
+    '<block type="dictionaries_recursive_lookup">' +
+    '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '</block>' +
+  '</xml>'},
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},

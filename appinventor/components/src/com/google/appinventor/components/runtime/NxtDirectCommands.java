@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * ![NXT component icon](images/legoMindstormsNxt.png)
+ *
  * A component that provides a low-level interface to a LEGO MINDSTORMS NXT
  * robot, with functions to send NXT Direct Commands.
  *

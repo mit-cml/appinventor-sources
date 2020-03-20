@@ -25,7 +25,7 @@ public class TextAreaPropertyEditor extends TextPropertyEditorBase {
   public TextAreaPropertyEditor() {
    super(new TextArea());
 
-   textEdit.getElement().getStyle().setProperty("min-height", MIN_CSS_HEIGHT);
-   textEdit.getElement().getStyle().setProperty("max-width", MAX_CSS_WIDTH);
+   textEdit.getElement().getStyle().setProperty("minHeight", MIN_CSS_HEIGHT);
+   textEdit.getElement().getStyle().setProperty("maxWidth", MAX_CSS_WIDTH);
   }
 }
