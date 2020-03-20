@@ -503,8 +503,10 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 30
   // For YOUNG_ANDROID_VERSION 203:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 9
+  // For YOUNG_ANDROID_VERSION 204:
+  // - NAVIGATION_COMPONENT_VERSION was initialized to 1
 
-  public static final int YOUNG_ANDROID_VERSION = 203;
+  public static final int YOUNG_ANDROID_VERSION = 204;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1004,6 +1006,10 @@ public class YaVersion {
   // For MARKER_COMPONENT_VERSION 3:
   // - Added fill and stroke opacity properties
   public static final int MARKER_COMPONENT_VERSION = 3;
+
+  // For NAVIGATION_COMPONENT_VERSION 1:
+  // - Initial Navigation implementation
+  public static final int NAVIGATION_COMPONENT_VERSION = 1;
 
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;

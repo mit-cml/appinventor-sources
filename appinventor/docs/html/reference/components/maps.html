@@ -136,6 +136,7 @@
   <li><a href="#LineString">LineString</a></li>
   <li><a href="#Map">Map</a></li>
   <li><a href="#Marker">Marker</a></li>
+  <li><a href="#Navigation">Navigation</a></li>
   <li><a href="#Polygon">Polygon</a></li>
   <li><a href="#Rectangle">Rectangle</a></li>
 </ul>
@@ -749,6 +750,75 @@
   <dt id="Marker.ShowInfobox" class="method"><i></i> ShowInfobox()</dt>
   <dd>Shows the info box for the <code class="highlighter-rouge">Marker</code> if it is not visible. Otherwise, this method has no effect.
  This method can be used to show the info box even if <a href="#Marker.EnableInfobox"><code class="highlighter-rouge">EnableInfobox</code></a> is false.</dd>
+</dl>
+
+<h2 id="Navigation">Navigation</h2>
+
+<p>The Navigation component generates directions between two locations using a service called
+ <a href="https://openrouteservice.org">OpenRouteService</a>. You must provide a valid API key from that
+ service in order for this component to work.</p>
+
+<h3 id="Navigation-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Navigation.ApiKey" class="text wo"><em>ApiKey</em></dt>
+  <dd>API Key for Open Route Service. Obtain an API key at
+ <a href="https://openrouteservice.org">https://openrouteservice.org</a>.</dd>
+  <dt id="Navigation.EndLatitude" class="number"><em>EndLatitude</em></dt>
+  <dd>The latitude of the end location.</dd>
+  <dt id="Navigation.EndLocation" class="component wo bo"><em>EndLocation</em></dt>
+  <dd>Set the end location.</dd>
+  <dt id="Navigation.EndLongitude" class="number"><em>EndLongitude</em></dt>
+  <dd>The longitude of the end location.</dd>
+  <dt id="Navigation.Language" class="text"><em>Language</em></dt>
+  <dd>Property for Language</dd>
+  <dt id="Navigation.ResponseContent" class="dictionary ro bo"><em>ResponseContent</em></dt>
+  <dd>The raw response from the server. This can be used to access more details beyond what the
+ <a href="#Navigation.GotDirections"><code class="highlighter-rouge">GotDirections</code></a> event provides.</dd>
+  <dt id="Navigation.StartLatitude" class="number"><em>StartLatitude</em></dt>
+  <dd>The latitude of the start location.</dd>
+  <dt id="Navigation.StartLocation" class="component wo bo"><em>StartLocation</em></dt>
+  <dd>Set the start location.</dd>
+  <dt id="Navigation.StartLongitude" class="number"><em>StartLongitude</em></dt>
+  <dd>The longitude of the start location.</dd>
+  <dt id="Navigation.TransportationMethod" class="text"><em>TransportationMethod</em></dt>
+  <dd>The transportation method used for determining the route. Valid options are:
+
+    <ul>
+      <li><code class="highlighter-rouge">foot-walking</code>: Route based on walking paths</li>
+      <li><code class="highlighter-rouge">driving-car</code>: Route based on vehicle paths</li>
+      <li><code class="highlighter-rouge">cycling-regular</code>: Route based on bicycle paths</li>
+      <li><code class="highlighter-rouge">wheelchair</code>: Route based on wheelchair accessible paths</li>
+    </ul>
+  </dd>
+</dl>
+
+<h3 id="Navigation-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Navigation.GotDirections">GotDirections(<em class="list">directions</em>,<em class="list">points</em>,<em class="number">distance</em>,<em class="number">duration</em>)</dt>
+  <dd>Event indicating that a request has finished and has returned data. The following parameters
+ are provided:
+
+    <ul>
+      <li><code class="highlighter-rouge">directions</code>: A list of text directions, such as “Turn left at Massachusetts Avenue”.</li>
+      <li><code class="highlighter-rouge">points</code>: A list of (latitude, longitude) points that represent the path to take. This can
+be passed to <a href="#LineString.Points"><code class="highlighter-rouge">LineString</code>’s <code class="highlighter-rouge">Points</code></a> to draw the line on a <a href="#Map"><code class="highlighter-rouge">Map</code></a>.</li>
+      <li><code class="highlighter-rouge">distance</code>: Estimated distance for the route, in meters.</li>
+      <li><code class="highlighter-rouge">duration</code>: Estimated duration for the route, in seconds.</li>
+    </ul>
+  </dd>
+</dl>
+
+<h3 id="Navigation-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Navigation.RequestDirections" class="method"><i></i> RequestDirections()</dt>
+  <dd>Request directions from the routing service using the values of <a href="#Navigation.StartLatitude"><code class="highlighter-rouge">StartLatitude</code></a>,
+ <a href="#Navigation.StartLongitude"><code class="highlighter-rouge">StartLongitude</code></a>, <a href="#Navigation.EndLatitude"><code class="highlighter-rouge">EndLatitude</code></a>, and <a href="#Navigation.EndLongitude"><code class="highlighter-rouge">EndLongitude</code></a>. On success,
+ the <a href="#Navigation.GotDirections"><code class="highlighter-rouge">GotDirections</code></a> event block will run. If an
+ error occurs, the error will be reported via the
+ <a href="userinterface.html#Screen.ErrorOccurred"><code class="highlighter-rouge">Screen's ErrorOccurred</code></a> event.</dd>
 </dl>
 
 <h2 id="Polygon">Polygon</h2>
