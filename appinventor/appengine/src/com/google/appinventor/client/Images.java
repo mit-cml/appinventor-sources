@@ -631,6 +631,12 @@ public interface Images extends Resources {
    ImageResource logo();
 
   /**
+   * Designer palette item: Arduino component
+   */
+  @Source("com/google/appinventor/images/arduino.png")
+  ImageResource arduino();
+  
+  /**
    * Media icon: image
    */
   @Source("com/google/appinventor/images/mediaIcon_img.png")

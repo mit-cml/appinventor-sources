@@ -169,6 +169,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/polygon.png", images.polygon());
     bundledImages.put("images/featurecollection.png", images.featurecollection());
     bundledImages.put("images/navigation.png", images.navigationComponent());
+    bundledImages.put("images/arduino.png", images.arduino());
 
     imagesInitialized = true;
   }

@@ -505,6 +505,7 @@ public class YaVersion {
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 9
   // For YOUNG_ANDROID_VERSION 204:
   // - NAVIGATION_COMPONENT_VERSION was initialized to 1
+  // - SERIAL_COMPONENT_VERSION was initialized to 1
 
   public static final int YOUNG_ANDROID_VERSION = 204;
 
@@ -1330,6 +1331,9 @@ public class YaVersion {
 
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
+
+  //For SERIAL_COMPONENT_VERSION: Initial Version
+  public static final int SERIAL_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";

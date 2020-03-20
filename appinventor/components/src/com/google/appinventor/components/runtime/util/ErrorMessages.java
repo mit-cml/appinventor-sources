@@ -269,11 +269,16 @@ public final class ErrorMessages {
   public static final int ERROR_SERVER = 3808;
   public static final int ERROR_SPEECH_TIMEOUT = 3809;
 
+  // Serial errors
+  public static final int ERROR_SERIAL_NOT_INITIALIZED = 3901;
+  public static final int ERROR_SERIAL_WRITING = 3902;
+
   // Navigation Errors
   public static final int ERROR_INVALID_API_KEY = 4001;
   public static final int ERROR_UNABLE_TO_REQUEST_DIRECTIONS = 4002;
   public static final int ERROR_ROUTING_SERVICE_ERROR = 4003;
   public static final int ERROR_NO_ROUTE_FOUND = 4004;
+
 
   // Start the next group of errors at 4100
 
@@ -675,6 +680,10 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_RECOGNIZER_BUSY, "RecognitionService Busy");
     errorMessages.put(ERROR_SERVER, "Error From Server");
     errorMessages.put(ERROR_SPEECH_TIMEOUT, "No Speech Input");
+
+    // Serial
+    errorMessages.put(ERROR_SERIAL_NOT_INITIALIZED, "Serial was not initialized");
+    errorMessages.put(ERROR_SERIAL_WRITING, "Error writing data to serial");
 
     // Navigation Errors
     errorMessages.put(ERROR_INVALID_API_KEY, "No api key provided");
