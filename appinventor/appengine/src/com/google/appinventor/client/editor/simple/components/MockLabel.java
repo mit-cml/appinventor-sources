@@ -8,6 +8,8 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.user.client.ui.InlineHTML;
 
@@ -22,12 +24,17 @@ public final class MockLabel extends MockVisibleComponent {
    */
   public static final String TYPE = "Label";
 
+  // Property name for opacity
+  protected static final String PROPERTY_NAME_OPACITY = "Opacity";
+
   // GWT label widget used to mock a Simple Label
   private InlineHTML labelWidget;
 
   private String savedText = "";     // Saved text, so if we change from
                                      // text to/from html we have the text
                                      // to set
+
+  private float opacity = 1f; // Current opacity
 
   /**
    * Creates a new MockLabel component.
@@ -63,7 +70,53 @@ public final class MockLabel extends MockVisibleComponent {
     if (MockComponentsUtil.isDefaultColor(text)) {
       text = "&HFFFFFFFF";  // white
     }
-    MockComponentsUtil.setWidgetBackgroundColor(labelWidget, text);
+
+    // Update alpha value; The String format is in &HAARRGGBB, so we extract
+    // the alpha portion and update the opacity property with it.
+    //String alphaValue = Integer.toString(Integer.parseInt(text.substring(2, 4), 16));
+    //float alphaFloat = Integer.parseInt(alphaValue) / 255f; // Convert to [0, 1] ranged value
+    //properties.changePropertyValue(PROPERTY_NAME_OPACITY, Float.toString(alphaFloat));
+
+    // Update background color with regards to the current color and the set opacity color.
+    MockComponentsUtil.setWidgetBackgroundColor(labelWidget, text, opacity);
+  }
+
+  /*
+   * Sets the labels' opacity property to a new value.
+   */
+  private void setOpacityProperty(String text) {
+    this.opacity = Float.parseFloat(text);
+
+    // Update background color to respond to current opacity
+    String backgroundColor = properties.getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR);
+    MockComponentsUtil.setWidgetBackgroundColor(labelWidget, backgroundColor, opacity);
+
+    // Update text color to respond to current opacity
+    if (properties.hasProperty(PROPERTY_NAME_TEXTCOLOR)) {
+      String textColor = properties.getPropertyValue(PROPERTY_NAME_TEXTCOLOR);
+      MockComponentsUtil.setWidgetTextColor(labelWidget, textColor, opacity);
+    }
+
+    // TODO: Previous solution; To be removed/adapted.
+    /*int newOpacity = Integer.parseInt(text);
+
+    // Update opacity only if the value is a new value.
+    // This is required to prevent infinite recursion when
+    // updating the background color property (which could again update the
+    // opacity property, and so on).
+    if (newOpacity != this.opacity) {
+      this.opacity = newOpacity;
+
+      // Generate new string for the background
+      String newValue = "&H" + MockComponentsUtil.convertToHex(newOpacity, 2)
+          + properties.getProperty(PROPERTY_NAME_BACKGROUNDCOLOR).getValue().substring(4);
+
+      // Change property of the background color value to take the opacity into account.
+      // This also changes the widget background color in the callback of changing
+      // the background color. The reason it is done this way is to also update
+      // the color picker value in Designer to be representative.
+      properties.changePropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR, newValue);
+    }*/
   }
 
   /*
@@ -119,7 +172,7 @@ public final class MockLabel extends MockVisibleComponent {
     if (MockComponentsUtil.isDefaultColor(text)) {
       text = "&HFF000000";  // black
     }
-    MockComponentsUtil.setWidgetTextColor(labelWidget, text);
+    MockComponentsUtil.setWidgetTextColor(labelWidget, text, opacity);
   }
 
   // PropertyChangeListener implementation
@@ -133,6 +186,8 @@ public final class MockLabel extends MockVisibleComponent {
       setTextAlignmentProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
       setBackgroundColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_OPACITY)) {
+      setOpacityProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_FONTBOLD)) {
       setFontBoldProperty(newValue);
       refreshForm();

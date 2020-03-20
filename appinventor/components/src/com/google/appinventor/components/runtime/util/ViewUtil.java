@@ -201,4 +201,37 @@ public final class ViewUtil {
     view.setBackgroundDrawable(drawable);
     view.invalidate();
   }
+
+  /**
+   * Applies the provided opacity to the provided alpha-red-green-blue integer.
+   * The opacity setting overrides the current opacity of the argb color.
+   * @param argb  ARGB color to apply opacity to
+   * @param opacity Opacity to apply, ranging from 0 to 1
+   * @return modified argb
+   */
+  public static int applyOpacityToColor(int argb, float opacity) {
+    // AAAAAAAA RRRRRRRR GGGGGGGG BBBBBBBB
+    // 00000000 11111111 11111111 11111111
+    final int rgbMask = 0x00ffffff;
+
+    // 11111111 00000000 00000000 00000000
+    final int alphaMask = 0xff000000;
+
+    // Get the current alpha value of the argb color
+    int currentAlpha = argb & alphaMask;
+    currentAlpha = currentAlpha >>> 24;
+
+    // Calculate new alpha based on opacity multiplier
+    int newAlpha = Math.round(opacity * currentAlpha);
+
+    // Push opacity to alpha mask's place (opacity in range 0, 255)
+    // And it with the alpha mask to remove any potential unwanted
+    // bit values that are set to 1.
+    int alphaPart = (newAlpha << 24) & alphaMask;
+
+    // Remove current opacity and apply the new one
+    argb = (argb & rgbMask) | alphaPart;
+
+    return argb;
+  }
 }

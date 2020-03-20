@@ -272,6 +272,8 @@ public class PropertiesUtil {
       String type = editorType.substring(PropertyTypeConstants.PROPERTY_TYPE_COMPONENT.length() + 2);
       type = type.substring(type.lastIndexOf('.') + 1);
       return new YoungAndroidComponentSelectorPropertyEditor(editor, Collections.singleton(type));
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_COLOR_VALUE)) {
+      return new YoungAndroidFloatRangePropertyEditor(0f, 1f);
     } else {
       return new TextPropertyEditor();
     }

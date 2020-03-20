@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.google.appinventor.components.runtime.util.ViewUtil;
 
 /**
  * Labels are components used to show text.
@@ -57,6 +58,9 @@ public final class Label extends AndroidViewComponent {
 
   // Backing for background color
   private int backgroundColor;
+
+  // Backing for opacity
+  private float opacity;
 
   // Backing for font typeface
   private int fontTypeface;
@@ -118,6 +122,7 @@ public final class Label extends AndroidViewComponent {
     TextColor(Component.COLOR_DEFAULT);
     HTMLFormat(false);
     HasMargins(true);
+    Opacity(1.0f);
   }
 
   // put this in the right file
@@ -189,11 +194,44 @@ public final class Label extends AndroidViewComponent {
   @SimpleProperty
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
-    if (argb != Component.COLOR_DEFAULT) {
-      TextViewUtil.setBackgroundColor(view, argb);
+    int newBackgroundColor = ViewUtil.applyOpacityToColor(backgroundColor, opacity);
+
+    if (backgroundColor != Component.COLOR_DEFAULT) {
+      TextViewUtil.setBackgroundColor(view, newBackgroundColor);
     } else {
       TextViewUtil.setBackgroundColor(view, Component.COLOR_NONE);
     }
+  }
+
+  /**
+   * Returns the opacity of the label's background color.
+   * The value is in between the range 0 to 1, where 0 is invisible,
+   * and 1 is fully visible.
+   *
+   * @return  Opacity as an integer value in range [0, 1]
+   */
+  @SimpleProperty(
+    category = PropertyCategory.APPEARANCE)
+  public float Opacity() {
+    return opacity;
+  }
+
+  /**
+   * Specifies the opacity of the label's background color.
+   * The value is in between the range 0 to 255, where 0 is invisible,
+   * and 255 is fully visible.
+   *
+   * @param opacity  Opacity as an integer value in range [0, 255]
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR_VALUE,
+      defaultValue = "1.0")
+  @SimpleProperty
+  public void Opacity(float opacity) {
+    this.opacity = opacity;
+
+    // Apply opacity to colors
+    BackgroundColor(backgroundColor);
+    TextColor(textColor);
   }
 
   /**
@@ -451,8 +489,10 @@ private void setLabelMargins(boolean hasMargins) {
   @SimpleProperty
   public void TextColor(int argb) {
     textColor = argb;
+    int newTextColor = ViewUtil.applyOpacityToColor(textColor, opacity);
+
     if (argb != Component.COLOR_DEFAULT) {
-      TextViewUtil.setTextColor(view, argb);
+      TextViewUtil.setTextColor(view, newTextColor);
     } else {
       TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK);
     }
