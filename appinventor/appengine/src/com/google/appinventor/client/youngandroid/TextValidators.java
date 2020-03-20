@@ -63,13 +63,11 @@ public final class TextValidators {
 
     // Check that project does not already exist
     if (Ode.getInstance().getProjectManager().getProject(projectName) != null) {
-      Window.alert(MESSAGES.duplicateProjectNameError(projectName));
-      return false;
-    }
-
-    // Check that project name may already exist in Trash Projects
-    if (Ode.getInstance().getProjectManager().getTrashProject(projectName) != null) {
-      Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));
+      if (Ode.getInstance().getProjectManager().getProject(projectName).isInTrash()) {
+        Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));
+      } else {
+        Window.alert(MESSAGES.duplicateProjectNameError(projectName));
+      }
       return false;
     }
 
