@@ -375,6 +375,14 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_MATH_NUMBER_TOOLTIP = 'Report the number shown.';
     Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER = 'number';
 
+    Blockly.Msg.LANG_MATH_DECIMAL_FORMAT = 'decimal';
+    Blockly.Msg.LANG_MATH_BINARY_FORMAT = 'binary';
+    Blockly.Msg.LANG_MATH_OCTAL_FORMAT = 'octal';
+    Blockly.Msg.LANG_MATH_HEXADECIMAL_FORMAT = 'hexadecimal';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_HELPURL = '/reference/blocks/math.html#number-radix';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TOOLTIP = 'Report the number shown in decimal (base-10) format.';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE = 'number radix';
+
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL = '';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_EQ = '/reference/blocks/math.html#=';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_NEQ = '/reference/blocks/math.html#not=';
@@ -757,6 +765,10 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE = 'is a string?';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING = 'thing';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = 'Returns true if <code>thing</code> is a string.';
+
+    Blockly.Msg.LANG_TEXT_REVERSE_HELPURL = '/reference/blocks/text.html#reverse';
+    Blockly.Msg.LANG_TEXT_REVERSE_INPUT = 'reverse';
+    Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP = 'Reverse the given text.';
 
 // Lists Blocks.
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Lists';

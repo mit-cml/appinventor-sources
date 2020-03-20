@@ -1247,7 +1247,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The BluetoothClient.Secure property was added.
     // No blocks need to be modified to upgrade to version 5.
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // The BluetoothClient.DisconnectOnError property was added.
+    // No blocks need to be modified to upgrade to version 5.
+    6: "noUpgrade"
 
   }, // End BluetoothClient upgraders
 
@@ -1813,7 +1817,10 @@ Blockly.Versioning.AllUpgradeMaps =
     28: "noUpgrade",
 
     // AI2: Added "for each in dictionary" block.
-    29: "noUpgrade"
+    29: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 30, The Reverse Text block was added
+    30: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -2673,7 +2680,10 @@ Blockly.Versioning.AllUpgradeMaps =
     7: "noUpgrade",
 
     //AI2: Added PageLoaded
-    8: "noUpgrade"
+    8: "noUpgrade",
+      
+    // AI2: Added BeforePageLoad event and Stop, Reload, and ClearCookies methods
+    9: "noUpgrade"
 
   }, // End WebViewer upgraders
 

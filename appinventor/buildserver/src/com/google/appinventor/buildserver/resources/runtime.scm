@@ -1842,13 +1842,31 @@
           360))
 
 (define (sin-degrees degrees)
-  (sin (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 90) 0)
+    (if (= (modulo (/ degrees 90) 2) 0)
+      0
+      (if (= (modulo (/ (- degrees 90) 180) 2) 0)
+        1
+        -1))
+    (sin (degrees->radians-internal degrees))))
 
 (define (cos-degrees degrees)
-  (cos (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 90) 0)
+    (if (= (modulo (/ degrees 90) 2) 1)
+      0
+      (if (= (modulo (/ degrees 180) 2) 1)
+        -1
+        1))
+    (cos (degrees->radians-internal degrees))))
 
 (define (tan-degrees degrees)
-  (tan (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 180) 0)
+    0
+    (if (= (modulo (- degrees 45) 90)  0)
+      (if (= (modulo (/ (- degrees 45) 90) 2) 0)
+        1
+        -1)
+      (tan (degrees->radians-internal degrees)))))
 
 ;; Result should be in the range [-90, +90].
 (define (asin-degrees y)
@@ -1871,6 +1889,21 @@
 
 (define (string-to-lower-case s)
   (String:toLowerCase (s:toString)))
+
+(define (unicode-string->list str :: <string>) :: <list>
+  (let loop ((result :: <list> '()) (i :: <int> (string-length str)))
+    (set! i (- i 1))
+    (if (< i 0) result
+        (if (and (>= i 1)
+              (let ((c (string-ref str i))
+                    (c1 (string-ref str (- i 1))))
+                (and (char>=? c #\xD800) (char<=? c #\xDFFF)
+                     (char>=? c1 #\xD800) (char<=? c1 #\xDFFF))))
+            (loop (make <pair> (string-ref str i) (make <pair> (string-ref str (- i 1)) result)) (- i 1))
+          (loop (make <pair> (string-ref str i) result) i)))))
+
+(define (string-reverse s)
+  (list->string (reverse (unicode-string->list s))))
 
 ;;; returns a string that is the number formatted with a
 ;;; specified number of decimal places
