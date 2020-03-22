@@ -36,6 +36,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
 
 /**
  * The Notifier component displays alert messages and creates Android log entries through
@@ -106,6 +107,9 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
   // Notifier text color
   private int textColor = Color.WHITE;
+  
+  // Notifier text format
+  private static boolean htmlFormat;
 
   /**
    * Creates a new Notifier component.
@@ -117,6 +121,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     activity = container.$context();
     handler = new Handler();
     progressDialog = null;
+    HTMLFormat(true);
   }
 
   /**
@@ -181,7 +186,11 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.setTitle(title);
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);
-    alertDialog.setMessage(stringToHTML(message));
+    if (htmlFormat) {
+      alertDialog.setMessage(stringToHTML(message));
+    } else {
+      alertDialog.setMessage(message);
+    }
     alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
         buttonText, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
@@ -204,7 +213,34 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private static SpannableString stringToHTML(String message) {
     return new SpannableString(Html.fromHtml(message));
   }
-
+  
+  /**
+   * Returns the notifier's text's format
+   *
+   * @return {@code true} indicates that the notifier format is html text
+   *         {@code false} indicates that the notifier format is plain text
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "If true, then this notifier will show html text else it " +
+          "will show plain text. Note: Not all HTML is supported.")
+  public boolean HTMLFormat() {
+    return htmlFormat;
+  }
+  
+  /**
+   * Specifies the notifier's text's format
+   *
+   * @return {@code true} indicates that the notifier format is html text
+   *         {@code false} indicates that the notifier format is plain text
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(userVisible = false)
+  public void HTMLFormat(boolean fmt) {
+    htmlFormat = fmt;
+  }
+  
   /**
    * Displays an alert with two buttons that have specified text.  If cancelable is true,
    * there is an additional button marked CANCEL that cancels the dialog.
@@ -252,7 +288,11 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.setTitle(title);
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);
-    alertDialog.setMessage(stringToHTML(message));
+    if (htmlFormat) {
+      alertDialog.setMessage(stringToHTML(message));
+    } else {
+      alertDialog.setMessage(message);
+    }
 
     // Warning: The SDK button names are confusing.  If there are
     // three buttons, they go in the order  POSITIVE | NEUTRAL | NEGATIVE
@@ -360,7 +400,11 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private void textInputDialog(String message, String title, boolean cancelable, boolean maskInput) {
     final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
-    alertDialog.setMessage(stringToHTML(message));
+    if (htmlFormat) {
+      alertDialog.setMessage(stringToHTML(message));
+    } else {
+      alertDialog.setMessage(message);
+    }
     // Set an EditText view to get user input
     final EditText input = new EditText(activity);
     if (maskInput) {
