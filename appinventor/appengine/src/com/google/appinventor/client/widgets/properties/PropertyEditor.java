@@ -42,4 +42,8 @@ public abstract class PropertyEditor extends Composite {
    */
   public void orphan() {
   }
+
+  public void refresh() {
+    this.updateValue();
+  }
 }
