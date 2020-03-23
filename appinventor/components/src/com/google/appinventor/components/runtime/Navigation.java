@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.json.JSONException;
 import org.osmdroid.util.GeoPoint;
@@ -345,7 +344,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
       String coords = "{\"coordinates\": "
           + JsonUtil.getJsonRepresentation(getCoordinates(start, end)) + ", \"language\": \""
           + language + "\"}";
-      byte[] postData = coords.getBytes(StandardCharsets.UTF_8);
+      byte[] postData = coords.getBytes("UTF-8");
       connection.setFixedLengthStreamingMode(postData.length);
       BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
       try {
