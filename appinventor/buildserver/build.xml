@@ -217,7 +217,7 @@
        PlayAppExtras: builds ../build/buildserver/MITAI2Companion-full.apk
        ===================================================================== -->
   <target name="PlayAppExtras"
-          depends="CheckPlayAppExtras"
+          depends="CheckPlayAppExtras,PlayApp"
           unless="PlayAppExtras.uptodate">
     <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
       <classpath>
@@ -255,7 +255,7 @@
        Emulator: builds ../build/buildserver/Emulator.apk
        ===================================================================== -->
   <target name="Emulator"
-          depends="CheckEmulator"
+          depends="CheckEmulator,PlayAppExtras"
           unless="Emulator.uptodate">
     <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
       <classpath>
