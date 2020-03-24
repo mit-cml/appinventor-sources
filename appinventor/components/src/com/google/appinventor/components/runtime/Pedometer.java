@@ -127,6 +127,7 @@ public class Pedometer extends AndroidNonvisibleComponent
 
   /**
    * Resets the step count, distance, and clock.
+   * @suppressdoc
    */
   @SimpleFunction(description = "Resets the step counter, distance measure and time running.")
   public void Reset() {
@@ -138,7 +139,7 @@ public class Pedometer extends AndroidNonvisibleComponent
   }
 
   /**
-   * Resumes the counting of steps.
+   * This method has been deprecated. Use {@link #Start()} instead.
    */
   @Deprecated
   @SimpleFunction(description = "Resumes counting, synonym of Start.")
@@ -147,7 +148,7 @@ public class Pedometer extends AndroidNonvisibleComponent
   }
 
   /**
-   * Pauses the counting of steps.
+   * This method has been deprecated. Use {@link #Stop()} instead.
    */
   @Deprecated
   @SimpleFunction(description = "Pause counting of steps and distance.")
@@ -157,6 +158,7 @@ public class Pedometer extends AndroidNonvisibleComponent
 
   /**
    * Saves the pedometer state to shared preferences.
+   * @suppressdoc
    */
   @SimpleFunction(description = "Saves the pedometer state to the phone. Permits " +
     "permits accumulation of steps and distance between invocations of an App that uses " +
@@ -186,8 +188,9 @@ public class Pedometer extends AndroidNonvisibleComponent
    *
    * @param simpleSteps number of raw steps detected
    * @param distance approximate distance covered by number of simpleSteps in meters
+   * @suppressdoc
    */
-  @SimpleEvent(description = "This event is run when a raw step is detected")
+  @SimpleEvent(description = "This event is run when a raw step is detected.")
   public void SimpleStep(int simpleSteps, float distance) {
     EventDispatcher.dispatchEvent(this, "SimpleStep", simpleSteps, distance);
   }
@@ -198,6 +201,7 @@ public class Pedometer extends AndroidNonvisibleComponent
    *
    * @param walkSteps number of walking steps detected
    * @param distance approximate distance covered by the number of walkSteps in meters
+   * @suppressdoc
    */
   @SimpleEvent(description = "This event is run when a walking step is detected. " +
     "A walking step is a step that appears to be involved in forward motion.")
@@ -447,51 +451,53 @@ public class Pedometer extends AndroidNonvisibleComponent
   // that has them is loaded.
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void StartedMoving() {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void StoppedMoving() {
 
   }
 
   @Deprecated
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "This property has been deprecated.")
   public void UseGPS(boolean gps) {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void CalibrationFailed() {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void GPSAvailable() {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void GPSLost() {
   }
 
   // Properties
 
   @Deprecated
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "This property has been deprecated.")
   public void CalibrateStrideLength(boolean cal) {
   }
 
   @Deprecated
-  @SimpleProperty
+  @SimpleProperty(description = "This property has been deprecated.")
   public boolean CalibrateStrideLength() {
     return false;
   }
 
   @Deprecated
-  @SimpleProperty
+  @SimpleProperty(description = "This property has been deprecated.")
   public boolean Moving() {
     return false;
   }

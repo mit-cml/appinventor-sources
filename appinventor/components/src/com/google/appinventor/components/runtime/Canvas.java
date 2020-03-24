@@ -6,8 +6,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -28,11 +26,13 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.PaintUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -40,7 +40,10 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -56,22 +59,37 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * <p>A two-dimensional touch-sensitive rectangular panel on which drawing can
- * be done and sprites can be moved.</p>
+ * A two-dimensional touch-sensitive rectangular panel on which drawing can
+ * be done and sprites can be moved.
  *
- * <p>Conceptually, a sprite consists of the following layers, from back
+ * The {@link #BackgroundColor()}, {@link #PaintColor()}, {@link #BackgroundImage()},
+ * {@link #Width()}, and {@link #Height()} of the `Canvas` can be set in either the Designer or in
+ * the Blocks Editor. The `Width` and `Height` are measured in pixels and must be positive.
+ *
+ * Any location on the `Canvas` can be specified as a pair of `(X, Y)` values, where
+ *
+ * * X is the number of pixels away from the left edge of the `Canvas`
+ * * Y is the number of pixels away from the top edge of the `Canvas`
+ *
+ * There are events to tell when and where a `Canvas` has been touched or a Sprite
+ * ({@link ImageSprite} or {@link Ball}) has been dragged. There are also methods for drawing
+ * points, lines, circles, shapes, arcs, and text.
+ *
+ * @internaldoc
+ *
+ * Conceptually, a sprite consists of the following layers, from back
  * to front (with items in front being drawn on top):
- * <ul>
- * <li> background color
- * <li> background image
- * <li> the "drawing layer", populated through calls to
- *      {@link #DrawPoint(int,int)}, {@link #DrawCircle(int,int,float)},
+ *
+ * * background color
+ * * background image
+ * * the "drawing layer", populated through calls to
+ *      {@link #DrawPoint(int,int)}, {@link #DrawCircle(int,int,float,boolean)},
  *      {@link #DrawText(String,int,int)}, and
  *      {@link #DrawTextAtAngle(String,int,int,float)}, and
  *      {@link #SetBackgroundPixelColor(int,int,int)}
- * <li> the sprite layer, where sprites with higher Z values are drawn
+ * * the sprite layer, where sprites with higher Z values are drawn
  *      in front of (after) sprites with lower Z values.
- * </ul>
+ *
  * To the user, the first three layers are all the background, in terms
  * of the behavior of {@link #SetBackgroundPixelColor(int,int,int)} and
  * {@link #GetBackgroundPixelColor(int,int)}.  For historical reasons,
@@ -572,6 +590,22 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       clearDrawingLayer();  // will call invalidate()
     }
 
+    @android.support.annotation.RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
+    void setBackgroundImageBase64(String imageUrl) {
+      backgroundImagePath = (imageUrl == null) ? "" : imageUrl;
+      backgroundDrawable = null;
+      scaledBackgroundBitmap = null;
+
+      if (!TextUtils.isEmpty(backgroundImagePath)) {
+        byte[] decodedString = Base64.decode(backgroundImagePath, Base64.DEFAULT);
+        android.graphics.Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        backgroundDrawable = new BitmapDrawable(decodedByte);
+      }
+
+      setBackground();
+      clearDrawingLayer();  // will call invalidate()
+    }
+
     private void setBackground() {
       Drawable setDraw = backgroundDrawable;
       if (backgroundImagePath != "" && backgroundDrawable != null) {
@@ -888,8 +922,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   // Properties
 
  /**
-  * Set the canvas width
+  * Specifies the horizontal width of the `%type%`, measured in pixels.
   *
+  * @internaldoc
   * The width can only be set to >0 or -1 (automatic) or -2 (fill parent)
   * or to a value less then or equal to LENGTH_PERCENT_TAG (which is later
   * converted to pixels.
@@ -911,8 +946,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * Set the canvas height
+   * Specifies the `%type%`'s vertical height, measured in pixels.
    *
+   * @internaldoc
    * The height can only be set to >0 or -1 (automatic) or -2 (fill parent) or
    * to a value less then or equal to LENGTH_PERCENT_TAG (which is later
    * converted to pixels.
@@ -979,8 +1015,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * Specifies the path of the canvas background image.
+   * Specifies the name of a file containing the background image for the `Canvas`.
    *
+   * @internaldoc
    * <p/>See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
@@ -991,6 +1028,26 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty
   public void BackgroundImage(String path) {
     view.setBackgroundImage(path);
+  }
+
+  /**
+   * Specifies the backgound image in Base64 format
+   * imageUrl will be in format of: iVBORw0KG...s//f+4z/6Z
+   * @suppressdoc
+   * @param imageUrl the base64 format for an image
+   */
+  @android.support.annotation.RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
+  @SimpleProperty (
+      description = "Set the background image in Base64 format. This requires API level >= 8. For "
+          + "devices with API level less than 8, setting this will end up with an empty background."
+  )
+  public void BackgroundImageinBase64(String imageUrl) {
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
+      view.setBackgroundImageBase64(imageUrl);
+    } else {
+      view.setBackgroundImageBase64("");
+    }
+
   }
 
   /**
@@ -1044,6 +1101,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     return paint.getTextSize() / scale;
   }
 
+  /**
+   * Specifies the font size of text drawn on the Canvas.
+   * @param size
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
@@ -1064,7 +1125,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * Specifies the stroke width
+   * Specifies the width of lines drawn on the Canvas.
    *
    * @param width
    */
@@ -1097,9 +1158,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   /**
    * Specifies the alignment of the canvas's text: center, normal
-   * (starting at the specified point in DrawText() or DrawAngle()),
-   * or opposite (ending at the specified point in DrawText() or
-   * DrawAngle()).
+   * (starting at the specified point in {@link #DrawText} or
+   * {@link #DrawTextAtAngle(String, int, int, float)}),
+   * or opposite (ending at the specified point in
+   * {@link #DrawText(String, int, int)} or
+   * {@link #DrawTextAtAngle(String, int, int, float)}).
    *
    * @param alignment  one of {@link Component#ALIGNMENT_NORMAL},
    *                   {@link Component#ALIGNMENT_CENTER} or
@@ -1133,6 +1196,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     return extendMovesOutsideCanvas;
   }
 
+  /**
+   * @suppressdoc
+   * @param extend
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty(userVisible = true)
   public void ExtendMovesOutsideCanvas(boolean extend){
@@ -1257,7 +1324,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
  /**
-   * Draws a circle (filled in) with the given radius centered at the given coordinates on the canvas
+   * Draws a circle (filled in) with the given radius centered at the given coordinates on the
+   * Canvas.
    *
    * @param centerX  x-coordinate of the center of the circle
    * @param centerY  y-coordinate of the center of the circle
@@ -1438,7 +1506,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * <p>Gets the color of the given pixel, ignoring sprites.</p>
+   * Gets the color of the given pixel, ignoring sprites.
    *
    * @param x the x-coordinate
    * @param y the y-coordinate
@@ -1456,8 +1524,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * <p>Sets the color of the given pixel.  This has no effect if the
-   * coordinates are out of bounds.</p>
+   * Sets the color of the given pixel.  This has no effect if the
+   * coordinates are out of bounds.
    *
    * @param x the x-coordinate
    * @param y the y-coordinate
@@ -1475,7 +1543,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * <p>Gets the color of the given pixel, including sprites.</p>
+   * Gets the color of the given pixel, including sprites.
    *
    * @param x the x-coordinate
    * @param y the y-coordinate

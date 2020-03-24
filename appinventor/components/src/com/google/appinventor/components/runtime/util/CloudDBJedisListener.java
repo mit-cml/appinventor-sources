@@ -48,7 +48,7 @@ public class CloudDBJedisListener extends JedisPubSub {
     try {
     // Message is a JSON encoded list of the tag that was just set and its value
       List<Object> data = null;
-      data = (List<Object>) JsonUtil.getObjectFromJson((String) message);
+      data = (List<Object>) JsonUtil.getObjectFromJson((String) message, false);
       if (DEBUG) {
         Log.d(LOG_TAG, "onMessage: data = " + data);
       }

@@ -524,6 +524,12 @@ public interface Images extends Resources {
   ImageResource lists();
 
   /**
+   * Built in drawer item: dictionaries
+   */
+  @Source("com/google/appinventor/images/dictionaries.png")
+  ImageResource dictionaries();
+
+  /**
    * Built in drawer item: colors
    */
   @Source("com/google/appinventor/images/colors.png")
@@ -625,6 +631,12 @@ public interface Images extends Resources {
    ImageResource logo();
 
   /**
+   * Designer palette item: Arduino component
+   */
+  @Source("com/google/appinventor/images/arduino.png")
+  ImageResource arduino();
+  
+  /**
    * Media icon: image
    */
   @Source("com/google/appinventor/images/mediaIcon_img.png")
@@ -649,6 +661,12 @@ public interface Images extends Resources {
   ImageResource magneticSensor();
 
   /**
+   * Designer palette item:
+   */
+  @Source("com/google/appinventor/images/navigation.png")
+  ImageResource navigationComponent();
+
+  /**
   * Wilson Logo 
   */
   @Source("com/google/appinventor/images/wilson.png")
@@ -665,5 +683,4 @@ public interface Images extends Resources {
   */
   @Source("com/google/appinventor/images/YRLogo.png")
   ImageResource YRLogo();
-
 }

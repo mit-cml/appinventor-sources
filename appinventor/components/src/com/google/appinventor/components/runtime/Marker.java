@@ -18,7 +18,6 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -34,6 +33,13 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
 
 import android.util.Log;
 
+/**
+ * The `Marker` component indicates points on a {@link Map}, such as buildings or other points of
+ * interest. `Marker`s can be customized in many ways, such as using custom images from the app's
+ * assets or by changing the `Marker` {@link #FillColor(int)}. `Marker`s can also be created
+ * dynamically by calling the {@link Map#CreateMarker(double, double)} method and configured using
+ * the ["Any Component"](../other/any-component-blocks.html) blocks.
+ */
 @DesignerComponent(version = YaVersion.MARKER_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
     description = "<p>An icon positioned at a point to indicate information on a map. Markers " +
@@ -183,7 +189,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   }
 
   /**
-   * The type of the map feature. For Marker, this returns the text "Marker".
+   * Return the type of the map feature. For Marker, this returns the text "Marker".
    * @return the type of the feature
    */
   @SimpleProperty
@@ -193,8 +199,11 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   }
 
   /**
-   * The latitude of the marker, in decimal degrees, with positive values representing
-   * degrees north of the equator.
+   * Sets or gets the latitude of the `Marker`, in degrees, with positive values representing
+   * north of the equator and negative values representing south of the equator. To update the
+   * `Latitude` and {@link #Longitude(double)} simultaneously, use the
+   * {@link #SetLocation(double, double)} method.
+   *
    * @param latitude the new latitude of the marker. Range: [-90, 90]
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LATITUDE,
@@ -211,14 +220,20 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     }
   }
 
+  /**
+   * @suppressdoc
+   */
   @SimpleProperty
   public double Latitude() {
     return location.getLatitude();
   }
 
   /**
-   * The longitude of the marker, in decimal degrees, with positive values representing
-   * degrees east of the prime meridian.
+   * Sets or gets the longitude of the `Marker`, in degrees, with positive values representing east
+   * of the prime meridian and negative values representing west of the prime meridian. To update
+   * the {@link #Latitude(double)} and `Longitude` simultaneously, use the
+   * {@link #SetLocation(double, double)} method.
+   *
    * @param longitude the new longitude of the marker. Range: [-180, 180]
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LONGITUDE,
@@ -235,11 +250,20 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     }
   }
 
+  /**
+   * @suppressdoc
+   */
   @SimpleProperty
   public double Longitude() {
     return location.getLongitude();
   }
 
+  /**
+   * Specifies the image shown for the `Marker`. If set to the empty string "", then the default
+   * marker icon will be used.
+   *
+   * @param path a relative or absolute path, or a url, to an image asset to use for the marker.
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
   @SimpleProperty
   public void ImageAsset(String path) {
@@ -248,12 +272,20 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     map.getController().updateFeatureImage(this);
   }
 
+  /**
+   * Specifies the image shown for the `Marker`. If set to the empty string "", then the default
+   * marker icon will be used.
+   */
   @SimpleProperty(description = "The ImageAsset property is used to provide an alternative image " +
       "for the Marker.")
   public String ImageAsset() {
     return imagePath;
   }
 
+  /**
+   * @suppressdoc
+   * @param argb the outline paint color
+   */
   @SimpleProperty
   public void StrokeColor(int argb) {
     super.StrokeColor(argb);
@@ -275,6 +307,10 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     map.getController().updateFeaturePosition(this);
   }
 
+  /**
+   * Sets or gets the horizontal offset of the `Marker` center relative to its image. Valid values
+   * are: `1` (Left), `2` (Right), or `3` (Center).
+   */
   @Override
   @SimpleProperty(description = "The horizontal alignment property controls where the Marker's " +
       "anchor is located relative to its width.")
@@ -297,6 +333,10 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     map.getController().updateFeaturePosition(this);
   }
 
+  /**
+   * Sets or gets the vertical offset of the `Marker` center relative to its image. Valid values
+   * are: `1` (Top), `2` (Center), or `3` (Bottom).
+   */
   @Override
   @SimpleProperty(description = "The vertical alignment property controls where the Marker's " +
       "anchor is located relative to its height.")
@@ -317,7 +357,8 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   }
 
   /**
-   * Sets the width of the marker image, in pixels.
+   * Specifies the horizontal width of the `%type%`, measured in pixels.
+   *
    * @param width the new width of the marker image
    */
   @Override
@@ -327,6 +368,9 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     map.getController().updateFeatureSize(this);
   }
 
+  /**
+   * Specifies the horizontal width of the `%type%`, measured in pixels.
+   */
   @Override
   @SimpleProperty
   public int Width() {
@@ -339,7 +383,9 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   }
 
   /**
-   * Sets the width of the marker image, as a percentage of the screen width.
+   * Specifies the horizontal width of the `%type%` as a percentage
+   * of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+   *
    * @param pCent the new width, in percent, of the marker image
    */
   @SuppressWarnings("squid:S00100")
@@ -350,7 +396,8 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   }
 
   /**
-   * Sets the height of the marker image, in pixels.
+   * Specifies the `%type%`'s vertical height, measured in pixels.
+   *
    * @param height the new height of the marker image
    */
   @Override
@@ -360,6 +407,9 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     map.getController().updateFeatureSize(this);
   }
 
+  /**
+   * Specifies the `%type%`'s vertical height, measured in pixels.
+   */
   @Override
   @SimpleProperty
   public int Height() {
@@ -372,7 +422,9 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   }
 
   /**
-   * Sets the height of the marker image, as a percentage of the screen height.
+   * Specifies the `%type%`'s vertical height as a percentage
+   * of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+   *
    * @param pCent The new height, in percent, of the marker image.
    */
   @SuppressWarnings("squid:S00100")
@@ -382,6 +434,12 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     map.getController().updateFeatureSize(this);
   }
 
+  /**
+   * Sets the location of the `Marker`.
+   *
+   * @param latitude the new latitude of the marker
+   * @param longitude the new longitude of the marker
+   */
   @SimpleFunction(description = "Set the location of the marker.")
   public void SetLocation(double latitude, double longitude) {
     Log.d(TAG, "SetLocation");
@@ -405,6 +463,13 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     return DistanceToPoint(latitude, longitude);
   }
 
+  /**
+   * Compute the distance, in meters, between a `Marker` and a `latitude`, `longitude` point.
+   *
+   * @param latitude
+   * @param longitude
+   * @return
+   */
   @SuppressWarnings("squid:S00100")
   @SimpleFunction(description = "Compute the distance, in meters, between a Marker and a " +
       "latitude, longitude point.")
@@ -412,6 +477,14 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     return GeometryUtil.distanceBetween(this, new GeoPoint(latitude, longitude));
   }
 
+  /**
+   * Returns the bearing from the `Marker` to the given `latitude` and `longitude`, in degrees
+   * from due north.
+   *
+   * @param latitude
+   * @param longitude
+   * @return
+   */
   @SuppressWarnings("squid:S00100")
   @SimpleFunction(description = "Returns the bearing from the Marker to the given latitude and " +
       "longitude, in degrees " +
@@ -420,6 +493,17 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     return location.bearingTo(new GeoPoint(latitude, longitude));
   }
 
+  /**
+   * Returns the bearing from the `Marker` to the given map feature, in degrees from due north.
+   * If the `centroids` parameter is `true`{:.logic.block}, the bearing will be to the center of
+   * the map feature. Otherwise, the bearing will be computed to the point in the feature nearest
+   * the `Marker`.
+   *
+   * @param mapFeature The target map feature used for computing the bearing from the Marker
+   * @param centroids True if the centroid of the target feature should be used for the computation,
+   *                  otherwise false for the nearest point on the edge of the feature
+   * @return The bearing in degrees east of due north
+   */
   @SuppressWarnings("squid:S00100")
   @SimpleFunction(description = "Returns the bearing from the Marker to the given map feature, " +
       "in degrees from due north. If the centroids parameter is true, the bearing will be to the " +

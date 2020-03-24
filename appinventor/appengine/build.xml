@@ -73,10 +73,7 @@
   <target name="CheckDocs">
     <uptodate property="Docs.uptodate">
       <srcfiles dir="${appinventor.dir}/docs/markdown">
-        <exclude name="_layouts/*" />
-        <exclude name="Gemfile*" />
-        <exclude name="_config.yml" />
-        <exclude name=".sass-cache/**/*" />
+        <include name="reference/**/*" />
       </srcfiles>
       <firstmatchmapper>
         <globmapper from="*.md" to="${appinventor.dir}/docs/html/*.html" />
@@ -88,16 +85,25 @@
   <!-- =====================================================================
        Builds the documentation from the corresponding Markdown files.
        ===================================================================== -->
-  <target name="BuildDocs" depends="components_Markdown,CheckDocs"
+  <target name="BuildDocs" depends="components_AndroidRuntime,CheckDocs"
           unless="Docs.uptodate">
+    <!-- Jenkins will pass -Dforce.builddocs=true to ensure docs build correctly -->
+    <property name="force.builddocs" value="false" />
     <!-- We set failifexecutionfails to false so the whole build doesn't fail
          if the developer doesn't have Jekyll set up -->
-    <exec executable="jekyll" failonerror="true" failifexecutionfails="false">
+    <exec executable="bundle" failonerror="${force.builddocs}"
+          failifexecutionfails="${force.builddocs}"
+          dir="${docs.dir}/markdown" >
+      <arg value="install" />
+      <arg value="--path" />
+      <arg value="vendor/bundle" />
+    </exec>
+    <exec executable="bundle" failonerror="${force.builddocs}"
+          failifexecutionfails="${force.builddocs}"
+          dir="${docs.dir}/markdown" >
+      <arg value="exec" />
+      <arg value="jekyll" />
       <arg value="build" />
-      <arg value="-s" />
-      <arg value="${docs.dir}/markdown" />
-      <arg value="--layouts" />
-      <arg value="${docs.dir}/markdown/_layouts" />
       <arg value="-d" />
       <arg value="${docs.dir}/html" />
     </exec>
@@ -489,7 +495,7 @@
        ===================================================================== -->
   <target name="AiClientLib"
           description="App Inventor Client library - compile java source to bytecode"
-          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription,components_ComponentTranslation">
+          depends="components_AndroidRuntime">
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
@@ -576,6 +582,41 @@
       <arg value="${build.war.dir}"/>
       <arg line="-logLevel INFO -extra ${build.extra.dir} -style pretty"/>
       <arg value="com.google.appinventor.YaClient"/>
+    </java>
+  </target>
+
+  <target name="devmode"
+          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
+          description="Run development mode">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.codeserver.CodeServer">
+      <classpath>
+        <pathelement location="src" />
+        <pathelement location="${build.dir}/components/ComponentTranslation/src" />
+        <pathelement location="${build.war.dir}/WEB-INF/classes" />
+        <pathelement location="${local.build.dir}/AiRebindLib.jar" />
+        <pathelement location="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
+        <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
+        <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
+        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
+        <!-- external libs -->
+        <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
+        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
+        <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
+        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+        <!-- gwt libs -->
+        <pathelement location="${gwt.sdk}/gwt-codeserver.jar" />
+        <pathelement location="${gwt.sdk}/gwt-dev.jar" />
+        <pathelement location="${gwt.sdk}/gwt-user.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+      </classpath>
+      <jvmarg value="-Xmx1G" />
+      <arg line="-style PRETTY -logLevel INFO" />
+      <arg value="com.google.appinventor.YaClient" />
     </java>
   </target>
 

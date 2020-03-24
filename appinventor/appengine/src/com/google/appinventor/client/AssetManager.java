@@ -222,8 +222,10 @@ public final class AssetManager implements ProjectChangeListener {
   }
 
   private void refreshAssets1() {
+    boolean loadInProgress = false;
     for (AssetInfo a : assets.values()) {
       if (!a.loaded) {
+        loadInProgress = true;
         if (a.fileContent == null && !useWebRTC()) { // Need to fetch it from the server
           retryCount = 3;
           ConnectProgressBar.setProgress(100 * assetTransferProgress / (2 * assets.size()),
@@ -244,7 +246,7 @@ public final class AssetManager implements ProjectChangeListener {
     }
     // If no assets are in the project, close the Progress Bar and
     // perform the callback immediately.
-    if (assets.values().size() == 0) {
+    if (assets.values().size() == 0 || !loadInProgress) {
       ConnectProgressBar.hide();
       if (assetsTransferredCallback != null) {
         doCallBack(assetsTransferredCallback);

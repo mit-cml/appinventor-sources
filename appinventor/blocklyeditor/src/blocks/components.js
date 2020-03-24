@@ -1047,7 +1047,7 @@ Blockly.Blocks.component_set_get = {
         thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
         if (thisBlock.propertyName) {
-          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.getTabCatcherElement(),
+          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.getTypeName(),
               thisBlock.propertyName, thisBlock.propertyObject.description));
         } else {
           thisBlock.setTooltip(Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP);
@@ -1335,7 +1335,7 @@ Blockly.Blocks.component_component_block = {
 
     this.appendDummyInput().appendField(this.componentDropDown, Blockly.ComponentBlock.COMPONENT_SELECTOR);
     //this.componentDropDown.setValue(this.instanceName);
-    this.setOutput(true, [this.typeName,"COMPONENT"]);
+    this.setOutput(true, [this.typeName,"COMPONENT","Key"]);
     this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkComponentNotExistsError"}];
   },
 
@@ -1443,6 +1443,7 @@ Blockly.ComponentBlock.HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL,
@@ -1533,6 +1534,7 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_PROPERTIES_HELPURL,
@@ -1623,6 +1625,7 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_EVENTS_HELPURL,
@@ -1703,6 +1706,7 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_METHODS_HELPURL,

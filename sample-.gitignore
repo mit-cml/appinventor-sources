@@ -19,3 +19,7 @@ out/
 *.pyc
 .vagrant/
 *.log
+.build/
+*-cache/
+.bundle/
+vendor/
