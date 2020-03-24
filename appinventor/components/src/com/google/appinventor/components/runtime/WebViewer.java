@@ -222,6 +222,15 @@ public final class WebViewer extends AndroidViewComponent {
     public void onPageFinished(WebView view, String url) {
       PageLoaded(url);
     }
+
+    @Override
+    public void onReceivedError(WebView view, final int errorCode, final String description, final String failingUrl) {
+      container.$form().runOnUiThread(new Runnable() {
+        public void run() {
+          ErrorOccurred(errorCode, description, failingUrl);
+        }
+      });
+    }
   }
 
   // Components don't normally override Width and Height, but we do it here so that
@@ -537,6 +546,16 @@ public final class WebViewer extends AndroidViewComponent {
     }
   }
 
+   /**
+   * Run JavaScript in the current page.
+   */
+  @SimpleFunction(description = "Run JavaScript in the current page.")
+  public void RunJavaScript(String js) {
+    // evaluateJavascript() was added in API 19
+    // and is therefore not used here for compatibility purposes.
+    webview.loadUrl("javascript:(function(){" + js + "})()");
+  }
+
   /**
    * Event that runs when the `AppInventor.setWebViewString` method is called from JavaScript.
    * The new {@link #WebViewString()} is given by the `value`{:.variable.block} parameter.
@@ -555,6 +574,11 @@ public final class WebViewer extends AndroidViewComponent {
   @SimpleEvent(description = "When a page is finished loading this event is run.")
   public void PageLoaded(String url) {
     EventDispatcher.dispatchEvent(this, "PageLoaded", url);
+  }
+
+  @SimpleEvent(description = "When an error occurs this event is run.")
+  public void ErrorOccurred(int errorCode, String description, String failingUrl) {
+    EventDispatcher.dispatchEvent(this, "ErrorOccurred", errorCode, description, failingUrl);
   }
 
   private void loadUrl(final String caller, final String url) {

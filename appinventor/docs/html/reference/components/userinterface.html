@@ -1497,6 +1497,8 @@ having dark grey components.</li>
 <dl class="events">
   <dt id="WebViewer.BeforePageLoad">BeforePageLoad(<em class="text">url</em>)</dt>
   <dd>When a page is about to load this event is run.</dd>
+  <dt id="WebViewer.ErrorOccurred">ErrorOccurred(<em class="number">errorCode</em>,<em class="text">description</em>,<em class="text">failingUrl</em>)</dt>
+  <dd>When an error occurs this event is run.</dd>
   <dt id="WebViewer.PageLoaded">PageLoaded(<em class="text">url</em>)</dt>
   <dd>When a page is finished loading this event is run.</dd>
   <dt id="WebViewer.WebViewStringChange">WebViewStringChange(<em class="text">value</em>)</dt>
@@ -1538,6 +1540,8 @@ Eclair, this function is a no-op on older phones.</p>
   <dd>Load the page at the given URL.</dd>
   <dt id="WebViewer.Reload" class="method"><i></i> Reload()</dt>
   <dd>Reload the current page.</dd>
+  <dt id="WebViewer.RunJavaScript" class="method"><i></i> RunJavaScript(<em class="text">js</em>)</dt>
+  <dd>Run JavaScript in the current page.</dd>
   <dt id="WebViewer.StopLoading" class="method"><i></i> StopLoading()</dt>
   <dd>Stop loading a page.</dd>
 </dl>

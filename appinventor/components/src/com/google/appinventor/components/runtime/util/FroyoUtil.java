@@ -153,6 +153,15 @@ public class FroyoUtil {
       public void onPageFinished(WebView view, String url) {
         EventDispatcher.dispatchEvent(component, "PageLoaded", url);
       }
+
+      @Override
+      public void onReceivedError(WebView view, final int errorCode, final String description, final String failingUrl) {
+        form.runOnUiThread(new Runnable() {
+          public void run() {
+            EventDispatcher.dispatchEvent(component, "ErrorOccurred", errorCode, description, failingUrl);
+          }
+        });
+      }
     };
   }
 
