@@ -11,6 +11,7 @@ import com.google.appinventor.components.runtime.ComponentContainer;
 
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -199,7 +200,7 @@ public final class ViewUtil {
    * Sets the image for an ImageView.
    */
   public static void setImage(ComponentContainer container, ImageView view, String picturePath) {
-    if (picturePath.substring(picturePath.lastIndexOf('.') + 1).equals("gif")) {
+    if (picturePath.endsWith(".gif") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
       GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(view);
       MediaUtil.MediaSource mediaSource = MediaUtil.determineMediaSource(container.$form(), picturePath);
       switch (mediaSource) {
