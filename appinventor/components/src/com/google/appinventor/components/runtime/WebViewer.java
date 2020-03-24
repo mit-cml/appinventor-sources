@@ -224,8 +224,12 @@ public final class WebViewer extends AndroidViewComponent {
     }
 
     @Override
-    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-      ErrorOccurred(errorCode, description, failingUrl);
+    public void onReceivedError(WebView view, final int errorCode, final String description, final String failingUrl) {
+      container.$form().runOnUiThread(new Runnable() {
+        public void run() {
+          ErrorOccurred(errorCode, description, failingUrl);
+        }
+      });
     }
   }
 

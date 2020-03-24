@@ -155,8 +155,12 @@ public class FroyoUtil {
       }
 
       @Override
-      public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-        EventDispatcher.dispatchEvent(component, "ErrorOccurred", errorCode, description, failingUrl);
+      public void onReceivedError(WebView view, final int errorCode, final String description, final String failingUrl) {
+        form.runOnUiThread(new Runnable() {
+          public void run() {
+            EventDispatcher.dispatchEvent(component, "ErrorOccurred", errorCode, description, failingUrl);
+          }
+        });
       }
     };
   }
