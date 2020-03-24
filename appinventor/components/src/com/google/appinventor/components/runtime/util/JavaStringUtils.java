@@ -129,6 +129,31 @@ public class JavaStringUtils {
       this.text = text;
     }
   }
+  /*
+   * Range comparator that sorts ranges in descending order of range
+   * end times. Overlapping ranges are considered equal by the comparator.
+   */
+  private static class RangeComparator implements Comparator<Range> {
+    @Override
+    public int compare(Range r1, Range r2) {
+      // First, test for overlap. We do this by taking the maximum
+      // start point of a range, and the minimum end point of a range.
+      int maxStart = Math.max(r1.start, r2.start);
+      int minEnd = Math.min(r1.end, r2.end);
+
+      // If maxStart <= minEnd, the ranges overlap (or touch). Since the
+      // min end index is exclusive, we take the strictly less < instead,
+      // since the ranges could touch (due to the end ID being overlapping)
+      if (maxStart < minEnd) {
+        // Ranges overlap. Consider them equal, thus not inserting a new range.
+        return 0;
+      } else {
+        // Ranges unequal. Sort by endpoint in descending order to get the last
+        // range first in the TreeSet.
+        return Integer.compare(r2.end, r1.end);
+      }
+    }
+  }
 
   public static final String LOG_TAG_JOIN_STRINGS = "JavaJoinListOfStrings";
   private static final boolean DEBUG = false;
@@ -146,32 +171,7 @@ public class JavaStringUtils {
     mappingOrderDictionary = new MappingOrder();
     mappingOrderLongestStringFirst = new MappingLongestStringFirstOrder();
     mappingOrderEarliestOccurrence = new MappingEarliestOccurrenceFirstOrder();
-
-    /*
-     * Range comparator that sorts ranges in descending order of range
-     * end times. Overlapping ranges are considered equal by the comparator.
-     */
-    rangeComparator = new Comparator<Range>() {
-      @Override
-      public int compare(Range r1, Range r2) {
-        // First, test for overlap. We do this by taking the maximum
-        // start point of a range, and the minimum end point of a range.
-        int maxStart = Math.max(r1.start, r2.start);
-        int minEnd = Math.min(r1.end, r2.end);
-
-        // If maxStart <= minEnd, the ranges overlap (or touch). Since the
-        // min end index is exclusive, we take the strictly less < instead,
-        // since the ranges could touch (due to the end ID being overlapping)
-        if (maxStart < minEnd) {
-          // Ranges overlap. Consider them equal, thus not inserting a new range.
-          return 0;
-        } else {
-          // Ranges unequal. Sort by endpoint in descending order to get the last
-          // range first in the TreeSet.
-          return Integer.compare(r2.end, r1.end);
-        }
-      }
-    };
+    rangeComparator = new RangeComparator();
   }
 
 
