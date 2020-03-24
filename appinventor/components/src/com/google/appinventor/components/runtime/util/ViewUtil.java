@@ -6,6 +6,20 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.data.DataFetcher;
+import com.bumptech.glide.load.model.GenericLoaderFactory;
+import com.bumptech.glide.load.model.ModelLoader;
+import com.bumptech.glide.load.model.ModelLoaderFactory;
+import com.bumptech.glide.load.model.file_descriptor.FileDescriptorModelLoader;
+import com.bumptech.glide.load.model.stream.StreamByteArrayLoader;
+import com.bumptech.glide.load.model.stream.StreamModelLoader;
+import com.bumptech.glide.module.GlideModule;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
 
@@ -19,8 +33,10 @@ import android.widget.TableRow;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Helper methods for manipulating {@link View} objects.
@@ -197,36 +213,54 @@ public final class ViewUtil {
    * Sets the image for an ImageView.
    */
   public static void setImage(ComponentContainer container, ImageView view, String picturePath) {
-    GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(view);
-    MediaUtil.MediaSource mediaSource = MediaUtil.determineMediaSource(container.$form(), picturePath);
-    switch (mediaSource) {
-      case ASSET:
-        Drawable drawable = null;
-        try {
-          drawable = MediaUtil.getBitmapDrawable(container.$form(), picturePath);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-        view.setImageDrawable(drawable);
-        break;
-      case REPL_ASSET:
-        String path = MediaUtil.replAssetPath(picturePath);
-        try {
-          Glide.with(container.$context())
-            .load(Uri.fromFile(new File(path)))
-            .into(imageViewTarget);
-        } catch (Exception e) {
-          Log.e("Image", "Unable to load " + path);
-        }
-        break;
-      default:
-        try {
-          Glide.with(container.$context())
-            .load(Uri.fromFile(new File(picturePath)))
-            .into(imageViewTarget);
-        } catch (Exception e) {
-          Log.e("Image", "Unable to load " + picturePath);
-        }
+    if (picturePath.substring(picturePath.lastIndexOf('.') + 1).equals("gif")) {
+      GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(view);
+      MediaUtil.MediaSource mediaSource = MediaUtil.determineMediaSource(container.$form(), picturePath);
+      switch (mediaSource) {
+        case ASSET:
+          try {
+            InputStream is = container.$form().getAssets().open(picturePath);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] buf = new byte[4096];
+            int read;
+            while ((read = is.read(buf)) > 0) {
+              bos.write(buf, 0, read);
+            }
+            buf = bos.toByteArray();
+            Glide.with(container.$context())
+                .load(buf)
+                .into(imageViewTarget);
+          } catch (IOException e) {
+            Log.e("Image", "Unable to load " + picturePath);
+          }
+          break;
+        case REPL_ASSET:
+          String replAssetPath = MediaUtil.replAssetPath(picturePath);
+          try {
+            Glide.with(container.$context())
+                .load(Uri.fromFile(new File(replAssetPath)))
+                .into(imageViewTarget);
+          } catch (Exception e) {
+            Log.e("Image", "Unable to load " + picturePath);
+          }
+          break;
+        default:
+          try {
+            Glide.with(container.$context())
+                .load(Uri.fromFile(new File(picturePath)))
+                .into(imageViewTarget);
+          } catch (Exception e) {
+            Log.e("Image", "Unable to load " + picturePath);
+          }
+      }
+    } else {
+      Drawable drawable = null;
+      try {
+        drawable = MediaUtil.getBitmapDrawable(container.$form(), picturePath);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      view.setImageDrawable(drawable);
     }
     if (view.getDrawable() != null) {
       view.setAdjustViewBounds(true);
