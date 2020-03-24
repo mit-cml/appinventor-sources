@@ -630,35 +630,39 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>Derives longitude from the given <code class="highlighter-rouge">locationName</code>.</dd>
 </dl>
 
-<h2 id="MagneticField">MagneticField</h2>
+<h2 id="MagneticFieldSensor">MagneticFieldSensor</h2>
 
-<h3 id="MagneticField-Properties">Properties</h3>
+<p>Component for MagneticFieldSensor</p>
+
+<h3 id="MagneticFieldSensor-Properties">Properties</h3>
 
 <dl class="properties">
-    <dt id="MagneticField.AbsoluteStrength" class="double"><em>AbsoluteStrength</em></dt>
-    <dd>Returns the absulute value of all magnetic forces.</dd>
-    <dt id="MagneticField.Available" class="boolean"><em>Available</em></dt>
-    <dd>Returns true when sensor is available in the device.</dd>
-    <dt id="MagneticField.Enabled" class="boolean"><em>Enabled</em></dt>
-    <dd>If enabled, sensor will be available for measurement.</dd>
-    <dt id="MagneticField.MaximumRange" class="float"><em>MaximumRange</em></dt>
-    <dd>Returns the maximum range on which values can be measured.</dd>
-    <dt id="MagneticField.XStrength" class="float"><em>XStrength</em></dt>
-    <dd>Returns the value of the force in the X-axis.</dd>
-    <dt id="MagneticField.Ytrength" class="float"><em>YStrength</em></dt>
-    <dd>Returns the value of the force in the Y-axis.</dd>
-    <dt id="MagneticField.ZStrength" class="float"><em>ZStrength</em></dt>
-    <dd>Returns the value of the force in the Z-axis.</dd>
-    <dd></dd>
+  <dt id="MagneticFieldSensor.AbsoluteStrength" class="number ro bo"><em>AbsoluteStrength</em></dt>
+  <dd>Indicates the absolute strength of the field.</dd>
+  <dt id="MagneticFieldSensor.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Indicates that there is a magnetic field sensor in the device and it is available.</dd>
+  <dt id="MagneticFieldSensor.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Property for Enabled</dd>
+  <dt id="MagneticFieldSensor.MaximumRange" class="number ro bo"><em>MaximumRange</em></dt>
+  <dd>Indicates the maximum range the magnetic sensor can reach.</dd>
+  <dt id="MagneticFieldSensor.XStrength" class="number ro bo"><em>XStrength</em></dt>
+  <dd>Indicates the field’s strength in the X-axis.</dd>
+  <dt id="MagneticFieldSensor.YStrength" class="number ro bo"><em>YStrength</em></dt>
+  <dd>Indicates the field’s strength in the Y-axis.</dd>
+  <dt id="MagneticFieldSensor.ZStrength" class="number ro bo"><em>ZStrength</em></dt>
+  <dd>Indicates the field’s strength in the Z-axis.</dd>
 </dl>
 
-<h3 id="MagneticField-Events">Events</h3>
+<h3 id="MagneticFieldSensor-Events">Events</h3>
 
 <dl class="events">
-    <dt id="MagneticField.MagneticChanged">MagneticChanged(<em class="float">xStrength</em>,
-        <em class="float">yStrength</em>, <em class="float">zStrength</em>, <em class="double">absoluteStrength</em>)</dt>
-    <dd>Indicates that new values have been measured. Variables are the new values.</dd>
+  <dt id="MagneticFieldSensor.MagneticChanged">MagneticChanged(<em class="number">xStrength</em>,<em class="number">yStrength</em>,<em class="number">zStrength</em>,<em class="number">absoluteStrength</em>)</dt>
+  <dd>Triggered when magnetic field has changed.</dd>
 </dl>
+
+<h3 id="MagneticFieldSensor-Methods">Methods</h3>
+
+<p class="methods">None</p>
 
 <h2 id="NearField">NearField</h2>
 
