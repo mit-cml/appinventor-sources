@@ -630,7 +630,7 @@ Component for MagneticFieldSensor
 {:.events}
 
 {:id="MagneticFieldSensor.MagneticChanged"} MagneticChanged(*xStrength*{:.number},*yStrength*{:.number},*zStrength*{:.number},*absoluteStrength*{:.number})
-: Triggered when magnetic field has changed.
+: Triggers when magnetic field has changed, setting the new values in parameters.
 
 ### Methods  {#MagneticFieldSensor-Methods}
 

@@ -81,7 +81,7 @@ public class MagneticFieldSensor extends AndroidNonvisibleComponent implements S
     }
   }
 
-  @SimpleEvent(description = "Triggered when magnetic field has changed.")
+  @SimpleEvent(description = "Triggers when magnetic field has changed, setting the new values in parameters.")
   public void MagneticChanged(float xStrength, float yStrength, float zStrength, double absoluteStrength) {
     EventDispatcher.dispatchEvent(this, "MagneticChanged", xStrength, yStrength, zStrength, absoluteStrength);
   }
