@@ -162,18 +162,10 @@ public class JavaStringUtils {
    * Since mapping orders do not have state, we initialize
    * fixed final MappingOrders to use for replaceAllMappings.
    */
-  private static final MappingOrder mappingOrderDictionary;
-  private static final MappingOrder mappingOrderLongestStringFirst;
-  private static final MappingOrder mappingOrderEarliestOccurrence;
-  private static final Comparator<Range> rangeComparator;
-
-  static {
-    mappingOrderDictionary = new MappingOrder();
-    mappingOrderLongestStringFirst = new MappingLongestStringFirstOrder();
-    mappingOrderEarliestOccurrence = new MappingEarliestOccurrenceFirstOrder();
-    rangeComparator = new RangeComparator();
-  }
-
+  private static final MappingOrder mappingOrderDictionary = new MappingOrder();
+  private static final MappingOrder mappingOrderLongestStringFirst = new MappingLongestStringFirstOrder();
+  private static final MappingOrder mappingOrderEarliestOccurrence = new MappingEarliestOccurrenceFirstOrder();
+  private static final Comparator<Range> rangeComparator = new RangeComparator();
 
   /**
    * Java implementation of join-strings since the Kawa version appears to run of space.
