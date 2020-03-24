@@ -140,11 +140,38 @@ public class JavaStringUtils {
   private static final MappingOrder mappingOrderDictionary;
   private static final MappingOrder mappingOrderLongestStringFirst;
   private static final MappingOrder mappingOrderEarliestOccurrence;
+  private static final Comparator<Range> rangeComparator;
 
   static {
     mappingOrderDictionary = new MappingOrder();
     mappingOrderLongestStringFirst = new MappingLongestStringFirstOrder();
     mappingOrderEarliestOccurrence = new MappingEarliestOccurrenceFirstOrder();
+
+    /*
+     * Range comparator that sorts ranges in descending order of range
+     * end times. Overlapping ranges are considered equal by the comparator.
+     */
+    rangeComparator = new Comparator<Range>() {
+      @Override
+      public int compare(Range r1, Range r2) {
+        // First, test for overlap. We do this by taking the maximum
+        // start point of a range, and the minimum end point of a range.
+        int maxStart = Math.max(r1.start, r2.start);
+        int minEnd = Math.min(r1.end, r2.end);
+
+        // If maxStart <= minEnd, the ranges overlap (or touch). Since the
+        // min end index is exclusive, we take the strictly less < instead,
+        // since the ranges could touch (due to the end ID being overlapping)
+        if (maxStart < minEnd) {
+          // Ranges overlap. Consider them equal, thus not inserting a new range.
+          return 0;
+        } else {
+          // Ranges unequal. Sort by endpoint in descending order to get the last
+          // range first in the TreeSet.
+          return Integer.compare(r2.end, r1.end);
+        }
+      }
+    };
   }
 
 
@@ -313,27 +340,7 @@ public class JavaStringUtils {
     // original text string are already set for replacement, together with the
     // text to replace with. We sort this TreeSet in descending order to preserve
     // indices of all ranges after replacement.
-    TreeSet<Range> ranges = new TreeSet<Range>(new Comparator<Range>() {
-      @Override
-      public int compare(Range r1, Range r2) {
-        // First, test for overlap. We do this by taking the maximum
-        // start point of a range, and the minimum end point of a range.
-        int maxStart = Math.max(r1.start, r2.start);
-        int minEnd = Math.min(r1.end, r2.end);
-
-        // If maxStart <= minEnd, the ranges overlap (or touch). Since the
-        // min end index is exclusive, we take the strictly less < instead,
-        // since the ranges could touch (due to the end ID being overlapping)
-        if (maxStart < minEnd) {
-          // Ranges overlap. Consider them equal, thus not inserting a new range.
-          return 0;
-        } else {
-          // Ranges unequal. Sort by endpoint in descending order to get the last
-          // range first in the TreeSet.
-          return Integer.compare(r2.end, r1.end);
-        }
-      }
-    });
+    TreeSet<Range> ranges = new TreeSet<Range>(rangeComparator);
 
     // Range construction step: Iterate through all the keys,
     // and fill in ranges set & replacements map.
