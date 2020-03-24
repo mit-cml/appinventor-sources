@@ -14,12 +14,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Range;
-import com.google.common.collect.TreeRangeSet;
 
 /**
  * Java implementation of string utility methods for use in Scheme calls.
@@ -107,6 +104,29 @@ public class JavaStringUtils {
           }
         }
       });
+    }
+  }
+
+  /**
+   * Auxiliary Range class to store the index range (substring indices)
+   * of some original String to replace with the given text.
+   */
+  private static class Range {
+    int start;   // Inclusive start index
+    int end;     // Exclusive end index
+    String text; // Replacement text
+
+    /**
+     * Create a new Range object instance.
+     *
+     * @param start  start index of the range (inclusive)
+     * @param end    end index of the range (exclusive)
+     * @param text   text to replace range with
+     */
+    public Range(int start, int end, String text) {
+      this.start = start;
+      this.end = end;
+      this.text = text;
     }
   }
 
@@ -290,18 +310,28 @@ public class JavaStringUtils {
    */
   private static String applyMappings(String text, Map<String, String> mappings, List<String> keys) {
     // Create a set of ranges to keep track of which index ranges in the
-    // original text string are already set for replacement.
-    TreeRangeSet<Integer> ranges = TreeRangeSet.create();
-
-    // Map to map Range to String to replace with.
-    // E.g. [1, 3) -> 'abcd' indicates that the substring from 1 to 3 exclusive should
-    // be replaced with the string 'ab'.
-    // Note that the length of the string does not matter.
-    Map<Range<Integer>, String> replacements = new TreeMap<>(new Comparator<Range<Integer>>() {
+    // original text string are already set for replacement, together with the
+    // text to replace with. We sort this TreeSet in descending order to preserve
+    // indices of all ranges after replacement.
+    TreeSet<Range> ranges = new TreeSet<Range>(new Comparator<Range>() {
       @Override
-      public int compare(Range<Integer> r1, Range<Integer> r2) {
-        // Sort in descending order
-        return Integer.compare(r2.upperEndpoint(), r1.upperEndpoint());
+      public int compare(Range r1, Range r2) {
+        // First, test for overlap. We do this by taking the maximum
+        // start point of a range, and the minimum end point of a range.
+        int maxStart = Math.max(r1.start, r2.start);
+        int minEnd = Math.min(r1.end, r2.end);
+
+        // If maxStart <= minEnd, the ranges overlap (or touch). Since the
+        // min end index is exclusive, we take the strictly less < instead,
+        // since the ranges could touch (due to the end ID being overlapping)
+        if (maxStart < minEnd) {
+          // Ranges overlap. Consider them equal, thus not inserting a new range.
+          return 0;
+        } else {
+          // Ranges unequal. Sort by endpoint in descending order to get the last
+          // range first in the TreeSet.
+          return Integer.compare(r2.end, r1.end);
+        }
       }
     });
 
@@ -323,41 +353,29 @@ public class JavaStringUtils {
         int endId = matcher.end();
 
         // Create a closed open range (closed since startId is inclusive,
-        // and open because endId is exclusive)
-        Range<Integer> range = Range.closedOpen(startId, endId);
-
-        // Check for overlap. If startId & (endId - 1) are already contained
-        // in our ranges, that means we overlap with the current ranges,
-        // and should not consider this range.
-        boolean inRange = ranges.contains(startId) || ranges.contains(endId - 1);
-
-        // No overlap; Update ranges set & replacements map
-        if (!inRange) {
-          ranges.add(range);
-          replacements.put(range, replacement);
-        }
+        // and open because endId is exclusive), and add the range
+        // to our TreeSet of ranges. If the range is already covered (i.e.
+        // there exists an overlapping range), it is simply not added.
+        Range range = new Range(startId, endId, replacement);
+        ranges.add(range);
       }
     }
 
     // Go through each entry that we want to replace. Since we used
-    // a TreeMap, we have an order that will not break things;
+    // a TreeSet, we have an order that will not break things;
     // We first replace the substring with the largest end index, which,
     // because of overlap, will not affect the previous range indices
     // because no ranges overlap in our range set.
     // If we did not have this order, then we would have to update all indices
     // of all ranges upon replacement.
-    for (Map.Entry<Range<Integer>, String> replaceEntry : replacements.entrySet()) {
-      // Get range end points
-      int startId = replaceEntry.getKey().lowerEndpoint();
-      int endId = replaceEntry.getKey().upperEndpoint();
-
+    for (Range range : ranges) {
       // Combine strings: L + M + R, where:
       // L - substring from start of string until endpoint
       // M - middle string (the one that we use as replacement)
       // R - remainder of the string after replacement
-      String left = text.substring(0, startId);
-      String middle = replaceEntry.getValue();
-      String end = text.substring(endId);
+      String left = text.substring(0, range.start);
+      String middle = range.text;
+      String end = text.substring(range.end);
       text = left + middle + end;
     }
 
