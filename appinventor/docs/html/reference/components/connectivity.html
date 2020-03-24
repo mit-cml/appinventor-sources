@@ -474,34 +474,40 @@ set the following properties:
 
 <h2 id="Serial">Serial</h2>
 
+<p>Component for Serial</p>
+
 <h3 id="Serial-Properties">Properties</h3>
 
 <dl class="properties">
-    <dt id="Serial.BaudRate" class="number do"><em>BaudRate</em></dt>
-    <dd>Specifies the baud rate for the connection.</dd>
-    <dt id="Serial.BufferSize" class="number do"><em>BufferSize</em></dt>
-    <dd>Specifies the buffer size in bytes for the connection.</dd>
-    <dt id="Serial.IsInitialized" class="boolean bo"><em>IsInitialized</em></dt>
-    <dd>Returns true when the component has been initialized.</dd>
-    <dt id="Serial.IsOpen" class="boolean bo"><em>IsOpen</em></dt>
-    <dd>Returns true when the connection has been opened.</dd>
+  <dt id="Serial.BaudRate" class="number"><em>BaudRate</em></dt>
+  <dd>Property for BaudRate</dd>
+  <dt id="Serial.BufferSize" class="number"><em>BufferSize</em></dt>
+  <dd>Property for BufferSize</dd>
+  <dt id="Serial.IsInitialized" class="boolean ro bo"><em>IsInitialized</em></dt>
+  <dd>Returns true when the Serial has been initialized.</dd>
+  <dt id="Serial.IsOpen" class="boolean ro bo"><em>IsOpen</em></dt>
+  <dd>Returns true when the Serial connection is open.</dd>
 </dl>
+
+<h3 id="Serial-Events">Events</h3>
+
+<p class="events">None</p>
 
 <h3 id="Serial-Methods">Methods</h3>
 
 <dl class="methods">
-    <dt id="Serial.CloseSerial" class="method returns boolean"><i></i> CloseSerial()</dt>
-    <dd>Attempts to close the serial connection, returning true when success.</dd>
-    <dt id="Serial.InitializeSerial" class="method"><i></i> InitializeSerial()</dt>
-    <dd>Initializes the serial component to be ready to use.</dd>
-    <dt id="Serial.OpenSerial" class="method returns boolean"><i></i> OpenSerial()</dt>
-    <dd>Attempts to close the serial connection, returning true when success.</dd>
-    <dt id="Serial.PrintSerial" class="method"><i></i> PrintSerial(<em class="text">data</em>)</dt>
-    <dd>Sends the given data to the serial connection, and appends a new line.</dd>
-    <dt id="Serial.ReadSerial" class="method"><i></i> ReadSerial()</dt>
-    <dd>Starts reading the serial port. Will raise AfterReadSerial event.</dd>
-    <dt id="Serial.WriteSerial" class="method"><i></i> WriteSerial(<em class="text">data</em>)</dt>
-    <dd>Sends the given data to the serial connection.</dd>
+  <dt id="Serial.CloseSerial" class="method returns boolean"><i></i> CloseSerial()</dt>
+  <dd>Closes serial connection. Returns true when closed.</dd>
+  <dt id="Serial.InitializeSerial" class="method"><i></i> InitializeSerial()</dt>
+  <dd>Initializes serial connection.</dd>
+  <dt id="Serial.OpenSerial" class="method returns boolean"><i></i> OpenSerial()</dt>
+  <dd>Opens serial connection. Returns true when opened.</dd>
+  <dt id="Serial.PrintSerial" class="method"><i></i> PrintSerial(<em class="text">data</em>)</dt>
+  <dd>Writes given data to serial, and appends a new line at the end.</dd>
+  <dt id="Serial.ReadSerial" class="method returns text"><i></i> ReadSerial()</dt>
+  <dd>Reads data from serial.</dd>
+  <dt id="Serial.WriteSerial" class="method"><i></i> WriteSerial(<em class="text">data</em>)</dt>
+  <dd>Writes given data to serial.</dd>
 </dl>
 
 <h2 id="Web">Web</h2>

@@ -11,6 +11,7 @@ Table of Contents:
 * [ActivityStarter](#ActivityStarter)
 * [BluetoothClient](#BluetoothClient)
 * [BluetoothServer](#BluetoothServer)
+* [Serial](#Serial)
 * [Web](#Web)
 
 ## ActivityStarter  {#ActivityStarter}
@@ -390,6 +391,56 @@ Use the `BluetoothServer` component to turn your device into a server that recei
 
 {:id="BluetoothServer.StopAccepting" class="method"} <i/> StopAccepting()
 : Stop accepting an incoming connection.
+
+## Serial  {#Serial}
+
+Component for Serial
+
+
+
+### Properties  {#Serial-Properties}
+
+{:.properties}
+
+{:id="Serial.BaudRate" .number} *BaudRate*
+: Property for BaudRate
+
+{:id="Serial.BufferSize" .number} *BufferSize*
+: Property for BufferSize
+
+{:id="Serial.IsInitialized" .boolean .ro .bo} *IsInitialized*
+: Returns true when the Serial has been initialized.
+
+{:id="Serial.IsOpen" .boolean .ro .bo} *IsOpen*
+: Returns true when the Serial connection is open.
+
+### Events  {#Serial-Events}
+
+{:.events}
+None
+
+
+### Methods  {#Serial-Methods}
+
+{:.methods}
+
+{:id="Serial.CloseSerial" class="method returns boolean"} <i/> CloseSerial()
+: Closes serial connection. Returns true when closed.
+
+{:id="Serial.InitializeSerial" class="method"} <i/> InitializeSerial()
+: Initializes serial connection.
+
+{:id="Serial.OpenSerial" class="method returns boolean"} <i/> OpenSerial()
+: Opens serial connection. Returns true when opened.
+
+{:id="Serial.PrintSerial" class="method"} <i/> PrintSerial(*data*{:.text})
+: Writes given data to serial, and appends a new line at the end.
+
+{:id="Serial.ReadSerial" class="method returns text"} <i/> ReadSerial()
+: Reads data from serial.
+
+{:id="Serial.WriteSerial" class="method"} <i/> WriteSerial(*data*{:.text})
+: Writes given data to serial.
 
 ## Web  {#Web}
 
