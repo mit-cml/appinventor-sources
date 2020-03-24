@@ -369,7 +369,10 @@ public class ExternalComponentGenerator {
   }
 
   private static String getClassPackage(String classAbsolutePath) {
-    String parentPath = "/appinventor/components/build/classes/AndroidRuntime/";
+    String parentPath = androidRuntimeClassDirPath;
+    if (!parentPath.endsWith("/")) {
+      parentPath += "/";
+    }
     parentPath = parentPath.replace("/", File.separator);
     String componentPackage = classAbsolutePath.substring(classAbsolutePath.indexOf(parentPath) + parentPath.length());
     componentPackage = componentPackage.substring(0, componentPackage.lastIndexOf(File.separator));
