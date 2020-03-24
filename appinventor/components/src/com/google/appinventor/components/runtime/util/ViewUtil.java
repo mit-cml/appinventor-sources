@@ -6,20 +6,6 @@
 
 package com.google.appinventor.components.runtime.util;
 
-import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Environment;
-import android.os.ParcelFileDescriptor;
-import com.bumptech.glide.GlideBuilder;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.data.DataFetcher;
-import com.bumptech.glide.load.model.GenericLoaderFactory;
-import com.bumptech.glide.load.model.ModelLoader;
-import com.bumptech.glide.load.model.ModelLoaderFactory;
-import com.bumptech.glide.load.model.file_descriptor.FileDescriptorModelLoader;
-import com.bumptech.glide.load.model.stream.StreamByteArrayLoader;
-import com.bumptech.glide.load.model.stream.StreamModelLoader;
-import com.bumptech.glide.module.GlideModule;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
 
