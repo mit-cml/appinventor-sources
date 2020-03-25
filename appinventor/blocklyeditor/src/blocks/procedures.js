@@ -190,10 +190,10 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     // [lyn, 10/28/13] I thought this rerendering was unnecessary. But I was wrong!
     // Without it, get bug noticed by Andrew in which toggling horizontal -> vertical params
     // in procedure decl doesn't handle body tag appropriately!
+    for (var i = 0; i < this.inputList.length; i++) {
+      this.inputList[i].init();
+    }
     if (this.rendered) {
-      for (var i = 0; i < this.inputList.length; i++) {
-        this.inputList[i].init();
-      }
       this.render();
     }
     if (this.workspace.loadCompleted) {  // set in BlocklyPanel.java on successful load
