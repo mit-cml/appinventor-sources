@@ -71,7 +71,7 @@ public class DeleteFileCommand extends ChainableCommand {
   @Override
   public void execute(final ProjectNode node) {
 	  if (node instanceof YoungAndroidSourceNode) {
-  		new NewFormDialog((YoungAndroidSourceNode) node).center();
+  		new DeleteFormDialog((YoungAndroidSourceNode) node).center();
   		
 	  } 
 	  else {
@@ -90,13 +90,13 @@ public class DeleteFileCommand extends ChainableCommand {
     return Window.confirm(MESSAGES.reallyDeleteFile());
   }
   
-  private class NewFormDialog extends DialogBox {
+  private class DeleteFormDialog extends DialogBox {
     // UI elements
     private final LabeledTextBox newNameTextBox;
 	private final CheckBox cb = new CheckBox(MESSAGES.checkBoxButton());
     private final Set<String> otherFormNames;
 
-    NewFormDialog(final YoungAndroidSourceNode projectRootNode) {
+    DeleteFormDialog(final YoungAndroidSourceNode projectRootNode) {
       super(false, true);
       setStylePrimaryName("ode-DialogBox");
       VerticalPanel contentPanel = new VerticalPanel();
@@ -167,12 +167,12 @@ public class DeleteFileCommand extends ChainableCommand {
     		  public void onKeyUp(KeyUpEvent event) {
       		    if(newNameTextBox.getText().equals(abc1)) {
                 	okButton.setEnabled(true);
-			newNameTextBox.setColor("red");
+			newNameTextBox.setColor("#00c8ff");
 		    }	  
         	    else
         	    {
                 	okButton.setEnabled(false);
-			ErrorReporter.reportInfo("Please select valid screen name");    
+			newNameTextBox.setColor("red");    
         	    }
     		  }
   		});	     
