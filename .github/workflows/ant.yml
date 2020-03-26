@@ -22,14 +22,6 @@ jobs:
       - name: 'Build Appinventor'
         run: ant noplay
         working-directory: appinventor
-      - name: 'Build Companion'
-        run: ant PlayApp
-        working-directory: appinventor
-      - name: 'Upload Companion to Artifacts'
-        uses: actions/upload-artifact@v1.0.0
-        with:
-          name: MIT AI2 Companion
-          path: appinventor/build/buildserver/MIT AI2 Companion.apk
       - name: 'Run Tests'
         run: ant tests
         working-directory: appinventor
@@ -38,3 +30,11 @@ jobs:
         with:
           name: Test Reports
           path: appinventor/reports
+      - name: 'Build Companion'
+        run: ant PlayApp
+        working-directory: appinventor
+      - name: 'Upload Companion to Artifacts'
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: MIT AI2 Companion
+          path: appinventor/build/buildserver/MIT AI2 Companion.apk
