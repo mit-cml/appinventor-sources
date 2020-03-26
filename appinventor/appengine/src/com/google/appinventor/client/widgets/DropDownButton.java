@@ -246,6 +246,20 @@ public class DropDownButton extends TextButton {
     items.remove(items.size()-1);
     items.add(menu.addItem(item.caption, true, item.command));
   }
+  
+  public void replaceSpecificItem(DropDownItem item, int num) {
+    if(num == 5){
+	  
+	  items.get(5-1).setText("Delete From Trash");
+	  items.get(5-1).setEnabled( true);
+	  items.get(5-1).setCommand(item.command);
+    }
+    else if(num == 6){
+	  items.get(5-1).setText("Move to Trash");
+	  items.get(5-1).setEnabled( true);
+	  items.get(5-1).setCommand(item.command);
+    }
+  }
 
   /**
    * Sets the HTML content of a menu item, identified by {@code id}, to the given {@code html}.
