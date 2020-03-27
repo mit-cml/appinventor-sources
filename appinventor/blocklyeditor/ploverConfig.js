@@ -144,6 +144,8 @@
     "./src/warning.js",
     "./src/toolboxController.js",
     "./src/field.js",
+    "./src/rendered_connection.js",
+    "./src/input.js",
 
     // Dialog Utiltiy
     "./src/util.js",

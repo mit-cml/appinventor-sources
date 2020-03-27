@@ -324,7 +324,7 @@ Blockly.WorkspaceSvg.prototype.render = function(blocks) {
       for (var t = 0, topBlock; topBlock = topBlocks[t]; t++) {
         Blockly.Instrument.timer(
           function () {
-            topBlock.renderDown();
+            topBlock.render(false);
           },
           function (result, timeDiffInner) {
             Blockly.Instrument.stats.renderDownTime += timeDiffInner;
