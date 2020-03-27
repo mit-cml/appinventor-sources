@@ -22,6 +22,8 @@ public class SimpleLabel extends AndroidViewComponent {
         super(container.$form());
 
         tv = new TextView(container.$context());
+
+        container.$add(this);
     }
 
     @Override
