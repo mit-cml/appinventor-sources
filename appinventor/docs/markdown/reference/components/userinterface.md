@@ -367,6 +367,9 @@ Component for displaying images and basic animations.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
  `ScrollLeftSlow`, `ScrollLeft`, `ScrollLeftFast`, and `Stop`.
 
+{:id="Image.Clickable" .boolean} *Clickable*
+: Specifies whether the image should be clickable or not.
+
 {:id="Image.Height" .number .bo} *Height*
 : Specifies the `Image`'s vertical height, measured in pixels.
 
@@ -400,8 +403,9 @@ Component for displaying images and basic animations.
 ### Events  {#Image-Events}
 
 {:.events}
-None
 
+{:id="Image.Click"} Click()
+: An event that occurs when an image is clicked.
 
 ### Methods  {#Image-Methods}
 
@@ -977,6 +981,15 @@ Top-level component containing all other components in the program.
 {:id="Screen.OpenScreenAnimation" .text} *OpenScreenAnimation*
 : The animation for switching to another screen. Valid options are `default`, `fade`, `zoom`,
  `slidehorizontal`, `slidevertical`, and `none`.
+
+{:id="Screen.Platform" .text .ro .bo} *Platform*
+: Gets the name of the underlying platform running the app. Currently, this is the text
+ "Android". Other platforms may be supported in the future.
+
+{:id="Screen.PlatformVersion" .text .ro .bo} *PlatformVersion*
+: Gets the version number of the platform running the app. This is typically a dotted version
+ number, such as 10.0. Any value can be returned, however, so you should take care to handle
+ unexpected data. If the platform version is unavailable, the empty text will be returned.
 
 {:id="Screen.PrimaryColor" .color .do} *PrimaryColor*
 : This is the primary color used as part of the Android theme, including coloring the `Screen`'s
@@ -1689,6 +1702,12 @@ Component for viewing Web pages.
 
 {:.events}
 
+{:id="WebViewer.BeforePageLoad"} BeforePageLoad(*url*{:.text})
+: When a page is about to load this event is run.
+
+{:id="WebViewer.ErrorOccurred"} ErrorOccurred(*errorCode*{:.number},*description*{:.text},*failingUrl*{:.text})
+: When an error occurs this event is run.
+
 {:id="WebViewer.PageLoaded"} PageLoaded(*url*{:.text})
 : When a page is finished loading this event is run.
 
@@ -1711,6 +1730,10 @@ Component for viewing Web pages.
  when using the `WebViewer` to poll a page that may not be sending
  appropriate cache control headers.
 
+{:id="WebViewer.ClearCookies" class="method"} <i/> ClearCookies()
+: Clear the webview's cookies. This is useful if you want to
+ sign the user out of a website that uses them to store logins.
+
 {:id="WebViewer.ClearLocations" class="method"} <i/> ClearLocations()
 : Clear Stored Location permissions. When the geolocation API is used in
  the `WebViewer`, the end user is prompted on a per URL basis for whether
@@ -1732,3 +1755,12 @@ Component for viewing Web pages.
 
 {:id="WebViewer.GoToUrl" class="method"} <i/> GoToUrl(*url*{:.text})
 : Load the page at the given URL.
+
+{:id="WebViewer.Reload" class="method"} <i/> Reload()
+: Reload the current page.
+
+{:id="WebViewer.RunJavaScript" class="method"} <i/> RunJavaScript(*js*{:.text})
+: Run JavaScript in the current page.
+
+{:id="WebViewer.StopLoading" class="method"} <i/> StopLoading()
+: Stop loading a page.

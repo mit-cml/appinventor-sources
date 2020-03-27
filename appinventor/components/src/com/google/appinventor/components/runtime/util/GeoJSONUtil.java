@@ -22,7 +22,9 @@ import com.google.common.annotations.VisibleForTesting;
 import gnu.lists.FString;
 import gnu.lists.LList;
 import gnu.lists.Pair;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.osmdroid.util.GeoPoint;
 
 import java.io.FileOutputStream;
@@ -43,9 +45,15 @@ import static com.google.appinventor.components.runtime.Component.*;
  */
 public final class GeoJSONUtil {
   private static final java.util.Map<String, Integer> colors;
+  private static final int ERROR_CODE_MALFORMED_GEOJSON = -3;
+  private static final String ERROR_MALFORMED_GEOJSON = "Malformed GeoJSON response. Expected FeatureCollection as root element.";
+  private static final String ERROR_UNKNOWN_TYPE = "Unrecognized/invalid type in JSON object";
   private static final String GEOJSON_COORDINATES = "coordinates";
   private static final String GEOJSON_FEATURE = "Feature";
+  private static final String GEOJSON_FEATURECOLLECTION = "FeatureCollection";
+  private static final String GEOJSON_FEATURES = "features";
   private static final String GEOJSON_GEOMETRY = "geometry";
+  private static final String GEOJSON_GEOMETRYCOLLECTION = "GeometryCollection";
   private static final String GEOJSON_PROPERTIES = "properties";
   private static final String GEOJSON_TYPE = "type";
   private static final String PROPERTY_ANCHOR_HORIZONTAL = "anchorHorizontal";
@@ -442,6 +450,77 @@ public final class GeoJSONUtil {
     }
   }
 
+  public static List<YailList> getGeoJSONFeatures(final String logTag, final String content) throws JSONException {
+    JSONObject parsedData = new JSONObject(stripBOM(content));
+    JSONArray features = parsedData.getJSONArray(GEOJSON_FEATURES);
+    List<YailList> yailFeatures = new ArrayList<YailList>();
+    for (int i = 0; i < features.length(); i++) {
+      yailFeatures.add(jsonObjectToYail(logTag, features.getJSONObject(i)));
+    }
+    return yailFeatures;
+  }
+
+  public static String getGeoJSONType(final String content, final String geojsonType) throws JSONException {
+    JSONObject parsedData = new JSONObject(stripBOM(content));
+    String type = parsedData.optString(geojsonType);
+    return type;
+  }
+
+  private static YailList jsonObjectToYail(final String logTag, final JSONObject object) throws JSONException {
+    List<YailList> pairs = new ArrayList<YailList>();
+    @SuppressWarnings("unchecked")  // json only allows String keys
+        Iterator<String> j = object.keys();
+    while (j.hasNext()) {
+      String key = j.next();
+      Object value = object.get(key);
+      if (value instanceof Boolean ||
+          value instanceof Integer ||
+          value instanceof Long ||
+          value instanceof Double ||
+          value instanceof String) {
+        pairs.add(YailList.makeList(new Object[] { key, value }));
+      } else if (value instanceof JSONArray) {
+        pairs.add(YailList.makeList(new Object[] { key, jsonArrayToYail(logTag, (JSONArray) value)}));
+      } else if (value instanceof JSONObject) {
+        pairs.add(YailList.makeList(new Object[] { key, jsonObjectToYail(logTag, (JSONObject) value)}));
+      } else if (!JSONObject.NULL.equals(value)) {
+        Log.wtf(logTag, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
+        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
+      }
+    }
+    return YailList.makeList(pairs);
+  }
+
+  private static YailList jsonArrayToYail(final String logTag, final JSONArray array) throws JSONException {
+    List<Object> items = new ArrayList<Object>();
+    for (int i = 0; i < array.length(); i++) {
+      Object value = array.get(i);
+      if (value instanceof Boolean ||
+          value instanceof Integer ||
+          value instanceof Long ||
+          value instanceof Double ||
+          value instanceof String) {
+        items.add(value);
+      } else if (value instanceof JSONArray) {
+        items.add(jsonArrayToYail(logTag, (JSONArray) value));
+      } else if (value instanceof JSONObject) {
+        items.add(jsonObjectToYail(logTag, (JSONObject) value));
+      } else if (!JSONObject.NULL.equals(value)) {
+        Log.wtf(logTag, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
+        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
+      }
+    }
+    return YailList.makeList(items);
+  }
+
+  private static String stripBOM(String content) {
+    if (content.charAt(0) == '\uFEFF') {
+      return content.substring(1);
+    } else {
+      return content;
+    }
+  }
+
   private static final class FeatureWriter implements MapFactory.MapFeatureVisitor<Void> {
 
     private final PrintStream out;
@@ -717,6 +796,15 @@ public final class GeoJSONUtil {
       p.setCar(coordinate.get(2));
       p = (Pair) p.getCdr();
       p.setCar(temp);
+    }
+    return coordinates;
+  }
+
+  public static <E> List<List<E>> swapCoordinates2(List<List<E>> coordinates) {
+    for (List<E> point : coordinates) {
+      E temp = point.get(0);
+      point.set(0, point.get(1));
+      point.set(1, temp);
     }
     return coordinates;
   }

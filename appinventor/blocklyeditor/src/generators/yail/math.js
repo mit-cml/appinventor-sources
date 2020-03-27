@@ -18,6 +18,12 @@ Blockly.Yail['math_number'] = function() {
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 
+Blockly.Yail['math_number_radix'] = function() {
+  var prefix = Blockly.Blocks.math_number_radix.PREFIX[this.getFieldValue('OP')];
+  var code = Number(prefix + this.getFieldValue('NUM'));
+  return [code, Blockly.Yail.ORDER_ATOMIC];
+};
+
 Blockly.Yail['math_compare'] = function() {
   // Basic compare operators
   var mode = this.getFieldValue('OP');

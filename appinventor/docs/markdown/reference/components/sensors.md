@@ -16,6 +16,7 @@ Table of Contents:
 * [Hygrometer](#Hygrometer)
 * [LightSensor](#LightSensor)
 * [LocationSensor](#LocationSensor)
+* [MagneticFieldSensor](#MagneticFieldSensor)
 * [NearField](#NearField)
 * [OrientationSensor](#OrientationSensor)
 * [Pedometer](#Pedometer)
@@ -592,6 +593,50 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 
 {:id="LocationSensor.LongitudeFromAddress" class="method returns number"} <i/> LongitudeFromAddress(*locationName*{:.text})
 : Derives longitude from the given `locationName`.
+
+## MagneticFieldSensor  {#MagneticFieldSensor}
+
+Component for MagneticFieldSensor
+
+
+
+### Properties  {#MagneticFieldSensor-Properties}
+
+{:.properties}
+
+{:id="MagneticFieldSensor.AbsoluteStrength" .number .ro .bo} *AbsoluteStrength*
+: Indicates the absolute strength of the field.
+
+{:id="MagneticFieldSensor.Available" .boolean .ro .bo} *Available*
+: Indicates that there is a magnetic field sensor in the device and it is available.
+
+{:id="MagneticFieldSensor.Enabled" .boolean} *Enabled*
+: Property for Enabled
+
+{:id="MagneticFieldSensor.MaximumRange" .number .ro .bo} *MaximumRange*
+: Indicates the maximum range the magnetic sensor can reach.
+
+{:id="MagneticFieldSensor.XStrength" .number .ro .bo} *XStrength*
+: Indicates the field's strength in the X-axis.
+
+{:id="MagneticFieldSensor.YStrength" .number .ro .bo} *YStrength*
+: Indicates the field's strength in the Y-axis.
+
+{:id="MagneticFieldSensor.ZStrength" .number .ro .bo} *ZStrength*
+: Indicates the field's strength in the Z-axis.
+
+### Events  {#MagneticFieldSensor-Events}
+
+{:.events}
+
+{:id="MagneticFieldSensor.MagneticChanged"} MagneticChanged(*xStrength*{:.number},*yStrength*{:.number},*zStrength*{:.number},*absoluteStrength*{:.number})
+: Triggers when magnetic field has changed, setting the new values in parameters.
+
+### Methods  {#MagneticFieldSensor-Methods}
+
+{:.methods}
+None
+
 
 ## NearField  {#NearField}
 

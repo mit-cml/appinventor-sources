@@ -497,3 +497,104 @@ Blockly.Blocks['text_is_string'] = {
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE}]
 };
+
+Blockly.Blocks['text_reverse'] = {
+  // String reverse.
+  category: 'Text',
+  helpUrl: Blockly.Msg.LANG_TEXT_REVERSE_HELPURL,
+  init: function () {
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('VALUE')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_TEXT_REVERSE_INPUT);
+    this.setTooltip(Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_REVERSE_INPUT}]
+};
+
+Blockly.Blocks['text_replace_mappings'] = {
+  // Replace all occurrences in mappings with their corresponding replacement
+  category: 'Text',
+  helpUrl: function () {
+    var mode = this.getFieldValue('OP');
+    return Blockly.Blocks.text_replace_mappings.HELPURLS()[mode];
+  },
+  init: function () {
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
+    var checkTypeMap = Blockly.Blocks.Utilities.YailTypeToBlocklyType("dictionary", Blockly.Blocks.Utilities.INPUT);
+
+    this.appendValueInput('MAPPINGS')
+      .setCheck(checkTypeMap)
+      .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE)
+      .setAlign(Blockly.ALIGN_RIGHT)
+
+    this.appendValueInput('TEXT')
+      .setCheck(checkTypeText)
+      .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT)
+      .setAlign(Blockly.ALIGN_RIGHT)
+
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX)
+        .appendField(new Blockly.FieldDropdown(this.OPERATORS, Blockly.Blocks.text_replace_mappings.onchange), 'OP')
+        .appendField(Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER)
+        .setAlign(Blockly.ALIGN_RIGHT)
+
+    this.setInputsInline(false);
+
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      var mode = thisBlock.getFieldValue('OP');
+      return Blockly.Blocks.text_replace_mappings.TOOLTIPS()[mode];
+    });
+  },
+  typeblock: [{
+    translatedName: Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST,
+    dropDown: {
+      titleName: 'OP',
+      value: 'LONGEST_STRING_FIRST'
+    }
+  }, {
+    translatedName: Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER,
+    dropDown: {
+      titleName: 'OP',
+      value: 'DICTIONARY_ORDER'
+    }
+  }
+  /*{
+    translatedName : Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST,
+    dropDown: {
+        titleName: 'OP',
+        value: 'EARLIEST_OCCURRENCE'
+    }
+  }*/
+  ]
+};
+
+// The order here determines the order in the dropdown
+Blockly.Blocks.text_replace_mappings.OPERATORS = function () {
+  return [
+    [Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST, 'LONGEST_STRING_FIRST'],
+    [Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER, 'DICTIONARY_ORDER']
+    //['earliest occurrence', 'EARLIEST_OCCURRENCE']
+  ]
+};
+
+Blockly.Blocks.text_replace_mappings.TOOLTIPS = function () {
+  return {
+    LONGEST_STRING_FIRST : Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST,
+    DICTIONARY_ORDER : Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER
+    //EARLIEST_OCCURRENCE : "tooltip"
+  }
+};
+
+Blockly.Blocks.text_replace_mappings.HELPURLS = function () {
+  return {
+    LONGEST_STRING_FIRST : Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_LONGEST_STRING_FIRST,
+    DICTIONARY_ORDER : Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_DICTIONARY_ORDER
+    //EARLIEST_OCCURRENCE : "help"
+  }
+}
