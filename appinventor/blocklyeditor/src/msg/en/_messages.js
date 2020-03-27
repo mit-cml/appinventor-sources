@@ -1474,6 +1474,11 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL = '/reference/components/connectivity.html#BluetoothServer';
     Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL = '/reference/components/connectivity.html#BluetoothServer';
 
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_HELPURL = "/reference/components/connectivity.html#Serial";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_PROPERTIES_HELPURL = "/reference/components/connectivity.html#Serial";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_EVENTS_HELPURL = "/reference/components/connectivity.html#Serial";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_METHODS_HELPURL = "/reference/components/connectivity.html#Serial";
+
     Blockly.Msg.LANG_COMPONENT_BLOCK_WEB_HELPURL = "/reference/components/connectivity.html#Web";
     Blockly.Msg.LANG_COMPONENT_BLOCK_WEB_PROPERTIES_HELPURL = '/reference/components/connectivity.html#Web';
     Blockly.Msg.LANG_COMPONENT_BLOCK_WEB_EVENTS_HELPURL = '/reference/components/connectivity.html#Web';
