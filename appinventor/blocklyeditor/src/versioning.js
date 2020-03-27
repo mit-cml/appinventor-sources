@@ -1247,7 +1247,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The BluetoothClient.Secure property was added.
     // No blocks need to be modified to upgrade to version 5.
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // The BluetoothClient.DisconnectOnError property was added.
+    // No blocks need to be modified to upgrade to version 5.
+    6: "noUpgrade"
 
   }, // End BluetoothClient upgraders
 
@@ -2679,7 +2683,13 @@ Blockly.Versioning.AllUpgradeMaps =
     7: "noUpgrade",
 
     //AI2: Added PageLoaded
-    8: "noUpgrade"
+    8: "noUpgrade",
+      
+    // AI2: Added BeforePageLoad event and Stop, Reload, and ClearCookies methods
+    9: "noUpgrade",
+
+    // AI2: Added ErrorOccurred event and RunJavaScript method
+    10: "noUpgrade"
 
   }, // End WebViewer upgraders
 

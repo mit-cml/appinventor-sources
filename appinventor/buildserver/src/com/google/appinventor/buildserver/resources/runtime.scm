@@ -1842,13 +1842,31 @@
           360))
 
 (define (sin-degrees degrees)
-  (sin (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 90) 0)
+    (if (= (modulo (/ degrees 90) 2) 0)
+      0
+      (if (= (modulo (/ (- degrees 90) 180) 2) 0)
+        1
+        -1))
+    (sin (degrees->radians-internal degrees))))
 
 (define (cos-degrees degrees)
-  (cos (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 90) 0)
+    (if (= (modulo (/ degrees 90) 2) 1)
+      0
+      (if (= (modulo (/ degrees 180) 2) 1)
+        -1
+        1))
+    (cos (degrees->radians-internal degrees))))
 
 (define (tan-degrees degrees)
-  (tan (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 180) 0)
+    0
+    (if (= (modulo (- degrees 45) 90)  0)
+      (if (= (modulo (/ (- degrees 45) 90) 2) 0)
+        1
+        -1)
+      (tan (degrees->radians-internal degrees)))))
 
 ;; Result should be in the range [-90, +90].
 (define (asin-degrees y)

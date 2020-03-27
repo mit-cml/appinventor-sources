@@ -502,9 +502,14 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 202:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 30
   // For YOUNG_ANDROID_VERSION 203:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 9
+  // For YOUNG_ANDROID_VERSION 204:
+  // - NAVIGATION_COMPONENT_VERSION was initialized to 1
+  // - SERIAL_COMPONENT_VERSION was initialized to 1
+  // For YOUNG_ANDROID_VERSION 205:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 31
 
-  public static final int YOUNG_ANDROID_VERSION = 203;
+  public static final int YOUNG_ANDROID_VERSION = 205;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -679,7 +684,9 @@ public class YaVersion {
   // - The BluetoothClient.DelimiterByte property was added.
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 5:
   // - The BluetoothClient.Secure property was added.
-  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 5;
+  // For BLUETOOTHCLIENT_COMPONENT_VERSION 6:
+  // - The BluetoothClient.DisconnectOnError property was added.
+  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 6;
 
   // For BLUETOOTHSERVER_COMPONENT_VERSION 2:
   // - The BluetoothServer.Enabled property was added.
@@ -1005,6 +1012,10 @@ public class YaVersion {
   // - Added fill and stroke opacity properties
   public static final int MARKER_COMPONENT_VERSION = 3;
 
+  // For NAVIGATION_COMPONENT_VERSION 1:
+  // - Initial Navigation implementation
+  public static final int NAVIGATION_COMPONENT_VERSION = 1;
+
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;
 
@@ -1309,7 +1320,13 @@ public class YaVersion {
   // - Added WebViewStringChange event
   //For WEBVIEWER_COMPONENT_VERSION 8:
   // - Added PageLoaded event
-  public static final int WEBVIEWER_COMPONENT_VERSION = 8;
+  // For WEBVIEWER_COMPONENT_VERSION 9:
+  // - Added BeforePageLoad event
+  // - Added Stop, Reload, and ClearCookies methods
+  // For WEBVIEWER_COMPONENT_VERSION 10:
+  // - Added ErrorOccurred event
+  // - Added RunJavaScript method
+  public static final int WEBVIEWER_COMPONENT_VERSION = 10;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.
@@ -1321,6 +1338,12 @@ public class YaVersion {
 
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
+
+  //For SERIAL_COMPONENT_VERSION: Initial Version
+  public static final int SERIAL_COMPONENT_VERSION = 1;
+
+  //For MAGNETICFIELDSENSOR_COMPONENT_VERSION: Initial Version
+  public static final int MAGNETICFIELDSENSOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";

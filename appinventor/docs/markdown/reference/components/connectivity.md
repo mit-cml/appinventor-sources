@@ -11,6 +11,7 @@ Table of Contents:
 * [ActivityStarter](#ActivityStarter)
 * [BluetoothClient](#BluetoothClient)
 * [BluetoothServer](#BluetoothServer)
+* [Serial](#Serial)
 * [Web](#Web)
 
 ## ActivityStarter  {#ActivityStarter}
@@ -139,6 +140,9 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
 : Returns the delimiter byte to use when passing a negative number for the
  numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
  ReceiveUnsignedBytes.
+
+{:id="BluetoothClient.DisconnectOnError" .boolean} *DisconnectOnError*
+: Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.
 
 {:id="BluetoothClient.Enabled" .boolean .ro .bo} *Enabled*
 : Returns `true`{:.logic.block} if Bluetooth is enabled, `false`{:.logic.block} otherwise.
@@ -387,6 +391,56 @@ Use the `BluetoothServer` component to turn your device into a server that recei
 
 {:id="BluetoothServer.StopAccepting" class="method"} <i/> StopAccepting()
 : Stop accepting an incoming connection.
+
+## Serial  {#Serial}
+
+Component for Serial
+
+
+
+### Properties  {#Serial-Properties}
+
+{:.properties}
+
+{:id="Serial.BaudRate" .number} *BaudRate*
+: Property for BaudRate
+
+{:id="Serial.BufferSize" .number} *BufferSize*
+: Property for BufferSize
+
+{:id="Serial.IsInitialized" .boolean .ro .bo} *IsInitialized*
+: Returns true when the Serial has been initialized.
+
+{:id="Serial.IsOpen" .boolean .ro .bo} *IsOpen*
+: Returns true when the Serial connection is open.
+
+### Events  {#Serial-Events}
+
+{:.events}
+None
+
+
+### Methods  {#Serial-Methods}
+
+{:.methods}
+
+{:id="Serial.CloseSerial" class="method returns boolean"} <i/> CloseSerial()
+: Closes serial connection. Returns true when closed.
+
+{:id="Serial.InitializeSerial" class="method"} <i/> InitializeSerial()
+: Initializes serial connection.
+
+{:id="Serial.OpenSerial" class="method returns boolean"} <i/> OpenSerial()
+: Opens serial connection. Returns true when opened.
+
+{:id="Serial.PrintSerial" class="method"} <i/> PrintSerial(*data*{:.text})
+: Writes given data to serial, and appends a new line at the end.
+
+{:id="Serial.ReadSerial" class="method returns text"} <i/> ReadSerial()
+: Reads data from serial.
+
+{:id="Serial.WriteSerial" class="method"} <i/> WriteSerial(*data*{:.text})
+: Writes given data to serial.
 
 ## Web  {#Web}
 

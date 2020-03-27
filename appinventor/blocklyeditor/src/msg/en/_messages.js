@@ -375,6 +375,14 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_MATH_NUMBER_TOOLTIP = 'Report the number shown.';
     Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER = 'number';
 
+    Blockly.Msg.LANG_MATH_DECIMAL_FORMAT = 'decimal';
+    Blockly.Msg.LANG_MATH_BINARY_FORMAT = 'binary';
+    Blockly.Msg.LANG_MATH_OCTAL_FORMAT = 'octal';
+    Blockly.Msg.LANG_MATH_HEXADECIMAL_FORMAT = 'hexadecimal';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_HELPURL = '/reference/blocks/math.html#number-radix';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TOOLTIP = 'Report the number shown in decimal (base-10) format.';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE = 'number radix';
+
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL = '';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_EQ = '/reference/blocks/math.html#=';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_NEQ = '/reference/blocks/math.html#not=';
@@ -1353,6 +1361,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL = "/reference/components/maps.html#FeatureCollection";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL = "/reference/components/maps.html#LineString";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL = "/reference/components/maps.html#Marker";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL = "/reference/components/maps.html#Navigation";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL = "/reference/components/maps.html#Polygon";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL = "/reference/components/maps.html#Rectangle";
 

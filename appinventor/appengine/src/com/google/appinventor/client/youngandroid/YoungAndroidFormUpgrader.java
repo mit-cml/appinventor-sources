@@ -552,6 +552,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // The BluetoothClient.DisconnectOnError property was added.
+      // No properties need to be modified to upgrade to version 6.
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -1611,7 +1616,7 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 8) {
+    if (srcCompVersion < 10) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
@@ -1622,7 +1627,9 @@ public final class YoungAndroidFormUpgrader {
       // ClearCaches method was added (version 6)
       // WebViewStringChange event was added (version 7)
       // PageLoaded event was added (version 8)
-      srcCompVersion = 8;
+      // BeforePageLoad event and Stop, Reload, and ClearCookies methods added (version 9)
+      // ErrorOccurred event and RunJavaScript method added (version 10)
+      srcCompVersion = 10;
     }
     return srcCompVersion;
   }
