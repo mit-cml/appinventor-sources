@@ -181,7 +181,7 @@ public class DeleteFileCommand extends ChainableCommand {
     private void handleOkClick(YoungAndroidSourceNode projectRootNode) {
       String newFormName = newNameTextBox.getText();
       if (validate(newFormName)) {
-  		allowCheckPoint();
+  	allowCheckPoint();
         hide();
         removeForm(projectRootNode);
       } else {
@@ -218,9 +218,9 @@ public class DeleteFileCommand extends ChainableCommand {
      
     
 	*/
-	public void removeForm(final ProjectNode node) {
-    if (deleteConfirmation()) {
-      final Ode ode = Ode.getInstance();
+    public void removeForm(final ProjectNode node) {
+      if (deleteConfirmation()) {
+        final Ode ode = Ode.getInstance();
 
       if (node instanceof YoungAndroidSourceNode) {
         // node could be either a YoungAndroidFormNode or a YoungAndroidBlocksNode.
@@ -238,23 +238,21 @@ public class DeleteFileCommand extends ChainableCommand {
 
         // When we tell the project service to delete either the form (.scm) file or the blocks
         // (.bky) file, it will delete both of them, and also the yail (.yail) file.
-        ode.getProjectService().deleteFile(ode.getSessionId(), projectId, node.getFileId(),
-            new OdeAsyncCallback<Long>(
+        ode.getProjectService().deleteFile(ode.getSessionId(), projectId, node.getFileId(), new OdeAsyncCallback<Long>(
         // message on failure
-            MESSAGES.deleteFileError()) {
+        MESSAGES.deleteFileError()) {
           @Override
           public void onSuccess(Long date) {
             // Remove all related nodes (form, blocks, yail) from the project.
             Project project = getProject(node);
             for (ProjectNode sourceNode : node.getProjectRoot().getAllSourceNodes()) {
               if (sourceNode.getFileId().equals(formFileId) ||
-                  sourceNode.getFileId().equals(blocksFileId) ||
-                  sourceNode.getFileId().equals(yailFileId)) {
+                sourceNode.getFileId().equals(blocksFileId) ||
+                sourceNode.getFileId().equals(yailFileId)) {
                 project.deleteNode(sourceNode);
               }
             }
-            ode.getDesignToolbar().removeScreen(project.getProjectId(), 
-                ((YoungAndroidSourceNode) node).getFormName());
+            ode.getDesignToolbar().removeScreen(project.getProjectId(), ((YoungAndroidSourceNode) node).getFormName());
             ode.updateModificationDate(projectId, date);
             executeNextCommand(node);
           }
@@ -266,24 +264,19 @@ public class DeleteFileCommand extends ChainableCommand {
           }
         });
       } else {  // asset file
-        ode.getProjectService().deleteFile(ode.getSessionId(),
-            node.getProjectId(), node.getFileId(),
-            new OdeAsyncCallback<Long>(
-                // message on failure
-                MESSAGES.deleteFileError()) {
-              @Override
-              public void onSuccess(Long date) {
-                getProject(node).deleteNode(node);
-                ode.updateModificationDate(node.getProjectId(), date);
-                executeNextCommand(node);
-              }
-
-              @Override
-              public void onFailure(Throwable caught) {
-                super.onFailure(caught);
-                executionFailedOrCanceled();
-              }
-            });
+        ode.getProjectService().deleteFile(ode.getSessionId(), node.getProjectId(), node.getFileId(), new OdeAsyncCallback<Long>(MESSAGES.deleteFileError()) {
+          @Override
+          public void onSuccess(Long date) {
+            getProject(node).deleteNode(node);
+            ode.updateModificationDate(node.getProjectId(), date);
+            executeNextCommand(node);
+          }
+          @Override
+          public void onFailure(Throwable caught) {
+            super.onFailure(caught);
+            executionFailedOrCanceled();
+          }
+        });
       }
     } else {
       executionFailedOrCanceled();
@@ -292,7 +285,6 @@ public class DeleteFileCommand extends ChainableCommand {
     @Override
     public void show() {
       super.show();
-
       Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
         @Override
         public void execute() {
