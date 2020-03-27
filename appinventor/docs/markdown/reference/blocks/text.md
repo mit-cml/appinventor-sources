@@ -162,7 +162,7 @@ Reverse the given text. For example, "reverse" would become "esrever".
 ![](images/text/replaceallmappings.png)
 
 Given a dictionary of mappings as input, replaces the key entries in the text with the corresponding values in the dictionary.
-Returns the text with the mappings appllied.
+Returns the text with the mappings applied.
 
 #### dictionary order {#replaceallmappingsdictionary}
 
