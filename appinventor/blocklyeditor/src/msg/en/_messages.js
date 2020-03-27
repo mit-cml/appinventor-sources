@@ -766,6 +766,23 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING = 'thing';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = 'Returns true if <code>thing</code> is a string.';
 
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL = '';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT = 'in text';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX = 'preferring';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER = 'order';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST = 'longest string first';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER = 'dictionary';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE = 'replace all mappings';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_LONGEST_STRING_FIRST = '/reference/blocks/text.html#replaceallmappingslongeststring';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST = 'Returns a new text obtained by replacing all occurrences\n'
+        + 'defined by the input dictionary keys with the values of the corresponding keys.\n'
+        + 'In case of a choice between replacing one key or the other, the longest key is replaced first.';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_DICTIONARY_ORDER = '/reference/blocks/text.html#replaceallmappingsdictionary';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER = 'Returns a new text obtained by replacing all occurrences\n'
+        + 'defined by the input dictionary keys with the values of the corresponding keys.\n'
+        + 'In case of a choice between replacing one key or the other, the element that occurs first \n'
+        + 'in the dictionary is replaced first.';
+
     Blockly.Msg.LANG_TEXT_REVERSE_HELPURL = '/reference/blocks/text.html#reverse';
     Blockly.Msg.LANG_TEXT_REVERSE_INPUT = 'reverse';
     Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP = 'Reverse the given text.';

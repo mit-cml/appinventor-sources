@@ -979,7 +979,7 @@
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
 (define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
-(define-alias JavaJoinListOfStrings <com.google.appinventor.components.runtime.util.JavaJoinListOfStrings>)
+(define-alias JavaStringUtils <com.google.appinventor.components.runtime.util.JavaStringUtils>)
 
 (define-alias JavaCollection <java.util.Collection>)
 (define-alias JavaIterator <java.util.Iterator>)
@@ -1533,8 +1533,8 @@
 (define (join-strings list-of-strings separator)
   ;; NOTE: The elements in list-of-strings should be Kawa strings
   ;; but they might not be Java strings, since some (all?) Kawa strings
-  ;; are FStrings.  See JavaJoinListOfStrings in components/runtime/utils
-  (JavaJoinListOfStrings:joinStrings list-of-strings separator))
+  ;; are FStrings.  See JavaStringUtils in components/runtime/utils
+  (JavaStringUtils:joinStrings list-of-strings separator))
 
 ;;; end of join-strings
 
@@ -2682,6 +2682,19 @@ Dictionary implementation.
              (b3 (bitwise-and (bitwise-ior (bitwise-arithmetic-shift-left b2 8) b) 255))
              (b4 (bitwise-and (bitwise-xor b3 (char->integer (string-ref lc i))) 255)))
         (set! acc (cons b4 acc))))))
+
+;; NOTE: The keys & values in the YailDictionary should be <String, String>.
+;; However, this might not necessarily be the case, so we pass in an <Object, Object>
+;; map instead to the Java call.
+;; See JavaStringUtils in components/runtime/utils
+(define (string-replace-mappings-dictionary text mappings)
+  (JavaStringUtils:replaceAllMappingsDictionaryOrder text mappings))
+
+(define (string-replace-mappings-longest-string text mappings)
+  (JavaStringUtils:replaceAllMappingsLongestStringOrder text mappings))
+
+(define (string-replace-mappings-earliest-occurrence text mappings)
+  (JavaStringUtils:replaceAllMappingsEarliestOccurrenceOrder text mappings))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Text implementation

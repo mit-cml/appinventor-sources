@@ -506,8 +506,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 204:
   // - NAVIGATION_COMPONENT_VERSION was initialized to 1
   // - SERIAL_COMPONENT_VERSION was initialized to 1
+  // For YOUNG_ANDROID_VERSION 205:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 31
 
-  public static final int YOUNG_ANDROID_VERSION = 204;
+  public static final int YOUNG_ANDROID_VERSION = 205;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -585,8 +587,10 @@ public class YaVersion {
   // - The for-each-in-dictionary block was added.
   // For BLOCKS_LANGUAGE_VERSION 30:
   // - The Reverse Text block was added
+  // For BLOCKS_LANGUAGE_VERSION 31
+  // - The replace-all-mappings block was added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 30;
+  public static final int BLOCKS_LANGUAGE_VERSION = 31;
 
   // ................................. Target SDK Version Number ..................................
 
