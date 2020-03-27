@@ -70,14 +70,13 @@ public class DeleteFileCommand extends ChainableCommand {
 
   @Override
   public void execute(final ProjectNode node) {
-	  if (node instanceof YoungAndroidSourceNode) {
-  		new DeleteFormDialog((YoungAndroidSourceNode) node).center();
-  		
-	  } 
-	  else {
-  		  executionFailedOrCanceled();
-  		  throw new IllegalArgumentException("node must be a YoungAndroidProjectNode");
-	  }
+    if (node instanceof YoungAndroidSourceNode) {
+      new DeleteFormDialog((YoungAndroidSourceNode) node).center();
+    } 
+    else {
+      executionFailedOrCanceled();
+      throw new IllegalArgumentException("node must be a YoungAndroidProjectNode");
+    }
   }
 
   /**
@@ -93,7 +92,7 @@ public class DeleteFileCommand extends ChainableCommand {
   private class DeleteFormDialog extends DialogBox {
     // UI elements
     private final LabeledTextBox newNameTextBox;
-	private final CheckBox cb = new CheckBox(MESSAGES.checkBoxButton());
+    private final CheckBox cb = new CheckBox(MESSAGES.checkBoxButton());
     private final Set<String> otherFormNames;
 
     DeleteFormDialog(final YoungAndroidSourceNode projectRootNode) {
@@ -144,40 +143,38 @@ public class DeleteFileCommand extends ChainableCommand {
       });
    
       if (projectRootNode instanceof YoungAndroidFormNode) {
-          final String abc1 = ((YoungAndroidFormNode) projectRootNode).getFormName();
-        	HorizontalPanel labelPanel = new HorizontalPanel();
-          	Label warnmsg = new Label(MESSAGES.reallyDeleteWarning(abc1));
-  		labelPanel.add(warnmsg);
-  		labelPanel.setSize("100%", "22px");
-  		contentPanel.add(labelPanel);
-  		contentPanel.add(newNameTextBox);
-          	HorizontalPanel buttonPanel = new HorizontalPanel();
-  		HorizontalPanel checkboxPanel = new HorizontalPanel();
-  		buttonPanel.add(cancelButton);
-  		buttonPanel.add(okButton);
-  		checkboxPanel.add(cb);
-  		checkboxPanel.setSize("100%", "20px");
-  		contentPanel.add(checkboxPanel);
-  		buttonPanel.setSize("100%", "24px");
-  		contentPanel.add(buttonPanel);
-  		contentPanel.setSize("320px", "100%");
-  		okButton.setEnabled(false); 
-		newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
-    		  @Override
-    		  public void onKeyUp(KeyUpEvent event) {
-      		    if(newNameTextBox.getText().equals(abc1)) {
-                	okButton.setEnabled(true);
-			newNameTextBox.setColor("#00c8ff");
-		    }	  
-        	    else
-        	    {
-                	okButton.setEnabled(false);
-			newNameTextBox.setColor("red");    
-        	    }
-    		  }
-  		});	     
-	  }
-
+        final String abc1 = ((YoungAndroidFormNode) projectRootNode).getFormName();
+        HorizontalPanel labelPanel = new HorizontalPanel();
+        Label warnmsg = new Label(MESSAGES.reallyDeleteWarning(abc1));
+  	labelPanel.add(warnmsg);
+  	labelPanel.setSize("100%", "22px");
+  	contentPanel.add(labelPanel);
+  	contentPanel.add(newNameTextBox);
+        HorizontalPanel buttonPanel = new HorizontalPanel();
+  	HorizontalPanel checkboxPanel = new HorizontalPanel();
+  	buttonPanel.add(cancelButton);
+  	buttonPanel.add(okButton);
+  	checkboxPanel.add(cb);
+  	checkboxPanel.setSize("100%", "20px");
+  	contentPanel.add(checkboxPanel);
+  	buttonPanel.setSize("100%", "24px");
+  	contentPanel.add(buttonPanel);
+  	contentPanel.setSize("320px", "100%");
+  	okButton.setEnabled(false); 
+	newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+    	  @Override
+    	  public void onKeyUp(KeyUpEvent event) {
+      	    if(newNameTextBox.getText().equals(abc1)) {
+              okButton.setEnabled(true);
+	      newNameTextBox.setColor("#00c8ff");
+	    }	  
+            else{
+              okButton.setEnabled(false);
+	      newNameTextBox.setColor("red");    
+            }
+    	  }
+  	});	     
+      }
       add(contentPanel);
     }
 	
