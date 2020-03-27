@@ -112,13 +112,18 @@
 		<sequential>
 			<ai.dojunit aij-testingtarget="BlocklyeditorTests" aij-dir="${blocklyeditor.pkg}">
 			</ai.dojunit>
-			<exec executable="mocha-phantomjs">
-				<arg value="tests/com/google/appinventor/mocha/index.html"/>
-				<arg value="--reporter"/>
-				<arg value="xunit"/>
-				<arg value="--file"/>
-				<arg value="reports/raw/TEST-MochaTests.xml"/>
+			<exec executable="npm">
+				<arg value="install"/>
 			</exec>
+			<exec executable="phantomjs" output="reports/raw/TEST-MochaTests.xml">
+				<arg value="../node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js"/>
+				<arg value="tests/com/google/appinventor/mocha/index.html"/>
+				<arg value="xunit"/>
+			</exec>
+			<!--Remove anything before the first < (start of xml)-->
+			<replaceregexp file="reports/raw/TEST-MochaTests.xml"
+				match="^[^&lt;]*"
+				replace=""/>
 			<!--Add package name to file-->
 			<replace file="reports/raw/TEST-MochaTests.xml"
 					 token="name=&quot;Mocha Tests&quot;"
