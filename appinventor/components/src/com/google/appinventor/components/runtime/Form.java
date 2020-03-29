@@ -566,8 +566,8 @@ public class Form extends AppInventorCompatActivity
   public void onBackPressed() {
     if (!BackPressed()) {
       AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
+      super.onBackPressed();
     }
-    super.onBackPressed();
   }
 
   @SimpleEvent(description = "Device back button pressed.")
