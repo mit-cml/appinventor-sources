@@ -376,7 +376,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onComponentRenamed(MockComponent component, String oldName) {
     if (loadComplete) {
       onFormStructureChange();
-      updatePropertiesPanel(form.getSelectedComponents());
+      updatePropertiesPanel(form.getSelectedComponents(), true);
     } else {
       OdeLog.elog("onComponentRenamed called when loadComplete is false");
     }
@@ -386,7 +386,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onComponentSelectionChange(MockComponent component, boolean selected) {
     if (loadComplete) {
       sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
-      updatePropertiesPanel(form.getSelectedComponents());
+      updatePropertiesPanel(form.getSelectedComponents(), selected);
     } else {
       OdeLog.elog("onComponentSelectionChange called when loadComplete is false");
     }
@@ -702,14 +702,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Set the properties box's content.
     PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
     propertiesBox.setContent(designProperties);
-    updatePropertiesPanel(form.getSelectedComponents());
+    updatePropertiesPanel(form.getSelectedComponents(), true);
     propertiesBox.setVisible(true);
   }
 
   /*
    * Show the given component's properties in the properties panel.
    */
-  private void updatePropertiesPanel(List<MockComponent> components) {
+  private void updatePropertiesPanel(List<MockComponent> components, boolean selected) {
     if (components == null || components.size() == 0) {
       throw new IllegalArgumentException("components must be a list of at least 1");
     }
@@ -767,7 +767,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       }
       selectedProperties = newProperties;
     }
-    selectedProperties.addPropertyChangeListener(this);
+    if (selected) {
+      selectedProperties.addPropertyChangeListener(this);
+    }
     designProperties.setProperties(selectedProperties);
     if (components.size() > 1) {
       designProperties.setPropertiesCaption(components.size() + " components selected");
@@ -918,7 +920,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     //Update Mock Components
     updateMockComponents(componentTypes);
     //Update the Properties Panel
-    updatePropertiesPanel(form.getSelectedComponents());
+    updatePropertiesPanel(form.getSelectedComponents(), true);
   }
 
   @Override
