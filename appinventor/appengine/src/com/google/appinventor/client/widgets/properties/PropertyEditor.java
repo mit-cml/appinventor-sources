@@ -14,6 +14,8 @@ import com.google.gwt.user.client.ui.Composite;
  */
 public abstract class PropertyEditor extends Composite {
 
+  private boolean multiselectMode = false;
+
   /**
    * Property being edited by this editor.
    */
@@ -45,5 +47,13 @@ public abstract class PropertyEditor extends Composite {
 
   public void refresh() {
     this.updateValue();
+  }
+
+  public void setMultiselectMode(boolean multiselect) {
+    multiselectMode = true;
+  }
+
+  public boolean inMultiselectMode() {
+    return multiselectMode;
   }
 }
