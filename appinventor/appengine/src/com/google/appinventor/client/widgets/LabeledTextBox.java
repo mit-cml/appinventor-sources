@@ -155,6 +155,10 @@ public class LabeledTextBox extends Composite {
   public void setErrorMessage(String errorMessage) {
     this.errorMessage = errorMessage;
   }
+  
+  public void setColor(String color) {
+	textbox.getElement().getStyle().setBorderColor(color);
+  }
 
   /**
    * Check to see if a textbox contains valid text. True if text is valid, false otherwise
