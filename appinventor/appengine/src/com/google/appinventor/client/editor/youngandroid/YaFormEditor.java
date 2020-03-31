@@ -763,6 +763,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
             break;
           }
         }
+        newProperties.getProperty(name).getEditor().setMultiselectMode(true);
         newProperties.getProperty(name).setValue(sharedValue);
       }
       selectedProperties = newProperties;
