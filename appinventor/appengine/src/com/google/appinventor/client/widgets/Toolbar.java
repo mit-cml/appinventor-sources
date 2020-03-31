@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.widgets;
 
+import com.google.appinventor.client.Ode;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
@@ -145,6 +146,15 @@ public class Toolbar extends Composite {
   }
 
   /**
+   * Adds a (left-aligned) button to the toolbar
+   *
+   * @param item the button to add
+   */
+  protected void addButton(ToolbarItem item) {
+    addButton(item, false);
+  }
+ 
+  /**
    * Adds a button to the toolbar
    *
    * @param item button to add
@@ -152,19 +162,7 @@ public class Toolbar extends Composite {
    *                   {@code false} if left-aligned
    */
   protected void addButton(final ToolbarItem item, boolean rightAlign) {
-    TextButton button = new TextButton(item.caption);
-    button.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        item.command.execute();
-      }
-    });
-    if (rightAlign) {
-      rightButtons.add(button);
-    } else {
-      leftButtons.add(button);
-    }
-    buttonMap.put(item.widgetName, button);
+    addButton(item, rightAlign, false);
   }
 
   /**
@@ -175,28 +173,33 @@ public class Toolbar extends Composite {
    */
   protected void addButton(final ToolbarItem item, boolean rightAlign, boolean top) {
     TextButton button = new TextButton(item.caption);
-    button.setStyleName("ode-TopPanelDropDownButton");
-    button.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        item.command.execute();
-      }
-    });
+    if (top) {
+      button.setStyleName("ode-TopPanelDropDownButton");
+    }
     if (rightAlign) {
       rightButtons.add(button);
     } else {
       leftButtons.add(button);
     }
+    button.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        Ode.getInstance().hideChaff();
+        item.command.execute();
+      }
+    });
     buttonMap.put(item.widgetName, button);
   }
 
   /**
-   * Adds a (left-aligned) button to the toolbar
+   * Adds a (left-aligned) drop down button to the toolbar
    *
-   * @param item the button to add
+   * @param dropDownName name used for internal map
+   * @param caption name of button
+   * @param items list of items to add to drop down
    */
-  protected void addButton(ToolbarItem item) {
-    addButton(item, false);
+  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items) {
+    addDropDownButton(dropDownName, caption, items, false);
   }
 
   /**
@@ -210,14 +213,7 @@ public class Toolbar extends Composite {
    */
   protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items,
       final boolean rightAlign) {
-    final DropDownButton button = new DropDownButton(dropDownName, caption,
-        items, rightAlign);
-    if (rightAlign) {
-      rightButtons.add(button);
-    } else {
-      leftButtons.add(button);
-    }
-    dropDownButtonMap.put(dropDownName, button);
+    addDropDownButton(dropDownName, caption, items, rightAlign, false);
   }
 
   /**
@@ -232,12 +228,20 @@ public class Toolbar extends Composite {
       final boolean rightAlign, final boolean top) {
     final DropDownButton button = new DropDownButton(dropDownName, caption,
         items, rightAlign);
-    button.setStyleName("ode-TopPanelDropDownButton");
+    if (top) {
+      button.setStyleName("ode-TopPanelDropDownButton");
+    }
     if (rightAlign) {
       rightButtons.add(button);
     } else {
       leftButtons.add(button);
     }
+    button.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        Ode.getInstance().hideChaff();
+      }
+    });
     dropDownButtonMap.put(dropDownName, button);
   }
 
@@ -275,17 +279,6 @@ public class Toolbar extends Composite {
    */
   protected void clearDropDownMenu(String dropDownName) {
     dropDownButtonMap.get(dropDownName).clearAllItems();
-  }
-  
-  /**
-   * Adds a (left-aligned) drop down button to the toolbar
-   *
-   * @param dropDownName name used for internal map
-   * @param caption name of button
-   * @param items list of items to add to drop down
-   */
-  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items) {
-    addDropDownButton(dropDownName, caption, items, false);
   }
 
   /**

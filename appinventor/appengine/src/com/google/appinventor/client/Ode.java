@@ -1523,7 +1523,7 @@ public class Ode implements EntryPoint {
   /**
    * HideChaff when switching view from block to others
    */
-  private void hideChaff() {
+  public void hideChaff() {
     if (designToolbar.getCurrentView() == DesignToolbar.View.BLOCKS
         // currentFileEditor may be null when switching projects
         && currentFileEditor != null) {
