@@ -141,7 +141,8 @@ Blockly.Yail['text_changeCase'] = function() {
 
 Blockly.Yail['text_changeCase'].OPERATORS = {
   UPCASE: ['string-to-upper-case', 'upcase', Blockly.Yail.ORDER_NONE],
-  DOWNCASE: ['string-to-lower-case', 'downcase', Blockly.Yail.ORDER_NONE]
+  DOWNCASE: ['string-to-lower-case', 'downcase', Blockly.Yail.ORDER_NONE],
+  TITLECASE: ['string-to-title-case','titlecase',Blockly.Yail.ORDER_NONE]
 };
 
 Blockly.Yail.text_starts_at = function() {
