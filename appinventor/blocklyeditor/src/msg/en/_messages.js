@@ -668,10 +668,13 @@ Blockly.Msg.en.switch_language_to_english = {
 
     Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_UPPERCASE = 'upcase';
     Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_DOWNCASE = 'downcase';
+    Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_TITLECASE = 'titlecase';
     Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE = 'Returns a copy of its text string argument converted to uppercase.';
     Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_UPPERCASE = '/reference/blocks/text.html#upcase';
-    Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE = 'Returns a copy of its text string argument converted to lowercase.';
+    Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE = 'Returns a copy of its text string argument consverted to lowercase.';
     Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_DOWNCASE = '/reference/blocks/text.html#downcase';
+    Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_TITLECASE = 'Returns a copy of its text string argument converted to capatalized case.';
+    Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_TITLECASE = '/reference/blocks/text.html#titlecase';
 
     Blockly.Msg.LANG_TEXT_TRIM_HELPURL = '/reference/blocks/text.html#trim';
     Blockly.Msg.LANG_TEXT_TRIM_TITLE_TRIM = 'trim';
