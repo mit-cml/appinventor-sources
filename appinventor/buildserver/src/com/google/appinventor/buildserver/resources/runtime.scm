@@ -1890,6 +1890,13 @@
 (define (string-to-lower-case s)
   (String:toLowerCase (s:toString)))
 
+(define (string-to-title-case s)
+    (let ((len (string-length s)))
+       (if (> len 0)
+       (format "~A~A" (string-to-upper-case (substring s 0 1)) (string-to-lower-case(substring s 1 len)))
+       )
+    ))
+
 (define (unicode-string->list str :: <string>) :: <list>
   (let loop ((result :: <list> '()) (i :: <int> (string-length str)))
     (set! i (- i 1))
