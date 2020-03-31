@@ -237,26 +237,34 @@ Blockly.Blocks['text_changeCase'] = {
       titleName: 'OP',
       value: 'DOWNCASE'
     }
+  },{
+    translatedName: Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_TITLECASE,
+    dropDown: {
+      titleName: 'OP',
+      value: 'TITLECASE'
+    }
   }]
 };
 
 Blockly.Blocks.text_changeCase.OPERATORS = function () {
   return [
-    [Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_UPPERCASE, 'UPCASE'], [Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_DOWNCASE, 'DOWNCASE']
+    [Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_UPPERCASE, 'UPCASE'], [Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_DOWNCASE, 'DOWNCASE'], [Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_TITLECASE, 'TITLECASE']
   ]
 };
 
 Blockly.Blocks.text_changeCase.TOOLTIPS = function () {
   return {
     UPCASE: Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE,
-    DOWNCASE: Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE
+    DOWNCASE: Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE,
+    TITLECASE: Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_TITLECASE
   }
 };
 
 Blockly.Blocks.text_changeCase.HELPURLS = function () {
   return {
     UPCASE: Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_UPPERCASE,
-    DOWNCASE: Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_DOWNCASE
+    DOWNCASE: Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_DOWNCASE,
+    TITLECASE: Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_TITLECASE
   }
 };
 
