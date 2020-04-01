@@ -756,13 +756,16 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
         // Determine if all components have the same value and apply it
         String sharedValue = components.get(0).getPropertyValue(name);
+        boolean collision = false;
         for (MockComponent component : components) {
           String propValue = component.getPropertyValue(name);
           if (!sharedValue.equals(propValue)) {
             sharedValue = "";
+            collision = true;
             break;
           }
         }
+        newProperties.getProperty(name).getEditor().setMultipleValues(collision);
         newProperties.getProperty(name).getEditor().setMultiselectMode(true);
         newProperties.getProperty(name).setValue(sharedValue);
       }

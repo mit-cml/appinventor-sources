@@ -6,9 +6,10 @@
 
 package com.google.appinventor.client.widgets.properties;
 
-import com.google.appinventor.client.widgets.DropDownButton;
+import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 
+import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 
@@ -88,7 +89,9 @@ public class ChoicePropertyEditor extends PropertyEditor {
       items.add(new DropDownItem("Choice Property Editor", choice.caption, new Command() {
         @Override
         public void execute() {
-          property.setValue(choice.value);
+          boolean multiple = isMultipleValues();
+          setMultipleValues(false);
+          property.setValue(choice.value, multiple);
         }
       }));
     }
@@ -114,7 +117,9 @@ public class ChoicePropertyEditor extends PropertyEditor {
       items.add(new DropDownItem("Choice Property Editor", choice.caption, new Command() {
         @Override
         public void execute() {
-          property.setValue(choice.value);
+          boolean multiple = isMultipleValues();
+          setMultipleValues(false);
+          property.setValue(choice.value, multiple);
         }
       }));
     }
@@ -126,6 +131,11 @@ public class ChoicePropertyEditor extends PropertyEditor {
 
   @Override
   protected void updateValue() {
+    if (isMultipleValues()) {
+      dropDownButton.setCaption(MESSAGES.multipleValues());
+      return;
+    }
+
     String propertyValue = property.getValue();
     for (Choice choice : choices) {
       String choiceValue = choice.value;

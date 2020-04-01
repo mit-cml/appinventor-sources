@@ -130,19 +130,30 @@ public final class EditableProperty extends Property {
   }
 
   /**
-   * {@inheritDoc}
+   * Sets the value of the property, optionally forcing the property to reset its value.
    *
-   * Also notifies any property listeners of the change.
+   * @param value the value to set
+   * @param force true if the property change should be forced, otherwise false
+   * @see #setValue(String)
    */
-  @Override
-  public void setValue(String value) {
-    if (!value.equals(getValue())) {
+  public void setValue(String value, boolean force) {
+    if (!value.equals(getValue()) || force) {
       super.setValue(value);
       if (properties != null) {
         properties.firePropertyChangeEvent(getName(), value);
       }
       editor.updateValue();
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * Also notifies any property listeners of the change.
+   */
+  @Override
+  public void setValue(String value) {
+    setValue(value, false);
   }
 
   /**
