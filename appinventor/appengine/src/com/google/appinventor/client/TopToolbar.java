@@ -68,6 +68,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
+  private static final String WIDGET_NAME_DELETE_TRASH = "Delete Trash";
   private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
   private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
   private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
@@ -181,30 +182,26 @@ public class TopToolbar extends Composite {
     initWidget(toolbar);
   }
   
-  public void updateMoveToTrash(int flag){
-	if(flag == 1){
-	   flag = 0;
-       DropDownItem item = new DropDownItem(WIDGET_NAME_DELETE,MESSAGES.trashProjectMenuItem(),  new DeleteForeverProjectAction());
-       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
-       fileDropDown.replaceSpecificItem(item, 5);
-       
-    }
-    else{
-	   DropDownItem item = new DropDownItem(WIDGET_NAME_MY_PROJECTS, MESSAGES.projectMenuItem(), new DeleteAction());
-	   fileDropDown.replaceSpecificItem(item, 6);
-    }
+  public void updateMoveToTrash(String menu_item){
+	if(menu_item.equals("Move To Trash")){
+	  fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
+	  fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);  
+	}
+	else{
+	  fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);
+	  fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);
+	}
   } 
 
   public void updateMenuState(int numSelectedProjects, int numProjects) {
     boolean allowDelete = !isReadOnly && numSelectedProjects > 0;
     boolean allowExport = numSelectedProjects > 0;
     boolean allowExportAll = numProjects > 0;
-    fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
+    fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
     String exportProjectLabel = numSelectedProjects > 1 ?
         MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects) : MESSAGES.exportProjectMenuItem();
     fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
     fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);
-    //fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
     fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
   }
 
@@ -219,6 +216,7 @@ public class TopToolbar extends Composite {
     for (DropDownItem i : items) {
       menu.addItem(i);
     }
+    fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
   }
 
   private void createProjectsMenu() {
@@ -235,6 +233,8 @@ public class TopToolbar extends Composite {
           new ImportTemplateAction()));
       fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
           new DeleteAction()));
+      fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_TRASH, MESSAGES.deleteFromTrashButton(),
+          new DeleteForeverProjectAction()));     
       fileItems.add(null);
       fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
           new SaveAction()));
@@ -454,8 +454,7 @@ public class TopToolbar extends Composite {
   private static class SwitchToProjectAction implements Command {
     @Override
     public void execute() {
-	  int flag = 0;
-	  Ode.getInstance().getTopToolbar().updateMoveToTrash(flag);
+	  Ode.getInstance().getTopToolbar().updateMoveToTrash("Move To Trash");
       Ode.getInstance().switchToProjectsView();
       Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
     }

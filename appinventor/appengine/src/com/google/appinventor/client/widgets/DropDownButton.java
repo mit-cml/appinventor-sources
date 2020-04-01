@@ -240,6 +240,20 @@ public class DropDownButton extends TextButton {
       }
     }
   }
+  
+  public void setItemVisible(String itemName, boolean enabled) {
+    for (MenuItem item : items) {
+      if (item.getText().equals(itemName)) {
+        if (enabled == true) {
+    	  item.setVisible(true);
+        }
+        else{
+    	  item.setVisible(false);
+        }
+        break;
+      }
+    }
+  }
 
   public void replaceLastItem(DropDownItem item) {
     menu.removeItem(items.get(items.size()-1));
@@ -247,20 +261,6 @@ public class DropDownButton extends TextButton {
     items.add(menu.addItem(item.caption, true, item.command));
   }
   
-  public void replaceSpecificItem(DropDownItem item, int num) {
-    if(num == 5){
-	  
-	  items.get(5-1).setText("Delete From Trash");
-	  items.get(5-1).setEnabled( true);
-	  items.get(5-1).setCommand(item.command);
-    }
-    else if(num == 6){
-	  items.get(5-1).setText("Move to Trash");
-	  items.get(5-1).setEnabled( true);
-	  items.get(5-1).setCommand(item.command);
-    }
-  }
-
   /**
    * Sets the HTML content of a menu item, identified by {@code id}, to the given {@code html}.
    *

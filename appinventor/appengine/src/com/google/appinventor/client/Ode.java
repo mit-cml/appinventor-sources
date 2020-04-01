@@ -467,8 +467,7 @@ public class Ode implements EntryPoint {
    */
 
   public void switchToTrash() {
-	int flag = 1;
-    Ode.getInstance().getTopToolbar().updateMoveToTrash(flag);
+	Ode.getInstance().getTopToolbar().updateMoveToTrash("Delete From Trash");
     hideChaff();
     hideTutorials();
     ProjectListBox.getProjectListBox().loadTrashList();
