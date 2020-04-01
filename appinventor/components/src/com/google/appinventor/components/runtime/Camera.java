@@ -142,10 +142,10 @@ public class Camera extends AndroidNonvisibleComponent
       Log.i("CameraComponent", "External storage is available and writable");
 
       File directory = new File(Environment.getExternalStorageDirectory()+"/Pictures");
-      if(!directory.exists())
-      {
+      if (!directory.exists()) {
         directory.mkdir();
       }
+
       File image = new File(Environment.getExternalStorageDirectory(),
           "/Pictures/app_inventor_" + new Date().getTime()
               + ".jpg");
