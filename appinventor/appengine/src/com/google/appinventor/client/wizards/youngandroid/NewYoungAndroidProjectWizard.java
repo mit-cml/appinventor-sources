@@ -55,8 +55,10 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel(), new Validator() {
       @Override
       public boolean validate(String value) {
+        
+        value = value.trim();
         errorMessage = TextValidators.getErrorMessage(value);
-        if (errorMessage.length()>0){
+        if (errorMessage.equals(MESSAGES.firstCharProjectNameError()) || errorMessage.equals(MESSAGES.invalidCharProjectNameError())){ // !errorMessage == MESSAGES.whitespaceProjectNameError();
           disableOkButton();
           return false;
         }
@@ -113,7 +115,7 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     initFinishCommand(new Command() {
       @Override
       public void execute() {
-        String projectName = projectNameTextBox.getText();
+        String projectName = projectNameTextBox.getText().trim().replaceAll("( )+", " ").replace(" ","_");
 
         if (TextValidators.checkNewProjectName(projectName)) {
           String packageName = StringUtils.getProjectPackage(

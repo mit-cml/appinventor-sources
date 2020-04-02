@@ -176,7 +176,7 @@ public class LabeledTextBox extends Composite {
   private void setErrorStyles(boolean validationResult) {
     if (validationResult) {
       textbox.getElement().getStyle().setBorderColor(defaultTextBoxColor);
-      errorLabel.setText("");
+      errorLabel.setText(errorMessage);
     } else {
       String errorColor = "red";
       textbox.getElement().getStyle().setBorderColor(errorColor);
