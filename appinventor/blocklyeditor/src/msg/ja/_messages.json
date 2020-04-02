@@ -52,5 +52,8 @@
     "Blockly.Msg.ENABLE_BLOCK": "ブロックを有効化する",
     "Blockly.Msg.DISABLE_BLOCK": "ブロックを無効化する",
     "Blockly.Msg.DELETE_BLOCK": "ブロックを削除",
-    "Blockly.Msg.EXTERNAL_INPUTS": "他のインプット"
+    "Blockly.Msg.EXTERNAL_INPUTS": "他のインプット",
+    "Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL": "まで",
+    "Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE": "の間",
+    "Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_INPUT_DO": "実行する"
 }
