@@ -369,7 +369,7 @@ Blockly.BlockSvg.prototype.updateCollapsed_ = function() {
     if (this.collapsed_ == collapsed) {
       return;
     }
-    this.collapsed_ = collapsed;
+    Blockly.BlockSvg.superClass_.setCollapsed.call(this, collapsed);
     if (!collapsed) {
       this.updateCollapsed_();
     } else if (this.rendered) {
