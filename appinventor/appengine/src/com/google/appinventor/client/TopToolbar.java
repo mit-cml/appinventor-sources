@@ -43,8 +43,6 @@ import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -198,12 +196,6 @@ public class TopToolbar extends Composite {
   private DropDownButton makeButton(String id, String text) {
     DropDownButton button = new DropDownButton(id, text, new ArrayList<DropDownItem>(), false);
     button.setStyleName("ode-TopPanelButton");
-    button.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        Ode.getInstance().hideChaff();
-      }
-    });
     return button;
   }
 
