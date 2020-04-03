@@ -592,5 +592,8 @@ top.document.addEventListener('mousedown', function(e) {
     }
     target = target.parentElement;
   }
-  Blockly.hideChaff();
+  // Make sure the workspace has been injected.
+  if (Blockly.mainWorkspace) {
+    Blockly.hideChaff();
+  }
 }, false);
