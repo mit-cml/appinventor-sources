@@ -50,7 +50,6 @@ public final class TextValidators {
   public static boolean checkNewProjectName(String projectName) {
 
     // Check the format of the project name
-
     if (!isValidIdentifier(projectName)) {
       Window.alert(MESSAGES.malformedProjectNameError());
       return false;
@@ -78,6 +77,7 @@ public final class TextValidators {
   public static boolean checkNewComponentName(String componentName) {
 
     // Check that it meets the formatting requirements.
+    
     if (!TextValidators.isValidComponentIdentifier(componentName)) {
       Window.alert(MESSAGES.malformedComponentNameError());
       return false;
@@ -188,20 +188,15 @@ public final class TextValidators {
     String errorMessage = "";
     String noWhitespace = "[\\S]+";
     String firstCharacterLetter = "[A-Za-z].*";
-    String temp = filename.replaceAll("( )+", " ").replace(" ","_");
-    if(temp.length() > 0){
-    if(!temp.matches("[A-Za-z][A-Za-z0-9_]*")) {
-       if (!temp.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
-        return MESSAGES.firstCharProjectNameError();
+ if(!filename.matches("[A-Za-z][A-Za-z0-9_]*") && filename.length() > 0) {
+      if(!filename.matches(noWhitespace)) { //Check to make sure that this project does not contain any whitespace
+        errorMessage = MESSAGES.whitespaceProjectNameError();
+      } else if (!filename.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
+        errorMessage = MESSAGES.firstCharProjectNameError();
       } else { //The text contains a character that is not a letter, number, or underscore
-        return MESSAGES.invalidCharProjectNameError();
+	  errorMessage = MESSAGES.invalidCharProjectNameError();
       }
     }
-    if (!filename.matches("[A-Za-z][A-Za-z0-9_]*")) { // check to make sure if original filename has no spaces
-    	return MESSAGES.whitespaceProjectNameError().concat(". \n '").concat(temp).concat("' will be used if continued.");
-    }
-    else return "";
-  }
-    return "";
+    return errorMessage;
   }
 }
