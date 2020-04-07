@@ -3,8 +3,22 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
+/**
+ * Placeholder for type checking. Actual function is defined in GWT.
+ * @return {boolean}
+ */
 top.HTML5DragDrop_isProjectEditorOpen = function() { return false; };
+
+/**
+ * Placeholder for type checking. Actual function is defined in GWT.
+ * @return {boolean}
+ */
 top.HTML5DragDrop_isBlocksEditorOpen = function() { return false; };
+
+/**
+ * Placeholder for type checking. Actual function is defined in GWT.
+ * @return {string}
+ */
 top.HTML5DragDrop_getOpenProjectId = function() { return ''; };
 top.HTML5DragDrop_handleUploadResponse = function(_projectId, type, name, response) {};
 top.HTML5DragDrop_reportError = function(errorCode) {};
@@ -14,22 +28,55 @@ var dropdiv = document.createElement('div');
 dropdiv.className = 'dropdiv';
 dropdiv.innerHTML = '<div><p>Drop files here</p></div>';
 
-function importProject(droppedItem) {
+function isUrl(str) {
+  return str.indexOf('http:') === 0 || str.indexOf('https:') === 0;
+}
+
+function readUrl(item, cb) {
   var xhr = new XMLHttpRequest();
-  var formData = new FormData();
-  var filename = droppedItem.name;
-  formData.append('uploadProjectArchive', droppedItem);
-  xhr.open('POST', '/ode/upload/project/' + filename.substr(0, filename.length - 4));
-  xhr.onreadystatechange = function() {
+  xhr.open('GET', item, true);
+  xhr.responseType = 'blob';
+  xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
-        top.HTML5DragDrop_handleUploadResponse(null, 'project', droppedItem.name, xhr.response);
-      } else {
-        top.HTML5DragDrop_reportError(xhr.status);
+        if (xhr.response.name === undefined) {
+          xhr.response.name = item.substr(item.lastIndexOf('/') + 1);
+        }
+        cb(xhr.response);
       }
     }
   };
-  xhr.send(formData);
+  xhr.send(null);
+}
+
+function handleDroppedItem(item, cb) {
+  if (isUrl(item.name)) {
+    readUrl(item.name, cb);
+  } else {
+    cb(item);
+  }
+}
+
+function importProject(droppedItem) {
+  function doImportProject(blob) {
+    var xhr = new XMLHttpRequest();
+    var formData = new FormData();
+    var filename = blob.name;
+    filename = filename.substr(filename.lastIndexOf('/') + 1);
+    formData.append('uploadProjectArchive', blob);
+    xhr.open('POST', '/ode/upload/project/' + filename.substr(0, filename.length - 4));
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          top.HTML5DragDrop_handleUploadResponse(null, 'project', droppedItem.name, xhr.response);
+        } else {
+          top.HTML5DragDrop_reportError(xhr.status);
+        }
+      }
+    };
+    xhr.send(formData);
+  }
+  handleDroppedItem(droppedItem, doImportProject);
 }
 
 function uploadExtension(droppedItem) {
@@ -37,21 +84,24 @@ function uploadExtension(droppedItem) {
     top.HTML5DragDrop_reportError(1);
     return;
   }
-  var projectId = top.HTML5DragDrop_getOpenProjectId();
-  var xhr = new XMLHttpRequest();
-  var formData = new FormData();
-  formData.append('uploadComponentArchive', droppedItem);
-  xhr.open('POST', '/ode/upload/component/' + droppedItem.name);
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4) {
-      if (xhr.status === 200) {
-        top.HTML5DragDrop_handleUploadResponse(projectId, 'extension', droppedItem.name, xhr.response);
-      } else {
-        top.HTML5DragDrop_reportError(xhr.status);
+  function doUploadExtension(blob) {
+    var projectId = top.HTML5DragDrop_getOpenProjectId();
+    var xhr = new XMLHttpRequest();
+    var formData = new FormData();
+    formData.append('uploadComponentArchive', blob);
+    xhr.open('POST', '/ode/upload/component/' + blob.name);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          top.HTML5DragDrop_handleUploadResponse(projectId, 'extension', blob.name, xhr.response);
+        } else {
+          top.HTML5DragDrop_reportError(xhr.status);
+        }
       }
-    }
-  };
-  xhr.send(formData);
+    };
+    xhr.send(formData);
+  }
+  handleDroppedItem(droppedItem, doUploadExtension);
 }
 
 function uploadAsset(droppedItem) {
@@ -59,38 +109,44 @@ function uploadAsset(droppedItem) {
     top.HTML5DragDrop_reportError(1);
     return;
   }
-  var projectId = top.HTML5DragDrop_getOpenProjectId();
-  var xhr = new XMLHttpRequest();
-  var formData = new FormData();
-  formData.append('uploadFile', droppedItem);
-  xhr.open('POST', '/ode/upload/file/' + projectId + '/assets/' + droppedItem.name);
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4) {
-      if (xhr.status === 200) {
-        top.HTML5DragDrop_handleUploadResponse(projectId, 'asset', droppedItem.name, xhr.response);
-      } else {
-        top.HTML5DragDrop_reportError(xhr.status);
+  function doUploadAsset(blob) {
+    var projectId = top.HTML5DragDrop_getOpenProjectId();
+    var xhr = new XMLHttpRequest();
+    var formData = new FormData();
+    formData.append('uploadFile', blob);
+    xhr.open('POST', '/ode/upload/file/' + projectId + '/assets/' + blob.name);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          top.HTML5DragDrop_handleUploadResponse(projectId, 'asset', blob.name, xhr.response);
+        } else {
+          top.HTML5DragDrop_reportError(xhr.status);
+        }
       }
-    }
-  };
-  xhr.send(formData);
+    };
+    xhr.send(formData);
+  }
+  handleDroppedItem(droppedItem, doUploadAsset);
 }
 
 function uploadKeystore(droppedItem) {
-  var xhr = new XMLHttpRequest();
-  var formData = new FormData();
-  formData.append('uploadUserFile', droppedItem);
-  xhr.open('POST', '/ode/upload/userfile/android.keystore');
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4) {
-      if (xhr.status === 200) {
-        top.HTML5DragDrop_handleUploadResponse(null, 'keystore', droppedItem.name, xhr.response);
-      } else {
-        top.HTML5DragDrop_reportError(xhr.status);
+  function doUploadKeystore(blob) {
+    var xhr = new XMLHttpRequest();
+    var formData = new FormData();
+    formData.append('uploadUserFile', blob);
+    xhr.open('POST', '/ode/upload/userfile/android.keystore');
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          top.HTML5DragDrop_handleUploadResponse(null, 'keystore', blob.name, xhr.response);
+        } else {
+          top.HTML5DragDrop_reportError(xhr.status);
+        }
       }
-    }
-  };
-  xhr.send(formData);
+    };
+    xhr.send(formData);
+  }
+  handleDroppedItem(droppedItem, doUploadKeystore);
 }
 
 function isProject(item) {
@@ -108,7 +164,8 @@ function isKeystore(item) {
 function checkValidDrag(e) {
   e.preventDefault();
   var dragType = 'none';
-  if (e.dataTransfer.types.indexOf('Files') >= 0) {
+  if (e.dataTransfer.types.indexOf('Files') >= 0 ||
+      e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
     dragType = 'copy';
     dropdiv.className = 'dropdiv good';
   }
@@ -123,8 +180,7 @@ function doUploadKeystore(item) {
 
 function checkValidDrop(e) {
   e.preventDefault();
-  for (var i = 0; i < e.dataTransfer.files.length; i++) {
-    var item = e.dataTransfer.files[i];
+  function process(item) {
     if (isProject(item)) {
       importProject(item);
     } else if (isKeystore(item)) {
@@ -138,6 +194,13 @@ function checkValidDrop(e) {
     } else {
       top.HTML5DragDrop_reportError(1);
     }
+  }
+  if (e.dataTransfer.types.indexOf('Files') >= 0) {
+    for (var i = 0; i < e.dataTransfer.files.length; i++) {
+      process(e.dataTransfer.files[i]);
+    }
+  } else if (e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
+    process({name: e.dataTransfer.getData('text/uri-list')});
   }
 }
 
@@ -233,7 +296,7 @@ function onDrop(e) {
 
 function cancelDrop(e) {
   if (dropdiv.classList.contains('good')) {
-    if (e.buttons == 0) {
+    if (e.buttons === 0) {
       dropdiv.remove();
       dropdiv.className = 'dropdiv';
     }
