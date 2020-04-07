@@ -304,7 +304,6 @@ function PNG() {
  * @const
  */
 PNG.HEADER = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
-var phy_data = [0,0,16,25,0,0,16,25,1] ;
 /**
  * Chunk represents the four components of a PNG file chunk.
  * @param {number} length The length of the chunk data
@@ -376,14 +375,12 @@ PNG.prototype.processData_ = function(data) {
     return data.slice(chunkStart, chunkStart + length);
   }
   this.chunks = [];
-  var phy = [112,72,89,115];
   while (chunkStart < data.length) {
     var length = decode4();
     var type = read4();
     var chunkData = readData(length);
     chunkStart += length;
     var crc = decode4();
-    if (type == 'IDAT') {this.chunks.push(new PNG.Chunk(9, 'pHYs', phy_data, crc32(phy.concat(phy_data))));} 
     this.chunks.push(new PNG.Chunk(length, type, chunkData, crc));
   }
 };
@@ -463,10 +460,10 @@ Blockly.exportBlockAsPng = function(block) {
     img.src = uri;
     img.onload = function() {
       var canvas = document.createElement('canvas');
-      canvas.width = 2*(img.width);
-      canvas.height = 2*(img.height);
+      canvas.width = img.width;
+      canvas.height = img.height;
       var context = canvas.getContext('2d');
-      context.drawImage(img, 0, 0,img.width,img.height,0,0,canvas.width,canvas.height);
+      context.drawImage(img, 0, 0);
 
       function download(png) {
         png.setCodeChunk(code);
