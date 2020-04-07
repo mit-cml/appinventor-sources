@@ -304,6 +304,7 @@ function PNG() {
  * @const
  */
 PNG.HEADER = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+
 /**
  * Chunk represents the four components of a PNG file chunk.
  * @param {number} length The length of the chunk data
