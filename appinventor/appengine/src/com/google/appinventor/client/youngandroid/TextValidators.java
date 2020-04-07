@@ -76,8 +76,7 @@ public final class TextValidators {
 
   public static boolean checkNewComponentName(String componentName) {
 
-    // Check that it meets the formatting requirements.
-    
+    // Check that it meets the formatting requirements. 
     if (!TextValidators.isValidComponentIdentifier(componentName)) {
       Window.alert(MESSAGES.malformedComponentNameError());
       return false;
@@ -194,7 +193,7 @@ public final class TextValidators {
       } else if (!filename.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
         errorMessage = MESSAGES.firstCharProjectNameError();
       } else { //The text contains a character that is not a letter, number, or underscore
-	  errorMessage = MESSAGES.invalidCharProjectNameError();
+        errorMessage = MESSAGES.invalidCharProjectNameError();
       }
     }
     return errorMessage;
