@@ -148,6 +148,7 @@ Blockly.BlockSvg.prototype.onMouseUp_ = (function(func) {
         if (Blockly.getMainWorkspace().hasBackpack() &&
             Blockly.getMainWorkspace().getBackpack().isOpen) {
           var backpack = Blockly.getMainWorkspace().getBackpack();
+          goog.Timer.callOnce(backpack.close, 100, backpack);
           backpack.addToBackpack(Blockly.selected, true);
           backpack.onMouseUp(e, Blockly.selected.dragStartXY_);
         }
