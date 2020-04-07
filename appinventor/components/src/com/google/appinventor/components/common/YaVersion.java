@@ -508,8 +508,10 @@ public class YaVersion {
   // - SERIAL_COMPONENT_VERSION was initialized to 1
   // For YOUNG_ANDROID_VERSION 205:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 31
+  // For YOUNG_ANDROID_VERSION 206:
+  // - YANDEX_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 205;
+  public static final int YOUNG_ANDROID_VERSION = 206;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1334,7 +1336,9 @@ public class YaVersion {
 
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.
-  public static final int YANDEX_COMPONENT_VERSION = 1;
+  // For YANDEX_COMPONENT_VERSION 2:
+  // - Added ApiKey property
+  public static final int YANDEX_COMPONENT_VERSION = 2;
 
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
