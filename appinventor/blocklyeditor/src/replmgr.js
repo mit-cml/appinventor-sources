@@ -445,7 +445,7 @@ Blockly.ReplMgr.putYail = (function() {
             webrtcpeer = new RTCPeerConnection(top.ReplState.iceservers);
             webrtcpeer.oniceconnectionstatechange = function(evt) {
                 console.log("oniceconnectionstatechange: evt.type = " + evt.type + " connection state = " + this.iceConnectionState);
-                connectionstate = this.iceConnectionState;
+                connectionstate = webrtcpeer.iceConnectionState;
                 if (connectionstate == "disconnected" ||
                     connectionstate == "failed") {
                     webrtcerror(true, Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + "state = " + connectionstate);
