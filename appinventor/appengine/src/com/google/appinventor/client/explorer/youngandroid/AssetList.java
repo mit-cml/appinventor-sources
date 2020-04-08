@@ -108,7 +108,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
     assetList.addSelectionHandler(new SelectionHandler<TreeItem>() {
       private int clickCount = 0;
       @Override
-      public void onSelection(SelectionEvent<TreeItem> event) {
+      public void onSelection(final SelectionEvent<TreeItem> event) {
          clickCount++;
          if (clickCount == 1) {
             Timer timer = new Timer() {
