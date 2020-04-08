@@ -47,10 +47,29 @@ def check_chunks(checkstyle_output, chunks):
     return success
 
 
+def process_chunk_info(line):
+    """
+    Processes a unified diff chunk header and returns a tuple indication the start and length of the deletion and
+    addition hunks.
+
+    :param line: Unified diff chunk marker, beginning with '@@'
+    :type line: str
+    :return: a 4-tuple of deletion start, deletion length, addition start, addition length
+    :rtype: tuple[int]
+    """
+    parts = line.split(' ')
+    del_info = parts[1][1:]
+    add_info = parts[2][1:]
+    del_start, del_length = map(int, del_info.split(',')) if ',' in del_info else (int(del_info), 1)
+    add_start, add_length = map(int, add_info.split(',')) if ',' in add_info else (int(add_info), 1)
+    return del_start, del_length, add_start, add_length
+
+
 def main(parent):
     current_file, chunk_start, chunk_length = '', 0, 0
     checkstyle_output = None
     chunks = []
+    passed = True
     for line in StringIO(subprocess.check_output(['git', 'diff', '-U0', parent], encoding='utf-8')):
         if line.startswith('diff --git'):
             pass
@@ -66,35 +85,32 @@ def main(parent):
             if line.startswith('+++ /dev/null'):
                 continue  # Deleted file
             if len(chunks) > 0 and current_file != '':
-                check_chunks(checkstyle_output, chunks)
+                passed = check_chunks(checkstyle_output, chunks) and passed
             # Handle new file
             current_file = line[6:].strip()
-            chunk_start, chunk_length = 0, 0
             current_file = os.path.join('..', current_file)
             checkstyle_output = checkstyle(current_file)
             chunks = []
         elif line.startswith('@@'):
-            if chunk_length > 0:
-                chunks.append((chunk_start, chunk_start + chunk_length))
             # Handle chunk
-            parts = line.split(' ')
-            chunk_info = parts[2][1:]
-            if ',' in chunk_info:
-                x, y = chunk_info.split(',')
-                chunk_start = int(x)
-                chunk_length = int(y)
+            del_start, del_length, add_start, add_length = process_chunk_info(line)
+            if add_length > 0:
+                # Addition or replacement
+                chunks.append((add_start, add_start + add_length))
             else:
-                chunk_start = int(chunk_info)
-                chunk_length = 1
-    if chunk_length > 0:
-        chunks.append((chunk_start, chunk_start + chunk_length))
+                # Code removal. Check next line to ensure it didn't introduce an error
+                chunks.append((del_start, del_start + 1))
+
     if len(chunks) > 0:
-        return check_chunks(checkstyle_output, chunks)
-    return True
+        passed = check_chunks(checkstyle_output, chunks) and passed
+
+    return passed
 
 
 if __name__ == '__main__':
+    if 'BYPASS_CHECKSTYLE' in os.environ:
+        sys.exit(0)
     if main(parent_commit):
         sys.exit(0)
     else:
-        sys.exit(-1 if 'BYPASS_CHECKSTYLE' not in os.environ else 0)
+        sys.exit(1)
