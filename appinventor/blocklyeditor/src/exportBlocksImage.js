@@ -378,14 +378,16 @@ PNG.prototype.processData_ = function(data) {
   }
   this.chunks = [];
   var phy = [112, 72, 89, 115];
+  var phy_flag = 0;
   while (chunkStart < data.length) {
     var length = decode4();
     var type = read4();
     var chunkData = readData(length);
     chunkStart += length;
     var crc = decode4();
-    if (type == 'IDAT') {
+    if (type == 'IDAT' && phy_flag == 0) {
       this.chunks.push(new PNG.Chunk(9, 'pHYs', pHY_data, crc32(phy.concat(pHY_data)))); 
+      phy_flag = 1;
     }
     this.chunks.push(new PNG.Chunk(length, type, chunkData, crc));
   }
