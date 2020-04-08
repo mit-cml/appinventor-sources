@@ -192,6 +192,16 @@ The automated tests depend on NodeJS (version 20+) and Firefox, which will be us
 
     $ ant tests
 
+### Debugging the Companion
+
+Build the companion with debugging enabled by running:
+
+    $ ant -Ddebug=true PlayApp
+
+Install this version of the companion onto your device or in the emulator.
+
+You can then follow the instructions [Debugging the Companion with IntelliJ](https://docs.google.com/document/d/1dFPXmB5h0O34SVKU1LP5mZpshHg6yrrnbuMXosK4E90/edit#) to connect a debugger, set breakpoints, etc.
+
 ### Building Release Code
 
 Release builds with optimizations turned on for the web components of the system can be done by passing `-Drelease=true` to `ant`, e.g.:
