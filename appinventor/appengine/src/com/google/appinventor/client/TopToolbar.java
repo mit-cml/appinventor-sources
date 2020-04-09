@@ -1088,7 +1088,7 @@ public class TopToolbar extends Composite {
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
-      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
       ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
       fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, true);
