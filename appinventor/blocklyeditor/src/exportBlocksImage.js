@@ -377,18 +377,12 @@ PNG.prototype.processData_ = function(data) {
     return data.slice(chunkStart, chunkStart + length);
   }
   this.chunks = [];
-  var phy = [112, 72, 89, 115];
-  var phy_flag = 0;
   while (chunkStart < data.length) {
     var length = decode4();
     var type = read4();
     var chunkData = readData(length);
     chunkStart += length;
     var crc = decode4();
-    if (type == 'IDAT' && phy_flag == 0) {
-      this.chunks.push(new PNG.Chunk(9, 'pHYs', pHY_data, crc32(phy.concat(pHY_data)))); 
-      phy_flag = 1;
-    }
     this.chunks.push(new PNG.Chunk(length, type, chunkData, crc));
   }
 };
@@ -472,9 +466,20 @@ Blockly.exportBlockAsPng = function(block) {
       canvas.height = 2*img.height;
       var context = canvas.getContext('2d');
       context.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
-      
+
       function download(png) {
         png.setCodeChunk(code);
+        for(var i = 0; i < png.chunks.length; i++){
+        	var phy = [112, 72, 89, 115];
+        	if (png.chunks[i].type == 'pHYs'){
+        		png.chunks.splice(i, 1, new PNG.Chunk(9, 'pHYs', pHY_data, crc32(phy.concat(pHY_data)))); //replacing existing pHYs chunk
+        		break;
+        	}
+        	else if (png.chunks[i].type == 'IDAT'){
+        		png.chunks.splice(i, 0, new PNG.Chunk(9, 'pHYs', pHY_data, crc32(phy.concat(pHY_data)))); // adding new pHYs chunk
+        		break;
+        	}
+        }
         var blob = png.toBlob();
         var a = document.createElement('a');
         a.download = (block.getChildren().length === 0 ? block.type : 'blocks') + '.png';
