@@ -370,6 +370,8 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeRectangleProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("FeatureCollection")) {
         srcCompVersion = upgradeFeatureCollection(componentProperties, srcCompVersion);
+      } else if (componentType.equals("YandexTranslate")) {
+        srcCompVersion = upgradeYandexTranslateProperties(componentProperties, srcCompVersion);
       }
 
       if (srcCompVersion < sysCompVersion) {
@@ -1735,6 +1737,16 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // Version 2
       // The GotGeoJSON and GeoJSONError events were renamed in the blocks editor.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeYandexTranslateProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Version 2
+      // The ApiKey property was added
       srcCompVersion = 2;
     }
     return srcCompVersion;
