@@ -131,6 +131,7 @@ public class TopPanel extends Composite {
     myProjects.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+        Ode.getInstance().getTopToolbar().updateMoveToTrash("Move To Trash");
         ode.switchToProjectsView();
       }
     });
