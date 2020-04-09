@@ -178,6 +178,7 @@ public class ProjectToolbar extends Toolbar {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
         @Override
         public void execute() {
+          Ode.getInstance().getTopToolbar().updateMoveToTrash("Move To Trash");
           Ode.getInstance().switchToProjectsView();
         }
       });
