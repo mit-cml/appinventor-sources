@@ -183,14 +183,14 @@ public class TopToolbar extends Composite {
   }
   
   public void updateMoveToTrash(String menu_item){
-	if(menu_item.equals("Move To Trash")){
-	  fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
-	  fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);  
-	}
-	else{
-	  fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);
-	  fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);
-	}
+    if(menu_item.equals("Move To Trash")){
+      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
+      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);  
+    }
+    else{
+      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);
+      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);
+    }
   } 
 
   public void updateMenuState(int numSelectedProjects, int numProjects) {
@@ -454,7 +454,7 @@ public class TopToolbar extends Composite {
   private static class SwitchToProjectAction implements Command {
     @Override
     public void execute() {
-	  Ode.getInstance().getTopToolbar().updateMoveToTrash("Move To Trash");
+      Ode.getInstance().getTopToolbar().updateMoveToTrash("Move To Trash");
       Ode.getInstance().switchToProjectsView();
       Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
     }
