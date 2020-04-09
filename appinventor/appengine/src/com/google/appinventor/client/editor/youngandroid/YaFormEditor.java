@@ -1098,13 +1098,23 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     StringBuilder sb = new StringBuilder();
     String sep = "";
     sb.append("[");
-    for (MockComponent component : form.getSelectedComponents()) {
-      if (component instanceof MockForm) {
-        continue;
+    if (form.getSelectedComponents().size() == 1 &&
+        form.getSelectedComponents().get(0) instanceof MockForm) {
+      // We can't copy screens, but we can copy all of the children of a screen...
+      for (MockComponent component : form.getChildren()) {
+        sb.append(sep);
+        encodeComponentProperties(component, sb, false);
+        sep = ",";
       }
-      sb.append(sep);
-      encodeComponentProperties(component, sb, false);
-      sep = ",";
+    } else {
+      for (MockComponent component : form.getSelectedComponents()) {
+        if (component instanceof MockForm) {
+          continue;
+        }
+        sb.append(sep);
+        encodeComponentProperties(component, sb, false);
+        sep = ",";
+      }
     }
     sb.append("]");
     if (sb.length() == 2) {

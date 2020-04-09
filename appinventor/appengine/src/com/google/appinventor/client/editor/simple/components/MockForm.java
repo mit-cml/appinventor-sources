@@ -238,7 +238,7 @@ public final class MockForm extends MockContainer {
   private TitleBar titleBar;
   private NavigationBar navigationBar;
   private List<MockComponent> selectedComponents = new ArrayList<MockComponent>(Collections.singleton(this));
-  private MockContainer pasteTarget;
+  private MockContainer pasteTarget = this;
 
   int screenWidth;              // TEMP: Make package visible so we can use it MockHVLayoutBase
   private int screenHeight;
