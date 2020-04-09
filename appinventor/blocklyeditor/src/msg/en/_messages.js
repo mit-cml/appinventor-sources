@@ -1613,6 +1613,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Do You Really?";
     Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
     Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "Companion Connection Error";
+    Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED = "The Companion has disconnected";
     Blockly.Msg.REPL_EMULATOR_ONLY = 'You can only use this option to update the Emulator';
 
 // Messages from Blockly.js
