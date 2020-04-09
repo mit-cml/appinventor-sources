@@ -164,7 +164,7 @@ public class MockRectangle extends MockPolygonBase {
     if (!rect.clickHandler) {
       while (el.lastChild) el.removeChild(el.lastChild);  // clear the div
       rect.clickHandler = function (e) {
-        this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::select()();
+        this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::select(*)(e);
         if (e.originalEvent) e.originalEvent.stopPropagation();
       };
       rect.dragHandler = function () {

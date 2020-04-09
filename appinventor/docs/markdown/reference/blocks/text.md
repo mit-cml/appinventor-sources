@@ -22,6 +22,8 @@ layout: documentation
 * [replace all](#replaceall)
 * [obfuscated text](#obfuscatetext)
 * [is a string?](#isstring)
+* [reverse](#reverse)
+* [replace all mappings](#replaceallmappings)
 
 ### " " (string block)   {#string}
 
@@ -148,3 +150,26 @@ Produces text, like a text block.  The difference is that th etext is not easily
 ![](images/text/isstring.png)
 
 Returns true if *thing* is a text object, otherwise false.
+
+### reverse   {#reverse}
+
+![](images/text/text_reverse.png)
+
+Reverse the given text. For example, "reverse" would become "esrever".
+
+### replace all mappings {#replaceallmappings}
+
+![](images/text/replaceallmappings.png)
+
+Given a dictionary of mappings as input, replaces the key entries in the text with the corresponding values in the dictionary.
+Returns the text with the mappings applied.
+
+#### dictionary order {#replaceallmappingsdictionary}
+
+If the dictionary order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
+is based on the entry order in the dictionary (the earliest one gets replaced first).
+
+#### longest string first order {#replaceallmappingslongeststring}
+
+If the longest string order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
+is the one which is longer.

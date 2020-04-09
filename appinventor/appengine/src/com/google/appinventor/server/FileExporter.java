@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -56,6 +57,19 @@ public interface FileExporter {
     boolean includeYail,
     boolean includeScreenShots,
     boolean fatalError, boolean forGallery) throws IOException;
+
+  /**
+   * Exports projects selected by the user as a zip of zips.
+   *
+   * @param userId the userId
+   * @param zipName the desired name for the zip
+   * @param projectIds the list of project ids corresponding to selected projects
+   * @return the name, contents, and number of files in the zip
+   * @throws IllegalArgumentException if download request cannot be fulfilled
+   *         (no projects)
+   * @throws IOException if files cannot be written
+   */
+  ProjectSourceZip exportSelectedProjectsSourceZip(String userId, String zipName, List<Long> projectIds) throws IOException;
 
   /**
    * Exports all of the user's projects' source files as a zip of zips.

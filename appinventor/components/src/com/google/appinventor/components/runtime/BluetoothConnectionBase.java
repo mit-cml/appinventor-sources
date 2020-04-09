@@ -48,23 +48,27 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   private ByteOrder byteOrder;
   private String encoding;
   private byte delimiter;
+  protected boolean disconnectOnError;
   protected boolean secure;
 
   private Object connectedBluetoothSocket;
   private InputStream inputStream;
   private OutputStream outputStream;
+  private final int sdkLevel;
 
   /**
    * Creates a new BluetoothConnectionBase.
    */
   protected BluetoothConnectionBase(ComponentContainer container, String logTag) {
-    this(container.$form(), logTag);
+    this(container.$form(), logTag, SdkLevel.getLevel());
     form.registerForOnDestroy(this);
   }
 
-  private BluetoothConnectionBase(Form form, String logTag) {
+  private BluetoothConnectionBase(Form form, String logTag, int sdkLevel) {
     super(form);
     this.logTag = logTag;
+    this.sdkLevel = sdkLevel;
+    this.disconnectOnError = false;
 
     HighByteFirst(false); // Lego Mindstorms NXT is low-endian, so false is a good default.
     CharacterEncoding("UTF-8");
@@ -76,7 +80,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
    * This constructor is for testing purposes only.
    */
   protected BluetoothConnectionBase(OutputStream outputStream, InputStream inputStream) {
-    this((Form) null, (String) null);
+    this((Form) null, (String) null, SdkLevel.LEVEL_ECLAIR_MR1);
     this.connectedBluetoothSocket = "Not Null";
     this.outputStream = outputStream;
     this.inputStream = inputStream;
@@ -192,11 +196,22 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   /**
    * Returns `frue`{:.logic.block} if a connection to a Bluetooth device has been made.
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "On devices with API level 14 (LEVEL_ICE_CREAM_SANDWICH) or higher, " +
+      "this property returned is accurate. But on old devices with API level lower than 14, " +
+      "it may not return the current state of connection(e.g., it might be disconnected but you " +
+      "may not know until you attempt to read/write the socket.")
   public final boolean IsConnected() {
-    return (connectedBluetoothSocket != null);
+    if (sdkLevel >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH) {
+      return (connectedBluetoothSocket != null && BluetoothReflection.isBluetoothSocketConnected(connectedBluetoothSocket));
+    } else {
+      return (connectedBluetoothSocket != null);
+    }
   }
 
+  protected boolean DisconnectOnError() {
+    return disconnectOnError;
+  }
   /**
    * Whether to invoke SSP (Simple Secure Pairing), which is supported on devices with Bluetooth
    * v2.1 or higher. When working with embedded Bluetooth devices, this property may need to be set
@@ -506,6 +521,10 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
       outputStream.write(b);
       outputStream.flush();
     } catch (IOException e) {
+      Log.e(logTag, "IO Exception during Writing" + e.getMessage());
+      if (disconnectOnError) {
+        Disconnect();
+      }
       bluetoothError(functionName,
           ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_WRITE, e.getMessage());
     }
@@ -528,6 +547,10 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
       outputStream.write(bytes);
       outputStream.flush();
     } catch (IOException e) {
+      Log.e(logTag, "IO Exception during Writing" + e.getMessage());
+      if (disconnectOnError) {
+        Disconnect();
+      }
       bluetoothError(functionName,
           ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_WRITE, e.getMessage());
     }
@@ -549,6 +572,10 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
     try {
       return inputStream.available();
     } catch (IOException e) {
+      Log.e(logTag, "IO Exception during Getting Receive Availability " + e.getMessage());
+      if (disconnectOnError) {
+        Disconnect();
+      }
       bluetoothError(functionName,
           ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_READ, e.getMessage());
       return 0;
@@ -771,6 +798,10 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
           }
           totalBytesRead += numBytesRead;
         } catch (IOException e) {
+          Log.e(logTag, "IO Exception during Reading " + e.getMessage());
+          if (disconnectOnError) {
+            Disconnect();
+          }
           bluetoothError(functionName,
               ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_READ, e.getMessage());
           break;
@@ -792,6 +823,10 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
             break;
           }
         } catch (IOException e) {
+          Log.e(logTag, "IO Exception during Reading " + e.getMessage());
+          if (disconnectOnError) {
+            Disconnect();
+          }
           bluetoothError(functionName,
               ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_READ, e.getMessage());
           break;

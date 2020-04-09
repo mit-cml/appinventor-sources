@@ -38,7 +38,6 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -186,8 +185,11 @@ public class TopToolbar extends Composite {
     boolean allowDelete = !isReadOnly && numSelectedProjects > 0;
     boolean allowExport = numSelectedProjects > 0;
     boolean allowExportAll = numProjects > 0;
-    fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(), allowDelete);
-    fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), allowExport);
+    fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
+    String exportProjectLabel = numSelectedProjects > 1 ?
+        MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects) : MESSAGES.exportProjectMenuItem();
+    fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
+    fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);
     fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
   }
 
@@ -572,6 +574,8 @@ public class TopToolbar extends Composite {
         //If we are in the projects view
         if (selectedProjects.size() == 1) {
           exportProject(selectedProjects.get(0));
+        } else if (selectedProjects.size() > 1) {
+          exportSelectedProjects(selectedProjects);
         } else {
           // The user needs to select only one project.
           ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
@@ -584,10 +588,24 @@ public class TopToolbar extends Composite {
 
     private void exportProject(Project project) {
       Tracking.trackEvent(Tracking.PROJECT_EVENT,
-          Tracking.PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA, project.getProjectName());
+        Tracking.PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA, project.getProjectName());
 
       Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
-          ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+        ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+    }
+
+    private void exportSelectedProjects(List<Project> projects) {
+      Tracking.trackEvent(Tracking.PROJECT_EVENT,
+              Tracking.PROJECT_ACTION_DOWNLOAD_SELECTED_PROJECTS_SOURCE_YA);
+
+      String selectedProjPath = ServerLayout.DOWNLOAD_SERVLET_BASE +
+              ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE + "/";
+
+      for (Project project : projects) {
+        selectedProjPath += project.getProjectId() + "-";
+      }
+
+      Downloader.getInstance().download(selectedProjPath);
     }
   }
 
@@ -633,7 +651,7 @@ public class TopToolbar extends Composite {
               // Show one confirmation window for selected projects.
               if (deleteConfirmation(selectedProjects)) {
                 for (Project project : selectedProjects) {
-                  moveToTrash(project);
+                  project.moveToTrash();
                 }
               }
             } else {
@@ -646,11 +664,11 @@ public class TopToolbar extends Composite {
             Project currentProject = Ode.getInstance().getProjectManager().getProject(Ode.getInstance().getCurrentYoungAndroidProjectId());
             selectedProjects.add(currentProject);
             if (deleteConfirmation(selectedProjects)) {
-              moveToTrash(currentProject);
+              currentProject.moveToTrash();
               //Add the command to stop this current project from saving
-              Ode.getInstance().switchToProjectsView();
             }
           }
+          Ode.getInstance().switchToProjectsView();
         }
       });
     }
@@ -679,34 +697,6 @@ public class TopToolbar extends Composite {
         }
       }
       return Window.confirm(message);
-    }
-
-    private void moveToTrash(Project project) {
-      Tracking.trackEvent(Tracking.PROJECT_EVENT,
-              Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, project.getProjectName());
-
-      final long projectId = project.getProjectId();
-
-      // Make sure that we delete projects even if they are not open.
-      doMoveProjectToTrash(projectId);
-    }
-
-    private void doMoveProjectToTrash(final long projectId) {
-      Ode.getInstance().getProjectService().moveToTrash(projectId,
-          new OdeAsyncCallback<UserProject>(
-              // failure message
-              MESSAGES.moveToTrashProjectError()) {
-            @Override
-            public void onSuccess(UserProject project) {
-              if (project.getProjectId() == projectId) {
-                Ode.getInstance().getProjectManager().removeProject(projectId);
-                Ode.getInstance().getProjectManager().addDeletedProject(project);
-                if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
-                  Ode.getInstance().createEmptyTrashDialog(true);
-                }
-              }
-            }
-          });
     }
   }
 
@@ -825,7 +815,11 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Ode.getInstance().setUserDyslexicFont(true);
-      Window.Location.reload();
+      // Window.Location.reload();
+      // Note: We used to reload here, but this causes
+      // a race condition with the saving of the user
+      // settings. So we now reload in the callback to
+      // saveSettings (in Ode.java)
     }
   }
 
@@ -833,7 +827,8 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Ode.getInstance().setUserDyslexicFont(false);
-      Window.Location.reload();
+      // Window.Location.reload();
+      // Not: See above comment
     }
   }
 
@@ -1065,11 +1060,11 @@ public class TopToolbar extends Composite {
     }
     if (view == 0) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
-          Ode.getInstance().getProjectManager().getProjects() == null);
+      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(),
+          ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-          Ode.getInstance().getProjectManager().getProjects().size() > 0);
-      fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
+      ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, false);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
@@ -1077,9 +1072,10 @@ public class TopToolbar extends Composite {
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
+      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
-          Ode.getInstance().getProjectManager().getProjects().size() > 0);
-      fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
+      ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, true);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);

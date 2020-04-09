@@ -31,6 +31,7 @@ public abstract class AdditionalChoicePropertyEditor extends PropertyEditor {
   // UI elements
   private final TextBox summary;
   protected PopupPanel popup;
+  private Button okButton;
 
   /**
    * Creates a new additional choice dialog.
@@ -63,7 +64,7 @@ public abstract class AdditionalChoicePropertyEditor extends PropertyEditor {
         closeAdditionalChoiceDialog(false);
       }
     });
-    Button okButton = new Button(MESSAGES.okButton());
+    okButton = new Button(MESSAGES.okButton());
     okButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -162,4 +163,16 @@ public abstract class AdditionalChoicePropertyEditor extends PropertyEditor {
    * @return true if the dialog is allowed to close
    */
   protected abstract boolean okAction();
+
+  protected void setOkButtonEnabled(boolean enabled) {
+    okButton.setEnabled(enabled);
+  }
+
+  @Override
+  public void setMultipleValues(boolean multiple) {
+    super.setMultipleValues(multiple);
+    if (multiple) {
+      updateValue();
+    }
+  }
 }

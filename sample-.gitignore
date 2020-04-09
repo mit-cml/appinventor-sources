@@ -20,4 +20,6 @@ out/
 .vagrant/
 *.log
 .build/
-.jekyll-cache/
+*-cache/
+.bundle/
+vendor/

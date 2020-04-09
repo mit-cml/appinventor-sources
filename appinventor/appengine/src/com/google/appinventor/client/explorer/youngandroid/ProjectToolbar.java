@@ -11,14 +11,11 @@ import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.boxes.TrashProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
-import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
@@ -52,7 +49,7 @@ public class ProjectToolbar extends Toolbar {
         new NewAction(this)));
 
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
-        new DeleteAction()));
+        new MoveToTrashAction()));
     addButton(new ToolbarItem(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton(),
         new PublishOrUpdateAction()));
     addButton(new ToolbarItem(WIDGET_NAME_TRASH,MESSAGES.trashButton(),
@@ -76,7 +73,7 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible(WIDGET_NAME_PROJECT, visible);
     setButtonVisible(WIDGET_NAME_RESTORE, visible);
     setButtonVisible(WIDGET_NAME_DELETE_FROM_TRASH, visible);
-    updateTrashButtons();
+    updateButtons();
   }
 
   public void setProjectTabButtonsVisible(boolean visible) {
@@ -108,7 +105,7 @@ public class ProjectToolbar extends Toolbar {
     }
   }
 
-  private static class DeleteAction implements Command {
+  private static class MoveToTrashAction implements Command {
     @Override
     public void execute() {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
@@ -120,9 +117,11 @@ public class ProjectToolbar extends Toolbar {
             // Show one confirmation window for selected projects.
             if (deleteConfirmation(selectedProjects)) {
               for (Project project : selectedProjects) {
-                moveToTrash(project);
+                project.moveToTrash();
               }
+              Ode.getInstance().switchToProjectsView();
             }
+            Ode.getInstance().switchToProjectsView();
           } else {
             // The user can select a project to resolve the
             // error.
@@ -149,41 +148,13 @@ public class ProjectToolbar extends Toolbar {
           separator = ", ";
         }
         String projectNames = sb.toString();
-        if(!gallerySettings.galleryEnabled()){
+        if (!gallerySettings.galleryEnabled()) {
           message = MESSAGES.confirmMoveToTrash(projectNames);
         } else {
           message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
         }
       }
       return Window.confirm(message);
-    }
-
-    private void moveToTrash(Project project) {
-      Tracking.trackEvent(Tracking.PROJECT_EVENT,
-          Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, project.getProjectName());
-
-      final long projectId = project.getProjectId();
-
-      // Make sure that we delete projects even if they are not open.
-      doMoveProjectToTrash(projectId);
-    }
-
-    private void doMoveProjectToTrash(final long projectId) {
-      Ode.getInstance().getProjectService().moveToTrash(projectId,
-          new OdeAsyncCallback<UserProject>(
-              // failure message
-              MESSAGES.moveToTrashProjectError()) {
-            @Override
-            public void onSuccess(UserProject project) {
-              if(project.getProjectId()== projectId){
-                Ode.getInstance().getProjectManager().removeProject(projectId);
-                Ode.getInstance().getProjectManager().addDeletedProject(project);
-                if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
-                  Ode.getInstance().createEmptyTrashDialog(true);
-                }
-              }
-            }
-          });
     }
   }
 
@@ -217,43 +188,17 @@ public class ProjectToolbar extends Toolbar {
   private static class RestoreProjectAction implements Command {
     @Override
     public void execute() {
-      List<Project> selectedProjects =
-          TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getSelectedProjects();
+      List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() > 0) {
-        for (Project project : selectedProjects){
-          restoreProject(project);
+        for (Project project : selectedProjects) {
+          project.restoreFromTrash();
+          Ode.getInstance().switchToTrash();
         }
       } else {
         // The user can select a project to resolve the
         // error.
         ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForRestore());
       }
-    }
-
-    private void restoreProject(Project project) {
-      Tracking.trackEvent(Tracking.PROJECT_EVENT,
-          Tracking.PROJECT_ACTION_RESTORE_PROJECT_YA, project.getProjectName());
-
-      final long projectId = project.getProjectId();
-
-      doRestoreProject(projectId);
-    }
-
-    private void doRestoreProject(final long projectId) {
-      Ode.getInstance().getProjectService().restoreProject(projectId,
-          new OdeAsyncCallback<UserProject>(
-              // failure message
-              MESSAGES.restoreProjectError()) {
-            @Override
-            public void onSuccess(UserProject project) {
-              if (project.getProjectId() == projectId) {
-                Ode.getInstance().getProjectManager().restoreDeletedProject(projectId);
-                if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
-                  Ode.getInstance().createEmptyTrashDialog(true);
-                }
-              }
-            }
-          });
     }
   }
 
@@ -264,15 +209,15 @@ public class ProjectToolbar extends Toolbar {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
         @Override
         public void execute() {
-          List<Project> deletedProjects =
-              TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getSelectedProjects();
+          List<Project> deletedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
           if (deletedProjects.size() > 0) {
             // Show one confirmation window for selected projects.
             if (deleteConfirmation(deletedProjects)) {
               for (Project project : deletedProjects) {
-                deleteProject(project);
+                project.deleteFromTrash();
               }
             }
+            Ode.getInstance().switchToTrash();
           } else {
             // The user can select a project to resolve the
             // error.
@@ -306,49 +251,6 @@ public class ProjectToolbar extends Toolbar {
         }
       }
       return Window.confirm(message);
-    }
-
-    private void deleteProject(Project project) {
-      Tracking.trackEvent(Tracking.PROJECT_EVENT,
-          Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
-
-      final long projectId = project.getProjectId();
-      if (project.isPublished()) {
-        doDeleteGalleryApp(project.getGalleryId());
-      }
-      // Make sure that we delete projects even if they are not open.
-      doDeleteProject(projectId);
-    }
-
-    private void doDeleteProject(final long projectId) {
-      Ode.getInstance().getProjectService().deleteProject(projectId,
-          new OdeAsyncCallback<Void>(
-              // failure message
-              MESSAGES.deleteProjectError()) {
-            @Override
-            public void onSuccess(Void result) {
-              Ode.getInstance().getProjectManager().removeDeletedProject(projectId);
-              // Show a welcome dialog in case there are no
-              // projects saved.
-              if (Ode.getInstance().getProjectManager().getDeletedProjects().size() == 0) {
-                Ode.getInstance().createEmptyTrashDialog(true);
-              }
-            }
-          });
-    }
-
-    private void doDeleteGalleryApp(final long galleryId) {
-      Ode.getInstance().getGalleryService().deleteApp(galleryId,
-          new OdeAsyncCallback<Void>(
-              // failure message
-              MESSAGES.galleryDeleteError()) {
-            @Override
-            public void onSuccess(Void result) {
-              // need to update gallery list
-              GalleryClient gallery = GalleryClient.getInstance();
-              gallery.appWasChanged();
-            }
-          });
     }
   }
 
@@ -404,13 +306,15 @@ public class ProjectToolbar extends Toolbar {
    */
   public void updateButtons() {
     ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
-    int numProjects = projectList.getNumProjects();
-    int numSelectedProjects = projectList.getNumSelectedProjects();
+    int numProjects = projectList.getMyProjectsCount();  // Get number of valid projects not in trash
+    int numSelectedProjects = projectList.getSelectedProjectsCount();
     if (isReadOnly) {           // If we are read-only, we disable all buttons
       setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton());
       setButtonEnabled(WIDGET_NAME_NEW, false);
       setButtonEnabled(WIDGET_NAME_DELETE, false);
       setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, false);
+      setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, false);
+      setButtonEnabled(WIDGET_NAME_RESTORE, false);
       Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
       return;
     }
@@ -422,19 +326,9 @@ public class ProjectToolbar extends Toolbar {
     } else {
       setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton());
     }
-    Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
-  }
-
-  public void updateTrashButtons() {
-    TrashProjectList trashProjectList = TrashProjectListBox.getTrashProjectListBox().getTrashProjectList();
-    int numSelectedProjects = trashProjectList.getNumSelectedProjects();
-    if (isReadOnly) {           // If we are read-only, we disable all buttons
-      setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, false);
-      setButtonEnabled(WIDGET_NAME_RESTORE, false);
-      return;
-    }
     setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);
+    Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
   }
 
   // If we started a project, then the start button was disabled (to avoid

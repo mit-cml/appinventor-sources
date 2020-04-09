@@ -470,13 +470,13 @@ public final class MockMap extends MockContainer {
     var L = $wnd.top.L;
     var tileLayers = [
       null,  // because AppInventor is 1-indexed, we leave element 0 as null
-      L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                   {minZoom: 0, maxZoom: 18,
                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'}),
-      L.tileLayer('http://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}',
+      L.tileLayer('//basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}',
                   {minZoom: 0, maxZoom: 15,
                    attribution: 'Satellite imagery &copy; <a href="http://mapquest.com">USGS</a>'}),
-      L.tileLayer('http://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
+      L.tileLayer('//basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
                   {minZoom: 0, maxZoom: 15,
                    attribution: 'Map data &copy; <a href="http://www.usgs.gov">USGS</a>'})
     ];
@@ -538,7 +538,7 @@ public final class MockMap extends MockContainer {
             // This is not desirable because it causes issues with the selected component.
             return;
           } else if (el === background) {
-            this.owner.@com.google.appinventor.client.editor.simple.components.MockComponent::select()();
+            this.owner.@com.google.appinventor.client.editor.simple.components.MockComponent::select(*)(e);
             return;
           }
           el = el.parentNode;

@@ -13,6 +13,7 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.resources.client.ImageResource;
@@ -46,7 +47,7 @@ public final class BlockSelectorBox extends Box {
     }
 
     @Override
-    public void onSelected() {
+    public void onSelected(NativeEvent source) {
     }
 
     @Override
@@ -167,7 +168,7 @@ public final class BlockSelectorBox extends Box {
           + getBuiltinDrawerNames(drawerName) + "</span>"));
       SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
         @Override
-        public void onSelected() {
+        public void onSelected(NativeEvent source) {
           fireBuiltinDrawerSelected(drawerName);
         }
       };
@@ -230,7 +231,7 @@ public final class BlockSelectorBox extends Box {
           + ComponentsTranslation.getComponentName(typeName) + "</span>"));
       SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
         @Override
-        public void onSelected() {
+        public void onSelected(NativeEvent source) {
           fireGenericDrawerSelected(typeName);
         }
       };

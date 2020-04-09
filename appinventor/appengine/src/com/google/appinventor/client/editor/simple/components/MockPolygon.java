@@ -168,7 +168,7 @@ public class MockPolygon extends MockPolygonBase {
     if (!polygon.clickHandler) {
       while (el.lastChild) el.removeChild(el.lastChild);  // clear the div
       polygon.clickHandler = function(e) {
-        this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::select()();
+        this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::select(*)(e);
         if (e.originalEvent) {
           if ((e.originalEvent.metaKey || e.originalEvent.ctrlKey) && polygon.editEnabled()) {
             polygon.editor.newHole(e.latlng);

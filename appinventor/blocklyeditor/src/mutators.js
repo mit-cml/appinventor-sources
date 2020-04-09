@@ -41,8 +41,14 @@ Blockly.domToMutation = function(container) {
     }
   }
 
-  for (var x = 0; x < this.itemCount_; x++) {
-    this.removeInput(this.repeatingInputName + x);
+  if (this.itemCount_ == 0) {
+    if (this.emptyInputName != null) {
+      this.removeInput(this.emptyInputName);
+    }
+  } else {
+    for (var x = 0; x < this.itemCount_; x++) {
+      this.removeInput(this.repeatingInputName + x);
+    }
   }
   this.itemCount_ = window.parseInt(container.getAttribute('items'), 10);
   for (var x = 0; x < this.itemCount_; x++) {

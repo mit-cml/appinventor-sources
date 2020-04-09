@@ -145,6 +145,8 @@
   <li><a href="#replaceall">replace all</a></li>
   <li><a href="#obfuscatetext">obfuscated text</a></li>
   <li><a href="#isstring">is a string?</a></li>
+  <li><a href="#reverse">reverse</a></li>
+  <li><a href="#replaceallmappings">replace all mappings</a></li>
 </ul>
 
 <h3 id="string">” “ (string block)</h3>
@@ -272,6 +274,29 @@
 <p><img src="images/text/isstring.png" alt="" /></p>
 
 <p>Returns true if <em>thing</em> is a text object, otherwise false.</p>
+
+<h3 id="reverse">reverse</h3>
+
+<p><img src="images/text/text_reverse.png" alt="" /></p>
+
+<p>Reverse the given text. For example, “reverse” would become “esrever”.</p>
+
+<h3 id="replaceallmappings">replace all mappings</h3>
+
+<p><img src="images/text/replaceallmappings.png" alt="" /></p>
+
+<p>Given a dictionary of mappings as input, replaces the key entries in the text with the corresponding values in the dictionary.
+Returns the text with the mappings applied.</p>
+
+<h4 id="replaceallmappingsdictionary">dictionary order</h4>
+
+<p>If the dictionary order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
+is based on the entry order in the dictionary (the earliest one gets replaced first).</p>
+
+<h4 id="replaceallmappingslongeststring">longest string first order</h4>
+
+<p>If the longest string order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
+is the one which is longer.</p>
 
 </article>
 <script>

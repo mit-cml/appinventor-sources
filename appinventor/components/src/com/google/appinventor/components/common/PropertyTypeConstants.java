@@ -157,6 +157,12 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_CHOICES = "choices";
 
   /**
+   * Length editor (e.g., width, height)
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_LENGTH = "length";
+
+  /**
    * Floating-point values in the range of valid longitudes [-180, 180].
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFloatRangePropertyEditor
    */
@@ -315,4 +321,10 @@ public class PropertyTypeConstants {
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor}
    */
   public static final String PROPERTY_TYPE_THEME = "theme";
+
+  /**
+   * Choices of navigation methods. {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidNavigationMethodChoicePropertyEditor}
+   */
+  public static final String PROPERTY_TYPE_NAVIGATION_METHOD = "navigation_method";
 }

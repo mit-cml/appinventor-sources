@@ -268,6 +268,17 @@ public class BluetoothReflection {
 
   /**
    * Invokes the method
+   * {@link android.bluetooth.BluetoothSocket#isConnected()}.
+   *
+   * @param bluetoothSocket a {@link android.bluetooth.BluetoothSocket} object
+   */
+  public static boolean isBluetoothSocketConnected(Object bluetoothSocket) {
+    return (Boolean)invokeMethod(getMethod(bluetoothSocket.getClass(), "isConnected"),
+            bluetoothSocket);
+  }
+
+  /**
+   * Invokes the method
    * {@link android.bluetooth.BluetoothSocket#getInputStream()}.
    *
    * @param bluetoothSocket a {@link android.bluetooth.BluetoothSocket} object

@@ -631,6 +631,12 @@ public interface Images extends Resources {
    ImageResource logo();
 
   /**
+   * Designer palette item: Arduino component
+   */
+  @Source("com/google/appinventor/images/arduino.png")
+  ImageResource arduino();
+  
+  /**
    * Media icon: image
    */
   @Source("com/google/appinventor/images/mediaIcon_img.png")
@@ -647,6 +653,18 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/mediaIcon_video.png")
   ImageResource mediaIconVideo();
+  
+  /**
+   * Designer palette item: Magnetic Field Sensor component
+   */
+  @Source("com/google/appinventor/images/magneticSensor.png")
+  ImageResource magneticSensor();
+
+  /**
+   * Designer palette item:
+   */
+  @Source("com/google/appinventor/images/navigation.png")
+  ImageResource navigationComponent();
 
   /**
   * Wilson Logo 
@@ -665,5 +683,4 @@ public interface Images extends Resources {
   */
   @Source("com/google/appinventor/images/YRLogo.png")
   ImageResource YRLogo();
-
 }

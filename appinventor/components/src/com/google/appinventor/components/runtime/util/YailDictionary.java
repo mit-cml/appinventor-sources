@@ -226,25 +226,9 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
   @SuppressWarnings({"unused", "WeakerAccess"})  // Called from runtime.scm
   public static YailList dictToAlist(YailDictionary dict) {
     List<Object> list = new ArrayList<>();
-
     for (Map.Entry<Object, Object> entry : dict.entrySet()) {
-      Object currentKey = entry.getKey();
-      Object currentValue = entry.getValue();
-
-      List<Object> currentPair = new ArrayList<>();
-      currentPair.add(currentKey);
-
-      if (currentValue instanceof YailDictionary) {
-        currentPair.add(dictToAlist((YailDictionary) currentValue));
-      } else if (currentValue instanceof YailList) {
-        currentPair.add(checkListForDicts((YailList) currentValue));
-      } else {
-        currentPair.add(currentValue);
-      }
-
-      list.add(YailList.makeList(currentPair));
+      list.add(YailList.makeList(new Object[] {entry.getKey(), entry.getValue()}));
     }
-
     return YailList.makeList(list);
   }
 
@@ -513,6 +497,49 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
   }
 
   @Override
+  public boolean containsKey(Object key) {
+    if (key instanceof FString) {
+      return super.containsKey(key.toString());
+    }
+    return super.containsKey(key);
+  }
+
+  @Override
+  public boolean containsValue(Object value) {
+    if (value instanceof FString) {
+      return super.containsValue(value.toString());
+    }
+    return super.containsValue(value);
+  }
+
+  @Override
+  public Object get(Object key) {
+    if (key instanceof FString) {
+      return super.get(key.toString());
+    }
+    return super.get(key);
+  }
+
+  @Override
+  public Object put(Object key, Object value) {
+    if (key instanceof FString) {
+      key = key.toString();
+    }
+    if (value instanceof FString) {
+      value = value.toString();
+    }
+    return super.put(key, value);
+  }
+
+  @Override
+  public Object remove(Object key) {
+    if (key instanceof FString) {
+      return super.remove(key.toString());
+    }
+    return super.remove(key);
+  }
+
+  @Override
   public String toString() {
     try {
       return JsonUtil.getJsonRepresentation(this);
@@ -539,7 +566,6 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
   }
 
   @NonNull
-  @SuppressWarnings("NullableProblems")
   @Override
   public Iterator<YailList> iterator() {
     return new DictIterator(entrySet().iterator());

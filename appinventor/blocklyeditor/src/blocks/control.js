@@ -416,6 +416,129 @@ Blockly.Blocks['controls_forEach'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM}]
 };
 
+Blockly.Blocks['controls_for_each_dict'] = {
+  category: 'Control',
+
+  helpUrl: Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL,
+
+  init: function() {
+    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+    var checkTypeDict = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
+        'dictionary', Blockly.Blocks.Utilities.INPUT);
+    var keyField = new Blockly.FieldParameterFlydown(
+        Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY,
+        true, Blockly.FieldFlydown.DISPLAY_BELOW);
+    var valueField = new Blockly.FieldParameterFlydown(
+        Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE,
+        true, Blockly.FieldFlydown.DISPLAY_BELOW);
+    this.interpolateMsg(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT,
+        ['KEY', keyField],
+        ['VALUE', valueField],
+        ['DICT', checkTypeDict, Blockly.ALIGN_LEFT],
+        Blockly.ALIGN_LEFT);
+    this.appendStatementInput('DO')
+        .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO);
+    this.setInputsInline(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP);
+  },
+
+  getVars: function () {
+    return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
+  },
+
+  blocksInScope: function () {
+    var doBlock = this.getInputTargetBlock('DO');
+    if (doBlock) {
+      return [doBlock];
+    } else {
+      return [];
+    }
+  },
+
+  declaredNames: function () {
+    return [this.getFieldValue('KEY'), this.getFieldValue('VALUE')];
+  },
+
+  renameVar: function (oldName, newName) {
+    if (Blockly.Names.equals(oldName, this.getFieldValue('KEY'))) {
+      this.setFieldValue(newName, 'KEY');
+    }
+    if (Blockly.Names.equals(oldName, this.getFieldValue('VALUE'))) {
+      this.setFieldValue(newName, 'VALUE');
+    }
+  },
+
+  renameBound: function (boundSubstitution, freeSubstitution) {
+    Blockly.LexicalVariable.renameFree(
+        this.getInputTargetBlock('DICT'), freeSubstitution);
+
+    var varFieldIds = ['KEY', 'VALUE'];
+
+    for (var i = 0, fieldId; (fieldId = varFieldIds[i]); i++) {
+      var oldVar = this.getFieldValue(fieldId);
+      var newVar = boundSubstitution.apply(oldVar);
+      if (newVar !== oldVar) {
+        this.renameVar(oldVar, newVar);
+        var keySubstitution = Blockly.Substitution.simpleSubstitution(
+            oldVar, newVar);
+        freeSubstitution = freeSubstitution.extend(keySubstitution);
+      } else {
+        freeSubstitution = freeSubstitution.remove([oldVar]);
+      }
+    }
+
+    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), modifiedSubstitution);
+
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
+    }
+  },
+
+  renameFree: function (freeSubstitution) {
+    var bodyFreeVars = Blockly.LexicalVariable.freeVariables(
+        this.getInputTargetBlock('DO'));
+
+    var varFieldIds = ['KEY', 'VALUE'];
+    var boundSubstitution = new Blockly.Substitution();
+
+    for (var i = 0, fieldId; (fieldId = varFieldIds[i]); i++) {
+      var oldVar = this.getFieldValue(fieldId);
+      bodyFreeVars.deleteName(oldVar);
+      var renamedBodyFreeVars = bodyFreeVars.renamed(freeSubstitution);
+      if (renamedBodyFreeVars.isMember(oldVar)) {
+        var newVar = Blockly.FieldLexicalVariable.nameNotIn(
+            oldVar, renamedBodyFreeVars.toList());
+        var substitution = Blockly.Substitution.simpleSubstitution(
+            oldVar, newVar);
+        boundSubstitution.extend(substitution);
+      }
+    }
+  },
+
+  freeVariables: function () { // return the free variables of this block
+    var result = Blockly.LexicalVariable.freeVariables(
+        this.getInputTargetBlock('DO'));
+
+    // Remove bound variables from body free vars.
+    result.deleteName(this.getFieldValue('KEY'));
+    result.deleteName(this.getFieldValue('VALUE'));
+
+    result.unite(Blockly.LexicalVariable.freeVariables(
+        this.getInputTargetBlock('DICT')));
+
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
+    }
+
+    return result;
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE}]
+};
+
 Blockly.Blocks['controls_while'] = {
   // While condition.
   category: 'Control',

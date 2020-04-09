@@ -598,8 +598,12 @@ Use this component to translate words and sentences between different languages.
 ### Properties  {#YandexTranslate-Properties}
 
 {:.properties}
-None
 
+{:id="YandexTranslate.ApiKey" .text .wo} *ApiKey*
+: The Yandex API Key to use. If set to DEFAULT the platform default key (if any)
+ will be used. Otherwise should be set to a valid API key which can be obtained
+ from https://tech.yandex.com/translate/. If the platform doesn't have a default
+ key and one isn't provided here, an error will be raised.
 
 ### Events  {#YandexTranslate-Events}
 

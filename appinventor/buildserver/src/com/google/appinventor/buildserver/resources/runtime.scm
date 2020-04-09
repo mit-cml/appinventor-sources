@@ -979,7 +979,7 @@
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
 (define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
-(define-alias JavaJoinListOfStrings <com.google.appinventor.components.runtime.util.JavaJoinListOfStrings>)
+(define-alias JavaStringUtils <com.google.appinventor.components.runtime.util.JavaStringUtils>)
 
 (define-alias JavaCollection <java.util.Collection>)
 (define-alias JavaIterator <java.util.Iterator>)
@@ -1205,14 +1205,23 @@
                         result))))
     (reverse! (looper '()))))
 
+;;; The initial version of this function iterated over entries rather than
+;;; keys, which has getKey and getValue methods. Unfortunately, Kawa tries
+;;; to do the Java Bean thing and look up the fields directly rather than
+;;; calling the methods. This fails because the fields don't have the right
+;;; access modifiers for what Kawa wants to do. Now we use this less
+;;; efficient process by iterating over the keys and looking up the
+;;; corresponding value.
 (define (java-map->yail-dictionary jMap :: JavaMap)
-  (let ((iterator :: JavaIterator ((jMap:entrySet):iterator))
+  (let ((iterator :: JavaIterator ((jMap:keySet):iterator))
         (dict :: YailDictionary (YailDictionary)))
     (define (convert)
       (if (not (iterator:hasNext))
           dict
-          (let ((entry (iterator:next)))
-            (entry:setValue (santize-component-data (entry:getValue)))
+          (let ((key (iterator:next)))
+            (*:put dict
+                   key
+                   (sanitize-component-data (jMap:get key)))
             (convert))))
     (convert)))
 
@@ -1524,8 +1533,8 @@
 (define (join-strings list-of-strings separator)
   ;; NOTE: The elements in list-of-strings should be Kawa strings
   ;; but they might not be Java strings, since some (all?) Kawa strings
-  ;; are FStrings.  See JavaJoinListOfStrings in components/runtime/utils
-  (JavaJoinListOfStrings:joinStrings list-of-strings separator))
+  ;; are FStrings.  See JavaStringUtils in components/runtime/utils
+  (JavaStringUtils:joinStrings list-of-strings separator))
 
 ;;; end of join-strings
 
@@ -1833,13 +1842,31 @@
           360))
 
 (define (sin-degrees degrees)
-  (sin (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 90) 0)
+    (if (= (modulo (/ degrees 90) 2) 0)
+      0
+      (if (= (modulo (/ (- degrees 90) 180) 2) 0)
+        1
+        -1))
+    (sin (degrees->radians-internal degrees))))
 
 (define (cos-degrees degrees)
-  (cos (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 90) 0)
+    (if (= (modulo (/ degrees 90) 2) 1)
+      0
+      (if (= (modulo (/ degrees 180) 2) 1)
+        -1
+        1))
+    (cos (degrees->radians-internal degrees))))
 
 (define (tan-degrees degrees)
-  (tan (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 180) 0)
+    0
+    (if (= (modulo (- degrees 45) 90)  0)
+      (if (= (modulo (/ (- degrees 45) 90) 2) 0)
+        1
+        -1)
+      (tan (degrees->radians-internal degrees)))))
 
 ;; Result should be in the range [-90, +90].
 (define (asin-degrees y)
@@ -1862,6 +1889,21 @@
 
 (define (string-to-lower-case s)
   (String:toLowerCase (s:toString)))
+
+(define (unicode-string->list str :: <string>) :: <list>
+  (let loop ((result :: <list> '()) (i :: <int> (string-length str)))
+    (set! i (- i 1))
+    (if (< i 0) result
+        (if (and (>= i 1)
+              (let ((c (string-ref str i))
+                    (c1 (string-ref str (- i 1))))
+                (and (char>=? c #\xD800) (char<=? c #\xDFFF)
+                     (char>=? c1 #\xD800) (char<=? c1 #\xDFFF))))
+            (loop (make <pair> (string-ref str i) (make <pair> (string-ref str (- i 1)) result)) (- i 1))
+          (loop (make <pair> (string-ref str i) result) i)))))
+
+(define (string-reverse s)
+  (list->string (reverse (unicode-string->list s))))
 
 ;;; returns a string that is the number formatted with a
 ;;; specified number of decimal places
@@ -2488,8 +2530,6 @@ Dictionary implementation.
   (*:remove (as YailDictionary yail-dictionary) key))
 
 (define (yail-dictionary-lookup key yail-dictionary default)
-  (android-log
-   (format #f "Dictionary lookup key is  ~A and table is ~A" key yail-dictionary))
   (let ((result
     (cond ((instance? yail-dictionary YailList)
            (yail-alist-lookup key yail-dictionary default))
@@ -2525,8 +2565,6 @@ Dictionary implementation.
   (*:size (as YailDictionary yail-dictionary)))
 
 (define (yail-dictionary-alist-to-dict alist)
-  (android-log
-   (format #f "List alist table is ~A" alist))
   (let loop ((pairs-to-check (yail-list-contents alist)))
     (cond ((null? pairs-to-check) "The list of pairs has a null pair")
           ((not (pair-ok? (car pairs-to-check)))
@@ -2644,6 +2682,19 @@ Dictionary implementation.
              (b3 (bitwise-and (bitwise-ior (bitwise-arithmetic-shift-left b2 8) b) 255))
              (b4 (bitwise-and (bitwise-xor b3 (char->integer (string-ref lc i))) 255)))
         (set! acc (cons b4 acc))))))
+
+;; NOTE: The keys & values in the YailDictionary should be <String, String>.
+;; However, this might not necessarily be the case, so we pass in an <Object, Object>
+;; map instead to the Java call.
+;; See JavaStringUtils in components/runtime/utils
+(define (string-replace-mappings-dictionary text mappings)
+  (JavaStringUtils:replaceAllMappingsDictionaryOrder text mappings))
+
+(define (string-replace-mappings-longest-string text mappings)
+  (JavaStringUtils:replaceAllMappingsLongestStringOrder text mappings))
+
+(define (string-replace-mappings-earliest-occurrence text mappings)
+  (JavaStringUtils:replaceAllMappingsEarliestOccurrenceOrder text mappings))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Text implementation

@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static com.google.appinventor.components.runtime.util.GeoJSONUtil.getGeoJSONFeatures;
+import static com.google.appinventor.components.runtime.util.GeoJSONUtil.getGeoJSONType;
 import static com.google.appinventor.components.runtime.util.GeoJSONUtil.processGeoJSONFeature;
 
 @SimpleObject
@@ -438,8 +440,7 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
 
   @SuppressWarnings("WeakerAccess")
   protected void processGeoJSON(final String url, final String content) throws JSONException {
-    JSONObject parsedData = new JSONObject(stripBOM(content));
-    String type = parsedData.optString(GEOJSON_TYPE);
+    String type = getGeoJSONType(content, GEOJSON_TYPE);
     if (!GEOJSON_FEATURECOLLECTION.equals(type) && !GEOJSON_GEOMETRYCOLLECTION.equals(type)) {
       $form().runOnUiThread(new Runnable() {
         public void run() {
@@ -449,71 +450,11 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
       });
       return;
     }
-    JSONArray features = parsedData.getJSONArray(GEOJSON_FEATURES);
-    final List<YailList> yailFeatures = new ArrayList<YailList>();
-    for (int i = 0; i < features.length(); i++) {
-      yailFeatures.add(jsonObjectToYail(features.getJSONObject(i)));
-    }
+    final List<YailList> yailFeatures = getGeoJSONFeatures(TAG, content);
     $form().runOnUiThread(new Runnable() {
       public void run() {
         MapFeatureContainerBase.this.GotFeatures(url, YailList.makeList(yailFeatures));
       }
     });
   }
-
-  private YailList jsonObjectToYail(JSONObject object) throws JSONException {
-    List<YailList> pairs = new ArrayList<YailList>();
-    @SuppressWarnings("unchecked")  // json only allows String keys
-        Iterator<String> j = object.keys();
-    while (j.hasNext()) {
-      String key = j.next();
-      Object value = object.get(key);
-      if (value instanceof Boolean ||
-          value instanceof Integer ||
-          value instanceof Long ||
-          value instanceof Double ||
-          value instanceof String) {
-        pairs.add(YailList.makeList(new Object[] { key, value }));
-      } else if (value instanceof JSONArray) {
-        pairs.add(YailList.makeList(new Object[] { key, jsonArrayToYail((JSONArray) value)}));
-      } else if (value instanceof JSONObject) {
-        pairs.add(YailList.makeList(new Object[] { key, jsonObjectToYail((JSONObject) value)}));
-      } else if (!JSONObject.NULL.equals(value)) {
-        Log.wtf(TAG, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
-        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
-      }
-    }
-    return YailList.makeList(pairs);
-  }
-
-  private YailList jsonArrayToYail(JSONArray array) throws JSONException {
-    List<Object> items = new ArrayList<Object>();
-    for (int i = 0; i < array.length(); i++) {
-      Object value = array.get(i);
-      if (value instanceof Boolean ||
-          value instanceof Integer ||
-          value instanceof Long ||
-          value instanceof Double ||
-          value instanceof String) {
-        items.add(value);
-      } else if (value instanceof JSONArray) {
-        items.add(jsonArrayToYail((JSONArray) value));
-      } else if (value instanceof JSONObject) {
-        items.add(jsonObjectToYail((JSONObject) value));
-      } else if (!JSONObject.NULL.equals(value)) {
-        Log.wtf(TAG, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
-        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
-      }
-    }
-    return YailList.makeList(items);
-  }
-
-  private static String stripBOM(String content) {
-    if (content.charAt(0) == '\uFEFF') {
-      return content.substring(1);
-    } else {
-      return content;
-    }
-  }
-
 }

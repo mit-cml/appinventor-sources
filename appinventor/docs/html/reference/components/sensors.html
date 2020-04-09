@@ -139,6 +139,7 @@
   <li><a href="#Hygrometer">Hygrometer</a></li>
   <li><a href="#LightSensor">LightSensor</a></li>
   <li><a href="#LocationSensor">LocationSensor</a></li>
+  <li><a href="#MagneticFieldSensor">MagneticFieldSensor</a></li>
   <li><a href="#NearField">NearField</a></li>
   <li><a href="#OrientationSensor">OrientationSensor</a></li>
   <li><a href="#Pedometer">Pedometer</a></li>
@@ -628,6 +629,40 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="LocationSensor.LongitudeFromAddress" class="method returns number"><i></i> LongitudeFromAddress(<em class="text">locationName</em>)</dt>
   <dd>Derives longitude from the given <code class="highlighter-rouge">locationName</code>.</dd>
 </dl>
+
+<h2 id="MagneticFieldSensor">MagneticFieldSensor</h2>
+
+<p>Component for MagneticFieldSensor</p>
+
+<h3 id="MagneticFieldSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="MagneticFieldSensor.AbsoluteStrength" class="number ro bo"><em>AbsoluteStrength</em></dt>
+  <dd>Indicates the absolute strength of the field.</dd>
+  <dt id="MagneticFieldSensor.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Indicates that there is a magnetic field sensor in the device and it is available.</dd>
+  <dt id="MagneticFieldSensor.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Property for Enabled</dd>
+  <dt id="MagneticFieldSensor.MaximumRange" class="number ro bo"><em>MaximumRange</em></dt>
+  <dd>Indicates the maximum range the magnetic sensor can reach.</dd>
+  <dt id="MagneticFieldSensor.XStrength" class="number ro bo"><em>XStrength</em></dt>
+  <dd>Indicates the field’s strength in the X-axis.</dd>
+  <dt id="MagneticFieldSensor.YStrength" class="number ro bo"><em>YStrength</em></dt>
+  <dd>Indicates the field’s strength in the Y-axis.</dd>
+  <dt id="MagneticFieldSensor.ZStrength" class="number ro bo"><em>ZStrength</em></dt>
+  <dd>Indicates the field’s strength in the Z-axis.</dd>
+</dl>
+
+<h3 id="MagneticFieldSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="MagneticFieldSensor.MagneticChanged">MagneticChanged(<em class="number">xStrength</em>,<em class="number">yStrength</em>,<em class="number">zStrength</em>,<em class="number">absoluteStrength</em>)</dt>
+  <dd>Triggers when magnetic field has changed, setting the new values in parameters.</dd>
+</dl>
+
+<h3 id="MagneticFieldSensor-Methods">Methods</h3>
+
+<p class="methods">None</p>
 
 <h2 id="NearField">NearField</h2>
 

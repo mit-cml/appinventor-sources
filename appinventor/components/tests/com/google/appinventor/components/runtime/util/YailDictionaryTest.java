@@ -14,6 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.errors.DispatchableError;
@@ -160,6 +161,24 @@ public class YailDictionaryTest {
   }
 
   @Test
+  public void testFString() {
+    YailDictionary target = new YailDictionary();
+    target.put("key", "value");
+    target.put(new FString("fstringkey"), new FString("fstringvalue"));
+    assertTrue(target.containsKey(new FString("key")));
+    assertTrue(target.containsValue(new FString("value")));
+    assertTrue(target.containsKey("fstringkey"));
+    assertTrue(target.containsValue("fstringvalue"));
+    assertEquals("value", target.get("key"));
+    assertEquals("value", target.get(new FString("key")));
+    assertEquals("fstringvalue", target.get("fstringkey"));
+    assertEquals("fstringvalue", target.get(new FString("fstringkey")));
+    target.remove(new FString("key"));
+    target.remove(new FString("fstringkey"));
+    assertTrue(target.isEmpty());
+  }
+
+  @Test
   public void testToString() {
     YailDictionary dict = YailDictionary.makeDictionary();
     assertEquals("{}", dict.toString());
@@ -226,7 +245,7 @@ public class YailDictionaryTest {
 
   @Test
   public void testDictToAlist() {
-    YailList target = getTestList();
+    YailList target = getDictToListTestList();
     YailDictionary dict = getTestDict();
     assertEquals(target, YailDictionary.dictToAlist(dict));
   }
@@ -377,5 +396,21 @@ public class YailDictionaryTest {
     target.put("dict", abdict);
     target.put("list-with-dict", YailList.makeList(singletonList(abdict)));
     return target;
+  }
+
+  private static YailList getDictToListTestList() {
+    // Only the top level is converted to a list.
+    YailList ablist = YailList.makeList(Arrays.asList("a", "b"));
+    YailDictionary abdict = YailDictionary.makeDictionary("a", "b");
+    return YailList.makeList(new Object[] {
+         YailList.makeList(new Object[] { "number", 1 }),
+         YailList.makeList(new Object[] { "string", "foo" }),
+         YailList.makeList(new Object[] { "empty-list", YailList.makeEmptyList() }),
+         YailList.makeList(new Object[] { "list",
+             YailList.makeList(asList(ablist, 2, 3)) }),
+         YailList.makeList(new Object[] { "dict", abdict }),
+         YailList.makeList(new Object[] { "list-with-dict",
+             YailList.makeList(singletonList(abdict)) })
+    });
   }
 }

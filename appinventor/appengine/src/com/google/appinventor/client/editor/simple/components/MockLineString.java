@@ -118,7 +118,7 @@ public class MockLineString extends MockMapFeatureBase {
     if (!polyline.clickHandler) {
       while (el.lastChild) el.removeChild(el.lastChild);  // clear the div
       polyline.clickHandler = function(e) {
-        this.@com.google.appinventor.client.editor.simple.components.MockLineString::select()();
+        this.@com.google.appinventor.client.editor.simple.components.MockLineString::select(*)(e);
         if (e.originalEvent) e.originalEvent.stopPropagation();
       };
       polyline.dragHandler = function() {
