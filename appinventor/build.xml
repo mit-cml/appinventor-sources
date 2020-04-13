@@ -130,9 +130,13 @@
   </target>
 
   <target name="checkstyle-all">
-    <java jar="lib/checkstyle/checkstyle.jar" fork="true">
+    <java classname="com.puppycrawl.tools.checkstyle.Main" fork="true">
+      <classpath>
+        <pathelement path="lib/checkstyle/checkstyle.jar"/>
+        <pathelement path="lib/checkstyle/appinventor-checks.jar"/>
+      </classpath>
       <arg value="-c"/>
-      <arg value="lib/checkstyle/appinventor_checks.xml"/>
+      <arg value="lib/checkstyle/appinventor-checks.xml"/>
       <arg value="appengine/src"/>
       <arg value="appengine/tests"/>
       <arg value="blocklyeditor/src"/>

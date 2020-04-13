@@ -250,6 +250,9 @@
 
         <!-- App Inventor-specific checks -->
 
+        <module name="edu.mit.appinventor.checkstyle.checks.EventDispatchArguments"/>
+        <module name="edu.mit.appinventor.checkstyle.checks.EventDispatchMissing"/>
+        <module name="edu.mit.appinventor.checkstyle.checks.EventDispatchWrongName"/>
         <module name="MethodName">
             <property name="id" value="RegularMethodName"/>
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>

@@ -14,8 +14,10 @@ basedir = os.getcwd() if os.path.exists('build.xml') else os.path.join(os.getcwd
 
 
 def checkstyle(current_file):
-    return StringIO(subprocess.check_output(['java', '-jar', 'lib/checkstyle/checkstyle.jar', '-c',
-                                             'lib/checkstyle/appinventor_checks.xml', current_file],
+    return StringIO(subprocess.check_output(['java', '-cp',
+                                             'lib/checkstyle/checkstyle.jar:lib/checkstyle/appinventor-checks.jar',
+                                             'com.puppycrawl.tools.checkstyle.Main', '-c',
+                                             'lib/checkstyle/appinventor-checks.xml', current_file],
                                             encoding='utf-8', cwd=basedir))
 
 
