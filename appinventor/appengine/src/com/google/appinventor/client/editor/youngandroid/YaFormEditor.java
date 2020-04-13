@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.editor.simple.components.MockComponent.PROPERTY_NAME_NAME;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -649,7 +650,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
           componentName = gensymName(componentType, componentName);
           substitution.put(oldName, componentName);
           shouldRename = true;
-        } else if (!mockComponent.getPropertyValue(MockComponent.PROPERTY_NAME_NAME).equals(componentName)) {
+        } else if (!mockComponent.getPropertyValue(PROPERTY_NAME_NAME).equals(componentName)) {
           // If the SCD gensyms a name, but it is free, we rename it back.
           shouldRename = true;
         }
@@ -667,7 +668,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     if (shouldRename) {
       mockComponent.rename(componentName);
     } else {
-      mockComponent.changeProperty(MockComponent.PROPERTY_NAME_NAME, componentName);
+      mockComponent.changeProperty(PROPERTY_NAME_NAME, componentName);
     }
 
     // Set component properties
@@ -987,7 +988,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     }
   }
 
-
+  @SuppressWarnings("checkstyle:LineLength")
   private native void registerNativeListeners()/*-{
     var editor = this;
 
@@ -1000,7 +1001,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         // don't copy/paste in non-active editor
         return false;
       }
-      var data = editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::getSelectedComponentJSON()();
+      var data = editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::getSelectedComponentJson()();
       var xml = editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::getSelectedComponentBlocks()();
       data = JSON.parse(data);
       if (data instanceof Array) {
@@ -1056,17 +1057,24 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       } catch(e) {
         return;  // not valid JSON to paste, abort!
       }
-      editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::pasteFromJSNI(*)(data, editor.shiftDown);
+      editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::pasteFromJsni(*)(data, editor.shiftDown);
     });
   }-*/;
 
   private void deleteSelectedComponent() {
+    if (form.getLastSelectedComponent() instanceof MockForm) {
+      return;  // Cannot delete MockForm
+    }
     form.getLastSelectedComponent().delete();
   }
 
   private native JsArrayString concat(JsArrayString first, JsArrayString second)/*-{
     return first.concat(second);
   }-*/;
+
+  private YaBlocksEditor getBlocksEditor() {
+    return ((YaProjectEditor) projectEditor).getBlocksFileEditor(formNode.getFormName());
+  }
 
   private JsArrayString getSelectedComponentBlocks() {
     JsArrayString code = (JsArrayString) JsArrayString.createArray();
@@ -1077,11 +1085,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     return code;
   }
 
-  private YaBlocksEditor getBlocksEditor() {
-    return ((YaProjectEditor) projectEditor).getBlocksFileEditor(formNode.getFormName());
-  }
-
-  private JsArrayString getSelectedComponentBlocks(MockComponent component, YaBlocksEditor blocksEditor) {
+  private JsArrayString getSelectedComponentBlocks(MockComponent component,
+      YaBlocksEditor blocksEditor) {
     JsArrayString blocks = blocksEditor.getTopBlocksForComponentByName(component.getName());
     if (component instanceof MockContainer) {
       for (MockComponent child : ((MockContainer) component).getChildren()) {
@@ -1094,18 +1099,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     return blocks;
   }
 
-  private String getSelectedComponentJSON() {
+  private String getSelectedComponentJson() {
     StringBuilder sb = new StringBuilder();
     String sep = "";
     sb.append("[");
-    if (form.getSelectedComponents().size() == 1 &&
-        form.getSelectedComponents().get(0) instanceof MockForm) {
-      // We can't copy screens, but we can copy all of the children of a screen...
-      for (MockComponent component : form.getChildren()) {
-        sb.append(sep);
-        encodeComponentProperties(component, sb, false);
-        sep = ",";
-      }
+    if (form.getSelectedComponents().size() == 1
+        && form.getSelectedComponents().get(0) instanceof MockForm) {
+      encodeComponentProperties(form, sb, false);
     } else {
       for (MockComponent component : form.getSelectedComponents()) {
         if (component instanceof MockForm) {
@@ -1120,34 +1120,76 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     if (sb.length() == 2) {
       return "";  // Only had the MockForm selected and you can't copy a form.
     }
-    if (!(form.getLastSelectedComponent() instanceof MockForm)) {
+    if (form.getLastSelectedComponent() instanceof MockForm) {
+      form.setPasteTarget(form);
+    } else {
       form.setPasteTarget(form.getLastSelectedComponent().getContainer());
     }
     return sb.toString();
   }
 
-  private void pasteFromJSNI(String jso, boolean dropBlocks) {
+  private MockComponent pasteComponents(JSONArray components, MockContainer container,
+      Map<String, String> substitution) {
+    MockComponent lastComponentCreated = null;
+    int insertAfter = container.getChildren().indexOf(form.getLastSelectedComponent()) + 1;
+    for (JSONValue element : components.getElements()) {
+      JSONObject object = element.asObject();
+      String type = object.get("$Type").asString().getString();
+      if (form.willAcceptComponentType(type)) {
+        MockComponent pasted = createMockComponent(object, form, substitution);
+        if (insertAfter > 0) {
+          form.removeComponent(pasted, false);
+          form.addVisibleComponent(pasted, insertAfter);
+          insertAfter++;  // keep ordering if multiple items are copied.
+        }
+        lastComponentCreated = pasted;
+      }
+    }
+    return lastComponentCreated;
+  }
+
+  private MockComponent pasteForm(JSONObject prototype, Map<String, String> substitution) {
+    // Copy the properties
+    for (Map.Entry<String, JSONValue> property : prototype.getProperties().entrySet()) {
+      if (property.getKey().startsWith("$")
+          || property.getKey().equals(MockForm.PROPERTY_NAME_UUID)) {
+        continue;
+      }
+      form.getProperties().getExistingProperty(property.getKey())
+          .setValue(property.getValue().asString().getString());
+    }
+
+    // Clone the children
+    MockComponent lastPasted = pasteComponents(prototype.get("$Components").asArray(), form,
+        substitution);
+    return lastPasted == null ? form : lastPasted;
+  }
+
+  private void pasteFromJsni(String jso, boolean dropBlocks) {
     final MockContainer container = form.getPasteTarget();
-    MockComponent lastComponentCreated = container;
+    MockComponent lastComponentCreated = null;
     JSONObject value = new ClientJsonParser().parse(jso).asObject();
     Map<String, String> substitution = new HashMap<>();
     JSONArray components = value.get("$components").asArray();
     JSONArray blocks = value.get("$blocks").asArray();
-    int insertAfter = container.getChildren().indexOf(form.getLastSelectedComponent()) + 1;
-    boolean didPaste = false;
+
+    // First: Check to see if we are pasting a whole form
     for (JSONValue element : components.getElements()) {
-      if (container.willAcceptComponentType(element.asObject().get("$Type").asString().getString())) {
-        MockComponent pasted = createMockComponent(element.asObject(), container, substitution);
-        if (insertAfter > 0) {
-          container.removeComponent(pasted, false);
-          container.addVisibleComponent(pasted, insertAfter);
-          insertAfter++;  // keep ordering if multiple items are copied.
-        }
-        lastComponentCreated = pasted;
-        didPaste = true;
+      JSONObject object = element.asObject();
+      if (object.get("$Type").asString().getString().equals(MockForm.TYPE)) {
+        lastComponentCreated = pasteForm(object, substitution);
+        break;
       }
     }
-    if (didPaste && !dropBlocks) {
+
+    // Second: If we didn't paste a form, paste components
+    if (lastComponentCreated == null) {
+      lastComponentCreated = pasteComponents(components, form.getPasteTarget(), substitution);
+    }
+
+    // Third: If we pasted anything and the user didn't hold shift, paste the associated blocks
+    // with optional substitutions.
+    if (lastComponentCreated != null && !dropBlocks) {
       getBlocksEditor().pasteFromJSNI(YaBlocksEditor.toJSO(substitution),
           YaBlocksEditor.toJsArrayString(blocks));
     }
