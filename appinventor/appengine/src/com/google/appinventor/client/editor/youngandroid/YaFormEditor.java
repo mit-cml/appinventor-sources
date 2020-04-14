@@ -25,6 +25,7 @@ import com.google.appinventor.client.editor.simple.components.FormChangeListener
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
@@ -636,6 +637,16 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Set the name of the component (on instantiation components are assigned a generated name)
     String componentName = properties.get("$Name").asString().getString();
     mockComponent.changeProperty("Name", componentName);
+
+    if (mockComponent instanceof MockForm) {
+      // A bug in an early version of multiselect resulted in Form gaining Row and Column
+      // properties, which are reserved for visible components that can appear in TableArrangements.
+      // Form doesn't have these properties, so we need to clean up the properties. The remove
+      // call here is idempotent--if the property is present, it is removed. If not present, the
+      // map remains unchanged.
+      properties.remove(MockVisibleComponent.PROPERTY_NAME_ROW);
+      properties.remove(MockVisibleComponent.PROPERTY_NAME_COLUMN);
+    }
 
     // Set component properties
     for (String name : properties.keySet()) {
