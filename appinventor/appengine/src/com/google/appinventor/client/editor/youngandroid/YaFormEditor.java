@@ -1131,16 +1131,26 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   private MockComponent pasteComponents(JSONArray components, MockContainer container,
       Map<String, String> substitution) {
     MockComponent lastComponentCreated = null;
-    int insertAfter = container.getChildren().indexOf(form.getLastSelectedComponent()) + 1;
+    int insertBefore = -2;
+    for (MockComponent component : form.getSelectedComponents()) {
+      if (component.isVisibleComponent()) {
+        insertBefore = Math.max(insertBefore, container.getChildren().indexOf(component));
+      }
+    }
+    if (insertBefore < 0) {
+      insertBefore = container.getShowingVisibleChildren().size();
+    } else {
+      insertBefore++;
+    }
     for (JSONValue element : components.getElements()) {
       JSONObject object = element.asObject();
       String type = object.get("$Type").asString().getString();
-      if (form.willAcceptComponentType(type)) {
-        MockComponent pasted = createMockComponent(object, form, substitution);
-        if (insertAfter > 0) {
-          form.removeComponent(pasted, false);
-          form.addVisibleComponent(pasted, insertAfter);
-          insertAfter++;  // keep ordering if multiple items are copied.
+      if (container.willAcceptComponentType(type)) {
+        MockComponent pasted = createMockComponent(object, container, substitution);
+        if (pasted.isVisibleComponent()) {
+          container.removeComponent(pasted, false);
+          container.addVisibleComponent(pasted, insertBefore);
+          insertBefore = container.getChildren().indexOf(pasted) + 1;
         }
         lastComponentCreated = pasted;
       }
@@ -1199,8 +1209,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     Scheduler.get().scheduleDeferred(new ScheduledCommand() {
       @Override
       public void execute() {
-        form.setSelectedComponent(componentToSelect, null);
-        onComponentSelectionChange(componentToSelect, true);
+        if (componentToSelect != null) {
+          form.setSelectedComponent(componentToSelect, null);
+          onComponentSelectionChange(componentToSelect, true);
+        }
         form.setPasteTarget(container);
       }
     });
