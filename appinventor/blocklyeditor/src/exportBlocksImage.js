@@ -473,10 +473,10 @@ Blockly.exportBlockAsPng = function(block) {
           var phy = [112, 72, 89, 115];
           if (png.chunks[i].type == 'pHYs') {
             png.chunks.splice(i, 1, new PNG.Chunk(9, 'pHYs', pHY_data, crc32(phy.concat(pHY_data)))); //replacing existing pHYs chunk
-        	break;
+            break;
           } else if (png.chunks[i].type == 'IDAT') {
             png.chunks.splice(i, 0, new PNG.Chunk(9, 'pHYs', pHY_data, crc32(phy.concat(pHY_data)))); // adding new pHYs chunk
-        	break;
+            break;
           }
         }
         var blob = png.toBlob();
