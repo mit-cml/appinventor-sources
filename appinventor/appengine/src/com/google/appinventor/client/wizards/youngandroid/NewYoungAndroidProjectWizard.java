@@ -57,7 +57,7 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
       public boolean validate(String value) {
         value = value.trim();
         errorMessage = TextValidators.getErrorMessage(value);
-        if (errorMessage.length()>0){ 
+        if (errorMessage.length()>0){
           disableOkButton();
           return false;
         }
