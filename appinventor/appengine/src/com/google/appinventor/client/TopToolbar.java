@@ -198,6 +198,7 @@ public class TopToolbar extends Composite {
     boolean allowExport = numSelectedProjects > 0;
     boolean allowExportAll = numProjects > 0;
     fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
+    fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), allowDelete);
     String exportProjectLabel = numSelectedProjects > 1 ?
         MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects) : MESSAGES.exportProjectMenuItem();
     fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
@@ -1076,6 +1077,7 @@ public class TopToolbar extends Composite {
     }
     if (view == 0) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(),
           ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
