@@ -230,7 +230,11 @@ Blockly.WorkspaceSvg.prototype.addWarningIndicator = function() {
  */
 Blockly.WorkspaceSvg.prototype.addBackpack = function() {
   if (Blockly.Backpack && !this.options.readOnly) {
-    this.backpack_ = new Blockly.Backpack(this, {scrollbars: true, media: './assets/'});
+    this.backpack_ = new Blockly.Backpack(this, {
+        scrollbars: true,
+        media: './assets/',
+        disabledPatternId: this.options.disabledPatternId,
+      });
     var svgBackpack = this.backpack_.createDom(this);
     this.svgGroup_.appendChild(svgBackpack);
     this.backpack_.init();

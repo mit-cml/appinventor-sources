@@ -25,6 +25,7 @@ import com.google.appinventor.client.editor.simple.components.FormChangeListener
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
@@ -376,7 +377,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onComponentRenamed(MockComponent component, String oldName) {
     if (loadComplete) {
       onFormStructureChange();
-      updatePropertiesPanel(form.getSelectedComponents());
+      updatePropertiesPanel(form.getSelectedComponents(), true);
     } else {
       OdeLog.elog("onComponentRenamed called when loadComplete is false");
     }
@@ -386,7 +387,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onComponentSelectionChange(MockComponent component, boolean selected) {
     if (loadComplete) {
       sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
-      updatePropertiesPanel(form.getSelectedComponents());
+      updatePropertiesPanel(form.getSelectedComponents(), selected);
     } else {
       OdeLog.elog("onComponentSelectionChange called when loadComplete is false");
     }
@@ -637,6 +638,16 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     String componentName = properties.get("$Name").asString().getString();
     mockComponent.changeProperty("Name", componentName);
 
+    if (mockComponent instanceof MockForm) {
+      // A bug in an early version of multiselect resulted in Form gaining Row and Column
+      // properties, which are reserved for visible components that can appear in TableArrangements.
+      // Form doesn't have these properties, so we need to clean up the properties. The remove
+      // call here is idempotent--if the property is present, it is removed. If not present, the
+      // map remains unchanged.
+      properties.remove(MockVisibleComponent.PROPERTY_NAME_ROW);
+      properties.remove(MockVisibleComponent.PROPERTY_NAME_COLUMN);
+    }
+
     // Set component properties
     for (String name : properties.keySet()) {
       if (name.charAt(0) != '$') { // Ignore special properties (name, type and nested components)
@@ -702,14 +713,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Set the properties box's content.
     PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
     propertiesBox.setContent(designProperties);
-    updatePropertiesPanel(form.getSelectedComponents());
+    updatePropertiesPanel(form.getSelectedComponents(), true);
     propertiesBox.setVisible(true);
   }
 
   /*
    * Show the given component's properties in the properties panel.
    */
-  private void updatePropertiesPanel(List<MockComponent> components) {
+  private void updatePropertiesPanel(List<MockComponent> components, boolean selected) {
     if (components == null || components.size() == 0) {
       throw new IllegalArgumentException("components must be a list of at least 1");
     }
@@ -756,18 +767,24 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
         // Determine if all components have the same value and apply it
         String sharedValue = components.get(0).getPropertyValue(name);
+        boolean collision = false;
         for (MockComponent component : components) {
           String propValue = component.getPropertyValue(name);
           if (!sharedValue.equals(propValue)) {
             sharedValue = "";
+            collision = true;
             break;
           }
         }
+        newProperties.getProperty(name).getEditor().setMultipleValues(collision);
+        newProperties.getProperty(name).getEditor().setMultiselectMode(true);
         newProperties.getProperty(name).setValue(sharedValue);
       }
       selectedProperties = newProperties;
     }
-    selectedProperties.addPropertyChangeListener(this);
+    if (selected) {
+      selectedProperties.addPropertyChangeListener(this);
+    }
     designProperties.setProperties(selectedProperties);
     if (components.size() > 1) {
       designProperties.setPropertiesCaption(components.size() + " components selected");
@@ -918,7 +935,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     //Update Mock Components
     updateMockComponents(componentTypes);
     //Update the Properties Panel
-    updatePropertiesPanel(form.getSelectedComponents());
+    updatePropertiesPanel(form.getSelectedComponents(), true);
   }
 
   @Override

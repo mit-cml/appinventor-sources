@@ -748,6 +748,12 @@ body {
   text-shadow: none;
 }
 
+.destructive-action[disabled],
+.destructive-action[disabled]:hover {
+  background: #faa;
+  color: #888;
+}
+
 .ya-Toolbar .ode-TextButton {
   font-size: 11px;
 }

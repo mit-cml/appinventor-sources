@@ -2684,7 +2684,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     //AI2: Added PageLoaded
     8: "noUpgrade",
-      
+
     // AI2: Added BeforePageLoad event and Stop, Reload, and ClearCookies methods
     9: "noUpgrade",
 
@@ -2696,7 +2696,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "YandexTranslate": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: ApiKey property added
+    2: "noUpgrade"
 
   } // End YandexTranslate upgraders
 

@@ -380,15 +380,7 @@ Blockly.ReplMgr.putYail = (function() {
             var haveoffer = false;
             var connectionstate = "none";
             var webrtcerror = function(doalert, msg) {
-              webrtcdata = null;
-              webrtcstarting = false;
-              webrtcrunning = false;
-              webrtcforcestop = true;
-              top.BlocklyPanel_indicateDisconnect();
-              top.ConnectProgressBar_hide();
-              if (!webrtcpeer) {
-                webrtcpeer.close();
-              }
+              engine.resetcompanion();
               if (doalert) {
                   var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_NETWORK_ERROR, msg, Blockly.Msg.REPL_OK, false, null, 0,
                       function() {
@@ -444,11 +436,24 @@ Blockly.ReplMgr.putYail = (function() {
             };
             webrtcpeer = new RTCPeerConnection(top.ReplState.iceservers);
             webrtcpeer.oniceconnectionstatechange = function(evt) {
-                console.log("oniceconnectionstatechange: evt.type = " + evt.type + " connection state = " + this.iceConnectionState);
-                connectionstate = this.iceConnectionState;
-                if (connectionstate == "disconnected" ||
-                    connectionstate == "failed") {
-                    webrtcerror(true, Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + "state = " + connectionstate);
+              //////////////////////////////////////////////////////////////
+              // So Firefox will transiently issue an iceConnectionState  //
+              // of "disconnected" when everything is fine. It usually    //
+              // immediately issues a new event declaring the             //
+              // iceConnectionState as "connected". When the connection   //
+              // is really dead, Firefox issues an event with             //
+              // iceConnectionState of failed.  Chrome on the other-hand  //
+              // never issues an event with iceConnectionState of failed, //
+              // but just disconnected. The detection method below was    //
+              // found on Stack Overflow.                                 //
+              //////////////////////////////////////////////////////////////
+              var isFirefox = typeof InstallTrigger !== 'undefined';
+              console.log("oniceconnectionstatechange: evt.type = " + evt.type + " ice connection state = " +
+                          this.iceConnectionState);
+              connectionstate = this.iceConnectionState;
+              if ((connectionstate == "disconnected" && !isFirefox) ||
+                  connectionstate == "failed") {
+                  webrtcerror(true, Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED);
                 }
             };
             webrtcpeer.onsignalingstatechange = function(evt) {
@@ -795,6 +800,8 @@ Blockly.ReplMgr.putYail = (function() {
             if (top.usewebrtc) {
                 if (webrtcdata) {
                     webrtcdata.close();
+                }
+                if (webrtcpeer) {
                     webrtcpeer.close();
                 }
                 webrtcforcestop = true;
@@ -802,12 +809,10 @@ Blockly.ReplMgr.putYail = (function() {
                 webrtcrunning = false;
                 webrtcstarting = false;
             }
-            if (rxhr)
+            if (rxhr) {
                 rxhr.abort();
+            }
             rxhr = null;
-//            if (conn)  // This seems to cause disconnects on project switch
-//                conn.abort();
-//            conn = null;
             top.usewebrtc = false;
             phonereceiving = false;
         },
@@ -821,6 +826,7 @@ Blockly.ReplMgr.putYail = (function() {
 //          context.hardreset(context.formName); // kill adb and emulator
             rs.didversioncheck = false;
             top.BlocklyPanel_indicateDisconnect();
+            top.ConnectProgressBar_hide();
             engine.reset();
         },
         "checkversionupgrade" : function(fatal, installer, force) {

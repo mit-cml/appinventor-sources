@@ -148,6 +148,7 @@ Blockly.BlockSvg.prototype.onMouseUp_ = (function(func) {
         if (Blockly.getMainWorkspace().hasBackpack() &&
             Blockly.getMainWorkspace().getBackpack().isOpen) {
           var backpack = Blockly.getMainWorkspace().getBackpack();
+          goog.Timer.callOnce(backpack.close, 100, backpack);
           backpack.addToBackpack(Blockly.selected, true);
           backpack.onMouseUp(e, Blockly.selected.dragStartXY_);
         }
@@ -369,7 +370,7 @@ Blockly.BlockSvg.prototype.updateCollapsed_ = function() {
     if (this.collapsed_ == collapsed) {
       return;
     }
-    this.collapsed_ = collapsed;
+    Blockly.BlockSvg.superClass_.setCollapsed.call(this, collapsed);
     if (!collapsed) {
       this.updateCollapsed_();
     } else if (this.rendered) {
