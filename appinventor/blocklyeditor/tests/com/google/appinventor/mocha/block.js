@@ -135,7 +135,7 @@ suite('Blocks', function() {
       } while (node != document);
       chai.assert(true);  // Succeed the test
     }
-    suite('Connecting and Disconnecting', function() {
+    suite('Connecting And Disconnecting', function() {
       test('Connect Block to Next', function() {
         var blockA = this.createBlock('stack_block');
         var blockB = this.createBlock('stack_block');
@@ -462,8 +462,8 @@ suite('Blocks', function() {
       this.chars = 30;
     });
     test ('Block Less Than Blockly.CollapsedChars', function() {
-      var string = '#'.repeat(10);
-      var expectedString = '#'.repeat(10);
+      var string = '##########';  // 10
+      var expectedString = '##########';  // 10
 
       var blockA = this.createBlock('empty_block');
       blockA.appendDummyInput()
@@ -471,8 +471,8 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('Block Exactly Blockly.CollapsedChars', function() {
-      var string = '#'.repeat(30);
-      var expectedString = '#'.repeat(30);
+      var string = '##############################';  // 30
+      var expectedString = '##############################';  // 30
 
       var blockA = this.createBlock('empty_block');
       blockA.appendDummyInput()
@@ -480,8 +480,8 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('Block Blockly.CollapsedChars Minus 1', function() {
-      var string = '#'.repeat(29);
-      var expectedString = '#'.repeat(29);
+      var string = '#############################';  // 29
+      var expectedString = '#############################'; // 29
 
       var blockA = this.createBlock('empty_block');
       blockA.appendDummyInput()
@@ -489,8 +489,8 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('Block Blockly.CollapsedChars Plus 1', function() {
-      var string = '#'.repeat(31);
-      var expectedString = '#'.repeat(27) + '...';
+      var string = '###############################';  // 31
+      var expectedString = '###########################...';  // 27...
 
       var blockA = this.createBlock('empty_block');
       blockA.appendDummyInput()
@@ -498,9 +498,9 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('First Row Less Than Blockly.CollapsedChars', function() {
-      var stringA = '#'.repeat(10);
-      var stringB = '*'.repeat(30);
-      var expectedString = '#'.repeat(10) + ' ' + '*'.repeat(16) + '...';
+      var stringA = '##########';  // 10
+      var stringB = '******************************';  // 30
+      var expectedString = '########## ****************...';  // 10 16...
 
       var blockA = this.createBlock('empty_block');
       blockA.appendDummyInput()
@@ -509,9 +509,9 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('First Row Exactly Blockly.CollapsedChars', function() {
-      var stringA = '#'.repeat(30);
-      var stringB = '*'.repeat(30);
-      var expectedString = '#'.repeat(27) + '...';
+      var stringA = '##############################';  // 30
+      var stringB = '******************************';  // 30
+      var expectedString = '###########################...';  // 27...
 
       var blockA = this.createBlock('empty_block');
       blockA.appendDummyInput()
@@ -520,9 +520,9 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('First Row Blockly.CollapsedChars Minus 1', function() {
-      var stringA = '#'.repeat(29);
-      var stringB = '*'.repeat(30);
-      var expectedString = '#'.repeat(27) + '...';
+      var stringA = '#############################';  // 29
+      var stringB = '******************************';  // 30
+      var expectedString = '###########################...';  // 27...
 
       var blockA = this.createBlock('empty_block');
       blockA.appendDummyInput()
@@ -531,9 +531,9 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('First Row Blockly.CollapsedChars Minus 2', function() {
-      var stringA = '#'.repeat(28);
-      var stringB = '*'.repeat(30);
-      var expectedString = '#'.repeat(27) + '...';
+      var stringA = '############################';  // 28
+      var stringB = '******************************';  // 30
+      var expectedString = '###########################...';  // 27...
 
       var blockA = this.createBlock('empty_block');
       blockA.appendDummyInput()
@@ -542,9 +542,9 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('First Row Blockly.CollapsedChars Minus 3', function() {
-      var stringA = '#'.repeat(27);
-      var stringB = '*'.repeat(30);
-      var expectedString = '#'.repeat(27) + '...';
+      var stringA = '###########################';  // 27
+      var stringB = '******************************';  // 30
+      var expectedString = '###########################...';  // 27...
 
       var blockA = this.createBlock('empty_block');
       blockA.appendDummyInput()
@@ -553,9 +553,9 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('First Row Blockly.CollapsedChars Plus 1', function() {
-      var stringA = '#'.repeat(31);
-      var stringB = '*'.repeat(30);
-      var expectedString = '#'.repeat(27) + '...';
+      var stringA = '###############################';  // 31
+      var stringB = '******************************';  // 30
+      var expectedString = '###########################...';  // 27...
 
       var blockA = this.createBlock('empty_block');
       blockA.appendDummyInput()
@@ -569,9 +569,9 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('All Children Less Than Blockly.CollapsedChars', function() {
-      var stringA = '#'.repeat(10);
-      var stringB = '*'.repeat(10);
-      var expectedString = '#'.repeat(10) + ' ' + '*'.repeat(10);
+      var stringA = '##########';  // 10
+      var stringB = '**********';  // 10
+      var expectedString = '########## **********'; // 10 10
 
       var blockA = this.createBlock('row_block');
       var blockB = this.createBlock('empty_block');
@@ -584,9 +584,9 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('All Children Exactly Blockly.CollapsedChars', function() {
-      var stringA = '#'.repeat(15);
-      var stringB = '*'.repeat(14);
-      var expectedString = '#'.repeat(15) + ' ' + '*'.repeat(14);
+      var stringA = '###############';  // 15
+      var stringB = '**************';  // 14
+      var expectedString = '############### **************';  // 15 14
 
       var blockA = this.createBlock('row_block');
       var blockB = this.createBlock('empty_block');
@@ -599,9 +599,9 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('All Children Blockly.CollapsedChars Minus 1', function() {
-      var stringA = '#'.repeat(15);
-      var stringB = '*'.repeat(13);
-      var expectedString = '#'.repeat(15) + ' ' + '*'.repeat(13);
+      var stringA = '###############';  // 15
+      var stringB = '*************';  // 13
+      var expectedString = '############### *************';  // 15 13
 
       var blockA = this.createBlock('row_block');
       var blockB = this.createBlock('empty_block');
@@ -614,9 +614,9 @@ suite('Blocks', function() {
       chai.assert.equal(blockA.toString(this.chars), expectedString)
     });
     test('All Children Blockly.CollapsedChars Plus 1', function() {
-      var stringA = '#'.repeat(15);
-      var stringB = '*'.repeat(15);
-      var expectedString = '#'.repeat(15) + ' ' + '*'.repeat(11) + '...';
+      var stringA = '###############';  // 15
+      var stringB = '***************';  // 15
+      var expectedString = '############### ***********...';  // 15 11...
 
       var blockA = this.createBlock('row_block');
       var blockB = this.createBlock('empty_block');
