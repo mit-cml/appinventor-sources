@@ -77,7 +77,7 @@ public final class RemixedYoungAndroidProjectWizard extends NewProjectWizard { /
         // loading indicator will be hided or forced to be hided in gallery.loadSourceFile
         content.add(loading);
         popup.center();
-        boolean success = gallery.loadSourceFile(app, projectNameTextBox.getText().trim(), popup);
+        boolean success = gallery.loadSourceFile(app, projectName, popup);
         if(success){
           gallery.appWasDownloaded(app.getGalleryAppId(), app.getDeveloperId());
         }

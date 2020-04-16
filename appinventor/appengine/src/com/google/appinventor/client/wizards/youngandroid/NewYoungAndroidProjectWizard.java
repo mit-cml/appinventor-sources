@@ -54,14 +54,14 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
 
     projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel(), new Validator() {
       @Override
-      public boolean validate(String value) {
-        
+      public boolean validate(String value) {  
         value = value.trim();
         errorMessage = TextValidators.getErrorMessage(value);
-        if (errorMessage.equals(MESSAGES.firstCharProjectNameError()) || errorMessage.equals(MESSAGES.invalidCharProjectNameError())){ // !errorMessage == MESSAGES.whitespaceProjectNameError();
+        if (errorMessage.length()>0){ 
           disableOkButton();
           return false;
         }
+          errorMessage = TextValidators.getWarningMessages(value);
           enableOkButton();
           return true;
       }
