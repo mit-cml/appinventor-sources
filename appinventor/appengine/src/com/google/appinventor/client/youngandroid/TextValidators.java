@@ -188,9 +188,10 @@ public final class TextValidators {
     String noWhitespace = "[\\S]+";
     String firstCharacterLetter = "[A-Za-z].*";
     String temp = filename.replaceAll("( )+", " ").replace(" ","_");
-    if(temp.length() > 0) {
-      if(!temp.matches("[A-Za-z][A-Za-z0-9_]*")) {
-        if(!temp.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
+    if (temp.length() > 0) {
+      if (!temp.matches("[A-Za-z][A-Za-z0-9_]*")) {
+        if (!temp.matches(firstCharacterLetter)) { 
+          //Check to make sure that the first character is a letter
           errorMessage = MESSAGES.firstCharProjectNameError();
         } else { //The text contains a character that is not a letter, number, or underscore
           errorMessage = MESSAGES.invalidCharProjectNameError();
@@ -200,11 +201,19 @@ public final class TextValidators {
     return errorMessage;
   }
 
+  /**
+   * Determines human-readable message for specific warning if there are no errors.
+   * @param filename The filename (not path) of uploaded file
+   * @return String representing warning message, empty string if no warning and no error
+   */
   public static String getWarningMessages(String filename){
     String warningMessage = "";
-    if(getErrorMessage(filename).length() == 0 && filename.length() > 0) {
-      if(!filename.matches("[A-Za-z][A-Za-z0-9_]*")) { // check to make sure if original filename has no spaces
-        warningMessage = MESSAGES.whitespaceProjectNameError() + ". \n '" + filename.replaceAll("( )+", " ").replace(" ","_") + "' will be used if continued.";
+    if (getErrorMessage(filename).length() == 0 && filename.length() > 0) {
+      if (!filename.matches("[A-Za-z][A-Za-z0-9_]*")) {
+        // check to make sure if filename has no spaces
+        String errorMessage = MESSAGES.whitespaceProjectNameError();
+        filename = filename.replaceAll("( )+", " ").replace(" ","_");
+        warningMessage = errorMessage + ". \n '" + filename + "' will be used if continued.";
       }
     }
     return warningMessage;

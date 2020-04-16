@@ -179,7 +179,7 @@ public class LabeledTextBox extends Composite {
    */
   private void setErrorStyles(boolean validationResult) {
     if (validationResult) {
-      if (errorMessage.length()>0) { // handling warnings
+      if (errorMessage.length() > 0) { // handling warnings
         String warningColor = "yellow";
         textbox.getElement().getStyle().setBorderColor(warningColor);
         errorLabel.setText(errorMessage);
