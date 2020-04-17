@@ -171,20 +171,28 @@ Blockly.FieldLexicalVariable.prototype.setCachedParent = function(parent) {
 // * Removed from prototype and stripped off "global" prefix (add it elsewhere)
 // * Add optional excluded block argument as in Neil's code to avoid global declaration being created
 Blockly.FieldLexicalVariable.getGlobalNames = function (optExcludedBlock) {
+  // TODO: Don't store global names on the warning handler. Or don't return that
+  //   cache from here.
+  //   The current method is not future-proof because if we ever forget to fire
+  //   a necessary event our cache will be incorrect.
   if (Blockly.Instrument.useLynCacheGlobalNames && Blockly.getMainWorkspace() &&
       Blockly.getMainWorkspace().getWarningHandler().cacheGlobalNames) {
     return Blockly.getMainWorkspace().getWarningHandler().cachedGlobalNames;
   }
   var globals = [];
+  // TODO: Require a workspace to be passed instead of accessing .mainWorkspace.
   if (Blockly.mainWorkspace) {
     var blocks = [];
+    // TODO: Remove this if. Checking less blocks is def better.
     if (Blockly.Instrument.useLynGetGlobalNamesFix) {
       blocks = Blockly.mainWorkspace.getTopBlocks(); // [lyn, 04/13/14] Only need top blocks, not all blocks!
     } else {
       blocks = Blockly.mainWorkspace.getAllBlocks(); // [lyn, 11/10/12] Is there a better way to get workspace?
     }
+    // TODO: Switch this to (block = blocks[i]).
     for (var i = 0; i < blocks.length; i++) {
       var block = blocks[i];
+      // TODO: Change type check to func call? Also remove unnecessary parens.
       if ((block.type === 'global_declaration') && (block != optExcludedBlock)) {
           globals.push(block.getFieldValue('NAME'));
       }

@@ -3,7 +3,6 @@
 /**
  * @license
  * @fileoverview Block behavior tests. Not related to code generation.
- *
  */
 
 suite('Blocks', function() {
