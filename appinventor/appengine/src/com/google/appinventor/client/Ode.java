@@ -47,6 +47,7 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
@@ -1254,6 +1255,7 @@ public class Ode implements EntryPoint {
     });
 
     setupMotd();
+    HTML5DragDrop.init();
   }
 
   private void setupMotd() {
