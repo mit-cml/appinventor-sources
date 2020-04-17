@@ -273,12 +273,13 @@ Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
     }
   }
 
+  // TODO: Remove this check. `block` is not optional.
   child = block;
   if (child) {
     parent = child.getParent();
     if (parent) {
       while (parent) {
-          // TODO: Maybe change this logic to instead call a function on the block.
+          // TODO: Change this logic to instead call a function on the block.
           if ((parent.type === "procedures_defnoreturn") || (parent.type === "procedures_defreturn")) {
             params = parent.declaredNames(); // [lyn, 10/13/13] Names from block, not arguments_ instance var
             for (i = 0; i < params.length; i++) {
