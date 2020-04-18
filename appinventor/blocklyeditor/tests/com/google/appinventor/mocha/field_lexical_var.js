@@ -93,7 +93,7 @@ suite ('FieldLexical', function() {
         '</xml>');
         this.assertLexicalNames(xml, [['name', 'name'], ['name2', 'name2']]);
       });
-      test('Matching Nesting', function() {
+      test('Matching Nesting - No Dupes', function() {
         var xml = Blockly.Xml.textToDom('<xml>' +
         '  <block type="local_declaration_statement">' +
         '    <mutation>' +
@@ -353,5 +353,123 @@ suite ('FieldLexical', function() {
         this.assertLexicalNames(xml, [['name', 'name']]);
       });
     })
+  })
+  suite('getNamesInScope', function() {
+    setup(function() {
+      this.assertNames = function(xml, expectedVars) {
+        Blockly.Xml.domToWorkspace(xml, this.workspace);
+        var block = this.workspace.getBlockById('a');
+        var actualVars = Blockly.FieldLexicalVariable
+            .getNamesInScope(block);
+        chai.assert.sameDeepOrderedMembers(actualVars, expectedVars);
+      }
+    });
+    test('Globals First', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="global_declaration" y="-200">' +
+      '    <field name="NAME">gName</field>' +
+      '  </block>' +
+      '  <block type="local_declaration_statement">' +
+      '    <mutation>' +
+      '      <localname name="name"></localname>' +
+      '    </mutation>' +
+      '    <field name="VAR0">name</field>' +
+      '    <value name="STACK">' +
+      '      <block type="controls_if" id="a"/>' +
+      '    </value>' +
+      '  </block>' +
+      '</xml>');
+      this.assertNames(xml, [
+        ['global gName', 'global gName'],
+        ['name', 'name'],
+      ]);
+    });
+    test('Vars Sorted 1', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="global_declaration" y="-200">' +
+      '    <field name="NAME">gA</field>' +
+      '  </block>' +
+      '  <block type="global_declaration" y="-200">' +
+      '    <field name="NAME">gB</field>' +
+      '  </block>' +
+      '  <block type="local_declaration_statement">' +
+      '    <mutation>' +
+      '      <localname name="lA"></localname>' +
+      '    </mutation>' +
+      '    <field name="VAR0">lA</field>' +
+      '    <value name="STACK">' +
+      '      <block type="local_declaration_statement">' +
+      '        <mutation>' +
+      '          <localname name="lB"></localname>' +
+      '        </mutation>' +
+      '        <field name="VAR0">lB</field>' +
+      '        <value name="STACK">' +
+      '          <block type="controls_if" id="a"/>' +
+      '        </value>' +
+      '      </block>' +
+      '    </value>' +
+      '  </block>' +
+      '</xml>');
+      this.assertNames(xml, [
+        ['global gA', 'global gA'],
+        ['global gB', 'global gB'],
+        ['lA', 'lA'],
+        ['lB', 'lB'],
+      ]);
+    });
+    test('Vars Sorted 2', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="global_declaration" y="-200">' +
+      '    <field name="NAME">gB</field>' +
+      '  </block>' +
+      '  <block type="global_declaration" y="-200">' +
+      '    <field name="NAME">gA</field>' +
+      '  </block>' +
+      '  <block type="local_declaration_statement">' +
+      '    <mutation>' +
+      '      <localname name="lB"></localname>' +
+      '    </mutation>' +
+      '    <field name="VAR0">lB</field>' +
+      '    <value name="STACK">' +
+      '      <block type="local_declaration_statement">' +
+      '        <mutation>' +
+      '          <localname name="lA"></localname>' +
+      '        </mutation>' +
+      '        <field name="VAR0">lA</field>' +
+      '        <value name="STACK">' +
+      '          <block type="controls_if" id="a"/>' +
+      '        </value>' +
+      '      </block>' +
+      '    </value>' +
+      '  </block>' +
+      '</xml>');
+      this.assertNames(xml, [
+        ['global gA', 'global gA'],
+        ['global gB', 'global gB'],
+        ['lA', 'lA'],
+        ['lB', 'lB'],
+      ]);
+    });
+    test('Global Prefix is Translated', function() {
+      Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX = 'testPrefix'
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="global_declaration" y="-200">' +
+      '    <field name="NAME">gName</field>' +
+      '  </block>' +
+      '  <block type="local_declaration_statement">' +
+      '    <mutation>' +
+      '      <localname name="name"></localname>' +
+      '    </mutation>' +
+      '    <field name="VAR0">name</field>' +
+      '    <value name="STACK">' +
+      '      <block type="controls_if" id="a"/>' +
+      '    </value>' +
+      '  </block>' +
+      '</xml>');
+      this.assertNames(xml, [
+        ['testPrefix gName', 'global gName'],
+        ['name', 'name'],
+      ]);
+    });
   })
 })

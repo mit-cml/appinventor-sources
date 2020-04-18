@@ -225,30 +225,39 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
 }
 
 /**
- * @param block
+ * Returns a list of all names in the scope of the block for use in populating
+ * a variable dropdown.
+ * @param {!Blockly.Block} block The block we use to determine the scope.
  * @returns {Array.<Array.<string>>} A list of pairs representing the translated
- * and untranslated name of every variable in the scope of the current block.
+ *     and untranslated name of every variable in the scope of the passed
+ *     block. Globals are at the start of the list, then lexical ones follow.
+ *     Within those categories they are sorted lexicographically.
  */
-// [lyn, 11/15/13] Refactored to work on any block
 Blockly.FieldLexicalVariable.getNamesInScope = function (block) {
-  var globalNames = Blockly.FieldLexicalVariable.getGlobalNames(); // from global variable declarations
-  // [lyn, 11/24/12] Sort and remove duplicates from namespaces
+  var globalNames = Blockly.FieldLexicalVariable.getGlobalNames();
+  // TODO: In what case are there duplicate names in the globals? I think we can
+  //   Move this to a simple .sort() call.
   globalNames = Blockly.LexicalVariable.sortAndRemoveDuplicates(globalNames);
   globalNames = globalNames.map(function(name) {
+    // TODO: Should the prefix function be moved into this class?
     return [Blockly.prefixGlobalMenuName(name), 'global ' + name];
   });
-  var allLexicalNames = Blockly.FieldLexicalVariable.getLexicalNamesInScope(block);
-  // Return a list of all names in scope: global names followed by lexical ones.
+  var allLexicalNames = Blockly.FieldLexicalVariable
+      .getLexicalNamesInScope(block);
   return globalNames.concat(allLexicalNames);
 }
 
 /**
- * @param block
- * @returns {Array.<Array.<string>>} A list of all lexical names (in sorted order) in scope at the point of the given block
- *   If Blockly.usePrefixInYail is true, returns names prefixed with labels like "param", "local", "index";
- *   otherwise returns unprefixed names.
+ * Returns a list of all the names in the lexical scope of the block for use
+ * in populating a variable dropdown.
+ * @param {!Blockly.Block} block The block we use to determine the scope.
+ * @returns {Array.<Array.<string>>} A list of pairs representing the translated
+ *     and untranslated name of every variable in the lexical scope of the
+ *     passed block. The array is sorted lexicographically.
+ * 
+ *     If Blockly.usePrefixInYail is true, returns names prefixed with labels
+ *     like "param", "local", "index", otherwise returns unprefixed names.
  */
-// [lyn, 11/15/13] Factored this out from getNamesInScope to work on any block
 Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
   var procedureParamNames = []; // from procedure/function declarations
   var handlerParamNames = []; // from event handlers
