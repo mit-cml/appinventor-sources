@@ -7,8 +7,6 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,7 +18,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.widgets.DropDownButton;
-import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.shared.rpc.project.Email;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryModerationAction;

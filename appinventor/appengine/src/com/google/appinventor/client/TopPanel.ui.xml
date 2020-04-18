@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:ode="urn:import:com.google.appinventor.client"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <g:FlowPanel styleName="ode-TopPanel" ui:field="header">
+    <g:HTML>
+      <img srcset="" src="/static/images/codi_long.png" ui:field="logo" />
+    </g:HTML>
+    <ode:TopToolbar ui:field="topToolbar" />
+    <g:FlowPanel ui:field="rightPanel">
+      <g:FlowPanel styleName="ode-TopPanelAccount">
+        <g:FlowPanel styleName="ode-TopPanelLinks" ui:field="links">
+          <g:Label text="{messages.readOnlyMode}" styleName="ode-TopPanelWarningLabel"
+                   ui:field="readOnly"/>
+          <ai:TextButton text="{messages.myProjectsTabName}" styleName="ode-TopPanelButton"
+                         ui:field="myProjects" />
+          <ai:TextButton text="{messages.viewTrashTabName}" styleName="ode-TopPanelButton"
+                         ui:field="viewTrash" />
+          <ai:TextButton text="{messages.tabNameGallery}" styleName="ode-TopPanelButton"
+                         ui:field="gallery" />
+          <ai:TextButton text="{messages.guideTabName}" styleName="ode-TopPanelButton"
+                         ui:field="guideLink" />
+          <ai:TextButton text="{messages.feedbackTabName}" styleName="ode-TopPanelButton"
+                         ui:field="feedbackLink" />
+          <ai:TextButton text="{messages.tabNameModeration}" styleName="ode-TopPanelButton"
+                         visible="false" ui:field="moderation" />
+        </g:FlowPanel>
+        <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
+                           ui:field="languageDropDown" />
+        <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
+                           ui:field="accountButton" />
+      </g:FlowPanel>
+    </g:FlowPanel>
+  </g:FlowPanel>
+</ui:UiBinder>

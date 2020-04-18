@@ -6,47 +6,41 @@
 
 package com.google.appinventor.client;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.Ode.getSystemConfig;
+
 import com.google.appinventor.client.boxes.MotdBox;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.tracking.Tracking;
-import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.client.widgets.TextButton;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.UrlBuilder;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.MissingResourceException;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * The top panel, which contains the main menu, various links plus ads.
@@ -54,24 +48,32 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public class TopPanel extends Composite {
   // Strings for links and dropdown menus:
-  private final DropDownButton accountButton;
-  public DropDownButton languageDropDown;
 
-  private final String WIDGET_NAME_MESSAGES = "Messages";
-  private final String WIDGET_NAME_PRIVATE_USER_PROFILE = "Profile";
-  private final TextButton gallery;
-  private final TextButton moderation;
+  interface TopPanelUiBinder extends UiBinder<FlowPanel, TopPanel> {}
+
+  private static final TopPanelUiBinder UI_BINDER = GWT.create(TopPanelUiBinder.class);
+
+  @UiField(provided = true) FlowPanel header = new FlowPanel("header");
+  @UiField TopToolbar topToolbar;
+  @UiField ImageElement logo;
+  @UiField Label readOnly;
+  @UiField FlowPanel rightPanel;
+  @UiField TextButton myProjects;
+  @UiField TextButton viewTrash;
+  @UiField TextButton gallery;
+  @UiField TextButton guideLink;
+  @UiField TextButton feedbackLink;
+  @UiField TextButton moderation;
+  @UiField DropDownButton languageDropDown;
+  @UiField DropDownButton accountButton;
+  @UiField FlowPanel links;
   private final String WIDGET_NAME_SIGN_OUT = "Signout";
-  private final String WIDGET_NAME_USER = "User";
   private static final String WIDGET_NAME_LANGUAGE = "Language";
 
   private static final String SIGNOUT_URL = "/ode/_logout";
-  private static final String LOGO_IMAGE_URL = "/static/images/codi_long.png";
 
   private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
   private static final String WINDOW_OPEN_LOCATION = "_ai2";
-
-  private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
   final Ode ode = Ode.getInstance();
 
@@ -106,162 +108,78 @@ public class TopPanel extends Composite {
      *  |+----------++---------------++-----------------+|
      *  +------------------------------------------------+
      */
-    HorizontalPanel topPanel = new HorizontalPanel();
-    topPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+    Config config = getSystemConfig();
+    initWidget(UI_BINDER.createAndBindUi(this));
 
-    // Create the Tools
-    TopToolbar tools = new TopToolbar();
-    ode.setTopToolbar(tools);
-
-    // Create the Links
-    HorizontalPanel links = new HorizontalPanel();
-    links.setStyleName("ode-TopPanelLinks");
-    links.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
-
-    if (Ode.getInstance().isReadOnly()) {
-      Label readOnly = new Label(MESSAGES.readOnlyMode());
-      readOnly.setStyleName("ode-TopPanelWarningLabel");
-      links.add(readOnly);
+    String logoUrl = config.getLogoUrl();
+    if (!Strings.isNullOrEmpty(logoUrl)) {
+      Image.wrap(logo).addClickHandler(new WindowOpenClickHandler(logoUrl));
     }
 
-    // My Projects Link
-    TextButton myProjects = new TextButton(MESSAGES.myProjectsTabName());
-    myProjects.setStyleName("ode-TopPanelButton");
+    if (!Ode.getInstance().isReadOnly()) {
+      readOnly.removeFromParent();
+    }
 
-    myProjects.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        ode.switchToProjectsView();
-      }
-    });
-
-    myProjects.setStyleName("ode-TopPanelButton");
-    links.add(myProjects);
-
-    // View Trash Link
-    TextButton viewTrash = new TextButton(MESSAGES.viewTrashTabName());
-    viewTrash.setStyleName("ode-TopPanelButton");
-    viewTrash.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        ode.switchToTrash();
-      }
-    });
-    links.add(viewTrash);
-
-    // Code on gallerydev branch
-    // Gallery Link
-    gallery = new TextButton(MESSAGES.tabNameGallery());
-    gallery.setStyleName("ode-TopPanelButton");
-    gallery.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        ode.switchToGalleryView();
-      }
-    });
-    links.add(gallery);
-
-    Config config = ode.getSystemConfig();
     String guideUrl = config.getGuideUrl();
     if (!Strings.isNullOrEmpty(guideUrl)) {
-      TextButton guideLink = new TextButton(MESSAGES.guideTabName());
       guideLink.addClickHandler(new WindowOpenClickHandler(guideUrl));
-      guideLink.setStyleName("ode-TopPanelButton");
-      links.add(guideLink);
+    } else {
+      guideLink.removeFromParent();
     }
 
     // Feedback Link
     String feedbackUrl = config.getFeedbackUrl();
     if (!Strings.isNullOrEmpty(feedbackUrl)) {
-      TextButton feedbackLink = new TextButton(MESSAGES.feedbackTabName());
-      feedbackLink.addClickHandler(
-        new WindowOpenClickHandler(feedbackUrl));
-      feedbackLink.setStyleName("ode-TopPanelButton");
-      links.add(feedbackLink);
+      feedbackLink.addClickHandler(new WindowOpenClickHandler(feedbackUrl));
+    } else {
+      feedbackLink.removeFromParent();
     }
 
-  /*
-  // Code on master branch
-    // Gallery Link
-    if (Ode.getInstance().getUser().getIsAdmin()) {
-      TextButton gallery = new TextButton(MESSAGES.galleryTabName());
-      gallery.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent clickEvent) {
-          Window.open("http://gallery.appinventor.mit.edu", "_blank", "scrollbars=1");
-        }
-      });
-
-      gallery.setStyleName("ode-TopPanelButton");
-      links.add(gallery);
-    }
-    */
-
-    moderation = new TextButton(MESSAGES.tabNameModeration());
-    moderation.setStyleName("ode-TopPanelButton");
-    moderation.addClickHandler(new ClickHandler() {
-    @Override
-      public void onClick(ClickEvent clickEvent) {
-        ode.switchToModerationPageView();
-      }
-    });
-    moderation.setVisible(false);
-    links.add(moderation);
-
-    // Create the Account Information
-    rightPanel = new VerticalPanel();
-    rightPanel.setHeight("100%");
-    rightPanel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
-
-    HorizontalPanel account = new HorizontalPanel();
-    account.setStyleName("ode-TopPanelAccount");
-
-    // Account Drop Down Button
-    List<DropDownItem> userItems = Lists.newArrayList();
-
-    // Sign Out
-    userItems.add(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
-
-    accountButton = new DropDownButton(WIDGET_NAME_USER, " " , userItems, true);
-    accountButton.setItemEnabled(WIDGET_NAME_MESSAGES, false);
-    accountButton.setStyleName("ode-TopPanelButton");
+    accountButton.addItem(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
 
     // Language
     List<DropDownItem> languageItems = Lists.newArrayList();
-    String[] localeNames = LocaleInfo.getAvailableLocaleNames();
-    String nativeName;
-    for (String localeName : localeNames) {
+    for (String localeName : LocaleInfo.getAvailableLocaleNames()) {
       if (!localeName.equals("default")) {
-        SelectLanguage lang = new SelectLanguage();
-        lang.setLocale(localeName);
-        nativeName = getDisplayName(localeName);
-        languageItems.add(new DropDownItem(WIDGET_NAME_LANGUAGE, nativeName, lang));
+        languageItems.add(new DropDownItem(WIDGET_NAME_LANGUAGE, getDisplayName(localeName),
+            new SelectLanguage(localeName)));
       }
     }
-    String currentLang = LocaleInfo.getCurrentLocale().getLocaleName();
-    String nativeDisplayName = getDisplayName(currentLang);
-    languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, nativeDisplayName, languageItems, true);
-    languageDropDown.setStyleName("ode-TopPanelButton");
+    languageDropDown.setItems(languageItems);
+    languageDropDown.setCaption(getDisplayName(LocaleInfo.getCurrentLocale().getLocaleName()));
+  }
 
-    account.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
-    account.add(links);
-    account.add(languageDropDown);
-    account.add(accountButton);
+  @UiFactory
+  public OdeMessages getMessages() {
+    return MESSAGES;
+  }
 
-    rightPanel.add(account);
+  public TopToolbar getTopToolbar() {
+    return topToolbar;
+  }
 
-    // Add the Logo, Tools, Links to the TopPanel
-    addLogo(topPanel);
-    topPanel.add(tools);
-    topPanel.add(rightPanel);
-    topPanel.setCellVerticalAlignment(rightPanel, HorizontalPanel.ALIGN_MIDDLE);
-    rightPanel.setCellHorizontalAlignment(account, HorizontalPanel.ALIGN_RIGHT);
-    topPanel.setCellHorizontalAlignment(rightPanel, HorizontalPanel.ALIGN_RIGHT);
+  @SuppressWarnings("unused")
+  @UiHandler("myProjects")
+  public void switchToMyProjects(ClickEvent e) {
+    ode.switchToProjectsView();
+  }
 
-    initWidget(topPanel);
+  @SuppressWarnings("unused")
+  @UiHandler("viewTrash")
+  public void switchToTrash(ClickEvent e) {
+    ode.switchToTrash();
+  }
 
-    setStyleName("ode-TopPanel");
-    setWidth("100%");
+  @SuppressWarnings("unused")
+  @UiHandler("gallery")
+  public void switchToGallery(ClickEvent e) {
+    ode.switchToGalleryView();
+  }
+
+  @SuppressWarnings("unused")
+  @UiHandler("moderation")
+  public void switchToModeration(ClickEvent e) {
+    ode.switchToModerationPageView();
   }
 
   private String getDisplayName(String localeName){
@@ -279,33 +197,11 @@ public class TopPanel extends Composite {
 
     // Gallery Items
     // (1)Private User Profile
-    accountButton.addItem(new DropDownItem(WIDGET_NAME_PRIVATE_USER_PROFILE, MESSAGES.privateProfileLink(), new PrivateProfileAction()));
+    accountButton.addItem(new DropDownItem("Profile",
+        MESSAGES.privateProfileLink(), new PrivateProfileAction()));
     // (2)Sign Out
-    accountButton.addItem(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
-  }
-
-  private void addLogo(HorizontalPanel panel) {
-    // Logo is a link to App Inv homepage. Add timestamp to logo url
-    // to get around browsers that agressively cache the image! This
-    // same trick is used in StorageUtil.getFilePath().
-    Image logo = new Image(LOGO_IMAGE_URL + "?t=" + System.currentTimeMillis());
-    logo.setSize("180px", "40px");
-    logo.setStyleName("ode-Logo");
-    String logoUrl = ode.getSystemConfig().getLogoUrl();
-    if (!Strings.isNullOrEmpty(logoUrl)) {
-      logo.addClickHandler(new WindowOpenClickHandler(logoUrl));
-    }
-    panel.add(logo);
-    panel.setCellWidth(logo, "230px");
-    panel.setCellHorizontalAlignment(logo, HorizontalPanel.ALIGN_LEFT);
-    panel.setCellVerticalAlignment(logo, HorizontalPanel.ALIGN_MIDDLE);
-  }
-
-  private void addMotd(VerticalPanel panel) {
-    MotdBox motdBox = MotdBox.getMotdBox();
-    panel.add(motdBox);
-    panel.setCellHorizontalAlignment(motdBox, HorizontalPanel.ALIGN_RIGHT);
-    panel.setCellVerticalAlignment(motdBox, HorizontalPanel.ALIGN_BOTTOM);
+    accountButton.addItem(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(),
+        new SignOutAction()));
   }
 
   /**
@@ -335,7 +231,7 @@ public class TopPanel extends Composite {
    * Adds the MOTD box to the right panel. This should only be called once.
    */
   public void showMotd() {
-    addMotd(rightPanel);
+    rightPanel.add(MotdBox.getMotdBox());
   }
 
   private static class WindowOpenClickHandler implements ClickHandler {
@@ -364,9 +260,13 @@ public class TopPanel extends Composite {
     }
   }
 
-  private class SelectLanguage implements Command {
+  private static class SelectLanguage implements Command {
 
     private String localeName;
+
+    public SelectLanguage(String localeName) {
+      this.localeName = localeName;
+    }
 
     @Override
     public void execute() {
@@ -389,7 +289,7 @@ public class TopPanel extends Composite {
 
   }
 
-  private class SaveAction implements Command {
+  private static class SaveAction implements Command {
     @Override
     public void execute() {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();

@@ -39,6 +39,7 @@ public class ViewerBox extends Box {
         600,    // height
         false,  // minimizable
         false); // removable
+    addStyleName("ViewerBox");
   }
 
   /**

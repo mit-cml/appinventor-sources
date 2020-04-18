@@ -1,0 +1,153 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
+             xmlns:yaactions="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+
+  <g:FlowPanel styleName="ode-TopToolbar">
+    <!-- Projects Menu -->
+    <ai:DropDownButton name="Project" caption="{messages.projectsTabName}"
+                       styleName="ode-TopPanelButton" ui:field="fileDropDown">
+      <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}">
+        <actions:SwitchToProjectAction />
+      </ai:DropDownItem>
+      <hr />
+      <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}">
+        <actions:NewAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}">
+        <actions:ImportProjectAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}">
+        <actions:ImportTemplateAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}">
+        <actions:DeleteAction />
+      </ai:DropDownItem>
+      <hr />
+      <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}">
+        <actions:SaveAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}">
+        <actions:SaveAsAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}">
+        <actions:CheckpointAction />
+      </ai:DropDownItem>
+      <hr />
+      <ai:DropDownItem name="ExportProject" caption="{messages.exportProjectMenuItem}">
+        <actions:ExportProjectAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="ExportAllProjects" caption="{messages.exportAllProjectsMenuItem}">
+        <actions:ExportAllProjectsAction />
+      </ai:DropDownItem>
+      <hr />
+      <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}">
+        <actions:UploadKeystoreAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="DownloadKeystore" caption="{messages.downloadKeystoreMenuItem}">
+        <actions:DownloadKeystoreAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}">
+        <actions:DeleteKeystoreAction />
+      </ai:DropDownItem>
+    </ai:DropDownButton>
+
+    <!-- Connect Menu -->
+    <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}"
+                       styleName="ode-TopPanelButton" ui:field="connectDropDown">
+      <ai:DropDownItem name="Wireless" caption="{messages.AICompanionMenuItem}">
+        <yaactions:WirelessAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Emulator" caption="{messages.emulatorMenuItem}">
+        <yaactions:EmulatorAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}">
+        <yaactions:UsbAction />
+      </ai:DropDownItem>
+      <hr />
+      <ai:DropDownItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
+        <yaactions:RefreshCompanionAction />
+      </ai:DropDownItem>
+      <hr />
+      <ai:DropDownItem name="Reset" caption="{messages.resetConnectionsMenuItem}">
+        <yaactions:ResetAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="HardReset" caption="{messages.hardResetConnectionsMenuItem}">
+        <yaactions:HardResetAction />
+      </ai:DropDownItem>
+    </ai:DropDownButton>
+
+    <!-- Build Menu -->
+    <ai:DropDownButton name="Build" caption="{messages.buildTabName}"
+                       styleName="ode-TopPanelButton" ui:field="buildDropDown">
+      <ai:DropDownItem name="Barcode" caption="{messages.showBarcodeMenuItem}">
+        <actions:BarcodeAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Download" caption="{messages.downloadToComputerMenuItem}">
+        <actions:DownloadAction />
+      </ai:DropDownItem>
+      <hr />
+      <ai:DropDownItem name="Barcode2" caption="{messages.showBarcodeMenuItem2}">
+        <actions:BarcodeAction second="true" />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Download2" caption="{messages.downloadToComputerMenuItem2}">
+        <actions:DownloadAction second="true" />
+      </ai:DropDownItem>
+      <hr />
+      <ai:DropDownItem name="Yail" caption="{messages.generateYailMenuItem}">
+        <actions:GenerateYailAction />
+      </ai:DropDownItem>
+    </ai:DropDownButton>
+
+    <!-- Settings Menu -->
+    <ai:DropDownButton name="Settings" caption="{messages.settingsTabName}"
+                       styleName="ode-TopPanelButton" ui:field="settingsDropDown">
+      <ai:DropDownItem name="AutoloadLastProject" caption="{messages.disableAutoload}">
+        <actions:DisableAutoloadAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="DyslexicFont" caption="{messages.disableOpenDyslexic}">
+        <actions:SetFontRegularAction />
+      </ai:DropDownItem>
+    </ai:DropDownButton>
+
+    <!-- Help Menu -->
+    <ai:DropDownButton name="Help" caption="{messages.helpTabName}"
+                       styleName="ode-TopPanelButton" ui:field="helpDropDown">
+      <ai:DropDownItem name="About" caption="{messages.aboutMenuItem}">
+        <actions:AboutAction />
+      </ai:DropDownItem>
+      <hr />
+      <ai:DropDownItem name="Library" caption="{messages.libraryMenuItem}" />
+      <ai:DropDownItem name="GetStarted" caption="{messages.getStartedMenuItem}" />
+      <ai:DropDownItem name="Extensions" caption="{messages.extensionsMenuItem}" />
+      <ai:DropDownItem name="Tutorials" caption="{messages.tutorialsMenuItem}" />
+      <ai:DropDownItem name="Troubleshooting" caption="{messages.troubleshootingMenuItem}" />
+      <ai:DropDownItem name="Forums" caption="{messages.forumsMenuItem}" />
+      <hr />
+      <ai:DropDownItem name="ReportIssue" caption="{messages.feedbackMenuItem}" />
+      <hr />
+      <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}" />
+      <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}" />
+      <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" />
+    </ai:DropDownButton>
+
+    <!-- Admin Menu -->
+    <ai:DropDownButton name="Admin" caption="{messages.adminTabName}"
+                       styleName="ode-TopPanelButton" ui:field="adminDropDown">
+      <ai:DropDownItem name="DownloadUserSource" caption="{messages.downloadUserSourceMenuItem}">
+        <actions:DownloadUserSourceAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="SwitchToDebugPane" caption="{messages.switchToDebugMenuItem}">
+        <actions:SwitchToDebugAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="UserAdmin" caption="{messages.userAdminMenuItem}">
+        <actions:SwitchToUserAdminAction />
+      </ai:DropDownItem>
+    </ai:DropDownButton>
+  </g:FlowPanel>
+</ui:UiBinder>

@@ -11,11 +11,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -208,7 +204,7 @@ public class Toolbar extends Composite {
    *        addded
    * @param rightAlign button should be right aligned in toolbar
    */
-  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items,
+  protected void addDropDownButton(String dropDownName, String caption, List<DropDownItem> items,
       final boolean rightAlign) {
     final DropDownButton button = new DropDownButton(dropDownName, caption,
         items, rightAlign);
@@ -228,7 +224,7 @@ public class Toolbar extends Composite {
    * @param rightAlign button should be right aligned in toolbar
    * @param top special style if button is added to the topPanel
    */
-  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items,
+  protected void addDropDownButton(String dropDownName, String caption, List<DropDownItem> items,
       final boolean rightAlign, final boolean top) {
     final DropDownButton button = new DropDownButton(dropDownName, caption,
         items, rightAlign);
@@ -247,7 +243,7 @@ public class Toolbar extends Composite {
    * @param dropDownName name used for internal map
    * @param item item to add to drop down
    */
-  protected void addDropDownButtonItem(String dropDownName, DropDownButton.DropDownItem item) {
+  protected void addDropDownButtonItem(String dropDownName, DropDownItem item) {
     final DropDownButton button = dropDownButtonMap.get(dropDownName);
     if (button != null && item != null) {
       button.addItem(item);
@@ -284,7 +280,7 @@ public class Toolbar extends Composite {
    * @param caption name of button
    * @param items list of items to add to drop down
    */
-  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items) {
+  protected void addDropDownButton(String dropDownName, String caption, List<DropDownItem> items) {
     addDropDownButton(dropDownName, caption, items, false);
   }
 

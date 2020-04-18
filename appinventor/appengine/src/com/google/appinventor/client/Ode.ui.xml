@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ed="urn:import:com.google.appinventor.client.editor.youngandroid"
+             xmlns:ex="urn:import:com.google.appinventor.client.explorer.youngandroid"
+             xmlns:ode="urn:import:com.google.appinventor.client"
+             xmlns:box="urn:import:com.google.appinventor.client.boxes"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <g:FlowPanel styleName="ode-Root">
+    <ode:TopPanel ui:field="topPanel" />
+    <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">
+      <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
+      <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
+        <g:FlowPanel styleName="ode-ProjectListView" width="100%" ui:field="projectPanel">
+          <ex:ProjectToolbar width="100%" ui:field="projectToolbar" />
+          <box:ProjectListBox width="100%" />
+        </g:FlowPanel>
+        <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
+          <ode:DesignToolbar ui:field="designToolbar" />
+          <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
+            <box:PaletteBox width="240px" />
+            <box:ViewerBox />
+            <g:FlowPanel ui:field="structureAndAssets">
+              <box:SourceStructureBox />
+              <box:BlockSelectorBox />
+              <box:AssetListBox />
+            </g:FlowPanel>
+            <box:PropertiesBox width="222px" />
+          </g:FlowPanel>
+        </g:FlowPanel>
+        <g:FlowPanel width="100%">
+          <box:AdminUserListBox />
+        </g:FlowPanel>
+      </g:DeckPanel>
+    </g:FlowPanel>
+    <ode:StatusPanel ui:field="statusPanel" />
+  </g:FlowPanel>
+</ui:UiBinder>

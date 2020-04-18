@@ -6,12 +6,16 @@
 
 package com.google.appinventor.client;
 
-import com.google.common.base.Strings;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.common.base.Strings;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 
 /**
@@ -19,30 +23,29 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  */
 public class StatusPanel extends Composite {
+
+  interface StatusPanelUiBinder extends UiBinder<FlowPanel, StatusPanel> {}
+  private static final StatusPanelUiBinder UI_BINDER = GWT.create(StatusPanelUiBinder.class);
+
+  @UiField(provided = true) FlowPanel footer = new FlowPanel("footer");
+  @UiField Anchor tosLink;
+
   /**
    * Initializes and assembles all UI elements shown in the status panel.
    */
   public StatusPanel() {
-    HorizontalPanel hpanel = new HorizontalPanel();
-    hpanel.setWidth("100%");
-    hpanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    String tosUrl = Ode.getInstance().getSystemConfig().getTosUrl();
+    initWidget(UI_BINDER.createAndBindUi(this));
+
+    String tosUrl = Ode.getSystemConfig().getTosUrl();
     if (!Strings.isNullOrEmpty(tosUrl)) {
-      String appInventorFooter =
-          "<a href=\"" + tosUrl + "\" target=\"_blank\">" + MESSAGES.privacyTermsLink() + "</a>";
-      hpanel.add(new HTML(appInventorFooter));
+      tosLink.setHref(tosUrl);
+    } else {
+      tosLink.removeFromParent();
     }
+  }
 
-    // This shows the git version and the date of the build
-//    String version = GitBuildId.getVersion();
-//    String date = GitBuildId.getDate();
-//    if (version != null && date != null) {
-//      Label buildId = new Label(MESSAGES.gitBuildId(date, version));
-//      hpanel.add(buildId);
-//      hpanel.setCellHorizontalAlignment(buildId, HorizontalPanel.ALIGN_RIGHT);
-//    }
-
-    initWidget(hpanel);
-    setStyleName("ode-StatusPanel");
+  @UiFactory
+  public OdeMessages getMessages() {
+    return MESSAGES;
   }
 }

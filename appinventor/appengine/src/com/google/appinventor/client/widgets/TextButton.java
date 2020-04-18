@@ -15,6 +15,12 @@ import com.google.gwt.user.client.ui.Image;
  * @author lizlooney@google.com (Liz Looney)
  */
 public class TextButton extends PushButton {
+
+  public TextButton() {
+    super();
+    setStylePrimaryName("ode-TextButton");
+  }
+
   public TextButton(String caption) {
     super(caption);
     setStylePrimaryName("ode-TextButton");

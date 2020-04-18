@@ -7,9 +7,9 @@
 package com.google.appinventor.client.widgets.properties;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-import static com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 
 import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 

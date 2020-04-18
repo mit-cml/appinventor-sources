@@ -8,7 +8,7 @@ package com.google.appinventor.client.widgets.properties;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.DropDownButton;
-import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;

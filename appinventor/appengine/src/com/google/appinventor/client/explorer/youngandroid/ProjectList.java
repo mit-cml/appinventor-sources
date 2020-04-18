@@ -38,8 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 /**
  * The project list shows all projects in a table.
  *
