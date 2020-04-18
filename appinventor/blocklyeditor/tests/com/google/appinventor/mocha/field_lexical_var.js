@@ -472,4 +472,60 @@ suite ('FieldLexical', function() {
       ]);
     });
   })
+  suite('prefixSuffix', function() {
+    test('No Suffix', function() {
+      var prefixSuffix = Blockly.FieldLexicalVariable.prefixSuffix('name');
+      chai.assert.sameDeepOrderedMembers(prefixSuffix, ['name', '']);
+    });
+    test('Digit Suffix', function() {
+      var prefixSuffix = Blockly.FieldLexicalVariable.prefixSuffix('name1');
+      chai.assert.sameDeepOrderedMembers(prefixSuffix, ['name', '1']);
+    }); 
+    test('Letter Following Digit', function() {
+      var prefixSuffix = Blockly.FieldLexicalVariable.prefixSuffix('name1a');
+      chai.assert.sameDeepOrderedMembers(prefixSuffix, ['name1a', '']);
+    }); 
+  });
+  suite('nameNotIn', function() {
+    test('No Conflict', function() {
+      var newName = Blockly.FieldLexicalVariable
+          .nameNotIn('foo', ['bar', 'cat', 'pupper']);
+      chai.assert.equal(newName, 'foo');
+    });
+    test('Empty Not Used', function() {
+      var newName = Blockly.FieldLexicalVariable
+          .nameNotIn('foo', ['foo1', 'foo2', 'foo3']);
+      chai.assert.equal(newName, 'foo');
+    });
+    test('Empty & 0', function() {
+      var newName = Blockly.FieldLexicalVariable
+          .nameNotIn('foo', ['foo', 'foo0']);
+      chai.assert.equal(newName, 'foo2');
+    });
+    test('Empty & 1', function() {
+      var newName = Blockly.FieldLexicalVariable
+          .nameNotIn('foo', ['foo', 'foo1']);
+      chai.assert.equal(newName, 'foo2');
+    });
+    test('Empty & 2', function() {
+      var newName = Blockly.FieldLexicalVariable
+          .nameNotIn('foo', ['foo', 'foo2']);
+      chai.assert.equal(newName, 'foo3');
+    });
+    test('Empty, 2 & 4', function() {
+      var newName = Blockly.FieldLexicalVariable
+          .nameNotIn('foo', ['foo', 'foo2', 'foo4']);
+      chai.assert.equal(newName, 'foo3');
+    });
+    test('Empty, 2, 3 & 4', function() {
+      var newName = Blockly.FieldLexicalVariable
+          .nameNotIn('foo', ['foo', 'foo2', 'foo3', 'foo4']);
+      chai.assert.equal(newName, 'foo5');
+    });
+    test('Extra vars', function() {
+      var newName = Blockly.FieldLexicalVariable
+          .nameNotIn('foo', ['foo', 'foo2', 'foo', 'foo4', 'bar3', 'cats']);
+      chai.assert.equal(newName, 'foo3');
+    });
+  });
 })

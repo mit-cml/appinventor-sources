@@ -391,21 +391,24 @@ Blockly.FieldLexicalVariable.dropdownChange = function(text) {
     this.setValue(text);
     this.sourceBlock_.getTopWorkspace().getWarningHandler().checkErrors(this.sourceBlock_);
   }
+  // TODO: Track this down and hopefully get rid of it.
   // window.setTimeout(Blockly.Variables.refreshFlyoutCategory, 1);
 };
 
 
-// [lyn, 11/18/12]
 /**
- * Possibly add a digit to name to disintguish it from names in list.
- * Used to guarantee that two names aren't the same in situations that prohibit this.
+ * Possibly adds a digit to given name to disintguish it from names in list.
+ * Used to guarantee that two names aren't the same in situations that prohibit
+ * this.
  * @param {string} name Proposed name.
- * @param {string list} nameList List of names with which name can't conflict
+ * @param {!Array<string>} nameList List of names with which name can't conflict
  * @return {string} Non-colliding name.
  */
+// TODO: What we be something good to rename this to?
 Blockly.FieldLexicalVariable.nameNotIn = function(name, nameList) {
-  // First find the nonempty digit suffixes of all names in nameList that have the same prefix as name
-  // e.g. for name "foo3" and nameList = ["foo", "bar4", "foo17", "bar" "foo5"]
+  // First find the nonempty digit suffixes of all names in nameList that have
+  // the same prefix as name.
+  // E.g. for name "foo3" and nameList = ["foo", "bar4", "foo17", "bar" "foo5"]
   // suffixes is ["17", "5"]
   var namePrefixSuffix = Blockly.FieldLexicalVariable.prefixSuffix(name);
   var namePrefix = namePrefixSuffix[0];
@@ -413,6 +416,8 @@ Blockly.FieldLexicalVariable.nameNotIn = function(name, nameList) {
   var emptySuffixUsed = false; // Tracks whether "" is a suffix.
   var isConflict = false; // Tracks whether nameSuffix is used
   var suffixes = [];
+
+  // TODO: Try switching to double equals == They're faster.
   for (var i = 0; i < nameList.length; i++) {
     var prefixSuffix = Blockly.FieldLexicalVariable.prefixSuffix(nameList[i]);
     var prefix = prefixSuffix[0];
@@ -428,19 +433,23 @@ Blockly.FieldLexicalVariable.nameNotIn = function(name, nameList) {
       }
     }
   }
-  if (! isConflict) {
-    // There is no conflict; just return name
+
+  if (!isConflict) {
     return name;
-  } else if (! emptySuffixUsed) {
-    // There is a conflict, but empty suffix not used, so use that
+  } else if (!emptySuffixUsed) {
+    // There is a conflict, but empty suffix not used, so use that.
     return namePrefix;
   } else {
     // There is a possible conflict and empty suffix is not an option.
     // First sort the suffixes as numbers from low to high
-    var suffixesAsNumbers = suffixes.map( function (elt, i, arr) { return parseInt(elt,10); } )
+    var suffixesAsNumbers = suffixes.map(function (elt, i, arr) {
+      return parseInt(elt,10);
+    })
     suffixesAsNumbers.sort( function(a,b) { return a-b; } );
-    // Now find smallest number >= 2 that is unused
-    var smallest = 2; // Don't allow 0 or 1 an indices
+
+    // TODO: Is there a different loop method we could use that is more intuitive?
+    // Don't allow 0 or 1 an indices
+    var smallest = 2;
     var index = 0;
     while (index < suffixesAsNumbers.length) {
       if (smallest < suffixesAsNumbers[index]) {
@@ -452,23 +461,26 @@ Blockly.FieldLexicalVariable.nameNotIn = function(name, nameList) {
         index++;
       }
     }
+    // TODO: Better comment.
     // Only get here if exit loop
     return namePrefix + smallest;
   }
 };
 
 /**
- * Split name into digit suffix and prefix before it.
- * Return two-element list of prefix and suffix strings. Suffix is empty if no digits.
- * @param {string} name Input string
- * @return {string list} Two-element list of prefix and suffix
+ * Splits the name into the prefix (actual text) and suffix (trailing digits).
+ * @param {string} name Input string.
+ * @return {!Array<string>} Tuple of prefix and suffix. Suffix is empty if there
+ *     are no trailing digits.
  */
 Blockly.FieldLexicalVariable.prefixSuffix = function(name) {
+  // TODO: Remove these unused vars.
   var prefix = name;
   var suffix = "";
   var matchResult = name.match(/^(.*?)(\d+)$/);
+  // TODO: Use brackets.
   if (matchResult)
-    return [matchResult[1], matchResult[2]]; // List of prefix and suffix
+    return [matchResult[1], matchResult[2]];
   else
     return [name, ""];
 }
