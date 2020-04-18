@@ -528,4 +528,10 @@ suite ('FieldLexical', function() {
       chai.assert.equal(newName, 'foo3');
     });
   });
-})
+  suite('setValue', function() {
+    test('Global Prefix Incorrect', function() {
+      var field = new Blockly.FieldLexicalVariable('notGlobal actualName');
+      chai.assert.equal(field.getText(), 'global actualName');
+    });
+  });
+});

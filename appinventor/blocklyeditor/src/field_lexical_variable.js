@@ -75,17 +75,21 @@ Blockly.FieldLexicalVariable = function(varname) {
 goog.inherits(Blockly.FieldLexicalVariable, Blockly.FieldDropdown);
 
 /**
- * Set the variable name.
+ * Sets the variable name.
  * @param {string} text New text.
  */
 Blockly.FieldLexicalVariable.prototype.setValue = function(text) {
-  // Fix for issue #1901. If the variable name contains a space separating two words, and the first
-  // isn't "global", then replace the first word with global. This fixes an issue where the
-  // translated "global" keyword was being stored instead of the English keyword, resulting in
-  // errors when moving between languages in the App Inventor UI.
-  // NB: This makes an assumption that we won't allow for multi-word variables in the future. Right
-  // now variables identifiers still need to be a sequence of non-whitespace characters, so only
-  // global variables will split on a space.
+  // TODO: Could we change this to point to the relevant PR and issue?
+
+  // Fix for issue #1901. If the variable name contains a space separating two
+  // words, and the first isn't "global", then replace the first word with
+  // global. This fixes an issue where the translated "global" keyword was being
+  // stored instead of the English keyword, resulting in errors when moving
+  // between languages in the App Inventor UI.
+  // NB: This makes an assumption that we won't allow for multi-word variables
+  // in the future. Right now variables identifiers still need to be a sequence
+  // of non-whitespace characters, so only global variables will split on a
+  // space.
   if (text && text !== ' ') {
     var parts = text.split(' ');
     if (parts.length == 2 && parts[0] !== 'global') {
