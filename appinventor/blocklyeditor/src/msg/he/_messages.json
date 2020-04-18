@@ -340,5 +340,7 @@
     "Blockly.Msg.LANG_MATH_ARITHMETIC_POWER": "^",
     "Blockly.Msg.LANG_MATH_ARITHMETIC_DIVIDE": "/",
     "Blockly.Msg.LANG_MATH_ARITHMETIC_MULTIPLY": "*",
-    "Blockly.Msg.LANG_MATH_ARITHMETIC_MINUS": "-"
+    "Blockly.Msg.LANG_MATH_ARITHMETIC_MINUS": "-",
+    "Blockly.Msg.DIALOG_SUBMIT": "שלח",
+    "Blockly.Msg.DIALOG_ENTER_VALUES": "הקלד ערך עבור:"
 }
