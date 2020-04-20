@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -19,6 +20,7 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -137,6 +139,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     SelectionIndex(0);
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
+    view.setOnItemSelectedListener(this);
     view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
@@ -411,6 +414,21 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
     updateAdapter();
     AfterPicking();
+  }
+
+  /**
+   * Simple event to raise when the component is selected. Implementation of
+   * AdapterView.OnItemSelectedListener.
+   */
+  @Override
+  public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+    // Defer to item click
+    onItemClick(adapterView, view, i, l);
+  }
+
+  @Override
+  public void onNothingSelected(AdapterView<?> adapterView) {
+
   }
 
   /**

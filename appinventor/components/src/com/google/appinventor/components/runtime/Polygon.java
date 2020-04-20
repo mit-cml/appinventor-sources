@@ -112,6 +112,7 @@ public class Polygon extends PolygonBase implements MapPolygon {
     clearGeometry();
     map.getController().updateFeaturePosition(this);
     map.getController().updateFeatureHoles(this);
+    map.getController().updateFeatureText(this);
   }
 
   @Override

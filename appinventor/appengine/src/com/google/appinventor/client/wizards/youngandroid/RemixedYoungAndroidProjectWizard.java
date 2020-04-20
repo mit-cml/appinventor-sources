@@ -68,7 +68,7 @@ public final class RemixedYoungAndroidProjectWizard extends NewProjectWizard { /
     initFinishCommand(new Command() {
       @Override
       public void execute() {
-        String projectName = projectNameTextBox.getText();
+        String projectName = projectNameTextBox.getText().trim();
         final PopupPanel popup = new PopupPanel(true);
         final FlowPanel content = new FlowPanel();
         popup.setWidget(content);
@@ -77,7 +77,7 @@ public final class RemixedYoungAndroidProjectWizard extends NewProjectWizard { /
         // loading indicator will be hided or forced to be hided in gallery.loadSourceFile
         content.add(loading);
         popup.center();
-        boolean success = gallery.loadSourceFile(app, projectNameTextBox.getText(), popup);
+        boolean success = gallery.loadSourceFile(app, projectNameTextBox.getText().trim(), popup);
         if(success){
           gallery.appWasDownloaded(app.getGalleryAppId(), app.getDeveloperId());
         }

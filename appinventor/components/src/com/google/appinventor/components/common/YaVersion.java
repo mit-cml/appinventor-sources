@@ -501,8 +501,17 @@ public class YaVersion {
   // - CANVAS_COMPONENT_VERSION was incremented to 13
   // For YOUNG_ANDROID_VERSION 202:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 30
+  // For YOUNG_ANDROID_VERSION 203:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 9
+  // For YOUNG_ANDROID_VERSION 204:
+  // - NAVIGATION_COMPONENT_VERSION was initialized to 1
+  // - SERIAL_COMPONENT_VERSION was initialized to 1
+  // For YOUNG_ANDROID_VERSION 205:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 31
+  // For YOUNG_ANDROID_VERSION 206:
+  // - YANDEX_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 202;
+  public static final int YOUNG_ANDROID_VERSION = 206;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -580,8 +589,10 @@ public class YaVersion {
   // - The for-each-in-dictionary block was added.
   // For BLOCKS_LANGUAGE_VERSION 30:
   // - The Reverse Text block was added
+  // For BLOCKS_LANGUAGE_VERSION 31
+  // - The replace-all-mappings block was added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 30;
+  public static final int BLOCKS_LANGUAGE_VERSION = 31;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -675,7 +686,9 @@ public class YaVersion {
   // - The BluetoothClient.DelimiterByte property was added.
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 5:
   // - The BluetoothClient.Secure property was added.
-  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 5;
+  // For BLUETOOTHCLIENT_COMPONENT_VERSION 6:
+  // - The BluetoothClient.DisconnectOnError property was added.
+  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 6;
 
   // For BLUETOOTHSERVER_COMPONENT_VERSION 2:
   // - The BluetoothServer.Enabled property was added.
@@ -1001,6 +1014,10 @@ public class YaVersion {
   // - Added fill and stroke opacity properties
   public static final int MARKER_COMPONENT_VERSION = 3;
 
+  // For NAVIGATION_COMPONENT_VERSION 1:
+  // - Initial Navigation implementation
+  public static final int NAVIGATION_COMPONENT_VERSION = 1;
+
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;
 
@@ -1305,7 +1322,13 @@ public class YaVersion {
   // - Added WebViewStringChange event
   //For WEBVIEWER_COMPONENT_VERSION 8:
   // - Added PageLoaded event
-  public static final int WEBVIEWER_COMPONENT_VERSION = 8;
+  // For WEBVIEWER_COMPONENT_VERSION 9:
+  // - Added BeforePageLoad event
+  // - Added Stop, Reload, and ClearCookies methods
+  // For WEBVIEWER_COMPONENT_VERSION 10:
+  // - Added ErrorOccurred event
+  // - Added RunJavaScript method
+  public static final int WEBVIEWER_COMPONENT_VERSION = 10;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.
@@ -1313,10 +1336,18 @@ public class YaVersion {
 
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.
-  public static final int YANDEX_COMPONENT_VERSION = 1;
+  // For YANDEX_COMPONENT_VERSION 2:
+  // - Added ApiKey property
+  public static final int YANDEX_COMPONENT_VERSION = 2;
 
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
+
+  //For SERIAL_COMPONENT_VERSION: Initial Version
+  public static final int SERIAL_COMPONENT_VERSION = 1;
+
+  //For MAGNETICFIELDSENSOR_COMPONENT_VERSION: Initial Version
+  public static final int MAGNETICFIELDSENSOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";
@@ -1362,11 +1393,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.57b";
+  public static final String PREFERRED_COMPANION = "2.58a";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.57b", "2.57bu" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.58a", "2.58au" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

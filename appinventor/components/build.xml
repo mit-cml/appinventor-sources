@@ -151,6 +151,7 @@
     <copy toFile="${public.deps.dir}/commons-pool.jar" file="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
     <copy toFile="${public.deps.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${public.deps.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
+    <copy toFile="${public.deps.dir}/physicaloid.jar" file="${lib.dir}/physicaloid/physicaloid-library.jar" />
     <!-- BEGIN Android Support Libraries -->
     <copy todir="${public.deps.dir}/">
       <fileset dir="${support.dir}/" includes="*.aar,*.jar" excludes="testing-support-R-classes.jar" />
@@ -442,6 +443,9 @@
          basedir="${ExternalComponent-class.dir}/${extensionClassFolder}"
          includes="**/*.class"
          excludes="*.jar" />
+    <antcall target="ProGuard">
+      <param name="extensionClassFolder" value="${extensionClassFolder}" />
+    </antcall>
     <copy file="${ExternalComponent-class.dir}/${extensionClassFolder}.jar"
           tofile="${ExternalComponent.dir}/${extensionClassFolder}/files/AndroidRuntime.jar"/>
     <echo>Generated build file AndroidRuntime.jar [${extensionClassFolder}]</echo>
@@ -485,7 +489,6 @@
          basedir="${ExternalComponent.dir}"
          includes="${extensionType}/"
     />
-
   </target>
 
   <target name="extensions" depends="ExternalComponentGenerator, jarAllExtensions, dexAllExtensions">
@@ -499,4 +502,103 @@
     </foreach>
   </target>
 
+
+  <!-- =====================================================================
+      ProGuard: obfuscates and minifies the AndroidRuntime.jar file, containing
+                the extensions source code. Only runs if the task has been called
+                like "ant extensions -Dproguard=1".
+       ===================================================================== -->
+
+  <condition property="skipProguard">
+    <not>
+      <equals arg1="${proguard}" arg2="1" />
+    </not>
+  </condition>
+
+  <target name="ProGuard" unless="skipProguard">
+    <taskdef resource="proguard/ant/task.properties"
+             classpath="${lib.dir}/proguard/proguard.jar" />
+    <proguard printmapping="${public.build.dir}/proguard.map"
+              overloadaggressively="on"
+              configuration="${lib.dir}/proguard/proguard.cfg"
+              ignorewarnings="false">
+
+      <injar  file="${ExternalComponent-class.dir}/${extensionClassFolder}.jar" />
+      <outjar file="${ExternalComponent-class.dir}/${extensionClassFolder}_p.jar" />
+
+      <!-- FOR DEVELOPER: Add the needed libraries for your extension right here
+                          like the ones above, just after copying them to the deps
+                          directory.
+      <libraryjar file="${public.deps.dir}/my-awesome-library.jar" /> -->
+      <!-- Core libraries -->
+      <libraryjar file="${public.deps.dir}/http-legacy.jar" />
+      <libraryjar file="${public.deps.dir}/android.jar" />
+      <libraryjar file="${public.deps.dir}/CommonVersion.jar" />
+      <!-- Android Support -->
+      <libraryjar file="${public.deps.dir}/animated-vector-drawable.jar" />
+      <libraryjar file="${public.deps.dir}/appcompat-v7.jar" />
+      <libraryjar file="${public.deps.dir}/asynclayoutinflater.jar" />
+      <libraryjar file="${public.deps.dir}/collections.jar" />
+      <libraryjar file="${public.deps.dir}/common.jar" />
+      <libraryjar file="${public.deps.dir}/constraint-layout.jar" />
+      <libraryjar file="${public.deps.dir}/constraint-layout-solver.jar" />
+      <libraryjar file="${public.deps.dir}/coordinatorlayout.jar" />
+      <libraryjar file="${public.deps.dir}/cursoradapter.jar" />
+      <libraryjar file="${public.deps.dir}/customview.jar" />
+      <libraryjar file="${public.deps.dir}/documentfile.jar" />
+      <libraryjar file="${public.deps.dir}/drawerlayout.jar" />
+      <libraryjar file="${public.deps.dir}/interpolator.jar" />
+      <libraryjar file="${public.deps.dir}/lifecycle-common.jar" />
+      <libraryjar file="${public.deps.dir}/livedata.jar" />
+      <libraryjar file="${public.deps.dir}/livedata-core.jar" />
+      <libraryjar file="${public.deps.dir}/loader.jar" />
+      <libraryjar file="${public.deps.dir}/localbroadcastmanager.jar" />
+      <libraryjar file="${public.deps.dir}/print.jar" />
+      <libraryjar file="${public.deps.dir}/runtime.jar" />
+      <libraryjar file="${public.deps.dir}/slidingpanelayout.jar" />
+      <libraryjar file="${public.deps.dir}/support-annotations.jar" />
+      <libraryjar file="${public.deps.dir}/support-compat.jar" />
+      <libraryjar file="${public.deps.dir}/support-core-ui.jar" />
+      <libraryjar file="${public.deps.dir}/support-core-utils.jar" />
+      <libraryjar file="${public.deps.dir}/support-fragment.jar" />
+      <libraryjar file="${public.deps.dir}/support-vector-drawable.jar" />
+      <libraryjar file="${public.deps.dir}/swiperefreshlayout.jar" />
+      <libraryjar file="${public.deps.dir}/versionedparcelable.jar" />
+      <libraryjar file="${public.deps.dir}/viewmodel.jar" />
+      <libraryjar file="${public.deps.dir}/viewpager.jar" />
+      <!-- Components Libraries -->
+      <libraryjar file="${public.deps.dir}/osmdroid.jar" />
+      <libraryjar file="${public.deps.dir}/webrtc.jar" />
+      <libraryjar file="${public.deps.dir}/jts.jar" />
+      <libraryjar file="${public.deps.dir}/androidsvg.jar" />
+      <libraryjar file="${public.deps.dir}/kawa.jar" />
+      <libraryjar file="${public.deps.dir}/acra-4.4.0.jar" />
+      <libraryjar file="${public.deps.dir}/twitter4j.jar" />
+      <libraryjar file="${public.deps.dir}/twitter4jmedia.jar" />
+      <libraryjar file="${public.deps.dir}/httpmime.jar" />
+      <libraryjar file="${public.deps.dir}/fusiontables.jar" />
+      <libraryjar file="${public.deps.dir}/firebase.jar" />
+      <libraryjar file="${public.deps.dir}/google-api-client-beta.jar" />
+      <libraryjar file="${public.deps.dir}/google-http-client-beta.jar" />
+      <libraryjar file="${public.deps.dir}/google-api-client-android2-beta.jar" />
+      <libraryjar file="${public.deps.dir}/google-http-client-android2-beta.jar" />
+      <libraryjar file="${public.deps.dir}/google-http-client-android3-beta.jar" />
+      <libraryjar file="${public.deps.dir}/gson-2.1.jar" />
+      <libraryjar file="${public.deps.dir}/json.jar" />
+      <libraryjar file="${public.deps.dir}/google-oauth-client-beta.jar" />
+      <libraryjar file="${public.deps.dir}/jedis.jar" />
+      <libraryjar file="${public.deps.dir}/commons-pool.jar" />
+      <libraryjar file="${public.deps.dir}/guava-14.0.1.jar" />
+      <libraryjar file="${public.deps.dir}/core.jar" />
+      <!-- Android Runtime -->
+      <libraryjar file="${public.build.dir}/AndroidRuntime.jar" />
+
+      <dontnote filter="proguard.configuration.ConfigurationLogger" />
+      <adaptresourcefilecontents filter="proguard/ant/task.properties" />
+    </proguard>
+
+    <delete file="${ExternalComponent-class.dir}/${extensionClassFolder}.jar" />
+    <move file="${ExternalComponent-class.dir}/${extensionClassFolder}_p.jar"
+          tofile="${ExternalComponent-class.dir}/${extensionClassFolder}.jar" />
+  </target>
 </project>

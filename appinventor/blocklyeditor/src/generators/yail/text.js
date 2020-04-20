@@ -319,7 +319,7 @@ Blockly.Yail['text_is_string'] = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail['text_reverse'] = function() {
+Blockly.Yail['text_reverse'] = function () {
   // String reverse.
   var argument = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-reverse"
@@ -332,5 +332,30 @@ Blockly.Yail['text_reverse'] = function() {
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "reverse"
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  return [code, Blockly.Yail.ORDER_ATOMIC];
+};
+
+Blockly.Yail['text_replace_mappings'] = function () {
+  // Replace all occurrences in mappings with their corresponding replacement
+  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
+  var argument1 = Blockly.Yail.valueToCode(this, 'MAPPINGS', Blockly.Yail.ORDER_NONE) || "\"\"";
+  var mode = this.getFieldValue('OP');
+  var mode_function = Blockly.Yail.text_replace_mappings.OPERATORS[mode];
+
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + mode_function + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
+  code = code + argument0 + Blockly.Yail.YAIL_SPACER;
+  code = code + argument1 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE;
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + "text" + Blockly.Yail.YAIL_SPACER;
+  code = code + "dictionary" + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "replace with mappings" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+
+  return [code, Blockly.Yail.ORDER_ATOMIC];
+};
+
+Blockly.Yail.text_replace_mappings.OPERATORS = {
+  LONGEST_STRING_FIRST: "string-replace-mappings-longest-string",
+  DICTIONARY_ORDER: "string-replace-mappings-dictionary"
+  //EARLIEST_OCCURRENCE: "string-replace-mappings-earliest-occurrence"
 };

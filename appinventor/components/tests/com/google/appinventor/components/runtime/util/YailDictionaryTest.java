@@ -245,7 +245,7 @@ public class YailDictionaryTest {
 
   @Test
   public void testDictToAlist() {
-    YailList target = getTestList();
+    YailList target = getDictToListTestList();
     YailDictionary dict = getTestDict();
     assertEquals(target, YailDictionary.dictToAlist(dict));
   }
@@ -396,5 +396,21 @@ public class YailDictionaryTest {
     target.put("dict", abdict);
     target.put("list-with-dict", YailList.makeList(singletonList(abdict)));
     return target;
+  }
+
+  private static YailList getDictToListTestList() {
+    // Only the top level is converted to a list.
+    YailList ablist = YailList.makeList(Arrays.asList("a", "b"));
+    YailDictionary abdict = YailDictionary.makeDictionary("a", "b");
+    return YailList.makeList(new Object[] {
+         YailList.makeList(new Object[] { "number", 1 }),
+         YailList.makeList(new Object[] { "string", "foo" }),
+         YailList.makeList(new Object[] { "empty-list", YailList.makeEmptyList() }),
+         YailList.makeList(new Object[] { "list",
+             YailList.makeList(asList(ablist, 2, 3)) }),
+         YailList.makeList(new Object[] { "dict", abdict }),
+         YailList.makeList(new Object[] { "list-with-dict",
+             YailList.makeList(singletonList(abdict)) })
+    });
   }
 }

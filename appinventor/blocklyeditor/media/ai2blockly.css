@@ -38,6 +38,7 @@
 }
 
 .dyslexic .blocklyText,
-.dyslexic .blocklyFieldParameter {
+.dyslexic .blocklyFieldParameter,
+.dyslexic .goog-menuitem .goog-menuitem-content {
   font-family: OpenDyslexic, Helvetica, Arial, sans-serif;
 }

@@ -13,6 +13,7 @@ Table of Contents:
 * [LineString](#LineString)
 * [Map](#Map)
 * [Marker](#Marker)
+* [Navigation](#Navigation)
 * [Polygon](#Polygon)
 * [Rectangle](#Rectangle)
 
@@ -747,6 +748,80 @@ The `Marker` component indicates points on a [`Map`](#Map), such as buildings or
 {:id="Marker.ShowInfobox" class="method"} <i/> ShowInfobox()
 : Shows the info box for the `Marker` if it is not visible. Otherwise, this method has no effect.
  This method can be used to show the info box even if [`EnableInfobox`](#Marker.EnableInfobox) is false.
+
+## Navigation  {#Navigation}
+
+The Navigation component generates directions between two locations using a service called
+ [OpenRouteService](https://openrouteservice.org). You must provide a valid API key from that
+ service in order for this component to work.
+
+
+
+### Properties  {#Navigation-Properties}
+
+{:.properties}
+
+{:id="Navigation.ApiKey" .text .wo} *ApiKey*
+: API Key for Open Route Service. Obtain an API key at
+ [https://openrouteservice.org](https://openrouteservice.org).
+
+{:id="Navigation.EndLatitude" .number} *EndLatitude*
+: The latitude of the end location.
+
+{:id="Navigation.EndLocation" .component .wo .bo} *EndLocation*
+: Set the end location.
+
+{:id="Navigation.EndLongitude" .number} *EndLongitude*
+: The longitude of the end location.
+
+{:id="Navigation.Language" .text} *Language*
+: Property for Language
+
+{:id="Navigation.ResponseContent" .dictionary .ro .bo} *ResponseContent*
+: The raw response from the server. This can be used to access more details beyond what the
+ [`GotDirections`](#Navigation.GotDirections) event provides.
+
+{:id="Navigation.StartLatitude" .number} *StartLatitude*
+: The latitude of the start location.
+
+{:id="Navigation.StartLocation" .component .wo .bo} *StartLocation*
+: Set the start location.
+
+{:id="Navigation.StartLongitude" .number} *StartLongitude*
+: The longitude of the start location.
+
+{:id="Navigation.TransportationMethod" .text} *TransportationMethod*
+: The transportation method used for determining the route. Valid options are:
+
+  - `foot-walking`: Route based on walking paths
+  - `driving-car`: Route based on vehicle paths
+  - `cycling-regular`: Route based on bicycle paths
+  - `wheelchair`: Route based on wheelchair accessible paths
+
+### Events  {#Navigation-Events}
+
+{:.events}
+
+{:id="Navigation.GotDirections"} GotDirections(*directions*{:.list},*points*{:.list},*distance*{:.number},*duration*{:.number})
+: Event indicating that a request has finished and has returned data. The following parameters
+ are provided:
+
+  - `directions`: A list of text directions, such as "Turn left at Massachusetts Avenue".
+  - `points`: A list of (latitude, longitude) points that represent the path to take. This can
+    be passed to [`LineString`'s `Points`](#LineString.Points) to draw the line on a [`Map`](#Map).
+  - `distance`: Estimated distance for the route, in meters.
+  - `duration`: Estimated duration for the route, in seconds.
+
+### Methods  {#Navigation-Methods}
+
+{:.methods}
+
+{:id="Navigation.RequestDirections" class="method"} <i/> RequestDirections()
+: Request directions from the routing service using the values of [`StartLatitude`](#Navigation.StartLatitude),
+ [`StartLongitude`](#Navigation.StartLongitude), [`EndLatitude`](#Navigation.EndLatitude), and [`EndLongitude`](#Navigation.EndLongitude). On success,
+ the [`GotDirections`](#Navigation.GotDirections) event block will run. If an
+ error occurs, the error will be reported via the
+ [`Screen's ErrorOccurred`](userinterface.html#Screen.ErrorOccurred) event.
 
 ## Polygon  {#Polygon}
 
