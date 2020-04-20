@@ -6,11 +6,11 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -19,13 +19,11 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import android.widget.LinearLayout.LayoutParams;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -61,8 +59,38 @@ import com.google.appinventor.components.runtime.util.YailList;
     nonVisible = false,
     iconName = "images/listView.png")
 @SimpleObject
-public final class ListView extends AndroidViewComponent implements AdapterView.OnItemClickListener,
-    AdapterView.OnItemSelectedListener {
+public final class ListView extends AndroidViewComponent implements AdapterView.OnItemClickListener {
+  /**
+   * Custom List View Adapter that contains functionality to alter the view of
+   * individual items based on ListView state.
+   */
+  private final class ListViewAdapter extends ArrayAdapter<Spannable> {
+    /**
+     * Initialize new List View adapter
+     * @param context   Context to use for List View
+     * @param resource  Resource for single row
+     * @param objects   List of objects to display
+     */
+    public ListViewAdapter(Context context, int resource, Spannable[] objects) {
+      super(context, resource, objects);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      // Get view for position
+      final View renderer = super.getView(position, convertView, parent);
+
+      // Update drawable based on whether the position is equal to the current selection
+      // We subtract 1 from the selection index to convert back to 0-based indexing
+      if (position == (selectionIndex - 1)) {
+        renderer.setBackgroundDrawable(selectionDrawable);
+      } else {
+        renderer.setBackgroundDrawable(UNSELECTED_DRAWABLE);
+      }
+
+      return renderer;
+    }
+  }
 
   private static final String LOG_TAG = "ListView";
 
@@ -93,7 +121,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private static final Drawable UNSELECTED_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
 
   private Drawable selectionDrawable;
-  private View lastSelected;
 
   private int textSize;
   private static final int DEFAULT_TEXT_SIZE = 22;
@@ -110,13 +137,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     SelectionIndex(0);
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
-    view.setOnItemSelectedListener(this);
     view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
-    view.setScrollingCacheEnabled(false);
-    view.setSelector(new StateListDrawable()); // Set to empty selector to prevent issues with dynamic highlighting
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
-
     txtSearchBox = new EditText(container.$context());
     txtSearchBox.setSingleLine(true);
     txtSearchBox.setWidth(Component.LENGTH_FILL_PARENT);
@@ -279,9 +302,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Sets the items of the ListView through an adapter
    */
   public void setAdapterData(){
-    adapter = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1,
+    adapter = new ListViewAdapter(container.$context(), android.R.layout.simple_list_item_1,
         itemsToColoredText());
     view.setAdapter(adapter);
+    updateAdapter();
 
     adapterCopy = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1);
     for (int i = 0; i < adapter.getCount(); ++i) {
@@ -348,8 +372,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     selectionIndex = ElementsUtil.selectionIndex(index, items);
     // Now, we need to change Selection to correspond to SelectionIndex.
     selection = ElementsUtil.setSelectionFromIndex(index, items);
-
-    updateSelectionIndex();
+    updateAdapter();
   }
 
   /**
@@ -374,36 +397,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     selection = value;
     // Now, we need to change SelectionIndex to correspond to Selection.
     selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, items);
-
-    updateSelectionIndex();
-  }
-
-  /**
-   * Action to take after updating selection index.
-   * Handles highlighting the newly updated item.
-   */
-  private void updateSelectionIndex() {
-    if (selectionIndex > 0) {
-      // Store last active view to refocus it later
-      View previousView = Form.getActiveForm().getCurrentFocus();
-
-      // We need to request focus from the ListView in order for the
-      // drawable changes to apply to the active item view.
-      view.requestFocusFromTouch();
-
-      // Set selection to 0-based index (which will in turn call
-      // the necessary listener)
-      view.setSelection(selectionIndex - 1);
-
-      // Re-focus last view
-      if (previousView != null) {
-        previousView.requestFocus();
-      }
-    } else if (lastSelected != null) {
-        // Un-set selected drawable from the last selected item
-        lastSelected.setBackgroundDrawable(UNSELECTED_DRAWABLE);
-        lastSelected = null;
-      }
+    updateAdapter();
   }
 
   /**
@@ -415,34 +409,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     Spannable item = (Spannable) parent.getAdapter().getItem(position);
     this.selection = item.toString();
     this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
-
-    // Un-set drawable from previous last selected item
-    if (lastSelected != null) {
-      lastSelected.setBackgroundDrawable(UNSELECTED_DRAWABLE);
-    }
-
-    // Set selected drawable to current view
-    view.setBackgroundDrawable(selectionDrawable);
-
-    // Update last selected
-    lastSelected = view;
-
+    updateAdapter();
     AfterPicking();
-  }
-
-  /**
-   * Simple event to raise when the component is selected. Implementation of
-   * AdapterView.OnItemSelectedListener.
-   */
-  @Override
-  public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-    // Defer to item click
-    onItemClick(adapterView, view, i, l);
-  }
-
-  @Override
-  public void onNothingSelected(AdapterView<?> adapterView) {
-
   }
 
   /**
@@ -537,6 +505,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     selectionColor = argb;
     this.selectionDrawable = new GradientDrawable(
       GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb});
+    updateAdapter();
   }
 
   /**
@@ -600,5 +569,16 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       else
         textSize = fontSize;
       setAdapterData();
+  }
+
+  /**
+   * Updates the view of the adapter to respond to changes.
+   * To be called when updating the selection of the List View,
+   * or when updating the color of a selection.
+   */
+  private void updateAdapter() {
+    if (adapter != null) {
+      adapter.notifyDataSetChanged();
+    }
   }
 }
