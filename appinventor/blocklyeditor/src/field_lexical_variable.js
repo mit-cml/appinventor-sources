@@ -51,8 +51,6 @@
  *  [lyn, 11/10/12] getGlobalNames and getNamesInScope
  */
 
-// Get all global names
-
 /**
  * Class for a variable's dropdown field.
  * @param {!string} varname The default name for the variable.  If null,
@@ -61,7 +59,8 @@
  * @constructor
  */
 Blockly.FieldLexicalVariable = function(varname) {
- // Call parent's constructor.
+  // Call parent's constructor.
+  // TODO: Fix indentation.
   Blockly.FieldDropdown.call(this, Blockly.FieldLexicalVariable.dropdownCreate,
                                    Blockly.FieldLexicalVariable.dropdownChange);
   if (varname) {
@@ -70,7 +69,6 @@ Blockly.FieldLexicalVariable = function(varname) {
     this.setValue(Blockly.Variables.generateUniqueName());
   }
 };
-
 // FieldLexicalVariable is a subclass of FieldDropdown.
 goog.inherits(Blockly.FieldLexicalVariable, Blockly.FieldDropdown);
 
@@ -104,19 +102,25 @@ Blockly.FieldLexicalVariable.prototype.setValue = function(text) {
  * Update the eventparam mutation associated with the field's source block.
  */
 Blockly.FieldLexicalVariable.prototype.updateMutation = function() {
+  // TODO: I think I need someone to explain this function to me.
+
   var text = this.getText();
+  // TODO: Change to if return;
   if (this.sourceBlock_ && this.sourceBlock_.getParent()) {
     this.sourceBlock_.eventparam = undefined;
+    // TODO: Is this necessary? I don't think global vars can have parents.
     if (text.indexOf(Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + ' ') === 0) {
       this.sourceBlock_.eventparam = null;
       return;
     }
+
     var i, parent = this.sourceBlock_.getParent();
     while (parent) {
       var variables = parent.declaredVariables ? parent.declaredVariables() : [];
       if (parent.type != 'component_event') {
         for (i = 0; i < variables.length; i++) {
           if (variables[i] == text) {
+            // TODO: Wouldn't this be tracking the outermost scope?
             // Innermost scope is not an event block, so eventparam can be nulled.
             this.sourceBlock_.eventparam = null;
             return;
@@ -839,9 +843,9 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturablesInfo = function (so
 }
 
 /**
- * [lyn, 10/27/13]
- * Checks an identifier for validity. Validity rules are a simplified version of Kawa identifier rules.
- * They assume that the YAIL-generated version of the identifier will be preceded by a legal Kawa prefix:
+ * Checks an identifier for validity. Validity rules are a simplified version of
+ * Kawa identifier rules. They assume that the YAIL-generated version of the
+ * identifier will be preceded by a legal Kawa prefix:
  *
  *   <identifier> = <first><rest>*
  *   <first> = letter U charsIn("_$?~@")
@@ -849,32 +853,40 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturablesInfo = function (so
  *
  *   Note: an earlier version also allowed characters in "!&%.^/+-*>=<",
  *   but we decided to remove these because (1) they may be used for arithmetic,
- *   logic, and selection infix operators in a future AI text language, and we don't want
- *   things like a+b, !c, d.e to be ambiguous between variables and other expressions.
- *   (2) using chars in "><&" causes HTML problems with getters/setters in flydown menu.
+ *   logic, and selection infix operators in a future AI text language, and we
+ *   don't want things like a+b, !c, d.e to be ambiguous between variables and
+ *   other expressions. (2) using chars in "><&" causes HTML problems with
+ *   getters/setters in flydown menu.
  *
  * First transforms the name by removing leading and trailing whitespace and
  * converting nonempty sequences of internal whitespace to '_'.
- * Returns a result object of the form {transformed: <string>, isLegal: <bool>}, where:
- * result.transformed is the transformed name and result.isLegal is whether the transformed
- * named satisfies the above rules.
+ * @param {string} ident The original identifier. 
+ * @return {!{transformed: string, isLegal: boolean}} A result object where the
+ *     transform property is the passed identifier with all whitespace converted
+ *     to underscores, and the isLegal property describes if the transformed
+ *     identifier contains any illegal characters.
  */
+// TODO: This function is only used by makeLegalIdentifier. Can we combine them?
 Blockly.LexicalVariable.checkIdentifier = function(ident) {
-  var transformed = ident.trim() // Remove leading and trailing whitespace
-                         .replace(/[\s\xa0]+/g, '_'); // Replace nonempty sequences of internal spaces by underscores
+  // Remove leading and trailing whitespace.
+  // Replace nonempty sequences of internal spaces by underscores.
+  var transformed = ident.trim().replace(/[\s\xa0]+/g, '_');
+
+  // TODO: It's been 6 years, do you think the current regex is good?
   // [lyn, 06/11/14] Previous definition focused on *legal* characters:
   //
   //    var legalRegexp = /^[a-zA-Z_\$\?~@][\w_\$\?~@]*$/;
   //
-  // Unfortunately this is geared only to English, and prevents i8n names (such as Chinese identifiers).
-  // In order to handle i8n, focus on avoiding illegal chars rather than accepting only legal ones.
-  // This is a quick solution. Needs more careful thought to work for every language. In particular,
+  // Unfortunately this is geared only to English, and prevents i8n names (such
+  // as Chinese identifiers). In order to handle i8n, focus on avoiding illegal
+  // chars rather than accepting only legal ones. This is a quick solution.
+  // Needs more careful thought to work for every language. In particular,
   // need to look at results of Java's Character.isJavaIdentifierStart(int) and
   // Character.isJavaIdentifierPart(int)
+
   // Note: to take complement of character set, put ^ first.
   // Note: to include '-' in character set, put it first or right after ^
   var legalRegexp = /^[^-0-9!&%^/>=<`'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ][^-!&%^/>=<'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ]*$/;
-  // " Make Emacs Happy
   var isLegal = transformed.search(legalRegexp) == 0;
   return {isLegal: isLegal, transformed: transformed};
 }
@@ -886,6 +898,14 @@ Blockly.LexicalVariable.makeLegalIdentifier = function(ident) {
   } else if (check.transformed === '') {
     return '_';
   } else {
+    // TODO: Is there a good translated thing we could default this to?
+    //   This is tricky because different fields have different defaults.
+    //   Options:
+    //      1) Just go with the global identifier.
+    //      3) Create some sort of 'default name' function?
+    //      2) Return null at some point along the field validation chain so it
+    //         reverts to the previous valid name instead of replacing it with
+    //         'name'.
     return 'name' // Use identifier 'name' to replace illegal name
   }
 }

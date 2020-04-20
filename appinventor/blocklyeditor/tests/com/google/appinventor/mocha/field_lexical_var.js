@@ -534,4 +534,74 @@ suite ('FieldLexical', function() {
       chai.assert.equal(field.getText(), 'global actualName');
     });
   });
+  suite('checkIdentifier', function() {
+    test('Spaces -> Underscores', function() {
+      var result = Blockly.LexicalVariable.checkIdentifier('test test');
+      chai.assert.isTrue(result.isLegal);
+      chai.assert.equal(result.transformed, 'test_test');
+    });
+    test('Trimming', function() {
+      var result = Blockly.LexicalVariable.checkIdentifier('   test   ');
+      chai.assert.isTrue(result.isLegal);
+      chai.assert.equal(result.transformed, 'test');
+    });
+    test('Trim to emtpy', function() {
+      var result = Blockly.LexicalVariable.checkIdentifier('   ');
+      chai.assert.isFalse(result.isLegal);
+      chai.assert.equal(result.transformed, '');
+    })
+    test('Chinese Character', function() {
+      var result = Blockly.LexicalVariable.checkIdentifier('修改数值');
+      chai.assert.isTrue(result.isLegal);
+      chai.assert.equal(result.transformed, '修改数值');
+    });
+    // TODO: I thought this was supposed to be illegal, but it works.
+    test.skip('@', function() {
+      var result = Blockly.LexicalVariable.checkIdentifier('@test');
+      chai.assert.isFalse(result.isLegal);
+      chai.assert.equal(result.transformed, '@test');
+    });
+    test('.', function() {
+      var result = Blockly.LexicalVariable.checkIdentifier('.test');
+      chai.assert.isFalse(result.isLegal);
+      chai.assert.equal(result.transformed, '.test');
+    });
+    test('-', function() {
+      var result = Blockly.LexicalVariable.checkIdentifier('-test');
+      chai.assert.isFalse(result.isLegal);
+      chai.assert.equal(result.transformed, '-test');
+    });
+    test('\\', function() {  // Checks single slash.
+      var result = Blockly.LexicalVariable.checkIdentifier('\\test');
+      chai.assert.isFalse(result.isLegal);
+      chai.assert.equal(result.transformed, '\\test');
+    });
+    test('+', function() {
+      var result = Blockly.LexicalVariable.checkIdentifier('+test');
+      chai.assert.isFalse(result.isLegal);
+      chai.assert.equal(result.transformed, '+test');
+    });
+    test('[', function() {
+      var result = Blockly.LexicalVariable.checkIdentifier('[test');
+      chai.assert.isFalse(result.isLegal);
+      chai.assert.equal(result.transformed, '[test');
+    });
+    test(']', function() {
+      var result = Blockly.LexicalVariable.checkIdentifier(']test');
+      chai.assert.isFalse(result.isLegal);
+      chai.assert.equal(result.transformed, ']test');
+    });
+  });
+  suite('makeLegalIdentifier', function() {
+    test('Legal', function() {
+      var name = Blockly.LexicalVariable.makeLegalIdentifier('test');
+      chai.assert.equal(name, 'test');
+    });
+    test('Illegal, Empty', function() {
+      var name = Blockly.LexicalVariable.makeLegalIdentifier('   ');
+      chai.assert.equal(name, '_');
+    });
+    // TODO: See TODO in file.
+    test.skip('Just Illegal', function() {})
+  })
 });
