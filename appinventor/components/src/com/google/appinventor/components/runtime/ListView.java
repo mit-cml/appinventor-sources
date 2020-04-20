@@ -139,10 +139,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     SelectionIndex(0);
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
-    view.setOnItemSelectedListener(this);
     view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
+
     txtSearchBox = new EditText(container.$context());
     txtSearchBox.setSingleLine(true);
     txtSearchBox.setWidth(Component.LENGTH_FILL_PARENT);
@@ -414,21 +414,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
     updateAdapter();
     AfterPicking();
-  }
-
-  /**
-   * Simple event to raise when the component is selected. Implementation of
-   * AdapterView.OnItemSelectedListener.
-   */
-  @Override
-  public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-    // Defer to item click
-    onItemClick(adapterView, view, i, l);
-  }
-
-  @Override
-  public void onNothingSelected(AdapterView<?> adapterView) {
-
   }
 
   /**
