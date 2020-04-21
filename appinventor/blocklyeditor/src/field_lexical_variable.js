@@ -514,7 +514,7 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
   newName = Blockly.FieldLexicalVariable.nameNotIn(newName, globals);
   // TODO: !==
   // TODO: Is this.sourceBlock_.rendered necessary?
-  if ((! (newName === oldName)) /*&& this.sourceBlock_.rendered*/) {
+  if ((! (newName === oldName)) && this.sourceBlock_.rendered) {
     // Rename getters and setters
     if (Blockly.mainWorkspace) {
       var blocks = Blockly.mainWorkspace.getAllBlocks();
