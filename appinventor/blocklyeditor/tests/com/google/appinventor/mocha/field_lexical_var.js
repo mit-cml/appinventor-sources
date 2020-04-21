@@ -18,6 +18,7 @@ suite ('FieldLexical', function() {
   });
   teardown(function() {
     delete this.createBlock;
+    this.workspace.clear();
     this.workspace.dispose();
     delete this.workspace;
   })
@@ -364,6 +365,9 @@ suite ('FieldLexical', function() {
         chai.assert.sameDeepOrderedMembers(actualVars, expectedVars);
       }
     });
+    teardown(function() {
+      delete this.assertNames;
+    })
     test('Globals First', function() {
       var xml = Blockly.Xml.textToDom('<xml>' +
       '  <block type="global_declaration" y="-200">' +
@@ -451,7 +455,7 @@ suite ('FieldLexical', function() {
       ]);
     });
     test('Global Prefix is Translated', function() {
-      Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX = 'testPrefix'
+      Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX = 'testPrefix';
       var xml = Blockly.Xml.textToDom('<xml>' +
       '  <block type="global_declaration" y="-200">' +
       '    <field name="NAME">gName</field>' +
@@ -470,6 +474,7 @@ suite ('FieldLexical', function() {
         ['testPrefix gName', 'global gName'],
         ['name', 'name'],
       ]);
+      Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX = 'global';
     });
   })
   suite('prefixSuffix', function() {
@@ -612,13 +617,14 @@ suite ('FieldLexical', function() {
         var result = Blockly.LexicalVariable
             .referenceResult(block, name, '', []);
 
-            console.log(result[0]);
         var actualIds = result[0].map((block) => { return block.id; });
-        console.log(actualIds);
         chai.assert.sameDeepMembers(actualIds, expectedIds);
         chai.assert.sameDeepMembers(result[1], expectedCaptures);
       }
     });
+    teardown(function() {
+      delete this.assertReference;
+    })
     test('Lexical > For Range', function() {
       var xml = Blockly.Xml.textToDom('<xml>' +
       '  <block type="local_declaration_statement">' +
@@ -1205,6 +1211,369 @@ suite ('FieldLexical', function() {
       '</xml>');
       this.assertReference(xml, 'a', ['a', 'b'], ['b']);
     });
+  });
+  suite('Renaming', function() {
+    setup(function() {
+      this.getVarsFor = function(blockIds) {
+        return blockIds.map((id) => {
+          return this.workspace.getBlockById(id).getVars()[0];
+        });
+      }
+    })
+    teardown(function() {
+      delete this.getVarsFor;
+    })
+    test('Rename Capturables', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="local_declaration_statement" id="rename">' +
+      '    <mutation>' + 
+      '      <localname name="old"></localname>' + 
+      '    </mutation>' +
+      '    <field name="VAR0">old</field>' +
+      '    <statement name="STACK">' +
+      '      <block type="local_declaration_statement" id="4">' +
+      '        <mutation>' + 
+      '          <localname name="new"></localname>' + 
+      '        </mutation>' +
+      '        <field name="VAR0">new</field>' +
+      '        <statement name="STACK">' +
+      '          <block type="lexical_variable_set" id="2">' +
+      '            <field name="VAR">old</field>' +
+      '            <value name="VALUE">' +
+      '              <block type="lexical_variable_get" id="3">' +
+      '                <field name="VAR">old</field>' +
+      '              </block>' +
+      '            </value>' +
+      '          </block>' +
+      '        </statement>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      Blockly.Xml.domToWorkspace(xml, this.workspace);
+      var block = this.workspace.getBlockById('rename');
+      // Ideally we would test using components, but that's not really possible.
+      Blockly.LexicalVariable.renameParamFromTo(block, 'old', 'new', true);
 
-  })
+      var actualVars = this.getVarsFor(['2', '3']);
+      chai.assert.sameMembers(actualVars, ['new', 'new']);
+      
+      actualVars = this.getVarsFor(['4'])
+      chai.assert.sameMembers(actualVars, ['new2']);
+    });
+    suite('Globals', function() {
+      setup(function() {
+        this.assertGlobalRename = function(xml, newName, ids, expected) {
+          Blockly.Xml.domToWorkspace(xml, this.workspace);
+          var block = this.workspace.getBlockById('rename');
+          block.setFieldValue(newName, 'NAME');
+          
+          var expectedVars = ids.map(() => { return 'global ' + expected });
+          var actualVars = this.getVarsFor(ids);
+          chai.assert.sameMembers(actualVars, expectedVars);
+        }
+      });
+      teardown(function() {
+        delete this.assertGlobalRename;
+      })
+      test('Simple', function() {
+        var xml = Blockly.Xml.textToDom('<xml>' +
+        '  <block type="global_declaration" id="rename">' +
+        '    <field name="NAME">old</field>' +
+        '  </block>' +
+        '  <block type="lexical_variable_set" id="1">' +
+        '    <field name="VAR">global old</field>' +
+        '    <value name="VALUE">' +
+        '      <block type="lexical_variable_get" id="2">' +
+        '        <field name="VAR">global old</field>' +
+        '      </block>' +
+        '    </value>' +
+        '  </block>' +
+        '</xml>');
+        this.assertGlobalRename(xml, 'new', ['1', '2'], 'new');
+      });
+      test('Nested', function() {
+        var xml = Blockly.Xml.textToDom('<xml>' +
+        '  <block type="global_declaration" id="rename">' +
+        '    <field name="NAME">old</field>' +
+        '  </block>' +
+        '  <block type="local_declaration_statement">' +
+        '    <mutation>' +
+        '      <localname name="old"></localname>' +
+        '    </mutation>' +
+        '    <field name="VAR0">old</field>' +
+        '    <value name="DECL0">' +
+        '      <block type="lexical_variable_get" id="1">' +
+        '        <field name="VAR">global old</field>' +
+        '      </block>' +
+        '    </value>' +
+        '    <statement name="STACK">' +
+        '      <block type="lexical_variable_set" id="2">' +
+        '        <field name="VAR">global old</field>' +
+        '        <value name="VALUE">' +
+        '          <block type="lexical_variable_get" id="3">' +
+        '            <field name="VAR">global old</field>' +
+        '          </block>' +
+        '        </value>' +
+        '      </block>' +
+        '    </statement>' +
+        '  </block>' +
+        '</xml>');
+        this.assertGlobalRename(xml, 'new', ['1', '2', '3'], 'new');
+      });
+      test('Collision', function() {
+        var xml = Blockly.Xml.textToDom('<xml>' +
+        '  <block type="global_declaration" id="rename">' +
+        '    <field name="NAME">old</field>' +
+        '  </block>' +
+        '  <block type="global_declaration">' +
+        '    <field name="NAME">new</field>' +
+        '  </block>' +
+        '  <block type="local_declaration_statement">' +
+        '    <mutation>' +
+        '      <localname name="old"></localname>' +
+        '    </mutation>' +
+        '    <field name="VAR0">old</field>' +
+        '    <value name="DECL0">' +
+        '      <block type="lexical_variable_get" id="1">' +
+        '        <field name="VAR">global old</field>' +
+        '      </block>' +
+        '    </value>' +
+        '    <statement name="STACK">' +
+        '      <block type="lexical_variable_set" id="2">' +
+        '        <field name="VAR">global old</field>' +
+        '        <value name="VALUE">' +
+        '          <block type="lexical_variable_get" id="3">' +
+        '            <field name="VAR">global old</field>' +
+        '          </block>' +
+        '        </value>' +
+        '      </block>' +
+        '    </statement>' +
+        '  </block>' +
+        '</xml>');
+        this.assertGlobalRename(xml, 'new', ['1', '2', '3'], 'new2');
+      });
+    });
+    suite('Nesting Locals', function() {
+      setup(function() {
+        this.assertLocalRename = function(xml, newName, ids, expected) {
+          Blockly.Xml.domToWorkspace(xml, this.workspace);
+          var block = this.workspace.getBlockById('rename');
+          block.setFieldValue(newName, 'VAR0');
+          
+          var actualVars = this.getVarsFor(ids);
+          var expectedVars = ids.map(() => { return expected });
+          chai.assert.sameMembers(actualVars, expectedVars);
+        }
+      })
+      test('Simple', function() {
+        var xml = Blockly.Xml.textToDom('<xml>' +
+        '  <block type="local_declaration_statement" id="rename">' +
+        '    <mutation>' + 
+        '      <localname name="old"></localname>' + 
+        '    </mutation>' +
+        '    <field name="VAR0">old</field>' +
+        '    <statement name="STACK">' +
+        '      <block type="local_declaration_statement">' +
+        '        <mutation>' + 
+        '          <localname name="other"></localname>' + 
+        '        </mutation>' +
+        '        <field name="VAR0">other</field>' +
+        '        <value name="DECL0">' +
+        '          <block type="lexical_variable_get" id="1">' +
+        '            <field name="VAR">old</field>' +
+        '          </block>' +
+        '        </value>' +
+        '        <statement name="STACK">' +
+        '          <block type="lexical_variable_set" id="2">' +
+        '            <field name="VAR">old</field>' +
+        '            <value name="VALUE">' +
+        '              <block type="lexical_variable_get" id="3">' +
+        '                <field name="VAR">old</field>' +
+        '              </block>' +
+        '            </value>' +
+        '          </block>' +
+        '        </statement>' +
+        '      </block>' +
+        '    </statement>' +
+        '  </block>' +
+        '</xml>');
+        this.assertLocalRename(xml, 'new', ['1', '2', '3'], 'new');
+      });
+      test('Some Renames in Scope', function() {
+        var xml = Blockly.Xml.textToDom('<xml>' +
+        '  <block type="local_declaration_statement" id="rename">' +
+        '    <mutation>' + 
+        '      <localname name="old"></localname>' + 
+        '    </mutation>' +
+        '    <field name="VAR0">old</field>' +
+        '    <statement name="STACK">' +
+        '      <block type="local_declaration_statement">' +
+        '        <mutation>' + 
+        // Overlap.
+        '          <localname name="old"></localname>' + 
+        '        </mutation>' +
+        '        <field name="VAR0">old</field>' +
+        '        <value name="DECL0">' +
+        '          <block type="lexical_variable_get" id="1">' +
+        '            <field name="VAR">old</field>' +
+        '          </block>' +
+        '        </value>' +
+        '        <statement name="STACK">' +
+        '          <block type="lexical_variable_set" id="2">' +
+        '            <field name="VAR">old</field>' +
+        '            <value name="VALUE">' +
+        '              <block type="lexical_variable_get" id="3">' +
+        '                <field name="VAR">old</field>' +
+        '              </block>' +
+        '            </value>' +
+        '          </block>' +
+        '        </statement>' +
+        '      </block>' +
+        '    </statement>' +
+        '  </block>' +
+        '</xml>');
+        this.assertLocalRename(xml, 'new', ['2', '3'], 'old');
+        var block = this.workspace.getBlockById('1');
+        chai.assert.equal(block.getVars(), 'new');
+      });
+      test('Rename on Nested', function() {
+        var xml = Blockly.Xml.textToDom('<xml>' +
+        '  <block type="local_declaration_statement">' +
+        '    <mutation>' + 
+        '      <localname name="old"></localname>' + 
+        '    </mutation>' +
+        '    <field name="VAR0">old</field>' +
+        '    <value name="DECL0">' +
+        '      <block type="lexical_variable_get" id="4">' +
+        '        <field name="VAR">old</field>' +
+        '      </block>' +
+        '    </value>' +
+        '    <statement name="STACK">' +
+        '      <block type="local_declaration_statement" id="rename">' +
+        '        <mutation>' + 
+        '          <localname name="old"></localname>' + 
+        '        </mutation>' +
+        '        <field name="VAR0">old</field>' +
+        '        <value name="DECL0">' +
+        '          <block type="lexical_variable_get" id="1">' +
+        '            <field name="VAR">old</field>' +
+        '          </block>' +
+        '        </value>' +
+        '        <statement name="STACK">' +
+        '          <block type="lexical_variable_set" id="2">' +
+        '            <field name="VAR">old</field>' +
+        '            <value name="VALUE">' +
+        '              <block type="lexical_variable_get" id="3">' +
+        '                <field name="VAR">old</field>' +
+        '              </block>' +
+        '            </value>' +
+        '          </block>' +
+        '        </statement>' +
+        '      </block>' +
+        '    </statement>' +
+        '  </block>' +
+        '</xml>');
+        this.assertLocalRename(xml, 'new', ['2', '3'], 'new');
+        var block = this.workspace.getBlockById('4');
+        chai.assert.equal(block.getVars(), 'old');
+        var block = this.workspace.getBlockById('1');
+        chai.assert.equal(block.getVars(), 'old');
+      });
+      test('Overlap - Rename Outer - Allowed', function() {
+        var xml = Blockly.Xml.textToDom('<xml>' +
+        '  <block type="local_declaration_statement" id="rename">' +
+        '    <mutation>' + 
+        '      <localname name="old"></localname>' + 
+        '    </mutation>' +
+        '    <field name="VAR0">old</field>' +
+        '    <statement name="STACK">' +
+        '      <block type="local_declaration_statement">' +
+        '        <mutation>' + 
+        '          <localname name="new"></localname>' + 
+        '        </mutation>' +
+        '        <field name="VAR0">new</field>' +
+        '        <value name="DECL0">' +
+        '          <block type="lexical_variable_get" id="1">' +
+        '            <field name="VAR">old</field>' +
+        '          </block>' +
+        '        </value>' +
+        '      </block>' +
+        '    </statement>' +
+        '  </block>' +
+        '</xml>');
+        this.assertLocalRename(xml, 'new', ['1'], 'new');
+      });
+      test('Overlap - Rename Outer - Not Allowed', function() {
+        var xml = Blockly.Xml.textToDom('<xml>' +
+        '  <block type="local_declaration_statement" id="rename">' +
+        '    <mutation>' + 
+        '      <localname name="old"></localname>' + 
+        '    </mutation>' +
+        '    <field name="VAR0">old</field>' +
+        '    <statement name="STACK">' +
+        '      <block type="local_declaration_statement">' +
+        '        <mutation>' + 
+        '          <localname name="new"></localname>' + 
+        '        </mutation>' +
+        '        <field name="VAR0">new</field>' +
+        '        <value name="DECL0">' +
+        '          <block type="lexical_variable_get" id="1">' +
+        '            <field name="VAR">old</field>' +
+        '          </block>' +
+        '        </value>' +
+        '        <statement name="STACK">' +
+        '          <block type="lexical_variable_set" id="2">' +
+        '            <field name="VAR">old</field>' +
+        '            <value name="VALUE">' +
+        '              <block type="lexical_variable_get" id="3">' +
+        '                <field name="VAR">old</field>' +
+        '              </block>' +
+        '            </value>' +
+        '          </block>' +
+        '        </statement>' +
+        '      </block>' +
+        '    </statement>' +
+        '  </block>' +
+        '</xml>');
+        this.assertLocalRename(xml, 'new', ['1', '2', '3'], 'new2');
+      })
+      test('Overlap - Rename Inner', function() {
+        var xml = Blockly.Xml.textToDom('<xml>' +
+        '  <block type="local_declaration_statement">' +
+        '    <mutation>' + 
+        '      <localname name="new"></localname>' + 
+        '    </mutation>' +
+        '    <field name="VAR0">new</field>' +
+        '    <statement name="STACK">' +
+        '      <block type="local_declaration_statement" id="rename">' +
+        '        <mutation>' + 
+        '          <localname name="old"></localname>' + 
+        '        </mutation>' +
+        '        <field name="VAR0">old</field>' +
+        '        <value name="DECL0">' +
+        '          <block type="lexical_variable_get" id="1">' +
+        '            <field name="VAR">old</field>' +
+        '          </block>' +
+        '        </value>' +
+        '        <statement name="STACK">' +
+        '          <block type="lexical_variable_set" id="2">' +
+        '            <field name="VAR">old</field>' +
+        '            <value name="VALUE">' +
+        '              <block type="lexical_variable_get" id="3">' +
+        '                <field name="VAR">old</field>' +
+        '              </block>' +
+        '            </value>' +
+        '          </block>' +
+        '        </statement>' +
+        '      </block>' +
+        '    </statement>' +
+        '  </block>' +
+        '</xml>');
+        this.assertLocalRename(xml, 'new', ['2', '3'], 'new');
+        var block = this.workspace.getBlockById('1');
+        chai.assert.equal(block.getVars(), 'old');
+      })
+    });
+  });
 });
