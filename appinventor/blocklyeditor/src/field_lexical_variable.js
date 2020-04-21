@@ -669,6 +669,7 @@ Blockly.LexicalVariable.renameFree = function (block, freeSubstitution) {
   }
 }
 
+// TODO: Define what a free variable is.
 /**
  * [lyn, written 11/15/13, installed 07/01/14]
  * Return a nameSet of all free variables in the given block
@@ -676,15 +677,18 @@ Blockly.LexicalVariable.renameFree = function (block, freeSubstitution) {
  * @returns (NameSet) set of all free names in block
  */
 Blockly.LexicalVariable.freeVariables = function (block) {
+  // TODO: I need someone to explain this to me before I write tests.
   var result = [];
   if (!block) { // input and next block slots might not empty
     result = new Blockly.NameSet();
   } else if (block.freeVariables) { // should be defined on every declaration block
     result = block.freeVariables();
   } else {
+    // TODO: Line wrapping.
     var nameSets = block.getChildren().map( function(blk) { return Blockly.LexicalVariable.freeVariables(blk); } );
-    result =  Blockly.NameSet.unionAll(nameSets);
+    result = Blockly.NameSet.unionAll(nameSets);
   }
+  // TODO: Remove console logs.
   // console.log("freeVariables(" + (block ? block.type : "*empty-socket*") + ") = " + result.toString());
   return result;
 }
@@ -920,12 +924,25 @@ Blockly.LexicalVariable.makeLegalIdentifier = function(ident) {
 //    (1) add prefix argument,
 //    (2) handle local declaration statements/expressions, and
 //    (3) treat prefixes correctly when they're used.
+// TODO: I think this breaks the single responsibility principle. Consider
+//   splitting it into two functions, since this is only called internally.
+// TODO: Might be good to split the recursive part from the non-recursive part.
+//   I.E. Drop the env var and create a separate recursive function that
+//   takes it.
 Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
+  // TODO: Pretty sure block should never be null.
   if (! block) { // special case when block is null
     return [[],[]];
   }
-  // [lyn, 11/29/12] Added forEach and forRange loops
+
+  // TODO: The structure of this object is kind of confusing, might be nice to
+  //   document.
   var referenceResults = []; // For collected reference results in subblocks
+  // TODO: Move this logic into functions on the block. Or actually, don't the
+  //   blocks just add their declared variables and then recursively call this
+  //   function on all children? We may not need a new function, just use the
+  //   ones that already exist.
+
   // Handle constructs that can introduce names here specially (should figure out a better way to generalize this!)
   if (block.type === "controls_forEach") {
     var loopVar = block.getFieldValue('VAR');
@@ -997,8 +1014,11 @@ Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
   } else { // General case for blocks that do not introduce new names
    referenceResults = block.getChildren().map( function(blk) { return Blockly.LexicalVariable.referenceResult(blk, name, prefix, env); } );
   }
+
+
   var blocksToRename = [];
   var capturables = [];
+  // TODO: Can we refactor this loop into a map? May not be worth it idk.
   for (var r = 0; r < referenceResults.length; r++) {
     blocksToRename = blocksToRename.concat(referenceResults[r][0]);
     capturables = capturables.concat(referenceResults[r][1]);
@@ -1037,6 +1057,7 @@ Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
       capturables.push(block.eventparam);
     }
   }
+  // TODO: Remove console log.
   /* console.log("referenceResult from block of type " + block.type +
              " with name " + name +
              " with prefix " + prefix +
