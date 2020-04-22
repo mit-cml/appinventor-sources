@@ -1,15 +1,15 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
-import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
+import androidx.annotation.VisibleForTesting;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -39,12 +39,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.XmlParser;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
-import com.google.appinventor.components.runtime.util.YailObject;
-import org.json.JSONException;
-import org.xml.sax.InputSource;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -65,6 +60,11 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.json.JSONException;
+import org.xml.sax.InputSource;
 
 /**
  * Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.
@@ -1286,7 +1286,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
-  private static String saveResponseContent(HttpURLConnection connection,
+  private String saveResponseContent(HttpURLConnection connection,
       String responseFileName, String responseType) throws IOException {
     File file = createFile(responseFileName, responseType);
 
@@ -1327,11 +1327,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
-  private static File createFile(String fileName, String responseType)
+  private File createFile(String fileName, String responseType)
       throws IOException, FileUtil.FileException {
     // If a fileName was specified, use it.
     if (!TextUtils.isEmpty(fileName)) {
-      return FileUtil.getExternalFile(fileName);
+      return FileUtil.getExternalFile(form, fileName);
     }
 
     // Otherwise, try to determine an appropriate file extension from the responseType.
@@ -1345,7 +1345,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     if (extension == null) {
       extension = "tmp";
     }
-    return FileUtil.getDownloadFile(extension);
+    return FileUtil.getDownloadFile(form, extension);
   }
 
   /*

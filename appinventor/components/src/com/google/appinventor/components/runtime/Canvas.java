@@ -1,10 +1,32 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -28,26 +50,6 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
-
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
-import android.util.Base64;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -590,7 +592,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       clearDrawingLayer();  // will call invalidate()
     }
 
-    @android.support.annotation.RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
+    @RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
     void setBackgroundImageBase64(String imageUrl) {
       backgroundImagePath = (imageUrl == null) ? "" : imageUrl;
       backgroundDrawable = null;
@@ -1036,7 +1038,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @suppressdoc
    * @param imageUrl the base64 format for an image
    */
-  @android.support.annotation.RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
+  @RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
   @SimpleProperty (
       description = "Set the background image in Base64 format. This requires API level >= 8. For "
           + "devices with API level less than 8, setting this will end up with an empty background."
@@ -1570,7 +1572,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
        "event will be called.")
   public String Save() {
     try {
-      File file = FileUtil.getPictureFile("png");
+      File file = FileUtil.getPictureFile($form(), "png");
       return saveFile(file, Bitmap.CompressFormat.PNG, "Save");
     } catch (PermissionException e) {
       container.$form().dispatchPermissionDeniedEvent(this, "Save", e);
@@ -1612,7 +1614,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       return "";
     }
     try {
-      File file = FileUtil.getExternalFile(fileName);
+      File file = FileUtil.getExternalFile($form(), fileName);
       return saveFile(file, format, "SaveAs");
     } catch (PermissionException e) {
       container.$form().dispatchPermissionDeniedEvent(this, "SaveAs", e);

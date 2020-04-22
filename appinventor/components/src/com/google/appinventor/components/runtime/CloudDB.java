@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2017-2018 MIT, All rights reserved
+// Copyright 2017-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -757,7 +757,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                 Log.d(LOG_TAG, "finished call jedis.get()");
               }
               if (returnValue != null) {
-                String val = JsonUtil.getJsonRepresentationIfValueFileName(returnValue);
+                String val = JsonUtil.getJsonRepresentationIfValueFileName(form, returnValue);
                 if(val != null) value.set(val);
                 else value.set(returnValue);
               }
@@ -1130,6 +1130,10 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     }
   }
 
+  public Form getForm() {
+    return form;
+  }
+
   public Jedis getJedis(boolean createNew) {
     Jedis jedis;
     if (dead) {                 // If we are dead, we are dead!
@@ -1247,7 +1251,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         throw new YailRuntimeError("Invalid fileName, was " + originalFileName, "ReadFrom");
       }
       String extension = getFileExtension(fileName);
-      byte [] content = FileUtil.readFile(fileName);
+      byte [] content = FileUtil.readFile(form, fileName);
       String encodedContent = Base64.encodeToString(content, Base64.DEFAULT);
       Object [] results = new Object[2];
       results[0] = "." + extension;

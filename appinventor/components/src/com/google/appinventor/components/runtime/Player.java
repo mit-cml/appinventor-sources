@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -177,7 +177,8 @@ public final class Player extends AndroidNonvisibleComponent
   @UsesPermissions(READ_EXTERNAL_STORAGE)
   public void Source(String path) {
     final String tempPath = (path == null) ? "" : path;
-    if (MediaUtil.isExternalFile(tempPath) && form.isDeniedPermission(READ_EXTERNAL_STORAGE)) {
+    if (MediaUtil.isExternalFile(form, tempPath)
+        && form.isDeniedPermission(READ_EXTERNAL_STORAGE)) {
       form.askPermission(READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
         @Override
         public void HandlePermissionResponse(String permission, boolean granted) {
