@@ -38,6 +38,15 @@ Blockly.WarningHandler.WarningState = {
 };
 
 /**
+ * Regular expression for floating point numbers.
+ *
+ * @type {!RegExp}
+ * @const
+ */
+Blockly.WarningHandler.NUMBER_REGEX =
+  new RegExp("^[-+]?[0-9]*(\\.[0-9]+)?([eE][-+][0-9]+)?$")
+
+/**
  * The currently selected index into the array of block IDs with warnings. If nothing has been
  * selected (i.e., if we are not stepping through warnings), this should be -1 so that the next
  * index will be 0.
@@ -438,6 +447,27 @@ Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(b
       block.setErrorIconText(errorMessage);
       return true;
     }
+  }
+  return false;
+};
+
+/**
+ * Checks whether a text block in a number slot has a valid value. If not,
+ * an error is generated.
+ *
+ * @param {!Blockly.BlockSvg} block the text block to evaluate
+ */
+Blockly.WarningHandler.prototype['checkInvalidNumber'] = function(block) {
+  if (!block.outputConnection || !block.outputConnection.isConnected()) {
+    return;
+  }
+  var targetChecks = block.outputConnection.targetConnection.getCheck();
+  var value = block.getFieldValue('TEXT');
+  if (targetChecks && targetChecks.indexOf('String') == -1 &&
+      targetChecks.indexOf('Number') >= 0 &&
+      (value == '' || !Blockly.WarningHandler.NUMBER_REGEX.test(value))) {
+    block.setErrorIconText(Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT);
+    return true;
   }
   return false;
 };

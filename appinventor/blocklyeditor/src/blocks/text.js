@@ -26,17 +26,24 @@ Blockly.Blocks['text'] = {
     this.setOutput(true, [Blockly.Blocks.text.connectionCheck]);
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_TOOLTIP);
   },
+  errors: [{name:"checkInvalidNumber"}],
   typeblock: [{translatedName: Blockly.Msg.LANG_CATEGORY_TEXT}]
 };
 
 Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection) {
   var block = myConnection.sourceBlock_;
   var otherTypeArray = otherConnection.check_;
+  var shouldIgnoreError = Blockly.mainWorkspace.isLoading;
   for (var i = 0; i < otherTypeArray.length; i++) {
     if (otherTypeArray[i] == "String") {
       return true;
-    } else if (otherTypeArray[i] == "Number" && !isNaN(parseFloat(block.getFieldValue('TEXT')))) {
-      return true;
+    } else if (otherTypeArray[i] == "Number") {
+      if (shouldIgnoreError) {
+        // Error may be noted by WarningHandler's checkInvalidNumber
+        return true;
+      } else if (!isNaN(parseFloat(block.getFieldValue('TEXT')))) {
+        return true;
+      }
     } else if (otherTypeArray[i] == "Key") {
       return true;
     }

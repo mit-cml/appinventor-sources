@@ -471,6 +471,7 @@ Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent
   if (blocksContent.length != 0) {
     try {
       Blockly.Events.disable();
+      this.isLoading = true;
       if (Blockly.Versioning.upgrade(formJson, blocksContent, this)) {
         var self = this;
         setTimeout(function() {
@@ -478,6 +479,7 @@ Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent
         });
       }
     } finally {
+      this.isLoading = false;
       Blockly.Events.enable();
     }
     if (this.getCanvas() != null) {

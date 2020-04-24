@@ -116,6 +116,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST = "Component does not exist";
     Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED = "This block is not defined. Delete this block!";
     Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP = "The break block should be used only within loops";
+    Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT = 'This text block does not contain a valid number';
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = '/reference/blocks/colors.html#basic';
