@@ -19,10 +19,15 @@ Blockly.Blocks['text'] = {
   category: 'Text',
   helpUrl: Blockly.Msg.LANG_TEXT_TEXT_HELPURL,
   init: function () {
+    var textInput = new Blockly.FieldTextInput('');
+    textInput.onFinishEditing_ = Blockly.Blocks.text
+        .bumpBlockOnFinishEdit.bind(this);
+
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.appendDummyInput().appendField(Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE).appendField(
-        new Blockly.FieldTextBlockInput(''),
-        'TEXT').appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE)
+        .appendField(textInput, 'TEXT')
+        .appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
     this.setOutput(true, [Blockly.Blocks.text.connectionCheck]);
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_TOOLTIP);
   },
@@ -52,6 +57,36 @@ Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection) {
   }
   return false;
 };
+
+/**
+ * Bumps the text block out of its connection iff it is connected to a number
+ * input and it no longer contains a number.
+ * @param {string} finalValue The final value typed into the text input.
+ * @this Blockly.Block
+ */
+Blockly.Blocks.text.bumpBlockOnFinishEdit = function(finalValue) {
+  var connection = this.outputConnection.targetConnection;
+  if (!connection) {
+    return;
+  }
+  if (!isNaN(parseFloat(finalValue))) {
+    // Block is a number, so no matter where it lives it is valid.
+    return;
+  }
+
+  var typeArray = connection.check_;
+  var length = typeArray.length;
+  for (var i = 0; i < length; i++) {
+    var type = typeArray[i];
+    if (type == "String" || type == "Key") {
+      // There is another valid type on the connection.
+      return;
+    }
+  } 
+
+  connection.disconnect();
+  connection.sourceBlock_.bumpNeighbours_();
+}
 
 Blockly.Blocks['text_join'] = {
   // Create a string made up of any number of elements of any type.
@@ -473,10 +508,15 @@ Blockly.Blocks['obfuscated_text'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.appendDummyInput().appendField(Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE
-      + " " + Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE).appendField(
-        new Blockly.FieldTextBlockInput(''),
-        'TEXT').appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
+    var label = Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE + " " +
+        Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE
+    var textInput = new Blockly.FieldTextBlockInput('');
+    textInput.onFinishEditing_ = Blockly.Blocks.text
+        .bumpBlockOnFinishEdit.bind(this);
+    this.appendDummyInput()
+        .appendField(label)
+        .appendField(textInput,'TEXT')
+        .appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
     this.setOutput(true, [Blockly.Blocks.text.connectionCheck]);
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP);
     this.confounder = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8);
