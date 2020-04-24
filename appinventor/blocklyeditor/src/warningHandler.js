@@ -40,6 +40,15 @@ Blockly.WarningHandler.WarningState = {
 };
 
 /**
+ * Regular expression for floating point numbers.
+ *
+ * @type {!RegExp}
+ * @const
+ */
+Blockly.WarningHandler.NUMBER_REGEX =
+  new RegExp("^[-+]?[0-9]*(\\.[0-9]+)?([eE][-+][0-9]+)?$")
+
+/**
  * The currently selected index into the array of block IDs with warnings. If nothing has been
  * selected (i.e., if we are not stepping through warnings), this should be -1 so that the next
  * index will be 0.
