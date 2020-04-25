@@ -35,11 +35,12 @@ Blockly.Blocks['text'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_CATEGORY_TEXT}]
 };
 
-Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection) {
+Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection, opt_value) {
   var block = myConnection.sourceBlock_;
   var otherTypeArray = otherConnection.check_;
   var shouldIgnoreError = Blockly.mainWorkspace.isLoading;
-  var value = block.getFieldValue('TEXT');
+  var value = opt_value || block.getFieldValue('TEXT');
+
   for (var i = 0; i < otherTypeArray.length; i++) {
     if (otherTypeArray[i] == "String") {
       return true;
@@ -69,23 +70,12 @@ Blockly.Blocks.text.bumpBlockOnFinishEdit = function(finalValue) {
   if (!connection) {
     return;
   }
-  if (!isNaN(parseFloat(finalValue))) {
-    // Block is a number, so no matter where it lives it is valid.
-    return;
+  // If the connections are no longer compatible.
+  if (!Blockly.Blocks.text.connectionCheck(
+      this.outputConnection, connection, finalValue)) {
+    connection.disconnect();
+    connection.sourceBlock_.bumpNeighbours_();
   }
-
-  var typeArray = connection.check_;
-  var length = typeArray.length;
-  for (var i = 0; i < length; i++) {
-    var type = typeArray[i];
-    if (type == "String" || type == "Key") {
-      // There is another valid type on the connection.
-      return;
-    }
-  } 
-
-  connection.disconnect();
-  connection.sourceBlock_.bumpNeighbours_();
 }
 
 Blockly.Blocks['text_join'] = {
