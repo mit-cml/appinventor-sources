@@ -77,8 +77,6 @@ goog.inherits(Blockly.FieldLexicalVariable, Blockly.FieldDropdown);
  * @param {string} text New text.
  */
 Blockly.FieldLexicalVariable.prototype.setValue = function(text) {
-  // TODO: Could we change this to point to the relevant PR and issue?
-
   // Fix for issue #1901. If the variable name contains a space separating two
   // words, and the first isn't "global", then replace the first word with
   // global. This fixes an issue where the translated "global" keyword was being
@@ -102,13 +100,10 @@ Blockly.FieldLexicalVariable.prototype.setValue = function(text) {
  * Update the eventparam mutation associated with the field's source block.
  */
 Blockly.FieldLexicalVariable.prototype.updateMutation = function() {
-  // TODO: I think I need someone to explain this function to me.
-
   var text = this.getText();
   // TODO: Change to if return;
   if (this.sourceBlock_ && this.sourceBlock_.getParent()) {
     this.sourceBlock_.eventparam = undefined;
-    // TODO: Is this necessary? I don't think global vars can have parents.
     if (text.indexOf(Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + ' ') === 0) {
       this.sourceBlock_.eventparam = null;
       return;
@@ -120,7 +115,6 @@ Blockly.FieldLexicalVariable.prototype.updateMutation = function() {
       if (parent.type != 'component_event') {
         for (i = 0; i < variables.length; i++) {
           if (variables[i] == text) {
-            // TODO: Wouldn't this be tracking the outermost scope?
             // Innermost scope is not an event block, so eventparam can be nulled.
             this.sourceBlock_.eventparam = null;
             return;
@@ -179,10 +173,6 @@ Blockly.FieldLexicalVariable.prototype.setCachedParent = function(parent) {
 // * Removed from prototype and stripped off "global" prefix (add it elsewhere)
 // * Add optional excluded block argument as in Neil's code to avoid global declaration being created
 Blockly.FieldLexicalVariable.getGlobalNames = function (optExcludedBlock) {
-  // TODO: Don't store global names on the warning handler. Or don't return that
-  //   cache from here.
-  //   The current method is not future-proof because if we ever forget to fire
-  //   a necessary event our cache will be incorrect.
   if (Blockly.Instrument.useLynCacheGlobalNames && Blockly.getMainWorkspace() &&
       Blockly.getMainWorkspace().getWarningHandler().cacheGlobalNames) {
     return Blockly.getMainWorkspace().getWarningHandler().cachedGlobalNames;
@@ -243,11 +233,9 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
  */
 Blockly.FieldLexicalVariable.getNamesInScope = function (block) {
   var globalNames = Blockly.FieldLexicalVariable.getGlobalNames();
-  // TODO: In what case are there duplicate names in the globals? I think we can
-  //   Move this to a simple .sort() call.
   globalNames = Blockly.LexicalVariable.sortAndRemoveDuplicates(globalNames);
   globalNames = globalNames.map(function(name) {
-    // TODO: Should the prefix function be moved into this class?
+    // TODO: Inline prefixGlobalMenuName logic. It is only called here.
     return [Blockly.prefixGlobalMenuName(name), 'global ' + name];
   });
   var allLexicalNames = Blockly.FieldLexicalVariable
@@ -455,8 +443,6 @@ Blockly.FieldLexicalVariable.nameNotIn = function(name, nameList) {
     })
     suffixesAsNumbers.sort( function(a,b) { return a-b; } );
 
-    // TODO: Is there a different loop method we could use that is more intuitive?
-    // Don't allow 0 or 1 an indices
     var smallest = 2;
     var index = 0;
     while (index < suffixesAsNumbers.length) {
@@ -677,7 +663,6 @@ Blockly.LexicalVariable.renameFree = function (block, freeSubstitution) {
  * @returns (NameSet) set of all free names in block
  */
 Blockly.LexicalVariable.freeVariables = function (block) {
-  // TODO: I need someone to explain this to me before I write tests.
   var result = [];
   if (!block) { // input and next block slots might not empty
     result = new Blockly.NameSet();
@@ -870,13 +855,11 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturablesInfo = function (so
  *     to underscores, and the isLegal property describes if the transformed
  *     identifier contains any illegal characters.
  */
-// TODO: This function is only used by makeLegalIdentifier. Can we combine them?
 Blockly.LexicalVariable.checkIdentifier = function(ident) {
   // Remove leading and trailing whitespace.
   // Replace nonempty sequences of internal spaces by underscores.
   var transformed = ident.trim().replace(/[\s\xa0]+/g, '_');
 
-  // TODO: It's been 6 years, do you think the current regex is good?
   // [lyn, 06/11/14] Previous definition focused on *legal* characters:
   //
   //    var legalRegexp = /^[a-zA-Z_\$\?~@][\w_\$\?~@]*$/;
@@ -884,9 +867,6 @@ Blockly.LexicalVariable.checkIdentifier = function(ident) {
   // Unfortunately this is geared only to English, and prevents i8n names (such
   // as Chinese identifiers). In order to handle i8n, focus on avoiding illegal
   // chars rather than accepting only legal ones. This is a quick solution.
-  // Needs more careful thought to work for every language. In particular,
-  // need to look at results of Java's Character.isJavaIdentifierStart(int) and
-  // Character.isJavaIdentifierPart(int)
 
   // Note: to take complement of character set, put ^ first.
   // Note: to include '-' in character set, put it first or right after ^
@@ -924,13 +904,7 @@ Blockly.LexicalVariable.makeLegalIdentifier = function(ident) {
 //    (1) add prefix argument,
 //    (2) handle local declaration statements/expressions, and
 //    (3) treat prefixes correctly when they're used.
-// TODO: I think this breaks the single responsibility principle. Consider
-//   splitting it into two functions, since this is only called internally.
-// TODO: Might be good to split the recursive part from the non-recursive part.
-//   I.E. Drop the env var and create a separate recursive function that
-//   takes it.
 Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
-  // TODO: Pretty sure block should never be null.
   if (! block) { // special case when block is null
     return [[],[]];
   }
@@ -1018,7 +992,6 @@ Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
 
   var blocksToRename = [];
   var capturables = [];
-  // TODO: Can we refactor this loop into a map? May not be worth it idk.
   for (var r = 0; r < referenceResults.length; r++) {
     blocksToRename = blocksToRename.concat(referenceResults[r][0]);
     capturables = capturables.concat(referenceResults[r][1]);
