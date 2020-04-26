@@ -550,8 +550,7 @@ Blockly.Blocks['local_declaration_statement'] = {
     result.subtract(new Blockly.NameSet(localNames)); // This is LET semantics, not LET* semantics, but should be changed!
     var numDecls = localNames.length;
     for (var i = 0; i < numDecls; i++) {
-      // TODO: Change to 'unite';
-      result.union(Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DECL'+i)));
+      result.unite(Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DECL'+i)));
     }
     if (this.nextConnection) {
       var nextBlock = this.nextConnection.targetBlock();

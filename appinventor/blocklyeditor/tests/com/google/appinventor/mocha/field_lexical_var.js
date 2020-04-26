@@ -1791,8 +1791,7 @@ suite ('FieldLexical', function() {
       '</xml>');
       this.assertFree(xml, ['b']);
     });
-    // TODO: Unskip once union -> unite is fixed.
-    test.skip('Lexical Out of Scope', function() {
+    test('Lexical Out of Scope', function() {
       var xml = Blockly.Xml.textToDom('<xml>' +
       '  <block type="controls_if" id="target">' +
       '    <statement name="DO0">' +
