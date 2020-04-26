@@ -1671,4 +1671,277 @@ suite ('FieldLexical', function() {
       chai.assert.equal(block.eventparam, 'someValue');
     });
   });
+  suite('freeVariables', function() {
+    setup(function() {
+      Blockly.Events.disable();
+      this.assertFree = function(xml, expectedFree) {
+        Blockly.Xml.domToWorkspace(xml, this.workspace);
+        var block = this.workspace.getBlockById('target');
+        var actualFree = Blockly.LexicalVariable.freeVariables(block);
+        //console.log(actualFree, expectedFree);
+        chai.assert.deepEqual(actualFree, new Blockly.NameSet(expectedFree));
+      }
+    })
+    teardown(function() {
+      Blockly.Events.enable();
+      delete this.assertFree;
+    })
+    test('Directly Next', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <next>' +
+      '      <block type="lexical_variable_set">' +
+      '        <field name="VAR">a</field>' +
+      '      </block>' +
+      '    </next>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['a']);
+    });
+    test('Eventually Next', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <next>' +
+      '      <block type="controls_if">' +
+      '        <next>' +
+      '          <block type="lexical_variable_set">' +
+      '            <field name="VAR">a</field>' +
+      '          </block>' +
+      '        </next>' +
+      '      </block>' +
+      '    </next>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['a']);
+    })
+    test('Directly Inside', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="lexical_variable_set">' +
+      '        <field name="VAR">a</field>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['a']);
+    });
+    test('Eventually Inside', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="controls_if">' +
+      '        <statement name="DO0">' +
+      '          <block type="lexical_variable_set">' +
+      '            <field name="VAR">a</field>' +
+      '          </block>' +
+      '        </statement>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['a']);
+    })
+    test('Free Inside Lexical', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="local_declaration_statement">' +
+      '        <mutation>' +
+      '          <localname name="a"></localname>' +
+      '        </mutation>' +
+      '        <field name="VAR0">a</field>' +
+      '        <statement name="STACK">' +
+      '          <block type="lexical_variable_set">' +
+      '            <field name="VAR">b</field>' +
+      '          </block>' +
+      '        </statement>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['b']);
+    });
+    test('Lexical In Scope', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="local_declaration_statement">' +
+      '        <mutation>' +
+      '          <localname name="a"></localname>' +
+      '        </mutation>' +
+      '        <field name="VAR0">a</field>' +
+      '        <statement name="STACK">' +
+      '          <block type="lexical_variable_set">' +
+      '            <field name="VAR">a</field>' +
+      '            <next>' +
+      '              <block type="controls_if">' +
+      '                <statement name="DO0">' +
+      '                  <block type="lexical_variable_set">' +
+      '                    <field name="VAR">b</field>' +
+      '                  </block>' +
+      '                </statement>' +
+      '              </block>' +
+      '            </next>' + 
+      '          </block>' +
+      '        </statement>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['b']);
+    });
+    // TODO: Unskip once union -> unite is fixed.
+    test.skip('Lexical Out of Scope', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="local_declaration_statement">' +
+      '        <mutation>' +
+      '          <localname name="a"></localname>' +
+      '          <localname name="b"></localname>' +
+      '        </mutation>' +
+      '        <field name="VAR0">a</field>' +
+      '        <field name="VAR1">b</field>' +
+      '        <value name="DECL1">' +
+      '          <block type="lexical_variable_get">' +
+      '            <field name="VAR">b</field>' +
+      '          </block>' +
+      '       </value>' +
+      '       <statement name="STACK">' +
+      '         <block type="lexical_variable_set">' +
+      '           <field name="VAR">a</field>' +
+      '         </block>' +
+      '       </statement>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['b']);
+    });
+    test('ForRange In Scope', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="controls_forRange">' +
+      '        <field name="VAR">a</field>' +
+      '        <value name="START">' +
+      '          <block type="lexical_variable_get">' +
+      '            <field name="VAR">a</field>' +
+      '          </block>' +
+      '        </value>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['a']);
+    });
+    test('ForRange Out of Scope', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="controls_forRange">' +
+      '        <field name="VAR">a</field>' +
+      '        <statement name="DO">' +
+      '          <block type="lexical_variable_set">' +
+      '            <field name="VAR">a</field>' +
+      '            <next>' +
+      '              <block type="lexical_variable_set">' +
+      '                <field name="VAR">b</field>' +
+      '              </block>' +
+      '            </next>' +
+      '          </block>' +
+      '        </statement>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['b']);
+    });
+    test('Foreach In Scope', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="controls_forEach">' +
+      '        <field name="VAR">a</field>' +
+      '        <value name="LIST">' +
+      '          <block type="lexical_variable_get">' +
+      '            <field name="VAR">a</field>' +
+      '          </block>' +
+      '        </value>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['a']);
+    });
+    test('Foreach Out of Scope', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="controls_forEach">' +
+      '        <field name="VAR">a</field>' +
+      '        <statement name="DO">' +
+      '          <block type="lexical_variable_set">' +
+      '          <field name="VAR">a</field>' +
+      '            <next>' +
+      '              <block type="lexical_variable_set">' +
+      '                <field name="VAR">b</field>' +
+      '              </block>' +
+      '            </next>' +
+      '          </block>' +
+      '        </statement>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['b']);
+    })
+    test('Foreach Dict In Scope', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="controls_for_each_dict">' +
+      '        <field name="KEY">a</field>' +
+      '        <field name="VALUE">b</field>' +
+      '        <value name="DICT">' +
+      '          <block type="lexical_variable_get">' +
+      '            <field name="VAR">a</field>' +
+      '          </block>' +
+      '        </value>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['a']);
+    });
+    test('Foreach Dict Out of Scope', function() {
+      var xml = Blockly.Xml.textToDom('<xml>' +
+      '  <block type="controls_if" id="target">' +
+      '    <statement name="DO0">' +
+      '      <block type="controls_for_each_dict">' +
+      '        <field name="KEY">a</field>' +
+      '        <field name="VALUE">b</field>' +
+      '        <statement name="DO">' +
+      '          <block type="lexical_variable_set">' +
+      '            <field name="VAR">a</field>' +
+      '            <next>' +
+      '              <block type="lexical_variable_set">' +
+      '                <field name="VAR">b</field>' +
+      '                <next>' +
+      '                   <block type="lexical_variable_set">' +
+      '                     <field name="VAR">c</field>' +
+      '                   </block>' +
+      '                 </next>' +
+      '              </block>' +
+      '            </next>' +
+      '          </block>' +
+      '        </statement>' +
+      '      </block>' +
+      '    </statement>' +
+      '  </block>' +
+      '</xml>');
+      this.assertFree(xml, ['c']);
+    })
+  })
 });
