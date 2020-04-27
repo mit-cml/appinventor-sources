@@ -1578,6 +1578,7 @@ suite ('FieldLexical', function() {
   });
   suite('updateMutation', function() {
     setup(function() {
+      Blockly.Events.disable();
       this.oldDef = {};
       Object.assign(this.oldDef, Blockly.Blocks['component_event']);
 
@@ -1595,15 +1596,11 @@ suite ('FieldLexical', function() {
           return [{name: 'test'}];
         }
       }
-
-      this.toDomStub = sinon.stub(Blockly.LexicalVariable, 'eventParamMutationToDom');
-      this.toMutationStub = sinon.stub(Blockly.LexicalVariable, 'eventParamDomToMutation');
     });
     teardown(function() {
       this.workspace.clear();
       Blockly.Blocks['component_event'] = this.oldDef;
-      this.toDomStub.restore();
-      this.toMutationStub.restore();
+      Blockly.Events.enable();
     });
     test('Is Event Param', function() {
       // Component mutator is emitted for simplicity.
