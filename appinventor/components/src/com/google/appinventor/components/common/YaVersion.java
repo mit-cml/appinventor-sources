@@ -510,8 +510,10 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 31
   // For YOUNG_ANDROID_VERSION 206:
   // - YANDEX_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 207:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 32
 
-  public static final int YOUNG_ANDROID_VERSION = 206;
+  public static final int YOUNG_ANDROID_VERSION = 207;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -591,8 +593,10 @@ public class YaVersion {
   // - The Reverse Text block was added
   // For BLOCKS_LANGUAGE_VERSION 31
   // - The replace-all-mappings block was added.
+  // For BLOCKS_LANGUAGE_VERSION 32
+  // - The and/or blocks gained mutators.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 31;
+  public static final int BLOCKS_LANGUAGE_VERSION = 32;
 
   // ................................. Target SDK Version Number ..................................
 

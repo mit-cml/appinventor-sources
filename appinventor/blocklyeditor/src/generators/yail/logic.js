@@ -51,7 +51,12 @@ Blockly.Yail['logic_operation'] = function() {
   var argument1 = Blockly.Yail.valueToCode(this, 'B', order) || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_OPEN_COMBINATION + operator
       + Blockly.Yail.YAIL_SPACER + argument0 + Blockly.Yail.YAIL_SPACER
-      + argument1 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+      + argument1;
+  for (var i = 2; i < this.itemCount_; i++) {
+    var arg = Blockly.Yail.valueToCode(this, this.repeatingInputName + i, order) || Blockly.Yail.YAIL_FALSE;
+    code += Blockly.Yail.YAIL_SPACER + arg;
+  }
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
