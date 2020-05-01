@@ -14,6 +14,8 @@
 
 goog.provide('AI.Blockly.WarningHandler');
 
+goog.require('Blockly.Blocks.Utilities');
+
 Blockly.WarningHandler = function(workspace) {
   this.workspace = workspace;
   this.allBlockErrors = [{name:'checkReplErrors'}];
@@ -36,15 +38,6 @@ Blockly.WarningHandler.WarningState = {
   WARNING: 1,
   ERROR: 2
 };
-
-/**
- * Regular expression for floating point numbers.
- *
- * @type {!RegExp}
- * @const
- */
-Blockly.WarningHandler.NUMBER_REGEX =
-  new RegExp("^[-+]?[0-9]*(\\.[0-9]+)?([eE][-+][0-9]+)?$")
 
 /**
  * The currently selected index into the array of block IDs with warnings. If nothing has been
@@ -465,7 +458,7 @@ Blockly.WarningHandler.prototype['checkInvalidNumber'] = function(block) {
   var value = block.getFieldValue('TEXT');
   if (targetChecks && targetChecks.indexOf('String') == -1 &&
       targetChecks.indexOf('Number') >= 0 &&
-      (value == '' || !Blockly.WarningHandler.NUMBER_REGEX.test(value))) {
+      (value == '' || !Blockly.Blocks.Utilities.NUMBER_REGEX.test(value))) {
     block.setErrorIconText(Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT);
     return true;
   }

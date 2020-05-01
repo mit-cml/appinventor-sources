@@ -34,6 +34,7 @@ Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection) {
   var block = myConnection.sourceBlock_;
   var otherTypeArray = otherConnection.check_;
   var shouldIgnoreError = Blockly.mainWorkspace.isLoading;
+  var value = block.getFieldValue('TEXT');
   for (var i = 0; i < otherTypeArray.length; i++) {
     if (otherTypeArray[i] == "String") {
       return true;
@@ -41,8 +42,9 @@ Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection) {
       if (shouldIgnoreError) {
         // Error may be noted by WarningHandler's checkInvalidNumber
         return true;
-      } else if (!isNaN(parseFloat(block.getFieldValue('TEXT')))) {
-        return true;
+      } else if (Blockly.Blocks.Utilities.NUMBER_REGEX.test(value)) {
+        // Value passes a floating point regex
+        return !isNaN(parseFloat(value));
       }
     } else if (otherTypeArray[i] == "Key") {
       return true;
