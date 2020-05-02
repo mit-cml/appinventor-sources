@@ -14,6 +14,7 @@
 goog.provide('AI.Blockly.WorkspaceSvg');
 
 goog.require('Blockly.WorkspaceSvg');
+goog.require('AI.Blockly.WarningHandler');
 
 /**
  * AI2 Blocks Drawer

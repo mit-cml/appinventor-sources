@@ -12,6 +12,8 @@
 
 goog.provide('Blockly.Blocks.text');
 
+goog.require('Blockly.BlockColors');
+goog.require('Blockly.FieldTextBlockInput');
 goog.require('Blockly.Blocks.Utilities');
 
 Blockly.Blocks['text'] = {

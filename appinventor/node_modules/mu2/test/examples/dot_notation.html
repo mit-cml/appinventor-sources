@@ -1,0 +1,5 @@
+Hello {{person.name}}
+You have just won ${{price.value}}!
+{{#person.in_ca}}
+Well, ${{ states.ca.taxed_value }}, after taxes.
+{{/person.in_ca}}

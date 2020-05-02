@@ -15,12 +15,20 @@
 
 goog.provide('AI.Blockly.BlocklyEditor');
 
+goog.require('Blockly');
+
 goog.require('AI.Blockly.Drawer');
+goog.require('AI.Blockly.Input');
+goog.require('AI.Blockly.BlockSvg');
+goog.require('AI.Blockly.WorkspaceSvg');
 
 // App Inventor extensions to Blockly
 goog.require('Blockly.TypeBlock');
 
-goog.require('Blockly.Flyout');
+goog.require('AI.Blockly.Backpack');
+goog.require('Blockly.Yail');
+goog.require('AI.Blockly.ReplMgr');
+goog.require('AI.Extras');
 
 // Make dragging a block from flyout work in any direction (default: 70)
 Blockly.Flyout.prototype.dragAngleRange_ = 360;

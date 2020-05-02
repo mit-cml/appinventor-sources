@@ -21,9 +21,7 @@ goog.require('goog.Timer');
  * Released under The MIT License (MIT)
  */
 
-(function() {
-  var out$ = typeof exports != 'undefined' && exports || this;
-
+(function(out$) {
   var doctype = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
 
   function isExternal(url) {
@@ -206,14 +204,14 @@ goog.require('goog.Timer');
         }
       });
   }
-})();
+})(Blockly.ExportBlocksImage);
 
 /**
  * Call to initiate blockly SVG conversion to PNG
  *
  */
 Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace) {
-  saveSvgAsPng((opt_workspace || Blockly.getMainWorkspace()).svgBlockCanvas_, "blocks.png", metrics);
+  Blockly.ExportBlocksImage.saveSvgAsPng((opt_workspace || Blockly.getMainWorkspace()).svgBlockCanvas_, "blocks.png", metrics);
 }
 
 
@@ -228,7 +226,7 @@ Blockly.ExportBlocksImage.getUri = function(callback, opt_workspace) {
   if (metrics == null || metrics.viewHeight == 0) {
     return null;
   }
-  svgAsDataUri(workspace.svgBlockCanvas_, metrics, {},
+  Blockly.ExportBlocksImage.svgAsDataUri(workspace.svgBlockCanvas_, metrics, {},
     function(uri) {
       var image = new Image();
       image.onload = function() {
@@ -457,7 +455,7 @@ Blockly.exportBlockAsPng = function(block) {
   var xml = document.createElement('xml');
   xml.appendChild(Blockly.Xml.blockToDom(block, true));
   var code = Blockly.Xml.domToText(xml);
-  svgAsDataUri(block.svgGroup_, block.workspace.getMetrics(), null, function(uri) {
+  Blockly.ExportBlocksImage.svgAsDataUri(block.svgGroup_, block.workspace.getMetrics(), null, function(uri) {
     var img = new Image();
     img.src = uri;
     img.onload = function() {

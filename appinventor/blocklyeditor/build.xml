@@ -117,6 +117,10 @@
 				<arg value="tests/com/google/appinventor/mocha/index.html"/>
 				<arg value="xunit"/>
 			</exec>
+                        <exec executable="../node_modules/.bin/karma" failonerror="true">
+                          <arg value="start"/>
+                          <arg value="karma.conf.js"/>
+                        </exec>
 			<!--Remove anything before the first < (start of xml)-->
 			<replaceregexp file="reports/raw/TEST-MochaTests.xml"
 				match="^[^&lt;]*"

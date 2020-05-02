@@ -8,13 +8,22 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "karma": "^5.0.4",
+    "karma-chai": "^0.1.0",
+    "karma-closure": "^0.1.3",
+    "karma-coverage": "^2.0.2",
+    "karma-html-reporter": "^0.2.7",
+    "karma-junit-reporter": "^2.0.1",
+    "karma-mocha": "^2.0.1",
+    "karma-phantomjs-launcher": "^1.0.4",
     "mocha": "^7.1.1",
     "mocha-phantomjs-core": "^1.1.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "cd blocklyeditor && karma start"
   },
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {}
 }

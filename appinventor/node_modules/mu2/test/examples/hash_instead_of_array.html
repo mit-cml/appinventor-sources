@@ -1,0 +1,3 @@
+{{#person}}
+  Name: {{name}}
+{{/person}}
