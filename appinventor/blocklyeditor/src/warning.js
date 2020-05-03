@@ -11,7 +11,7 @@
 
 'use strict';
 
-goog.provide('AI2.Blockly.Warning');
+goog.provide('AI.Blockly.Warning');
 
 goog.require('Blockly.Warning');
 

@@ -18,6 +18,8 @@
 
 goog.provide('AI.Blockly.Input');
 
+goog.require('Blockly.Input');
+
 /**
  * Add an item to the end of the input's field row.
  *

@@ -10,18 +10,9 @@
 'use strict';
 
 goog.provide('Blockly.Yail');
+goog.provide('AI.Blockly.Yail');
 
 goog.require('Blockly.Generator');
-goog.require('Blockly.Yail.componentblock');
-goog.require('Blockly.Yail.lists');
-goog.require('Blockly.Yail.math');
-goog.require('Blockly.Yail.control');
-goog.require('Blockly.Yail.logic');
-goog.require('Blockly.Yail.text');
-goog.require('Blockly.Yail.color');
-goog.require('Blockly.Yail.variables');
-goog.require('Blockly.Yail.procedures');
-goog.require('Blockly.Yail.dictionaries');
 
 Blockly.Yail = new Blockly.Generator('Yail');
 

@@ -1,6 +1,7 @@
 'use strict';
 
 goog.provide('AI.Events');
+goog.provide('AI.Blockly.Events');
 
 goog.require('Blockly.Events');
 

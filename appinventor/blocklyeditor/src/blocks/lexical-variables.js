@@ -78,6 +78,9 @@ function myStringify (obj) {
 goog.provide('Blockly.Blocks.lexicalvariables');
 goog.require('Blockly.Blocks.Utilities');
 goog.require('goog.dom');
+goog.require('AI.Blockly.FieldLexicalVariable');
+goog.require('AI.Blockly.FieldGlobalFlydown');
+goog.require('AI.Blockly.FieldParameterFlydown');
 
 /**
  * Prototype bindings for a global variable declaration block

@@ -14,7 +14,13 @@
 goog.provide('AI.Blockly.WorkspaceSvg');
 
 goog.require('Blockly.WorkspaceSvg');
+goog.require('AI.Blockly.Backpack');
+goog.require('AI.Blockly.ConnectionDB');
+goog.require('AI.Blockly.Workspace');
+goog.require('AI.Blockly.Warning');
 goog.require('AI.Blockly.WarningHandler');
+goog.require('AI.Blockly.WarningIndicator');
+goog.require('AI.Blockly.ExportBlocksImage');
 
 /**
  * AI2 Blocks Drawer

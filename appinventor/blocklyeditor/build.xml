@@ -25,114 +25,114 @@
           depends="BlocklyTestbed, BlocklyeditorTests">
   </target>
 
-	<!-- =====================================================================
+  <!-- =====================================================================
        Import common directory, task, and target definitions.
        ===================================================================== -->
 
-	<import file="../build-common.xml" />
+  <import file="../build-common.xml" />
 
-	<!-- =====================================================================
+  <!-- =====================================================================
        Define base package path.
        ===================================================================== -->
-	<property name="blocklyeditor.pkg" value="com/google/appinventor/blocklyeditor" />
+  <property name="blocklyeditor.pkg" value="com/google/appinventor/blocklyeditor" />
 
-	<property name="local.lib.dir" location="lib" />
-	<property name="run.dir" location="${local.build.dir}/run" />
-	<property name="run.lib.dir" location="${run.dir}/lib" />
+  <condition property="optimization" value="SIMPLE" else="BUNDLE">
+    <and>
+      <isset property="release"/>
+      <equals arg1="${release}" arg2="true"/>
+    </and>
+  </condition>
 
-	<property name="blockly.src.dir" location="${lib.dir}/blockly" />
+  <property name="local.lib.dir" location="lib" />
+  <property name="run.dir" location="${local.build.dir}/run" />
+  <property name="run.lib.dir" location="${run.dir}/lib" />
 
-	<!-- =====================================================================
+  <property name="blockly.src.dir" location="${lib.dir}/blockly" />
+
+  <!-- =====================================================================
        Targets
        ===================================================================== -->
 
-        <target name="CheckBlocklyCompile">
-          <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
-            <srcfiles dir="src/" includes="**/*.js" />
-            <srcfiles dir="${blockly.src.dir}/" includes="core/**/*.js" />
-            <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
-            <srcfiles dir="${basedir}" includes="ploverConfig.js" />
-            <!-- <mapper type="merge" to="${public.build.dir}/blockly-all.js" /> -->
-          </uptodate>
-        </target>
+  <target name="CheckBlocklyCompile">
+    <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
+      <srcfiles dir="src/" includes="**/*.js" />
+      <srcfiles dir="${blockly.src.dir}/" includes="core/**/*.js" />
+      <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
+    </uptodate>
+  </target>
 
-	<target name="BlocklyCompile"
-		      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library"
-		      depends="init,CheckBlocklyCompile"
-                      unless="BlocklyCompile.uptodate">
-		<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
-			<arg line="build ploverConfig.js" />
-		</java>
-	</target>
+  <target name="BlocklyCompile"
+	  description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library"
+	  depends="init,CheckBlocklyCompile"
+          unless="BlocklyCompile.uptodate">
+    <java failonerror="true" fork="true" jar="${lib.dir}/closure-compiler/closure-compiler-v20190909.jar">
+      <arg line="-O ${optimization}"/>
+      <arg line="--js_output_file=${public.build.dir}/blockly-all.js"/>
+      <arg line="--create_source_map=${public.build.dir}/blockly-all.js.map"/>
+      <arg line="--entry_point=goog:AI.Blockly.BlocklyEditor"/>
+      <arg line="--language_out=ECMASCRIPT5"/>
+      <arg line="src/**.js"/>
+      <arg line="${lib.dir}/blockly/core/**.js"/>
+      <arg line="${lib.dir}/blockly/msg/js/**.js"/>
+      <arg line="${lib.dir}/closure-library/closure/goog/**.js"/>
+    </java>
+  </target>
 
-	<!--  property name="js.tests.dir" location="./tests" /-->
-	<!-- Change as needed -->
-
-	<!--target name="tests">
-    <exec executable="phantomjs" failonerror="true">
-      <arg path="${js.tests.dir}/buttonClickTest.js"/>
-    </exec>
-  </target-->
-
-	<!-- =====================================================================
+  <!-- =====================================================================
        BlocklyeditorTests: build and run the Blocklyeditor tests and
        generate the output results
        ===================================================================== -->
 
-	<target name="BlocklyTestbed"
-		      description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser"
-		      depends="components_AndroidRuntime, common_CommonTestUtils">
-		<mkdir dir="${run.lib.dir}" />
+  <target name="BlocklyTestbed"
+	  description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser"
+	  depends="components_AndroidRuntime, common_CommonTestUtils">
+    <mkdir dir="${run.lib.dir}" />
 
-		<echo message="var componentTypeJson = " file="${public.build.dir}/component-types.js" />
-		<concat destfile="${public.build.dir}/component-types.js" append="true">
-			<fileset file="${build.dir}/components/simple_components.json" />
-		</concat>
-		<mkdir dir="${public.build.dir}/media" />
-		<copy todir="${public.build.dir}/media">
-			<fileset dir="${blockly.src.dir}/media" />
-		</copy>
-	</target>
+    <echo message="var componentTypeJson = " file="${public.build.dir}/component-types.js" />
+    <concat destfile="${public.build.dir}/component-types.js" append="true">
+      <fileset file="${build.dir}/components/simple_components.json" />
+    </concat>
+    <mkdir dir="${public.build.dir}/media" />
+    <copy todir="${public.build.dir}/media">
+      <fileset dir="${blockly.src.dir}/media" />
+    </copy>
+  </target>
 
-	<path id="libsForBlocklyeditorTests.path">
-		<fileset dir="${run.lib.dir}" includes="*.jar" />
-		<pathelement location="${build.dir}/common/CommonTestUtils.jar" />
-                <pathelement location="${build.dir}/components/CommonConstants.jar" />
-		<pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
-	</path>
+  <path id="libsForBlocklyeditorTests.path">
+    <fileset dir="${run.lib.dir}" includes="*.jar" />
+    <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
+    <pathelement location="${build.dir}/components/CommonConstants.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+  </path>
 
-	<path id="BlocklyeditorTests.path">
-		<path refid="libsForBlocklyeditorTests.path" />
-		<pathelement location="${local.build.dir}/BlocklyeditorTests.jar" />
-	</path>
+  <path id="BlocklyeditorTests.path">
+    <path refid="libsForBlocklyeditorTests.path" />
+    <pathelement location="${local.build.dir}/BlocklyeditorTests.jar" />
+  </path>
 
-	<target name="BlocklyeditorTests"
-		      description="Blocklyeditor: build and run the test suite"
-		      depends="BlocklyCompile, BlocklyTestbed" >
-		<sequential>
-			<ai.dojunit aij-testingtarget="BlocklyeditorTests" aij-dir="${blocklyeditor.pkg}">
-			</ai.dojunit>
-			<exec executable="phantomjs" output="reports/raw/TEST-MochaTests.xml">
-				<arg value="../node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js"/>
-				<arg value="tests/com/google/appinventor/mocha/index.html"/>
-				<arg value="xunit"/>
-			</exec>
-                        <exec executable="../node_modules/.bin/karma" failonerror="true">
-                          <arg value="start"/>
-                          <arg value="karma.conf.js"/>
-                        </exec>
-			<!--Remove anything before the first < (start of xml)-->
-			<replaceregexp file="reports/raw/TEST-MochaTests.xml"
-				match="^[^&lt;]*"
-				replace=""/>
-			<!--Add package name to file-->
-			<replace file="reports/raw/TEST-MochaTests.xml"
-					 token="name=&quot;Mocha Tests&quot;"
-					 value="name=&quot;com.google.appinventor.blocklyeditor.MochaTests&quot;"/>
-			<junitreport todir="${reports.dir}">
-				<fileset file="reports/raw/TEST-*.xml"/>
-				<report format="frames" todir="${reports.dir}/html"/>
-			</junitreport>
-		</sequential>
-	</target>
+  <target name="BlocklyeditorTests"
+	  description="Blocklyeditor: build and run the test suite"
+	  depends="BlocklyCompile, BlocklyTestbed" >
+    <sequential>
+      <ai.dojunit aij-testingtarget="BlocklyeditorTests" aij-dir="${blocklyeditor.pkg}">
+      </ai.dojunit>
+      <exec executable="../node_modules/.bin/karma" failonerror="true">
+        <arg value="start"/>
+        <arg value="karma.conf.js"/>
+      </exec>
+      <!--Remove anything before the first < (start of xml)-->
+      <!--
+      <replaceregexp file="reports/raw/TEST-MochaTests.xml"
+		     match="^[^&lt;]*"
+		     replace=""/>-->
+      <!--Add package name to file-->
+      <replaceregexp file="reports/raw/TEST-MochaTests.xml"
+	             match="name=&quot;PhantomJS[^&quot;]*&quot;"
+	             replace="name=&quot;com.google.appinventor.blocklyeditor.MochaTests&quot;"/>
+      <junitreport todir="${reports.dir}">
+	<fileset file="reports/raw/TEST-*.xml"/>
+	<report format="frames" todir="${reports.dir}/html"/>
+      </junitreport>
+    </sequential>
+  </target>
 </project>

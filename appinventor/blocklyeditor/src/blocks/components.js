@@ -15,6 +15,7 @@
 goog.provide('AI.Blockly.Blocks.components');
 goog.provide('AI.Blockly.ComponentBlock');
 goog.require('Blockly.Blocks.Utilities');
+goog.require('AI.Blockly.FieldParameterFlydown');
 
 Blockly.Blocks.components = {};
 Blockly.ComponentBlock = {};

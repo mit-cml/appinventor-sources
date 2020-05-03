@@ -12,7 +12,7 @@
 
 'use strict';
 
-goog.provide('Blockly.BlockColors');
+goog.provide('AI.Blockly.BlockColors');
 
 Blockly.HSV_SATURATION = 0.7;
 Blockly.CONTROL_CATEGORY_HUE = "#B18E35";  // [177, 143, 53]
