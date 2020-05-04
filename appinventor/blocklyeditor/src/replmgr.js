@@ -1115,11 +1115,13 @@ Blockly.ReplMgr.processRetvals = function(responses) {
 };
 
 Blockly.ReplMgr.setDoitResult = function(block, value) {
-    var patt = /Do It Result:.*?\n---\n/m;
-    var result = 'Do It Result: ' + value + '\n---\n';
+    var oldPatt = /Do It Result:.*?\n---\n/m;
+    var patt = new RegExp(Blockly.Msg.DO_IT + ':.*?\n---\n');
+    var result = Blockly.Msg.DO_IT + ': ' + value + '\n---\n';
     var text = "";
+
     if (block.comment) {
-        text = block.comment.getText();
+        text = block.comment.getText().replace(oldPatt, '');
     }
     if (!text) {
         text = result;
