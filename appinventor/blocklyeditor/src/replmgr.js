@@ -1116,8 +1116,8 @@ Blockly.ReplMgr.processRetvals = function(responses) {
 
 Blockly.ReplMgr.setDoitResult = function(block, value) {
     var oldPatt = /Do It Result:.*?\n---\n/m;
-    var patt = new RegExp(Blockly.Msg.DO_IT + ':.*?\n---\n');
-    var result = Blockly.Msg.DO_IT + ': ' + value + '\n---\n';
+    var patt = new RegExp(Blockly.Msg.DO_IT_RESULT + '.*?\n---\n');
+    var result = Blockly.Msg.DO_IT_RESULT + ' ' + value + '\n---\n';
     var text = "";
 
     if (block.comment) {
