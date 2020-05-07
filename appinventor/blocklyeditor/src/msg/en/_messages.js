@@ -1623,6 +1623,7 @@ Blockly.Msg.en.switch_language_to_english = {
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "Generate Yail";
     Blockly.Msg.DO_IT = "Do It";
+    Blockly.Msg.DO_IT_RESULT = "Do It Result:";
     Blockly.Msg.DO_IT_DISCONNECTED = 'Do It (Companion not connected)';
     Blockly.Msg.CLEAR_DO_IT_ERROR = "Clear Error";
     Blockly.Msg.CAN_NOT_DO_IT = "Cannot Do it";
