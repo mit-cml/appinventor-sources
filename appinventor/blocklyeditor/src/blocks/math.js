@@ -50,7 +50,7 @@ Blockly.Blocks.math_number.validator = function (text) {
 Blockly.Blocks['math_number_radix'] = {
   category:'Math',
 
-  helpUrl: Blockly.Msg.LANG_MATH_NUMBER_RADIX_TOOLTIP,
+  helpUrl: Blockly.Msg.LANG_MATH_NUMBER_RADIX_HELPURL,
 
   init: function() {
     this.dropdown = new Blockly.FieldDropdown([
