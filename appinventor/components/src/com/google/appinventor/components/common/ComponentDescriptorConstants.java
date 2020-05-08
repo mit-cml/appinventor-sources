@@ -20,6 +20,8 @@ public final class ComponentDescriptorConstants {
   public static final String ASSET_DIRECTORY = "component";
   public static final String ASSETS_TARGET = "assets";
   public static final String ACTIVITIES_TARGET = "activities";
+  public static final String METADATA_TARGET = "metadata";
+  public static final String ACTIVITY_METADATA_TARGET = "activityMetadata";
   public static final String LIBRARIES_TARGET = "libraries";
   public static final String NATIVE_TARGET = "native";
   public static final String PERMISSIONS_TARGET = "permissions";

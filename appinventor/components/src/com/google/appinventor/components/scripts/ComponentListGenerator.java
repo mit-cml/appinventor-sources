@@ -81,6 +81,8 @@ public final class ComponentListGenerator extends ComponentProcessor {
     appendComponentInfo(sb, ComponentDescriptorConstants.NATIVE_TARGET, component.nativeLibraries);
     appendComponentInfo(sb, ComponentDescriptorConstants.ASSETS_TARGET, component.assets);
     appendComponentInfo(sb, ComponentDescriptorConstants.ACTIVITIES_TARGET, component.activities);
+    appendComponentInfo(sb, ComponentDescriptorConstants.METADATA_TARGET, component.metadata);
+    appendComponentInfo(sb, ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET, component.activityMetadata);
     appendComponentInfo(sb, ComponentDescriptorConstants.ANDROIDMINSDK_TARGET, Collections.singleton(Integer.toString(component.getAndroidMinSdk())));
     appendComponentInfo(sb, ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET, component.broadcastReceivers);
     appendConditionalComponentInfo(component, sb);
