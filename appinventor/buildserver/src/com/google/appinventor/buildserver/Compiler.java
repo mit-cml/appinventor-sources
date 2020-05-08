@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -794,11 +794,7 @@ public final class Compiler {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<adaptive-icon " + "xmlns:android=\"http://schemas.android.com/apk/res/android\" " + ">\n");
       out.write("<background android:drawable=\"@color/ic_launcher_background\" />\n");
-      if (isRound) {
-        out.write("<foreground android:drawable=\"@mipmap/ic_launcher_round\" />\n");
-      }else{
-        out.write("<foreground android:drawable=\"@mipmap/ic_launcher_foreground\" />\n");
-      }
+      out.write("<foreground android:drawable=\"@mipmap/ic_launcher_foreground\" />\n");
       out.write("</adaptive-icon>\n");
       out.close();
     } catch (IOException e) {
@@ -901,11 +897,21 @@ public final class Compiler {
 
       // Remove Google's Forbidden Permissions
       // This code is crude because we had to do this on short notice
+      // List of permissions taken from
+      // https://support.google.com/googleplay/android-developer/answer/9047303#intended
       if (isForCompanion && !includeDangerousPermissions) {
+        // Default SMS handler
+        permissions.remove("android.permission.READ_SMS");
+        permissions.remove("android.permission.RECEIVE_MMS");
         permissions.remove("android.permission.RECEIVE_SMS");
+        permissions.remove("android.permission.RECEIVE_WAP_PUSH");
         permissions.remove("android.permission.SEND_SMS");
+        permissions.remove("android.permission.WRITE_SMS");
+        // Default Phone handler
         permissions.remove("android.permission.PROCESS_OUTGOING_CALLS");
         permissions.remove("android.permission.CALL_PHONE");
+        permissions.remove("android.permission.READ_CALL_LOG");
+        permissions.remove("android.permission.WRITE_CALL_LOG");
       }
 
       for (String permission : permissions) {
@@ -984,7 +990,8 @@ public final class Compiler {
 
         // The keyboard option prevents the app from stopping when a external (bluetooth)
         // keyboard is attached.
-        out.write("android:configChanges=\"orientation|screenSize|keyboardHidden|keyboard\">\n");
+        out.write("android:configChanges=\"orientation|screenSize|keyboardHidden|keyboard|"
+            + "screenLayout|smallestScreenSize\">\n");
 
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
@@ -1765,8 +1772,9 @@ public final class Compiler {
    */
   private BufferedImage produceForegroundImageIcon(BufferedImage icon) {
     int imageWidth = icon.getWidth();
-    // Ratio of icon size to png image size for foreground/round icon is 0.80
-    double iconWidth = imageWidth * 0.80;
+    // According to the adaptive icon documentation, both layers are 108x108dp but only the inner
+    // 72x72dp appears in the masked viewport, so we shrink down the size of the image accordingly.
+    double iconWidth = imageWidth * 72.0 / 108.0;
     // Round iconWidth value to even int for a centered png
     int intIconWidth = ((int)Math.round(iconWidth / 2) * 2);
     Image tmp = icon.getScaledInstance(intIconWidth, intIconWidth, Image.SCALE_SMOOTH);

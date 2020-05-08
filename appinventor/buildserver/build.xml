@@ -48,7 +48,7 @@
        the jars needed to compile the build server classes.
        ===================================================================== -->
   <target name="BuildServer"
-          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_Barcode,components_ComponentList">
+          depends="init,CopyToRunLibDir,components_AndroidRuntime">
     <property name="BuildServer-class.dir" location="${class.dir}/BuildServer" />
     <mkdir dir="${BuildServer-class.dir}" />
 
@@ -64,7 +64,7 @@
     <copy todir="${classes.files.dir}" flatten="true">
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
-               includes="AndroidRuntime.jar,Barcode.jar,simple_components.txt,simple_components_build_info.json,simple_components.json"/>
+               includes="AndroidRuntime.jar,simple_components.txt,simple_components_build_info.json,simple_components.json"/>
       <!-- Map assets for build server -->
       <fileset dir="${lib.dir}/leaflet" includes="leaflet.js,leaflet.css" />
       <fileset dir="${lib.dir}/leaflet/assets" includes="*"/>
@@ -217,7 +217,7 @@
        PlayAppExtras: builds ../build/buildserver/MITAI2Companion-full.apk
        ===================================================================== -->
   <target name="PlayAppExtras"
-          depends="CheckPlayAppExtras"
+          depends="CheckPlayAppExtras,PlayApp"
           unless="PlayAppExtras.uptodate">
     <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
       <classpath>
@@ -255,7 +255,7 @@
        Emulator: builds ../build/buildserver/Emulator.apk
        ===================================================================== -->
   <target name="Emulator"
-          depends="CheckEmulator"
+          depends="CheckEmulator,PlayAppExtras"
           unless="Emulator.uptodate">
     <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
       <classpath>

@@ -44,6 +44,7 @@
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
                     <a class="dropdown-item"
                        href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
 		</div>
 	    </li>
 	    <li class="nav-item dropdown">
@@ -81,6 +82,7 @@
                        target="_blank">Open Source Information</a>
 	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
                     <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
 		</div>
 	    </li>
             <li class="nav-item dropdown">
@@ -143,131 +145,186 @@
 
 <h2 id="Camcorder">Camcorder</h2>
 
+<p><img src="images/camcorder.png" alt="Camcorder icon" /></p>
+
+<p>A component to record a video using the device’s camcorder. After the video is recorded, the
+ name of the file on the phone containing the clip is available as an argument to the
+ <a href="#Camcorder.AfterRecording"><code class="highlighter-rouge">AfterRecording</code></a> event. The file name can be used, for example, to set the source
+ property of a <a href="#VideoPlayer"><code class="highlighter-rouge">VideoPlayer</code></a> component.</p>
+
+<h3 id="Camcorder-Properties">Properties</h3>
+
+<p class="properties">None</p>
+
 <h3 id="Camcorder-Events">Events</h3>
 
 <dl class="events">
   <dt id="Camcorder.AfterRecording">AfterRecording(<em class="text">clip</em>)</dt>
   <dd>Indicates that a video was recorded with the camera and provides the path to
- the stored picture.</dd>
+ the stored video.</dd>
 </dl>
 
 <h3 id="Camcorder-Methods">Methods</h3>
 
 <dl class="methods">
   <dt id="Camcorder.RecordVideo" class="method"><i></i> RecordVideo()</dt>
-  <dd>Records a video, then raises the AfterRecoding event.</dd>
+  <dd>Records a video, then raises the <a href="#Camcorder.AfterRecording"><code class="highlighter-rouge">AfterRecording</code></a> event.</dd>
 </dl>
 
 <h2 id="Camera">Camera</h2>
 
+<p><img src="images/camera.png" alt="Camera icon" /></p>
+
+<p>Use a camera component to take a picture on the phone.</p>
+
+<p><code class="highlighter-rouge">Camera</code> is a non-visible component that takes a picture using the device’s camera. After the
+ picture is taken, the path to the file on the phone containing the picture is available as an
+ argument to the <a href="#Camera.AfterPicture"><code class="highlighter-rouge">AfterPicture</code></a> event. The path can be used, for example, as the
+ <a href="userinterface.html#Image.Picture"><code class="highlighter-rouge">Picture</code></a> property of an <a href="userinterface.html3Image"><code class="highlighter-rouge">Image</code></a>
+ component.</p>
+
 <h3 id="Camera-Properties">Properties</h3>
 
-<dl class="properties">
-  <dt id="Camera.UseFront" class="boolean bo"><em>UseFront</em></dt>
-  <dd>Returns true if the front-facing camera is to be used (when available)</dd>
-</dl>
+<p class="properties">None</p>
 
 <h3 id="Camera-Events">Events</h3>
 
 <dl class="events">
   <dt id="Camera.AfterPicture">AfterPicture(<em class="text">image</em>)</dt>
-  <dd>Indicates that a photo was taken with the camera and provides the path to
- the stored picture.</dd>
+  <dd>Called after the picture is taken. The text argument <code class="highlighter-rouge">image</code> is the path that can be used to
+ locate the image on the phone.</dd>
 </dl>
 
 <h3 id="Camera-Methods">Methods</h3>
 
 <dl class="methods">
   <dt id="Camera.TakePicture" class="method"><i></i> TakePicture()</dt>
-  <dd>Takes a picture, then raises the AfterPicture event.
- If useFront is true, adds an extra to the intent that requests the front-facing camera.</dd>
+  <dd>Takes a picture, then raises the <a href="#Camera.AfterPicture"><code class="highlighter-rouge">AfterPicture</code></a> event.</dd>
 </dl>
 
 <h2 id="ImagePicker">ImagePicker</h2>
+
+<p>A special-purpose button. When the user taps an <code class="highlighter-rouge">ImagePicker</code>, the device’s image gallery
+ appears, and the user can choose an image. After an image is picked, it is saved, and the
+ <a href="#ImagePicker.Selection"><code class="highlighter-rouge">Selection</code></a> property will be the name of the file where the image is stored. In order
+ to not fill up storage, a maximum of 10 images will be stored. Picking more images will delete
+ previous images, in order from oldest to newest.</p>
 
 <h3 id="ImagePicker-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="ImagePicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
-  <dd>Returns the button’s background color</dd>
+  <dd>Specifies the <code class="highlighter-rouge">ImagePicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
   <dt id="ImagePicker.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>If set, user can tap ImagePicker to cause action.</dd>
+  <dd>Specifies whether the <code class="highlighter-rouge">ImagePicker</code> should be active and clickable.</dd>
   <dt id="ImagePicker.FontBold" class="boolean"><em>FontBold</em></dt>
-  <dd>If set, ImagePicker text is displayed in bold.</dd>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">ImagePicker</code> should be bold.
+ Some fonts do not support bold.</dd>
   <dt id="ImagePicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
-  <dd>If set, ImagePicker text is displayed in italics.</dd>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">ImagePicker</code> should be italic.
+ Some fonts do not support italic.</dd>
   <dt id="ImagePicker.FontSize" class="number"><em>FontSize</em></dt>
-  <dd>Point size for ImagePicker text.</dd>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">ImagePicker</code>, measured in sp(scale-independent pixels).</dd>
   <dt id="ImagePicker.FontTypeface" class="number do"><em>FontTypeface</em></dt>
-  <dd>Font family for ImagePicker text.</dd>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">ImagePicker</code> as default, serif, sans
+ serif, or monospace.</dd>
   <dt id="ImagePicker.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the vertical height of the ImagePicker, measured in pixels.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">ImagePicker</code>’s vertical height, measured in pixels.</dd>
   <dt id="ImagePicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the vertical height of the ImagePicker as a percentage of the height of the Screen.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">ImagePicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="ImagePicker.Image" class="text"><em>Image</em></dt>
-  <dd>Image to display on button.</dd>
+  <dd>Specifies the path of the <code class="highlighter-rouge">ImagePicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#ImagePicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
   <dt id="ImagePicker.Selection" class="text ro bo"><em>Selection</em></dt>
   <dd>Path to the file containing the image that was selected.</dd>
   <dt id="ImagePicker.Shape" class="number do"><em>Shape</em></dt>
-  <dd>Returns the style of the button.</dd>
+  <dd>Specifies the shape of the <code class="highlighter-rouge">ImagePicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
+ <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
   <dt id="ImagePicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
-  <dd>Specifies if a visual feedback should be shown  for a ImagePicker that as an image as background.</dd>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">ImagePicker</code> with an assigned
+ <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
   <dt id="ImagePicker.Text" class="text"><em>Text</em></dt>
-  <dd>Text to display on ImagePicker.</dd>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">ImagePicker</code>.</dd>
   <dt id="ImagePicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
-  <dd>Left, center, or right.</dd>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">ImagePicker</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
   <dt id="ImagePicker.TextColor" class="color"><em>TextColor</em></dt>
-  <dd>Color for button text.</dd>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">ImagePicker</code> as an alpha-red-green-blue
+ integer.</dd>
   <dt id="ImagePicker.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Returns true iff the ImagePicker is visible.</dd>
+  <dd>Specifies whether the <code class="highlighter-rouge">ImagePicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">ImagePicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="ImagePicker.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the ImagePicker, measured in pixels.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ImagePicker</code>, measured in pixels.</dd>
   <dt id="ImagePicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the ImagePicker as a percentage of the width of the Screen.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ImagePicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
 </dl>
 
 <h3 id="ImagePicker-Events">Events</h3>
 
 <dl class="events">
   <dt id="ImagePicker.AfterPicking">AfterPicking()</dt>
-  <dd>Event to be raised after the picker activity returns its
+  <dd>Event to be raised after the <code class="highlighter-rouge">ImagePicker</code> activity returns its
  result and the properties have been filled in.</dd>
   <dt id="ImagePicker.BeforePicking">BeforePicking()</dt>
-  <dd>Event to raise when the ImagePicker is clicked or the list is shown
- using the Open block.  This event occurs before the list of items is displayed, and 
- can be used to prepare the list before it is shown.</dd>
+  <dd>Event to raise when the <code class="highlighter-rouge">ImagePicker</code> is clicked or the picker is shown
+ using the <a href="#ImagePicker.Open"><code class="highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
+ can be used to prepare the picker before it is shown.</dd>
   <dt id="ImagePicker.GotFocus">GotFocus()</dt>
-  <dd>Indicates the cursor moved over the ImagePicker so it is now possible to click it.</dd>
+  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">ImagePicker</code> so it is now possible
+ to click it.</dd>
   <dt id="ImagePicker.LostFocus">LostFocus()</dt>
-  <dd>Indicates the cursor moved away from the ImagePicker so it is now no longer possible to click it.</dd>
+  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">ImagePicker</code> so it is now no
+ longer possible to click it.</dd>
   <dt id="ImagePicker.TouchDown">TouchDown()</dt>
-  <dd>Indicates that the ImagePicker was pressed down.</dd>
+  <dd>Indicates that the <code class="highlighter-rouge">ImagePicker</code> was pressed down.</dd>
   <dt id="ImagePicker.TouchUp">TouchUp()</dt>
-  <dd>Indicates that the ImagePicker has been released.</dd>
+  <dd>Indicates that the <code class="highlighter-rouge">ImagePicker</code> has been released.</dd>
 </dl>
 
 <h3 id="ImagePicker-Methods">Methods</h3>
 
 <dl class="methods">
   <dt id="ImagePicker.Open" class="method"><i></i> Open()</dt>
-  <dd>Opens the picker, as though the user clicked on it.</dd>
+  <dd>Opens the <code class="highlighter-rouge">ImagePicker</code>, as though the user clicked on it.</dd>
 </dl>
 
 <h2 id="Player">Player</h2>
+
+<p>Multimedia component that plays audio and controls phone vibration. The name of a multimedia
+ file is specified in the <a href="#Player.Source"><code class="highlighter-rouge">Source</code></a> property, which can be set in the Designer or
+ in the Blocks Editor. The length of time for a vibration is specified in the Blocks Editor in
+ milliseconds (thousandths of a second).</p>
+
+<p>For supported audio formats, see
+ <a href="//developer.android.com/guide/appendix/media-formats.html">Android Supported Media Formats</a>.</p>
+
+<p>This component is best for long sound files, such as songs, while the <a href="#Sound"><code class="highlighter-rouge">Sound</code></a> component is
+ more efficient for short files, such as sound effects.</p>
 
 <h3 id="Player-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Player.IsPlaying" class="boolean ro bo"><em>IsPlaying</em></dt>
-  <dd>Reports whether the media is playing</dd>
+  <dd>Reports whether the media is playing.</dd>
   <dt id="Player.Loop" class="boolean"><em>Loop</em></dt>
-  <dd>If true, the player will loop when it plays. Setting Loop while the player is playing will affect the current playing.</dd>
+  <dd>If true, the <code class="highlighter-rouge">Player</code> will loop when it plays. Setting <code class="highlighter-rouge">Loop</code> while the player is playing will
+ affect the current playing.</dd>
   <dt id="Player.PlayOnlyInForeground" class="boolean"><em>PlayOnlyInForeground</em></dt>
-  <dd>If true, the player will pause playing when leaving the current screen; if false (default option), the player continues playing whenever the current screen is displaying or not.</dd>
+  <dd>If true, the <code class="highlighter-rouge">Player</code> will pause playing when leaving the current screen; if false
+ (default option), the <code class="highlighter-rouge">Player</code> continues playing whenever the current screen is displaying or
+ not.</dd>
   <dt id="Player.Source" class="text"><em>Source</em></dt>
-  <dd>Returns the path to the audio source</dd>
+  <dd>Sets the audio source.</dd>
   <dt id="Player.Volume" class="number wo"><em>Volume</em></dt>
-  <dd>Sets the volume to a number between 0 and 100</dd>
+  <dd>Sets the volume property to a number between 0 and 100.</dd>
 </dl>
 
 <h3 id="Player-Events">Events</h3>
@@ -276,7 +333,8 @@
   <dt id="Player.Completed">Completed()</dt>
   <dd>Indicates that the media has reached the end</dd>
   <dt id="Player.OtherPlayerStarted">OtherPlayerStarted()</dt>
-  <dd>This event is signaled when another player has started (and the current player is playing or paused, but not stopped).</dd>
+  <dd>This event is signaled when another player has started (and the current player is playing or
+ paused, but not stopped).</dd>
 </dl>
 
 <h3 id="Player-Methods">Methods</h3>
@@ -295,24 +353,40 @@
 
 <h2 id="Sound">Sound</h2>
 
+<p>A multimedia component that plays sound files and optionally vibrates for the number of
+ milliseconds (thousandths of a second) specified in the Blocks Editor. The name of the sound
+ file to play can be specified either in the Designer or in the Blocks Editor.</p>
+
+<p>For supported sound file formats, see
+ <a href="//developer.android.com/guide/appendix/media-formats.html">Android Supported Media Formats</a>.</p>
+
+<p>This <code class="highlighter-rouge">Sound</code> component is best for short sound files, such as sound effects, while the
+ <a href="#Player"><code class="highlighter-rouge">Player</code></a> component is more efficient for longer sounds, such as songs.</p>
+
 <h3 id="Sound-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Sound.MinimumInterval" class="number"><em>MinimumInterval</em></dt>
-  <dd>The minimum interval, in milliseconds, between sounds.  If you play a sound, all further Play() calls will be ignored until the interval has elapsed.</dd>
+  <dd>Specifies the minimum interval required between calls to <a href="#Sound.Play"><code class="highlighter-rouge">Play</code></a>, in
+ milliseconds.
+ Once the sound starts playing, all further <a href="#Sound.Play"><code class="highlighter-rouge">Play</code></a> calls will be ignored
+ until the interval has elapsed.</dd>
   <dt id="Sound.Source" class="text"><em>Source</em></dt>
-  <dd>The name of the sound file.  Only certain formats are supported.  See http://developer.android.com/guide/appendix/media-formats.html.</dd>
+  <dd>The name of the sound file. Only certain formats are supported.
+ See http://developer.android.com/guide/appendix/media-formats.html.</dd>
 </dl>
 
 <h3 id="Sound-Events">Events</h3>
 
-<h3 id="Sound-Methods" class="events">Methods</h3>
+<p class="events">None</p>
+
+<h3 id="Sound-Methods">Methods</h3>
 
 <dl class="methods">
   <dt id="Sound.Pause" class="method"><i></i> Pause()</dt>
   <dd>Pauses playing the sound if it is being played.</dd>
   <dt id="Sound.Play" class="method"><i></i> Play()</dt>
-  <dd>Plays the sound specified by the Source property.</dd>
+  <dd>Plays the sound.</dd>
   <dt id="Sound.Resume" class="method"><i></i> Resume()</dt>
   <dd>Resumes playing the sound after a pause.</dd>
   <dt id="Sound.Stop" class="method"><i></i> Stop()</dt>
@@ -323,11 +397,18 @@
 
 <h2 id="SoundRecorder">SoundRecorder</h2>
 
+<p><img src="images/soundrecorder.png" alt="SoundRecorder icon" /></p>
+
+<p>Multimedia component that records audio.</p>
+
 <h3 id="SoundRecorder-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="SoundRecorder.SavedRecording" class="text"><em>SavedRecording</em></dt>
-  <dd>Specifies the path to the file where the recording should be stored. If this proprety is the empty string, then starting a recording will create a file in an appropriate location.  If the property is not the empty string, it should specify a complete path to a file in an existing directory, including a file name with the extension .3gp.</dd>
+  <dd>Specifies the path to the file where the recording should be stored. If this property is the
+ empty string, then starting a recording will create a file in an appropriate location. If the
+ property is not the empty string, it should specify a complete path to a file in an existing
+ directory, including a file name with the extension .3gp.</dd>
 </dl>
 
 <h3 id="SoundRecorder-Events">Events</h3>
@@ -352,24 +433,35 @@
 
 <h2 id="SpeechRecognizer">SpeechRecognizer</h2>
 
+<p><img src="images/speechrecognizer.png" alt="SpeechRecognizer icon" /></p>
+
+<p>Use a <code class="highlighter-rouge">SpeechRecognizer</code> component to listen to the user speaking and convert the spoken sound
+ into text using the device’s speech recognition feature.</p>
+
 <h3 id="SpeechRecognizer-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="SpeechRecognizer.Result" class="text ro bo"><em>Result</em></dt>
-  <dd>Result property getter method.</dd>
+  <dd>Returns the last text produced by the recognizer.</dd>
   <dt id="SpeechRecognizer.UseLegacy" class="boolean"><em>UseLegacy</em></dt>
-  <dd>If true, an app can retain their older behaviour.</dd>
+  <dd>If true, a separate dialog is used to recognize speech (the default). If false, speech is
+ recognized in the background and partial results are also provided. See
+ <a href="#SpeechRecognizer.AfterGettingText"><code class="highlighter-rouge">AfterGettingText</code></a> for more details on partial speech recognition.</dd>
 </dl>
 
 <h3 id="SpeechRecognizer-Events">Events</h3>
 
 <dl class="events">
   <dt id="SpeechRecognizer.AfterGettingText">AfterGettingText(<em class="text">result</em>,<em class="boolean">partial</em>)</dt>
-  <dd>Simple event to raise after the VoiceReco activity has returned.
- Partial is ‘false’ when SpeechRecognizer stops automatically after listening,
- else it is ‘true’ if SpeechRecognizer returns partial results.</dd>
+  <dd>Simple event to raise after the SpeechRecognizer has recognized speech. If
+ <a href="#SpeechRecognizer.UseLegacy"><code class="highlighter-rouge">UseLegacy</code></a> is <code class="logic block highlighter-rouge">true</code>, then this event will only happen once
+ at the very end of the recognition. If <a href="#SpeechRecognizer.UseLegacy"><code class="highlighter-rouge">UseLegacy</code></a> is <code class="logic block highlighter-rouge">false</code>,
+ then this event will run multiple times as the <code class="highlighter-rouge">SpeechRecognizer</code> incrementally recognizes
+ speech. In this case, <code class="highlighter-rouge">partial</code> will be <code class="logic block highlighter-rouge">true</code> until the recognized speech
+ has been finalized (e.g., the user has stopped speaking), in which case <code class="highlighter-rouge">partial</code> will be
+ <code class="logic block highlighter-rouge">false</code>.</dd>
   <dt id="SpeechRecognizer.BeforeGettingText">BeforeGettingText()</dt>
-  <dd>Simple event to raise when VoiceReco is invoked but before the VoiceReco
+  <dd>Simple event to raise when the <code class="highlighter-rouge">SpeechRecognizer</code> is invoked but before its
  activity is started.</dd>
 </dl>
 
@@ -377,15 +469,30 @@
 
 <dl class="methods">
   <dt id="SpeechRecognizer.GetText" class="method"><i></i> GetText()</dt>
-  <dd>Solicits speech input from the user.  After the speech is converted to
- text, the AfterGettingText event will be raised.</dd>
+  <dd>Asks the user to speak, and converts the speech to text. Signals the
+ <a href="#SpeechRecognizer.AfterGettingText"><code class="highlighter-rouge">AfterGettingText</code></a> event when the result is available.</dd>
   <dt id="SpeechRecognizer.Stop" class="method"><i></i> Stop()</dt>
   <dd>Function used to forcefully stop listening speech in cases where
  SpeechRecognizer cannot stop automatically.
- This function works only when UseLegacy property is set to ‘false’.</dd>
+ This function works only when the <a href="#SpeechRecognizer.UseLegacy"><code class="highlighter-rouge">UseLegacy</code></a> property is
+ set to <code class="logic block highlighter-rouge">false</code>.</dd>
 </dl>
 
 <h2 id="TextToSpeech">TextToSpeech</h2>
+
+<p>The <code class="highlighter-rouge">TextToSpeech</code> component speaks a given text aloud. You can set the pitch
+ and the rate of speech.</p>
+
+<p>You can also set a language by supplying a language code. This changes the pronunciation of
+ words, not the actual language spoken. For example, setting the <a href="#TextToSpeech.Language"><code class="highlighter-rouge">Language</code></a> to French
+ and speaking English text will sound like someone speaking English (en) with a French accent.</p>
+
+<p>You can also specify a country by supplying a <a href="#TextToSpeech.Country"><code class="highlighter-rouge">Country</code></a> code. This can affect the
+ pronunciation. For example, British English (GBR) will sound different from US English (USA).
+ Not every country code will affect every language.</p>
+
+<p>The languages and countries available depend on the particular device, and can be listed with
+ the <a href="#TextToSpeech.AvailableLanguages"><code class="highlighter-rouge">AvailableLanguages</code></a> and <a href="#TextToSpeech.AvailableCountries"><code class="highlighter-rouge">AvailableCountries</code></a> properties.</p>
 
 <h3 id="TextToSpeech-Properties">Properties</h3>
 
@@ -395,22 +502,41 @@
   <dt id="TextToSpeech.AvailableLanguages" class="list ro bo"><em>AvailableLanguages</em></dt>
   <dd>List of the languages available on this device for use with TextToSpeech.  Check the Android developer documentation under supported languages to find the meanings of these abbreviations.</dd>
   <dt id="TextToSpeech.Country" class="text"><em>Country</em></dt>
-  <dd>Country code to use for speech generation.  This can affect the pronounciation.  For example, British English (GBR) will sound different from US English (USA).  Not every country code will affect every language.</dd>
+  <dd>Country code to use for speech generation. This can affect the pronunciation. For example,
+ British English (GBR) will sound different from US English (USA). Not every country code will
+ affect every language.</dd>
   <dt id="TextToSpeech.Language" class="text"><em>Language</em></dt>
-  <dd>Sets the language for TextToSpeech. This changes the way that words are pronounced, not the actual language that is spoken.  For example setting the language to and speaking English text with sound like someone speaking English with a Frernch accent.</dd>
+  <dd>Sets the language for TextToSpeech. This changes the way that words are pronounced, not the
+ actual language that is spoken. For example, setting the language to French and speaking
+ English text will sound like someone speaking English with a French accent.</dd>
   <dt id="TextToSpeech.Pitch" class="number"><em>Pitch</em></dt>
-  <dd>Sets the Pitch for TextToSpeech The values should be between 0 and 2 where lower values lower the tone of synthesized voice and greater values raise it.</dd>
+  <dd>Sets the speech pitch for the TextToSpeech.
+
+    <p>The values should be between 0 and 2 where lower values lower the tone of synthesized voice
+ and greater values raise it.</p>
+
+    <p>The default value is 1.0 for normal pitch.</p>
+  </dd>
   <dt id="TextToSpeech.Result" class="boolean ro bo"><em>Result</em></dt>
-  <dd>Result property getter method.</dd>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if the text was successfully converted to
+ speech, otherwise <code class="logic block highlighter-rouge">false</code>.</dd>
   <dt id="TextToSpeech.SpeechRate" class="number"><em>SpeechRate</em></dt>
-  <dd>Sets the SpeechRate for TextToSpeech. The values should be between 0 and 2 where lower values slow down the pitch and greater values accelerate it.</dd>
+  <dd>Sets the SpeechRate for TextToSpeech.
+
+    <p>The values should be between 0 and 2 where lower values slow down the pitch and greater
+ values accelerate it.</p>
+
+    <p>The default value is 1.0 for normal speech rate.</p>
+  </dd>
 </dl>
 
 <h3 id="TextToSpeech-Events">Events</h3>
 
 <dl class="events">
   <dt id="TextToSpeech.AfterSpeaking">AfterSpeaking(<em class="boolean">result</em>)</dt>
-  <dd>Event to raise after the message is spoken.</dd>
+  <dd>Event to raise after the message is spoken. The <code class="variable block highlighter-rouge">result</code> will be
+ <code class="logic block highlighter-rouge">true</code> if the message is spoken successfully, otherwise it will be
+ <code class="logic block highlighter-rouge">false</code>.</dd>
   <dt id="TextToSpeech.BeforeSpeaking">BeforeSpeaking()</dt>
   <dd>Event to raise when Speak is invoked, before the message is spoken.</dd>
 </dl>
@@ -424,26 +550,50 @@
 
 <h2 id="VideoPlayer">VideoPlayer</h2>
 
+<p>A multimedia component capable of playing videos. When the application is run, the <code class="highlighter-rouge">VideoPlayer</code>
+ will be displayed as a rectangle on-screen. If the user touches the rectangle, controls will
+ appear to play/pause, skip ahead, and skip backward within the video. The application can also
+ control behavior by calling the <a href="#VideoPlayer.Start"><code class="highlighter-rouge">Start</code></a>, <a href="#VideoPlayer.Pause"><code class="highlighter-rouge">Pause</code></a>, and <a href="#VideoPlayer.SeekTo"><code class="highlighter-rouge">SeekTo</code></a>
+ methods.</p>
+
+<p>Video files should be in 3GPP (.3gp) or MPEG-4 (.mp4) formats. For more details about legal
+ formats, see
+ <a href="//developer.android.com/guide/appendix/media-formats.html">Android Supported Media Formats</a>.</p>
+
+<p>App Inventor only permits video files under 1 MB and limits the total size of an application to
+ 5 MB, not all of which is available for media (video, audio, and sound) files. If your media
+ files are too large, you may get errors when packaging or installing your application, in which
+ case you should reduce the number of media files or their sizes. Most video editing software,
+ such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by
+ shortening them or re-encoding the video into a more compact format.</p>
+
+<p>You can also set the media source to a URL that points to a streaming video, but the URL must
+ point to the video file itself, not to a program that plays the video.</p>
+
 <h3 id="VideoPlayer-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="VideoPlayer.FullScreen" class="boolean bo"><em>FullScreen</em></dt>
-  <dd>Returns whether the VideoPlayer’s video is currently being
- shown in fullscreen mode or not.</dd>
+  <dd>Sets whether the video should be shown in fullscreen or not.</dd>
   <dt id="VideoPlayer.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the component’s vertical height, measured in pixels.</dd>
   <dt id="VideoPlayer.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the vertical height of the VideoPlayer as a percentage of the height of the Screen.</dd>
+  <dd>Specifies the <code class="highlighter-rouge">VideoPlayer</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="VideoPlayer.Source" class="text wo"><em>Source</em></dt>
-  <dd>The “path” to the video.  Usually, this will be the name of the video file, which should be added in the Designer.</dd>
+  <dd>Sets the “path” to the video. Usually, this will be the name of the video file, which should be
+ added in the Designer.</dd>
   <dt id="VideoPlayer.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Returns true iff the VideoPlayer is visible.</dd>
+  <dd>Specifies whether the <code class="highlighter-rouge">VideoPlayer</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">VideoPlayer</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="VideoPlayer.Volume" class="number wo"><em>Volume</em></dt>
-  <dd>Sets the volume to a number between 0 and 100. Values less than 0 will be treated as 0, and values greater than 100 will be treated as 100.</dd>
+  <dd>Sets the volume property to a number between 0 and 100. Values less than 0
+ will be treated as 0, and values greater than 100 will be treated as 100.</dd>
   <dt id="VideoPlayer.Width" class="number bo"><em>Width</em></dt>
   <dd>Specifies the component’s horizontal width, measured in pixels.</dd>
   <dt id="VideoPlayer.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the VideoPlayer as a percentage of the width of the Screen.</dd>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">VideoPlayer</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
 </dl>
 
 <h3 id="VideoPlayer-Events">Events</h3>
@@ -459,31 +609,63 @@
   <dt id="VideoPlayer.GetDuration" class="method returns number"><i></i> GetDuration()</dt>
   <dd>Returns duration of the video in milliseconds.</dd>
   <dt id="VideoPlayer.Pause" class="method"><i></i> Pause()</dt>
-  <dd>Pauses playback of the video.  Playback can be resumed at the same location by calling the <code>Start</code> method.</dd>
+  <dd>Pauses playback of the video.  Playback can be resumed at the same location by calling the
+ <a href="#VideoPlayer.Start"><code class="highlighter-rouge">Start</code></a> method.</dd>
   <dt id="VideoPlayer.SeekTo" class="method"><i></i> SeekTo(<em class="number">ms</em>)</dt>
   <dd>Seeks to the requested time (specified in milliseconds) in the video. If the video is paused, the frame shown will not be updated by the seek. The player can jump only to key frames in the video, so seeking to times that differ by short intervals may not actually move to different frames.</dd>
   <dt id="VideoPlayer.Start" class="method"><i></i> Start()</dt>
-  <dd>Starts playback of the video.</dd>
+  <dd>Plays the media specified by the <a href="#VideoPlayer.Source"><code class="highlighter-rouge">Source</code></a>.</dd>
   <dt id="VideoPlayer.Stop" class="method"><i></i> Stop()</dt>
   <dd>Resets to start of video and pauses it if video was playing.</dd>
 </dl>
 
 <h2 id="YandexTranslate">YandexTranslate</h2>
 
+<p>Use this component to translate words and sentences between different languages. This component
+ needs Internet access, as it will request translations to the Yandex.Translate service.
+ Specify the source and target language in the form source-target using two letter language codes.
+ So “en-es” will translate from English to Spanish while “es-ru” will translate from Spanish to
+ Russian. If you leave out the source language, the service will attempt to detect the source
+ language. So providing just “es” will attempt to detect the source language and translate it
+ to Spanish.</p>
+
+<p>This component is powered by the Yandex translation service. See
+ http://api.yandex.com/translate/ for more information, including the list of available languages
+ and the meanings of the language codes and status codes.</p>
+
+<p><strong>Note:</strong> Translation happens asynchronously in the background. When the translation is complete,
+ the <a href="#YandexTranslate.GotTranslation"><code class="highlighter-rouge">GotTranslation</code></a> event is triggered.</p>
+
+<h3 id="YandexTranslate-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="YandexTranslate.ApiKey" class="text wo"><em>ApiKey</em></dt>
+  <dd>The Yandex API Key to use. If set to DEFAULT the platform default key (if any)
+ will be used. Otherwise should be set to a valid API key which can be obtained
+ from https://tech.yandex.com/translate/. If the platform doesn’t have a default
+ key and one isn’t provided here, an error will be raised.</dd>
+</dl>
+
 <h3 id="YandexTranslate-Events">Events</h3>
 
 <dl class="events">
   <dt id="YandexTranslate.GotTranslation">GotTranslation(<em class="text">responseCode</em>,<em class="text">translation</em>)</dt>
-  <dd>Event triggered when the Yandex.Translate service returns the translated text. This event also provides a response code for error handling. If the responseCode is not 200, then something went wrong with the call, and the translation will not be available.</dd>
+  <dd>Event indicating that a request has finished and has returned data (translation).</dd>
 </dl>
 
 <h3 id="YandexTranslate-Methods">Methods</h3>
 
 <dl class="methods">
   <dt id="YandexTranslate.RequestTranslation" class="method"><i></i> RequestTranslation(<em class="text">languageToTranslateTo</em>,<em class="text">textToTranslate</em>)</dt>
-  <dd>By providing a target language to translate to (for instance, ‘es’ for Spanish, ‘en’ for English, or ‘ru’ for Russian), and a word or sentence to translate, this method will request a translation to the Yandex.Translate service.
-Once the text is translated by the external service, the event GotTranslation will be executed.
-Note: Yandex.Translate will attempt to detect the source language. You can also specify prepending it to the language translation. I.e., es-ru will specify Spanish to Russian translation.</dd>
+  <dd>By providing a target language to translate to (for instance, ‘es’ for Spanish, ‘en’ for
+ English, or ‘ru’ for Russian), and a word or sentence to translate, this method will request
+ a translation to the Yandex.Translate service. Once the text is translated by the external
+ service, the event <a href="#YandexTranslate.GotTranslation"><code class="highlighter-rouge">GotTranslation</code></a> will be executed.
+
+    <p><strong>Note:</strong> Yandex.Translate will attempt to detect the source language. You can also specify
+ prepending it to the language translation, e.g., es-ru will specify Spanish to Russian
+ translation.</p>
+  </dd>
 </dl>
 
 </article>
@@ -563,16 +745,16 @@ Note: Yandex.Translate will attempt to detect the source language. You can also 
 	<div class="col-xl-6 legal text-center">
 	    <ul>
 		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
                        target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">Unported License Terms of Service</a>
-		</li>
-		<li>
-		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2019 Massachusetts Institute of Technology</a>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
 		</li>
 	    </ul>
 	</div>

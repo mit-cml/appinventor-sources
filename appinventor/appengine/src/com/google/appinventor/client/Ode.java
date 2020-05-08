@@ -25,13 +25,11 @@ import com.google.appinventor.client.boxes.GalleryAppBox;
 import com.google.appinventor.client.boxes.ProfileBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
-import com.google.appinventor.client.boxes.TrashProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
-import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -49,6 +47,7 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
@@ -197,16 +196,16 @@ public class Ode implements EntryPoint {
   private AssetManager assetManager;
 
   // Remembers the current View
-  static final int DESIGNER = 0;
-  static final int PROJECTS = 1;
-  private static final int GALLERY = 2;
-  private static final int GALLERYAPP = 3;
-  private static final int USERPROFILE = 4;
-  private static final int PRIVATEUSERPROFILE = 5;
-  private static final int MODERATIONPAGE = 6;
-  private static final int USERADMIN = 7;
-  private static final int TRASHCAN = 8;
-  private static int currentView = DESIGNER;
+  public static final int DESIGNER = 0;
+  public static final int PROJECTS = 1;
+  public static final int GALLERY = 2;
+  public static final int GALLERYAPP = 3;
+  public static final int USERPROFILE = 4;
+  public static final int PRIVATEUSERPROFILE = 5;
+  public static final int MODERATIONPAGE = 6;
+  public static final int USERADMIN = 7;
+  public static final int TRASHCAN = 8;
+  public static int currentView = DESIGNER;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
@@ -247,7 +246,6 @@ public class Ode implements EntryPoint {
   private TopToolbar topToolbar;
   private VerticalPanel pVertPanel;
   private HorizontalPanel projectListPanel = new HorizontalPanel();
-  private HorizontalPanel projectListPane2= new HorizontalPanel();
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -442,31 +440,32 @@ public class Ode implements EntryPoint {
     hideChaff();
     hideTutorials();
     Runnable next = new Runnable() {
-      @Override
-      public void run() {
-        if (currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
-          ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
-          //shifting back to show projects
-          if (currentView == TRASHCAN)  {
-            projectListPane2.remove(TrashProjectListBox.getTrashProjectListBox());
-            projectListPanel.setWidth("100%");
-            projectListPanel.add(ProjectListBox.getProjectListBox());
-            pVertPanel.add(projectListPanel);
-          }
+        @Override
+        public void run() {
+          ProjectListBox.getProjectListBox().loadProjectList();
+          currentView = PROJECTS;
+          getTopToolbar().updateFileMenuButtons(currentView);
+          deckPanel.showWidget(projectsTabIndex);
+          // If we started a project, then the start button was disabled (to avoid
+          // a second press while the new project wizard was starting (aka we "debounce"
+          // the button). When the person switches to the projects list view again (here)
+          // we re-enable it.
+          projectToolbar.enableStartButton();
+          projectToolbar.setProjectTabButtonsVisible(true);
+          projectToolbar.setPublishOrUpdateButtonVisible(true);
+          projectToolbar.setTrashTabButtonsVisible(false);
+          currentView = PROJECTS;
+          getTopToolbar().updateFileMenuButtons(currentView);
+          deckPanel.showWidget(projectsTabIndex);
+          // If we started a project, then the start button was disabled (to avoid
+          // a second press while the new project wizard was starting (aka we "debounce"
+          // the button). When the person switches to the projects list view again (here)
+          // we re-enable it.
+          projectToolbar.enableStartButton();
+          projectToolbar.setProjectTabButtonsVisible(true);
+          projectToolbar.setPublishOrUpdateButtonVisible(true);
+          projectToolbar.setTrashTabButtonsVisible(false);
         }
-        currentView = PROJECTS;
-        getTopToolbar().updateFileMenuButtons(currentView);
-        deckPanel.showWidget(projectsTabIndex);
-        // If we started a project, then the start button was disabled (to avoid
-        // a second press while the new project wizard was starting (aka we "debounce"
-        // the button). When the person switches to the projects list view again (here)
-        // we re-enable it.
-        projectToolbar.enableStartButton();
-        projectToolbar.setProjectTabButtonsVisible(true);
-        projectToolbar.setPublishOrUpdateButtonVisible(true);
-        projectToolbar.setTrashTabButtonsVisible(false);
-      }
     };
     if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
       next.run();
@@ -483,23 +482,12 @@ public class Ode implements EntryPoint {
   public void switchToTrash() {
     hideChaff();
     hideTutorials();
-    if (currentView != TRASHCAN){
-      TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getSelectedProjects().clear();
-      TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().refreshTable(false);
-    }
+    ProjectListBox.getProjectListBox().loadTrashList();
     currentView = TRASHCAN;
-    projectListPane2.setWidth("100%");
-    projectListPanel.remove(ProjectListBox.getProjectListBox());
-    projectListPane2.add(TrashProjectListBox.getTrashProjectListBox());
-    pVertPanel.remove(projectListPanel);
-    pVertPanel.add(projectListPane2);
-    deckPanel.showWidget(projectsTabIndex);
+    projectToolbar.enableStartButton();
     projectToolbar.setProjectTabButtonsVisible(false);
     projectToolbar.setPublishOrUpdateButtonVisible(false);
     projectToolbar.setTrashTabButtonsVisible(true);
-    if (TrashProjectListBox.getTrashProjectListBox().getTrashProjectList().getNumProjects() == 0) {
-      Ode.getInstance().createEmptyTrashDialog(true);
-    }
   }
 
   /**
@@ -664,7 +652,7 @@ public class Ode implements EntryPoint {
     } else if (!projectIdString.equals("0")) {
       final long projectId = Long.parseLong(projectIdString);
       Project project = projectManager.getProject(projectId);
-      if (project != null) {
+      if (project != null && !project.isInTrash()) {   // If last opened project is now in the trash, don't open it.
         openYoungAndroidProjectInDesigner(project);
       } else {
         // The project hasn't been added to the ProjectManager yet.
@@ -1282,6 +1270,7 @@ public class Ode implements EntryPoint {
     });
 
     setupMotd();
+    HTML5DragDrop.init();
   }
 
   private void setupMotd() {
@@ -1578,7 +1567,17 @@ public class Ode implements EntryPoint {
     userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
             changePropertyValue(SettingsConstants.USER_DYSLEXIC_FONT,
                     "" + dyslexicFont);
-    userSettings.saveSettings(null);
+    userSettings.saveSettings(new Command() {
+        @Override
+        public void execute() {
+          // Reload for the new font to take effect. We
+          // do this here because we need to make sure that
+          // the user settings were saved before we terminate
+          // this browsing session. This is particularly important
+          // for Firefox
+          Window.Location.reload();
+        }
+      });
   }
 
   /**
@@ -1832,7 +1831,7 @@ public class Ode implements EntryPoint {
     projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
       @Override
       public void onProjectsLoaded() {
-        if (projectManager.projectCount() == 0 && !templateLoadingFlag && !galleryIdLoadingFlag) {
+        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 && !templateLoadingFlag && !galleryIdLoadingFlag) {
           ErrorReporter.hide();  // hide the "Please choose a project" message
           createNoProjectsDialog(true);
         }
@@ -1945,7 +1944,7 @@ public class Ode implements EntryPoint {
     projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
       @Override
       public void onProjectsLoaded() {
-        if (projectManager.projectCount() == 0 && !templateLoadingFlag) {
+        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 && !templateLoadingFlag) {
           ErrorReporter.hide();  // hide the "Please choose a project" message
           showSplashScreens();
         }

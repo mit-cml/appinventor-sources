@@ -31,12 +31,28 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
- * Component enabling a user to select a contact.
+ * A button that, when clicked on, displays a list of the contacts to choose among. After the user
+ * has made a selection, the following properties will be set to information about the chosen
+ * contact:
+ *
+ *  - {@link #ContactName()}: the contact's name
+ *  - {@link #EmailAddress()}: the contact's primary email address
+ *  - {@link #EmailAddressList()}: a list of the contact's email addresses
+ *  - {@link #ContactUri()}: the contact's URI on the device
+ *  - {@link #PhoneNumber()}: the contact's primary phone number (on Later Android Verisons)
+ *  - {@link #PhoneNumberList()}: a list of the contact's phone numbers (on Later Android Versions)
+ *  - {@link #Picture()}: the name of the file containing the contact's image, which can be used as a Picture property value for the Image or ImageSprite component.
+ *
+ * Other properties affect the appearance of the button ({@link #TextAlignment()},
+ * {@link #BackgroundColor()}, etc.) and whether it can be clicked on ({@link #Enabled()}).
+ *
+ * The `ContactPicker` component might not work on all phones. For example, on Android systems
+ * before system 3.0, it cannot pick phone numbers, and the list of email addresses will contain
+ * only one email.
  *
  * @author sharon@google.com (Sharon Perl)
  * @author markf@google.com (Mark Friedman)
- * @author: Yifan(Evan) Li (for contact Uri)
-
+ * @author Yifan(Evan) Li (for contact Uri)
  */
 @DesignerComponent(version = YaVersion.CONTACTPICKER_COMPONENT_VERSION,
     description = "A button that, when clicked on, displays a list of " +
@@ -133,7 +149,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
 
   /**
-   * Picture URI for this contact, which can be
+   * Returns a picture URI for the selected contact, which can be
    * used to retrieve the contact's photo and other fields.
    */
   @SimpleProperty(
@@ -143,7 +159,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
 
   /**
-   * Name property getter method.
+   * Returns the full name of the selected contact, or the empty string if a name is unavailable.
    */
   @SimpleProperty(
     category = PropertyCategory.BEHAVIOR)
@@ -152,7 +168,8 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
 
   /**
-   * EmailAddress property getter method.
+   * Returns the primary email address of the selected contact, or the empty string if an email
+   * address is unavailable.
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -169,7 +186,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
 
   /**
-   * "URI that specifies the location of the contact on the device.",
+   * Returns a URI that specifies the location of the contact on the device.
    */
   @SimpleProperty(description = "URI that specifies the location of the contact on the device.",
       category = PropertyCategory.BEHAVIOR)
@@ -178,7 +195,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
 
   /**
-   * EmailAddressList property getter method.
+   * Returns a list of email addresses associated with the selected contact.
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -187,7 +204,8 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
 
   /**
-   * PhoneNumber property getter method.
+   * Returns the primary phone number associated with the selected contact, or the empty string if
+   * no phone number is associated with the contact.
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -196,7 +214,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
 
   /**
-   * PhoneNumberList property getter method.
+   * Returns a list of phone numbers associated with the selected contact.
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -205,7 +223,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
 
   /**
-   *  return nothing, just call another activity which is view contact
+   * Opens the selected contact's entry in the device's default Contacts app.
    */
   @SimpleFunction(description = "view a contact via its URI")
   public void ViewContact(String uri) {

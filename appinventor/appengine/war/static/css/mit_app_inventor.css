@@ -347,6 +347,7 @@ h1 { color: white; }
 .documentation span.math, .documentation code.math { background-color: #3F71B5; }
 .documentation span.text, .documentation code.text { background-color: #B32D5E; }
 .documentation span.list, .documentation code.list { background-color: #49A6D4; }
+.documentation span.dictionary, .documentation code.dictionary { background-color: #2D1799; }
 .documentation span.color, .documentation code.color { background-color: #7D7D7D; }
 .documentation span.variable,
 .documentation code.variable {
@@ -355,13 +356,12 @@ h1 { color: white; }
 .documentation span.procedure, .documentation span.method, documentation code.procedure, .documentation code.method { background-color: #7C5385; }
 .documentation span.setter, .documentation code.setter { background-color: #266643; }
 .documentation span.getter, .documentation span.component, .documentation code.getter, .documentation code.component { background-color: #439970; }
-.documentation p { padding: 6pt; }
-.documentation dd p { padding: 6pt 0; }
+.documentation p { margin: 6pt 0; }
 .documentation .figure { display: block; margin: 4pt auto; }
 .documentation p.figure { text-align: center; }
 .documentation p.figure img { margin: 4pt auto; }
 .documentation p.caption { padding: 0 24pt; font-size: 80%; text-align: center; }
-.documentation h1, .documentation h2, .documentation h3 { padding: 6pt; }
+.documentation h1, .documentation h2, .documentation h3 { padding: 6pt 0; }
 .documentation h1 { font-size: 2rem; margin-top: 1rem; color: black; }
 .documentation h2 { padding-bottom: 6pt; font-size: 1.67rem; }
 .documentation h3 { font-size: 1.33rem; }
@@ -426,6 +426,12 @@ dt span.list i:after,
 .methods dt em.list:before,
 .events dt em.list:before
 { background-color: #70b3d8; content: "list"; }
+dt.dictionary i:after,
+dt span.dictionary i:after,
+.properties dt.dictionary em:after,
+.methods dt em.dictionary:before,
+.events dt em.dictionary:before
+{ background-color: #2D1799; content: "dictionary"; }
 dt.component i:after,
 dt span.component i:after,
 .properties dt.component em:after,

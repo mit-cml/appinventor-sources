@@ -21,6 +21,8 @@ import android.hardware.SensorManager;
 
 /**
  * Physical world component that can measure the light level.
+ *
+ * @internaldoc
  * It is implemented using
  * android.hardware.SensorListener
  * (http://developer.android.com/reference/android/hardware/SensorListener.html).

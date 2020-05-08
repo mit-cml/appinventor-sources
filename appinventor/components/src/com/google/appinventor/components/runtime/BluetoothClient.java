@@ -7,12 +7,14 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.BluetoothReflection;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -28,7 +30,10 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * BluetoothClient component
+ * Use `BluetoothClient` to connect your device to other devices using Bluetooth. This component
+ * uses the Serial Port Profile (SPP) for communication. If you are interested in using Bluetooth
+ * low energy, please see the
+ * [BluetoothLE](http://iot.appinventor.mit.edu/#/bluetoothle/bluetoothleintro) extension.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -52,6 +57,28 @@ public final class BluetoothClient extends BluetoothConnectionBase {
    */
   public BluetoothClient(ComponentContainer container) {
     super(container, "BluetoothClient");
+    DisconnectOnError(false);
+  }
+
+  /**
+   * Returns whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+          description = "Disconnects BluetoothClient automatically when an error occurs.")
+  public boolean DisconnectOnError() {
+    return disconnectOnError;
+  }
+
+  /**
+   * Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.
+   *
+   * @param disconnectOnError {@code true} to disconnect BluetoothClient/BluetoothServer automatically when an error occurs.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty
+  public void DisconnectOnError(boolean disconnectOnError) {
+    this.disconnectOnError = disconnectOnError;
   }
 
   boolean attachComponent(Component component, Set<Integer> acceptableDeviceClasses) {
@@ -137,6 +164,7 @@ public final class BluetoothClient extends BluetoothConnectionBase {
    * list is a String consisting of the device's address, a space, and the
    * device's name.
    *
+   * @internaldoc
    * This method calls isDeviceClassAcceptable to determine whether to include
    * a particular device in the returned list.
    *
