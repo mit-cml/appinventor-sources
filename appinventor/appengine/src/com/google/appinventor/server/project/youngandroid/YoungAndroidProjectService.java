@@ -52,6 +52,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
+import java.util.Locale;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -80,12 +81,17 @@ import java.util.logging.Logger;
  */
 public final class YoungAndroidProjectService extends CommonProjectService {
 
-  private static int currentProgress = 0;
   private static final Logger LOG = Logger.getLogger(YoungAndroidProjectService.class.getName());
+  private static final int MB = 1024 * 1024;
 
   // The value of this flag can be changed in appengine-web.xml
   private static final Flag<Boolean> sendGitVersion =
     Flag.createFlag("build.send.git.version", true);
+
+  private static final Flag<Integer> MAX_PROJECT_SIZE =
+      Flag.createFlag("project.maxsize", 30);
+  private static final String ERROR_LARGE_PROJECT =
+      "Sorry, can't package projects larger than %1$d MB. Yours is %2$3.2f MB.";
 
   // Project folder prefixes
   public static final String SRC_FOLDER = YoungAndroidSourceAnalyzer.SRC_FOLDER;
@@ -697,16 +703,16 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       // Keep in mind that large projects can lead to large APK files which
       // may not be loadable into many memory restricted devices, so we
       // may not want to encourage large projects...
-      if (zipFile.getContent().length > 10*1024*1024) { // 10 Megabyte size limit...
-        int zipFileLength = zipFile.getContent().length;
-        String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
+      if (zipFile.getContent().length > MAX_PROJECT_SIZE.get() * MB) {
+        double size = (double) zipFile.getContent().length / MB;
         RuntimeException exception = new RuntimeException(
-            "Sorry, can't package projects larger than 10Mb."
-            + " Yours is " + lengthMbs + "MB.");
+            String.format(Locale.getDefault(), ERROR_LARGE_PROJECT, MAX_PROJECT_SIZE.get(), size)
+        );
         CrashReport.createAndLogError(LOG, null,
             buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId),
             exception);
-        return new RpcResult(false, "", exception.getMessage());
+        return new RpcResult(413, "", "{\"maxSize\":" + MAX_PROJECT_SIZE.get()
+            + ",\"aiaSize\":" + size + "}");
       }
       bufferedOutputStream.write(zipFile.getContent());
       bufferedOutputStream.flush();
@@ -877,8 +883,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String userId = user.getUserId();
     String buildOutputFileName = BUILD_FOLDER + '/' + target + '/' + "build.out";
     List<String> outputFiles = storageIo.getProjectOutputFiles(userId, projectId);
-    updateCurrentProgress(user, projectId, target);
-    RpcResult buildResult = new RpcResult(-1, ""+currentProgress, ""); // Build not finished
+    RpcResult buildResult = new RpcResult(-1,
+        Integer.toString(getCurrentProgress(user, projectId, target)),
+        ""); // Build not finished
     for (String outputFile : outputFiles) {
       if (buildOutputFileName.equals(outputFile)) {
         String outputStr = storageIo.downloadFile(userId, projectId, outputFile, "UTF-8");
@@ -904,8 +911,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param projectId  project id to be built
    * @param target  build target (optional, implementation dependent)
    */
-  public void updateCurrentProgress(User user, long projectId, String target) {
-    currentProgress = storageIo.getBuildStatus(user.getUserId(), projectId);
+  public int getCurrentProgress(User user, long projectId, String target) {
+    return storageIo.getBuildStatus(user.getUserId(), projectId);
   }
 
   // Nicely format floating number using only two decimal places
