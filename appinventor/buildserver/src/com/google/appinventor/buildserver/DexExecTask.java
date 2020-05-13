@@ -21,7 +21,9 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +31,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Dex task, modified from the Android SDK to run in BuildServer.
@@ -44,6 +48,8 @@ public class DexExecTask {
     private int mChildProcessRamMb = 1024;
     private boolean mDisableDexMerger = false;
     private static Map<String, String> alreadyChecked = new HashMap<String, String>();
+    private String mainDexFile = null;
+    private boolean mPredex = true;
 
     private static final Object semaphore = new Object(); // Used to protect dex cache creation
 
@@ -66,6 +72,19 @@ public class DexExecTask {
         mVerbose = verbose;
     }
 
+    public void setMainDexClasses(Set<String> classes) {
+        File dx = new File(mExecutable);
+        mainDexFile = dx.getParent() + File.separator + "main-classes.txt";
+        try (PrintStream out = new PrintStream(new FileOutputStream(mainDexFile))) {
+            for (String name : new TreeSet<>(classes)) {
+                out.println(name);
+            }
+            mPredex = false;  // Cannot use predexing in multidex mode
+        } catch (IOException e) {
+            mainDexFile = null;
+        }
+    }
+
     /**
      * Sets the value of the "output" attribute.
      *
@@ -77,6 +96,10 @@ public class DexExecTask {
 
     public void setDexedLibs(String dexedLibs) {
         mDexedLibs = dexedLibs;
+    }
+
+    public void setPredex(boolean predex) {
+        mPredex = predex;
     }
 
     /**
@@ -164,8 +187,10 @@ public class DexExecTask {
 
     public boolean execute(List<File> paths) {
         // pre dex libraries if needed
-        boolean successPredex = preDexLibraries(paths);
-        if (!successPredex) return false;
+        if (mPredex) {
+            boolean successPredex = preDexLibraries(paths);
+            if (!successPredex) return false;
+        }
 
         System.out.println(String.format(
                 "Converting compiled files and external libraries into %1$s...", mOutput));
@@ -188,6 +213,11 @@ public class DexExecTask {
 
         commandLineList.add("--dex");
         commandLineList.add("--positions=lines");
+
+        if (mainDexFile != null) {
+            commandLineList.add("--multi-dex");
+            commandLineList.add("--main-dex-list=" + mainDexFile);
+        }
 
         if (mNoLocals) {
             commandLineList.add("--no-locals");
