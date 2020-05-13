@@ -2632,6 +2632,10 @@ public class Ode implements EntryPoint {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
+      String locale = Window.Location.getParameter("locale");
+      if (locale != null) {
+        newURL += (newURL.contains("?") ? "&" : "?") + "locale=" + locale;
+      }
       tutorialPanel.setUrl(newURL);
       designToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);
