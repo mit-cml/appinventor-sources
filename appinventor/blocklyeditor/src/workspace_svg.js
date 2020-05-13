@@ -230,7 +230,11 @@ Blockly.WorkspaceSvg.prototype.addWarningIndicator = function() {
  */
 Blockly.WorkspaceSvg.prototype.addBackpack = function() {
   if (Blockly.Backpack && !this.options.readOnly) {
-    this.backpack_ = new Blockly.Backpack(this, {scrollbars: true, media: './assets/'});
+    this.backpack_ = new Blockly.Backpack(this, {
+        scrollbars: true,
+        media: './assets/',
+        disabledPatternId: this.options.disabledPatternId,
+      });
     var svgBackpack = this.backpack_.createDom(this);
     this.svgGroup_.appendChild(svgBackpack);
     this.backpack_.init();
@@ -324,7 +328,7 @@ Blockly.WorkspaceSvg.prototype.render = function(blocks) {
       for (var t = 0, topBlock; topBlock = topBlocks[t]; t++) {
         Blockly.Instrument.timer(
           function () {
-            topBlock.renderDown();
+            topBlock.render(false);
           },
           function (result, timeDiffInner) {
             Blockly.Instrument.stats.renderDownTime += timeDiffInner;
@@ -467,6 +471,7 @@ Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent
   if (blocksContent.length != 0) {
     try {
       Blockly.Events.disable();
+      this.isLoading = true;
       if (Blockly.Versioning.upgrade(formJson, blocksContent, this)) {
         var self = this;
         setTimeout(function() {
@@ -474,6 +479,7 @@ Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent
         });
       }
     } finally {
+      this.isLoading = false;
       Blockly.Events.enable();
     }
     if (this.getCanvas() != null) {
@@ -961,7 +967,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     var allBlocks = Blockly.mainWorkspace.getAllBlocks();
     Blockly.Events.setGroup(true);
     for (var x = 0, block; block = allBlocks[x]; x++) {
-      if (block.comment != null) {
+      if (block.comment != null && !block.isCollapsed()) {
         block.comment.setVisible(true);
       }
     }
@@ -976,7 +982,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     var allBlocks = Blockly.mainWorkspace.getAllBlocks();
     Blockly.Events.setGroup(true);
     for (var x = 0, block; block = allBlocks[x]; x++) {
-      if (block.comment != null) {
+      if (block.comment != null && !block.isCollapsed()) {
         block.comment.setVisible(false);
       }
     }

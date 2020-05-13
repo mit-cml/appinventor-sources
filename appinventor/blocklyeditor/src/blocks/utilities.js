@@ -27,13 +27,16 @@ Blockly.Blocks.Utilities.InstantInTime = function () { return 'InstantInTime'; }
 // The Yail type 'any' is repsented by Javascript null, to match
 // Blockly's convention
 Blockly.Blocks.Utilities.YailTypeToBlocklyTypeMap = {
-  'number':{input:"Number",output:["Number","String"]},
-  'text':{input:"String",output:["Number","String"]},
+  'number':{input:"Number",output:["Number","String", "Key"]},
+  'text':{input:"String",output:["Number","String", "Key"]},
   'boolean':{input:"Boolean",output:["Boolean","String"]},
   'list':{input:"Array",output:["Array","String"]},
-  'component':{input:"COMPONENT",output:"COMPONENT"},
+  'component':{input:"COMPONENT",output:["COMPONENT", "Key"]},
   'InstantInTime':{input:Blockly.Blocks.Utilities.InstantInTime,output:Blockly.Blocks.Utilities.InstantInTime},
-  'any':{input:null,output:null}
+  'any':{input:null,output:null},
+  'dictionary':{input:"Dictionary",output:["Dictionary", "String", "Array"]},
+  'pair':{input:"Pair",output:["Pair", "String", "Array"]},
+  'key':{input:"Key",output:["String", "Key"]}
   //add  more types here
 };
 
@@ -80,31 +83,15 @@ Blockly.Blocks.Utilities.wrapSentence = function(str, len) {
 
 Blockly.Blocks.Utilities.MAX_COLLAPSE = 4;
 
-Blockly.Blocks.Utilities.renameCollapsed = function(block, n) {
-  if(n > Blockly.Blocks.Utilities.MAX_COLLAPSE) return;
-  if (block.isCollapsed()) {
-    var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
-    block.removeInput(COLLAPSED_INPUT_NAME);
-    block.collapsed_ = false;
-    var text = block.toString(Blockly.COLLAPSE_CHARS);
-    block.collapsed_ = true;
-    block.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
-
-    if(block.type.indexOf("procedures_call") != -1) {
-      block.moveInputBefore(COLLAPSED_INPUT_NAME, 'ARG0');
-    }
-  }
-
-  if(block.parentBlock_) {
-    Blockly.Blocks.Utilities.renameCollapsed(block.parentBlock_, n+1);
-  }
-}
-
 // unicode multiplication symbol
 Blockly.Blocks.Utilities.times_symbol = '\u00D7';
 
-
-
-
-
-
+/**
+ * Regular expression for floating point numbers.
+ *
+ * @type {!RegExp}
+ * @const
+ */
+Blockly.Blocks.Utilities.NUMBER_REGEX =
+  new RegExp("^([-+]?[0-9]+)?(\\.[0-9]+)?([eE][-+]?[0-9]+)?$|" +
+    "^[-+]?[0-9]+(\\.[0-9]*)?([eE][-+]?[0-9]+)?$");

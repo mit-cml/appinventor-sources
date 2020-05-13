@@ -1,0 +1,4 @@
+com.google.appinventor.components.scripts.ComponentDescriptorGenerator
+com.google.appinventor.components.scripts.ComponentListGenerator
+com.google.appinventor.components.scripts.ComponentTranslationGenerator
+com.google.appinventor.components.scripts.MarkdownDocumentationGenerator

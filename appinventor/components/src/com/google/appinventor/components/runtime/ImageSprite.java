@@ -25,8 +25,20 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
 /**
- * Simple image-based Sprite.
+ * A 'sprite' that can be placed on a {@link Canvas}, where it can react to touches and drags,
+ * interact with other sprites ({@link Ball}s and other `ImageSprite`s) and the edge of the
+ * `Canvas`, and move according to its property values. Its appearance is that of the image
+ * specified in its {@link #Picture()} property (unless its {@link #Visible()} property is
+ * `false`{:.logic.block}.
  *
+ * To have an `ImageSprite` move 10 pixels to the left every 1000 milliseconds (one second), for
+ * example, you would set the {@link #Speed()} property to 10 [pixels], the {@link #Interval()}
+ * property to 1000 [milliseconds], the {@link #Heading()} property to 180 [degrees], and the
+ * {@link #Enabled()} property to `true`{:.logic.block}. A sprite whose {@link #Rotates()}
+ * property is `true`{:.logic.block} will rotate its image as the sprite's heading changes.
+ * *Checking for collisions with a rotated sprite currently checks the sprite's unrotated position
+ * so that collision checking will be inaccurate for tall narrow or short wide sprites that are
+ * rotated.* Any of the sprite properties can be changed at any time under program control.
  */
 @DesignerComponent(version = YaVersion.IMAGESPRITE_COMPONENT_VERSION,
     description = "<p>A 'sprite' that can be placed on a " +
@@ -114,8 +126,9 @@ public class ImageSprite extends Sprite {
   }
 
   /**
-   * Specifies the path of the sprite's picture
+   * Specifies the path of the sprite's picture.
    *
+   * @internaldoc
    * <p/>See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
@@ -149,6 +162,10 @@ public class ImageSprite extends Sprite {
     return heightHint;
   }
 
+  /**
+   * @suppressdoc
+   * @param height  height property used by the layout
+   */
   @Override
   @SimpleProperty
   public void Height(int height) {
@@ -171,6 +188,10 @@ public class ImageSprite extends Sprite {
     return widthHint;
   }
 
+  /**
+   * @suppressdoc
+   * @param width  width property used by the layout
+   */
   @Override
   @SimpleProperty
   public void Width(int width) {
@@ -198,7 +219,8 @@ public class ImageSprite extends Sprite {
   }
 
   /**
-   * Rotates property setter method
+   * If true, the sprite image rotates to match the sprite's heading. If false, the sprite image
+   * does not rotate when the sprite changes heading. The sprite rotates around its centerpoint.
    *
    * @param rotates  {@code true} indicates that the image rotates to match the sprite's heading
    * {@code false} indicates that the sprite image doesn't rotate.
@@ -229,9 +251,14 @@ public class ImageSprite extends Sprite {
     return super.Y();
   }
 
+  /**
+   * Moves the %type% so that its left top corner is at the specified `x` and `y` coordinates.
+   * @param x the x-coordinate
+   * @param y the y-coordinate
+   */
   @SimpleFunction(
       description = "Moves the ImageSprite so that its left top corner is at " +
-          "the specfied x and y coordinates.")
+          "the specified x and y coordinates.")
   @Override
   public void MoveTo(double x, double y) {
     super.MoveTo(x, y);

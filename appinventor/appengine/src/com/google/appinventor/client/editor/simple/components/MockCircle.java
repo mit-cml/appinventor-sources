@@ -198,7 +198,7 @@ public class MockCircle extends MockMapFeatureBaseWithFill {
     if (!circle.clickHandler) {
       while (el.lastChild) el.removeChild(el.lastChild);  // clear the div
       circle.clickHandler = function(e) {
-        this.@com.google.appinventor.client.editor.simple.components.MockCircle::select()();
+        this.@com.google.appinventor.client.editor.simple.components.MockCircle::select(*)(e);
         if (e.originalEvent) e.originalEvent.stopPropagation();
       };
       circle.dragHandler = function(e) {

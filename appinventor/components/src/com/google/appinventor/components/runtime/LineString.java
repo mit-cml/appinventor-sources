@@ -39,6 +39,12 @@ import android.util.Log;
 import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
 import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
 
+/**
+ * `LineString` is a component for drawing an open, continuous sequence of lines on a `Map`. To add
+ * new points to a `LineString` in the designer, drag the midpoint of any segment away from the
+ * line to introduce a new vertex. Move a vertex by clicking and dragging the vertex to a new
+ * location. Clicking on a vertex will delete the vertex, unless only two remain.
+ */
 @DesignerComponent(version = YaVersion.LINESTRING_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
     description = "LineString")
@@ -101,7 +107,7 @@ public class LineString extends MapFeatureBase implements MapLineString {
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "The type of the map feature. For LineString, this returns "
+      description = "Returns the type of the map feature. For LineString, this returns "
           + "the text \"LineString\".")
   @Override
   public String Type() {
@@ -116,6 +122,10 @@ public class LineString extends MapFeatureBase implements MapLineString {
     return GeometryUtil.pointsListToYailList(points);
   }
 
+  /**
+   * The list of points, as pairs of latitudes and longitudes, in the `LineString`.
+   * @param points the new coordinates for the LineString.
+   */
   @SimpleProperty
   @Override
   public void Points(@NonNull YailList points) {
@@ -136,8 +146,7 @@ public class LineString extends MapFeatureBase implements MapLineString {
 
   /**
    * Set the points of the LineString from a specially-coded character string of the form:
-   * [[longitude1, latitude1], [longitude2, latitude2], ...]
-   * Note the reversal of latitude and longitude versus how they are typically represented.
+   * [[latitude1, longitude1], [latitude2, longitude2], ...]
    *
    * @param points String containing a sequence of points for the LineString.
    */
@@ -184,6 +193,10 @@ public class LineString extends MapFeatureBase implements MapLineString {
     }
   }
 
+  /**
+   * Sets or gets the width of the stroke used to outline the `%type%`.
+   * @param width the outline width
+   */
   @Override
   @DesignerProperty(defaultValue = "3")
   @SimpleProperty

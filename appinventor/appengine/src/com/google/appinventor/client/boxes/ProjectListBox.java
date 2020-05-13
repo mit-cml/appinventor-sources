@@ -53,4 +53,16 @@ public final class ProjectListBox extends Box {
   public ProjectList getProjectList() {
      return plist;
   }
+
+  public void loadProjectList () {
+    plist.getSelectedProjects().clear();
+    plist.refreshTable(false, false);
+    this.setCaption(MESSAGES.projectListBoxCaption());
+  }
+
+  public void loadTrashList() {
+    plist.getSelectedProjects().clear();
+    plist.refreshTable(false, true);
+    this.setCaption(MESSAGES.trashprojectlistbox());
+  }
 }

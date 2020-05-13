@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: MIT App Inventor Community
+    url: https://community.appinventor.mit.edu/c/mit-app-inventor-help/5
+    about: Looking for help while developing your apps? Ask in the Community your doubts and questions!
+  - name: Extension Development
+    url: https://community.appinventor.mit.edu/c/open-source-development/extension-development/25
+    about: For issues while developing an extension, please refer to the specific category in our Community

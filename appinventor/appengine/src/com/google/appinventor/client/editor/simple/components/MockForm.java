@@ -8,6 +8,8 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,14 +24,17 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 
 import com.google.gwt.user.client.Timer;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -232,7 +237,7 @@ public final class MockForm extends MockContainer {
   ScrollPanel scrollPanel;
   private TitleBar titleBar;
   private NavigationBar navigationBar;
-  private MockComponent selectedComponent;
+  private List<MockComponent> selectedComponents = new ArrayList<MockComponent>(Collections.singleton(this));
 
   int screenWidth;              // TEMP: Make package visible so we can use it MockHVLayoutBase
   private int screenHeight;
@@ -450,8 +455,10 @@ public final class MockForm extends MockContainer {
   @Override
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + PORTRAIT_WIDTH, null,
+        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, null,
+        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
 
@@ -904,48 +911,61 @@ public final class MockForm extends MockContainer {
     }
   }
 
+  private boolean shouldSelectMultipleComponents(NativeEvent e) {
+    if (e == null) {
+      return false;
+    }
+    if (Window.Navigator.getPlatform().toLowerCase().startsWith("mac")) {
+      return e.getMetaKey();
+    } else {
+      return e.getCtrlKey();
+    }
+  }
+
   /**
    * Changes the component that is currently selected in the form.
    * <p>
    * There will always be exactly one component selected in a form
    * at any given time.
    */
-  public final void setSelectedComponent(MockComponent newSelectedComponent) {
-    MockComponent oldSelectedComponent = selectedComponent;
-
+  public final void setSelectedComponent(MockComponent newSelectedComponent, NativeEvent event) {
     if (newSelectedComponent == null) {
       throw new IllegalArgumentException("at least one component must always be selected");
     }
-    YaFormEditor formEditor = (YaFormEditor) editor;
-    boolean shouldSelectMultipleComponents = formEditor.getShouldSelectMultipleComponents();
-    List<MockComponent> selectedComponents = formEditor.getSelectedComponents();
+    boolean shouldSelectMultipleComponents = shouldSelectMultipleComponents(event);
     if (selectedComponents.size() == 1 && selectedComponents.contains(newSelectedComponent)) {
       // Attempting to change the selection from old to new when they are the same breaks
       // Marker drag. See https://github.com/mit-cml/appinventor-sources/issues/1936
       return;
     }
-    if (shouldSelectMultipleComponents && selectedComponents.size() > 1 && formEditor.isSelectedComponent(newSelectedComponent)) {
-      int index = selectedComponents.indexOf(newSelectedComponent);
-      selectedComponent = selectedComponents.get((index == 0) ? 1 : index - 1);
+
+    // Remove an previously selected component from the list of selected components, but only if
+    // there would still be something selected.
+    if (shouldSelectMultipleComponents && selectedComponents.contains(newSelectedComponent)
+        && selectedComponents.size() > 1) {
+      selectedComponents.remove(newSelectedComponent);
       newSelectedComponent.onSelectedChange(false);
       return;
     }
 
-    selectedComponent = newSelectedComponent;
-    Map<String, MockComponent> componentsMap = formEditor.getComponents();
-
-    if (oldSelectedComponent != null && !shouldSelectMultipleComponents) {     // Can be null initially
-      for (MockComponent component : componentsMap.values()) {
-        if (component.getName() != selectedComponent.getName()) {
+    if (!shouldSelectMultipleComponents) {
+      for (MockComponent component : selectedComponents) {
+        if (component != newSelectedComponent) {
           component.onSelectedChange(false);
         }
       }
+      selectedComponents.clear();
     }
+    selectedComponents.add(newSelectedComponent);
     newSelectedComponent.onSelectedChange(true);
   }
 
-  public final MockComponent getSelectedComponent() {
-    return selectedComponent;
+  public final List<MockComponent> getSelectedComponents() {
+    return selectedComponents;
+  }
+
+  public final MockComponent getLastSelectedComponent() {
+    return selectedComponents.get(selectedComponents.size() - 1);
   }
 
   /**
