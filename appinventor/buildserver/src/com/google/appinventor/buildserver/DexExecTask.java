@@ -21,9 +21,7 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,8 +29,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Dex task, modified from the Android SDK to run in BuildServer.
@@ -72,16 +68,10 @@ public class DexExecTask {
         mVerbose = verbose;
     }
 
-    public void setMainDexClasses(Set<String> classes) {
-        File dx = new File(mExecutable);
-        mainDexFile = dx.getParent() + File.separator + "main-classes.txt";
-        try (PrintStream out = new PrintStream(new FileOutputStream(mainDexFile))) {
-            for (String name : new TreeSet<>(classes)) {
-                out.println(name);
-            }
-            mPredex = false;  // Cannot use predexing in multidex mode
-        } catch (IOException e) {
-            mainDexFile = null;
+    public void setMainDexClassesFile(String classList) {
+        mainDexFile = classList;
+        if (classList != null) {
+            mPredex = false;
         }
     }
 
@@ -217,6 +207,7 @@ public class DexExecTask {
         if (mainDexFile != null) {
             commandLineList.add("--multi-dex");
             commandLineList.add("--main-dex-list=" + mainDexFile);
+            commandLineList.add("--minimal-main-dex");
         }
 
         if (mNoLocals) {

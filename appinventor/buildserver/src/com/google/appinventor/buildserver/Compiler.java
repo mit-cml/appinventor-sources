@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
@@ -132,6 +133,14 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "AndroidRuntime.jar";
   private static final String APKSIGNER_JAR =
       RUNTIME_FILES_DIR + "apksigner.jar";
+
+  private static final Set<String> CRITICAL_JARS =
+      new HashSet<>(Arrays.asList(
+          RUNTIME_FILES_DIR + "appcompat-v7.jar",
+          RUNTIME_FILES_DIR + "common.jar",
+          RUNTIME_FILES_DIR + "lifecycle-common.jar",
+          RUNTIME_FILES_DIR + "support-compat.jar"
+      ));
 
   private static final String LINUX_AAPT_TOOL =
       "/tools/linux/aapt";
@@ -1915,6 +1924,26 @@ public final class Compiler {
   }
 
   /**
+   * Writes out the class list for the main dex file. The format of this file is the pathname of
+   * the class, including the .class extension, one per line.
+   *
+   * @param classesDir directory to place the main classes list
+   * @param classes the set of classes to include in the main dex file
+   * @return the path to the file containing the main classes list
+   */
+  private String writeClassList(File classesDir, Set<String> classes) {
+    File target = new File(classesDir, "main-classes.txt");
+    try (PrintStream out = new PrintStream(new FileOutputStream(target))) {
+      for (String name : new TreeSet<>(classes)) {
+        out.println(name.replaceAll("\\.", "/") + ".class");
+      }
+      return target.getAbsolutePath();
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  /**
    * Compiles Java class files and JAR files into the Dex file format using dx.
    *
    * @param classesDir directory containing compiled App Inventor screens
@@ -1931,13 +1960,20 @@ public final class Compiler {
       inputList.add(recordForMainDex(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)),
           mainDexClasses));
       inputList.add(recordForMainDex(new File(getResource(KAWA_RUNTIME)), mainDexClasses));
-      for (String jar : SUPPORT_JARS) {
+      for (String jar : CRITICAL_JARS) {
         inputList.add(recordForMainDex(new File(getResource(jar)), mainDexClasses));
       }
 
       // Only include ACRA for the companion app
       if (isForCompanion) {
         inputList.add(recordForMainDex(new File(getResource(ACRA_RUNTIME)), mainDexClasses));
+      }
+
+      for (String jar : SUPPORT_JARS) {
+        if (CRITICAL_JARS.contains(jar)) {  // already covered above
+          continue;
+        }
+        inputList.add(new File(getResource(jar)));
       }
 
       // Add the rest of the libraries in any order
@@ -1958,7 +1994,7 @@ public final class Compiler {
       // Run the dx utility
       DexExecTask dexTask = new DexExecTask();
       dexTask.setExecutable(getResource(DX_JAR));
-      dexTask.setMainDexClasses(mainDexClasses);
+      dexTask.setMainDexClassesFile(writeClassList(classesDir, mainDexClasses));
       dexTask.setOutput(dexedClassesDir);
       dexTask.setChildProcessRamMb(childProcessRamMb);
       if (dexCacheDir == null) {
