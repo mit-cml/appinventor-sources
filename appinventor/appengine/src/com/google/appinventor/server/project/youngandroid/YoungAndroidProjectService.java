@@ -649,6 +649,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
   /**
+   * Constructs a RpcResult object that indicates that a file was too big to send.
+   *
+   * @param size size of the aia
+   * @return a new RpcResult with information for rendering an error in the client
+   */
+  private RpcResult fileTooBigResult(double size) {
+    return new RpcResult(413, "", String.format(Locale.getDefault(),
+        "{\"maxSize\":%d,\"aiaSize\":%f}", MAX_PROJECT_SIZE.get(), size / MB));
+  }
+
+  /**
    * Make a request to the Build Server to build a project.  The Build Server will asynchronously
    * post the results of the build via the {@link com.google.appinventor.server.ReceiveBuildServlet}
    * A later call will need to be made by the client in order to get those results.
@@ -704,15 +715,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       // may not be loadable into many memory restricted devices, so we
       // may not want to encourage large projects...
       if (zipFile.getContent().length > MAX_PROJECT_SIZE.get() * MB) {
-        double size = (double) zipFile.getContent().length / MB;
-        RuntimeException exception = new RuntimeException(
-            String.format(Locale.getDefault(), ERROR_LARGE_PROJECT, MAX_PROJECT_SIZE.get(), size)
-        );
-        CrashReport.createAndLogError(LOG, null,
-            buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId),
-            exception);
-        return new RpcResult(413, "", "{\"maxSize\":" + MAX_PROJECT_SIZE.get()
-            + ",\"aiaSize\":" + size + "}");
+        return fileTooBigResult(zipFile.getContent().length);
       }
       bufferedOutputStream.write(zipFile.getContent());
       bufferedOutputStream.flush();
@@ -769,17 +772,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       return new RpcResult(false, "", e.getMessage());
     } catch (IOException e) {
       // As of App Engine 1.9.0 we get these when UrlFetch is asked to send too much data
-      Throwable wrappedException = e;
       int zipFileLength = zipFile == null ? -1 : zipFile.getContent().length;
-      if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
-        String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
-        wrappedException = new IllegalArgumentException(
-          "Sorry, can't package projects larger than 5MB."
-          + " Yours is " + lengthMbs + "MB.", e);
+      if (zipFileLength >= MAX_PROJECT_SIZE.get() * MB) {
+        return fileTooBigResult(zipFileLength);
+      } else {
+        return new RpcResult(false, "", e.getMessage());
       }
-      CrashReport.createAndLogError(LOG, null,
-          buildErrorMsg("IOException", buildServerUrl, userId, projectId), wrappedException);
-      return new RpcResult(false, "", wrappedException.getMessage());
     } catch (EncryptionException e) {
       CrashReport.createAndLogError(LOG, null,
           buildErrorMsg("EncryptionException", buildServerUrl, userId, projectId), e);
@@ -790,18 +788,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       Throwable wrappedException = e;
       if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
         int zipFileLength = zipFile.getContent().length;
-        if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
-          String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
-          wrappedException = new IllegalArgumentException(
-              "Sorry, can't package projects larger than 5MB."
-              + " Yours is " + lengthMbs + "MB.", e);
+        if (zipFileLength >= MAX_PROJECT_SIZE.get() * MB) {
+          return fileTooBigResult(zipFileLength);
         } else {
           wrappedException = new IllegalArgumentException(
               "Sorry, project was too large to package (" + zipFileLength + " bytes)");
         }
+      } else {
+        // Unexpected runtime error
+        CrashReport.createAndLogError(LOG, null,
+            buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId), wrappedException);
       }
-      CrashReport.createAndLogError(LOG, null,
-          buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId), wrappedException);
       return new RpcResult(false, "", wrappedException.getMessage());
     }
     return new RpcResult(true, "Building " + projectName, "");
@@ -913,11 +910,5 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   public int getCurrentProgress(User user, long projectId, String target) {
     return storageIo.getBuildStatus(user.getUserId(), projectId);
-  }
-
-  // Nicely format floating number using only two decimal places
-  private String format(double input) {
-    DecimalFormat formatter = new DecimalFormat("###.##");
-    return formatter.format(input);
   }
 }
