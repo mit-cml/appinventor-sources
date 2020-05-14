@@ -158,9 +158,10 @@ Blockly.Blocks['logic_operation'] = {
     op = op || 'AND';
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
-    this.opField = new Blockly.FieldDropdown(this.OPERATORS, function(op) {
-      return thisBlock.updateFields(op);
-    });
+    this.opField = new Blockly.FieldDropdown(
+      Blockly.Blocks.logic_operation.OPERATORS, function(op) {
+        return thisBlock.updateFields(op);
+      });
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('A')
@@ -257,7 +258,9 @@ Blockly.Blocks['logic_operation'] = {
     if (this.getInputsInline()) {
       if (inputNum == 1) {
         var op = this.opField.getValue();
-        this.opField = new Blockly.FieldDropdown(this.OPERATORS, this.updateFields.bind(this));
+        this.opField = new Blockly.FieldDropdown(
+          Blockly.Blocks.logic_operation.OPERATORS.OPERATORS,
+          this.updateFields.bind(this));
         this.opField.setValue(op);
         input.appendField(this.opField, 'OP');
         this.opField.init();
@@ -268,7 +271,9 @@ Blockly.Blocks['logic_operation'] = {
       }
     } else if (inputNum == 0) {
       var op = this.opField.getValue();
-      this.opField = new Blockly.FieldDropdown(this.OPERATORS, this.updateFields.bind(this));
+      this.opField = new Blockly.FieldDropdown(
+        Blockly.Blocks.logic_operation.OPERATORS.OPERATORS,
+        this.updateFields.bind(this));
       this.opField.setValue(op);
       input.appendField(this.opField, 'OP');
       this.opField.init();
