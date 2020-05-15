@@ -592,6 +592,14 @@ typedef union {
   XCTAssertEqualObjects(@"你好", result);
 }
 
+- (void)testSinglePointUTF16CharacterParsing {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  NSString *result = [interpreter evalForm:@"#\\xD800"];
+  XCTAssertNil(interpreter.exception);
+  XCTAssertNotNil(result);
+  XCTAssertEqualObjects(@"55296", result);
+}
+
 - (void)testFormatLong {
   SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
   NSString *result = [interpreter evalForm:@"(yail:format-exact 4028354713.0)"];
