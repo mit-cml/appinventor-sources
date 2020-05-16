@@ -1,1 +1,24 @@
-{}
+{
+    "Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TOOLTIP": " ",
+    "Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TOOLTIP": " ",
+    "Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_ARG_DEFAULT_VARIABLE": "x",
+    "Blockly.Msg.LANG_MATH_DIVIDE": "÷",
+    "Blockly.Msg.LANG_MATH_TRIG_ATAN2_Y": "y",
+    "Blockly.Msg.LANG_MATH_TRIG_ATAN2_X": "x",
+    "Blockly.Msg.LANG_MATH_SINGLE_OP_EXP": "e^",
+    "Blockly.Msg.LANG_MATH_ARITHMETIC_POWER": "^",
+    "Blockly.Msg.LANG_MATH_ARITHMETIC_DIVIDE": "/",
+    "Blockly.Msg.LANG_MATH_ARITHMETIC_MULTIPLY": "*",
+    "Blockly.Msg.LANG_MATH_ARITHMETIC_MINUS": "-",
+    "Blockly.Msg.LANG_MATH_ARITHMETIC_ADD": "+",
+    "Blockly.Msg.LANG_MATH_COMPARE_GTE": "≥",
+    "Blockly.Msg.LANG_MATH_COMPARE_GT": ">",
+    "Blockly.Msg.LANG_MATH_COMPARE_LTE": "≤",
+    "Blockly.Msg.LANG_MATH_COMPARE_LT": "<",
+    "Blockly.Msg.LANG_MATH_COMPARE_NEQ": "≠",
+    "Blockly.Msg.LANG_MATH_COMPARE_EQ": "=",
+    "Blockly.Msg.LANG_LOGIC_COMPARE_NEQ": "≠",
+    "Blockly.Msg.LANG_LOGIC_COMPARE_EQ": "=",
+    "Blockly.Msg.LANG_COLOUR_WHITE": "սպիտակ",
+    "Blockly.Msg.NEW_VARIABLE": "Նոր փոփոխական..."
+}
