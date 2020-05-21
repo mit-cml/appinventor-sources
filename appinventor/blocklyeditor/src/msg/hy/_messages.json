@@ -20,5 +20,15 @@
     "Blockly.Msg.LANG_LOGIC_COMPARE_NEQ": "≠",
     "Blockly.Msg.LANG_LOGIC_COMPARE_EQ": "=",
     "Blockly.Msg.LANG_COLOUR_WHITE": "սպիտակ",
-    "Blockly.Msg.NEW_VARIABLE": "Նոր փոփոխական..."
+    "Blockly.Msg.NEW_VARIABLE": "Նոր փոփոխական...",
+    "Blockly.Msg.LANG_COLOUR_GREEN": "կանաչ",
+    "Blockly.Msg.LANG_COLOUR_YELLOW": "դեղին",
+    "Blockly.Msg.LANG_COLOUR_ORANGE": "նարնջագույն",
+    "Blockly.Msg.LANG_COLOUR_PINK": "վարդագույն",
+    "Blockly.Msg.LANG_COLOUR_RED": "կարմիր",
+    "Blockly.Msg.VARIABLE_CATEGORY": "Փոփոխականներ",
+    "Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT": "ոչ",
+    "Blockly.Msg.LANG_LOGIC_OPERATION_OR": "կամ",
+    "Blockly.Msg.LANG_LOGIC_OPERATION_AND": "և",
+    "Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN": "երբ "
 }
