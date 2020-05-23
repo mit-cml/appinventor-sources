@@ -107,7 +107,7 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
         _form.dispatchErrorOccurredEvent(self, "finishedRecording", ErrorMessage.ERROR_SOUND_RECORDER.code, ErrorMessage.ERROR_SOUND_RECORDER.message)
         return
       }
-      let sound = _fileURL.lastPathComponent
+      let sound = _fileURL.path
       AfterSoundRecorded(sound)
     } else {
       _form.dispatchErrorOccurredEvent(self, "finishedRecording", ErrorMessage.ERROR_SOUND_RECORDER.code, ErrorMessage.ERROR_SOUND_RECORDER.message)
