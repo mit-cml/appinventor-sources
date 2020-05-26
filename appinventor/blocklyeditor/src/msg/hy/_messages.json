@@ -30,5 +30,8 @@
     "Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT": "ոչ",
     "Blockly.Msg.LANG_LOGIC_OPERATION_OR": "կամ",
     "Blockly.Msg.LANG_LOGIC_OPERATION_AND": "և",
-    "Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN": "երբ "
+    "Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN": "երբ ",
+    "Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT": "եթե",
+    "Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE": "եթե",
+    "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST": " "
 }
