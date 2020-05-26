@@ -188,6 +188,10 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     EventDispatcher.dispatchEvent(of: self, called: "WebViewStringChange", arguments: value as NSString)
   }
 
+  @objc open func PageLoaded(_ url: String) {
+    EventDispatcher.dispatchEvent(of: self, called: "PageLoaded", arguments: url as NSString)
+  }
+  
   open func webView(_ webView: WKWebView, didFail: WKNavigation!, withError: Error) {
     _container.form.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEB_VIEWER_UNKNOWN_ERROR.code, withError.localizedDescription)
   }
@@ -222,6 +226,10 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
   }
 
   open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    let url = webView.url?.absoluteString ?? ""
+      DispatchQueue.main.async {
+        self.PageLoaded(url)
+    }
     _wantLoad = false
   }
 
