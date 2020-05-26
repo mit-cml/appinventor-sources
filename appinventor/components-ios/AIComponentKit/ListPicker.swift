@@ -134,10 +134,11 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
       return _selectionIndex
     }
     set(index) {
-      _selectionIndex = index
       if index > 0 && index <= Int32(_items.count) {
+        _selectionIndex = index
         _selection = _items[Int(index) - 1]
       } else {
+        _selectionIndex = 0
         _selection = ""
       }
     }

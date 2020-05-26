@@ -121,12 +121,20 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
   @objc open var SelectionIndex: Int32 {
     get {
-      return _selectionIndex + 1
+      return _selectionIndex
     }
     set(selectionIndex) {
-      _selectionIndex = selectionIndex - 1
-      if _selectionIndex < 0 {
-        _view.deselectRow(at: _view.indexPathForSelectedRow!, animated: true)
+      if selectionIndex > 0 && selectionIndex <= Int32(_elements.count) {
+        _selectionIndex = selectionIndex
+        _selection = _elements[Int(selectionIndex) - 1]
+      } else {
+        _selectionIndex = 0
+        _selection = ""
+      }
+      if _selectionIndex == 0 {
+        if let path = _view.indexPathForSelectedRow {
+          _view.deselectRow(at: path, animated: true)
+        }
       } else {
         _view.selectRow(at: IndexPath(row: Int(_selectionIndex), section: 0), animated: true, scrollPosition: UITableView.ScrollPosition.middle)
       }
