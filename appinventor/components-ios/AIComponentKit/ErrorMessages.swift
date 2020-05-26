@@ -50,6 +50,7 @@ import Foundation
   case ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS = 1111
   case ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST = 1112
   case ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS = 1113
+  case ERROR_WEB_REQUEST_TIMED_OUT = 1117
 
   // Camcorder Errors
   case ERROR_CAMCORDER_NO_CLIP_RETURNED = 1201
@@ -205,6 +206,8 @@ import Foundation
       return "Unable to build request data: element %s is not a list"
     case .ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS:
       return "Unable to build request data: element %s does not contain two elements"
+    case .ERROR_WEB_REQUEST_TIMED_OUT:
+      return "Took longer than timeout period to receive data from the URL: %s"
 
     // Camcorder Errors
     case .ERROR_CAMCORDER_NO_CLIP_RETURNED:

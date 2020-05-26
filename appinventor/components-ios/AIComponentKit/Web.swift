@@ -10,6 +10,7 @@ open class Web: NonvisibleComponent {
   fileprivate var _saveResponse = false
   fileprivate var _responseFileName = ""
   fileprivate var _cookieStorage = HTTPCookieStorage()
+  private var _timeout: Int32 = 0
 
   fileprivate let stringToEncoding: [String: String.Encoding] =
     ["utf8": .utf8, "utf-8": .utf8, "utf16": .utf16, "utf-16": .utf16, "utf32": .utf32,
@@ -23,6 +24,8 @@ open class Web: NonvisibleComponent {
     }
     return text.data(using: encodingType)
   }
+
+  // MARK: - Web Properties
   
   @objc open var Url: String {
     get {
@@ -70,6 +73,17 @@ open class Web: NonvisibleComponent {
       _responseFileName = responseFileName
     }
   }
+
+  @objc open var Timeout: Int32 {
+    get {
+      return _timeout
+    }
+    set (timeout) {
+      _timeout = timeout
+    }
+  }
+
+  // MARK: - Web Methods
   
   @objc open func ClearCookies() {
     _cookieStorage = HTTPCookieStorage.init()
@@ -163,28 +177,37 @@ open class Web: NonvisibleComponent {
     }
 
     let task = session.dataTask(with: request, completionHandler: { (data, response, error) in
+      if let response = response {
+        let responseType = response.mimeType ?? ""
+        let responseCode = (response as! HTTPURLResponse).statusCode
+        var responseContent: NSString = ""
 
-      let responseType = response?.mimeType ?? ""
-      let responseCode = (response as! HTTPURLResponse).statusCode
-      var responseContent: NSString = ""
+        if (self._saveResponse) {
+          let path = self.saveResponseContent(response, webProps.responseFileName, responseType, data)
 
-      if (self._saveResponse) {
-        let path = self.saveResponseContent(response!, webProps.responseFileName, responseType, data)
-
-        DispatchQueue.main.async {
-          self.GotFile(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, fileName: path as NSString)
-        }
-      } else {
-        if let data = data {
-          let encodingName = response?.textEncodingName ?? "utf8"
-          guard let encodingType = self.stringToEncoding[encodingName], let responseContentStr = String(data: data, encoding: encodingType) else {
-            self._form.dispatchErrorOccurredEvent(self, "performRequest", ErrorMessage.ERROR_WEB_UNSUPPORTED_ENCODING.code, encodingName)
-            return
+          DispatchQueue.main.async {
+            self.GotFile(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, fileName: path as NSString)
           }
-          responseContent = responseContentStr as NSString
+        } else {
+          if let data = data {
+            let encodingName = response.textEncodingName ?? "utf8"
+            guard let encodingType = self.stringToEncoding[encodingName], let responseContentStr = String(data: data, encoding: encodingType) else {
+              self._form.dispatchErrorOccurredEvent(self, "performRequest", ErrorMessage.ERROR_WEB_UNSUPPORTED_ENCODING.code, encodingName)
+              return
+            }
+            responseContent = responseContentStr as NSString
+          }
+          DispatchQueue.main.async {
+            self.GotText(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, responseContent: responseContent)
+          }
         }
-        DispatchQueue.main.async {
-          self.GotText(webProps.urlString as NSString, responseCode: responseCode as NSNumber, responseType: responseType as NSString, responseContent: responseContent)
+      } else if let error = error {
+        NSLog("Got error during URL fetch: \(error.localizedDescription)")
+        if (error as NSError).code == URLError.timedOut.rawValue {
+          DispatchQueue.main.async {
+            self.TimedOut(webProps.urlString as NSString)
+            self._form.dispatchErrorOccurredEvent(self, httpVerb, ErrorMessage.ERROR_WEB_REQUEST_TIMED_OUT.code, webProps.urlString)
+          }
         }
       }
     })
@@ -206,6 +229,9 @@ open class Web: NonvisibleComponent {
     let urlSessionConfiguration = URLSessionConfiguration.default
     urlSessionConfiguration.httpCookieStorage = _cookieStorage
     urlSessionConfiguration.httpShouldSetCookies = _allowCookies
+    if webProps.timeout > 0 {
+      urlSessionConfiguration.timeoutIntervalForRequest = Double(webProps.timeout) / 1000.0
+    }
 
     if (httpVerb == "PUT" || httpVerb == "DELETE") {
       urlSessionConfiguration.httpAdditionalHeaders = webProps.requestHeaders
@@ -335,12 +361,18 @@ open class Web: NonvisibleComponent {
     return nil
   }
 
+  // MARK: - Web Events
+
   @objc open func GotText(_ url: NSString, responseCode: NSNumber, responseType: NSString, responseContent: NSString) {
     EventDispatcher.dispatchEvent(of: self, called: "GotText", arguments: url, responseCode, responseType, responseContent)
   }
 
   @objc open func GotFile(_ url: NSString, responseCode: NSNumber, responseType: NSString, fileName: NSString) {
     EventDispatcher.dispatchEvent(of: self, called: "GotFile", arguments: url, responseCode, responseType, fileName)
+  }
+
+  @objc open func TimedOut(_ url: NSString) {
+    EventDispatcher.dispatchEvent(of: self, called: "TimedOut", arguments: url)
   }
 
   class CapturedProperties {
@@ -351,6 +383,7 @@ open class Web: NonvisibleComponent {
     let responseFileName: String
     var requestHeaders: [String: [String]] = [String: [String]]()
     let cookies: HTTPCookieStorage
+    let timeout: Int32
 
     init?(web: Web) throws {
       urlString = web._url
@@ -363,6 +396,7 @@ open class Web: NonvisibleComponent {
       responseFileName = web._responseFileName
       cookies = web._cookieStorage
       requestHeaders = try web.processRequestHeaders(web._requestHeaders)
+      timeout = web._timeout
     }
   }
 
