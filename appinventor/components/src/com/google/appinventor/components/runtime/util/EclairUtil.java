@@ -88,14 +88,17 @@ public class EclairUtil {
             return;
           }
 
+          // Get origin of permission request
           String origin = request.getOrigin().toString();
 
+          // Grant resource on accept
           DialogInterface.OnClickListener acceptListener = new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int which) {
                 request.grant(request.getResources());
               }
           };
 
+          // Deny request on reject
           DialogInterface.OnClickListener refuseListener = new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int which) {
                 request.deny();
