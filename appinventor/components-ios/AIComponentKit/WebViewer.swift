@@ -37,6 +37,8 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     _view.navigationDelegate = self
     controller.add(self, name: "webString")
     parent.add(self)
+    Width = kLengthFillParent
+    Height = kLengthFillParent
   }
 
   @objc open func CurrentPageTitle() -> String {
