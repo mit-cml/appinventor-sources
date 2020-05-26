@@ -82,6 +82,7 @@ public class EclairUtil {
     webview.setWebChromeClient(new WebChromeClient() {
         @Override
         public void onPermissionRequest(final PermissionRequest request) {
+          // No prompt for permission needed; Grant resource
           if (!caller.PromptforPermission()) {
             request.grant(request.getResources());
             return;

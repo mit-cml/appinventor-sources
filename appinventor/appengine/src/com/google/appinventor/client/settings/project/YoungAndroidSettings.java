@@ -49,6 +49,9 @@ public final class YoungAndroidSettings extends Settings {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_CAMERA, "false",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_MICROPHONE, "false",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME, "",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,

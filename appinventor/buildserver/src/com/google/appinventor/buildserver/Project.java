@@ -73,6 +73,7 @@ public final class Project {
    *    build - output directory for the compiler
    *    useslocation - flag indicating whether or not the project uses locations
    *    usescamera - flag indicating whether or not the project uses the camera
+   *    usesmicrophone - flag indicating whether or not the project uses the microphone
    *    aname - the human-readable application name
    *    androidminsdk - the minimum Android sdk required for the app
    *    theme - the base theme for the app
@@ -90,6 +91,7 @@ public final class Project {
   private static final String BUILDTAG = "build";
   private static final String USESLOCATIONTAG = "useslocation";
   private static final String USESCAMERATAG = "usescamera";
+  private static final String USESMICROPHONETAG = "usesmicrophone";
   private static final String ANAMETAG = "aname";
   private static final String ANDROID_MIN_SDK_TAG = "androidminsdk";
   private static final String ACTIONBAR_TAG = "actionbar";
@@ -262,6 +264,15 @@ public final class Project {
    */
   public String getUsesCamera() {
     return getOptionalBooleanProperty(USESCAMERATAG);
+  }
+
+  /**
+   * gets the usesmicrophone property
+   *
+   * @return usesmicrophone property
+   */
+  public String getUsesMicrophone() {
+    return getOptionalBooleanProperty(USESMICROPHONETAG);
   }
 
   /**

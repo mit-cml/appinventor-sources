@@ -132,13 +132,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * Returns project settings that can be used when creating a new project.
    */
   public static String getProjectSettings(String icon, String vCode, String vName,
-    String useslocation, String usescamera, String aName, String sizing, String showListsAsJson, String tutorialURL,
-    String subsetJSON, String actionBar, String theme, String primaryColor, String primaryColorDark, String accentColor) {
+    String useslocation, String usescamera, String usesmicrophone, String aName, String sizing, String showListsAsJson,
+    String tutorialURL, String subsetJSON, String actionBar, String theme, String primaryColor, String primaryColorDark,
+    String accentColor) {
     icon = Strings.nullToEmpty(icon);
     vCode = Strings.nullToEmpty(vCode);
     vName = Strings.nullToEmpty(vName);
     useslocation = Strings.nullToEmpty(useslocation);
     usescamera = Strings.nullToEmpty(usescamera);
+    usesmicrophone = Strings.nullToEmpty(usesmicrophone);
     sizing = Strings.nullToEmpty(sizing);
     aName = Strings.nullToEmpty(aName);
     showListsAsJson = Strings.nullToEmpty(showListsAsJson);
@@ -155,6 +157,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"" + vName +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"" + useslocation +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_CAMERA + "\":\"" + usescamera +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_MICROPHONE + "\":\"" + usesmicrophone +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"" + aName +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"" + sizing +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON + "\":\"" + showListsAsJson +
@@ -179,9 +182,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param vname the version name
    */
   public static String getProjectPropertiesFileContents(String projectName, String qualifiedName,
-    String icon, String vcode, String vname, String useslocation, String usescamera, String aname,
-    String sizing, String showListsAsJson, String tutorialURL, String subsetJSON, String actionBar, String theme,
-    String primaryColor, String primaryColorDark, String accentColor) {
+    String icon, String vcode, String vname, String useslocation, String usescamera, String usesmicrophone,
+    String aname, String sizing, String showListsAsJson, String tutorialURL, String subsetJSON, String actionBar,
+    String theme, String primaryColor, String primaryColorDark, String accentColor) {
     String contents = "main=" + qualifiedName + "\n" +
         "name=" + projectName + '\n' +
         "assets=../" + ASSETS_FOLDER + "\n" +
@@ -201,6 +204,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
     if (usescamera != null && !usescamera.isEmpty()) {
       contents += "usescamera=" + usescamera + "\n";
+    }
+    if (usesmicrophone!= null && !usesmicrophone.isEmpty()) {
+      contents += "usesmicrophone=" + usesmicrophone + "\n";
     }
     if (aname != null) {
       contents += "aname=" + aname + "\n";
@@ -298,6 +304,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String newUsesCamera = Strings.nullToEmpty(settings.getSetting(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_CAMERA));
+    String newUsesMicrophone = Strings.nullToEmpty(settings.getSetting(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_MICROPHONE));
     String newSizing = Strings.nullToEmpty(settings.getSetting(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
@@ -345,6 +354,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldVName = Strings.nullToEmpty(properties.getProperty("versionname"));
     String oldUsesLocation = Strings.nullToEmpty(properties.getProperty("useslocation"));
     String oldUsesCamera = Strings.nullToEmpty(properties.getProperty("usescamera"));
+    String oldUsesMicrophone = Strings.nullToEmpty(properties.getProperty("usesmicrophone"));
     String oldSizing = Strings.nullToEmpty(properties.getProperty("sizing"));
     String oldAName = Strings.nullToEmpty(properties.getProperty("aname"));
     String oldShowListsAsJson = Strings.nullToEmpty(properties.getProperty("showlistsasjson"));
@@ -358,8 +368,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     if (!newIcon.equals(oldIcon) || !newVCode.equals(oldVCode) || !newVName.equals(oldVName)
       || !newUsesLocation.equals(oldUsesLocation) || !newUsesCamera.equals(oldUsesCamera) ||
-         !newAName.equals(oldAName) || !newSizing.equals(oldSizing) ||
-      !newShowListsAsJson.equals(oldShowListsAsJson) ||
+         !newUsesMicrophone.equals(oldUsesMicrophone) || !newAName.equals(oldAName) ||
+         !newSizing.equals(oldSizing) || !newShowListsAsJson.equals(oldShowListsAsJson) ||
         !newTutorialURL.equals(oldTutorialURL) || !newSubsetJSON.equals(oldSubsetJSON) || !newActionBar.equals(oldActionBar) ||
         !newTheme.equals(oldTheme) || !newPrimaryColor.equals(oldPrimaryColor) ||
         !newPrimaryColorDark.equals(oldPrimaryColorDark) || !newAccentColor.equals(oldAccentColor)) {
@@ -367,7 +377,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
       String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon,
-        newVCode, newVName, newUsesLocation, newUsesCamera, newAName, newSizing, newShowListsAsJson, newTutorialURL, newSubsetJSON,
+        newVCode, newVName, newUsesLocation, newUsesCamera, newUsesMicrophone, newAName, newSizing, newShowListsAsJson, newTutorialURL, newSubsetJSON,
         newActionBar, newTheme, newPrimaryColor, newPrimaryColorDark, newAccentColor);
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
@@ -388,7 +398,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String propertiesFileName = PROJECT_PROPERTIES_FILE_NAME;
     String propertiesFileContents = getProjectPropertiesFileContents(projectName,
       qualifiedFormName, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null);
+        null, null, null, null);
 
     String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
@@ -408,7 +418,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     project.addTextFile(new TextFile(yailFileName, yailFileContents));
 
     // Create new project
-    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false", "false",
+    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false", "false", "false",
         projectName, "Fixed", "false", "", "", "false", "AppTheme.Light.DarkActionBar","0", "0", "0"));
   }
 
@@ -433,6 +443,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String usescamera = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_CAMERA);
+    String usesmicrophone = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_MICROPHONE);
     String aname = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME);
@@ -482,7 +495,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         String qualifiedFormName = StringUtils.getQualifiedFormName(
             storageIo.getUser(userId).getUserEmail(), newName);
         newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode,
-          vname, useslocation, usescamera, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar,
+          vname, useslocation, usescamera, usesmicrophone, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar,
           theme, primaryColor, primaryColorDark, accentColor);
       } else {
         // This is some file other than the project properties file.
@@ -507,7 +520,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     // Create the new project and return the new project's id.
     return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname,
-        useslocation, usescamera, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar, theme, primaryColor,
+        useslocation, usescamera, usesmicrophone, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar, theme, primaryColor,
         primaryColorDark, accentColor));
   }
 

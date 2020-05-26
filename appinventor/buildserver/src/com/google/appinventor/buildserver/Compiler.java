@@ -313,6 +313,11 @@ public final class Compiler {
           webViewerPermissions.add("android.permission.CAMERA");
         }
 
+        LOG.log(Level.INFO, "usesMicrophone = " + project.getUsesMicrophone());
+        if (project.getUsesMicrophone().equals("True")) { // Add microphone permissions if any WebViewer requests it
+          webViewerPermissions.add("android.permissions.RECORD_AUDIO");
+        }
+
         if (!webViewerPermissions.isEmpty()) {
           permissionsNeeded.put("com.google.appinventor.components.runtime.WebViewer", webViewerPermissions);
         }
