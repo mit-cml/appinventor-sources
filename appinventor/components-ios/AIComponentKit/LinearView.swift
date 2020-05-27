@@ -255,6 +255,14 @@ public class LinearView: UIView {
     }
   }
 
+  open func removeAllItems() {
+    for item in _items {
+      _inner.removeArrangedSubview(item.view)
+      item.view.removeFromSuperview()
+    }
+    _items.removeAll()
+  }
+
   open func contains(_ item: UIView) -> Bool {
     return _inner.arrangedSubviews.contains(item)
   }

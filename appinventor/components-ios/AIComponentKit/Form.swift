@@ -41,6 +41,8 @@ import Toast_Swift
   var lastFormName = ""
   var formResult: AnyObject?
   private var _orientation = "unspecified"
+  private var _titleVisible = true
+  private var _constraints = [NSLayoutConstraint]()
 
   open func copy(with zone: NSZone? = nil) -> Any {
     return self
@@ -180,6 +182,7 @@ import Toast_Swift
     for subview in subviews {
       subview.removeFromSuperview()
     }
+    _linearView.removeAllItems()
     clearComponents()
     defaultPropertyValues()
   }
@@ -187,7 +190,6 @@ import Toast_Swift
   private func recomputeLayout() {
     _linearView.removeFromSuperview()
     _scaleFrameLayout.removeFromSuperview()
-    _linearView = LinearView(frame: view.frame)
     _linearView.accessibilityIdentifier = "Form root view"
     if _compatibilityMode {
       _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(x: 0, y: 0, width: 320, height: view.frame.height / _scaleFrameLayout.scale))
@@ -197,16 +199,27 @@ import Toast_Swift
     _scaleFrameLayout.mode = _compatibilityMode ? .Fixed : .Responsive
     _scaleFrameLayout.addSubview(_linearView)
     view.addSubview(_scaleFrameLayout)
-    _scaleFrameLayout.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-    _scaleFrameLayout.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-    _scaleFrameLayout.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.0/_scaleFrameLayout.scale).isActive = true
-    _scaleFrameLayout.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1.0/_scaleFrameLayout.scale).isActive = true
-    _linearView.topAnchor.constraint(equalTo: _scaleFrameLayout.topAnchor).isActive = true
-    _linearView.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor).isActive = true
-    _linearView.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor).isActive = true
-    _linearView.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor).isActive = true
     _linearView.horizontalAlignment = HorizontalGravity(rawValue: _horizontalAlignment)!
     _linearView.verticalAlignment = VerticalGravity(rawValue: _verticalAlignment)!
+    resetConstraints()
+  }
+
+  private func resetConstraints() {
+    _scaleFrameLayout.removeConstraints(_constraints)
+    _constraints.removeAll()
+    if ShowStatusBar && !TitleVisible {
+      _constraints.append(_scaleFrameLayout.topAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height))
+    } else {
+      _constraints.append(_scaleFrameLayout.topAnchor.constraint(equalTo: view.topAnchor))
+    }
+    _constraints.append(_scaleFrameLayout.leadingAnchor.constraint(equalTo: view.leadingAnchor))
+    _constraints.append(_scaleFrameLayout.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.0/_scaleFrameLayout.scale))
+    _constraints.append(_scaleFrameLayout.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1.0/_scaleFrameLayout.scale))
+    _constraints.append(_linearView.topAnchor.constraint(equalTo: _scaleFrameLayout.topAnchor))
+    _constraints.append(_linearView.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor))
+    _constraints.append(_linearView.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor))
+    _constraints.append(_linearView.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor))
+    view.addConstraints(_constraints)
   }
 
   @objc func clearComponents() {
@@ -496,11 +509,12 @@ import Toast_Swift
 
   @objc open var ShowStatusBar: Bool {
     get {
-      return UIApplication.shared.isStatusBarHidden
+      return !UIApplication.shared.isStatusBarHidden
     }
     set(show) {
       _statusBarHidden = !show
       setNeedsStatusBarAppearanceUpdate()
+      resetConstraints()
     }
   }
   
@@ -555,10 +569,12 @@ import Toast_Swift
 
   @objc open var TitleVisible: Bool {
     get {
-      return (self.navigationController?.isNavigationBarHidden)!
+      return _titleVisible
     }
     set(show) {
-      self.navigationController?.setNavigationBarHidden(!show, animated: true)
+      _titleVisible = show
+      self.navigationController?.setNavigationBarHidden(!_titleVisible, animated: true)
+      resetConstraints()
     }
   }
 
