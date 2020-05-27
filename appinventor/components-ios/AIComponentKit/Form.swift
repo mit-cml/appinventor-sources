@@ -635,6 +635,18 @@ import Toast_Swift
     }
   }
 
+  open func dispatchPermissionDeniedEvent(_ component: Component, _ functionName: String, _ exception: PermissionException) {
+    runOnUiThread {
+      self.PermissionDenied(component, functionName, exception.permissionNeeded)
+    }
+  }
+
+  open func dispatchPermissionDeniedEvent(_ component: Component, _ functionName: String, _ permissionName: String) {
+    runOnUiThread {
+      self.PermissionDenied(component, functionName, permissionName)
+    }
+  }
+
   @objc open func BackPressed() {
     EventDispatcher.dispatchEvent(of: self, called: "BackPressed")
   }
@@ -666,6 +678,16 @@ import Toast_Swift
 
   @objc open func OtherScreenClosed(_ otherScreenName: String, _ result: AnyObject) {
     EventDispatcher.dispatchEvent(of: self, called: "OtherScreenClosed", arguments: otherScreenName as NSString, result)
+  }
+
+  @objc open func PermissionDenied(_ component: Component, _ functionName: String, _ permissionName: String) {
+    if (!EventDispatcher.dispatchEvent(of: self, called: "PermissionDenied", arguments: component as AnyObject, functionName as AnyObject, permissionName as AnyObject)) {
+      dispatchErrorOccurredEvent(component, functionName, ErrorMessage.ERROR_PERMISSION_DENIED.code, permissionName)
+    }
+  }
+
+  @objc open func PermissionGranted(_ permissionName: String) {
+    EventDispatcher.dispatchEvent(of: self, called: "PermissionGranted", arguments: permissionName as AnyObject)
   }
 
   @objc open func ScreenOrientationChanged() {

@@ -83,6 +83,8 @@ open class PermissionHandler: NSObject, CLLocationManagerDelegate {
       return false
     case .notDetermined:
       return nil
+    @unknown default:
+      return nil
     }
   }
 
@@ -133,6 +135,8 @@ open class PermissionHandler: NSObject, CLLocationManagerDelegate {
       case .denied, .restricted:
         return false
       case .notDetermined:
+        return nil
+      @unknown default:
         return nil
       }
     } else {

@@ -34,6 +34,9 @@ import Foundation
   case ERROR_SOUND_RECORDER_CANNOT_CREATE = 802
   case ERROR_SOUND_RECORDER_PERMISSION_DENIED = 806
 
+  // Form errors
+  case ERROR_PERMISSION_DENIED = 908
+
   // ContactPicker and PhoneNumberPicker Errors
   // "Error message for when contact data cannot be used on the device."
   case ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107
@@ -180,6 +183,10 @@ import Foundation
       return "Cannot start recording: %s"
     case .ERROR_SOUND_RECORDER_PERMISSION_DENIED:
       return "Permission to record audio was denied."
+
+    // Form Errors
+    case .ERROR_PERMISSION_DENIED:
+      return "The permission %s has been denied. Please enable it in the Settings app."
 
     // ContactPicker and PhoneNumberPicker Errors
     case .ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER:
