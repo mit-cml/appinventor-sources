@@ -5,6 +5,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.util;
 
+import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.WebViewer;
 
 import android.app.Activity;
@@ -24,7 +25,10 @@ import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
 import android.widget.EditText;
 
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,6 +44,7 @@ public class EclairUtil {
    * TODO: Might be worthwhile to move this somewhere else.
   */
   private static final Map<String, String> RESOURCE_MAP;
+  private static final Map<String, String[]> PERMISSION_MAP;
 
   static {
     RESOURCE_MAP = new HashMap<String, String>();
@@ -47,8 +52,13 @@ public class EclairUtil {
     RESOURCE_MAP.put("android.webkit.resource.MIDI_SYSEX", "MIDI device");
     RESOURCE_MAP.put("android.webkit.resource.PROTECTED_MEDIA_ID", "EME APIs");
     RESOURCE_MAP.put("android.webkit.resource.VIDEO_CAPTURE", "camera");
-  }
 
+    PERMISSION_MAP = new HashMap<String, String[]>();
+    PERMISSION_MAP.put("location", new String[]{"android.permission.ACCESS_FINE_LOCATION",
+    "android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_MOCK_LOCATION"});
+    PERMISSION_MAP.put("camera", new String[]{"android.permission.CAMERA"});
+    PERMISSION_MAP.put("microphone", new String[]{"android.permission.RECORD_AUDIO", "android.permission.MODIFY_AUDIO_SETTINGS", "android.permission.MICROPHONE"});
+  }
 
   private EclairUtil() {
   }
@@ -107,6 +117,7 @@ public class EclairUtil {
 
           String accessString = generateAccessString(request);
 
+          resolveAndroidPermissions(getPermissionsForRequest(request));
           createPermissionAlertDialog(origin, accessString, acceptListener, refuseListener);
         }
 
@@ -133,6 +144,7 @@ public class EclairUtil {
               }
           };
 
+          resolveAndroidPermissions(PERMISSION_MAP.get("location"));
           createPermissionAlertDialog(origin, "location", acceptListener, refuseListener);
         }
 
@@ -168,6 +180,38 @@ public class EclairUtil {
         }
 
         /**
+         * Auxiliary function to extract all the required Android
+         * permissions from a single PermissionRequest.
+         *
+         * @return Array of permissions
+         */
+        private String[] getPermissionsForRequest(final PermissionRequest request) {
+          // Get requested resources
+          String[] resources = request.getResources();
+
+          // Maintain list of all permissions needed
+          List<String> permissions = new ArrayList<String>();
+
+          for (String res : resources) {
+            // Mapping exists (note that PERMISSION_MAP only contains a subset of RESOURCE_MAP entries,
+            // so all other cases are not covered by the mapping)
+            if (RESOURCE_MAP.containsKey(res)) {
+              // Map res -> RESOURCE_MAP name
+              final String resourceName = RESOURCE_MAP.get(res);
+
+              // Retrieve permissions (if they exist), and convert to list
+              final List<String> newPermissions = Arrays.asList(PERMISSION_MAP.getOrDefault(resourceName, new String[] {}));
+
+              // Concatenate lists together
+              permissions.addAll(newPermissions);
+            }
+          }
+
+          // Return concatenated permissions as an array of strings
+          return permissions.toArray(new String[permissions.size()]);
+        }
+
+        /**
          * Creates a permission alert dialog that perform the corresponding listener actions
          * on accept or reject.
          * @param origin  Origin of the permission request (URL string)
@@ -190,6 +234,19 @@ public class EclairUtil {
             alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Refuse", refuseListener);
             
             alertDialog.show();
+        }
+
+        /**
+         * Auxiliary function to request Android permissions from the specified array
+         * of strings.
+         *
+         * @param permissions Array of permissions to request
+         */
+        private void resolveAndroidPermissions(String[] permissions) {
+          // Request permissions only if permissions to be requested exist
+          if (permissions.length > 0) {
+            ((Form) activity).askPermissions(permissions);
+          }
         }
       });
   }
