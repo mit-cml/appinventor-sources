@@ -315,7 +315,8 @@ public final class Compiler {
 
         LOG.log(Level.INFO, "usesMicrophone = " + project.getUsesMicrophone());
         if (project.getUsesMicrophone().equals("True")) { // Add microphone permissions if any WebViewer requests it
-          webViewerPermissions.add("android.permissions.RECORD_AUDIO");
+          webViewerPermissions.add("android.permission.RECORD_AUDIO");
+          webViewerPermissions.add("android.permission.MODIFY_AUDIO_SETTINGS");
         }
 
         if (!webViewerPermissions.isEmpty()) {
