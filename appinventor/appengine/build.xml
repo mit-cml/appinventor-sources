@@ -617,6 +617,8 @@
       <jvmarg value="-Xmx1G" />
       <arg line="-style PRETTY -logLevel INFO" />
       <arg value="com.google.appinventor.YaClient" />
+      <arg value="-bindAddress"/>
+      <arg value="0.0.0.0"/>
     </java>
   </target>
 

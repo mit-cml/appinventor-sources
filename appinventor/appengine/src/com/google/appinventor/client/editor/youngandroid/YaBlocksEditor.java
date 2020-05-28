@@ -589,7 +589,7 @@ public final class YaBlocksEditor extends FileEditor
   private void updateSourceStructureExplorer() {
     MockForm form = getForm();
     if (form != null) {
-      updateBlocksTree(form, form.getSelectedComponent().getSourceStructureExplorerItem());
+      updateBlocksTree(form, form.getLastSelectedComponent().getSourceStructureExplorerItem());
     }
   }
 

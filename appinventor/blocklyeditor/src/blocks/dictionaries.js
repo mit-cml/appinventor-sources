@@ -117,6 +117,42 @@ Blockly.Blocks['dictionaries_create_with'] = {
     containerBlock.setFieldValue(Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TITLE_ADD,"CONTAINER_TEXT");
     containerBlock.setTooltip(Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TOOLTIP);
   },
+  /**
+   * Create a human-readable text representation of this block and any children.
+   * @param {number=} opt_maxLength Truncate the string to this length.
+   * @param {string=} opt_emptyToken The placeholder string used to denote an
+   *     empty field. If not specified, '?' is used.
+   * @return {string} Text of block.
+   */
+  toString: function(opt_maxLength, opt_emptyToken) {
+    var buffer = '{';
+    var checkLen = true;
+    opt_emptyToken = opt_emptyToken || '?';
+    if (!opt_maxLength || opt_maxLength === 0) {
+      checkLen = false;
+    }
+    var sep = '';
+    for (var i = 0, input; (input = this.getInput('ADD' + i)) && (!checkLen || buffer.length < opt_maxLength); i++) {
+      var target = input.connection.targetBlock();
+      if (target) {
+        var keyblock = target.getInput('KEY').connection.targetBlock();
+        var valueblock = target.getInput('VALUE').connection.targetBlock();
+        if (keyblock || valueblock) {
+          buffer += sep;
+          buffer += keyblock ? keyblock.toString(opt_maxLength, opt_emptyToken) : opt_emptyToken;
+          buffer += ':';
+          buffer += valueblock ? valueblock.toString(opt_maxLength, opt_emptyToken) : opt_emptyToken;
+          sep = ',';
+        }
+      }
+    }
+    if (checkLen && buffer.length >= opt_maxLength) {
+      buffer = buffer.substring(0, opt_maxLength - 2);
+      buffer += '…'
+    }
+    buffer += '}';
+    return buffer;
+  },
   // create type blocks for both make a dictionary (two pairs) and create empty dictionary
   typeblock: [
       { translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TITLE,

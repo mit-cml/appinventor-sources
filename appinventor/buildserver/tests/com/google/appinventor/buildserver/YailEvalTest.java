@@ -14,6 +14,7 @@ import gnu.kawa.functions.Arithmetic;
 import gnu.math.DFloNum;
 import gnu.math.IntNum;
 import gnu.math.Numeric;
+import java.util.Random;
 import junit.framework.TestCase;
 import kawa.standard.Scheme;
 
@@ -1143,22 +1144,38 @@ public class YailEvalTest extends TestCase {
     }
   }
 
+  private void testUnaryIntegerFunction(String funName, int[] args, int[] vals)
+          throws Throwable {
+    for (int i = 0; i < args.length; i++) {
+      String expression = "(" + funName + " " + args[i] + ")";
+      Object result = scheme.eval(expression);
+      if (result instanceof IntNum) {
+        assertEquals(expression, vals[i], ((IntNum) result).intValue());
+      } else {
+        assertEquals(expression, vals[i], (int) result);
+      }
+    }
+  }
+
    public void testSine() throws Throwable {
-     double[] args = { 0, 90, 180, 270 };
-     double[] vals = { 0,  1,  0,   -1 };
-     testUnaryDoubleFunction("sin-degrees", args, vals);
+     int[] args = { -360, -270, -180, -90, 0, 90, 180, 270, 360 };
+     int[] vals = {    0,    1,    0,  -1, 0,  1,   0,  -1,   0 };
+     testUnaryIntegerFunction("sin-degrees", args, vals);
    }
 
    public void testCosine() throws Throwable {
-     double[] args = { 0, 90, 180, 270 };
-     double[] vals = { 1,  0,  -1,   0 };
-     testUnaryDoubleFunction("cos-degrees", args, vals);
+     int[] args = { -360, -270, -180, -90, 0, 90, 180, 270, 360 };
+     int[] vals = {    1,    0,   -1,   0, 1,  0,  -1,   0,   1 };
+     testUnaryIntegerFunction("cos-degrees", args, vals);
    }
 
    public void testTangent() throws Throwable {
-     double[] args = { 0, 45, 135, 180, 225, 315, 30 };
-     double[] vals = { 0,  1,  -1,   0,   1,  -1, .57735 };
-     testUnaryDoubleFunction("tan-degrees", args, vals);
+     int[] args = { -315, -225, -180, -135, -45, 0, 45, 135, 180, 225, 315 };
+     int[] vals = {    1,   -1,    0,    1,  -1, 0,  1,  -1,   0,   1,  -1 };
+     testUnaryIntegerFunction("tan-degrees", args, vals);
+     double[] arg = { 30 };
+     double[] val = { .57735 };
+     testUnaryDoubleFunction("tan-degrees", arg, val);
    }
 
    public void testAsin() throws Throwable {
@@ -1181,6 +1198,72 @@ public class YailEvalTest extends TestCase {
      double[] vals = { 0, 45, -45, 30 };
      testUnaryDoubleFunction("atan-degrees", args, vals);
    }
+
+   public void testTrigonometricIdentities() throws Throwable {
+     Random random = new Random();
+     double theta = 90 * random.nextDouble();
+
+     String sinExpression = "(" + "sin-degrees" + " " + theta + ")";
+     Object sinResult = scheme.eval(sinExpression);
+     String cosExpression = "(" + "cos-degrees" + " " + theta + ")";
+     Object cosResult = scheme.eval(cosExpression);
+     String tanExpression = "(" + "tan-degrees" + " " + theta + ")";
+     Object tanResult = scheme.eval(tanExpression);
+     String cosComplementExpression = "(" + "cos-degrees" + " " + (90 - theta) + ")";
+     Object cosComplementResult = scheme.eval(cosComplementExpression);
+
+     double sin = Double.parseDouble(String.valueOf(sinResult));
+     double cos = Double.parseDouble(String.valueOf(cosResult));
+     double tan = Double.parseDouble(String.valueOf(tanResult));
+     double cosComplement = Double.parseDouble(String.valueOf(cosComplementResult));
+
+     assertEquals(sin, cosComplement, DELTA);
+     assertEquals((Math.pow(sin,2) + Math.pow(cos,2)), 1, DELTA);
+     assertEquals(tan * cos, sin, DELTA);
+  }
+
+  public void testTrigonometricEquations() throws Throwable {
+    Random random = new Random();
+    double theta1 = 90 * random.nextDouble();
+    double theta2 = 90 * random.nextDouble();
+
+    String sinExpression1 = "(" + "sin-degrees" + " " + theta1 + ")";
+    Object sinResult1 = scheme.eval(sinExpression1);
+    String sinExpression2 = "(" + "sin-degrees" + " " + theta2 + ")";
+    Object sinResult2 = scheme.eval(sinExpression2);
+    String sinExpressionSum = "(" + "sin-degrees" + " " + (theta1 + theta2) + ")";
+    Object sinResultSum = scheme.eval(sinExpressionSum);
+    String sinExpressionDiff = "(" + "sin-degrees" + " " + (theta1 - theta2) + ")";
+    Object sinResultDiff = scheme.eval(sinExpressionDiff);
+
+    String cosExpression1 = "(" + "cos-degrees" + " " + theta1 + ")";
+    Object cosResult1 = scheme.eval(cosExpression1);
+    String cosExpression2 = "(" + "cos-degrees" + " " + theta2 + ")";
+    Object cosResult2 = scheme.eval(cosExpression2);
+    String cosExpressionSum = "(" + "cos-degrees" + " " + (theta1 + theta2) + ")";
+    Object cosResultSum = scheme.eval(cosExpressionSum);
+    String cosExpressionDiff = "(" + "cos-degrees" + " " + (theta1 - theta2) + ")";
+    Object cosResultDiff = scheme.eval(cosExpressionDiff);
+
+    double sin1 = Double.parseDouble(String.valueOf(sinResult1));
+    double sin2 = Double.parseDouble(String.valueOf(sinResult2));
+    double sinSum = Double.parseDouble(String.valueOf(sinResultSum));
+    double sinDiff = Double.parseDouble(String.valueOf(sinResultDiff));
+
+    double cos1 = Double.parseDouble(String.valueOf(cosResult1));
+    double cos2 = Double.parseDouble(String.valueOf(cosResult2));
+    double cosSum = Double.parseDouble(String.valueOf(cosResultSum));
+    double cosDiff = Double.parseDouble(String.valueOf(cosResultDiff));
+
+    assertEquals(sinSum, ((sin1*cos2) + (cos1*sin2)), DELTA);
+    assertEquals(sinDiff, ((sin1*cos2) - (cos1*sin2)), DELTA);
+    assertEquals(cosSum, ((cos1*cos2) - (sin1*sin2)), DELTA);
+    assertEquals(cosDiff, ((cos1*cos2) + (sin1*sin2)), DELTA);
+    assertEquals((2*sin1*sin2), (cosDiff - cosSum), DELTA);
+    assertEquals((2*cos1*cos2), (cosDiff + cosSum), DELTA);
+    assertEquals((2*sin1*cos2), (sinSum + sinDiff), DELTA);
+    assertEquals((2*cos1*sin2), (sinSum - sinDiff), DELTA);
+  }
 
   // These constant definitions make the below tests more readable.
   private static final double PI = Math.PI;
@@ -1333,5 +1416,21 @@ public class YailEvalTest extends TestCase {
         Arithmetic.asNumeric(2), Arithmetic.asNumeric(3))),
         asdict.get("list"));
     assertEquals(YailDictionary.makeDictionary("a", "b"), asdict.get("dictionary"));
+  }
+
+  public void testDictToListCoercion() throws Throwable {
+    /* Tests that coercion to a list only coerces the top-level dictionary */
+    String schemeInputString = "(call-yail-primitive yail-list-get-item " +
+    "  (*list-for-runtime* (call-yail-primitive make-yail-dictionary " +
+    "    (*list-for-runtime* (call-yail-primitive make-dictionary-pair " +
+    "      (*list-for-runtime* " +
+    "        \"key\" " +
+    "        (call-yail-primitive make-yail-dictionary " +
+    "          (*list-for-runtime* ) '() \"make a dictionary\") ) " +
+    "      '(key any)  \"make a pair\") ) " +
+    "    '(pair ) \"make a dictionary\") " +
+    "  1) '(list number) \"select list item\")";
+    String schemeResultString = "(key {})";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
   }
 }
