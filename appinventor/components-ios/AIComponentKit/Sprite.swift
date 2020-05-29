@@ -10,21 +10,25 @@ fileprivate let DEFAULT_INTERVAL: Int32 = 100 // ms
 fileprivate let DEFAULT_SPEED: CGFloat = 0.0 // pixels per interval
 fileprivate let DEFAULT_VISIBLE: Bool = true
 fileprivate let DEFAULT_Z: Double = 1.0
+fileprivate let DEFAULT_ORIGIN_AT_CENTER: Bool = false
 
 open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   fileprivate let _view = UIView()
   fileprivate var _visible = DEFAULT_VISIBLE
   fileprivate var _interval = DEFAULT_INTERVAL
-  fileprivate var _enabled = DEFAULT_ENABLED;
+  fileprivate var _enabled = DEFAULT_ENABLED
   fileprivate var _heading = DEFAULT_HEADING
   fileprivate var _headingRadians = DEFAULT_HEADING
   fileprivate var _xLeft: CGFloat = 0
   fileprivate var _yTop: CGFloat = 0
   fileprivate var _z = DEFAULT_Z
+  fileprivate var _xCenter: CGFloat = 0
+  fileprivate var _yCenter: CGFloat = 0
   fileprivate var _speed = DEFAULT_SPEED
   fileprivate var _timer: Timer?
   fileprivate var _initialized = false
   fileprivate var _registeredCollisions = Set<Sprite>()
+  fileprivate var _originAtCenter: Bool = DEFAULT_ORIGIN_AT_CENTER
   @objc var _canvas: Canvas
 
   // Layer displays either ball or image set by user.
@@ -42,7 +46,6 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     
     super.init(parent)
     parent.add(self)
-
     _canvas.addSprite(self)
     restartTimer()
   }
@@ -141,33 +144,83 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     }
   }
   
+  open var OriginAtCenter: Bool {
+    get {
+      return _originAtCenter
+    }
+    set(originAtCenter) {
+      if originAtCenter != _originAtCenter {
+        _originAtCenter = originAtCenter
+      }
+    }
+  }
+  
+  open var XCenter: Double {
+    return Double(_xCenter)
+  }
+  
+  open var YCenter: Double {
+    return Double(_yCenter)
+  }
+  
+  private func xLeftToCenter(xLeft: Double) -> Double {
+    return xLeft + Double(Width / 2)
+  }
+
+  private func xCenterToLeft(xCenter: Double) -> Double {
+    return xCenter - Double(Width / 2)
+  }
+  
+  private func updateX(x: Double) {
+    if (_originAtCenter) {
+      _xCenter = CGFloat(x)
+      _xLeft = CGFloat(xCenterToLeft(xCenter: x))
+    } else {
+      _xLeft = CGFloat(x)
+      _xCenter = CGFloat(xLeftToCenter(xLeft: x))
+    }
+  }
+  
   /**
    * Distance to the left edge of the canvas.
    */
   @objc open var X: Double {
     get {
-      return Double(_xLeft)
+      return _originAtCenter ? Double(_xCenter) : Double(_xLeft)
     }
     set(x) {
-      if _xLeft != CGFloat(x) {
-        _xLeft = CGFloat(x)
-        registerChanges()
-      }
+      updateX(x: x)
+      registerChanges()
     }
   }
   
+  private func yTopToCenter(yTop: Double) -> Double {
+    return yTop + Double(Height / 2)
+  }
+
+  private func yCenterToTop(yCenter: Double) -> Double {
+    return yCenter - Double(Height / 2)
+  }
+  
+  private func updateY(y: Double) {
+    if (_originAtCenter) {
+      _yCenter = CGFloat(y)
+      _yTop = CGFloat(yCenterToTop(yCenter: y))
+    } else {
+      _yTop = CGFloat(y)
+      _yCenter = CGFloat(yTopToCenter(yTop: y))
+    }
+  }
   /**
    * Distance from the top edge of canvas.
    */
   @objc open var Y: Double {
     get {
-      return Double(_yTop)
+      return _originAtCenter ? Double(_yCenter) : Double(_yTop)
     }
     set(y) {
-      if _yTop != CGFloat(y) {
-        _yTop = CGFloat(y)
-        registerChanges()
-      }
+      updateY(y: y)
+      registerChanges()
     }
   }
   
@@ -410,10 +463,10 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     let canvasWidth = Int32(_canvas.canvasView.bounds.width)
     let canvasHeight = Int32(_canvas.canvasView.bounds.height)
     
-    let west = overWestEdge();
-    let north = overNorthEdge();
-    let east = overEastEdge(canvasWidth);
-    let south = overSouthEdge(canvasHeight);
+    let west = overWestEdge()
+    let north = overNorthEdge()
+    let east = overEastEdge(canvasWidth)
+    let south = overSouthEdge(canvasHeight)
     
     if !(west || north || east || south) {
       return Direction.none

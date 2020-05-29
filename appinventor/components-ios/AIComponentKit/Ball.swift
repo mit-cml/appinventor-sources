@@ -21,6 +21,15 @@ open class Ball: Sprite {
   }
   
   // MARK: Properties
+  @objc override open var OriginAtCenter : Bool {
+    get {
+      return super.OriginAtCenter
+    }
+    set(b){
+      super.OriginAtCenter = b
+    }
+  }
+  
   @objc open var PaintColor : Int32 {
     get {
       return _paintColor
@@ -74,8 +83,8 @@ open class Ball: Sprite {
   //MARK: Methods
   override func contains(_ point: CGPoint) -> Bool {
     let r = Double(Radius)
-    let xCenter = X + r
-    let yCenter = Y + r
+    let xCenter = XCenter
+    let yCenter = YCenter
     let xDiffSquared = pow(Double(point.x) - xCenter, 2)
     let yDiffSquared = pow(Double(point.y) - yCenter, 2)
     let radiusSquared = pow(Double(r), 2)
@@ -83,11 +92,11 @@ open class Ball: Sprite {
   }
   
   override func updateDisplayLayer() {
-    let centerX = CGFloat(Double(Radius) + X)
-    let centerY = CGFloat(Double(Radius) + Y)
+    let xCenter = CGFloat(XCenter)
+    let yCenter = CGFloat(YCenter)
     CATransaction.begin()
     CATransaction.setAnimationDuration(0.0)
-    DisplayLayer.position = CGPoint(x: centerX, y: centerY)
+    DisplayLayer.position = CGPoint(x: xCenter, y: yCenter)
     CATransaction.commit()
   }
 }
