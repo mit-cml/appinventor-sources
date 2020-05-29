@@ -16,7 +16,7 @@ goog.require('Blockly.Msg.lt');
  * to message files.
  */
 
-Blockly.Msg.fr.switch_language_to_lithuanian = {
+Blockly.Msg.lt.switch_language_to_lithuanian = {
   // Switch language to Lithuanian.
   category: '',
   helpUrl: '',
