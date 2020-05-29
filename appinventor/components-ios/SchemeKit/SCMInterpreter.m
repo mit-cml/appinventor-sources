@@ -43,7 +43,8 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
     pic_fprintf(pic, port, "~a\0", irrs);
     pic_fgetbuf(pic, port, &buffer, &buflen);
     bufcopy = (char *)malloc(buflen + 1);
-    strcpy(bufcopy, buffer);  // Picrin may GC, so make a clean copy before we exit this scope
+    strncpy(bufcopy, buffer, buflen);  // Picrin may GC, so make a clean copy before we exit this scope
+    bufcopy[buflen] = '\0';
   } pic_catch(e2) {
     NSLog(@"WTF");
   }
