@@ -820,10 +820,10 @@ import Toast_Swift
 
   override open var preferredStatusBarStyle: UIStatusBarStyle {
     switch _theme {
-    case .BlackText:
-      return .default
-    default:
+    case .Dark:
       return .lightContent
+    default:
+      return .default
     }
   }
 

@@ -50,7 +50,7 @@ public func rgbArrayToInt32(_ rgb: [Int]) -> Int32 {
 }
 
 public func preferredBackgroundColor(_ form: Form) -> UIColor {
-  if #available(iOS 13.0, *) {
+  if #available(iOS 13.0, *), form.Theme == "DeviceDefault" {
     return UIColor.systemBackground
   } else if form.Theme == "Dark" {
     return UIColor.black
