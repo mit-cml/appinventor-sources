@@ -87,12 +87,12 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
       return
     }
     if visibility {
-      _view.addItem(LinearViewItem(component.view))
+      _view.setVisibility(of: component.view, to: true)
       // Replay width/height properties
       setChildHeight(of: component, to: component._lastSetHeight)
       setChildWidth(of: component, to: component._lastSetWidth)
     } else {
-      _view.removeItem(component.view)
+      _view.setVisibility(of: component.view, to: false)
     }
   }
 

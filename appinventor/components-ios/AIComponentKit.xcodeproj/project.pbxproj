@@ -126,6 +126,7 @@
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		06F15C0F24059B0100C783E3 /* TextBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F15C0E24059B0100C783E3 /* TextBoxTests.swift */; };
+		06FB67DB247B8EDA00ABEAD6 /* LinearViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */; };
 		06FB67DD247D4AB200ABEAD6 /* ListViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DC247D4AB200ABEAD6 /* ListViewTests.swift */; };
 		06FB67DF247D4CEC00ABEAD6 /* ListPickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DE247D4CEC00ABEAD6 /* ListPickerTests.swift */; };
 		080C7FE321077707007C94A8 /* Ev3ResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080C7FE221077707007C94A8 /* Ev3ResponseManager.swift */; };
@@ -339,6 +340,7 @@
 		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
 		06F15C0E24059B0100C783E3 /* TextBoxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextBoxTests.swift; sourceTree = "<group>"; };
+		06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearViewTests.swift; sourceTree = "<group>"; };
 		06FB67DC247D4AB200ABEAD6 /* ListViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewTests.swift; sourceTree = "<group>"; };
 		06FB67DE247D4CEC00ABEAD6 /* ListPickerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListPickerTests.swift; sourceTree = "<group>"; };
 		080C7FE221077707007C94A8 /* Ev3ResponseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ev3ResponseManager.swift; sourceTree = "<group>"; };
@@ -841,6 +843,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		06FB67D9247B8EB900ABEAD6 /* util */ = {
+			isa = PBXGroup;
+			children = (
+				06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */,
+			);
+			path = util;
+			sourceTree = "<group>";
+		};
 		7474807A747CFE996FC4893A /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -877,6 +887,7 @@
 		CBC78695202E0B73005363A3 /* Unit Tests */ = {
 			isa = PBXGroup;
 			children = (
+				06FB67D9247B8EB900ABEAD6 /* util */,
 				CBC78691202E0B35005363A3 /* components */,
 			);
 			path = "Unit Tests";
@@ -1282,6 +1293,7 @@
 				CB8539252075549A009E9030 /* ClockTests.swift in Sources */,
 				061F8572203F28AC00683091 /* AppInventorTestCase.swift in Sources */,
 				06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */,
+				06FB67DB247B8EDA00ABEAD6 /* LinearViewTests.swift in Sources */,
 				06E2D5FD1FDB15F100A1D52A /* BuiltinBlockTests.swift in Sources */,
 				0602B270203481F900ED60A8 /* FormTests.swift in Sources */,
 				06009FF62280723F00E4EC4A /* ImageTests.swift in Sources */,

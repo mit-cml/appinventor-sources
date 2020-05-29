@@ -164,12 +164,12 @@ import Toast_Swift
       return
     }
     if visibility {
-      _linearView.addItem(LinearViewItem(component.view))
+      _linearView.setVisibility(of: component.view, to: true)
       // Replay width/height properties
       setChildHeight(of: component, to: component._lastSetHeight)
       setChildWidth(of: component, to: component._lastSetWidth)
     } else {
-      _linearView.removeItem(component.view)
+      _linearView.setVisibility(of: component.view, to: false)
     }
   }
 

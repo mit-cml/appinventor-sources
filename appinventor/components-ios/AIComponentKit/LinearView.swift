@@ -263,6 +263,32 @@ public class LinearView: UIView {
     _items.removeAll()
   }
 
+  open func setVisibility(of view: UIView, to visible: Bool) {
+    if visible && view.superview == nil {
+      var visibleCount = 1  // accounts for _innerHead
+      for item in _items {
+        if item.view == view {
+          NSLog("Inserting view %@ at position %d", view, visibleCount)
+          _inner.insertSubview(view, at: visibleCount)
+          _inner.insertArrangedSubview(view, at: visibleCount)
+          break
+        } else if item.view.superview != nil {
+          visibleCount += 1
+        }
+      }
+      setNeedsLayout()
+      setNeedsUpdateConstraints()
+    } else if !visible && view.superview != nil {
+      view.removeFromSuperview()
+      setNeedsLayout()
+      setNeedsUpdateConstraints()
+    }
+  }
+
+  open var arrangedSubviews: [UIView] {
+    return Array<UIView>(_inner.arrangedSubviews[1..<_inner.arrangedSubviews.count-1])
+  }
+
   open func contains(_ item: UIView) -> Bool {
     return _inner.arrangedSubviews.contains(item)
   }
