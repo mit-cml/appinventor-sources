@@ -18,7 +18,7 @@
   </description>
 
   <target name="all"
-          depends="BlocklyCompile">
+          depends="BlocklyTranslationGenerator">
   </target>
 
   <target name="tests"
@@ -42,9 +42,35 @@
 
 	<property name="blockly.src.dir" location="${lib.dir}/blockly" />
 
+	<property name="gwt.sdk" location="${lib.dir}/gwt/2.8.1-patched" />
+
+
 	<!-- =====================================================================
        Targets
        ===================================================================== -->
+
+	<target name="BlocklyTranslationGenerator"
+			description="This is the script for creating combined i18n files from blockly and app inventor"
+			depends="BlocklyCompile">
+		<property name="BlocklyTranslator-class.dir" location="${class.dir}/BlocklyTranslator-class" />
+		<mkdir dir="${BlocklyTranslator-class.dir}" />
+		<ai.javac destdir="${BlocklyTranslator-class.dir}"
+				  source="1.7" target="1.7">
+			<include name="${appinventor.dir}/blocklyeditor/src/msg/BlocklyTranslationGenerator.java" />
+			<classpath>
+				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+				<pathelement location="${lib.dir}/json/json.jar" />
+			</classpath>
+		</ai.javac>
+		<java failonerror="true" classname="com.google.blocklyeditor.msg.BlocklyTranslationGenerator">
+			<arg line="${appinventor.dir}/blocklyeditor/src/msg/msg ${lib.dir}/blockly/msg/json ${appinventor.dir}/blocklyeditor/src/msg" />
+			<classpath>
+				<pathelement location="${BlocklyTranslator-class.dir}"/>
+				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+				<pathelement location="${lib.dir}/json/json.jar" />
+			</classpath>
+		</java>
+	</target>
 
         <target name="CheckBlocklyCompile">
           <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
