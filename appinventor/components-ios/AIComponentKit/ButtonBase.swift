@@ -60,17 +60,20 @@ fileprivate let CLASSIC_DEFAULT_BUTTON_DISABLED_TEXTCOLOR = argbToColor(Int32(-2
   override public var intrinsicContentSize: CGSize {
     // The intrinsic content size for UIButton doesn't account for line wrapping in the title label
     // We perform this here so that automatic sizing works when the label needs to wrap.
-    // TODO(ewpatton): Do we also need to account for the background image here?
+    var result = super.intrinsicContentSize
+    if let image = backgroundImage(for: .normal) {
+      result = image.size
+    }
     if let titleFrame = titleLabel?.frame,
        let labelSize = titleLabel?.sizeThatFits(CGSize(width: frame.width, height: frame.height)) {
       let insetWidth = titleEdgeInsets.left + titleEdgeInsets.right + contentEdgeInsets.left +
         contentEdgeInsets.right
       let insetHeight = titleEdgeInsets.top + titleEdgeInsets.bottom + contentEdgeInsets.top +
         contentEdgeInsets.bottom
-      return CGSize(width: max(titleFrame.width, labelSize.width) + insetWidth,
-                    height: max(titleFrame.height, labelSize.height) + insetHeight)
+      result.width = max(result.width, max(titleFrame.width, labelSize.width) + insetWidth)
+      result.height = max(result.height, max(titleFrame.height, labelSize.height) + insetHeight)
     }
-    return super.intrinsicContentSize
+    return result
   }
 }
 
