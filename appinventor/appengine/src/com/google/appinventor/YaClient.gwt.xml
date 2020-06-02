@@ -72,6 +72,8 @@
   <source path="client/editor/simple/palette"/>
   <source path="client/editor/youngandroid/palette"/>
   <source path="client/editor/youngandroid/properties"/>
+  <source path="client/editor/youngandroid/i18n"/>
+  <source path="client/editor/youngandroid/i18n/msg"/>
   <source path="images"/>
   <source path="shared/jsonp"/>
   <source path="shared/rpc"/>

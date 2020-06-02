@@ -114,7 +114,7 @@
        ===================================================================== -->
   <target name="CopyToBuildWar"
           description="Create and populate build/war directory structure"
-          depends="init,blocklyeditor_BlocklyCompile,BuildDocs">
+          depends="init,blocklyeditor_BlocklyTranslationGenerator,BuildDocs">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
       <fileset dir="war" />
@@ -157,6 +157,15 @@
       </fileset>
     </copy>
     <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/blockly.js" />
+
+    <!-- Move Blockly translations into place -->
+    <mkdir dir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n"/>
+    <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n">
+      <fileset dir="${build.dir}/blocklyeditor/msg">
+        <include name="*.json"/>
+      </fileset>
+    </copy>
+
     <copy todir="${build.static.dir}">
       <fileset dir="src/${appinventor.pkg}">
         <!-- canvas is a special case (see MockCanvas.java) -->
