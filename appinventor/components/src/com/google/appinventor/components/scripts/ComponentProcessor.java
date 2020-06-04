@@ -1838,7 +1838,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "component";
     }
 
-    throw new IllegalArgumentException("Cannot convert Java type '" + type + "' to Yail type");
+    // TODO: We need to add support for converting an enum type to a yail type.
+    //   This should be very easy.
+
+    //throw new IllegalArgumentException("Cannot convert Java type '" + type + "' to Yail type");
+    return "whatever";
   }
 
   /**

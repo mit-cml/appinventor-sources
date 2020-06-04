@@ -128,23 +128,6 @@ public interface Component {
   static final int TOAST_LENGTH_SHORT = 0;
   static final int TOAST_LENGTH_LONG = 1;
 
-  /*
-   * Screen direction constants.
-   * Observe that opposite directions have the same magnitude but opposite signs.
-   */
-  static final int DIRECTION_NORTH = 1;
-  static final int DIRECTION_NORTHEAST = 2;
-  static final int DIRECTION_EAST = 3;
-  static final int DIRECTION_SOUTHEAST = 4;
-  static final int DIRECTION_SOUTH = -1;
-  static final int DIRECTION_SOUTHWEST = -2;
-  static final int DIRECTION_WEST = -3;
-  static final int DIRECTION_NORTHWEST = -4;
-  // Special values
-  static final int DIRECTION_NONE = 0;
-  static final int DIRECTION_MIN = -4;
-  static final int DIRECTION_MAX = 4;
-
   //Slider defaults for setting MinimumValue and MaximumValue
   public static float SLIDER_MIN_VALUE = 10;
   public static float SLIDER_MAX_VALUE = 50;
