@@ -169,6 +169,20 @@
     <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${public.deps.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
     <copy toFile="${public.deps.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
+    <copy tofile="${public.deps.dir}/material.jar" file="${support.dir}/material-1.2.0-alpha06.jar"/>
+    <copy tofile="${public.deps.dir}/material.aar" file="${support.dir}/material-1.2.0-alpha06.aar"/>
+    <copy tofile="${public.deps.dir}/cardview.jar" file="${support.dir}/cardview-1.0.0.jar"/>
+    <copy tofile="${public.deps.dir}/cardview.aar" file="${support.dir}/cardview-1.0.0.aar"/>
+    <copy tofile="${public.deps.dir}/recyclerview.jar" file="${support.dir}/recyclerview-1.1.0.jar"/>
+    <copy tofile="${public.deps.dir}/recyclerview.aar" file="${support.dir}/recyclerview-1.1.0.aar"/>
+    <copy tofile="${public.deps.dir}/viewpager2.jar" file="${support.dir}/viewpager2-1.0.0.jar"/>
+    <copy tofile="${public.deps.dir}/viewpager2.aar" file="${support.dir}/viewpager2-1.0.0.aar"/>
+    <copy tofile="${public.deps.dir}/core.jar" file="${support.dir}/core-1.2.0.jar"/>
+    <copy tofile="${public.deps.dir}/core.aar" file="${support.dir}/core-1.2.0.aar"/>
+    <copy tofile="${public.deps.dir}/appcompat.jar" file="${support.dir}/appcompat-1.1.0.jar"/>
+    <copy tofile="${public.deps.dir}/appcompat.aar" file="${support.dir}/appcompat-1.1.0.aar"/>
+    <copy tofile="${public.deps.dir}/appcompat-resources.jar" file="${support.dir}/appcompat-resources-1.1.0.jar"/>
+    <copy tofile="${public.deps.dir}/appcompat-resources.aar" file="${support.dir}/appcompat-resources-1.1.0.aar"/>
 
     <!-- Add extension libraries here -->
     <!-- Example: <copy toFile="${public.deps.dir}/my-dependency.jar" file="${lib.dir}/my-dependency/my-dependency-1.0.0.jar" /> -->
