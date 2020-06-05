@@ -131,5 +131,18 @@
     "Blockly.Msg.COLLAPSE_BLOCK": "Խմբավորել Բլոկը",
     "Blockly.Msg.DELETE_X_BLOCKS": "Ջնջել %1 Բլոկները",
     "Blockly.Msg.DELETE_BLOCK": "Ջնջել Բլոկը",
-    "Blockly.Msg.DELETE_ALL_BLOCKS": "Ջնջ՞ել բոլոր %1 բլոկները:"
+    "Blockly.Msg.DELETE_ALL_BLOCKS": "Ջնջ՞ել բոլոր %1 բլոկները:",
+    "Blockly.Msg.RENAME_VARIABLE": "Վերանվանել փոփոխականը…",
+    "Blockly.Msg.NEW_VARIABLE_TITLE": "Ներ փոփոխականի անվանումը:",
+    "Blockly.Msg.CHANGE_VALUE_TITLE": "Փոխել արժեքը.",
+    "Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG": "Ներբեռնել Բոլկները PNG ընդլայնումով",
+    "Blockly.Msg.UNGENERICIZE_BLOCK": "Դարձնել հատուկ",
+    "Blockly.Msg.GENERICIZE_BLOCK": "Դարձնել ընդհանուր",
+    "Blockly.Msg.SHOW_ALL_COMMENTS": "Ցուցադրել բոլոր մեկանաբանությունները",
+    "Blockly.Msg.HIDE_ALL_COMMENTS": "Թաքցնել բոլոր մեկնաբանությունները",
+    "Blockly.Msg.ENABLE_ALL_BLOCKS": "Ակտիվացնել բոլոր Բլոկները",
+    "Blockly.Msg.DISABLE_ALL_BLOCKS": "Ապակտիվացնել բոլոր Բլոկները",
+    "Blockly.Msg.DISABLE_GRID": "Ապակտիվացնել աշխատանքային միջավայրի ցանցը",
+    "Blockly.Msg.ENABLE_GRID": "Ակտիվացնել աշխատանքային միջավայրի ցանցը",
+    "Blockly.Msg.BACKPACK_DOCUMENTATION": "ՈՒսապարկը պատճենել/ներդնել ֆունկցիա է: Այն թույլ է տալիս մի նախագծից կամ էկրանից պատճենել Բլոկները և ներդնել մեկ այլ նախագծի կամ էկրանի վրա: Պատճենելու համար կարող եք քաշել-տանել Բլոկները Ուսապարկի մեջ: Ներդնելու համար քաշեք-տարեք Բլոկները աշխատանքային միջավայր:</p><p> Եթե ելք գործեք MIT App Inventor -ից և թողնեք Բլոկները Ուսապարկի մեջ, դրանք այնտեղ կլինեն, երբ մյուս անգամ մուտք գործեք:</p><p><a href='/reference/other/backpack.html' target='_blank'>Սեղմեք այստեղ</a> ավելի մանրամասն ձևակերպման և \"ինչպե՞ս անել\" տեսանյութը դիտելու համար:"
 }
