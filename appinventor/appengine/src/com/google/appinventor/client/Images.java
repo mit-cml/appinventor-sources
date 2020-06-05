@@ -683,4 +683,11 @@ public interface Images extends Resources {
   */
   @Source("com/google/appinventor/images/YRLogo.png")
   ImageResource YRLogo();
+  
+  
+  @Source("com/google/appinventor/images/horizontal.png")
+  ImageResource tabArrangement();
+  
+  @Source("com/google/appinventor/images/vertical.png")
+  ImageResource tab();
 }

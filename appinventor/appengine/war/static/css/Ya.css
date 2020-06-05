@@ -2786,3 +2786,35 @@ div.dropdiv p {
   line-height: 30pt;
   color: darkgreen;
 }
+
+.ode-TabContentView {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  bottom: 49px;
+}
+
+.ode-TabContainer {
+  position: absolute;
+  width: 100%;
+  height: 48px;
+  bottom: 0;
+  border: 0;
+  border-top: 1px solid gray;
+}
+
+.ode-Tab {
+  font-weight: normal;
+  font-size: 12px;
+  border: 2px solid transparent;
+  text-align: center;
+}
+
+.ode-Tab-disabled {
+  color: gray;
+}
+
+.ode-Tab-selected {
+  border: 2px solid #8fc202;
+}
