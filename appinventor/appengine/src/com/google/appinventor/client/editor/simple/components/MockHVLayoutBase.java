@@ -662,8 +662,8 @@ abstract class MockHVLayoutBase extends MockLayout {
       setDividerLocation(-1);
 
       // Calculate drop information
-      MockContainer srcContainer = source.getContainer();
-      MockContainer dstContainer = container;
+      MockContainer<?> srcContainer = source.getContainer();
+      MockContainer<?> dstContainer = container;
       if (srcContainer == dstContainer) {
         final int srcPos = srcContainer.getShowingVisibleChildren().indexOf(source);
         if (dstPos > srcPos) {

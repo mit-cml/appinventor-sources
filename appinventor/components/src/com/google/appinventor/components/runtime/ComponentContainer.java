@@ -7,6 +7,8 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.view.View;
+import org.w3c.dom.Text;
 
 /**
  * Components that can contain other components need to implement this
@@ -38,11 +40,11 @@ public interface ComponentContainer {
    *
    * @param component  component associated with view
    */
-  void $add(AndroidViewComponent component);
+  void $add(AndroidViewComponent<? extends View> component);
 
-  void setChildWidth(AndroidViewComponent component, int width);
+  void setChildWidth(AndroidViewComponent<? extends View> component, int width);
 
-  void setChildHeight(AndroidViewComponent component, int height);
+  void setChildHeight(AndroidViewComponent<? extends View> component, int height);
 
   int Width();
 

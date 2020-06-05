@@ -24,7 +24,7 @@ import com.google.appinventor.components.common.YaVersion;
     "(<code>Enabled</code>), can be changed in the Designer or in the Blocks " +
     "Editor.")
 @SimpleObject
-public final class Button extends ButtonBase {
+public final class Button extends ButtonBase<android.widget.Button> {
 
   /**
    * Creates a new Button component.
@@ -32,7 +32,7 @@ public final class Button extends ButtonBase {
    * @param container container, component will be placed in
    */
   public Button(ComponentContainer container) {
-    super(container);
+    super(container, new android.widget.Button(container.$context()));
   }
 
  @Override

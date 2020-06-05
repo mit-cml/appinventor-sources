@@ -25,9 +25,9 @@ import java.util.Map;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public abstract class MockContainer extends MockVisibleComponent implements DropTarget {
+public abstract class MockContainer<T extends MockLayout> extends MockVisibleComponent implements DropTarget {
 
-  protected final MockLayout layout;
+  protected final T layout;
 
   // List of components within the container
   protected final List<MockComponent> children;
@@ -54,8 +54,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    *
    * @param editor  editor of source file the component belongs to
    */
-  MockContainer(SimpleEditor editor, String type, ImageResource icon,
-      MockLayout layout) {
+  MockContainer(SimpleEditor editor, String type, ImageResource icon, T layout) {
     super(editor, type, icon);
 
     this.layout = layout;
@@ -83,7 +82,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
   /**
    * Returns the layout used by this container to position its components.
    */
-  public final MockLayout getLayout() {
+  public final T getLayout() {
     return layout;
   }
 
@@ -126,7 +125,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param beforeVisibleIndex  visible-index at which the inserted component will appear,
    *                            or {@code -1} to insert the component at the end
    */
-  public final void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
+  protected void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
     List<MockComponent> visibleChildren = getShowingVisibleChildren();
 
     int beforeActualIndex;
@@ -153,7 +152,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param beforeIndex  index at which the inserted component will reside in the children,
    *                     or {@code -1} to insert the component at the end
    */
-  private void addComponent(MockComponent component, int beforeIndex) {
+  protected void addComponent(MockComponent component, int beforeIndex) {
     // Set the container to be the parent of the component
     component.setContainer(this);
 

@@ -30,6 +30,7 @@ public final class MockHorizontalArrangement extends MockHVArrangement {
     super(editor, TYPE, images.horizontal(),
       ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL,
       ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
+    finishConfiguration();
   }
 
 }

@@ -51,7 +51,7 @@ import com.google.gwt.user.client.ui.TreeItem;
  * Normal size is a 1:1 with pixels on a device with dpi:160. We use that as the baseline for the
  * browser too. All UI elements should be scaled to DP for buckets other than 'normal'.
  */
-public final class MockForm extends MockContainer {
+public final class MockForm extends MockContainer<MockFormLayout> {
 
   /*
    * Widget for the mock form title bar.

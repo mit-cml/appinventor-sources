@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.widget.FrameLayout;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -54,11 +55,12 @@ import com.google.appinventor.components.common.YaVersion;
     "<code>HorizontalArrangement</code> instead.</p>",
     category = ComponentCategory.LAYOUT)
 @SimpleObject
-public class VerticalArrangement extends HVArrangement {
+public class VerticalArrangement extends HVArrangement<FrameLayout> {
 
   public VerticalArrangement(ComponentContainer container) {
     super(container, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
-      ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
+        new FrameLayout(container.$context()));
+    container.$add(this);
   }
 
 }

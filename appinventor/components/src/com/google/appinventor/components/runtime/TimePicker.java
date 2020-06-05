@@ -43,7 +43,7 @@ import java.util.Calendar;
     description = "<p>A button that, when clicked on, launches  a popup" +
     " dialog to allow the user to select a time.</p>")
 @SimpleObject
-public class TimePicker extends ButtonBase {
+public class TimePicker extends ButtonBase<android.widget.Button> {
 
   private int hour = 0;
   private int minute = 0;
@@ -59,7 +59,7 @@ public class TimePicker extends ButtonBase {
    * @param container the parent container.
    */
   public TimePicker(ComponentContainer container) {
-    super(container);
+    super(container, new android.widget.Button(container.$context()));
     form = container.$form();
     final Calendar c = Calendar.getInstance();
     hour = c.get(Calendar.HOUR_OF_DAY);

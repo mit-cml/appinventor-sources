@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.widget.ScrollView;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -32,11 +33,12 @@ import com.google.appinventor.components.common.YaVersion;
     "This version is scrollable",
     category = ComponentCategory.LAYOUT)
 @SimpleObject
-public class VerticalScrollArrangement extends HVArrangement {
+public class VerticalScrollArrangement extends HVArrangement<ScrollView> {
 
   public VerticalScrollArrangement(ComponentContainer container) {
     super(container, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
-      ComponentConstants.SCROLLABLE_ARRANGEMENT);
+    new ScrollView(container.$context()));
+    container.$add(this);
   }
 
 }
