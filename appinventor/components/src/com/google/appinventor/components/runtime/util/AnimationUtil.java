@@ -79,9 +79,14 @@ public final class AnimationUtil {
    * @param animType - the animation type
    */
   public static void ApplyOpenScreenAnimation(Activity activity, String animType) {
+    ScreenAnimation anim = ScreenAnimation.get(animType);
     if (animType == null) {
       return;
     }
+    AnimationUtil.ApplyOpenScreenAnimation(activity, anim);
+  }
+
+  private void ApplyOpenScreenAnimation(Activity activity, ScreenAnimation animType) {
     if (SdkLevel.getLevel() <= SdkLevel.LEVEL_DONUT) {
       Log.e("AnimationUtil", "Screen animations are not available on android versions less than 2.0.");
       return;
@@ -89,19 +94,19 @@ public final class AnimationUtil {
     int enter = 0;
     int exit = 0;
 
-    if (animType.equalsIgnoreCase("fade")) {
+    if (animType == ScreenAnimation.Fade) {
       enter = activity.getResources().getIdentifier("fadein", "anim", activity.getPackageName());
       exit = activity.getResources().getIdentifier("hold", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("zoom")) {
+    } else if (animType == ScreenAnimation.Zoom) {
       exit = activity.getResources().getIdentifier("zoom_exit", "anim", activity.getPackageName());
       enter = activity.getResources().getIdentifier("zoom_enter", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("slidehorizontal")) {
+    } else if (animType == ScreenAnimation.SlideHorizontal) {
       exit = activity.getResources().getIdentifier("slide_exit", "anim", activity.getPackageName());
       enter = activity.getResources().getIdentifier("slide_enter", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("slidevertical")) {
+    } else if (animType == ScreenAnimation.SlideHorizontal) {
       exit = activity.getResources().getIdentifier("slide_v_exit", "anim", activity.getPackageName());
       enter = activity.getResources().getIdentifier("slide_v_enter", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("none")) {
+    } else if (animType == ScreenAnimation.None) {
       // enter and exit are already set to 0, so
       // no animations will be played.
     } else {
@@ -119,28 +124,33 @@ public final class AnimationUtil {
    * @param animType - the animation type
    */
   public static void ApplyCloseScreenAnimation(Activity activity, String animType) {
+    ScreenAnimation anim = ScreenAnimation.get(animType);
     if (animType == null) {
       return;
     }
+    AnimationUtil.ApplyCloseScreenAnimation(activity, anim);
+  }
+
+  public static void ApplyCloseScreenAnimation(Activity activity, ScreenAnimation animType) {
     if (SdkLevel.getLevel() <= SdkLevel.LEVEL_DONUT) {
       Log.e("AnimationUtil", "Screen animations are not available on android versions less than 2.0.");
       return;
     }
     int enter = 0;
     int exit = 0;
-    if (animType.equalsIgnoreCase("fade")) {
+    if (animType == ScreenAnimation.Fade) {
       exit = activity.getResources().getIdentifier("fadeout", "anim", activity.getPackageName());
       enter = activity.getResources().getIdentifier("hold", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("zoom")) {
+    } else if (animType == ScreenAnimation.Zoom) {
       exit = activity.getResources().getIdentifier("zoom_exit_reverse", "anim", activity.getPackageName());
       enter = activity.getResources().getIdentifier("zoom_enter_reverse", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("slidehorizontal")) {
+    } else if (animType == ScreenAnimation.SlideHorizontal) {
       exit = activity.getResources().getIdentifier("slide_exit_reverse", "anim", activity.getPackageName());
       enter = activity.getResources().getIdentifier("slide_enter_reverse", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("slidevertical")) {
+    } else if (animType == ScreenAnimation.SlideVertical) {
       exit = activity.getResources().getIdentifier("slide_v_exit_reverse", "anim", activity.getPackageName());
       enter = activity.getResources().getIdentifier("slide_v_enter_reverse", "anim", activity.getPackageName());
-    } else if (animType.equalsIgnoreCase("none")) {
+    } else if (animType == ScreenAnimation.None) {
       // enter and exit are already set to 0, so
       // no animations will be played.
     } else {
@@ -150,5 +160,4 @@ public final class AnimationUtil {
     }
     EclairUtil.overridePendingTransitions(activity, enter, exit);
   }
-
 }

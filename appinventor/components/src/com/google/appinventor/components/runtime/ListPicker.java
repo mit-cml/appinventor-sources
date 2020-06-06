@@ -294,8 +294,8 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     // Get the current Form's opening transition anim type,
     // and pass it to the list picker activity. For consistency,
     // the closing animation will be the same (but in reverse)
-    String openAnim = container.$form().getOpenAnimType();
-    intent.putExtra(LIST_ACTIVITY_ANIM_TYPE, openAnim);
+    ScreenAnimation openAnim = container.$form().getOpenAnimType();
+    intent.putExtra(LIST_ACTIVITY_ANIM_TYPE, openAnim.getValue());
     intent.putExtra(LIST_ACTIVITY_ORIENTATION_TYPE,container.$form().ScreenOrientation());
     intent.putExtra(LIST_ACTIVITY_ITEM_TEXT_COLOR, itemTextColor);
     intent.putExtra(LIST_ACTIVITY_BACKGROUND_COLOR, itemBackgroundColor);
