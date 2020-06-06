@@ -127,22 +127,22 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_1 = 'Jei reikšmė teisinga, tai atliekami keli sakiniai';
     Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_2 = 'Jei reikšmė teisinga, tai atliekamas pirmas sakinių blokas.\n' +
         'Priešingu atveju, atliekamas antras sakinių blokas.';
-    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_3 = 'If the first value is true, then do the first block of statements.\n' +
-        'Otherwise, if the second value is true, do the second block of statements.';
-    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_4 = 'If the first value is true, then do the first block of statements.\n' +
-        'Otherwise, if the second value is true, do the second block of statements.\n' +
-        'If none of the values are true, do the last block of statements.';
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_3 = 'Jei pirma reikšmė teisinga, tai atliekamas pirmas sakinių blokas.\n' +
+        'Priešingu atveju, jei antroji reikšmė yra teisinga, tai atliekamas antras sakinių blokas.';
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_4 = 'Jei pirma reikšmė teisinga, tai atliekamas pirmas sakinių blokas.\n' +
+        'Priešingu atveju, jei antroji reikšmė yra teisinga, tai atliekamas antras sakinių blokas.\n' +
+        'Jei nė viena iš reikšmių nėra teisinga, atliekamas paskutinis sakinių blokas.';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_IF = 'jei';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF = 'priešingu atveju jei';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSE = 'priešingu atveju';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN = 'tai';
 
     Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF = 'jei';
-    Blockly.Msg.LANG_CONTROLS_IF_IF_TOOLTIP = 'Add, remove, or reorder sections\n' +
-        'to reconfigure this if block.';
+    Blockly.Msg.LANG_CONTROLS_IF_IF_TOOLTIP = 'Pridėti, pašalinti arba perrikiuoti sekcijas\n' +
+        'norint iš naujo sukonfigūruoti šį bloką.';
 
     Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TITLE_ELSEIF = 'priešingu atveju jei';
-    Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TOOLTIP = 'Add a condition to the if block.';
+    Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TOOLTIP = 'Pridėti sąlygas Add a condition to the if block.';
 
     Blockly.Msg.LANG_CONTROLS_IF_ELSE_TITLE_ELSE = 'priešingu atveju';
     Blockly.Msg.LANG_CONTROLS_IF_ELSE_TOOLTIP = 'Add a final, catch-all condition to the if block.';
