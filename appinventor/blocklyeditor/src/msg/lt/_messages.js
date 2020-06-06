@@ -149,13 +149,13 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_HELPURL = '/reference/blocks/control.html#while';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT = 'kartoti';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_INPUT_DO = 'atlikti';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_INPUT_DO = 'do';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE = 'kol';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = 'until';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_WHILE = 'Kol reikšmė teisinga, atliekama keleta sakinių.';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = 'Kol reikšmė teisinga, atliekama keleta sakinių.';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_1 = 'Runs the blocks in the \'do\' section while the test is '
-        + 'true.';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_1 = 'Veikia blokus, esančius sekcijoje „do“ kol testas yra '
+        + 'teisingas.';
 
     Blockly.Msg.LANG_CONTROLS_FOR_HELPURL = '';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_WITH = 'skaičiuok su';
@@ -164,42 +164,42 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_TO = 'iki';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_DO = 'do';
 
-    Blockly.Msg.LANG_CONTROLS_FOR_TOOLTIP = 'Count from a start number to an end number.\n' +
-        'For each count, set the current count number to\n' +
-        'variable "%1", and then do some statements.';
+    Blockly.Msg.LANG_CONTROLS_FOR_TOOLTIP = 'Suskaičiuoja nuo pradžios numerio iki pabaigos numerio.\n' +
+        'Kiekvienam skaičiui nustato dabartinį skaičiaus numerį į\n' +
+        'kintamojo "%1", ir tada atlieka kelis sakinius.';
 
     Blockly.Msg.LANG_CONTROLS_FORRANGE_HELPURL = '/reference/blocks/control.html#forrange';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM = 'for each';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_VAR = 'number';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START = 'from';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END = 'to';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM = 'kiekvienam';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_VAR = 'numeriui';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START = 'nuo';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END = 'iki';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP = 'by';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO = 'do';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = 'for number in range';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = 'numeriui intervale';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX = 'for ';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX = ' in range';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = 'Runs the blocks in the \'do\' section for each numeric '
-        + 'value in the range from start to end, stepping the value each time.  Use the given '
-        + 'variable name to refer to the current value.';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX = ' intervale';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = 'Veikia blokus esančius sekcijoje „do“ kiekvienai skaitinei reikšmei '
+        + 'intervale nuo pradžios iki pabaigos, kiekvieną kartą padidinant reikšmę. Panaudoja duotą '
+        + 'kintamojo vardą, kuris nurodo esamą reikšmę.';
 
     Blockly.Msg.LANG_CONTROLS_FOREACH_HELPURL = '/reference/blocks/control.html#foreach';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM = 'for each';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_VAR = 'item';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_INLIST = 'in list';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM = 'kiekvienam';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_VAR = 'elementui';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_INLIST = 'sąraše';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_DO = 'do';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_TEXT = 'for item in list';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_TEXT = 'elementui sąraše';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_PREFIX = 'for ';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX = ' in list';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX = ' sąraše';
     Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Runs the blocks in the \'do\'  section for each item in '
         + 'the list.  Use the given variable name to refer to the current list item.';
 
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL = '/reference/blocks/control.html#foreachdict';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT = 'for each %1 with %2 in dictionary %3';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT = 'kiekvienam %1 su %2 žodyne %3';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO = 'do';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY = 'key';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE = 'value';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE = 'reikšmė';
     // Used by the typeblock system.
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE = 'for each in dictionary';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE = 'kiekvienam žodyne';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP =
         'Runs the blocks in the \'do\' section for each key-value entry in the dictionary.'
         + ' Use the given variable names to refer to the key/value of the current dictionary item.';
