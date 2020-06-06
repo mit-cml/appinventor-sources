@@ -190,19 +190,19 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_TEXT = 'elementui sąraše';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_PREFIX = 'for ';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX = ' sąraše';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Runs the blocks in the \'do\'  section for each item in '
-        + 'the list.  Use the given variable name to refer to the current list item.';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Veikia blokus esančius sekcijoje „do“ kiekvienam elementui sąraše. '
+        + ' Norėdami nurodyti dabartinį sąrašo elementą, naudokite duotą kintamojo pavadinimą.';
 
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL = '/reference/blocks/control.html#foreachdict';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT = 'kiekvienam %1 su %2 žodyne %3';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO = 'do';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY = 'key';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY = 'raktas';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE = 'reikšmė';
     // Used by the typeblock system.
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE = 'kiekvienam žodyne';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP =
-        'Runs the blocks in the \'do\' section for each key-value entry in the dictionary.'
-        + ' Use the given variable names to refer to the key/value of the current dictionary item.';
+        'Veikia blokus esančius sekcijoje „do“ kiekvienam rakto reikšmės įrašui žodyne.'
+        + ' Nurodykite dabartinio žodyno elemento raktą / reikšmę naudodami duotus kintamųjų pavadinimus.';
 
     Blockly.Msg.LANG_CONTROLS_GET_HELPURL = '/reference/blocks/control.html#get';
 
@@ -210,19 +210,18 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_HELPURL = 'http://en.wikipedia.org/wiki/Control_flow';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_INPUT_OFLOOP = 'of loop';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK = 'break out';
-    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE = 'continue with next iteration';
+    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE = 'tęsti su kita iteracija';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK = 'Break out of the containing loop.';
-    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE = 'Skip the rest of this loop, and\n' +
-        'continue with the next iteration.';
-    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_WARNING = 'Warning:\n' +
-        'This block may only\n' +
-        'be used within a loop.';
+    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE = 'Praleidžia likusią šio ciklo dalį ir \n' +
+        'tęsia su kita iteracija.';
+    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_WARNING = 'Įspėjimas:\n' +
+        'Šis blokas gali būti naudojamas tik cikle.';
 
     Blockly.Msg.LANG_CONTROLS_WHILE_HELPURL = '/reference/blocks/control.html#while';
-    Blockly.Msg.LANG_CONTROLS_WHILE_TITLE = 'while';
+    Blockly.Msg.LANG_CONTROLS_WHILE_TITLE = 'kol';
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = 'test';
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO = 'do';
-    Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'while';
+    Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'kol';
     Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Runs the blocks in the \'do\' section while the test is '
         + 'true.';
 
