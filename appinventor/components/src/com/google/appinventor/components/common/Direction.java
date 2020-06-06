@@ -31,6 +31,6 @@ public enum Direction {
   }
 
   public static Direction get(int dir) {
-    return lookup
+    return lookup.get(dir)
   }
 }
