@@ -17,7 +17,7 @@ import com.google.appinventor.components.runtime.errors.AssertionFailure;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.TimerInternal;
-import com.google.appinventor.components.runtime.Direction;
+import com.google.appinventor.components.common.Direction;
 
 import android.os.Handler;
 
@@ -487,8 +487,20 @@ public abstract class Sprite extends VisibleComponent
           "bounce off of the edge it reached. Edge here is represented as an integer that " +
           "indicates one of eight directions north (1), northeast (2), east (3), southeast (4), " +
           "south (-1), southwest (-2), west (-3), and northwest (-4).")
+  public void EdgeReached(int edge) {
+    Direction dir = Direction.get(edge);
+    if (dir != null) {
+      EdgeReached(Direction.get(edge));
+    }
+  }
+
+  @SimpleEvent()
   public void EdgeReached(Direction edge) {
-    postEvent(this, "EdgeReached", edge);
+    // We will have to use getValue() to send an int for backwards-compat. But I decided to use this
+    // function as the base because I think converting the enum is a better check than the one from
+    // before.
+    // But if you think using the old func as the base is less confusing, we can do that.
+    postEvent(this, "EdgeReached", edge.getValue());
   }
 
   /**
@@ -602,6 +614,13 @@ public abstract class Sprite extends VisibleComponent
   @SimpleFunction(
     description = "Makes the %type% bounce, as if off a wall. " +
         "For normal bouncing, the edge argument should be the one returned by EdgeReached.")
+  public void Bounce(int edge) {
+    Direction dir = Direction.get(edge);
+    if (dir != null) {
+      Bounce(dir);
+    }
+  }
+
   public void Bounce (Direction edge) {
     MoveIntoBounds();
 
@@ -728,7 +747,7 @@ public abstract class Sprite extends VisibleComponent
       canvas.getView().invalidate();
       return;
     }
-    Direction edge = hitEdge();
+    int edge = hitEdge();
     if (edge != null) {
       EdgeReached(edge);
     }
@@ -743,7 +762,7 @@ public abstract class Sprite extends VisibleComponent
    *         direction (e.g., {@link Component#DIRECTION_NORTHEAST}) if that
    *         edge of the canvas has been hit
    */
-  protected Direction hitEdge() {
+  protected int hitEdge() {
     if (!canvas.ready()) {
       return null;
     }
@@ -841,7 +860,7 @@ public abstract class Sprite extends VisibleComponent
     return yTop + Height() > canvasHeight;
   }
 
-  protected Direction hitEdge(int canvasWidth, int canvasHeight) {
+  protected int hitEdge(int canvasWidth, int canvasHeight) {
     // Determine in which direction(s) we are out of bounds, if any.
     // Note that more than one boolean value can be true.  For example, if
     // the sprite is past the northwest boundary, north and west will be true.
@@ -861,33 +880,37 @@ public abstract class Sprite extends VisibleComponent
     MoveIntoBounds();
 
     // Determine the appropriate return value.
+    Direction dir = null;
     if (west) {
       if (north) {
-        return Direction.Northwest;
+        dir = Direction.Northwest;
       } else if (south) {
-        return Direction.Southwest;
+        dir = Direction.Southwest;
       }
-      return Direction.West;
+      dir = Direction.West;
     }
 
     if (east) {
       if (north) {
-        return Direction.Northeast;
+        dir = Direction.Northeast;
       } else if (south) {
-        return Direction.Southeast;
+        dir =  Direction.Southeast;
       }
-      return Direction.East;
+      dir = Direction.East;
     }
 
     if (north) {
-      return Direction.North;
+      dir = Direction.North;
     }
     if (south) {
-      return Direction.South;
+      dir = Direction.South;
     }
 
     // This should never be reached.
-    return null;
+    if (dir == null) {
+      return null;
+    }
+    return dir.getValue();
   }
 
   /**
