@@ -208,7 +208,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
 
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_HELPURL = 'http://en.wikipedia.org/wiki/Control_flow';
-    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_INPUT_OFLOOP = 'of loop';
+    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_INPUT_OFLOOP = 'ciklo';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK = 'break out';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE = 'tęsti su kita iteracija';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK = 'Break out of the containing loop.';
@@ -219,7 +219,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_CONTROLS_WHILE_HELPURL = '/reference/blocks/control.html#while';
     Blockly.Msg.LANG_CONTROLS_WHILE_TITLE = 'kol';
-    Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = 'test';
+    Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = 'testas';
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO = 'do';
     Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'kol';
     Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Veikia blokus, esančius sekcijoje „do“ kol testas yra '
@@ -231,22 +231,22 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = 'tai';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'priešingu atveju';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'jei';
-    Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = 'If the condition being tested is true,'
-        + 'return the result of evaluating the expression attached to the \'then-return\' slot;'
-        + 'otherwise return the result of evaluating the expression attached to the \'priešingu atveju-return\' slot;'
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = 'Jei tikrinama sąlyga yra tiesa,'
+        + 'return the result of evaluating the expression attached to the „tai-grąžina“ slot;'
+        + 'otherwise return the result of evaluating the expression attached to the „priešingu atveju-gražina“ slot;'
         + 'at most one of the return slot expressions will be evaluated.';
 
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = '/reference/blocks/control.html#doreturn';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = 'do';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN = 'result';
-    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = 'Runs the blocks in \'do\' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.';
+    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = 'Veikia blokus, esančius „do“ ir grąžina sakinį. Useful if you need to run a procedure before returning a value to a variable.';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'do/result';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = 'do result';
 
-    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'evaluate but ignore result';
+    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'įvertinti, bet nepaisyti rezultato';
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_HELPURL = '/reference/blocks/control.html#evaluate';
-    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = 'eval but ignore';
-    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP = 'Runs the connected block of code and ignores the return value (if any). Useful if need to call a procedure with a return value but don\'t need the value.';
+    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = 'įvertinti, bet nepaisyti';
+    Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP = 'Paleidžia prijungtą kodo bloką ir nepaiso grąžinimo reikšmės (jei yra). Naudinga, jei reikia iškviesti procedūrą su grąžinimo reikšme, bet jos nereikia.';
 
     /* [lyn, 10/14/13] Removed for now. May come back some day.
      Blockly.Msg.LANG_CONTROLS_NOTHING_TITLE = 'nothing';
@@ -261,12 +261,12 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP = 'Kelių ekranų programoje atidaromas naujas ekranas.';
 
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_HELPURL = '/reference/blocks/control.html#openscreenwithvalue';
-    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE = 'open another screen with start value';
+    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE = 'atveria kitą ekraną su pradine reikšme';
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME = 'ekranoPavadinimas';
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_STARTVALUE = 'pradinėReikšmė';
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_COLLAPSED_TEXT = 'atverti ekraną su reikšme';
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP = 'Kelių ekranų programoje atidaromas naujas ekranas '
-        + 'ir perduoda pradinę reikšmę į tą ekraną.';
+        + 'ir perduodama pradinė reikšmė į tą ekraną.';
 
     Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_HELPURL = '/reference/blocks/control.html#getstartvalue';
     Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TITLE = 'gauti pradinę reikšmę';
@@ -282,11 +282,10 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TOOLTIP = 'Užveria dabartinį ekraną';
 
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_HELPURL = '/reference/blocks/control.html#closescreenwithvalue';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE = 'close screen with value';
+    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE = 'uždaryti ekraną su reikšme';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_INPUT_RESULT = 'rezultatas';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_COLLAPSED_TEXT = 'close screen with value';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TOOLTIP = 'Closes the current screen and returns a result to the '
-        + 'screen that opened this one.';
+    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_COLLAPSED_TEXT = 'uždaryti ekraną su reikšme';
+    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TOOLTIP = 'Uždaromas dabartinis ekranas ir grąžinamas rezultatas į ekraną, kuris jį atidarė.';
 
     Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_HELPURL = '/reference/blocks/control.html#closeapp';
     Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_TITLE = 'close application';
