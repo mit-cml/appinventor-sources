@@ -222,18 +222,18 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = 'test';
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO = 'do';
     Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'kol';
-    Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Runs the blocks in the \'do\' section while the test is '
-        + 'true.';
+    Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Veikia blokus, esančius sekcijoje „do“ kol testas yra '
+        + 'teisingas.';
 
     Blockly.Msg.LANG_CONTROLS_CHOOSE_HELPURL = '/reference/blocks/control.html#choose';
-    Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE = 'if';
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE = 'jei';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST = '';
-    Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = 'then';
-    Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'else';
-    Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'if';
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = 'tai';
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'priešingu atveju';
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'jei';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = 'If the condition being tested is true,'
         + 'return the result of evaluating the expression attached to the \'then-return\' slot;'
-        + 'otherwise return the result of evaluating the expression attached to the \'else-return\' slot;'
+        + 'otherwise return the result of evaluating the expression attached to the \'priešingu atveju-return\' slot;'
         + 'at most one of the return slot expressions will be evaluated.';
 
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = '/reference/blocks/control.html#doreturn';
@@ -255,36 +255,35 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
      */
 
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_HELPURL = '/reference/blocks/control.html#openscreen';
-    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE = 'open another screen';
-    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME = 'screenName';
-    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT = 'open screen';
-    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP = 'Opens a new screen in a multiple screen app.';
+    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE = 'atveria kitą ekraną';
+    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME = 'ekranoPavadinimas';
+    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT = 'atverti ekraną';
+    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP = 'Kelių ekranų programoje atidaromas naujas ekranas.';
 
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_HELPURL = '/reference/blocks/control.html#openscreenwithvalue';
     Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE = 'open another screen with start value';
-    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME = 'screenName';
-    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_STARTVALUE = 'startValue';
-    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_COLLAPSED_TEXT = 'open screen with value';
-    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP = 'Opens a new screen in a multiple screen app and passes the '
-        + 'start value to that screen.';
+    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME = 'ekranoPavadinimas';
+    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_STARTVALUE = 'pradinėReikšmė';
+    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_COLLAPSED_TEXT = 'atverti ekraną su reikšme';
+    Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP = 'Kelių ekranų programoje atidaromas naujas ekranas '
+        + 'ir perduoda pradinę reikšmę į tą ekraną.';
 
     Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_HELPURL = '/reference/blocks/control.html#getstartvalue';
-    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TITLE = 'get start value';
-    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_INPUT_SCREENNAME = 'screenName';
-    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_INPUT_STARTVALUE = 'startValue';
-    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_COLLAPSED_TEXT = 'get start value';
-    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TOOLTIP = 'Returns the value that was passed to this screen when it '
-        + 'was opened, typically by another screen in a multiple-screen app. If no value was '
-        + 'passed, returns the empty text.';
+    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TITLE = 'gauti pradinę reikšmę';
+    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_INPUT_SCREENNAME = 'ekranoPavadinimas';
+    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_INPUT_STARTVALUE = 'pradinėReikšmė';
+    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_COLLAPSED_TEXT = 'gauti pradinę reikšmę';
+    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TOOLTIP = 'Grąžina reikšmę, kuri buvo perduota šiam ekranui, kai jis buvo atidaromas kito ekrano '
+        + 'kelių ekranų programoje. Jei reikšmė nebuvo perduota, grąžinamas tuščias tekstas.';
 
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_HELPURL = '/reference/blocks/control.html#closescreen';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TITLE = 'close screen';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_COLLAPSED_TEXT = 'close screen';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TOOLTIP = 'Close the current screen';
+    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TITLE = 'užverti ekraną';
+    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_COLLAPSED_TEXT = 'užverti ekraną';
+    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TOOLTIP = 'Užveria dabartinį ekraną';
 
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_HELPURL = '/reference/blocks/control.html#closescreenwithvalue';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE = 'close screen with value';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_INPUT_RESULT = 'result';
+    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_INPUT_RESULT = 'rezultatas';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_COLLAPSED_TEXT = 'close screen with value';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TOOLTIP = 'Closes the current screen and returns a result to the '
         + 'screen that opened this one.';
@@ -292,7 +291,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_HELPURL = '/reference/blocks/control.html#closeapp';
     Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_TITLE = 'close application';
     Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_COLLAPSED_TEXT = 'close application';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_TOOLTIP = 'Closes all screens in this app and stops the app.';
+    Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_TOOLTIP = 'Uždaromi visi šios programos ekranai ir sustabdoma programa.';
 
     Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL = '/reference/blocks/control.html#getplainstarttext';
     Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE = 'get plain start text';
@@ -303,7 +302,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_HELPURL = '/reference/blocks/control.html#closescreenwithplaintext';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE = 'close screen with plain text';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT = 'text';
+    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT = 'tekstas';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_COLLAPSED_TEXT = 'close screen with plain text';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP = 'Closes the current screen and returns text to the app that '
         + 'opened this one.   This command is for returning text to non-App Inventor activities, not to App Inventor screens. '
@@ -311,11 +310,11 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_CONTROLS_BREAK_HELPURL = '/reference/blocks/control.html#break';
     Blockly.Msg.LANG_CONTROLS_BREAK_TITLE = 'break';
-    Blockly.Msg.LANG_CONTROLS_BREAK_INPUT_TEXT = 'value';
+    Blockly.Msg.LANG_CONTROLS_BREAK_INPUT_TEXT = 'reikšmė';
     Blockly.Msg.LANG_CONTROLS_BREAK_COLLAPSED_TEXT = 'break';
 
 // Logic Blocks.
-    Blockly.Msg.LANG_CATEGORY_LOGIC = 'Logic';
+    Blockly.Msg.LANG_CATEGORY_LOGIC = 'Logika';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL = 'http://en.wikipedia.org/wiki/Inequality_(mathematics)';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_EQ = '/reference/blocks/logic.html#=';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_NEQ = '/reference/blocks/logic.html#not=';
@@ -332,25 +331,25 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_AND = '/reference/blocks/logic.html#and';
     Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_OR = '/reference/blocks/logic.html#or';
-    Blockly.Msg.LANG_LOGIC_OPERATION_AND = 'and';
-    Blockly.Msg.LANG_LOGIC_OPERATION_OR = 'or';
+    Blockly.Msg.LANG_LOGIC_OPERATION_AND = 'ir';
+    Blockly.Msg.LANG_LOGIC_OPERATION_OR = 'arba';
     Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_AND = 'Return true if all inputs are true.';
     Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_OR = 'Return true if any input is true.';
 
     Blockly.Msg.LANG_LOGIC_NEGATE_HELPURL = '/reference/blocks/logic.html#not';
-    Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT = 'not';
+    Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT = 'ne';
     Blockly.Msg.LANG_LOGIC_NEGATE_TOOLTIP = 'Returns true if the input is false.\n' +
         'Returns false if the input is true.';
 
     Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE_HELPURL = '/reference/blocks/logic.html#true';
     Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE_HELPURL = '/reference/blocks/logic.html#false';
-    Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE = 'true';
-    Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE = 'false';
+    Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE = 'tiesa';
+    Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE = 'netiesa';
     Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_TRUE = 'Returns the boolean true.';
     Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_FALSE = 'Returns the boolean false.';
 
 // Math Blocks.
-    Blockly.Msg.LANG_CATEGORY_MATH = 'Math';
+    Blockly.Msg.LANG_CATEGORY_MATH = 'Matematika';
     Blockly.Msg.LANG_MATH_NUMBER_HELPURL = '/reference/blocks/math.html#number';
     Blockly.Msg.LANG_MATH_NUMBER_TOOLTIP = 'Report the number shown.';
     Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER = 'number';
@@ -498,8 +497,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_MATH_RANDOM_INT_HELPURL = '/reference/blocks/math.html#randomint';
     Blockly.Msg.LANG_MATH_RANDOM_INT_TITLE_RANDOM = 'random integer';
-    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_FROM = 'from';
-    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO = 'to';
+    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_FROM = 'nuo';
+    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO = 'iki';
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT = 'random integer from %1 to %2';
     Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP = 'Returns a random integer between the upper bound\n' +
         'and the lower bound. The bounds will be clipped to be smaller\n' +
@@ -568,7 +567,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC = 'Takes a string that represents a number in binary and returns the string that represents the number in base 10';
 
 // Text Blocks.
-    Blockly.Msg.LANG_CATEGORY_TEXT = 'Text';
+    Blockly.Msg.LANG_CATEGORY_TEXT = 'Tekstas';
     Blockly.Msg.LANG_TEXT_TEXT_HELPURL = '/reference/blocks/text.html#string';
     Blockly.Msg.LANG_TEXT_TEXT_TOOLTIP = 'A text string.';
     Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE = '\u201C';
@@ -586,7 +585,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_APPEND_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
     Blockly.Msg.LANG_TEXT_APPEND_TO = 'to';
     Blockly.Msg.LANG_TEXT_APPEND_APPENDTEXT = 'append text';
-    Blockly.Msg.LANG_TEXT_APPEND_VARIABLE = 'item';
+    Blockly.Msg.LANG_TEXT_APPEND_VARIABLE = 'elementas';
     Blockly.Msg.LANG_TEXT_APPEND_TOOLTIP = 'Append some text to variable "%1".';
 
     Blockly.Msg.LANG_TEXT_LENGTH_HELPURL = '/reference/blocks/text.html#length';
