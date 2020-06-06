@@ -194,8 +194,8 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @SimpleProperty
   @Override
-  public String Type() {
-    return MapFactory.MapFeatureType.TYPE_MARKER;
+  public /*@EnumeratedBy(MapFeature.Class)*/ String Type() {
+    return MapFeature.Marker.getValue();
   }
 
   /**

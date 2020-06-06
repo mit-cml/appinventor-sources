@@ -99,8 +99,8 @@ public class Rectangle extends PolygonBase implements MapRectangle {
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Returns the type of the feature. For rectangles, this returns the text "
           + "\"Rectangle\".")
-  public String Type() {
-    return MapFactory.MapFeatureType.TYPE_RECTANGLE;
+  public /*@EnumeratedBy(MapFeature.Class)*/ String Type() {
+    return MapFeature.Rectangle.getValue();
   }
 
   /**

@@ -1484,38 +1484,6 @@ public final class MapFactory {
     private MapFeatureType() {}
 
     /**
-     * The Marker type.
-     */
-    public static final String TYPE_MARKER = "Marker";
-
-    /**
-     * The Circle type.
-     */
-    public static final String TYPE_CIRCLE = "Circle";
-
-    /**
-     * The Rectangle type.
-     */
-    public static final String TYPE_RECTANGLE = "Rectangle";
-
-    // the following 6 types are defined by GeoJSON
-
-    /**
-     * The Point type. Implemented as {@link com.google.appinventor.components.runtime.Marker}.
-     */
-    public static final String TYPE_POINT = "Point";
-
-    /**
-     * The LineString type. Implemented as {@link com.google.appinventor.components.runtime.LineString}.
-     */
-    public static final String TYPE_LINESTRING = "LineString";
-
-    /**
-     * The Polygon type. Implemented as {@link com.google.appinventor.components.runtime.Polygon}.
-     */
-    public static final String TYPE_POLYGON = "Polygon";
-
-    /**
      * The MultiPoint type. Reserved for future use.
      */
     @SuppressWarnings("unused")
