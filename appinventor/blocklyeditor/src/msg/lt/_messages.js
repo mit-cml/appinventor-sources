@@ -55,11 +55,11 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.COPY_TO_BACKPACK = 'Dėti į kuprinę';
     Blockly.Msg.COPY_ALLBLOCKS = 'Visus blokus nukopijuoti į kurpinę';
     Blockly.Msg.REMOVE_FROM_BACKPACK = 'Pašalinti iš kuprinės';
-    Blockly.Msg.BACKPACK_GET = 'Paste All Blocks from Backpack';
+    Blockly.Msg.BACKPACK_GET = 'Iš kuprinės įklijuoti visus blokelius';
     Blockly.Msg.BACKPACK_EMPTY = 'Ištuštinti kuprinę';
-    Blockly.Msg.BACKPACK_CONFIRM_EMPTY = 'Are you sure you want to empty the backpack?';
-    Blockly.Msg.BACKPACK_DOC_TITLE = "Backpack Information";
-    Blockly.Msg.SHOW_BACKPACK_DOCUMENTATION = "Show Backpack documentation";
+    Blockly.Msg.BACKPACK_CONFIRM_EMPTY = 'Ar tikrai norite ištuštinti kuprinę?';
+    Blockly.Msg.BACKPACK_DOC_TITLE = "Kuprinės informacija";
+    Blockly.Msg.SHOW_BACKPACK_DOCUMENTATION = "Rodyti kuprinės dokumentaciją";
     Blockly.Msg.BACKPACK_DOCUMENTATION = "The Backpack is a copy/paste feature. It allows you to copy blocks from one project or screen " +
    " and paste them into another project or screen. " +
    " To copy, you can drag-and-drop blocks into the Backpack. To paste, click on the Backpack icon and " +
@@ -73,18 +73,18 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.DISABLE_SNAPPING = 'Disable Snap to Grid';
     Blockly.Msg.DISABLE_ALL_BLOCKS = 'Disable All Blocks';
     Blockly.Msg.ENABLE_ALL_BLOCKS = 'Enable All Blocks';
-    Blockly.Msg.HIDE_ALL_COMMENTS = 'Hide All Comments';
+    Blockly.Msg.HIDE_ALL_COMMENTS = 'Slėpti visus komentarus';
     Blockly.Msg.SHOW_ALL_COMMENTS = 'Rodyti visus komentarus';
-    Blockly.Msg.GENERICIZE_BLOCK = 'Make Generic';
-    Blockly.Msg.UNGENERICIZE_BLOCK = 'Make Specific';
-    Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG = 'Download Blocks as PNG';
+    Blockly.Msg.GENERICIZE_BLOCK = 'Padaryti bendriniu';
+    Blockly.Msg.UNGENERICIZE_BLOCK = 'Padaryti specifiniu';
+    Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG = 'Parsisiųsti blokus kaip PNG';
 
 // Variable renaming.
     Blockly.Msg.CHANGE_VALUE_TITLE = 'Keisti reikšmę:';
     Blockly.Msg.NEW_VARIABLE = 'Naujas kintamasis...';
-    Blockly.Msg.NEW_VARIABLE_TITLE = 'New variable name:';
-    Blockly.Msg.RENAME_VARIABLE = 'Rename variable...';
-    Blockly.Msg.RENAME_VARIABLE_TITLE = 'Rename all "%1" variables to:';
+    Blockly.Msg.NEW_VARIABLE_TITLE = 'Naujas kintamojo pavadinimas:';
+    Blockly.Msg.RENAME_VARIABLE = 'Pervadinti kintamąjį...';
+    Blockly.Msg.RENAME_VARIABLE_TITLE = 'Pervadinti visus "%1" kintamuosius į:';
 
 // Toolbox.
     Blockly.Msg.VARIABLE_CATEGORY = 'Kintamieji';
