@@ -142,26 +142,26 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         'norint iš naujo sukonfigūruoti šį bloką.';
 
     Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TITLE_ELSEIF = 'priešingu atveju jei';
-    Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TOOLTIP = 'Pridėti sąlygas Add a condition to the if block.';
+    Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TOOLTIP = 'Pridėti sąlygas į bloką „Jei“.';
 
     Blockly.Msg.LANG_CONTROLS_IF_ELSE_TITLE_ELSE = 'priešingu atveju';
-    Blockly.Msg.LANG_CONTROLS_IF_ELSE_TOOLTIP = 'Add a final, catch-all condition to the if block.';
+    Blockly.Msg.LANG_CONTROLS_IF_ELSE_TOOLTIP = 'Prdėti galutinę sąlygą į bloką „Jei“.';
 
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_HELPURL = '/reference/blocks/control.html#while';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT = 'kartoti';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_INPUT_DO = 'do';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE = 'while';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_INPUT_DO = 'atlikti';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE = 'kol';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = 'until';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_WHILE = 'While a value is true, then do some statements.';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = 'While a value is false, then do some statements.';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_WHILE = 'Kol reikšmė teisinga, atliekama keleta sakinių.';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = 'Kol reikšmė teisinga, atliekama keleta sakinių.';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_1 = 'Runs the blocks in the \'do\' section while the test is '
         + 'true.';
 
     Blockly.Msg.LANG_CONTROLS_FOR_HELPURL = '';
-    Blockly.Msg.LANG_CONTROLS_FOR_INPUT_WITH = 'skaičiuoti su';
+    Blockly.Msg.LANG_CONTROLS_FOR_INPUT_WITH = 'skaičiuok su';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_VAR = 'x';
-    Blockly.Msg.LANG_CONTROLS_FOR_INPUT_FROM = 'from';
-    Blockly.Msg.LANG_CONTROLS_FOR_INPUT_TO = 'to';
+    Blockly.Msg.LANG_CONTROLS_FOR_INPUT_FROM = 'nuo';
+    Blockly.Msg.LANG_CONTROLS_FOR_INPUT_TO = 'iki';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_DO = 'do';
 
     Blockly.Msg.LANG_CONTROLS_FOR_TOOLTIP = 'Count from a start number to an end number.\n' +
