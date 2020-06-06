@@ -144,5 +144,21 @@
     "Blockly.Msg.DISABLE_ALL_BLOCKS": "Ապակտիվացնել բոլոր Բլոկները",
     "Blockly.Msg.DISABLE_GRID": "Ապակտիվացնել աշխատանքային միջավայրի ցանցը",
     "Blockly.Msg.ENABLE_GRID": "Ակտիվացնել աշխատանքային միջավայրի ցանցը",
-    "Blockly.Msg.BACKPACK_DOCUMENTATION": "ՈՒսապարկը պատճենել/ներդնել ֆունկցիա է: Այն թույլ է տալիս մի նախագծից կամ էկրանից պատճենել Բլոկները և ներդնել մեկ այլ նախագծի կամ էկրանի վրա: Պատճենելու համար կարող եք քաշել-տանել Բլոկները Ուսապարկի մեջ: Ներդնելու համար քաշեք-տարեք Բլոկները աշխատանքային միջավայր:</p><p> Եթե ելք գործեք MIT App Inventor -ից և թողնեք Բլոկները Ուսապարկի մեջ, դրանք այնտեղ կլինեն, երբ մյուս անգամ մուտք գործեք:</p><p><a href='/reference/other/backpack.html' target='_blank'>Սեղմեք այստեղ</a> ավելի մանրամասն ձևակերպման և \"ինչպե՞ս անել\" տեսանյութը դիտելու համար:"
+    "Blockly.Msg.BACKPACK_DOCUMENTATION": "ՈՒսապարկը պատճենել/ներդնել ֆունկցիա է: Այն թույլ է տալիս մի նախագծից կամ էկրանից պատճենել Բլոկները և ներդնել մեկ այլ նախագծի կամ էկրանի վրա: Պատճենելու համար կարող եք քաշել-տանել Բլոկները Ուսապարկի մեջ: Ներդնելու համար քաշեք-տարեք Բլոկները աշխատանքային միջավայր:</p><p> Եթե ելք գործեք MIT App Inventor -ից և թողնեք Բլոկները Ուսապարկի մեջ, դրանք այնտեղ կլինեն, երբ մյուս անգամ մուտք գործեք:</p><p><a href='/reference/other/backpack.html' target='_blank'>Սեղմեք այստեղ</a> ավելի մանրամասն ձևակերպման և \"ինչպե՞ս անել\" տեսանյութը դիտելու համար:",
+    "Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR": "տարանջատել գույները",
+    "Blockly.Msg.LANG_COLOUR_GRAY": "մոխրագույն",
+    "Blockly.Msg.LANG_COLOUR_DARK_GRAY": "մուգ մոխրագույն",
+    "Blockly.Msg.LANG_COLOUR_LIGHT_GRAY": "բաց մոխրագույն",
+    "Blockly.Msg.LANG_COLOUR_MAGENTA": "մանուշակագույն",
+    "Blockly.Msg.LANG_COLOUR_BLUE": "կապույտ",
+    "Blockly.Msg.LANG_COLOUR_CYAN": "ցիան",
+    "Blockly.Msg.LANG_COLOUR_BLACK": "սև",
+    "Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP": "Գույնը ընտրելու համար սեղմեք քառակուսու վրա:",
+    "Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP": "Տարանջատող Բլոկը պետք է օգտագործվի միայն հանգույցների միջև",
+    "Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED": "Բլոկը սահմանված չէ: Ջնջե'կ Բլոկը:",
+    "Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST": "Մասնիկը գոյություն չունի",
+    "Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN": "Ցուցակինց ընտրել վավեր արժեք:",
+    "Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION": "Այս Բլոկը չի կարող սահմանված լինել",
+    "Blockly.Msg.PROCEDURE_CATEGORY": "Ընթացակարգ",
+    "Blockly.Msg.RENAME_VARIABLE_TITLE": "Վերանվանել բոլոր '%1' փոփոխականները -ի."
 }
