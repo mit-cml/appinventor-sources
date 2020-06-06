@@ -108,47 +108,47 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_COLOUR_ORANGE = 'oranžinė';
     Blockly.Msg.LANG_COLOUR_YELLOW = 'geltona';
     Blockly.Msg.LANG_COLOUR_GREEN = 'žalia';
-    Blockly.Msg.LANG_COLOUR_CYAN = 'cyan';
+    Blockly.Msg.LANG_COLOUR_CYAN = 'ciano';
     Blockly.Msg.LANG_COLOUR_BLUE = 'mėlyna';
     Blockly.Msg.LANG_COLOUR_MAGENTA = 'magenta';
     Blockly.Msg.LANG_COLOUR_LIGHT_GRAY = 'šviesiai pilka';
     Blockly.Msg.LANG_COLOUR_DARK_GRAY = 'tamsiai pilka';
     Blockly.Msg.LANG_COLOUR_GRAY = 'pilka';
-    Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR = 'split color';
+    Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR = 'padalinti spalvą';
     Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_HELPURL = '/reference/blocks/colors.html#split';
-    Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP = "A list of four elements, each in the range 0 to 255, representing the red, green, blue and alpha components.";
+    Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP = "Keturių elementų sąrašas (reikšmės nuo 0 iki 255), nurodantis raudoną, žalią, mėlyną ir alfa komponentus.";
     Blockly.Msg.LANG_COLOUR_MAKE_COLOUR = 'sukurti spalvą';
     Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_HELPURL = '/reference/blocks/colors.html#make';
-    Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP = "A color with the given red, green, blue, and optionally alpha components";
+    Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP = "Spalva su nurodytais raudonos, žalios, mėlynos ir pasirinktinai alfa komponentais";
 
 // Control Blocks
-    Blockly.Msg.LANG_CATEGORY_CONTROLS = 'Control';
+    Blockly.Msg.LANG_CATEGORY_CONTROLS = 'Valdymas';
     Blockly.Msg.LANG_CONTROLS_IF_HELPURL = '/reference/blocks/control.html#if';
-    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_1 = 'If a value is true, then do some statements.';
-    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_2 = 'If a value is true, then do the first block of statements.\n' +
-        'Otherwise, do the second block of statements.';
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_1 = 'Jei reikšmė teisinga, tai atliekami keli sakiniai';
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_2 = 'Jei reikšmė teisinga, tai atliekamas pirmas sakinių blokas.\n' +
+        'Priešingu atveju, atliekamas antras sakinių blokas.';
     Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_3 = 'If the first value is true, then do the first block of statements.\n' +
         'Otherwise, if the second value is true, do the second block of statements.';
     Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_4 = 'If the first value is true, then do the first block of statements.\n' +
         'Otherwise, if the second value is true, do the second block of statements.\n' +
         'If none of the values are true, do the last block of statements.';
-    Blockly.Msg.LANG_CONTROLS_IF_MSG_IF = 'if';
-    Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF = 'else if';
-    Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSE = 'else';
-    Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN = 'then';
+    Blockly.Msg.LANG_CONTROLS_IF_MSG_IF = 'jei';
+    Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF = 'priešingu atveju jei';
+    Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSE = 'priešingu atveju';
+    Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN = 'tai';
 
-    Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF = 'if';
+    Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF = 'jei';
     Blockly.Msg.LANG_CONTROLS_IF_IF_TOOLTIP = 'Add, remove, or reorder sections\n' +
         'to reconfigure this if block.';
 
-    Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TITLE_ELSEIF = 'else if';
+    Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TITLE_ELSEIF = 'priešingu atveju jei';
     Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TOOLTIP = 'Add a condition to the if block.';
 
-    Blockly.Msg.LANG_CONTROLS_IF_ELSE_TITLE_ELSE = 'else';
+    Blockly.Msg.LANG_CONTROLS_IF_ELSE_TITLE_ELSE = 'priešingu atveju';
     Blockly.Msg.LANG_CONTROLS_IF_ELSE_TOOLTIP = 'Add a final, catch-all condition to the if block.';
 
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_HELPURL = '/reference/blocks/control.html#while';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT = 'repeat';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT = 'kartoti';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_INPUT_DO = 'do';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE = 'while';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = 'until';
@@ -158,7 +158,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'true.';
 
     Blockly.Msg.LANG_CONTROLS_FOR_HELPURL = '';
-    Blockly.Msg.LANG_CONTROLS_FOR_INPUT_WITH = 'count with';
+    Blockly.Msg.LANG_CONTROLS_FOR_INPUT_WITH = 'skaičiuoti su';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_VAR = 'x';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_FROM = 'from';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_TO = 'to';
