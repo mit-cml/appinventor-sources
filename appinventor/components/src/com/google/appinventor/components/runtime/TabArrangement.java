@@ -30,7 +30,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   
   public TabArrangement(ComponentContainer container) {
     super(container);
-    Log.d("TabTest","Constructor of TabArrangement");
+    Log.d("tabarrangement","Constructor of TabArrangement");
     viewPager = new ViewPager2(container.$context());
     viewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
     tabLayout = new TabLayout(container.$context());
@@ -42,7 +42,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     adapter = new RecyclerView.Adapter() {
       @Override
       public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        Log.d("TabTest","onCreateViewHolder at index: "+i);
+        Log.d("tabarrangement","onCreateViewHolder at index: "+i);
         FrameLayout layout = new FrameLayout(viewGroup.getContext());
         layout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
         return new RecyclerView.ViewHolder(layout) {
@@ -55,13 +55,14 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
       
       @Override
       public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-        Log.d("TabTest","onBindViewHolder at position: " + i);
+        Log.d("tabarrangement","onBindViewHolder at position: " + i);
+        Log.d("tabarrangement", "Tab details: Index: " + i + " Tab: " + tabs.get(i) + " Expected: " + tabs.get(i).getTab() + " Found: " + tabLayout.getTabAt(i));
         ViewGroup childViewGroup = tabs.get(i).viewLayout.getLayoutManager();
         if(childViewGroup.getParent()!=null) {
           ((ViewGroup) childViewGroup.getParent()).removeView(childViewGroup);
         }
         ((ViewGroup)(viewHolder.itemView)).addView(childViewGroup);
-        Log.d("TabTest","Number of children: " + childViewGroup.getChildCount());
+        Log.d("tabarrangement","Number of children: " + childViewGroup.getChildCount());
       }
       
       @Override
@@ -73,8 +74,10 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
       @Override
       public void onConfigureTab(TabLayout.Tab tab, int i) {
-        Log.d("TabTest","on Configure Tab at index "+i);
+        tabs.get(i).setTab(tab);
+        Log.d("tabarrangement","on Configure Tab at index "+i);
         tab.setText("Object " + i);
+        Log.d("tabarrangement","Configured tab text at position: " + i + " " + tab + " to Object " + i);
       }
     }).attach();
     container.$add(this);
@@ -82,7 +85,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   
   @Override
   public LinearLayout getView() {
-    Log.d("TabTest","Return Linear layout with "+tabLayout.getTabCount()+" tabs");
+    Log.d("tabarrangement","Return Linear layout with "+tabLayout.getTabCount()+" tabs");
     LinearLayout layout = new LinearLayout($context());
     layout.setOrientation(LinearLayout.VERTICAL);
     layout.setGravity(Gravity.TOP);
@@ -103,11 +106,9 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   }
   
   void addTab(Tab tab){
-    Log.d("TabTest","Add new tab "+ tab);
-    tabLayout.addTab(tab.getTab());
+    tabLayout.addTab(tabLayout.newTab());
     tabs.add(tab);
-    tab.getTab().setText("Tab "+tabs.size());
-    Log.d("TabTest","Current list of tabs: " + Arrays.toString(tabs.toArray()));
+    Log.d("tabarrangement","Current list of tabs: " + Arrays.toString(tabs.toArray()));
     adapter.notifyDataSetChanged();
   }
   
