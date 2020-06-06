@@ -100,24 +100,24 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = '/reference/blocks/colors.html#basic';
-    Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP = 'Click the square to pick a color.';
-    Blockly.Msg.LANG_COLOUR_BLACK = 'black';
-    Blockly.Msg.LANG_COLOUR_WHITE = 'white';
-    Blockly.Msg.LANG_COLOUR_RED = 'red';
-    Blockly.Msg.LANG_COLOUR_PINK = 'pink';
-    Blockly.Msg.LANG_COLOUR_ORANGE = 'orange';
-    Blockly.Msg.LANG_COLOUR_YELLOW = 'yellow';
-    Blockly.Msg.LANG_COLOUR_GREEN = 'green';
+    Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP = 'Spustelėkite kvadratą, kad pasirinktumėte spalvą.';
+    Blockly.Msg.LANG_COLOUR_BLACK = 'juoda';
+    Blockly.Msg.LANG_COLOUR_WHITE = 'balta';
+    Blockly.Msg.LANG_COLOUR_RED = 'raudona';
+    Blockly.Msg.LANG_COLOUR_PINK = 'rožinė';
+    Blockly.Msg.LANG_COLOUR_ORANGE = 'oranžinė';
+    Blockly.Msg.LANG_COLOUR_YELLOW = 'geltona';
+    Blockly.Msg.LANG_COLOUR_GREEN = 'žalia';
     Blockly.Msg.LANG_COLOUR_CYAN = 'cyan';
-    Blockly.Msg.LANG_COLOUR_BLUE = 'blue';
+    Blockly.Msg.LANG_COLOUR_BLUE = 'mėlyna';
     Blockly.Msg.LANG_COLOUR_MAGENTA = 'magenta';
-    Blockly.Msg.LANG_COLOUR_LIGHT_GRAY = 'light gray';
-    Blockly.Msg.LANG_COLOUR_DARK_GRAY = 'dark gray';
-    Blockly.Msg.LANG_COLOUR_GRAY = 'gray';
+    Blockly.Msg.LANG_COLOUR_LIGHT_GRAY = 'šviesiai pilka';
+    Blockly.Msg.LANG_COLOUR_DARK_GRAY = 'tamsiai pilka';
+    Blockly.Msg.LANG_COLOUR_GRAY = 'pilka';
     Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR = 'split color';
     Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_HELPURL = '/reference/blocks/colors.html#split';
     Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP = "A list of four elements, each in the range 0 to 255, representing the red, green, blue and alpha components.";
-    Blockly.Msg.LANG_COLOUR_MAKE_COLOUR = 'make color';
+    Blockly.Msg.LANG_COLOUR_MAKE_COLOUR = 'sukurti spalvą';
     Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_HELPURL = '/reference/blocks/colors.html#make';
     Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP = "A color with the given red, green, blue, and optionally alpha components";
 
