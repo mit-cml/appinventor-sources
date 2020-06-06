@@ -60,19 +60,19 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.BACKPACK_CONFIRM_EMPTY = 'Ar tikrai norite ištuštinti kuprinę?';
     Blockly.Msg.BACKPACK_DOC_TITLE = "Kuprinės informacija";
     Blockly.Msg.SHOW_BACKPACK_DOCUMENTATION = "Rodyti kuprinės dokumentaciją";
-    Blockly.Msg.BACKPACK_DOCUMENTATION = "The Backpack is a copy/paste feature. It allows you to copy blocks from one project or screen " +
-   " and paste them into another project or screen. " +
-   " To copy, you can drag-and-drop blocks into the Backpack. To paste, click on the Backpack icon and " +
-   " drag-and-drop blocks into the workspace." +
-   "</p><p>If you leave MIT App Inventor with blocks left in your backpack, " +
-   " they will be there the next time you login." +
-   "</p><p><a href='/reference/other/backpack.html' target='_blank'>Click Here</a> for further documentation and a 'how to' video.";
+    Blockly.Msg.BACKPACK_DOCUMENTATION = "Kuprinė yra kopijavimo / įklijavimo funkcija. Tai leidžia kopijuoti blokus iš vieno projekto ar ekrano " +
+   " ir įklijuoti juos į kitą projektą ar ekraną. " +
+   " Norėdami nukopijuoti, galite nuvilkti blokus į kuprinę. Norėdami įklijuoti, spustelėkite ant kuprinės piktogramos ir " +
+   " nuvilkite blokus į darbo vietą." +
+   "</p><p>Jei atsijungsite iš „App Inventor“ su kuprinėje paliktais blokais, " +
+   " jie bus ten, kai kitą kartą prisijungsite." +
+   "</p><p><a href='/reference/other/backpack.html' target='_blank'>Spustelėkite čia</a> dėl detalesnės informacijos.";
     Blockly.Msg.ENABLE_GRID = 'Enable Workspace Grid';
     Blockly.Msg.DISABLE_GRID = 'Disable Workspace Grid';
     Blockly.Msg.ENABLE_SNAPPING = 'Enable Snap to Grid';
     Blockly.Msg.DISABLE_SNAPPING = 'Disable Snap to Grid';
-    Blockly.Msg.DISABLE_ALL_BLOCKS = 'Disable All Blocks';
-    Blockly.Msg.ENABLE_ALL_BLOCKS = 'Enable All Blocks';
+    Blockly.Msg.DISABLE_ALL_BLOCKS = 'Išjungti visus blokus';
+    Blockly.Msg.ENABLE_ALL_BLOCKS = 'Įgalinti visus blokus';
     Blockly.Msg.HIDE_ALL_COMMENTS = 'Slėpti visus komentarus';
     Blockly.Msg.SHOW_ALL_COMMENTS = 'Rodyti visus komentarus';
     Blockly.Msg.GENERICIZE_BLOCK = 'Padaryti bendriniu';
