@@ -67,10 +67,10 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
    "</p><p>Jei atsijungsite iš „App Inventor“ su kuprinėje paliktais blokais, " +
    " jie bus ten, kai kitą kartą prisijungsite." +
    "</p><p><a href='/reference/other/backpack.html' target='_blank'>Spustelėkite čia</a> dėl detalesnės informacijos.";
-    Blockly.Msg.ENABLE_GRID = 'Enable Workspace Grid';
-    Blockly.Msg.DISABLE_GRID = 'Disable Workspace Grid';
-    Blockly.Msg.ENABLE_SNAPPING = 'Enable Snap to Grid';
-    Blockly.Msg.DISABLE_SNAPPING = 'Disable Snap to Grid';
+    Blockly.Msg.ENABLE_GRID = 'Įgalinti darbo vietos tinklelį';
+    Blockly.Msg.DISABLE_GRID = 'Išjungti darbo vietos tinklelį';
+    Blockly.Msg.ENABLE_SNAPPING = 'Įgalinti pritraukimą į tinklelį';
+    Blockly.Msg.DISABLE_SNAPPING = 'Išjungti pritraukimą į tinklelį';
     Blockly.Msg.DISABLE_ALL_BLOCKS = 'Išjungti visus blokus';
     Blockly.Msg.ENABLE_ALL_BLOCKS = 'Įgalinti visus blokus';
     Blockly.Msg.HIDE_ALL_COMMENTS = 'Slėpti visus komentarus';
@@ -91,12 +91,12 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.PROCEDURE_CATEGORY = 'Procedūros';
 
 // Warnings/Errors
-    Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "This block cannot be in a definition";
-    Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Select a valid item in the drop down.";
-    Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER = "This is a duplicate event handler for this component.";
-    Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST = "Component does not exist";
-    Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED = "This block is not defined. Delete this block!";
-    Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP = "The break block should be used only within loops";
+    Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "Šis blokas negali būti apibrėžtas";
+    Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Išskleidžiamajame meniu pasirinkite tinkamą elementą.";
+    Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER = "Tai yra šio komponento įvykių tvarkyklės kopija.";
+    Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST = "Komponentas neegzistuoja";
+    Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED = "Šis blokas nėra apibrėžtas. Ištrinkite šį bloką!";
+    Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP = "Lūžio blokas turėtų būti naudojamas tik cikluose";
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = '/reference/blocks/colors.html#basic';
