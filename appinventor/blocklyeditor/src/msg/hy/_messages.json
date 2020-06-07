@@ -160,5 +160,12 @@
     "Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN": "Ցուցակինց ընտրել վավեր արժեք:",
     "Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION": "Այս Բլոկը չի կարող սահմանված լինել",
     "Blockly.Msg.PROCEDURE_CATEGORY": "Ընթացակարգ",
-    "Blockly.Msg.RENAME_VARIABLE_TITLE": "Վերանվանել բոլոր '%1' փոփոխականները -ի."
+    "Blockly.Msg.RENAME_VARIABLE_TITLE": "Վերանվանել բոլոր '%1' փոփոխականները -ի.",
+    "Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_INPUT_SCREENNAME": "էկրանիԱնվանում",
+    "Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_INPUT_STARTVALUE": "սկզբնականԱրժեք",
+    "Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT": "փոխարկել",
+    "Blockly.Msg.LANG_CATEGORY_MATH": "Մաթեմատիկա",
+    "Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TOOLTIP": "Փակել ընթացիկ էկրանը",
+    "Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_COLLAPSED_TEXT": "փակել էկրանը",
+    "Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TITLE": "փակել էկրանը"
 }
