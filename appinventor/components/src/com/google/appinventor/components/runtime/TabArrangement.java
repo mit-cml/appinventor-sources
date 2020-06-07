@@ -75,9 +75,6 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
       @Override
       public void onConfigureTab(TabLayout.Tab tab, int i) {
         tabs.get(i).setTab(tab);
-        Log.d("tabarrangement","on Configure Tab at index "+i);
-        tab.setText("Object " + i);
-        Log.d("tabarrangement","Configured tab text at position: " + i + " " + tab + " to Object " + i);
       }
     }).attach();
     container.$add(this);
@@ -85,11 +82,9 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   
   @Override
   public LinearLayout getView() {
-    Log.d("tabarrangement","Return Linear layout with "+tabLayout.getTabCount()+" tabs");
     LinearLayout layout = new LinearLayout($context());
     layout.setOrientation(LinearLayout.VERTICAL);
     layout.setGravity(Gravity.TOP);
-    layout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.FILL_PARENT));
     if(tabLayout.getParent() != null) {
       ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
     }
@@ -99,10 +94,6 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     }
     layout.addView(viewPager, RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.FILL_PARENT);
     return layout;
-  }
-  
-  public TabLayout getTabLayout() {
-    return tabLayout;
   }
   
   void addTab(Tab tab){
