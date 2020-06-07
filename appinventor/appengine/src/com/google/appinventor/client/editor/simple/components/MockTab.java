@@ -25,7 +25,6 @@ public class MockTab extends MockHVArrangement {
   public static final String PROPERTY_NAME_TEXT = "Text";
   public static final String PROPERTY_NAME_SHOW_TEXT = "ShowText";
   public static final String PROPERTY_NAME_SHOW_IMAGE = "ShowImage";
-  public static final String PROPERTY_NAME_SCROLLABLE = "Scrollable";
   public static final String PROPERTY_NAME_ALIGNVERTICAL = "AlignVertical";
   
   private static final int ANDROID_TAB_HEIGHT = 48;
@@ -108,11 +107,6 @@ public class MockTab extends MockHVArrangement {
       setShowText(newValue);
     } else if (PROPERTY_NAME_SHOW_IMAGE.equals(propertyName)) {
       setShowImage(newValue);
-    } else if (PROPERTY_NAME_SCROLLABLE.equals(propertyName)) {
-      layout.setVAlignmentFlags(ComponentConstants.GRAVITY_TOP + "");
-      rootPanel.getElement().getStyle().setOverflowY("True".equals(newValue) ? Overflow.SCROLL : Overflow.HIDDEN);
-      ((YoungAndroidVerticalAlignmentChoicePropertyEditor)
-          getProperties().getExistingProperty(PROPERTY_NAME_ALIGNVERTICAL).getEditor()).disable();
     }
   }
   
