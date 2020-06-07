@@ -1,5 +1,6 @@
 package com.google.appinventor.components.runtime;
 
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -8,14 +9,21 @@ import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.MediaUtil;
+
+import java.io.IOException;
 
 @DesignerComponent(version = YaVersion.TAB_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT)
 @SimpleObject
 public class Tab extends HVArrangement<ViewGroup> implements Component, ComponentContainer {
+  private static final String LOG_TAG = Tab.class.getSimpleName();
   private com.google.android.material.tabs.TabLayout.Tab tab;
   private String text = "";
   private boolean showText = true;
+  private String iconPath = "";
+  private Drawable icon = null;
+  private boolean showIcon = true;
   
   public Tab (TabArrangement container) {
     super(container, HVArrangement.LAYOUT_ORIENTATION_VERTICAL, new FrameLayout(container.$context()));
@@ -57,6 +65,36 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   @SimpleProperty
   public boolean ShowText() {
     return showText;
+  }
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void Icon(String path) {
+    try {
+      icon = MediaUtil.getBitmapDrawable($form(), path);
+      iconPath = path;
+      tab.setIcon(showIcon ? icon : null);
+    } catch (IOException e) {
+      Log.d(LOG_TAG, "Unable to load icon " + iconPath);
+    }
+  }
+  
+  @SimpleProperty
+  public String Icon() {
+    return iconPath;
+  }
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void ShowIcon(boolean show) {
+    showIcon = show;
+    tab.setIcon(show ? icon : null);
+  }
+  
+  @SimpleProperty
+  public boolean ShowIcon() {
+    return showIcon;
   }
   
   @SimpleEvent

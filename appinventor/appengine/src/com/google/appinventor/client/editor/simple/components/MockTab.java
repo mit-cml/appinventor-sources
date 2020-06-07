@@ -2,15 +2,8 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
-import com.google.gwt.dom.client.Style.Overflow;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.ErrorEvent;
-import com.google.gwt.event.dom.client.ErrorHandler;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -21,10 +14,10 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class MockTab extends MockHVArrangement {
   
   public static final String TYPE = "Tab";
-  public static final String PROPERTY_NAME_IMAGE = "Image";
+  public static final String PROPERTY_NAME_ICON = "Icon";
   public static final String PROPERTY_NAME_TEXT = "Text";
   public static final String PROPERTY_NAME_SHOW_TEXT = "ShowText";
-  public static final String PROPERTY_NAME_SHOW_IMAGE = "ShowImage";
+  public static final String PROPERTY_NAME_SHOW_ICON = "ShowIcon";
   public static final String PROPERTY_NAME_ALIGNVERTICAL = "AlignVertical";
   
   private static final int ANDROID_TAB_HEIGHT = 48;
@@ -99,45 +92,43 @@ public class MockTab extends MockHVArrangement {
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
     
-    if (PROPERTY_NAME_IMAGE.equals(propertyName)) {
-      setImageProperty(newValue);
+    if (PROPERTY_NAME_ICON.equals(propertyName)) {
+      setIconProperty(newValue);
     } else if (PROPERTY_NAME_TEXT.equals(propertyName)) {
       tabLabel.setText(newValue);
     } else if (PROPERTY_NAME_SHOW_TEXT.equals(propertyName)) {
       setShowText(newValue);
-    } else if (PROPERTY_NAME_SHOW_IMAGE.equals(propertyName)) {
-      setShowImage(newValue);
+    } else if (PROPERTY_NAME_SHOW_ICON.equals(propertyName)) {
+      setShowIcon(newValue);
     }
   }
   
   @SuppressWarnings("Convert2Lambda")
-  private void setImageProperty(String newValue) {
-    if (!newValue.isEmpty()) {
-      if (tabImage == null) {
-        tabImage = new Image();
-        tabImage.addErrorHandler(new ErrorHandler() {
-          @Override
-          public void onError(ErrorEvent errorEvent) {
-            refreshForm(true);
-          }
-        });
-        tabImage.addLoadHandler(new LoadHandler() {
-          @Override
-          public void onLoad(LoadEvent loadEvent) {
-            refreshForm(true);
-          }
-        });
-        tabImage.setWidth("24px");
-        tabImage.setHeight("24px");
-      }
-      String url = convertImagePropertyValueToUrl(newValue);
-      if (url == null) {
-        tabImage.removeFromParent();
-      } else {
-        tabImage.setUrl(url);
-        if (!tabImage.isAttached()) {
-          tab.insert(tabImage, 0);
+  private void setIconProperty(String newValue) {
+    if (tabImage == null) {
+      tabImage = new Image();
+      tabImage.addErrorHandler(new ErrorHandler() {
+        @Override
+        public void onError(ErrorEvent errorEvent) {
+          refreshForm(true);
         }
+      });
+      tabImage.addLoadHandler(new LoadHandler() {
+        @Override
+        public void onLoad(LoadEvent loadEvent) {
+          refreshForm(true);
+        }
+      });
+      tabImage.setWidth("24px");
+      tabImage.setHeight("24px");
+    }
+    String url = convertImagePropertyValueToUrl(newValue);
+    if (url == null) {
+      tabImage.removeFromParent();
+    } else {
+      tabImage.setUrl(url);
+      if (!tabImage.isAttached()) {
+        tab.insert(tabImage, 0);
       }
     }
     imagePath = newValue;
@@ -153,14 +144,14 @@ public class MockTab extends MockHVArrangement {
     }
   }
   
-  private void setShowImage(String newValue) {
+  private void setShowIcon(String newValue) {
     if (!imagePath.isEmpty()) {
       if ("True".equals(newValue)) {
         if (!tabImage.isAttached()) {
           tab.insert(tabImage, 0);
         }
       } else {
-        tab.removeFromParent();
+        tabImage.removeFromParent();
       }
     }
   }
