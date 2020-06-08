@@ -307,9 +307,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'Ši komanda skirta grąžinti tekstą ne „App Inventor“ veiklai, o ne „App Inventor“ ekranams.';
 
     Blockly.Msg.LANG_CONTROLS_BREAK_HELPURL = '/reference/blocks/control.html#break';
-    Blockly.Msg.LANG_CONTROLS_BREAK_TITLE = 'break';
+    Blockly.Msg.LANG_CONTROLS_BREAK_TITLE = 'lūžis';
     Blockly.Msg.LANG_CONTROLS_BREAK_INPUT_TEXT = 'reikšmė';
-    Blockly.Msg.LANG_CONTROLS_BREAK_COLLAPSED_TEXT = 'break';
+    Blockly.Msg.LANG_CONTROLS_BREAK_COLLAPSED_TEXT = 'lūžis';
 
 // Logic Blocks.
     Blockly.Msg.LANG_CATEGORY_LOGIC = 'Logika';
@@ -317,13 +317,13 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_EQ = '/reference/blocks/logic.html#=';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_NEQ = '/reference/blocks/logic.html#not=';
     Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ = 'Testuoja ar du dalykai yra lygūs.\n' +
-        'The things being compared can be any things, not only numbers. \n' +
-        'Numbers are considered to be equal to their printed form as strings, \n' +
-        'for example, the number 0 is equal to the text \"0\".  Also, two strings \n' +
-        'that represent numbers are equal if the numbers are equal, for example \n' +
-        '\"1\" is equal to \"01\".';
-    Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ = 'Return true if both inputs are not equal to each other.';
-    Blockly.Msg.LANG_LOGIC_COMPARE_TRANSLATED_NAME = 'logic equal';
+        'Lyginami dalykai gali būti bet kokie dalykai, ne tik skaičiai. \n' +
+        'Skaičiai laikomi lygiais jų spausdintai formai kaip eilutės, pavyzdžiui, \n' +
+        'skaičius 0 yra lygus tekstui „0“.\n' +
+        'Be to, dvi eilutės, kurios žymi skaičius, yra lygios, jei skaičiai yra lygūs, pavyzdžiui, \n' +
+        '„1“ yra lygus „01“.';
+    Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ = 'Grąžina reikšmę „Tiesa“, jei abi įvestys nėra lygios viena kitai..';
+    Blockly.Msg.LANG_LOGIC_COMPARE_TRANSLATED_NAME = 'loginė lygybė';
     Blockly.Msg.LANG_LOGIC_COMPARE_EQ = '=';
     Blockly.Msg.LANG_LOGIC_COMPARE_NEQ = '\u2260';
 
@@ -331,34 +331,34 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_OR = '/reference/blocks/logic.html#or';
     Blockly.Msg.LANG_LOGIC_OPERATION_AND = 'ir';
     Blockly.Msg.LANG_LOGIC_OPERATION_OR = 'arba';
-    Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_AND = 'Return true if all inputs are true.';
-    Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_OR = 'Return true if any input is true.';
+    Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_AND = 'Grąžina reikšmę „Tiesa“, jei visos įvestys yra teisingos.';
+    Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_OR = 'Grąžina reikšmę „Tiesa“, jei kuri nors įvestis yra teisinga.';
 
     Blockly.Msg.LANG_LOGIC_NEGATE_HELPURL = '/reference/blocks/logic.html#not';
     Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT = 'ne';
-    Blockly.Msg.LANG_LOGIC_NEGATE_TOOLTIP = 'Returns true if the input is false.\n' +
-        'Returns false if the input is true.';
+    Blockly.Msg.LANG_LOGIC_NEGATE_TOOLTIP = 'Grąžina reikšmę „Tiesa“, jei įvestis yra neteisinga.\n' +
+        'Grąžina reikšmę „Netiesa“, jei įvestis yra teisinga.';
 
     Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE_HELPURL = '/reference/blocks/logic.html#true';
     Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE_HELPURL = '/reference/blocks/logic.html#false';
     Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE = 'tiesa';
     Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE = 'netiesa';
-    Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_TRUE = 'Returns the boolean true.';
-    Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_FALSE = 'Returns the boolean false.';
+    Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_TRUE = 'Grąžina loginę reikšmę „Tiesa“.';
+    Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_FALSE = 'Grąžina loginę reikšmę „Netiesa“.';
 
 // Math Blocks.
     Blockly.Msg.LANG_CATEGORY_MATH = 'Matematika';
     Blockly.Msg.LANG_MATH_NUMBER_HELPURL = '/reference/blocks/math.html#number';
-    Blockly.Msg.LANG_MATH_NUMBER_TOOLTIP = 'Report the number shown.';
-    Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER = 'number';
+    Blockly.Msg.LANG_MATH_NUMBER_TOOLTIP = 'Informuoja apie rodomą numerį.';
+    Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER = 'numeris';
 
-    Blockly.Msg.LANG_MATH_DECIMAL_FORMAT = 'decimal';
-    Blockly.Msg.LANG_MATH_BINARY_FORMAT = 'binary';
-    Blockly.Msg.LANG_MATH_OCTAL_FORMAT = 'octal';
-    Blockly.Msg.LANG_MATH_HEXADECIMAL_FORMAT = 'hexadecimal';
+    Blockly.Msg.LANG_MATH_DECIMAL_FORMAT = 'dešimtainis';
+    Blockly.Msg.LANG_MATH_BINARY_FORMAT = 'dvejetainis';
+    Blockly.Msg.LANG_MATH_OCTAL_FORMAT = 'aštuntainis';
+    Blockly.Msg.LANG_MATH_HEXADECIMAL_FORMAT = 'šešioliktainis';
     Blockly.Msg.LANG_MATH_NUMBER_RADIX_HELPURL = '/reference/blocks/math.html#number-radix';
-    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TOOLTIP = 'Report the number shown in decimal (base-10) format.';
-    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE = 'number radix';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TOOLTIP = 'Pateikite skaičių dešimtainiu formatu.';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE = 'skaičiaus šaknis';
 
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL = '';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_EQ = '/reference/blocks/math.html#=';
