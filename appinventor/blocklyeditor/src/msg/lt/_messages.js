@@ -232,13 +232,13 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'priešingu atveju';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'jei';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = 'Jei tikrinama sąlyga yra tiesa,'
-        + 'grąžinamas išraiškos įvertinimo rezultatas pridėtas prie „tai-grąžinti“ slot;'
-        + 'otherwise return the result of evaluating the expression attached to the „priešingu atveju-gražinti“ slot;'
-        + 'at most one of the return slot expressions will be evaluated.';
+        + 'grąžinamas išraiškos, pridėtos prie sakinio „tai-grąžinti“, įvertinimo rezultatas;'
+        + 'kitu atveju, grąžinamas išraiškos, pridėtos prie sakinio „priešingu atveju-gražinti“ įvertinimo rezultatas;'
+        + 'bus įvertinta viena iš grąžinimo sakinių išraiškų.';
 
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = '/reference/blocks/control.html#doreturn';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = 'do';
-    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN = 'result';
+    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN = 'rezultatas';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = 'Veikia blokus, esančius „do“ ir grąžina sakinį. Useful if you need to run a procedure before returning a value to a variable.';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'do/result';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = 'do result';
