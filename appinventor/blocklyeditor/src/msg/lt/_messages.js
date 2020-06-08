@@ -414,35 +414,33 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
      Blockly.Msg.LANG_MATH_CHANGE_TOOLTIP = 'Add a number to variable "%1".';*/
 
 
-    Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT = 'square root';
-    Blockly.Msg.LANG_MATH_SINGLE_OP_ABSOLUTE = 'absolute';
-    Blockly.Msg.LANG_MATH_SINGLE_OP_NEG = 'neg';
+    Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT = 'kvadratinė šaknis';
+    Blockly.Msg.LANG_MATH_SINGLE_OP_ABSOLUTE = 'absoliutus';
+    Blockly.Msg.LANG_MATH_SINGLE_OP_NEG = 'neigimas';
     Blockly.Msg.LANG_MATH_SINGLE_OP_LN = 'log';
     Blockly.Msg.LANG_MATH_SINGLE_OP_EXP = 'e^';
-    Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ROOT = 'Return the square root of a number.';
+    Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ROOT = 'Grąžina skaičiaus kvadratinę šaknį.';
     Blockly.Msg.LANG_MATH_SINGLE_HELPURL_ROOT = '/reference/blocks/math.html#sqrt';
-    Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ABS = 'Return the absolute value of a number.';
+    Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ABS = 'Grąžina absoliučią skaičiaus reikšmę.';
     Blockly.Msg.LANG_MATH_SINGLE_HELPURL_ABS = '/reference/blocks/math.html#abs';
-    Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_NEG = 'Return the negation of a number.';
+    Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_NEG = 'Grąžina skaičiaus neigimą.';
     Blockly.Msg.LANG_MATH_SINGLE_HELPURL_NEG = '/reference/blocks/math.html#neg';
-    Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_LN = 'Return the natural logarithm of a number, i.e. the logarithm to the base e (2.71828...)';
+    Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_LN = 'Grąžina natūralų logaritmą, t.y. logaritmą, kurio pagrindas e (2.71828 ...).';
     Blockly.Msg.LANG_MATH_SINGLE_HELPURL_LN ='/reference/blocks/math.html#log';
-    Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_EXP = 'Return e (2.71828...) to the power of a number.';
+    Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_EXP = 'Grąžina e (2.71828...) kaip skaičiaus laipsnį.';
     Blockly.Msg.LANG_MATH_SINGLE_HELPURL_EXP ='/reference/blocks/math.html#e';
     /*Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_POW10 = 'Return 10 to the power of a number.';*/
 
-    Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_ROUND = 'Rounds the input to the nearest integer. ' +
-        'Values with a fraction of .5 are rounded to the nearest even integer.';
+    Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_ROUND = 'Suapvalina įvestį iki artimiausio sveikojo skaičiaus. ' +
+        'Reikšmės, kurių dešimtainė trupmena yra 0,5, suapvalinamos iki artimiausio sveikojo skaičiaus.';
     Blockly.Msg.LANG_MATH_ROUND_HELPURL_ROUND = '/reference/blocks/math.html#round';
-    Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_CEILING = 'Rounds the input to the smallest\n' +
-        'number not less then the input.';
+    Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_CEILING = 'Suapvalina įvestį iki mažiausio skaičiaus ne mažesnio nei įvestis.';
     Blockly.Msg.LANG_MATH_ROUND_HELPURL_CEILING =  '/reference/blocks/math.html#ceiling';
-    Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_FLOOR = 'Rounds the input to the largest\n' +
-        'number not greater then the input.';
+    Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_FLOOR = 'Suapvalina įvestį iki didžiausio skaičiaus, bet ne didesnio už įvestį.';
     Blockly.Msg.LANG_MATH_ROUND_HELPURL_FLOOR =  '/reference/blocks/math.html#floor';
-    Blockly.Msg.LANG_MATH_ROUND_OPERATOR_ROUND = 'round';
-    Blockly.Msg.LANG_MATH_ROUND_OPERATOR_CEILING = 'ceiling';
-    Blockly.Msg.LANG_MATH_ROUND_OPERATOR_FLOOR = 'floor';
+    Blockly.Msg.LANG_MATH_ROUND_OPERATOR_ROUND = 'apvalinimas';
+    Blockly.Msg.LANG_MATH_ROUND_OPERATOR_CEILING = 'apvalinimas į mažesnę pusę';
+    Blockly.Msg.LANG_MATH_ROUND_OPERATOR_FLOOR = 'apvalinimas į didesnę pusę';
 
     Blockly.Msg.LANG_MATH_TRIG_SIN = 'sin';
     Blockly.Msg.LANG_MATH_TRIG_COS = 'cos';
