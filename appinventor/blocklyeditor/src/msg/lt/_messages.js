@@ -1157,7 +1157,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP = "This block is not defined. Delete this block!";
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_HELPURL = '';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN = 'when ';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN = 'kai ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO = 'do';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE = 'when any ';
 
@@ -1166,7 +1166,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_HELPURL = '';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL = 'call ';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT = 'for component';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT = 'komponentui';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_GETTER_HELPURL = '';
 
@@ -1174,12 +1174,12 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_GETTER_TITLE_OF_COMPONENT = 'of component';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_HELPURL = '';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET = 'set ';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_TO = ' to';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET = 'nustatyti ';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_TO = ' į';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_HELPURL = '';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET = 'set ';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO = ' to';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET = 'nustatyti ';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO = ' į';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT = 'of component';
 
 ///////////////////
@@ -1520,8 +1520,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_VOTING_METHODS_HELPURL = '/reference/components/internal.html#votingmethods';
 
 //Misc
-    Blockly.Msg.SHOW_WARNINGS = "Show Warnings";
-    Blockly.Msg.HIDE_WARNINGS = "Hide Warnings";
+    Blockly.Msg.SHOW_WARNINGS = "Rodyti įspėjimus";
+    Blockly.Msg.HIDE_WARNINGS = "Slėpti įspėjimus";
     Blockly.Msg.MISSING_SOCKETS_WARNINGS = "You should fill all of the sockets with blocks";
     Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS = "This block should be connected to an event block or a procedure definition";
     Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE = 'This block needs a value block connected to its socket.';
@@ -1532,7 +1532,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_NETWORK_CONNECTION_ERROR = "Network Connection Error";
     Blockly.Msg.REPL_NETWORK_ERROR = "Network Error";
     Blockly.Msg.REPL_NETWORK_ERROR_RESTART = "Network Error Communicating with Companion.<br />Try restarting the Companion and reconnecting";
-    Blockly.Msg.REPL_OK = "OK";
+    Blockly.Msg.REPL_OK = "Gerai";
     Blockly.Msg.REPL_COMPANION_VERSION_CHECK = "Companion Version Check";
     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE = 'Your Companion App is out of date. Click "OK" to start the update. Watch your ';
     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2 = 'Your Companion App is out of date. Restart the Companion and use it to scan the QRCode below in order to update';
@@ -1541,14 +1541,14 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_APPROVE_UPDATE = " screen because you will be asked to approve the update.";
     Blockly.Msg.REPL_MORE_INFORMATION = "More Information";
     Blockly.Msg.REPL_SECURE_CONNECTION = "<b>Note:</b> You are on a secure connection, legacy mode on the Companion will not work";
-    Blockly.Msg.REPL_NOT_NOW = "Not Now";
+    Blockly.Msg.REPL_NOT_NOW = "Ne dabar;
     Blockly.Msg.REPL_NO_LEGACY = "Legacy Connection mode does not work when MIT App Inventor is loaded over https (secure).";
     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 = "The Companion you are using is out of date.<br/><br/>This Version of App Inventor should be used with Companion version";
     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE = "You are using an out-of-date Companion. You should update the MIT AI2 Companion as soon as possible. If you have auto-update setup in the store, the update will happen by itself shortly.";
     Blockly.Msg.REPL_COMPANION_WRONG_PACKAGE = "The Companion you are using was built for different instance of App Inventor. To obtain the correct companion look on the App Inventor screen under Help->Companion Information menu.";
     Blockly.Msg.REPL_DISMISS = "Dismiss";
     Blockly.Msg.REPL_SOFTWARE_UPDATE = "Software Update";
-    Blockly.Msg.REPL_OK_LOWER = "Ok";
+    Blockly.Msg.REPL_OK_LOWER = "Gerai";
     Blockly.Msg.REPL_GOT_IT = "Got It";
     Blockly.Msg.REPL_UPDATE_INFO = 'The update is now being installed on your device. Watch your device (or emulator) screen and approve the software installation when prompted.<br /><br />IMPORTANT: When the update finishes, choose "DONE" (don\'t click "open"). Then go to App Inventor in your web browser, click the "Connect" menu and choose "Reset Connection".  Then reconnect the device.';
 
@@ -1562,8 +1562,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS = "<br/><i>Note:</i>&nbsp;You will not see another error reported for 5 seconds.";
     Blockly.Msg.REPL_CONNECTING_USB_CABLE = "Connecting via USB Cable";
     Blockly.Msg.REPL_STARTING_EMULATOR = "Starting the Android Emulator<br/>Please wait: This might take a minute or two.";
-    Blockly.Msg.REPL_CONNECTING = "Connecting...";
-    Blockly.Msg.REPL_CANCEL = "Cancel";
+    Blockly.Msg.REPL_CONNECTING = "Jungiamasi...";
+    Blockly.Msg.REPL_CANCEL = "Atšaukti";
     Blockly.Msg.REPL_GIVE_UP = "Give Up";
     Blockly.Msg.REPL_KEEP_TRYING = "Keep Trying";
     Blockly.Msg.REPL_CONNECTION_FAILURE1 = "Connection Failure";
@@ -1581,33 +1581,33 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_VERIFYING_COMPANION = "Verifying that the Companion Started....";
     Blockly.Msg.REPL_CONNECT_TO_COMPANION = "Connect to Companion";
     Blockly.Msg.REPL_TRY_AGAIN1 = "Failed to Connect to the MIT AI2 Companion, try again.";
-    Blockly.Msg.REPL_YOUR_CODE_IS = "Your code is";
-    Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Do You Really?";
+    Blockly.Msg.REPL_YOUR_CODE_IS = "Jūsų kodas yra ";
+    Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Ar tikrai?";
     Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
     Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "Companion Connection Error";
     Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED = "The Companion has disconnected";
     Blockly.Msg.REPL_EMULATOR_ONLY = 'You can only use this option to update the Emulator';
 
 // Messages from Blockly.js
-    Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Are you sure you want to delete all %1 of these blocks?";
+    Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Ar tikrai norite ištrinti visus %1 blokus (-ų)?";
 
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "Generate Yail";
     Blockly.Msg.DO_IT = "Do It";
     Blockly.Msg.DO_IT_DISCONNECTED = 'Do It (Companion not connected)';
-    Blockly.Msg.CLEAR_DO_IT_ERROR = "Clear Error";
+    Blockly.Msg.CLEAR_DO_IT_ERROR = "Išvalyti klaidą";
     Blockly.Msg.CAN_NOT_DO_IT = "Cannot Do it";
     Blockly.Msg.CONNECT_TO_DO_IT = 'You must be connected to the companion or emulator to use "Do It"';
 
 // Clock Component Menu Items
-    Blockly.Msg.TIME_YEARS = "Years";
-    Blockly.Msg.TIME_MONTHS = "Months";
-    Blockly.Msg.TIME_WEEKS = "Weeks";
-    Blockly.Msg.TIME_DAYS = "Days";
-    Blockly.Msg.TIME_HOURS = "Hours";
-    Blockly.Msg.TIME_MINUTES = "Minutes";
-    Blockly.Msg.TIME_SECONDS = "Seconds";
-    Blockly.Msg.TIME_DURATION = "Duration";
+    Blockly.Msg.TIME_YEARS = "Metai";
+    Blockly.Msg.TIME_MONTHS = "Mėnesiai";
+    Blockly.Msg.TIME_WEEKS = "Savaitės";
+    Blockly.Msg.TIME_DAYS = "Dienos";
+    Blockly.Msg.TIME_HOURS = "Valandos";
+    Blockly.Msg.TIME_MINUTES = "Minutės";
+    Blockly.Msg.TIME_SECONDS = "Sekundės";
+    Blockly.Msg.TIME_DURATION = "Trukmė";
 
 // Connection Dialog Messages
     Blockly.Msg.DIALOG_RENDEZVOUS_NEGOTIATING = "15 Rendezvous (please wait)";
@@ -1617,7 +1617,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
 //Blockly.Util.Dialog Messages
     Blockly.Msg.DIALOG_UNBOUND_VAR = 'Unbound Variables';
-    Blockly.Msg.DIALOG_SUBMIT = 'Submit';
+    Blockly.Msg.DIALOG_SUBMIT = 'Pateikti';
     Blockly.Msg.DIALOG_ENTER_VALUES = 'Enter values for:';
   }
 };
