@@ -164,18 +164,18 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_TO = 'iki';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_DO = 'do';
 
-    Blockly.Msg.LANG_CONTROLS_FOR_TOOLTIP = 'Suskaičiuoja nuo pradžios numerio iki pabaigos numerio.\n' +
+    Blockly.Msg.LANG_CONTROLS_FOR_TOOLTIP = 'Suskaičiuoja nuo pradžios iki pabaigos skaičiaus.\n' +
         'Kiekvienam skaičiui nustato dabartinį skaičiaus numerį į\n' +
         'kintamojo "%1", ir tada atlieka kelis sakinius.';
 
     Blockly.Msg.LANG_CONTROLS_FORRANGE_HELPURL = '/reference/blocks/control.html#forrange';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM = 'kiekvienam';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_VAR = 'numeriui';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_VAR = 'skaičiui';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START = 'nuo';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END = 'iki';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP = 'by';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO = 'do';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = 'numeriui intervale';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = 'skaičiui intervale';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX = 'for ';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX = ' intervale';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = 'Veikia blokus esančius sekcijoje „do“ kiekvienai skaitinei reikšmei '
@@ -349,8 +349,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 // Math Blocks.
     Blockly.Msg.LANG_CATEGORY_MATH = 'Matematika';
     Blockly.Msg.LANG_MATH_NUMBER_HELPURL = '/reference/blocks/math.html#number';
-    Blockly.Msg.LANG_MATH_NUMBER_TOOLTIP = 'Informuoja apie rodomą numerį.';
-    Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER = 'numeris';
+    Blockly.Msg.LANG_MATH_NUMBER_TOOLTIP = 'Informuoja apie rodomą skaičių.';
+    Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER = 'skaičius';
 
     Blockly.Msg.LANG_MATH_DECIMAL_FORMAT = 'dešimtainis';
     Blockly.Msg.LANG_MATH_BINARY_FORMAT = 'dvejetainis';
@@ -367,16 +367,14 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_LTE = '/reference/blocks/math.html#lte';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_GT = '/reference/blocks/math.html#gt';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_GTE = '/reference/blocks/math.html#gte';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_EQ = 'Return true if both numbers are equal to each other.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ = 'Return true if both numbers are not equal to each other.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LT = 'Return true if the first number is smaller\n' +
-        'than the second number.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LTE = 'Return true if the first number is smaller\n' +
-        'than or equal to the second number.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GT = 'Return true if the first number is greater\n' +
-        'than the second number.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GTE = 'Return true if the first number is greater\n' +
-        'than or equal to the second number.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_EQ = 'Grąžina reikšmę „Tiesa“, jei abu skaičiai yra lygūs vienas kitam.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ = 'Grąžina reikšmę „Tiesa“, jei abu skaičiai nėra lygūs vienas kitam..';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LT = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra mažesnis už antrą.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LTE = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra mažesnis\n' +
+        'arba lygus antram skaičiui.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GT = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra didesnis už antrą.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GTE = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra didesnis\n' +
+        'arba lygus antram skaičiui.';
     Blockly.Msg.LANG_MATH_COMPARE_EQ = '=';
     Blockly.Msg.LANG_MATH_COMPARE_NEQ = '\u2260';
     Blockly.Msg.LANG_MATH_COMPARE_LT = '<';
@@ -392,9 +390,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_BITWISE_HELPURL_AND = '/reference/blocks/math.html#bitwise_and';
     Blockly.Msg.LANG_MATH_BITWISE_HELPURL_IOR = '/reference/blocks/math.html#bitwise_ior';
     Blockly.Msg.LANG_MATH_BITWISE_HELPURL_XOR = '/reference/blocks/math.html#bitwise_xor';
-    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_ADD = 'Return the sum of the two numbers.';
-    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MINUS = 'Return the difference of the two numbers.';
-    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MULTIPLY = 'Return the product of the two numbers.';
+    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_ADD = 'Grąžina dviejų skaičių sumą.';
+    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MINUS = 'Grąžina dviejų skaičių skirtumą.';
+    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MULTIPLY = 'Grąžina dviejų skaičių sandaugą.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_DIVIDE = 'Return the quotient of the two numbers.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_POWER = 'Return the first number raised to\n' +
         'the power of the second number.';
