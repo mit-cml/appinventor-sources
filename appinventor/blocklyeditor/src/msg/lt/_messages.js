@@ -393,9 +393,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_ADD = 'Grąžina dviejų skaičių sumą.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MINUS = 'Grąžina dviejų skaičių skirtumą.';
     Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MULTIPLY = 'Grąžina dviejų skaičių sandaugą.';
-    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_DIVIDE = 'Return the quotient of the two numbers.';
-    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_POWER = 'Return the first number raised to\n' +
-        'the power of the second number.';
+    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_DIVIDE = 'Grąžina dviejų skaičių dalmenį.';
+    Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_POWER = 'Grąžina reikšmę, kai pirmas skaičius pakeltas antro skaičiaus laipniu.';
     Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND = 'Return the bitwise AND of the two numbers.';
     Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_IOR = 'Return the bitwise inclusive OR of the two numbers.';
     Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_XOR = 'Return the bitwise exclusive OR of the two numbers.';
