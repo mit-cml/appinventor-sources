@@ -661,13 +661,13 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL = '/reference/blocks/text.html#contains';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'contains';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = 'text';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = 'tekstas';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = 'piece';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = 'contains  text %1 piece %2';
     Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = 'Tests whether the piece is contained in the text.';
 
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL = '';
-    Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = 'text';
+    Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = 'tekstas';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT = 'at';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT_LIST = 'at (list)';
     Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST = 'split at first';
@@ -716,17 +716,17 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_SPLIT_AT_TOOLTIP = 'Split the text into pieces separated by spaces.';
 
     Blockly.Msg.LANG_TEXT_SEGMENT_HELPURL = '/reference/blocks/text.html#segment';
-    Blockly.Msg.LANG_TEXT_SEGMENT_TITLE_SEGMENT = 'segment';
-    Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_START = 'start';
-    Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_LENGTH = 'length';
-    Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_TEXT = 'text';
+    Blockly.Msg.LANG_TEXT_SEGMENT_TITLE_SEGMENT = 'segmentas';
+    Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_START = 'pradžia';
+    Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_LENGTH = 'ilgis';
+    Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_TEXT = 'tekstas';
     Blockly.Msg.LANG_TEXT_SEGMENT_INPUT = 'segment  text %1 start %2 length %3';
     Blockly.Msg.LANG_TEXT_SEGMENT_AT_TOOLTIP = 'Extracts the segment of the given length from the given text\n'
         + 'starting from the given text starting from the given position. Position\n'
         + '1 denotes the beginning of the text.';
 
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_HELPURL = '/reference/blocks/text.html#replaceall';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_SEGMENT = 'segment';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_SEGMENT = 'segmentas';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_TEXT = 'text';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL = 'replace all';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_REPLACEMENT = 'replacement';
@@ -735,12 +735,12 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'of the segment with the replacement.';
 
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_HELPURL = '/reference/blocks/text.html#isstring';
-    Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE = 'is a string?';
+    Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE = 'yra eilutė?';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING = 'thing';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = 'Returns true if <code>thing</code> is a string.';
 
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL = '';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT = 'in text';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT = 'tekste';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX = 'preferring';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER = 'order';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST = 'longest string first';
