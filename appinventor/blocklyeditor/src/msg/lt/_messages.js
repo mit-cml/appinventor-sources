@@ -209,9 +209,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_HELPURL = 'http://en.wikipedia.org/wiki/Control_flow';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_INPUT_OFLOOP = 'ciklo';
-    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK = 'break out';
+    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK = 'nutraukti';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE = 'tęsti su kita iteracija';
-    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK = 'Break out of the containing loop.';
+    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK = 'Nutraukti besitęsiantį ciklą.';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE = 'Praleidžia likusią šio ciklo dalį ir \n' +
         'tęsia su kita iteracija.';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_WARNING = 'Įspėjimas:\n' +
@@ -232,8 +232,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'priešingu atveju';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'jei';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = 'Jei tikrinama sąlyga yra tiesa,'
-        + 'return the result of evaluating the expression attached to the „tai-grąžina“ slot;'
-        + 'otherwise return the result of evaluating the expression attached to the „priešingu atveju-gražina“ slot;'
+        + 'grąžinamas išraiškos įvertinimo rezultatas pridėtas prie „tai-grąžinti“ slot;'
+        + 'otherwise return the result of evaluating the expression attached to the „priešingu atveju-gražinti“ slot;'
         + 'at most one of the return slot expressions will be evaluated.';
 
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = '/reference/blocks/control.html#doreturn';
