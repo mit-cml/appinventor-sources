@@ -596,8 +596,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_HELPURL = '/reference/blocks/text.html#compare';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'palyginti tekstus';
-    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = 'Tests whether text1 is lexicographically less than text2.\n'
-        + 'if one text is the prefix of the other, the shorter text is\n'
+    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = 'Tikrina ar tekstas1 yra leksikografiškai mažesnis nei tekstas2.\n'
+        + 'If one text is the prefix of the other, the shorter text is\n'
         + 'considered smaller. Uppercase characters precede lowercase characters.';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL = 'Tests whether text strings are identical, ie., have the same\n'
         + 'characters in the same order. This is different from ordinary =\n'
