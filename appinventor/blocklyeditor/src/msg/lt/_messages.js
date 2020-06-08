@@ -303,9 +303,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE = 'uždaryti ekraną su grynuoju tekstu';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT = 'tekstas';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_COLLAPSED_TEXT = 'uždaryti ekraną su grynuoju tekstu';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP = 'Closes the current screen and returns text to the app that '
-        + 'opened this one. This command is for returning text to non-App Inventor activities, not to App Inventor screens. '
-        + 'For App Inventor Screens, as in multiple screen apps, use Close Screen with Value, not Close Screen with Plain Text.';
+    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP = 'Uždaromas dabartinis ekranas ir grąžinamas tekstas programai, kuri jį atidarė. '
+        + 'Ši komanda skirta grąžinti tekstą ne „App Inventor“ veiklai, o ne „App Inventor“ ekranams.';
 
     Blockly.Msg.LANG_CONTROLS_BREAK_HELPURL = '/reference/blocks/control.html#break';
     Blockly.Msg.LANG_CONTROLS_BREAK_TITLE = 'break';
@@ -317,7 +316,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL = 'http://en.wikipedia.org/wiki/Inequality_(mathematics)';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_EQ = '/reference/blocks/logic.html#=';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_NEQ = '/reference/blocks/logic.html#not=';
-    Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ = 'Tests whether two things are equal. \n' +
+    Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ = 'Testuoja ar du dalykai yra lygūs.\n' +
         'The things being compared can be any things, not only numbers. \n' +
         'Numbers are considered to be equal to their printed form as strings, \n' +
         'for example, the number 0 is equal to the text \"0\".  Also, two strings \n' +
