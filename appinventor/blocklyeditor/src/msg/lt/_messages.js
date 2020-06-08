@@ -472,8 +472,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN = 'min';
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX = 'max';
-    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Return the smallest of its arguments..';
-    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Return the largest of its arguments..';
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Grąžina mažiausią iš argumentų.';
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Grąžina didžiausią iš argumentų.';
     Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MIN = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#min';
     Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MAX = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#max';
 
@@ -489,10 +489,10 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_QUOTIENT = '/reference/blocks/math.html#quotient';
 
     Blockly.Msg.LANG_MATH_RANDOM_INT_HELPURL = '/reference/blocks/math.html#randomint';
-    Blockly.Msg.LANG_MATH_RANDOM_INT_TITLE_RANDOM = 'random integer';
+    Blockly.Msg.LANG_MATH_RANDOM_INT_TITLE_RANDOM = 'atsitiktinis sveikasis skaičius';
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_FROM = 'nuo';
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO = 'iki';
-    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT = 'random integer from %1 to %2';
+    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT = 'atsitiktinis sveikasis skaičius nuo %1 iki %2';
     Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP = 'Returns a random integer between the upper bound\n' +
         'and the lower bound. The bounds will be clipped to be smaller\n' +
         'than 2**30.';
@@ -519,15 +519,15 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_HELPURL = '/reference/blocks/math.html#format';
     Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TITLE = 'format as decimal';
-    Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT_NUM = 'number';
+    Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT_NUM = 'skaičius';
     Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT_PLACES = 'places';
     Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT = 'format as decimal number %1 places %2';
     Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TOOLTIP = 'Returns the number formatted as a decimal\n' +
         'with a specified number of places.';
 
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_HELPURL = '/reference/blocks/math.html#isnumber';
-    Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM = 'is number?';
-    Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP = 'Tests if something is a number.';
+    Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM = 'yra skaičius?';
+    Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP = 'Testuoja ar tai yra skaičius.';
 
     Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = '/reference/blocks/math.html#isnumber';
     Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM = 'is Base 10?';
@@ -538,7 +538,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP = 'Tests if something is a string that represents a hexadecimal number.';
 
     Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = '/reference/blocks/math.html#isnumber';
-    Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = 'is binary?';
+    Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = 'yra dvejetainis?';
     Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP = 'Tests if something is a string that represents a binary number.';
 
 
@@ -562,7 +562,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 // Text Blocks.
     Blockly.Msg.LANG_CATEGORY_TEXT = 'Tekstas';
     Blockly.Msg.LANG_TEXT_TEXT_HELPURL = '/reference/blocks/text.html#string';
-    Blockly.Msg.LANG_TEXT_TEXT_TOOLTIP = 'A text string.';
+    Blockly.Msg.LANG_TEXT_TEXT_TOOLTIP = 'Teksto eilutė.';
     Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE = '\u201C';
     Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE = '\u201D';
 
@@ -572,7 +572,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'If there are no inputs, makes an empty text.';
     Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN = 'join';
 
-    Blockly.Msg.LANG_TEXT_JOIN_ITEM_TITLE_ITEM = 'string';
+    Blockly.Msg.LANG_TEXT_JOIN_ITEM_TITLE_ITEM = 'eilutė';
     Blockly.Msg.LANG_TEXT_JOIN_ITEM_TOOLTIP = '';
 
     Blockly.Msg.LANG_TEXT_APPEND_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
@@ -582,12 +582,12 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_APPEND_TOOLTIP = 'Append some text to variable "%1".';
 
     Blockly.Msg.LANG_TEXT_LENGTH_HELPURL = '/reference/blocks/text.html#length';
-    Blockly.Msg.LANG_TEXT_LENGTH_INPUT_LENGTH = 'length';
+    Blockly.Msg.LANG_TEXT_LENGTH_INPUT_LENGTH = 'ilgis';
     Blockly.Msg.LANG_TEXT_LENGTH_TOOLTIP = 'Returns number of letters (including spaces)\n' +
         'in the provided text.';
 
     Blockly.Msg.LANG_TEXT_ISEMPTY_HELPURL = '/reference/blocks/text.html#isempty';
-    Blockly.Msg.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY = 'is empty';
+    Blockly.Msg.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY = 'yra tuščias';
     Blockly.Msg.LANG_TEXT_ISEMPTY_TOOLTIP = 'Returns true if the length of the\n' + 'text is 0, false otherwise.';
 
     Blockly.Msg.LANG_TEXT_COMPARE_LT = ' <';
@@ -595,7 +595,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_COMPARE_NEQ = ' ≠';
     Blockly.Msg.LANG_TEXT_COMPARE_GT = ' >';
     Blockly.Msg.LANG_TEXT_COMPARE_HELPURL = '/reference/blocks/text.html#compare';
-    Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'compare texts';
+    Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'palyginti tekstus';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = 'Tests whether text1 is lexicographically less than text2.\n'
         + 'if one text is the prefix of the other, the shorter text is\n'
         + 'considered smaller. Uppercase characters precede lowercase characters.';
