@@ -63,7 +63,7 @@
 			</classpath>
 		</ai.javac>
 		<java failonerror="true" classname="msg.BlocklyTranslationGenerator">
-			<arg line="${src.dir}/msg/msg ${lib.dir}/blockly/msg/json ${src.dir}/msg" />
+			<arg line="${src.dir}/msg/ai_blockly ${lib.dir}/blockly/msg/json ${src.dir}/msg" />
 			<classpath>
 				<pathelement location="${BlocklyTranslator-class.dir}"/>
 				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
