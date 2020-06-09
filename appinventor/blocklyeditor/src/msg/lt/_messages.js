@@ -1573,7 +1573,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_HELPER_Q = "Pagelbiklis?";
     Blockly.Msg.REPL_HELPER_NOT_RUNNING = 'Neatrodo, kad yra paleistas „aiStarter“ pagelbiklis<br /><a href="http://appinventor.mit.edu" target="_blank">Reikia pagalbos?</a>';
     Blockly.Msg.REPL_USB_CONNECTED_WAIT = "USB prijungtas, laukite ";
-    Blockly.Msg.REPL_SECONDS_ENSURE_RUNNING = " sekundžes (-ių), kad įsitikintumėte, jog viskas veikia.";
+    Blockly.Msg.REPL_SECONDS_ENSURE_RUNNING = " sekundes (-džių), kad įsitikintumėte, jog viskas veikia.";
     Blockly.Msg.REPL_EMULATOR_STARTED = "Emuliatorius paleistas, laukite ";
     Blockly.Msg.REPL_STARTING_COMPANION_ON_PHONE = "Paleiskite „AI2 Companion“ programą prijungtame telefone.";
     Blockly.Msg.REPL_STARTING_COMPANION_IN_EMULATOR = "Paleiskite programą „AI2 Companion“ emuliatoriuje.";
