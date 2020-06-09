@@ -902,7 +902,7 @@ public class Ode implements EntryPoint {
       }
 
       private String makeUri(String base) {
-        String[] params = new String[] { "locale", "repo", "galleryId" };
+        String[] params = new String[] { "locale", "repo", "galleryId", "autoload" };
         String separator = "?";
         StringBuilder sb = new StringBuilder(base);
         for (String param : params) {

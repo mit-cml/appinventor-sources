@@ -8,6 +8,7 @@
    String locale = request.getParameter("locale");
    String redirect = request.getParameter("redirect");
    String repo = (String) request.getAttribute("repo");
+   String autoload = (String) request.getAttribute("autoload");
    String galleryId = (String) request.getAttribute("galleryId");
    if (locale == null) {
        locale = "en";
@@ -43,6 +44,10 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
    %>
 <input type=hidden name=repo value="<%= repo %>">
 <% }
+   if (autoload != null && !autoload.equals("")) {
+   %>
+<input type=hidden name=autoload value="<%= autoload %>">
+<% }
    if (galleryId != null && !galleryId.equals("")) {
    %>
 <input type=hidden name=galleryId value="<%= galleryId %>">
@@ -59,6 +64,7 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
 <%    if (useGoogleLabel != null && useGoogleLabel.equals("true")) { %>
 <center><p><a href="<%= new UriBuilder("/login/google")
                               .add("locale", locale)
+                              .add("autoload", autoload)
                               .add("repo", repo)
                               .add("galleryId", galleryId)
                               .add("redirect", redirect).build() %>" style="text-decoration:none;">Click Here to use your Google Account to login</a></p></center>
@@ -67,16 +73,19 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
 <center><a href="<%= new UriBuilder("/login")
                            .add("locale", "zh_CN")
                            .add("repo", repo)
+                           .add("autoload", autoload)
                            .add("galleryId", galleryId)
                            .add("redirect", redirect).build() %>"  style="text-decoration:none;" >中文</a>&nbsp;
 <a href="<%= new UriBuilder("/login")
                            .add("locale", "pt")
                            .add("repo", repo)
+                           .add("autoload", autoload)
                            .add("galleryId", galleryId)
                            .add("redirect", redirect).build() %>"  style="text-decoration:none;" >Português</a>&nbsp;
 <a href="<%= new UriBuilder("/login")
                    .add("locale", "en")
                    .add("repo", repo)
+                   .add("autoload", autoload)
                    .add("galleryId", galleryId)
                    .add("redirect", redirect).build() %>"  style="text-decoration:none;" >English</a></center>
 <p></p>
