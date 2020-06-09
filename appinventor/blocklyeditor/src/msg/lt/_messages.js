@@ -1523,14 +1523,14 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.SHOW_WARNINGS = "Rodyti įspėjimus";
     Blockly.Msg.HIDE_WARNINGS = "Slėpti įspėjimus";
     Blockly.Msg.MISSING_SOCKETS_WARNINGS = "You should fill all of the sockets with blocks";
-    Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS = "This block should be connected to an event block or a procedure definition";
+    Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS = "Šis blokas turėtų būti sujungtas su įvykių bloku arba procedūros apibrėžimu.";
     Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE = 'This block needs a value block connected to its socket.';
     Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT = 'You need to provide a valid component to this block\'s "%1" socket.';
 
 // Messages from replmgr.js
     Blockly.Msg.REPL_ERROR_FROM_COMPANION = "Error from Companion";
     Blockly.Msg.REPL_NETWORK_CONNECTION_ERROR = "Network Connection Error";
-    Blockly.Msg.REPL_NETWORK_ERROR = "Network Error";
+    Blockly.Msg.REPL_NETWORK_ERROR = "Tinklo klaida";
     Blockly.Msg.REPL_NETWORK_ERROR_RESTART = "Network Error Communicating with Companion.<br />Try restarting the Companion and reconnecting";
     Blockly.Msg.REPL_OK = "Gerai";
     Blockly.Msg.REPL_COMPANION_VERSION_CHECK = "Companion Version Check";
@@ -1547,7 +1547,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE = "You are using an out-of-date Companion. You should update the MIT AI2 Companion as soon as possible. If you have auto-update setup in the store, the update will happen by itself shortly.";
     Blockly.Msg.REPL_COMPANION_WRONG_PACKAGE = "The Companion you are using was built for different instance of App Inventor. To obtain the correct companion look on the App Inventor screen under Help->Companion Information menu.";
     Blockly.Msg.REPL_DISMISS = "Dismiss";
-    Blockly.Msg.REPL_SOFTWARE_UPDATE = "Software Update";
+    Blockly.Msg.REPL_SOFTWARE_UPDATE = "Programinės įrangos atnaujinimas";
     Blockly.Msg.REPL_OK_LOWER = "Gerai";
     Blockly.Msg.REPL_GOT_IT = "Got It";
     Blockly.Msg.REPL_UPDATE_INFO = 'The update is now being installed on your device. Watch your device (or emulator) screen and approve the software installation when prompted.<br /><br />IMPORTANT: When the update finishes, choose "DONE" (don\'t click "open"). Then go to App Inventor in your web browser, click the "Connect" menu and choose "Reset Connection".  Then reconnect the device.';
@@ -1586,7 +1586,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
     Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "Companion Connection Error";
     Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED = "The Companion has disconnected";
-    Blockly.Msg.REPL_EMULATOR_ONLY = 'You can only use this option to update the Emulator';
+    Blockly.Msg.REPL_EMULATOR_ONLY = 'Šią parinktį galite naudoti tik norėdami atnaujinti emuliatorių.';
 
 // Messages from Blockly.js
     Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Ar tikrai norite ištrinti visus %1 blokus (-ų)?";
