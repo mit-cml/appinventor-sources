@@ -1522,10 +1522,10 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 //Misc
     Blockly.Msg.SHOW_WARNINGS = "Rodyti įspėjimus";
     Blockly.Msg.HIDE_WARNINGS = "Slėpti įspėjimus";
-    Blockly.Msg.MISSING_SOCKETS_WARNINGS = "You should fill all of the sockets with blocks";
+    Blockly.Msg.MISSING_SOCKETS_WARNINGS = "Visus lizdus turėtumėte užpildyti blokais";
     Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS = "Šis blokas turėtų būti sujungtas su įvykių bloku arba procedūros apibrėžimu.";
-    Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE = 'This block needs a value block connected to its socket.';
-    Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT = 'You need to provide a valid component to this block\'s "%1" socket.';
+    Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE = 'Šiam blokui reikia reikšmės bloko, prijungto prie jo lizdo.';
+    Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT = 'Turite pateikti galiojantį komponentą bloko "%1" lizdui.';
 
 // Messages from replmgr.js
     Blockly.Msg.REPL_ERROR_FROM_COMPANION = "Klaida iš „AI2 Companion“";
