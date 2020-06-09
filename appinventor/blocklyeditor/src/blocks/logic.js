@@ -162,6 +162,21 @@ Blockly.Blocks['logic_operation'] = {
       Blockly.Blocks.logic_operation.OPERATORS, function(op) {
         return thisBlock.updateFields(op);
       });
+    /**
+     * Reference to the last mutator workspace so we can update the container block's label when
+     * the dropdown value changes.
+     *
+     * @type {Blockly.WorkspaceSvg}
+     */
+    this.lastMutator = null;
+    // NOTE(ewp): Blockly doesn't trigger the validation function when the field is set during
+    // load, so we override setValue here to make sure that the additional and/or labels (if
+    // present) match the dropdown's value.
+    var oldSetValue = this.opField.setValue;
+    this.opField.setValue = function(newValue) {
+      oldSetValue.call(this, newValue);
+      thisBlock.updateFields(newValue);
+    };
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('A')
@@ -212,6 +227,7 @@ Blockly.Blocks['logic_operation'] = {
       }
       connection = itemBlock.nextConnection;
     }
+    this.lastMutator = workspace;
     return containerBlock;
   },
   compose: function(containerBlock) {
@@ -318,6 +334,13 @@ Blockly.Blocks['logic_operation'] = {
       for (var input, i = 2; (input = this.inputList[i]); i++) {
         input.fieldRow[0].setText(text);
       }
+    }
+    // Update the mutator container block if the mutator is open
+    if (this.lastMutator) {
+      var mutatorBlock = this.lastMutator.getTopBlocks()[0];
+      var title = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
+        Blockly.Msg.LANG_LOGIC_OPERATION_OR;
+      mutatorBlock.setFieldValue(title, 'CONTAINER_TEXT');
     }
     return op;
   },
