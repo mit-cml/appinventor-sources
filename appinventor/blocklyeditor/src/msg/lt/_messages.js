@@ -200,7 +200,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     // Used by the typeblock system.
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE = 'kiekvienam žodyne';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP =
-        'Veikia blokus esančius sekcijoje „do“ kiekvienam rakto reikšmės įrašui žodyne.'
+        'Veikia blokus, esančius „atlikti“, kiekvienam rakto reikšmės įrašui žodyne.'
         + ' Nurodykite dabartinio žodyno elemento raktą / reikšmę naudodami duotus kintamųjų pavadinimus.';
 
     Blockly.Msg.LANG_CONTROLS_GET_HELPURL = '/reference/blocks/control.html#get';
@@ -221,8 +221,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = 'testas';
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'kol';
-    Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Veikia blokus, esančius sekcijoje „atlikti“ kol testas yra '
-        + 'teisingas.';
+    Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Veikia blokus, esančius sekcijoje „atlikti“ kol testas yra teisingas.';
 
     Blockly.Msg.LANG_CONTROLS_CHOOSE_HELPURL = '/reference/blocks/control.html#choose';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE = 'jei';
