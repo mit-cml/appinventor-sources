@@ -1539,29 +1539,29 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_EMULATORS = "emulator's";
     Blockly.Msg.REPL_DEVICES = "device's";
     Blockly.Msg.REPL_APPROVE_UPDATE = " screen because you will be asked to approve the update.";
-    Blockly.Msg.REPL_MORE_INFORMATION = "More Information";
+    Blockly.Msg.REPL_MORE_INFORMATION = "Daugiau informacijos";
     Blockly.Msg.REPL_SECURE_CONNECTION = "<b>Note:</b> You are on a secure connection, legacy mode on the Companion will not work";
     Blockly.Msg.REPL_NOT_NOW = "Ne dabar;
     Blockly.Msg.REPL_NO_LEGACY = "Legacy Connection mode does not work when MIT App Inventor is loaded over https (secure).";
     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 = "The Companion you are using is out of date.<br/><br/>This Version of App Inventor should be used with Companion version";
     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE = "You are using an out-of-date Companion. You should update the MIT AI2 Companion as soon as possible. If you have auto-update setup in the store, the update will happen by itself shortly.";
     Blockly.Msg.REPL_COMPANION_WRONG_PACKAGE = "The Companion you are using was built for different instance of App Inventor. To obtain the correct companion look on the App Inventor screen under Help->Companion Information menu.";
-    Blockly.Msg.REPL_DISMISS = "Dismiss";
+    Blockly.Msg.REPL_DISMISS = "Atmesti";
     Blockly.Msg.REPL_SOFTWARE_UPDATE = "Programinės įrangos atnaujinimas";
     Blockly.Msg.REPL_OK_LOWER = "Gerai";
     Blockly.Msg.REPL_GOT_IT = "Got It";
     Blockly.Msg.REPL_UPDATE_INFO = 'The update is now being installed on your device. Watch your device (or emulator) screen and approve the software installation when prompted.<br /><br />IMPORTANT: When the update finishes, choose "DONE" (don\'t click "open"). Then go to App Inventor in your web browser, click the "Connect" menu and choose "Reset Connection".  Then reconnect the device.';
 
-    Blockly.Msg.REPL_UPDATE_NO_UPDATE = "No Update is Available";
-    Blockly.Msg.REPL_UPDATE_NO_CONNECTION = "You must be connected to a Companion to update it";
-    Blockly.Msg.REPL_UNABLE_TO_UPDATE = "Unable to send update to device/emulator";
-    Blockly.Msg.REPL_UNABLE_TO_LOAD = "Unable to load update from App Inventor server";
-    Blockly.Msg.REPL_UNABLE_TO_LOAD_NO_RESPOND = "Unable to load update from App Inventor server (server not responding)";
-    Blockly.Msg.REPL_NOW_DOWNLOADING = "We are now downloading update from the App Inventor Server, please standby";
-    Blockly.Msg.REPL_RUNTIME_ERROR = "Runtime Error";
-    Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS = "<br/><i>Note:</i>&nbsp;You will not see another error reported for 5 seconds.";
+    Blockly.Msg.REPL_UPDATE_NO_UPDATE = "Nėra atnaujinimo";
+    Blockly.Msg.REPL_UPDATE_NO_CONNECTION = "Norėdami atnaujinti, turite būti prisijungę prie „AI2 Companion“";
+    Blockly.Msg.REPL_UNABLE_TO_UPDATE = "Neįmanoma nusiųsti atnaujinimo į įrenginį / emuliatorių";
+    Blockly.Msg.REPL_UNABLE_TO_LOAD = "Neįmanoma įkelti atnaujinimo iš „App Inventor“ serverio";
+    Blockly.Msg.REPL_UNABLE_TO_LOAD_NO_RESPOND = "Neįmanoma įkelti atnaujinimo iš „App Inventor“ serverio (serveris neatsako)";
+    Blockly.Msg.REPL_NOW_DOWNLOADING = "Dabar siunčiame naujinimą iš „App Inventor“ serverio, prašome palaukti.";
+    Blockly.Msg.REPL_RUNTIME_ERROR = "Vykdymo klaida";
+    Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS = "<br/><i>Pastaba:</i>&nbsp;Nematysite kitos klaidos pranešimo 5 sekundes.";
     Blockly.Msg.REPL_CONNECTING_USB_CABLE = "Connecting via USB Cable";
-    Blockly.Msg.REPL_STARTING_EMULATOR = "Starting the Android Emulator<br/>Please wait: This might take a minute or two.";
+    Blockly.Msg.REPL_STARTING_EMULATOR = "Paleidžiamas „Android“ emuliatorius<br/>Prašome palaukti: tai gali užtrukti minutę ar dvi.";
     Blockly.Msg.REPL_CONNECTING = "Jungiamasi...";
     Blockly.Msg.REPL_CANCEL = "Atšaukti";
     Blockly.Msg.REPL_GIVE_UP = "Give Up";
@@ -1579,24 +1579,24 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_STARTING_COMPANION_IN_EMULATOR = "Starting the Companion App in the emulator.";
     Blockly.Msg.REPL_COMPANION_STARTED_WAITING = "„AI2 Companion“ starting, waiting ";
     Blockly.Msg.REPL_VERIFYING_COMPANION = "Verifying that the Companion Started....";
-    Blockly.Msg.REPL_CONNECT_TO_COMPANION = "Connect to „AI2 Companion“";
-    Blockly.Msg.REPL_TRY_AGAIN1 = "Failed to Connect to the MIT AI2 Companion, try again.";
+    Blockly.Msg.REPL_CONNECT_TO_COMPANION = "Prisijungti prie „AI2 Companion“";
+    Blockly.Msg.REPL_TRY_AGAIN1 = "Nepavyko prisijungti prie „AI2 Companion“, bandykite dar kartą.";
     Blockly.Msg.REPL_YOUR_CODE_IS = "Jūsų kodas yra ";
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Ar tikrai?";
-    Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
-    Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "„AI2 Companion“ Connection Error";
-    Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED = "„AI2 Companion“ has disconnected";
+    Blockly.Msg.REPL_FACTORY_RESET = 'Bus bandoma atkurti emuliatoriaus „gamyklinę“ būseną. Jei anksčiau atnaujinote emuliatoriuje įdiegtą „AI2 Companion“, greičiausiai turėsite tai padaryti dar kartą.';
+    Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "„AI2 Companion“ ryšio klaida";
+    Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED = "„AI2 Companion“ atsijungė";
     Blockly.Msg.REPL_EMULATOR_ONLY = 'Šią parinktį galite naudoti tik norėdami atnaujinti emuliatorių.';
 
 // Messages from Blockly.js
     Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Ar tikrai norite ištrinti visus %1 blokus (-ų)?";
 
 // Blocklyeditor.js
-    Blockly.Msg.GENERATE_YAIL = "Generuoti Yail";
+    Blockly.Msg.GENERATE_YAIL = "Generuoti YAIL";
     Blockly.Msg.DO_IT = "Atlikti tai";
     Blockly.Msg.DO_IT_DISCONNECTED = 'Atlikti tai („AI2 Companion“ neprisijungęs)';
     Blockly.Msg.CLEAR_DO_IT_ERROR = "Išvalyti klaidą";
-    Blockly.Msg.CAN_NOT_DO_IT = "Negalima atlikti to";
+    Blockly.Msg.CAN_NOT_DO_IT = "Negalima atlikti";
     Blockly.Msg.CONNECT_TO_DO_IT = 'Norėdami naudoti „Atlikti tai“, turite būti prisijungę prie „AI2 Companion“ ar emuliatoriaus.';
 
 // Clock Component Menu Items
@@ -1616,9 +1616,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.DIALOG_FOUND_COMPANION = "Aptikti „AI2 Companion“";
 
 //Blockly.Util.Dialog Messages
-    Blockly.Msg.DIALOG_UNBOUND_VAR = 'Unbound Variables';
+    Blockly.Msg.DIALOG_UNBOUND_VAR = 'Nepriklausomos reikšmės';
     Blockly.Msg.DIALOG_SUBMIT = 'Pateikti';
-    Blockly.Msg.DIALOG_ENTER_VALUES = 'Enter values for:';
+    Blockly.Msg.DIALOG_ENTER_VALUES = 'Įveskite reiškmes:';
   }
 };
 
