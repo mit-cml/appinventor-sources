@@ -1099,31 +1099,31 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TITLE_LOCAL_NAMES = 'local names';
     Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TOOLTIP = '';
 
-    Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_ARG_TITLE_NAME = 'name';
+    Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_ARG_TITLE_NAME = 'pavadinimas';
     Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_ARG_DEFAULT_VARIABLE = 'x';
 
 // Procedures Blocks.
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_HELPURL = '/reference/blocks/procedures.html#do';
-    Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DEFINE = 'to';
-    Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_PROCEDURE = 'procedure';
-    Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO = 'do';
-    Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_COLLAPSED_PREFIX = 'to ';
+    Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DEFINE = 'į';
+    Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_PROCEDURE = 'procedūra';
+    Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO = 'atlikti';
+    Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_COLLAPSED_PREFIX = 'į ';
     Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_TOOLTIP = 'A procedure that does not return a value.';
 
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_HELPURL = '/reference/blocks/procedures.html#doreturn';
-    Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'result';
-    Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_DO = 'do';
-    Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_RETURN = 'result';
+    Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'rezultatas';
+    Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_DO = 'atlikti';
+    Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_RETURN = 'rezultatas';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP = 'Runs the blocks in \'do\' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT = 'do/result';
 
     Blockly.Msg.LANG_PROCEDURES_DEFRETURN_HELPURL = '/reference/blocks/procedures.html#return';
-    Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE = 'to';
+    Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE = 'į';
     Blockly.Msg.LANG_PROCEDURES_DEFRETURN_PROCEDURE = Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_PROCEDURE;
     Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DO = Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO;
-    Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN = 'result';
-    Blockly.Msg.LANG_PROCEDURES_DEFRETURN_COLLAPSED_PREFIX = 'to ';
-    Blockly.Msg.LANG_PROCEDURES_DEFRETURN_TOOLTIP = 'A procedure returning a result value.';
+    Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN = 'rezultatas';
+    Blockly.Msg.LANG_PROCEDURES_DEFRETURN_COLLAPSED_PREFIX = 'į ';
+    Blockly.Msg.LANG_PROCEDURES_DEFRETURN_TOOLTIP = 'Rezultato reikšmės grąžinimo procedūra.';
 
     Blockly.Msg.LANG_PROCEDURES_DEF_DUPLICATE_WARNING = 'Įspėjimas:\n' +
         'Ši procedūra turi\n' +
@@ -1134,16 +1134,16 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_HELPURL = '/reference/blocks/procedures.html#do';
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL = 'iškviesti ';
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_PROCEDURE = 'procedūra';
-    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_COLLAPSED_PREFIX = 'call ';
-    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TOOLTIP = 'Call a procedure with no return value.';
-    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME = 'call no return';
+    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_COLLAPSED_PREFIX = 'iškviesti ';
+    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TOOLTIP = 'Kviečia procedūrą be grąžinimo reikšmės.';
+    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME = 'iškviesti be grąžinimo';
 
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_HELPURL = '/reference/blocks/procedures.html#return';
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_CALL = Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL;
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_PROCEDURE = Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_PROCEDURE;
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_COLLAPSED_PREFIX = 'iškviesti ';
-    Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP = 'Kvieskite procedūrą su grąžinimo reikšme.';
-    Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME = 'iškviesti grąžinimą';
+    Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP = 'Kviečia procedūrą su grąžinimo reikšme.';
+    Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME = 'iškviesti su grąžinimu';
 
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'įvestys';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = 'įvestis:';
