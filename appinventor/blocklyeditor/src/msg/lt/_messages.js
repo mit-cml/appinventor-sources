@@ -643,8 +643,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_DOWNCASE = '/reference/blocks/text.html#downcase';
 
     Blockly.Msg.LANG_TEXT_TRIM_HELPURL = '/reference/blocks/text.html#trim';
-    Blockly.Msg.LANG_TEXT_TRIM_TITLE_TRIM = 'trim';
-    Blockly.Msg.LANG_TEXT_TRIM_TOOLTIP = 'Grąžina teksto eilutės argumentų kopiją su pašalintais tarpai priekyje ir gale.';
+    Blockly.Msg.LANG_TEXT_TRIM_TITLE_TRIM = 'apkarpyti';
+    Blockly.Msg.LANG_TEXT_TRIM_TOOLTIP = 'Grąžina teksto eilutės argumentų kopiją su pašalintais tarpais priekyje ir gale.';
 
     Blockly.Msg.LANG_TEXT_STARTS_AT_HELPURL = '/reference/blocks/text.html#startsat';
     Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_STARTS_AT = 'prasideda';
@@ -724,8 +724,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_HELPURL = '/reference/blocks/text.html#replaceall';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_SEGMENT = 'segmentas';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_TEXT = 'tekstas';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL = 'replace all';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_REPLACEMENT = 'replacement';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL = 'pakeisti visus';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_REPLACEMENT = 'pakeitimas';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT = 'replace all text %1 segment %2 replacement %3';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP = 'Returns a new text obtained by replacing all occurrences\n'
         + 'of the segment with the replacement.';
@@ -753,8 +753,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'in the dictionary is replaced first.';
 
     Blockly.Msg.LANG_TEXT_REVERSE_HELPURL = '/reference/blocks/text.html#reverse';
-    Blockly.Msg.LANG_TEXT_REVERSE_INPUT = 'reverse';
-    Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP = 'Reverse the given text.';
+    Blockly.Msg.LANG_TEXT_REVERSE_INPUT = 'atvirkščiai';
+    Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP = 'Atvirkščiai išveda duotą tekstą.';
 
 // Lists Blocks.
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Sąrašai';
@@ -767,7 +767,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_CREATE_WITH_TOOLTIP = 'Sukuria sąrašą su bet kokiu elementų skaičiumi.';
 
     Blockly.Msg.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP = 'Add, remove, or reorder sections to reconfigure this list block.';
+    Blockly.Msg.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP = 'Prideda, pašalina arba pertvarko skyrius, kad iš naujo sukonfigūruotų šį sąrašo bloką.';
 
     Blockly.Msg.LANG_LISTS_CREATE_WITH_ITEM_TITLE = 'elementas';
     Blockly.Msg.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP = 'Prideda elementą į sąrašą.';
