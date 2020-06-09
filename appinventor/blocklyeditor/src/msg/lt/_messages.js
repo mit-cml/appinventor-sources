@@ -449,27 +449,23 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_TRIG_ATAN2 = 'atan2';
     Blockly.Msg.LANG_MATH_TRIG_ATAN2_X = 'x';
     Blockly.Msg.LANG_MATH_TRIG_ATAN2_Y = 'y';
-    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_SIN = 'Provides the sine of the given angle in degrees.';
+    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_SIN = 'Pateikia nurodyto kampo sinusą laipsniais.';
     Blockly.Msg.LANG_MATH_TRIG_HELPURL_SIN = '/reference/blocks/math.html#sin';
-    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_COS = 'Provides the cosine of the given angle in degrees.';
+    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_COS = 'Pateikia nurodyto kampo kosinusą laipsniais.';
     Blockly.Msg.LANG_MATH_TRIG_HELPURL_COS = '/reference/blocks/math.html#cos';
-    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_TAN = 'Provides the tangent of the given angle in degrees.';
+    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_TAN = 'Pateikia nurodyto kampo tangentą laipsniais.';
     Blockly.Msg.LANG_MATH_TRIG_HELPURL_TAN = '/reference/blocks/math.html#tan';
-    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ASIN = 'Provides the angle in the range (-90,+90]\n' +
-        'degrees with the given sine value.';
+    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ASIN = 'Pateikia kampo laipsnius intervale (-90, + 90) su nurodyta sinuso reikšme.';
     Blockly.Msg.LANG_MATH_TRIG_HELPURL_ASIN = '/reference/blocks/math.html#asin';
-    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ACOS = 'Provides the angle in the range [0, 180)\n' +
-        'degrees with the given cosine value.';
+    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ACOS = 'Pateikia kampo laipsnius intervale [0, 180) su nurodyta kosinuso reikšme.';
     Blockly.Msg.LANG_MATH_TRIG_HELPURL_ACOS = '/reference/blocks/math.html#acos';
-    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN = 'Provides the angle in the range (-90, +90)\n' +
-        'degrees with the given tangent value.';
+    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN = 'Pateikia kampo laipsnius intervale (-90, +90) su nurodyta tangento reikšme.';
     Blockly.Msg.LANG_MATH_TRIG_HELPURL_ATAN = '/reference/blocks/math.html#atan';
-    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN2 = 'Provides the angle in the range (-180, +180]\n' +
-        'degrees with the given rectangular coordinates.';
+    Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN2 = 'Pateikia kampo laipsnius intervale (-180, +180] su nurodytomis koordinatėmis.';
     Blockly.Msg.LANG_MATH_TRIG_HELPURL_ATAN2 = '/reference/blocks/math.html#atan2';
 
-    Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN = 'min';
-    Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX = 'max';
+    Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN = 'mažiausias';
+    Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX = 'didžiausias';
     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Grąžina mažiausią iš argumentų.';
     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Grąžina didžiausią iš argumentų.';
     Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MIN = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#min';
@@ -575,9 +571,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_TEXT_APPEND_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
     Blockly.Msg.LANG_TEXT_APPEND_TO = 'į';
-    Blockly.Msg.LANG_TEXT_APPEND_APPENDTEXT = 'append text';
+    Blockly.Msg.LANG_TEXT_APPEND_APPENDTEXT = 'pridėti tekstą';
     Blockly.Msg.LANG_TEXT_APPEND_VARIABLE = 'elementas';
-    Blockly.Msg.LANG_TEXT_APPEND_TOOLTIP = 'Append some text to variable "%1".';
+    Blockly.Msg.LANG_TEXT_APPEND_TOOLTIP = 'Prideda tekstą prie kintamojo "%1".';
 
     Blockly.Msg.LANG_TEXT_LENGTH_HELPURL = '/reference/blocks/text.html#length';
     Blockly.Msg.LANG_TEXT_LENGTH_INPUT_LENGTH = 'ilgis';
