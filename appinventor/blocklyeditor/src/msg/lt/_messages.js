@@ -1577,15 +1577,15 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_EMULATOR_STARTED = "Emulator started, waiting ";
     Blockly.Msg.REPL_STARTING_COMPANION_ON_PHONE = "Starting the Companion App on the connected phone.";
     Blockly.Msg.REPL_STARTING_COMPANION_IN_EMULATOR = "Starting the Companion App in the emulator.";
-    Blockly.Msg.REPL_COMPANION_STARTED_WAITING = "Companion starting, waiting ";
+    Blockly.Msg.REPL_COMPANION_STARTED_WAITING = "„AI2 Companion“ starting, waiting ";
     Blockly.Msg.REPL_VERIFYING_COMPANION = "Verifying that the Companion Started....";
-    Blockly.Msg.REPL_CONNECT_TO_COMPANION = "Connect to Companion";
+    Blockly.Msg.REPL_CONNECT_TO_COMPANION = "Connect to „AI2 Companion“";
     Blockly.Msg.REPL_TRY_AGAIN1 = "Failed to Connect to the MIT AI2 Companion, try again.";
     Blockly.Msg.REPL_YOUR_CODE_IS = "Jūsų kodas yra ";
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Ar tikrai?";
     Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
-    Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "Companion Connection Error";
-    Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED = "The Companion has disconnected";
+    Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "„AI2 Companion“ Connection Error";
+    Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED = "„AI2 Companion“ has disconnected";
     Blockly.Msg.REPL_EMULATOR_ONLY = 'Šią parinktį galite naudoti tik norėdami atnaujinti emuliatorių.';
 
 // Messages from Blockly.js
