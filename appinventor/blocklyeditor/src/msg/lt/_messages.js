@@ -1125,14 +1125,14 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_PROCEDURES_DEFRETURN_COLLAPSED_PREFIX = 'to ';
     Blockly.Msg.LANG_PROCEDURES_DEFRETURN_TOOLTIP = 'A procedure returning a result value.';
 
-    Blockly.Msg.LANG_PROCEDURES_DEF_DUPLICATE_WARNING = 'Warning:\n' +
-        'This procedure has\n' +
-        'duplicate inputs.';
+    Blockly.Msg.LANG_PROCEDURES_DEF_DUPLICATE_WARNING = 'Įspėjimas:\n' +
+        'Ši procedūra turi\n' +
+        'pasikartojančias įvestis.';
 
     Blockly.Msg.LANG_PROCEDURES_GET_HELPURL = '/reference/blocks/procedures.html#get';
 
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_HELPURL = '/reference/blocks/procedures.html#do';
-    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL = 'call ';
+    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL = 'iškviesti ';
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_PROCEDURE = 'procedūra';
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_COLLAPSED_PREFIX = 'call ';
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TOOLTIP = 'Call a procedure with no return value.';
@@ -1141,37 +1141,37 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_HELPURL = '/reference/blocks/procedures.html#return';
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_CALL = Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL;
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_PROCEDURE = Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_PROCEDURE;
-    Blockly.Msg.LANG_PROCEDURES_CALLRETURN_COLLAPSED_PREFIX = 'call ';
-    Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP = 'Call a procedure with a return value.';
-    Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME = 'call return';
+    Blockly.Msg.LANG_PROCEDURES_CALLRETURN_COLLAPSED_PREFIX = 'iškviesti ';
+    Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP = 'Kvieskite procedūrą su grąžinimo reikšme.';
+    Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME = 'iškviesti grąžinimą';
 
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'įvestys';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = 'įvestis:';
 
-    Blockly.Msg.LANG_PROCEDURES_HIGHLIGHT_DEF = 'Highlight Procedure';
+    Blockly.Msg.LANG_PROCEDURES_HIGHLIGHT_DEF = 'Paryškinti procedūrą';
 
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TOOLTIP = '';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TOOLTIP = '';
 
 // Components Blocks.
-    Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP = "This block is not defined. Delete this block!";
+    Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP = "Šis blokas nėra apibrėžtas. Ištrinkite šį bloką!";
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_HELPURL = '';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN = 'kai ';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO = 'do';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE = 'when any ';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO = 'atlikti';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE = 'kai bet kuris ';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_HELPURL = '';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL = 'call ';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL = 'iškviesti ';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_HELPURL = '';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL = 'call ';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL = 'iškviesti ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT = 'komponentui';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_GETTER_HELPURL = '';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_GETTER_HELPURL = '';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_GETTER_TITLE_OF_COMPONENT = 'of component';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_GETTER_TITLE_OF_COMPONENT = 'komponento';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_HELPURL = '';
     Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET = 'nustatyti ';
@@ -1180,7 +1180,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_HELPURL = '';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET = 'nustatyti ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO = ' į';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT = 'of component';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT = 'komponento';
 
 ///////////////////
     /* HelpURLs for Component Blocks */
@@ -1525,7 +1525,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.MISSING_SOCKETS_WARNINGS = "Visus lizdus turėtumėte užpildyti blokais";
     Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS = "Šis blokas turėtų būti sujungtas su įvykių bloku arba procedūros apibrėžimu.";
     Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE = 'Šiam blokui reikia reikšmės bloko, prijungto prie jo lizdo.';
-    Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT = 'Turite pateikti galiojantį komponentą bloko "%1" lizdui.';
+    Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT = 'Turite pateikti galiojantį komponentą bloko „%1“ lizdui.';
 
 // Messages from replmgr.js
     Blockly.Msg.REPL_ERROR_FROM_COMPANION = "Klaida iš „AI2 Companion“";
