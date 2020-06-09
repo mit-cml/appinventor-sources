@@ -487,23 +487,21 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_FROM = 'nuo';
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO = 'iki';
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT = 'atsitiktinis sveikasis skaičius nuo %1 iki %2';
-    Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP = 'Returns a random integer between the upper bound\n' +
-        'and the lower bound. The bounds will be clipped to be smaller\n' +
-        'than 2**30.';
+    Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP = 'Grąžina atsitiktinį sveikąjį skaičių tarp viršutinio ir apatinio rėžio.\n' +
+        'Ribos bus sumažintos, kad būtų mažesnis nei 2**30.';
 
     Blockly.Msg.LANG_MATH_RANDOM_FLOAT_HELPURL = '/reference/blocks/math.html#randomfrac';
-    Blockly.Msg.LANG_MATH_RANDOM_FLOAT_TITLE_RANDOM = 'random fraction';
-    Blockly.Msg.LANG_MATH_RANDOM_FLOAT_TOOLTIP = 'Return a random number between 0 and 1.';
+    Blockly.Msg.LANG_MATH_RANDOM_FLOAT_TITLE_RANDOM = 'atsitiktinė trupmena';
+    Blockly.Msg.LANG_MATH_RANDOM_FLOAT_TOOLTIP = 'Grąžina atsitiktinį skaičių nuo 0 iki 1.';
 
     Blockly.Msg.LANG_MATH_RANDOM_SEED_HELPURL = '/reference/blocks/math.html#randomseed';
     Blockly.Msg.LANG_MATH_RANDOM_SEED_TITLE_RANDOM = 'random set seed';
-    Blockly.Msg.LANG_MATH_RANDOM_SEED_INPUT_TO = 'to';
-    Blockly.Msg.LANG_MATH_RANDOM_SEED_TOOLTIP = 'specifies a numeric seed\n' +
-        'for the random number generator';
+    Blockly.Msg.LANG_MATH_RANDOM_SEED_INPUT_TO = 'į';
+    Blockly.Msg.LANG_MATH_RANDOM_SEED_TOOLTIP = 'specifies a numeric seed for the random number generator';
 
-    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT = 'convert';
-    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_RAD_TO_DEG = 'radians to degrees';
-    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_DEG_TO_RAD = 'degrees to radians';
+    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT = 'konvertuoti';
+    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_RAD_TO_DEG = 'radianus į laipsnius';
+    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_DEG_TO_RAD = 'laipsnius į radianus';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG = 'Returns the degree value in the range\n' +
         '[0, 360) corresponding to its radians argument.';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_HELPURL_RAD_TO_DEG = '/reference/blocks/math.html#convertrad';
