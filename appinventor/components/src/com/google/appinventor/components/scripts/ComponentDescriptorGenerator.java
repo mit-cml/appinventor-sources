@@ -26,6 +26,7 @@ import javax.tools.FileObject;
  * The output is a sequence of component descriptions enclosed in square
  * brackets and separated by commas. Each component description has the
  * following format:
+ * <pre><code>
  * { "type": "COMPONENT-TYPE",
  *   "name": "COMPONENT-TYPE-NAME",
  *   "external": "true"|"false",
@@ -34,6 +35,7 @@ import javax.tools.FileObject;
  *   "helpString": “DESCRIPTION”,
  *   "showOnPalette": "true"|"false",
  *   "nonVisible": "true"|"false",
+ *   "isContainer": "true"|"false",
  *   "iconName": "ICON-FILE-NAME",
  *   "androidMinSdk": "ANDROID-MIN-SDK",
  *   "conditionals": {
@@ -73,6 +75,7 @@ import javax.tools.FileObject;
  *   ],
  *   ("assets": ["FILENAME",*])?
  * }
+ * </code></pre>
  *
  * @author lizlooney@google.com (Liz Looney)
  * @author sharon@google.com (Sharon Perl) - added events, methods, non-designer
@@ -107,6 +110,8 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append(component.getShowOnPalette());
     sb.append("\",\n  \"nonVisible\": \"");
     sb.append(component.getNonVisible());
+    sb.append("\",\n  \"isContainer\": \"");
+    sb.append(component.getIsContainer());
     sb.append("\",\n  \"iconName\": \"");
     sb.append(component.getIconName());
     sb.append("\",\n  \"androidMinSdk\": ");

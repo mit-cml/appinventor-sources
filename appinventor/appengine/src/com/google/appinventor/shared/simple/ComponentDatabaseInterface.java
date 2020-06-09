@@ -42,12 +42,13 @@ public interface ComponentDatabaseInterface {
     private final List<MethodDefinition> methods;
     private final Map<String, String> propertiesTypesByName;
     private final boolean nonVisible;
+    private final boolean isContainer;
     private final String iconName;
     private final String typeDescription;
 
     public ComponentDefinition(String name, int version, String versionName, String dateBuilt, String type, boolean external,
               String categoryString, String helpString, String helpUrl,
-              boolean showOnPalette, boolean nonVisible, String iconName, String typeDescription) {
+              boolean showOnPalette, boolean nonVisible, boolean isContainer, String iconName, String typeDescription) {
       this.name = name;
       this.version = version;
       this.versionName = versionName;
@@ -65,6 +66,7 @@ public interface ComponentDatabaseInterface {
       this.methods = new ArrayList<MethodDefinition>();
       this.propertiesTypesByName = new HashMap<String, String>();
       this.nonVisible = nonVisible;
+      this.isContainer = isContainer;
       this.iconName = iconName;
       this.typeDescription = typeDescription;
     }
@@ -150,6 +152,10 @@ public interface ComponentDatabaseInterface {
 
     public boolean isNonVisible() {
       return nonVisible;
+    }
+
+    public boolean isContainer() {
+      return isContainer;
     }
 
     public String getIconName() {
@@ -454,6 +460,8 @@ public interface ComponentDatabaseInterface {
    * @return whether the component is non-visible
    */
   boolean getNonVisible(String componentName);
+
+  boolean isContainer(String componentName);
 
   /**
    * Returns the name of the icon file (last part of the path name) for the

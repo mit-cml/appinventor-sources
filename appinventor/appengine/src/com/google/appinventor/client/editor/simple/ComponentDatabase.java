@@ -244,6 +244,15 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
+  public boolean isContainer(String componentName) {
+    ComponentDefinition component = components.get(componentName);
+    if (component == null) {
+      throw new ComponentNotFoundException(componentName);
+    }
+    return component.isContainer();
+  }
+
+  @Override
   public String getIconName(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
@@ -338,6 +347,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
         properties.containsKey("helpUrl") ? properties.get("helpUrl").asString().getString() : "",
         Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
         Boolean.valueOf(properties.get("nonVisible").asString().getString()),
+        Boolean.parseBoolean(properties.get("isContainer").asString().getString()),
         properties.get("iconName").asString().getString(), componentNode.toJson());
     findComponentProperties(component, properties.get("properties").asArray());
     findComponentBlockProperties(component, properties.get("blockProperties").asArray());

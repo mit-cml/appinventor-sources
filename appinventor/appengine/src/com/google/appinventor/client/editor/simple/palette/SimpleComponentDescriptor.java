@@ -12,6 +12,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.*;
 
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import com.google.common.collect.Maps;
@@ -425,10 +426,17 @@ public final class SimpleComponentDescriptor {
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
     } else {
-      String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
-      Image imageFromPath = getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-              pkgName, editor.getProjectId());
-      return new MockVisibleExtension(editor, name, imageFromPath);
+      if (SimpleComponentDatabase.getInstance(editor.getProjectId()).isContainer(name)) {
+        return new MockHVArrangement(editor, name, images.vertical(),
+                ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
+                ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
+      } else {
+        String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
+        Image imageFromPath = getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                pkgName,
+                editor.getProjectId());
+        return new MockVisibleExtension(editor, name, imageFromPath);
+      }
     }
   }
 }
