@@ -1592,12 +1592,12 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Ar tikrai norite ištrinti visus %1 blokus (-ų)?";
 
 // Blocklyeditor.js
-    Blockly.Msg.GENERATE_YAIL = "Generate Yail";
-    Blockly.Msg.DO_IT = "Do It";
-    Blockly.Msg.DO_IT_DISCONNECTED = 'Do It (Companion not connected)';
+    Blockly.Msg.GENERATE_YAIL = "Generuoti Yail";
+    Blockly.Msg.DO_IT = "Atlikti tai";
+    Blockly.Msg.DO_IT_DISCONNECTED = 'Atlikti tai („AI2 Companion“ neprisijungęs)';
     Blockly.Msg.CLEAR_DO_IT_ERROR = "Išvalyti klaidą";
-    Blockly.Msg.CAN_NOT_DO_IT = "Cannot Do it";
-    Blockly.Msg.CONNECT_TO_DO_IT = 'You must be connected to the companion or emulator to use "Do It"';
+    Blockly.Msg.CAN_NOT_DO_IT = "Negalima atlikti to";
+    Blockly.Msg.CONNECT_TO_DO_IT = 'Norėdami naudoti „Atlikti tai“, turite būti prisijungę prie „AI2 Companion“ ar emuliatoriaus.';
 
 // Clock Component Menu Items
     Blockly.Msg.TIME_YEARS = "Metai";
@@ -1610,10 +1610,10 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.TIME_DURATION = "Trukmė";
 
 // Connection Dialog Messages
-    Blockly.Msg.DIALOG_RENDEZVOUS_NEGOTIATING = "15 Rendezvous (please wait)";
-    Blockly.Msg.DIALOG_SECURE_ESTABLISHING = "20 Establishing Secure Connection";
-    Blockly.Msg.DIALOG_SECURE_ESTABLISHED = "30 Secure Connection Established";
-    Blockly.Msg.DIALOG_FOUND_COMPANION = "10 Found the Companion";
+    Blockly.Msg.DIALOG_RENDEZVOUS_NEGOTIATING = "Prašome palaukti";
+    Blockly.Msg.DIALOG_SECURE_ESTABLISHING = "Saugaus ryšio užmezgimas";
+    Blockly.Msg.DIALOG_SECURE_ESTABLISHED = "Saugus ryšys užmegztas";
+    Blockly.Msg.DIALOG_FOUND_COMPANION = "Aptikti „AI2 Companion“";
 
 //Blockly.Util.Dialog Messages
     Blockly.Msg.DIALOG_UNBOUND_VAR = 'Unbound Variables';
