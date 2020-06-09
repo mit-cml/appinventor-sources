@@ -150,12 +150,11 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_HELPURL = '/reference/blocks/control.html#while';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT = 'kartoti';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_INPUT_DO = 'atlikti';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE = 'kol';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = 'until';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE = 'Kol';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = 'Tol, kol';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_WHILE = 'Kol reikšmė teisinga, atliekama keleta sakinių.';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = 'Kol reikšmė teisinga, atliekama keleta sakinių.';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_1 = 'Veikia blokus, esančius sekcijoje „atlikti“ kol testas yra '
-        + 'teisingas.';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = 'Tol, kol reikšmė teisinga, atliekama keleta sakinių.';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_1 = 'Veikia blokus, esančius sekcijoje „atlikti“ kol testas yra teisingas.';
 
     Blockly.Msg.LANG_CONTROLS_FOR_HELPURL = '';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_WITH = 'skaičiuok su';
