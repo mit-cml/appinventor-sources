@@ -648,20 +648,20 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'leading or trailing spaces removed.';
 
     Blockly.Msg.LANG_TEXT_STARTS_AT_HELPURL = '/reference/blocks/text.html#startsat';
-    Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_STARTS_AT = 'starts at';
+    Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_STARTS_AT = 'prasideda';
     Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_TEXT = 'tekstas';
-    Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_PIECE = 'piece';
-    Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT = 'starts at  text %1 piece %2';
+    Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_PIECE = 'dalis';
+    Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT = 'prasideda tekste %1 dalyje %2';
     Blockly.Msg.LANG_TEXT_STARTS_AT_TOOLTIP = 'Returns the starting index of the piece in the text.\n'
         + 'where index 1 denotes the beginning of the text. Returns 0 if the\n'
         + 'piece is not in the text.';
 
     Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL = '/reference/blocks/text.html#contains';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'contains';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'turi';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = 'tekstas';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = 'piece';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = 'contains  text %1 piece %2';
-    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = 'Tests whether the piece is contained in the text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = 'dalis';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = 'turi tekstą %1 dalį %2';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = 'Tikrina ar dalis yra tekste.';
 
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL = '';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = 'tekstas';
