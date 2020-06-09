@@ -472,14 +472,14 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MAX = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#max';
 
     Blockly.Msg.LANG_MATH_DIVIDE = '\u00F7';
-    Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_MODULO = 'modulo of';
-    Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_REMAINDER = 'remainder of';
-    Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_QUOTIENT = 'quotient of';
-    Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_MODULO = 'Return the modulo.';
+    Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_MODULO = 'modulis';
+    Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_REMAINDER = 'liekana';
+    Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_QUOTIENT = 'dalmuo';
+    Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_MODULO = 'Grąžina modulį.';
     Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_MODULO = '/reference/blocks/math.html#modulo';
-    Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_REMAINDER = 'Return the remainder.';
+    Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_REMAINDER = 'Grąžina liekaną.';
     Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_REMAINDER = '/reference/blocks/math.html#remainder';
-    Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_QUOTIENT = 'Return the quotient.';
+    Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_QUOTIENT = 'Grąžina dalmenį.';
     Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_QUOTIENT = '/reference/blocks/math.html#quotient';
 
     Blockly.Msg.LANG_MATH_RANDOM_INT_HELPURL = '/reference/blocks/math.html#randomint';
