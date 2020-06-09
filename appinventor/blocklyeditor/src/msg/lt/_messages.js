@@ -149,12 +149,12 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_HELPURL = '/reference/blocks/control.html#while';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT = 'kartoti';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_INPUT_DO = 'do';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE = 'kol';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = 'until';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_WHILE = 'Kol reikšmė teisinga, atliekama keleta sakinių.';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = 'Kol reikšmė teisinga, atliekama keleta sakinių.';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_1 = 'Veikia blokus, esančius sekcijoje „do“ kol testas yra '
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_1 = 'Veikia blokus, esančius sekcijoje „atlikti“ kol testas yra '
         + 'teisingas.';
 
     Blockly.Msg.LANG_CONTROLS_FOR_HELPURL = '';
@@ -162,7 +162,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_VAR = 'x';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_FROM = 'nuo';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_TO = 'iki';
-    Blockly.Msg.LANG_CONTROLS_FOR_INPUT_DO = 'do';
+    Blockly.Msg.LANG_CONTROLS_FOR_INPUT_DO = 'atlikti';
 
     Blockly.Msg.LANG_CONTROLS_FOR_TOOLTIP = 'Suskaičiuoja nuo pradžios iki pabaigos skaičiaus.\n' +
         'Kiekvienam skaičiui nustato dabartinį skaičiaus numerį į\n' +
@@ -174,11 +174,11 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START = 'nuo';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END = 'iki';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP = 'by';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO = 'do';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = 'skaičiui intervale';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX = 'for ';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX = ' intervale';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = 'Veikia blokus esančius sekcijoje „do“ kiekvienai skaitinei reikšmei '
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = 'Veikia blokus esančius sekcijoje „atlikti“ kiekvienai skaitinei reikšmei '
         + 'intervale nuo pradžios iki pabaigos, kiekvieną kartą padidinant reikšmę. Panaudoja duotą '
         + 'kintamojo vardą, kuris nurodo esamą reikšmę.';
 
@@ -186,16 +186,16 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM = 'kiekvienam';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_VAR = 'elementui';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_INLIST = 'sąraše';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_DO = 'do';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_TEXT = 'elementui sąraše';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_PREFIX = 'for ';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX = ' sąraše';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Veikia blokus esančius sekcijoje „do“ kiekvienam elementui sąraše. '
+    Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Veikia blokus esančius sekcijoje „atlikti“ kiekvienam elementui sąraše. '
         + ' Norėdami nurodyti dabartinį sąrašo elementą, naudokite duotą kintamojo pavadinimą.';
 
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL = '/reference/blocks/control.html#foreachdict';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT = 'kiekvienam %1 su %2 žodyne %3';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO = 'do';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY = 'raktas';
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE = 'reikšmė';
     // Used by the typeblock system.
@@ -220,9 +220,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_WHILE_HELPURL = '/reference/blocks/control.html#while';
     Blockly.Msg.LANG_CONTROLS_WHILE_TITLE = 'kol';
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = 'testas';
-    Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO = 'do';
+    Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'kol';
-    Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Veikia blokus, esančius sekcijoje „do“ kol testas yra '
+    Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Veikia blokus, esančius sekcijoje „atlikti“ kol testas yra '
         + 'teisingas.';
 
     Blockly.Msg.LANG_CONTROLS_CHOOSE_HELPURL = '/reference/blocks/control.html#choose';
@@ -237,10 +237,10 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'bus įvertinta viena iš grąžinimo sakinių išraiškų.';
 
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = '/reference/blocks/control.html#doreturn';
-    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = 'do';
+    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN = 'rezultatas';
-    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = 'Veikia blokus, esančius „do“ ir grąžina sakinį. Useful if you need to run a procedure before returning a value to a variable.';
-    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'do/result';
+    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = 'Veikia blokus, esančius „atlikti“ ir grąžina sakinį. Useful if you need to run a procedure before returning a value to a variable.';
+    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'atlikti/rezultatas';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = 'do result';
 
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'įvertinti, bet nepaisyti rezultato';
