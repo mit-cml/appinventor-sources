@@ -635,17 +635,16 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
      Blockly.Msg.LANG_TEXT_CHARAT_INPUT_INTEXT = 'in text';
      Blockly.Msg.LANG_TEXT_CHARAT_TOOLTIP = 'Returns the letter at the specified position.';*/
 
-    Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_UPPERCASE = 'upcase';
-    Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_DOWNCASE = 'downcase';
-    Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE = 'Returns a copy of its text string argument converted to uppercase.';
+    Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_UPPERCASE = 'didžiosios raidės';
+    Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_DOWNCASE = 'mažosios raidės';
+    Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE = 'Gauna teksto eilutės argumento, konvertuoto į didžiąsias raides, kopiją.';
     Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_UPPERCASE = '/reference/blocks/text.html#upcase';
-    Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE = 'Returns a copy of its text string argument converted to lowercase.';
+    Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE = 'Gauna teksto eilutės argumento, konvertuoto į mažąsias raides, kopiją.';
     Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_DOWNCASE = '/reference/blocks/text.html#downcase';
 
     Blockly.Msg.LANG_TEXT_TRIM_HELPURL = '/reference/blocks/text.html#trim';
     Blockly.Msg.LANG_TEXT_TRIM_TITLE_TRIM = 'trim';
-    Blockly.Msg.LANG_TEXT_TRIM_TOOLTIP = 'Returns a copy of its text string arguments with any\n'
-        + 'leading or trailing spaces removed.';
+    Blockly.Msg.LANG_TEXT_TRIM_TOOLTIP = 'Grąžina teksto eilutės argumentų kopiją su pašalintais tarpai priekyje ir gale.';
 
     Blockly.Msg.LANG_TEXT_STARTS_AT_HELPURL = '/reference/blocks/text.html#startsat';
     Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_STARTS_AT = 'prasideda';
