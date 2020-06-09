@@ -1570,8 +1570,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_NO_START_EMULATOR = "Nepavyko paleisti „AI2 Companion“ emuliatoriuje";
     Blockly.Msg.REPL_PLUGGED_IN_Q = "Prijungtas?";
     Blockly.Msg.REPL_AI_NO_SEE_DEVICE = "„App Inventor“ nemato jūsų įrenginio, įsitikinkite, kad kabelis prijungtas ir tvarkyklės yra teisingos.";
-    Blockly.Msg.REPL_HELPER_Q = "Pagalbos?";
-    Blockly.Msg.REPL_HELPER_NOT_RUNNING = 'The aiStarter helper does not appear to be running<br /><a href="http://appinventor.mit.edu" target="_blank">Need Help?</a>';
+    Blockly.Msg.REPL_HELPER_Q = "Pagelbiklis?";
+    Blockly.Msg.REPL_HELPER_NOT_RUNNING = 'Neatrodo, kad yra paleistas „aiStarter“ pagelbiklis<br /><a href="http://appinventor.mit.edu" target="_blank">Reikia pagalbos?</a>';
     Blockly.Msg.REPL_USB_CONNECTED_WAIT = "USB Connected, waiting ";
     Blockly.Msg.REPL_SECONDS_ENSURE_RUNNING = " seconds to ensure all is running.";
     Blockly.Msg.REPL_EMULATOR_STARTED = "Emulator started, waiting ";
