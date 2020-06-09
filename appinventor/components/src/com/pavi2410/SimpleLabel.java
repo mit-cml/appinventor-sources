@@ -1,4 +1,4 @@
-package test;
+package com.pavi2410;
 
 import android.view.View;
 import android.widget.TextView;
@@ -13,7 +13,7 @@ import com.google.appinventor.components.runtime.ComponentContainer;
         description = "Simple Label extension",
         category = ComponentCategory.EXTENSION,
         iconName = "images/extension.png")
-@SimpleObject(external = true)
+@SimpleObject(external = true /*, hasMock = true */ )
 public class SimpleLabel extends AndroidViewComponent {
 
     private TextView tv;
