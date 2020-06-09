@@ -1078,8 +1078,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_HELPURL = '/reference/blocks/variables.html#do';
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT = 'initialize local';
-    Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_DEFAULT_NAME = 'name';
-    Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO = 'to';
+    Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_DEFAULT_NAME = 'pavadinimas';
+    Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO = 'į';
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_IN_DO = 'in';
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_COLLAPSED_TEXT = 'local';
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP = 'Allows you to create variables that are only accessible in the do part of this block.';
@@ -1114,8 +1114,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'rezultatas';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_DO = 'atlikti';
     Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_RETURN = 'rezultatas';
-    Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP = 'Runs the blocks in \'do\' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.';
-    Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT = 'do/result';
+    Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP = 'Veikia blokai, esantys „atlikti“, ir grąžina sakinį. Naudinga, jei prieš pradedant grąžinti reikšmę į kintamąjį reikia atlikti procedūrą.';
+    Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT = 'atlikti/rezultatas';
 
     Blockly.Msg.LANG_PROCEDURES_DEFRETURN_HELPURL = '/reference/blocks/procedures.html#return';
     Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE = 'į';
