@@ -599,11 +599,10 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT = 'Tikrina ar tekstas1 yra leksikografiškai didesnis nei tekstas2.\n'
         + 'Jei vienas tekstas yra kito priešdėlis, trumpesnis tekstas laikomas mažesniu.\n'
         + 'Didžiosios raidės rašomos prieš mažąsias raides.';
-    Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP = "Produces text, like a text block.  The difference is that the \n"
-        + "text is not easily discoverable by examining the app's APK.  Use this when creating apps \n"
-        + "to distribute that include confidential information, for example, API keys.  \n"
+    Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP = "Kuria tekstą, kaip teksto bloką. Skirtumas tas, kad tekstas nėra lengvai aptinkamas\n"
+        + "nagrinėjant programos APK. Naudokite tai kurdami programas, kad platintumėte konfidencialią informaciją, pavyzdžiui, API raktus. \n"
         + "Warning: This provides only very low security against expert adversaries.";
-    Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE = 'Obfuscated Text';
+    Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE = 'Neteisingas tekstas';
     Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_HELPURL = '/reference/blocks/text.html#obfuscatetext';
 
     /*Blockly.Msg.LANG_TEXT_ENDSTRING_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
