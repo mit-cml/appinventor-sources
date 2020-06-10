@@ -601,7 +601,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'Didžiosios raidės rašomos prieš mažąsias raides.';
     Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP = "Kuria tekstą, kaip teksto bloką. Skirtumas tas, kad tekstas nėra lengvai aptinkamas\n"
         + "nagrinėjant programos APK. Naudokite tai kurdami programas, kad platintumėte konfidencialią informaciją, pavyzdžiui, API raktus. \n"
-        + "Warning: This provides only very low security against expert adversaries.";
+        + "Įspėjimas: tai užtikrina tik labai žemą apsaugą.";
     Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE = 'Neteisingas tekstas';
     Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_HELPURL = '/reference/blocks/text.html#obfuscatetext';
 
