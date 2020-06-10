@@ -39,6 +39,7 @@ suite('Text Blocks', function() {
     var string = { check_: ['String'] };
     var key = { check_: ['Key'] };
     var many = { check_: ['Number', 'String'] };
+    var untyped = { check_: null };
     var invalidNumbers = [
       'cat', '4cat', 'e', '  zero  ', '0x0', '.', '-', '+', '', '-e-', '+e+'
     ];
@@ -83,6 +84,14 @@ suite('Text Blocks', function() {
 
     test('Should connect with many checks', function() {
       chai.assert.isTrue(check(mockConnection('cat'), many));
-    })
+    });
+
+    test('Should connect to untyped when a number', function() {
+      chai.assert.isTrue(check(mockConnection('1'), untyped));
+    });
+
+    test('Should connect to untyped when not number', function() {
+      chai.assert.isTrue(check(mockConnection('cat'), untyped));
+    });
   });
 })

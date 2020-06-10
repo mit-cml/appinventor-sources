@@ -36,8 +36,12 @@ Blockly.Blocks['text'] = {
 };
 
 Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection, opt_value) {
-  var block = myConnection.sourceBlock_;
   var otherTypeArray = otherConnection.check_;
+  if (!otherTypeArray) {  // Other connection accepts everything.
+    return true;
+  }
+
+  var block = myConnection.sourceBlock_;
   var shouldIgnoreError = Blockly.mainWorkspace.isLoading;
   var value = opt_value || block.getFieldValue('TEXT');
 

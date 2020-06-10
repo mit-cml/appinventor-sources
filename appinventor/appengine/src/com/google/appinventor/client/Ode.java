@@ -595,10 +595,14 @@ public class Ode implements EntryPoint {
     resizeWorkArea((WorkAreaPanel) deckPanel.getWidget(debuggingTabIndex));
   }
 
-  public void openPreviousProject() {
+  /**
+   * Processes the template and galleryId flags.
+   *
+   * @return true if a template or gallery id is present and being handled, otherwise false.
+   */
+  private boolean handleQueryString() {
     if (userSettings == null) {
-      OdeLog.wlog("Ignoring openPreviousProject() since userSettings is null");
-      return;
+      return false;
     }
     OdeLog.log("Ode.openPreviousProject called");
     final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
@@ -619,34 +623,48 @@ public class Ode implements EntryPoint {
         }
       };
       TemplateUploadWizard.openProjectFromTemplate(templatePath, callbackCommand);
-    } else if(galleryIdLoadingFlag){
+      return true;
+    } else if (galleryIdLoadingFlag) {
       try {
-        long galleryId_Long = Long.valueOf(galleryId);
+        long galleryId = Long.parseLong(this.galleryId);
         final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
-                // failure message
-                MESSAGES.galleryError()) {
+            // failure message
+            MESSAGES.galleryError()) {
           @Override
           public void onSuccess(GalleryApp app) {
-            if(app == null){
-              openProject(value);
+            if (app == null) {
               Window.alert(MESSAGES.galleryIdNotExist());
-            }else{
+              // Reset the galleryId flag and then load the previous project
+              galleryIdLoadingFlag = false;
+              openPreviousProject();
+            } else {
               Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
             }
           }
         };
-        Ode.getInstance().getGalleryService().getApp(galleryId_Long, callback);
+        Ode.getInstance().getGalleryService().getApp(galleryId, callback);
+        return true;
       } catch (NumberFormatException e) {
-        openProject(value);
         Window.alert(MESSAGES.galleryIdNotExist());
       }
-    } else {
-      openProject(value);
     }
+    return false;
+  }
+
+  /**
+   * Opens the user's last project, if the information is known.
+   */
+  private void openPreviousProject() {
+    if (userSettings == null) {
+      OdeLog.wlog("Ignoring openPreviousProject() since userSettings is null");
+      return;
+    }
+    final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+    openProject(value);
   }
 
   private void openProject(String projectIdString) {
-    OdeLog.log("Ode.openProject called for " + projectIdString);
     if (projectIdString.equals("")) {
       openPreviousProject();
     } else if (!projectIdString.equals("0")) {
@@ -865,7 +883,7 @@ public class Ode implements EntryPoint {
               @Override
               public void onProjectsLoaded() {
                 projectManager.removeProjectManagerEventListener(this);
-                if (shouldAutoloadLastProject()) {
+                if (!handleQueryString() && shouldAutoloadLastProject()) {
                   openPreviousProject();
                 }
 
@@ -2647,6 +2665,10 @@ public class Ode implements EntryPoint {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
+      String locale = Window.Location.getParameter("locale");
+      if (locale != null) {
+        newURL += (newURL.contains("?") ? "&" : "?") + "locale=" + locale;
+      }
       tutorialPanel.setUrl(newURL);
       designToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);
