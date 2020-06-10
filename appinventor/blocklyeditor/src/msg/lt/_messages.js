@@ -510,11 +510,11 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_HELPURL_DEG_TO_RAD = '/reference/blocks/math.html#convertdeg';
 
     Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_HELPURL = '/reference/blocks/math.html#format';
-    Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TITLE = 'format as decimal';
+    Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TITLE = 'formatuoti kaip dešimtainį';
     Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT_NUM = 'skaičius';
-    Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT_PLACES = 'places';
-    Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT = 'format as decimal number %1 places %2';
-    Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TOOLTIP = 'Returns the number formatted as a decimal with a specified number of places.';
+    Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT_PLACES = 'skiltys';
+    Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT = 'formatuoti kaip dešimtainį %1 skiltys %2';
+    Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TOOLTIP = 'Grąžina skaičių, suformatuotą kaip dešimtainį, su nurodytu skilčių skaičiumi.';
 
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_HELPURL = '/reference/blocks/math.html#isnumber';
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM = 'yra skaičius?';
@@ -522,11 +522,11 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = '/reference/blocks/math.html#isnumber';
     Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM = 'yra dešimtainis?';
-    Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP = 'Tikrina, ar kažkas yra eilutė, vaizduojanti teigiamą dešimtainį skaičių.';
+    Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP = 'Tikrina, ar kažkas yra eilutė, kuri reiškia teigiamą dešimtainį skaičių.';
 
     Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL = '/reference/blocks/math.html#isnumber';
     Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM = 'yra šešioliktainis?';
-    Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP = 'Tikrina, ar kažkas yra eilutė, vaizduojanti šešioliktainį skaičių.';
+    Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP = 'Tikrina, ar kažkas yra eilutė, kuri reiškia šešioliktainį skaičių.';
 
     Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = '/reference/blocks/math.html#isnumber';
     Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = 'yra dvejetainis?';
@@ -536,19 +536,19 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TITLE_CONVERT = 'konvertuoti skaičių';
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_HEX = 'dešimtainį į šešioliktainį';
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_HEX = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#convertnumber';
-    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_HEX = 'Takes a positive integer in base 10 and returns the string that represents the number in hexadecimal';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_HEX = 'Paima teigiamą sveikąjį dešimtainį skaičių ir grąžina eilutę, kuri žymi šešioliktainį skaičių.';
 
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_HEX_TO_DEC = 'šešioliktainį į dešimtainį';
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_HEX_TO_DEC = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#convertnumber';
-    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_HEX_TO_DEC = 'Takes a string that represents a number in hexadecimal and returns the string that represents the number in base 10';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_HEX_TO_DEC = 'Paima eilutę, kuri žymi šešioliktainį skaičių, ir grąžina eilutę, kuri nurodo dešimtainį skaičių.';
 
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_BIN = 'dešimtainį į dvejetainį';
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_BIN = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#convertnumber';
-    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_BIN = 'Takes a positive integer in base 10 and returns the string that represents the number in binary';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_BIN = 'Paima teigiamą sveikąjį dešimtainį skaičių ir grąžina eilutę, kuri žymi dvejetainį skaičių.';
 
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_BIN_TO_DEC = 'dvejetainį į dešimtainį';
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_BIN_TO_DEC = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#convertnumber';
-    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC = 'Takes a string that represents a number in binary and returns the string that represents the number in base 10';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC = 'Paima eilutę, kuri žymi dvejetainį skaičių, ir grąžina eilutę, kuri nurodo dešimtainį skaičių.';
 
 // Text Blocks.
     Blockly.Msg.LANG_CATEGORY_TEXT = 'Tekstas';
