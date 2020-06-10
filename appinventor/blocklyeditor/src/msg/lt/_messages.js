@@ -590,16 +590,15 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'Jei vienas tekstas yra kito priešdėlis, trumpesnis tekstas laikomas mažesniu.\n'
         + 'Didžiosios raidės rašomos prieš mažąsias raides.';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL = 'Testuoja, ar teksto eilutės yra tapačios, t.y., turi tuos pačius\n'
-        + 'simbolius ta pačia tvarka. This is different from ordinary =\n'
-        + 'in the case where the text strings are numbers: 123 and 0123 are =\n'
-        + 'but not text =.';
-    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ = 'Tests whether text strings are different, ie., don\'t have the same\n'
-        + 'characters in the same order. This is different from ordinary ≠\n'
-        + 'in the case where the text strings are numbers: 123 and 0123 are text ≠\n'
-        + 'but are mathematically =.';
-    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT = 'Reports whether text1 is lexicographically greater than text2.\n'
-        + 'if one text is the prefix of the other, the shorter text is considered smaller.\n'
-        + 'Uppercase characters precede lowercase characters.';
+        + 'simbolius ta pačia tvarka. Skiriasi nuo įprasto „=“ tuo atveju, kai teksto eilutės yra skaitinės: 123 ir 0123 yra\n'
+        + 'lygios, bet ne teksto atžvilgiu.';
+    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ = 'Testuoja, ar teksto eilutės yra skirtingos, t.y., neturi tų pačių\n'
+        + 'simbolių ta pačia tvarka. Skiriasi nuo įprasto „≠“ tuo atveju,\n'
+        + 'kai teksto eilutės yra skaitinės: 123 ir 0123 yra nelygios teksto atžvilgiu,\n'
+        + 'bet matematiškai lygios.';
+    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT = 'Tikrina ar tekstas1 yra leksikografiškai didesnis nei tekstas2.\n'
+        + 'Jei vienas tekstas yra kito priešdėlis, trumpesnis tekstas laikomas mažesniu.\n'
+        + 'Didžiosios raidės rašomos prieš mažąsias raides.';
     Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP = "Produces text, like a text block.  The difference is that the \n"
         + "text is not easily discoverable by examining the app's APK.  Use this when creating apps \n"
         + "to distribute that include confidential information, for example, API keys.  \n"
