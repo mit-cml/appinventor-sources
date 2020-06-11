@@ -765,44 +765,42 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_TITLE_SELECT = 'pasirinkti sąrašo elementą';
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT_LIST = 'sąrašas';
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT_INDEX = 'indeksas';
-    Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT = 'select list item  list %1 index %2';
-    Blockly.Msg.LANG_LISTS_SELECT_ITEM_TOOLTIP = 'Returns the item at position index in the list.';
+    Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT = 'pasirinkti sąrašo elementą: sąrašas %1 indeksas %2';
+    Blockly.Msg.LANG_LISTS_SELECT_ITEM_TOOLTIP = 'Grąžina elementą esantį sąraše, tam tikroje pozicijoje, kurią nurodo indeksas .';
 
     Blockly.Msg.LANG_LISTS_IS_IN_HELPURL = '/reference/blocks/lists.html#inlist';
     Blockly.Msg.LANG_LISTS_IS_IN_TITLE_IS_IN = 'yra sąraše?';
     Blockly.Msg.LANG_LISTS_IS_IN_INPUT_THING = 'dalykas';
     Blockly.Msg.LANG_LISTS_IS_IN_INPUT_LIST = 'sąrašas';
     Blockly.Msg.LANG_LISTS_IS_IN_INPUT = 'yra sąraše? dalykas %1 sąrašas %2';
-    Blockly.Msg.LANG_LISTS_IS_IN_TOOLTIP = 'Returns true if the the thing is an item in the list, and '
-        + 'false if not.';
+    Blockly.Msg.LANG_LISTS_IS_IN_TOOLTIP = 'Grąžina „Tiesa“, jei daiktas yra sąrašo elementas, priešingu atveju grąžina „Netiesa“.';
 
     Blockly.Msg.LANG_LISTS_POSITION_IN_HELPURL = '/reference/blocks/lists.html#indexinlist';
     Blockly.Msg.LANG_LISTS_POSITION_IN_TITLE_POSITION = 'indeksas sąraše';
     Blockly.Msg.LANG_LISTS_POSITION_IN_INPUT_THING = 'dalykas';
     Blockly.Msg.LANG_LISTS_POSITION_IN_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_POSITION_IN_INPUT = 'index in list  thing %1 list %2';
-    Blockly.Msg.LANG_LISTS_POSITION_IN_TOOLTIP = 'Find the position of the thing in the list. If it\'s not in '
-        + 'the list, return 0.';
+    Blockly.Msg.LANG_LISTS_POSITION_IN_INPUT = 'indeksas sąraše: dalykas %1 sąrašas %2';
+    Blockly.Msg.LANG_LISTS_POSITION_IN_TOOLTIP = 'Suranda dalyko poziciją sąraše. Jei jo nėra sąraše grąžina 0.';
 
     Blockly.Msg.LANG_LISTS_PICK_RANDOM_ITEM_HELPURL = '/reference/blocks/lists.html#pickrandomitem';
-    Blockly.Msg.LANG_LISTS_PICK_RANDOM_TITLE_PICK_RANDOM = 'pick a random item';
+    Blockly.Msg.LANG_LISTS_PICK_RANDOM_TITLE_PICK_RANDOM = 'parinkti atsitiktinį elementą';
     Blockly.Msg.LANG_LISTS_PICK_RANDOM_ITEM_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_PICK_RANDOM_TOOLTIP = 'Pick an item at random from the list.';
+    Blockly.Msg.LANG_LISTS_PICK_RANDOM_TOOLTIP = 'Iš sąrašo atsitiktinai parinkti elementą.';
 
     Blockly.Msg.LANG_LISTS_REPLACE_ITEM_HELPURL = '/reference/blocks/lists.html#replace';
-    Blockly.Msg.LANG_LISTS_REPLACE_ITEM_TITLE_REPLACE = 'replace list item';
+    Blockly.Msg.LANG_LISTS_REPLACE_ITEM_TITLE_REPLACE = 'pakeisti sąrašo elementą';
     Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT_INDEX = 'index';
-    Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT_REPLACEMENT = 'replacement';
-    Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT = 'replace list item  list %1 index %2 replacement %3';
-    Blockly.Msg.LANG_LISTS_REPLACE_ITEM_TOOLTIP = 'Replaces the nth item in a list.';
+    Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT_INDEX = 'indeksas';
+    Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT_REPLACEMENT = 'pakeitimas';
+    Blockly.Msg.LANG_LISTS_REPLACE_ITEM_INPUT = 'pakeisti sąrašo elementą:  sąrašas %1 indeksas %2 pakeitimas %3';
+    Blockly.Msg.LANG_LISTS_REPLACE_ITEM_TOOLTIP = 'Pakeičia n-tąjį sąrašo elementą.';
 
     Blockly.Msg.LANG_LISTS_REMOVE_ITEM_HELPURL = '/reference/blocks/lists.html#removeitem';
     Blockly.Msg.LANG_LISTS_REMOVE_ITEM_TITLE_REMOVE = 'pašalinti sąrašo elementą';
     Blockly.Msg.LANG_LISTS_REMOVE_ITEM_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_REMOVE_ITEM_INPUT_INDEX = 'index';
-    Blockly.Msg.LANG_LISTS_REMOVE_ITEM_INPUT = 'remove list item  list %1 index %2';
-    Blockly.Msg.LANG_LISTS_REMOVE_ITEM_TOOLTIP = 'Removes the item at the specified position from the list.';
+    Blockly.Msg.LANG_LISTS_REMOVE_ITEM_INPUT_INDEX = 'indeksas';
+    Blockly.Msg.LANG_LISTS_REMOVE_ITEM_INPUT = 'pašalinti sąrašo elementą: sąrašas %1 indeksas %2';
+    Blockly.Msg.LANG_LISTS_REMOVE_ITEM_TOOLTIP = 'Iš sąrašo pašalinamas nurodytoje vietoje esantis elementas.';
 
     /*Blockly.Msg.LANG_LISTS_REPEAT_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
      Blockly.Msg.LANG_LISTS_REPEAT_TITLE_CREATE = 'create list with item';
@@ -814,8 +812,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_LENGTH_HELPURL = '/reference/blocks/lists.html#lengthoflist';
     Blockly.Msg.LANG_LISTS_LENGTH_INPUT_LENGTH = 'sąrašo ilgis';
     Blockly.Msg.LANG_LISTS_LENGTH_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_LENGTH_INPUT = 'length of list list %1';
-    Blockly.Msg.LANG_LISTS_LENGTH_TOOLTIP = 'Counts the number of items in a list.';
+    Blockly.Msg.LANG_LISTS_LENGTH_INPUT = 'sąrašo ilgis: sąrašas %1';
+    Blockly.Msg.LANG_LISTS_LENGTH_TOOLTIP = 'Suskaičiuoja sąrašo elementų skaičių.';
 
     Blockly.Msg.LANG_LISTS_APPEND_LIST_HELPURL = '/reference/blocks/lists.html#append';
     Blockly.Msg.LANG_LISTS_APPEND_LIST_TITLE_APPEND = 'append to list';
@@ -829,8 +827,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_TITLE_ADD = 'įtraukti elementus į sąrašą';
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_INPUT_LIST = ' sąrašas';
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_INPUT_ITEM = 'elementas';
-    Blockly.Msg.LANG_LISTS_ADD_ITEMS_INPUT = 'add items to list list %1 item %2';
-    Blockly.Msg.LANG_LISTS_ADD_ITEMS_TOOLTIP = 'Įtraukti elementus į sąrašo pabaigą.';
+    Blockly.Msg.LANG_LISTS_ADD_ITEMS_INPUT = 'įtraukti elementus į sąrašą: sąrašas %1 elementas %2';
+    Blockly.Msg.LANG_LISTS_ADD_ITEMS_TOOLTIP = 'Įtraukia elementus į sąrašo pabaigą.';
 
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_CONTAINER_TITLE_ADD = 'sąrašas';
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_CONTAINER_TOOLTIP = 'Add, remove, or reorder sections to reconfigure this list block.';
@@ -838,7 +836,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_COPY_HELPURL = '/reference/blocks/lists.html#copy';
     Blockly.Msg.LANG_LISTS_COPY_TITLE_COPY = 'kopijuoti sąrašą';
     Blockly.Msg.LANG_LISTS_COPY_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_COPY_TOOLTIP = 'Makes a copy of a list, including copying all sublists';
+    Blockly.Msg.LANG_LISTS_COPY_TOOLTIP = 'Padaro sąrašo kopiją.';
 
     Blockly.Msg.LANG_LISTS_IS_LIST_HELPURL = '/reference/blocks/lists.html#isalist';
     Blockly.Msg.LANG_LISTS_IS_LIST_TITLE_IS_LIST = 'yra sąrašas?';
