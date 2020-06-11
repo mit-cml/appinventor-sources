@@ -642,9 +642,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_TEXT = 'tekstas';
     Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_PIECE = 'dalis';
     Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT = 'prasideda tekste %1 dalyje %2';
-    Blockly.Msg.LANG_TEXT_STARTS_AT_TOOLTIP = 'Returns the starting index of the piece in the text.\n'
-        + 'where index 1 denotes the beginning of the text. Returns 0 if the\n'
-        + 'piece is not in the text.';
+    Blockly.Msg.LANG_TEXT_STARTS_AT_TOOLTIP = 'Grąžina tekste esančios dalies pradžios indeksą.\n'
+        + 'Indeksas 1 ymi teksto pradžią. Grąžina 0, jei dalies nėra tekste.';
 
     Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL = '/reference/blocks/text.html#contains';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'turi';
