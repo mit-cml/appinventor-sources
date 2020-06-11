@@ -695,27 +695,26 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
      Blockly.Msg.LANG_TEXT_PROMPT_TYPE_NUMBER = 'number';*/
 
     Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_HELPURL = '/reference/blocks/text.html#splitspaces';
-    Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_TITLE = 'split at spaces';
-    Blockly.Msg.LANG_TEXT_SPLIT_AT_TOOLTIP = 'Split the text into pieces separated by spaces.';
+    Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_TITLE = 'skaidyti tarpais';
+    Blockly.Msg.LANG_TEXT_SPLIT_AT_TOOLTIP = 'SKaido tekstą į dalis ir atskiria tarpais.';
 
     Blockly.Msg.LANG_TEXT_SEGMENT_HELPURL = '/reference/blocks/text.html#segment';
     Blockly.Msg.LANG_TEXT_SEGMENT_TITLE_SEGMENT = 'segmentas';
     Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_START = 'pradžia';
     Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_LENGTH = 'ilgis';
     Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_TEXT = 'tekstas';
-    Blockly.Msg.LANG_TEXT_SEGMENT_INPUT = 'segment  text %1 start %2 length %3';
-    Blockly.Msg.LANG_TEXT_SEGMENT_AT_TOOLTIP = 'Extracts the segment of the given length from the given text\n'
-        + 'starting from the given text starting from the given position. Position\n'
-        + '1 denotes the beginning of the text.';
+    Blockly.Msg.LANG_TEXT_SEGMENT_INPUT = 'segmento tekstas %1 pradžia %2 ilgis %3';
+    Blockly.Msg.LANG_TEXT_SEGMENT_AT_TOOLTIP = 'Iš duoto teksto ištraukia nurodyto ilgio segmentą\n'
+        + 'pradedant nuo pateikto teksto, pradedant nuo nurodytos pozicijos.\n'
+        + 'Pozicija 1 žymi teksto pradžią.';
 
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_HELPURL = '/reference/blocks/text.html#replaceall';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_SEGMENT = 'segmentas';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_TEXT = 'tekstas';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL = 'pakeisti visus';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_REPLACEMENT = 'pakeitimas';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT = 'replace all text %1 segment %2 replacement %3';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP = 'Returns a new text obtained by replacing all occurrences\n'
-        + 'of the segment with the replacement.';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT = 'pakeisti visą tekstą %1 segmentu %2 pakeičiant %3';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP = 'Grąžina naują tekstą, gautą pakeičiant segmentus.';
 
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_HELPURL = '/reference/blocks/text.html#isstring';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE = 'yra eilutė?';
@@ -724,15 +723,15 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL = '';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT = 'tekste';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX = 'preferring';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER = 'order';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX = 'teikiant pirmenybę';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER = 'tvarkai';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST = 'pirmiausia ilgiausia eilutė';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER = 'žodynas';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE = 'replace all mappings';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE = 'pakeisti visus atvaizdavimus';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_LONGEST_STRING_FIRST = '/reference/blocks/text.html#replaceallmappingslongeststring';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST = 'Returns a new text obtained by replacing all occurrences\n'
-        + 'defined by the input dictionary keys with the values of the corresponding keys.\n'
-        + 'In case of a choice between replacing one key or the other, the longest key is replaced first.';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST = 'Pateikus atvaizdavimo žodyną kaip įvestį, pagrindiniai teksto įrašai n\'
+        + 'pakeičiami atitinkamomis žodyno reikšmėmis. Grąžina tekstą su pritaikytais atvaizdavimais.\n'
+        + 'Jei pasirenkamas vienas ar kitas raktas, pirmiausia pakeičiamas ilgiausias raktas.';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_DICTIONARY_ORDER = '/reference/blocks/text.html#replaceallmappingsdictionary';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER = 'Returns a new text obtained by replacing all occurrences\n'
         + 'defined by the input dictionary keys with the values of the corresponding keys.\n'
