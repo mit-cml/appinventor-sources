@@ -654,26 +654,23 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL = '';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = 'tekstas';
-    Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT = 'at';
-    Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT_LIST = 'at (list)';
-    Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST = 'split at first';
-    Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY = 'split at first of any';
-    Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT = 'split';
-    Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_ANY = 'split at any';
-    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = 'Divides the given text into two pieces using the location of the first occurrence of \n'
-        + 'the text \'at\' as the dividing point, and returns a two-item list consisting of the piece \n'
-        + 'before the dividing point and the piece after the dividing point. \n'
-        + 'Splitting "apple,banana,cherry,dogfood" with a comma as the splitting point \n'
-        + 'returns a list of two items: the first is the text "apple" and the second is the text \n'
-        + '"banana,cherry,dogfood". \n'
-        + 'Notice that the comma after "apple" does not appear in the result, \n'
-        + 'because that is the dividing point.';
+    Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT = 'esantis';
+    Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT_LIST = 'esantis (sąrašas)';
+    Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST = 'skaidyti iš pradžių';
+    Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY = 'sskaidyti iš pradžių bet kurį';
+    Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT = 'skaidyti';
+    Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_ANY = 'skaidyti bet kurį';
+    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = 'Pateiktą tekstą skaido į dvi dalis naudojant \n'
+        + 'skaidymo tašką, ir grąžina dviejų elementų sąrašą, susidedantį iš dalių prieš ir po skaidymo taško. \n'
+        + 'Tekste „obuolys,bananas,vyšnia,persikas“ skaidymo tašku laikant kablelį bus grąžinamas \n'
+        + 'dviejų elementų sąrašas: pirmoje dalyje tekstas „obuolys“, antroje dalyje „bananas,vyšnia,persikas“. \n'
+        + 'Pastaba, kad kablelio po „obuolys“ nebus, kadangi jis buvo skaidymo taškas.';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = '/reference/blocks/text.html#splitat';
-    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Divides the given text into a two-item list, using the first location of any item \n'
-        + 'in the list \'at\' as the dividing point. \n\n'
-        + 'Splitting "I love apples bananas apples grapes" by the list "(ba,ap)" returns \n'
-        + 'a list of two items, the first being "I love" and the second being \n'
-        + '"ples bananas apples grapes."';
+    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Pateiktą tekstą skaido į dvi dalis naudojant \n'
+        + 'pirmąją bet kurio elemento vietą kaip skaidymo tašką. \n\n'
+        + 'Skaidant pagal sąrašą „(ba,ob)“ tekstą „Man patinka obuolys ir bananas.“ bus grąžinamas \n'
+        + 'dviejų elementų sąrašas: pirmoje dalyje bus tekstas „Man patinka“, antroje dalyje bus \n'
+        + '„uolys ir bananas.“';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = '/reference/blocks/text.html#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Divides text into pieces using the text \'at\' as the dividing points and produces a list of the results.  \n'
         + 'Splitting "one,two,three,four" at "," (comma) returns the list "(one two three four)". \n'
