@@ -1017,8 +1017,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TITLE = 'sujungti žodynus';
     Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_HELPURL = '/reference/blocks/dictionaries.html#merge-into-dictionary';
 
-    Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE = 'list by walking key path %1 in dictionary or list %2';
-    Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TOOLTIP = 'Starts from the given dictionary and follows it and its children\'s keys based on the given path, returning a list of nodes found at the end of the walk.';
+    Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE = 'sąrašas, einant rakto keliu %1 žodyne arba sąraše %2';
+    Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TOOLTIP = 'Pradeda nuo duoto žodyno ir seka jį ir jo raktus, atsižvelgiant į nurodytą kelią, grąžina rastų mazgų sąrašą.';
     Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_HELPURL = '/reference/blocks/dictionaries.html#list-by-walking-key-path';
 
     Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE = 'walk all at level';
