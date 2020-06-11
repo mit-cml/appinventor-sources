@@ -733,10 +733,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'pakeičiami atitinkamomis žodyno reikšmėmis. Grąžina tekstą su pritaikytais atvaizdavimais.\n'
         + 'Jei pasirenkamas vienas ar kitas raktas, pirmiausia pakeičiamas ilgiausias raktas.';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_DICTIONARY_ORDER = '/reference/blocks/text.html#replaceallmappingsdictionary';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER = 'Returns a new text obtained by replacing all occurrences\n'
-        + 'defined by the input dictionary keys with the values of the corresponding keys.\n'
-        + 'In case of a choice between replacing one key or the other, the element that occurs first \n'
-        + 'in the dictionary is replaced first.';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER = 'Grąžina naują tekstą, kuris gaunamas pakeičiant visus atvejus \n'
+        + 'apibrėžtais įvesties žodyno raktais su atitinkamomis raktų reikšmėmis. \n'
+        + 'Jei reikia pasirinkti pakeisti vieną ar kitą raktą, elementas, kuris pirmas atsiranda žodyne, yra pakeičiamas pirmas.';
 
     Blockly.Msg.LANG_TEXT_REVERSE_HELPURL = '/reference/blocks/text.html#reverse';
     Blockly.Msg.LANG_TEXT_REVERSE_INPUT = 'atvirkščiai';
@@ -765,7 +764,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_TITLE_HELPURL = '/reference/blocks/lists.html#selectlistitem';
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_TITLE_SELECT = 'pasirinkti sąrašo elementą';
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT_INDEX = 'index';
+    Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT_INDEX = 'indeksas';
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT = 'select list item  list %1 index %2';
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_TOOLTIP = 'Returns the item at position index in the list.';
 
@@ -778,7 +777,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'false if not.';
 
     Blockly.Msg.LANG_LISTS_POSITION_IN_HELPURL = '/reference/blocks/lists.html#indexinlist';
-    Blockly.Msg.LANG_LISTS_POSITION_IN_TITLE_POSITION = 'index in list';
+    Blockly.Msg.LANG_LISTS_POSITION_IN_TITLE_POSITION = 'indeksas sąraše';
     Blockly.Msg.LANG_LISTS_POSITION_IN_INPUT_THING = 'dalykas';
     Blockly.Msg.LANG_LISTS_POSITION_IN_INPUT_LIST = 'sąrašas';
     Blockly.Msg.LANG_LISTS_POSITION_IN_INPUT = 'index in list  thing %1 list %2';
