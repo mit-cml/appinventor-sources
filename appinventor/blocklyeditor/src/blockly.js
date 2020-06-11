@@ -34,6 +34,22 @@ Blockly.INDENTED_VALUE = 6;
 Blockly.pathToBlockly = './';
 
 /**
+ * Returns the dimensions of the specified SVG image.
+ * @param {!Element} svg SVG image.
+ * @return {!Object} Contains width and height properties.
+ */
+Blockly.svgSize = function(svg) {
+  if (svg) {
+    return {
+      width: svg.cachedWidth_,
+      height: svg.cachedHeight_
+    };
+  } else {
+    return 0;
+  }
+};
+
+/**
  * Extend Blockly's hideChaff method with AI2-specific behaviors.
  */
 Blockly.hideChaff = (function(func) {
