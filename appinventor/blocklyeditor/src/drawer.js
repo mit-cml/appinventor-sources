@@ -38,6 +38,11 @@ Blockly.Drawer = function(parentWorkspace, opt_options) {
   this.options.languageTree = Blockly.Drawer.buildTree_();
   this.workspace_ = parentWorkspace;
   this.options.RTL = this.workspace_.RTL;
+  if (this.options.RTL) {
+    this.options.toolboxPosition = Blockly.TOOLBOX_AT_RIGHT;
+  } else {
+    this.options.toolboxPosition = Blockly.TOOLBOX_AT_LEFT;
+  }
   this.flyout_ = new Blockly.Flyout(this.options);
   var flyoutGroup = this.flyout_.createDom('g'),
       svg = this.workspace_.getParentSvg();
