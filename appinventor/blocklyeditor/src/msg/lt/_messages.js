@@ -938,73 +938,73 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TOOLTIP = 'Sukuriamas žodynas.';
     Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_HELPURL = '/reference/blocks/dictionaries.html#make-a-dictionary';
 
-    Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TITLE_ADD = 'dict';
-    Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TOOLTIP = 'Add, remove, or reorder sections to reconfigure this dictionary block.';
+    Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TITLE_ADD = 'žodynas';
+    Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TOOLTIP = 'Įtraukti, pašalinti ar perrikiuoti skyrius siekiant pertvarkyti šį žodyno bloką..';
 
-    Blockly.Msg.LANG_DICTIONARIES_PAIR_TITLE = 'pair';
-    Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP = 'Add a pair to the dictionary.';
+    Blockly.Msg.LANG_DICTIONARIES_PAIR_TITLE = 'pora';
+    Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP = 'Įtraukti porą į žodyną.';
     Blockly.Msg.LANG_DICTIONARIES_PAIR_HELPURL = '/reference/blocks/dictionaries.html#pair';
 
-    Blockly.Msg.LANG_DICTIONARIES_PAIR_INPUT = 'key %1 value %2';
-    Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP = 'Creates a pair with the key and value provided.';
-    Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE = 'make a pair';
+    Blockly.Msg.LANG_DICTIONARIES_PAIR_INPUT = 'raktas %1 reikšmė %2';
+    Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP = 'Sukuriama pora su pateiktu raktu ir reikšme.';
+    Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE = 'sukurti porą';
 
-    Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_INPUT = 'set value for key %1 in dictionary %2 to %3';
-    Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TITLE = 'set dict pair';
-    Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TOOLTIP = 'Set a pair in a dictionary.';
+    Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_INPUT = 'nustatyti reikšmę raktui %1 esančiam žodyne %2 į %3';
+    Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TITLE = 'nusatyti porą';
+    Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TOOLTIP = 'Nustato porą žodyne.';
     Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_HELPURL = '/reference/blocks/dictionaries.html#set-value-for-key';
 
-    Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_INPUT = 'remove entry for key %2 from dictionary %1';
-    Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TITLE = 'remove entry for key from dictionary';
-    Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TOOLTIP = 'Delete a pair in a dictionary given its key.';
+    Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_INPUT = 'pašalinti įrašą raktui %2 iš žodyno %1';
+    Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TITLE = 'pašalinti raktui įrašą iš žodyno %1';
+    Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TOOLTIP = 'Pašalina porą žodyne, atsižvelgiant į jos raktą.';
     Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_HELPURL = '/reference/blocks/dictionaries.html#delete-entry-for-key';
 
-    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_INPUT = 'get value for key %1 in dictionary %2 or if not found %3';
-    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TOOLTIP = 'Returns the value in the dictionary associated with the key.';
-    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TITLE = 'look up in a dict';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_INPUT = 'gauti reikšmę raktui %1 žodyne %2 arba jei nerastas %3';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TOOLTIP = 'Grąžina reikšmę žodyne, susijusiame su raktu.';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TITLE = 'pažiūrėti žodyną';
     Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_HELPURL = '/reference/blocks/dictionaries.html#get-value-for-key';
 
-    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_INPUT = 'get value at key path %1 in dictionary %2 or if not found %3';
-    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TOOLTIP = 'Returns the value in the nested dictionary.';
-    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE = 'recursive look up in a dict';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_INPUT = 'gauti reikšmę kelyje %1 žodyne %2 arba jei nerasta %3';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TOOLTIP = 'Grąžina įdėto žodyno reikšmę.';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE = 'rekursinė paieška žodyne';
     Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_HELPURL = '/reference/blocks/dictionaries.html#get-value-at-key-path';
 
-    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_INPUT = 'set value for key path %1 in dictionary %2 to %3';
-    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP = 'Sets the value at a path in a tree starting from the given dictionary.';
-    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE = 'set value at key path of dictionary';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_INPUT = 'nustatyti reikšmę kelyje %1 žodyne %2 į %3';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP = 'Nustato reikšmę medyje, pradedant nuo duoto žodyno.';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE = 'nustatyti reikšmę pagrindiniame žodyno kelyje';
     Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_HELPURL = '/reference/blocks/dictionaries.html#set-value-for-key-path';
 
     Blockly.Msg.LANG_DICTIONARIES_GETTERS_TITLE = 'gauti';
     Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TITLE = 'raktai';
     Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT = 'žodynas';
-    Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP = 'Returns a list of all of the keys in the dictionary.';
+    Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP = 'Grąžina visų žodyno raktų sąrašą.';
     Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_HELPURL = '/reference/blocks/dictionaries.html#get-keys';
     Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TYPEBLOCK = 'gauna raktus';
 
     Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TITLE = 'reikšmės';
     Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_INPUT = 'žodynas';
-    Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TOOLTIP = 'Returns a list of all of the values in the dictionary.';
+    Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TOOLTIP = 'Grąžina visų žodyno reikšmių sąrašą.';
     Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_HELPURL = '/reference/blocks/dictionaries.html#get-values';
     Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TYPEBLOCK = 'gauna raktus';
 
-    Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_INPUT = 'yra raktas žodyne? key %1 dictionary %2';
-    Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TOOLTIP = 'Check if a key is in a dictionary.';
-    Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TITLE = 'is key in dict?';
+    Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_INPUT = 'yra raktas žodyne? raktas %1 žodynas %2';
+    Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TOOLTIP = 'Patikrina, ar raktas yra žodyne.';
+    Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TITLE = 'ar raktas yra žodyne?';
     Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_HELPURL = '/reference/blocks/dictionaries.html#is-key-in-dictionary';
 
     Blockly.Msg.LANG_DICTIONARIES_LENGTH_TITLE = 'žodyno dydis';
     Blockly.Msg.LANG_DICTIONARIES_LENGTH_INPUT = 'žodynas';
-    Blockly.Msg.LANG_DICTIONARIES_LENGTH_TOOLTIP = 'Returns the number of key-value pairs in the dictionary.';
+    Blockly.Msg.LANG_DICTIONARIES_LENGTH_TOOLTIP = 'Grąžina reikšmiingų porų skaičių žodyne.';
     Blockly.Msg.LANG_DICTIONARIES_LENGTH_HELPURL = '/reference/blocks/dictionaries.html#size-of-dictionary';
 
-    Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TITLE = 'list of pairs to dictionary';
-    Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_INPUT = 'pairs';
-    Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TOOLTIP = 'Converts a list of pairs to a dictionary.';
+    Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TITLE = 'porų sąrašas žodyne';
+    Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_INPUT = 'poros';
+    Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TOOLTIP = 'Porų sąrašą paverčia žodynu.';
     Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_HELPURL = '/reference/blocks/dictionaries.html#list-of-pairs-to-dictionary';
 
-    Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_TITLE = 'dictionary to list of pairs';
+    Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_TITLE = 'žodynas į porų sąrašą';
     Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_INPUT = 'žodynas';
-    Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_TOOLTIP = 'Converts a dictionary to a list of pairs.';
+    Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_TOOLTIP = 'Žodyną paverčia porų sąrašu.';
     Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_HELPURL = '/reference/blocks/dictionaries.html#dictionary-to-list-of-pairs';
 
     Blockly.Msg.LANG_DICTIONARIES_COPY_TITLE = 'kopijuoti žodyną';
@@ -1013,8 +1013,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_DICTIONARIES_COPY_HELPURL = '/reference/blocks/dictionaries.html#copy-dictionary';
 
     Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_INPUT = 'sujungti į žodyną %1 iš žodyno %2';
-    Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TOOLTIP = 'Copies the pairs of the "From" dictionary into the "To" dictionary.';
-    Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TITLE = 'combine dictionaries';
+    Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TOOLTIP = 'Nukopijuoja žodyno poras „Iš“ į žodyną „Į“.';
+    Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TITLE = 'sujungti žodynus';
     Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_HELPURL = '/reference/blocks/dictionaries.html#merge-into-dictionary';
 
     Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE = 'list by walking key path %1 in dictionary or list %2';
