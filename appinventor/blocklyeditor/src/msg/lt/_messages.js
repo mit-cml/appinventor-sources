@@ -831,7 +831,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_TOOLTIP = 'Įtraukia elementus į sąrašo pabaigą.';
 
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_CONTAINER_TITLE_ADD = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_ADD_ITEMS_CONTAINER_TOOLTIP = 'Add, remove, or reorder sections to reconfigure this list block.';
+    Blockly.Msg.LANG_LISTS_ADD_ITEMS_CONTAINER_TOOLTIP = 'Įtraukti, pašalinti ar perrikiuoti skyrius siekiant pertvarkyti šį sąrašo bloką.';
 
     Blockly.Msg.LANG_LISTS_COPY_HELPURL = '/reference/blocks/lists.html#copy';
     Blockly.Msg.LANG_LISTS_COPY_TITLE_COPY = 'kopijuoti sąrašą';
@@ -844,51 +844,48 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_IS_LIST_TOOLTIP = 'Tikrinti ar tai yra sąrašas.';
 
     Blockly.Msg.LANG_LISTS_REVERSE_HELPURL = '/reference/blocks/lists.html#reverse';
-    Blockly.Msg.LANG_LISTS_REVERSE_TITLE_REVERSE = 'reverse list';
+    Blockly.Msg.LANG_LISTS_REVERSE_TITLE_REVERSE = 'perrikiuoti sąrašą';
     Blockly.Msg.LANG_LISTS_REVERSE_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP = 'Reverses the order of input list and returns it as a new list.';
+    Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP = 'Pakeičia įvesties sąrašo tvarką ir grąžina kaip naują sąrašą';
 
     Blockly.Msg.LANG_LISTS_TO_CSV_ROW_HELPURL = '/reference/blocks/lists.html#listtocsvrow';
-    Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TITLE_TO_CSV = 'list to csv row';
+    Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TITLE_TO_CSV = 'sąrašą į CSV eilutę';
     Blockly.Msg.LANG_LISTS_TO_CSV_ROW_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TOOLTIP = 'Interprets the list as a row of a table and returns a CSV '
-        + '\(comma-separated value\) text representing the row. Each item in the row list is '
-        + 'considered to be a field, and is quoted with double-quotes in the resulting CSV text. '
-        + 'Items are separated by commas. The returned row text does not have a line separator at '
-        + 'the end.';
+    Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TOOLTIP = 'Sąrašą interpretuoja kaip lentelės eilutę ir grąžina CSV '
+        + '(kableliais atskirtos reikšmės) tekstą atvaizduojantį eilutes. Kiekvienas eilučių sąrašo elementas laikomas lauku,'
+        + 'o gautame CSV tekste cituojamas dvigubomis kabutėmis.'
+        + 'Elementai yra atskirti kableliais. Grąžintos eilutės teksto pabaigoje nėra eilučių skirtuko.';
 
     Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_HELPURL = '/reference/blocks/lists.html#listfromcsvrow';
-    Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_TITLE_FROM_CSV = 'list from csv row';
+    Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_TITLE_FROM_CSV = 'sąrašas iš CSV eilutės';
     Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_INPUT_TEXT = 'tekstas';
-    Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_TOOLTIP = 'Parses a text as a CSV \(comma-separated value\) formatted '
-        + 'row to produce a list of fields. It is an error for the row text to contain unescaped '
-        + 'newlines inside fields \(effectively, multiple lines\). It is okay for the row text to '
-        + 'end in a single newline or CRLF.';
+    Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_TOOLTIP = 'Analizuoja tekstą kaip CSV (kableliais atskirta reikšmė) suformatuota '
+        + 'eilutė, kad būtų pateiktas laukų sąrašas. Klaida, kai eilutės tekste yra neištrintos naujos eilutės '
+        + '(kelios eilutės). Eilutės tekstas turi pasibaigti viena nauja eilute.';
 
     Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_HELPURL = '/reference/blocks/lists.html#listtocsvtable';
-    Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TITLE_TO_CSV = 'list to csv table';
+    Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TITLE_TO_CSV = 'sąrašas į CSV lentelę';
     Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TOOLTIP = 'Interprets the list as a table in row-major format and '
-        + 'returns a CSV \(comma-separated value\) text representing the table. Each item in the '
-        + 'list should itself be a list representing a row of the CSV table. Each item in the row '
-        + 'list is considered to be a field, and is quoted with double-quotes in the resulting CSV '
-        + 'text. In the returned text, items in rows are separated by commas and rows are '
-        + 'separated by CRLF \(\\r\\n\).';
+    Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TOOLTIP = 'Interpretuoja sąrašą kaip lentelę su didžiausių eilučių formatu ir '
+        + 'grąžina CSV (kableliais atskirtos reikšmės) tekstą atvaizduojančia lentelę. Kiekvienas elementas sąraše '
+        + 'pats turėtų būti CSV lentelės eilutę atvaizduojantis sąrašas. Kiekvienas elementas eilučių '
+        + 'sąraše laikomas lauku ir pateiktame CSV tekste cituojamas dvigubomis kabutėmis. '
+        + ' Grąžintame tekste eilutės elementai yra atskiriami kableliais, o eilutės yra atskiriamos naujomis eilutėmis.';
 
     Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_HELPURL = '/reference/blocks/lists.html#listfromcsvtable';
-    Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TITLE_FROM_CSV = 'list from csv table';
+    Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TITLE_FROM_CSV = 'sąrašas iš CSV lentelės';
     Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_INPUT_TEXT = 'tekstas';
-    Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TOOLTIP = 'Parses a text as a CSV \(comma-separated value\) formatted '
-        + 'table to produce a list of rows, each of which is a list of fields. Rows can be '
-        + 'separated by newlines \(\\n\) or CRLF \(\\r\\n\).';
+    Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TOOLTIP = 'Analizuoja tekstą kaip CSV (kableliais atskirta reikšmė) suformatuota'
+        + 'lentelę, kad būtų pateiktas eilučių sąrašas, iš kurių kiekvienas yra laukų sąrašas.  '
+        + 'Eilutes galima atskirti naujomis eilutėmis.';
 
     Blockly.Msg.LANG_LISTS_INSERT_ITEM_HELPURL = '/reference/blocks/lists.html#insert';
     Blockly.Msg.LANG_LISTS_INSERT_TITLE_INSERT_LIST = 'įterpti sąrašo elementą';
     Blockly.Msg.LANG_LISTS_INSERT_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_INSERT_INPUT_INDEX = 'index';
+    Blockly.Msg.LANG_LISTS_INSERT_INPUT_INDEX = 'indeksas';
     Blockly.Msg.LANG_LISTS_INSERT_INPUT_ITEM = 'elementas';
-    Blockly.Msg.LANG_LISTS_INSERT_INPUT = 'insert list item  list %1 index %2 item %3';
-    Blockly.Msg.LANG_LISTS_INSERT_TOOLTIP = 'Insert an item into a list at the specified position.';
+    Blockly.Msg.LANG_LISTS_INSERT_INPUT = 'iįterpti sąrašo elementą:  sąrašas %1 indeksas %2 elementas %3';
+    Blockly.Msg.LANG_LISTS_INSERT_TOOLTIP = 'Įterpkia elementą į sąrašą nurodytoje vietoje.';
 
     Blockly.Msg.LANG_LISTS_IS_EMPTY_HELPURL = '/reference/blocks/lists.html#islistempty';
     Blockly.Msg.LANG_LISTS_TITLE_IS_EMPTY = 'sąrašas tuščias?';
@@ -896,20 +893,20 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_IS_EMPTY_TOOLTIP = 'Grąžina reikšmę „Tiesa“, jei sąrašas tuščias.';
 
     Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_HELPURL = '/reference/blocks/lists.html#lookuppairs';
-    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_TITLE_LOOKUP_IN_PAIRS = 'look up in pairs';
+    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_TITLE_LOOKUP_IN_PAIRS = 'ieškoti porose';
     Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_KEY = 'raktas';
-    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_PAIRS = 'pairs';
-    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_NOT_FOUND = 'nerastas';
-    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT = 'look up in pairs  key %1 pairs %2 notFound %3';
-    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_TOOLTIP = 'Returns the value associated with the key in the list of pairs';
+    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_PAIRS = 'poros';
+    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_NOT_FOUND = 'nerasta';
+    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT = 'ieškoti porose:  raktas %1 poros %2 nerasta %3';
+    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_TOOLTIP = 'Grąžina reikšmę, susietą su raktu porų sąraše.';
 
     // Join With Separator block
     Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_HELPURL = '/reference/blocks/lists.html#joinwithseparator';
-    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TITLE = 'join with separator';
-    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_SEPARATOR = 'separator';
+    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TITLE = 'sujungti su skirtuku';
+    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_SEPARATOR = 'skirtukas';
     Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_INPUT = 'join items using separator %1 list %2';
-    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TOOLTIP = 'Returns text with list elements joined with separator';
+    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_INPUT = 'sujungti elementus naudojant skirtuką %1 sąrašas %2';
+    Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TOOLTIP = 'Grąžina tekstą su sąrašo elementais, sujungtais su skirtuku.';
 
     /*Blockly.Msg.LANG_LISTS_INDEX_OF_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
      Blockly.Msg.LANG_LISTS_INDEX_OF_TITLE_FIND = 'find';
