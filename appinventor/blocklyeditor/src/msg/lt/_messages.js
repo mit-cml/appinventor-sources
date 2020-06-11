@@ -667,20 +667,20 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'Pastaba, kad kablelio po „obuolys“ nebus, kadangi jis buvo skaidymo taškas.';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = '/reference/blocks/text.html#splitat';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Pateiktą tekstą skaido į dvi dalis naudojant \n'
-        + 'pirmąją bet kurio elemento vietą kaip skaidymo tašką. \n\n'
+        + 'pirmąją bet kurio elemento vietą kaip skaidymo tašką. \n'
         + 'Skaidant pagal sąrašą „(ba,ob)“ tekstą „Man patinka obuolys ir bananas.“ bus grąžinamas \n'
         + 'dviejų elementų sąrašas: pirmoje dalyje bus tekstas „Man patinka“, antroje dalyje bus \n'
         + '„uolys ir bananas.“';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = '/reference/blocks/text.html#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Skaido tekstą į dalis, naudodamas skaidymo tašką nurodytą „esantis“ ir pateikia rezultatų sąrašą. \n'
         + 'Skaidant tekstą „vienas,du,trys,keturi“ ir skaidymo tašku naudojant kablelį bus grąžinamas sąrašas „(vienas du trys keturi)“. \n'
-        + 'Skaidant tekstą „vienas-bulvė,du-bulvė,trys-bulvė,keturi-bulvė“ ir skaidymo tašku naudojant "-bulvė", bus grąžinamas sąrašas „(vienas du trys keturi)“.';
+        + 'Skaidant tekstą „vienas-bulvė,du-bulvė,trys-bulvė,keturi“ ir skaidymo tašku naudojant "-bulvė,", bus grąžinamas sąrašas „(vienas du trys keturi)“.';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT = '/reference/blocks/text.html#split';
-    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Divides the given text into a list, using any of the items in the list \'at\' as the \n'
-        + 'dividing point, and returns a list of the results. \n'
-        + 'Splitting "appleberry,banana,cherry,dogfood" with \'at\' as the two-element list whose \n'
-        + 'first item is a comma and whose second item is "rry" returns a list of four items: \n'
-        + '"(applebe banana che dogfood)".';
+    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Pateiktas tekstas skaidomas į sąrašą, naudojant bet kurį elementą kaip skaidymo tašką,  \n'
+        + 'ir grąžinamas rezultatų sąrašas. \n'
+        + 'Skaidant „nesimokyti,mokytis,tingėti“ pagal sąrašą „(,moky)“ \n'
+        + 'pirmas yra kablelis, antras yra „moky“, bus grąžinamas trijų elementų sąrašas: \n'
+        + '„(nesii tis tingėti)“.';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_ANY = '/reference/blocks/text.html#splitatany';
 
     /*.LANG_TEXT_PRINT_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
