@@ -174,10 +174,10 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP = 'kas kiek';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = 'skaičiui intervale';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX = 'for ';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX = 'dėl ';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX = ' intervale';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = 'Veikia blokus esančius sekcijoje „atlikti“ kiekvienai skaitinei reikšmei '
-        + 'intervale nuo pradžios iki pabaigos, kiekvieną kartą padidinant reikšmę. Panaudoja duotą '
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = 'Veikia blokus, esančius skyriuje „atlikti“, ir kiekvienai skaitinei reikšmei '
+        + '(intervale nuo pradžios iki pabaigos) kiekvieną kartą padidina reikšmę. Panaudoja duotą '
         + 'kintamojo vardą, kuris nurodo esamą reikšmę.';
 
     Blockly.Msg.LANG_CONTROLS_FOREACH_HELPURL = '/reference/blocks/control.html#foreach';
@@ -186,9 +186,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_INLIST = 'sąraše';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_TEXT = 'elementui sąraše';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_PREFIX = 'for ';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_PREFIX = 'dėl ';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX = ' sąraše';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Veikia blokus esančius sekcijoje „atlikti“ kiekvienam elementui sąraše. '
+    Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Veikia blokus, esančius skyriuje „atlikti“, kiekvienam elementui sąraše. '
         + ' Norėdami nurodyti dabartinį sąrašo elementą, naudokite duotą kintamojo pavadinimą.';
 
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL = '/reference/blocks/control.html#foreachdict';
@@ -220,7 +220,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST = 'testas';
     Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'kol';
-    Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Veikia blokus, esančius sekcijoje „atlikti“ kol testas yra teisingas.';
+    Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP = 'Veikia blokus, esančius skyriuje „atlikti“, kol testas yra teisingas.';
 
     Blockly.Msg.LANG_CONTROLS_CHOOSE_HELPURL = '/reference/blocks/control.html#choose';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE = 'jei';
@@ -229,16 +229,16 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'priešingu atveju';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'jei';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = 'Jei tikrinama sąlyga yra tiesa,'
-        + 'grąžinamas išraiškos, pridėtos prie sakinio „tai-grąžinti“, įvertinimo rezultatas;'
-        + 'kitu atveju, grąžinamas išraiškos, pridėtos prie sakinio „priešingu atveju-gražinti“ įvertinimo rezultatas;'
-        + 'bus įvertinta viena iš grąžinimo sakinių išraiškų.';
+        + 'grąžinamas išraiškos, pridėtos prie sakinio „tai-grąžinti“, įvertinimo rezultatas.'
+        + 'Kitu atveju, grąžinamas išraiškos, pridėtos prie sakinio „priešingu atveju-gražinti“ įvertinimo rezultatas.'
+        + 'Bus įvertinta viena iš grąžinimo sakinių išraiškų.';
 
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = '/reference/blocks/control.html#doreturn';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN = 'rezultatas';
-    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = 'Veikia blokus, esančius „atlikti“ ir grąžina sakinį. Useful if you need to run a procedure before returning a value to a variable.';
+    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = 'Veikia blokus, esančius „atlikti“, ir grąžina sakinį. Naudinga, jei prieš pradedant grąžinti reikšmę į kintamąjį reikia atlikti procedūrą.';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'atlikti/rezultatas';
-    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = 'do result';
+    Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE = 'atlikti rezultatą';
 
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'įvertinti, bet nepaisyti rezultato';
     Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_HELPURL = '/reference/blocks/control.html#evaluate';
