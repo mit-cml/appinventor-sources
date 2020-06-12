@@ -21,7 +21,7 @@
                                    }
      //--><!]]>
     </script>
-    <title>Other Reference Materials</title></head>
+    <title>Editing Functions in App Inventor</title></head>
 <body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
     <a class="navbar-brand" href="http://appinventor.mit.edu/">
 	<img src="/static/images/logo2.png" alt="Logo">
@@ -121,43 +121,53 @@
 </nav>
 <div class="default-page">
             <div class="header">
-	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Other Reference Materials</h1>
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Editing Functions in App Inventor</h1>
             </div>
             <div class="container-fluid">
                 <article class="documentation">
-<p>These documents provide additional details on some App Inventor topics.</p>
+<p>Beginning with version nb184, App Inventor has included the capability to cut, copy, and paste parts of your app design. This document explains this functionality.</p>
 
-<ul>
-  <li><a href="editing-functions.html">Editing Your App (Copy and Paste)</a></li>
-  <li><a href="activitystarter.html">Using the Activity Starter</a></li>
-  <li><a href="appstoplay.html">Uploading Your Apps to Google Play</a></li>
-  <li><a href="tinywebdb.html">Creating a Custom TinyWebDB Service</a></li>
-  <li><a href="testing.html">Live Development, Testing, and Debugging Tools</a></li>
-  <li><a href="emulator.html">Building Apps with the Emulator</a></li>
-  <li><a href="displaylist.html">Displaying a List</a></li>
-  <li><a href="locationsensor.html">Using the Location Sensor</a></li>
-  <li><a href="sizes.html">Specifying Sizes of Components</a></li>
-  <li><a href="media.html">Accessing Images and Sounds</a></li>
-  <li><a href="usingImages.html">Using Images with App Inventor</a></li>
-  <li><a href="https://docs.google.com/document/d/1HuWW8C3Ghz-pO-tWRpod2znM5wD7RfK10b2J37ftf2E/pub">Interfacing App Inventor projects to external sensors</a></li>
-  <li><a href="manyscreens.html">Building apps with many screens</a></li>
-  <li><a href="json-web-apis.html">Working with JSON and Web APIs</a></li>
-  <li><a href="xml.html">Working with XML and Web Services</a></li>
-  <li><a href="genymotion.html">Using the Genymotion emulator with App Inventor</a></li>
-  <li><a href="extensions.html">App Inventor Extensions</a></li>
-  <li><a href="responsiveDesign.html">Responsive Design in App Inventor</a></li>
-  <li><a href="compatibilityIssues.html">Compatibility Issues with releases of Android and App Inventor</a></li>
-  <li><a href="extensionsMultitouch.html">Using App Inventor extensions to implement multitouch: Scale Detector</a></li>
-  <li><a href="extensionsRotation.html">Using App Inventor extensions to implement multitouch: Rotation Detector</a></li>
-  <li><a href="extensionsGestures.html">Extending MIT App Inventor with Multi-touch and Gesture Detection</a></li>
-  <li><a href="backpack.html">Using the “Backpack” Cut and Paste system</a></li>
-  <li><a href="firebaseIntro.html">Brief introduction to cloud data and the Firebase component</a></li>
-  <li><a href="IoT.html">Controlling Internet of Things Devices with MIT App Inventor</a></li>
-  <li><a href="merger.html">Project merger tool</a></li>
-  <li><a href="vr.html">Experiments with Virtual Reality and MIT App Inventor</a></li>
-  <li><a href="any-component-blocks.html">Don’t Repeat Yourself (DRY) using Generic Blocks</a></li>
-  <li><a href="download-pngs.html">Import and export code blocks as PNGs</a></li>
-</ul>
+<h2 id="manipulating-components">Manipulating Components</h2>
+
+<p>Your app design is made up of one or more components in a tree structure that starts at the Screen. You can add components by dragging them in from the Palette panel to the left of the designer. You can customize components by changing their properties in the Properties panel to the right of the designer.</p>
+
+<h3 id="selecting-components">Selecting Components</h3>
+
+<p>You select components by clicking on them. Starting with release nb182, you can select multiple components by holding a platform specific key (Ctrl on Windows/Linux, Command on macOS) and clicking on additional components. This feature is sometimes referred to in App Inventor as multiselect. When you select multiple components, the properties panel will update to only show common properties among the selected components. Changing a property in this mode will change it for all of the selected components.</p>
+
+<h3 id="copying-components">Copying Components</h3>
+
+<p>Once you have selected one or more elements, use the standard keyboard shortcut for your platform to copy them (Ctrl+C on Windows/Linux, ⌘C on macOS). This places the contents of the selection onto your system’s clipboard.</p>
+
+<p>You can also use the Cut shortcut (Ctrl+X on Windows/Linux, ⌘X on macOS) to copy elements to the clipboard and immediately delete them, so that they can be pasted elsewhere.</p>
+
+<h3 id="pasting-components">Pasting Components</h3>
+
+<p>Once you have copied components to the clipboard, you can press the paste shortcut key (Ctrl+V on Windows/Linux, ⌘V on macOS) to paste them. When copying and pasting components, the default behavior is to copy both the design as well as the behavior (i.e., the blocks). If you would prefer to only paste the component without copying its behavior, hold the shift key while pressing the paste key combination. App Inventor will skip pasting the blocks if the shift key is held.</p>
+
+<p>When pasting, App Inventor will rename the pasted components if there is a collision with existing components in the project. It does this by computing a fresh name for each colliding name. The renaming algorithm works by either adding a numeric suffix to the name, or by incrementing the numeric suffix of the name until the collision is resolved. For example, if you copy a component named <code class="highlighter-rouge">ResetButton</code>, the first copy will be called <code class="highlighter-rouge">ResetButton1</code>, the second will be called <code class="highlighter-rouge">ResetButton2</code>, and so forth. These new names are also subsituted into the copied blocks code, if any.</p>
+
+<h2 id="manipulating-blocks">Manipulating Blocks</h2>
+
+<p>The blocks editor is where you provide the behavior for your app. Like the designer, it supports copying and pasting blocks. You can also use the <a href="backpack.html">backpack</a> to transfer blocks between projects, or <a href="download-pngs.html">download blocks as images</a> that you can share with others.</p>
+
+<h3 id="copying-blocks">Copying Blocks</h3>
+
+<p>To copy a block, first select the block. You can copy the block by either pressing the copy shortcut for your platform (Ctrl+C for Windows/Linux, ⌘C for macOS). The copy action is also available on the context menu by right clicking (Ctrl+clicking on macOS) the block.</p>
+
+<h3 id="paste-blocks">Paste Blocks</h3>
+
+<p>To paste a block, press the paste shortcut for your platofmr (Ctrl+V for Windows/Linux, ⌘V on macOS). The paste action is also available on the context menu by right clicking (Ctrl+clicking on macOS) the workspace.</p>
+
+<h2 id="copying-screens">Copying Screens</h2>
+
+<p>App Inventor allows you to copy and paste the content of a screen, effectively allowing you to copy screens.</p>
+
+<p>To copy a screen, select the screen either by clicking its background or selecting it in the structure tree. Press the copy shortcut key to copy it. Next, create a new screen. Press the paste shortcut key in this new screen to paste the contents copied from the previous screen.</p>
+
+<h2 id="sharing-designs">Sharing Designs</h2>
+
+<p>Because the copy functionality puts the content of your selection onto the clipboard, it is possible to share the content in a text form although the format is somewhat complex. For example, you can copy a component and paste its textual representation into a text document or email. Someone can select the text, copy it, and then paste it into App Inventor to recreate the component’s representation. This can help you build a collection of design elements for your apps.</p>
 
 </article>
 <script>
