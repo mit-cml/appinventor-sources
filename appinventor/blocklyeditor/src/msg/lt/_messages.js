@@ -60,8 +60,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.BACKPACK_CONFIRM_EMPTY = 'Ar tikrai norite ištuštinti kuprinę?';
     Blockly.Msg.BACKPACK_DOC_TITLE = "Kuprinės informacija";
     Blockly.Msg.SHOW_BACKPACK_DOCUMENTATION = "Rodyti kuprinės dokumentaciją";
-    Blockly.Msg.BACKPACK_DOCUMENTATION = "Kuprinė yra kopijavimo / įklijavimo funkcija. Tai leidžia kopijuoti blokus iš vieno projekto ar ekrano " +
-   " ir įklijuoti juos į kitą projektą ar ekraną. " +
+    Blockly.Msg.BACKPACK_DOCUMENTATION = "Kuprinė yra kopijavimo / įklijavimo funkcija. Tai leidžia kopijuoti blokus iš vieno projekto " +
+   " ar ekrano ir įklijuoti juos į kitą projektą ar ekraną. " +
    " Norėdami nukopijuoti, galite nuvilkti blokus į kuprinę. Norėdami įklijuoti, spustelėkite ant kuprinės piktogramos ir " +
    " nuvilkite blokus į darbo vietą." +
    "</p><p>Jei atsijungsite iš „App Inventor“ su kuprinėje paliktais blokais, " +
@@ -84,7 +84,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.NEW_VARIABLE = 'Naujas kintamasis...';
     Blockly.Msg.NEW_VARIABLE_TITLE = 'Naujas kintamojo pavadinimas:';
     Blockly.Msg.RENAME_VARIABLE = 'Pervadinti kintamąjį...';
-    Blockly.Msg.RENAME_VARIABLE_TITLE = 'Pervadinti visus "%1" kintamuosius į:';
+    Blockly.Msg.RENAME_VARIABLE_TITLE = 'Pervadinti visus „%1“ kintamuosius į:';
 
 // Toolbox.
     Blockly.Msg.VARIABLE_CATEGORY = 'Kintamieji';
@@ -138,8 +138,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN = 'tai';
 
     Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF = 'jei';
-    Blockly.Msg.LANG_CONTROLS_IF_IF_TOOLTIP = 'Pridėti, pašalinti arba perrikiuoti sekcijas\n' +
-        'norint iš naujo sukonfigūruoti šį bloką.';
+    Blockly.Msg.LANG_CONTROLS_IF_IF_TOOLTIP = 'Pridėti, pašalinti arba perrikiuoti skyrius norint iš naujo sukonfigūruoti šį bloką.';
 
     Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TITLE_ELSEIF = 'priešingu atveju jei';
     Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TOOLTIP = 'Pridėti sąlygas į bloką „Jei“.';
