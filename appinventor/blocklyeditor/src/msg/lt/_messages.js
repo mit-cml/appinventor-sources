@@ -319,7 +319,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         'skaičius 0 yra lygus tekstui „0“.\n' +
         'Be to, dvi eilutės, kurios žymi skaičius, yra lygios, jei skaičiai yra lygūs, pavyzdžiui, \n' +
         '„1“ yra lygus „01“.';
-    Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ = 'Grąžina reikšmę „Tiesa“, jei abi įvestys nėra lygios viena kitai..';
+    Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ = 'Grąžina reikšmę „Tiesa“, jei abi įvestys nėra lygios viena kitai.';
     Blockly.Msg.LANG_LOGIC_COMPARE_TRANSLATED_NAME = 'loginė lygybė';
     Blockly.Msg.LANG_LOGIC_COMPARE_EQ = '=';
     Blockly.Msg.LANG_LOGIC_COMPARE_NEQ = '\u2260';
@@ -365,7 +365,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_GT = '/reference/blocks/math.html#gt';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_GTE = '/reference/blocks/math.html#gte';
     Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_EQ = 'Grąžina reikšmę „Tiesa“, jei abu skaičiai yra lygūs vienas kitam.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ = 'Grąžina reikšmę „Tiesa“, jei abu skaičiai nėra lygūs vienas kitam..';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ = 'Grąžina reikšmę „Tiesa“, jei abu skaičiai nėra lygūs vienas kitam.';
     Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LT = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra mažesnis už antrą.';
     Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LTE = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra mažesnis\n' +
         'arba lygus antram skaičiui.';
@@ -487,16 +487,16 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO = 'iki';
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT = 'atsitiktinis sveikasis skaičius nuo %1 iki %2';
     Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP = 'Grąžina atsitiktinį sveikąjį skaičių tarp viršutinio ir apatinio rėžio.\n' +
-        'Ribos bus sumažintos, kad būtų mažesnis nei 2**30.';
+        'Ribos bus sumažintos, kad būtų mažiau nei 2**30.';
 
     Blockly.Msg.LANG_MATH_RANDOM_FLOAT_HELPURL = '/reference/blocks/math.html#randomfrac';
     Blockly.Msg.LANG_MATH_RANDOM_FLOAT_TITLE_RANDOM = 'atsitiktinė trupmena';
     Blockly.Msg.LANG_MATH_RANDOM_FLOAT_TOOLTIP = 'Grąžina atsitiktinį skaičių nuo 0 iki 1.';
 
     Blockly.Msg.LANG_MATH_RANDOM_SEED_HELPURL = '/reference/blocks/math.html#randomseed';
-    Blockly.Msg.LANG_MATH_RANDOM_SEED_TITLE_RANDOM = 'random set seed';
+    Blockly.Msg.LANG_MATH_RANDOM_SEED_TITLE_RANDOM = 'atsitiktinai nustatyta sėkla';
     Blockly.Msg.LANG_MATH_RANDOM_SEED_INPUT_TO = 'į';
-    Blockly.Msg.LANG_MATH_RANDOM_SEED_TOOLTIP = 'specifies a numeric seed for the random number generator';
+    Blockly.Msg.LANG_MATH_RANDOM_SEED_TOOLTIP = 'nurodo skaitinę sėklą atsitiktinių skaičių generatoriui';
 
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT = 'konvertuoti';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_RAD_TO_DEG = 'radianus į laipsnius';
