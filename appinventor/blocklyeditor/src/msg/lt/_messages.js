@@ -152,8 +152,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE = 'Kol';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = 'Tol, kol';
     Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_WHILE = 'Kol reikšmė teisinga, atliekama keleta sakinių.';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = 'Tol, kol reikšmė teisinga, atliekama keleta sakinių.';
-    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_1 = 'Veikia blokus, esančius sekcijoje „atlikti“ kol testas yra teisingas.';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = 'Tol, kol reikšmė teisinga, atliekami keli sakiniai.';
+    Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_1 = 'Veikia blokus, esančius skyriuje „atlikti“, kol testas yra teisingas.';
 
     Blockly.Msg.LANG_CONTROLS_FOR_HELPURL = '';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_WITH = 'skaičiuok su';
@@ -162,16 +162,16 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_TO = 'iki';
     Blockly.Msg.LANG_CONTROLS_FOR_INPUT_DO = 'atlikti';
 
-    Blockly.Msg.LANG_CONTROLS_FOR_TOOLTIP = 'Suskaičiuoja nuo pradžios iki pabaigos skaičiaus.\n' +
+    Blockly.Msg.LANG_CONTROLS_FOR_TOOLTIP = 'Suskaičiuoja nuo pradžios iki pabaigos.\n' +
         'Kiekvienam skaičiui nustato dabartinį skaičiaus numerį į\n' +
-        'kintamojo "%1", ir tada atlieka kelis sakinius.';
+        'kintamojo „%1“, ir tada atlieka kelis sakinius.';
 
     Blockly.Msg.LANG_CONTROLS_FORRANGE_HELPURL = '/reference/blocks/control.html#forrange';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM = 'kiekvienam';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_VAR = 'skaičiui';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START = 'nuo';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END = 'iki';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP = 'by';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP = 'kas kiek';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO = 'atlikti';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = 'skaičiui intervale';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX = 'for ';
