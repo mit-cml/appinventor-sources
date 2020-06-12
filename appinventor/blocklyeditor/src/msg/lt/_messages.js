@@ -1531,9 +1531,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_UNABLE_TO_LOAD_NO_RESPOND = "Neįmanoma įkelti atnaujinimo iš „App Inventor“ serverio (serveris neatsako)";
     Blockly.Msg.REPL_NOW_DOWNLOADING = "Dabar siunčiame naujinimą iš „App Inventor“ serverio, prašome palaukti.";
     Blockly.Msg.REPL_RUNTIME_ERROR = "Vykdymo klaida";
-    Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS = "<br/><i>Pastaba:</i>&nbsp;Nematysite kitos klaidos pranešimo 5 sekundes.";
+    Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS = "Pastaba: Nematysite kitos klaidos pranešimo 5 sekundes.";
     Blockly.Msg.REPL_CONNECTING_USB_CABLE = "Prijungimas per USB kabelį";
-    Blockly.Msg.REPL_STARTING_EMULATOR = "Paleidžiamas „Android“ emuliatorius<br/>Prašome palaukti: tai gali užtrukti minutę ar dvi.";
+    Blockly.Msg.REPL_STARTING_EMULATOR = "Paleidžiamas „Android“ emuliatorius. Prašome palaukti: tai gali užtrukti minutę ar dvi.";
     Blockly.Msg.REPL_CONNECTING = "Jungiamasi...";
     Blockly.Msg.REPL_CANCEL = "Atšaukti";
     Blockly.Msg.REPL_GIVE_UP = "Atsisakyti";
@@ -1543,7 +1543,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_PLUGGED_IN_Q = "Prijungtas?";
     Blockly.Msg.REPL_AI_NO_SEE_DEVICE = "„App Inventor“ nemato jūsų įrenginio, įsitikinkite, kad kabelis prijungtas ir tvarkyklės yra teisingos.";
     Blockly.Msg.REPL_HELPER_Q = "Pagelbiklis?";
-    Blockly.Msg.REPL_HELPER_NOT_RUNNING = 'Neatrodo, kad yra paleistas „aiStarter“ pagelbiklis<br /><a href="http://appinventor.mit.edu" target="_blank">Reikia pagalbos?</a>';
+    Blockly.Msg.REPL_HELPER_NOT_RUNNING = 'Neatrodo, kad yra paleistas „aiStarter“ pagelbiklis <a href="http://appinventor.mit.edu" target="_blank">Reikia pagalbos?</a>';
     Blockly.Msg.REPL_USB_CONNECTED_WAIT = "USB prijungtas, laukite ";
     Blockly.Msg.REPL_SECONDS_ENSURE_RUNNING = " sekundes (-džių), kad įsitikintumėte, jog viskas veikia.";
     Blockly.Msg.REPL_EMULATOR_STARTED = "Emuliatorius paleistas, laukite ";
@@ -1590,7 +1590,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 //Blockly.Util.Dialog Messages
     Blockly.Msg.DIALOG_UNBOUND_VAR = 'Nepriklausomos reikšmės';
     Blockly.Msg.DIALOG_SUBMIT = 'Pateikti';
-    Blockly.Msg.DIALOG_ENTER_VALUES = 'Įveskite reiškmes:';
+    Blockly.Msg.DIALOG_ENTER_VALUES = 'Įveskite reikšmes:';
   }
 };
 
