@@ -178,7 +178,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX = ' intervale';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = 'Veikia blokus, esančius skyriuje „atlikti“, ir kiekvienai skaitinei reikšmei '
         + '(intervale nuo pradžios iki pabaigos) kiekvieną kartą padidina reikšmę. Panaudoja duotą '
-        + 'kintamojo vardą, kuris nurodo esamą reikšmę.';
+        + 'kintamojo pavadinimą, kuris nurodo esamą reikšmę.';
 
     Blockly.Msg.LANG_CONTROLS_FOREACH_HELPURL = '/reference/blocks/control.html#foreach';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM = 'kiekvienam';
@@ -737,7 +737,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_TEXT_REVERSE_HELPURL = '/reference/blocks/text.html#reverse';
     Blockly.Msg.LANG_TEXT_REVERSE_INPUT = 'atvirkščiai';
-    Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP = 'Atvirkščiai išveda duotą tekstą.';
+    Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP = 'Duotą tekstą išveda atvirkščia tvarka.';
 
 // Lists Blocks.
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Sąrašai';
@@ -764,14 +764,14 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT_LIST = 'sąrašas';
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT_INDEX = 'indeksas';
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT = 'pasirinkti sąrašo elementą: sąrašas %1 indeksas %2';
-    Blockly.Msg.LANG_LISTS_SELECT_ITEM_TOOLTIP = 'Grąžina elementą esantį sąraše, tam tikroje pozicijoje, kurią nurodo indeksas .';
+    Blockly.Msg.LANG_LISTS_SELECT_ITEM_TOOLTIP = 'Grąžina elementą, kuris yra sąraše, tam tikroje pozicijoje, kurią nurodo indeksas .';
 
     Blockly.Msg.LANG_LISTS_IS_IN_HELPURL = '/reference/blocks/lists.html#inlist';
     Blockly.Msg.LANG_LISTS_IS_IN_TITLE_IS_IN = 'yra sąraše?';
     Blockly.Msg.LANG_LISTS_IS_IN_INPUT_THING = 'dalykas';
     Blockly.Msg.LANG_LISTS_IS_IN_INPUT_LIST = 'sąrašas';
     Blockly.Msg.LANG_LISTS_IS_IN_INPUT = 'yra sąraše? dalykas %1 sąrašas %2';
-    Blockly.Msg.LANG_LISTS_IS_IN_TOOLTIP = 'Grąžina „Tiesa“, jei daiktas yra sąrašo elementas, priešingu atveju grąžina „Netiesa“.';
+    Blockly.Msg.LANG_LISTS_IS_IN_TOOLTIP = 'Grąžina „Tiesa“, jei dalykas yra sąrašo elementas, priešingu atveju grąžina „Netiesa“.';
 
     Blockly.Msg.LANG_LISTS_POSITION_IN_HELPURL = '/reference/blocks/lists.html#indexinlist';
     Blockly.Msg.LANG_LISTS_POSITION_IN_TITLE_POSITION = 'indeksas sąraše';
@@ -814,12 +814,12 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_LENGTH_TOOLTIP = 'Suskaičiuoja sąrašo elementų skaičių.';
 
     Blockly.Msg.LANG_LISTS_APPEND_LIST_HELPURL = '/reference/blocks/lists.html#append';
-    Blockly.Msg.LANG_LISTS_APPEND_LIST_TITLE_APPEND = 'append to list';
+    Blockly.Msg.LANG_LISTS_APPEND_LIST_TITLE_APPEND = 'pridėti prie sąrašo';
     Blockly.Msg.LANG_LISTS_APPEND_LIST_INPUT_LIST1 = 'sąrašas1';
     Blockly.Msg.LANG_LISTS_APPEND_LIST_INPUT_LIST2 = 'sąrašas2';
-    Blockly.Msg.LANG_LISTS_APPEND_LIST_INPUT = 'append to list  list1 %1 list2 %2';
-    Blockly.Msg.LANG_LISTS_APPEND_LIST_TOOLTIP = 'Appends all the items in list2 onto the end of list1. After '
-        + 'the append, list1 will include these additional elements, but list2 will be unchanged.';
+    Blockly.Msg.LANG_LISTS_APPEND_LIST_INPUT = 'pridėti prie sąrašo  sąrašas1 %1 sąrašas2 %2';
+    Blockly.Msg.LANG_LISTS_APPEND_LIST_TOOLTIP = 'Prideda visus elementus esančius sąrašas2 į sąrašas1 pabaigą. '
+        + 'Po pridėjimo, sąrašė sąrašas1 bus papildomi elementai, tačiau sąrašas2 nebus keičiamas.';
 
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_HELPURL = '/reference/blocks/lists.html#additems';
     Blockly.Msg.LANG_LISTS_ADD_ITEMS_TITLE_ADD = 'įtraukti elementus į sąrašą';
@@ -874,7 +874,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TITLE_FROM_CSV = 'sąrašas iš CSV lentelės';
     Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_INPUT_TEXT = 'tekstas';
     Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TOOLTIP = 'Analizuoja tekstą kaip CSV (kableliais atskirta reikšmė) suformatuota'
-        + 'lentelę, kad būtų pateiktas eilučių sąrašas, iš kurių kiekvienas yra laukų sąrašas.  '
+        + 'lentelę, kad būtų pateiktas eilučių sąrašas, iš kurių kiekvienas yra laukų sąrašas.'
         + 'Eilutes galima atskirti naujomis eilutėmis.';
 
     Blockly.Msg.LANG_LISTS_INSERT_ITEM_HELPURL = '/reference/blocks/lists.html#insert';
@@ -882,8 +882,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_INSERT_INPUT_LIST = 'sąrašas';
     Blockly.Msg.LANG_LISTS_INSERT_INPUT_INDEX = 'indeksas';
     Blockly.Msg.LANG_LISTS_INSERT_INPUT_ITEM = 'elementas';
-    Blockly.Msg.LANG_LISTS_INSERT_INPUT = 'iįterpti sąrašo elementą:  sąrašas %1 indeksas %2 elementas %3';
-    Blockly.Msg.LANG_LISTS_INSERT_TOOLTIP = 'Įterpkia elementą į sąrašą nurodytoje vietoje.';
+    Blockly.Msg.LANG_LISTS_INSERT_INPUT = 'įterpti sąrašo elementą: sąrašas %1 indeksas %2 elementas %3';
+    Blockly.Msg.LANG_LISTS_INSERT_TOOLTIP = 'Įterpia elementą į sąrašą nurodytoje vietoje.';
 
     Blockly.Msg.LANG_LISTS_IS_EMPTY_HELPURL = '/reference/blocks/lists.html#islistempty';
     Blockly.Msg.LANG_LISTS_TITLE_IS_EMPTY = 'sąrašas tuščias?';
@@ -895,7 +895,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_KEY = 'raktas';
     Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_PAIRS = 'poros';
     Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_NOT_FOUND = 'nerasta';
-    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT = 'ieškoti porose:  raktas %1 poros %2 nerasta %3';
+    Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT = 'ieškoti porose: raktas %1 poros %2 nerasta %3';
     Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_TOOLTIP = 'Grąžina reikšmę, susietą su raktu porų sąraše.';
 
     // Join With Separator block
@@ -937,7 +937,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_HELPURL = '/reference/blocks/dictionaries.html#make-a-dictionary';
 
     Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TITLE_ADD = 'žodynas';
-    Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TOOLTIP = 'Įtraukti, pašalinti ar perrikiuoti skyrius siekiant pertvarkyti šį žodyno bloką..';
+    Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TOOLTIP = 'Įtraukti, pašalinti ar perrikiuoti skyrius siekiant pertvarkyti šį žodyno bloką.';
 
     Blockly.Msg.LANG_DICTIONARIES_PAIR_TITLE = 'pora';
     Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP = 'Įtraukti porą į žodyną.';
@@ -1030,7 +1030,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 // Variables Blocks.
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_HELPURL = '/reference/blocks/variables.html#global';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT = 'inicijuoti globalų';
-    Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_NAME = 'vardas';
+    Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_NAME = 'pavadinimas';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TO = 'į';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT = 'globalus';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP = 'Sukuria globalų kintamąjį ir suteikia jam pridedamų blokų reikšmę.';
@@ -1056,8 +1056,8 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO = 'į';
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_IN_DO = 'esantis';
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_COLLAPSED_TEXT = 'vietinis';
-    Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP = 'Leidžia jums sukurti kintamuosius, kurie pasiekiami tik šio bloko dalyje „atlikti“.';
-    Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TRANSLATED_NAME = 'inicijuoja vietinį atlikime';
+    Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP = 'Leidžia sukurti kintamuosius, kurie pasiekiami tik šio bloko dalyje „atlikti“.';
+    Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TRANSLATED_NAME = 'inicijuoja vietinį';
 
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_HELPURL = '/reference/blocks/variables.html#return';
     /* // These don't differ between the statement and expression
@@ -1070,7 +1070,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TOOLTIP = 'Leidžia kurti kintamuosius, kurie pasiekiami tik šio bloko grįžtamojoje dalyje.';
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TRANSLATED_NAME = 'inicijuoja vietinį grąžinime';
 
-    Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TITLE_LOCAL_NAMES = 'vietiniai vardai';
+    Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TITLE_LOCAL_NAMES = 'vietiniai pavadinimai';
     Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TOOLTIP = '';
 
     Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_ARG_TITLE_NAME = 'pavadinimas';
