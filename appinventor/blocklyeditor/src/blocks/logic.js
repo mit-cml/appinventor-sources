@@ -222,9 +222,6 @@ Blockly.Blocks['logic_operation'] = {
       var itemBlock = workspace.newBlock('logic_mutator_item');
       itemBlock.initSvg();
       connection.connect(itemBlock.previousConnection);
-      if (x < 2) {
-        itemBlock.setMovable(false);
-      }
       connection = itemBlock.nextConnection;
     }
     this.lastMutator = workspace;
@@ -404,5 +401,17 @@ Blockly.Blocks['logic_mutator_item'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.contextMenu = false;
+  },
+  isMovable: function() {
+    if (this.previousConnection.targetBlock()) {
+      var parent = this.previousConnection.targetBlock();
+      if (parent.type == 'mutator_container') {
+        return false;
+      } else if(parent.previousConnection.targetBlock() &&
+        parent.previousConnection.targetBlock().type == 'mutator_container') {
+        return false;
+      }
+    }
+    return true;
   }
 };
