@@ -994,7 +994,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_DICTIONARIES_LENGTH_TITLE = 'žodyno dydis';
     Blockly.Msg.LANG_DICTIONARIES_LENGTH_INPUT = 'žodynas';
-    Blockly.Msg.LANG_DICTIONARIES_LENGTH_TOOLTIP = 'Grąžina reikšmiingų porų skaičių žodyne.';
+    Blockly.Msg.LANG_DICTIONARIES_LENGTH_TOOLTIP = 'Grąžina reikšmingų porų skaičių žodyne.';
     Blockly.Msg.LANG_DICTIONARIES_LENGTH_HELPURL = '/reference/blocks/dictionaries.html#size-of-dictionary';
 
     Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TITLE = 'porų sąrašas žodyne';
@@ -1017,12 +1017,12 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TITLE = 'sujungti žodynus';
     Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_HELPURL = '/reference/blocks/dictionaries.html#merge-into-dictionary';
 
-    Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE = 'sąrašas, einant rakto keliu %1 žodyne arba sąraše %2';
+    Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE = 'sąrašas einant rakto keliu %1 žodyne arba sąraše %2';
     Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TOOLTIP = 'Pradeda nuo duoto žodyno ir seka jį ir jo raktus, atsižvelgiant į nurodytą kelią, grąžina rastų mazgų sąrašą.';
     Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_HELPURL = '/reference/blocks/dictionaries.html#list-by-walking-key-path';
 
-    Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE = 'walk all at level';
-    Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TOOLTIP = 'Used in the list by walking key path block, explores every node at a given level on the walk.';
+    Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE = 'eiti visuose lygiuose';
+    Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TOOLTIP = 'Naudojamas sąraše, einant rakto kelio bloku, tiria kiekvieną mazgą tam tikrame lygyje.';
     Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_HELPURL = '/reference/blocks/dictionaries.html#walk-all-at-level';
 
     Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TITLE = 'yra žodynas? %1';
