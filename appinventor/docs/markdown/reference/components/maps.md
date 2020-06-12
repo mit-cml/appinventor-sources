@@ -288,8 +288,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 
 {:id="LineString.PointsFromString" .text .wo} *PointsFromString*
 : Set the points of the LineString from a specially-coded character string of the form:
- [[longitude1, latitude1], [longitude2, latitude2], ...]
- Note the reversal of latitude and longitude versus how they are typically represented.
+ [[latitude1, longitude1], [latitude2, longitude2], ...]
 
 {:id="LineString.StrokeColor" .color} *StrokeColor*
 : Sets or gets the color used to outline the `LineString`.

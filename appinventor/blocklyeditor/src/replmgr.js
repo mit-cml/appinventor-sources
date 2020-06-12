@@ -1115,27 +1115,22 @@ Blockly.ReplMgr.processRetvals = function(responses) {
 };
 
 Blockly.ReplMgr.setDoitResult = function(block, value) {
-    var patt = /Do It Result:.*?\n---\n/m;
-    var comment = "";
-    var result = 'Do It Result: ' + value + '\n---\n';
+    var oldPatt = /Do It Result:.*?\n---\n/m;
+    var patt = new RegExp(Blockly.Msg.DO_IT_RESULT + '.*?\n---\n');
+    var result = Blockly.Msg.DO_IT_RESULT + ' ' + value + '\n---\n';
+    var text = "";
+
     if (block.comment) {
-        comment = block.comment.getText();
+        text = block.comment.getText().replace(oldPatt, '');
     }
-    if (!comment) {
-        comment = result;
+    if (!text) {
+        text = result;
+    } else if (patt.test(text)) { // Already a result there.
+        text = text.replace(patt, result);
     } else {
-        if (patt.test(comment)) { // Already a doit there!
-            comment = comment.replace(patt, result);
-        } else {
-            comment = result + comment;
-        }
+        text = result + text;
     }
-    // If we don't set visible to false, the comment
-    // doesn't always change when it should...
-    if (block.comment) {
-        block.comment.setVisible(false);
-    }
-    block.setCommentText(comment);
+    block.setCommentText(text);
     block.comment.setVisible(true);
 };
 

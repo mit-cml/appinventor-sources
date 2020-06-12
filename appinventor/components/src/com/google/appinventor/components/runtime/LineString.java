@@ -146,8 +146,7 @@ public class LineString extends MapFeatureBase implements MapLineString {
 
   /**
    * Set the points of the LineString from a specially-coded character string of the form:
-   * [[longitude1, latitude1], [longitude2, latitude2], ...]
-   * Note the reversal of latitude and longitude versus how they are typically represented.
+   * [[latitude1, longitude1], [latitude2, longitude2], ...]
    *
    * @param points String containing a sequence of points for the LineString.
    */

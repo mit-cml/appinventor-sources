@@ -74,3 +74,8 @@ Blockly.RenderedConnection.prototype.disconnectInternal_ = function(parentBlock,
   // Reset visibility, since this block is now a top block.
   childBlock.getSvgRoot().style.display = 'block';
 };
+
+// TODO(ewpatton): Can be removed once we upgrade to a newer version of Blockly
+Blockly.Connection.prototype.getCheck = function() {
+  return this.check_;
+}

@@ -19,30 +19,68 @@ Blockly.Blocks['text'] = {
   category: 'Text',
   helpUrl: Blockly.Msg.LANG_TEXT_TEXT_HELPURL,
   init: function () {
+    var textInput = new Blockly.FieldTextInput('');
+    textInput.onFinishEditing_ = Blockly.Blocks.text
+        .bumpBlockOnFinishEdit.bind(this);
+
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.appendDummyInput().appendField(Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE).appendField(
-        new Blockly.FieldTextBlockInput(''),
-        'TEXT').appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE)
+        .appendField(textInput, 'TEXT')
+        .appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
     this.setOutput(true, [Blockly.Blocks.text.connectionCheck]);
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_TOOLTIP);
   },
+  errors: [{name:"checkInvalidNumber"}],
   typeblock: [{translatedName: Blockly.Msg.LANG_CATEGORY_TEXT}]
 };
 
-Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection) {
-  var block = myConnection.sourceBlock_;
+Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection, opt_value) {
   var otherTypeArray = otherConnection.check_;
+  if (!otherTypeArray) {  // Other connection accepts everything.
+    return true;
+  }
+
+  var block = myConnection.sourceBlock_;
+  var shouldIgnoreError = Blockly.mainWorkspace.isLoading;
+  var value = opt_value || block.getFieldValue('TEXT');
+
   for (var i = 0; i < otherTypeArray.length; i++) {
     if (otherTypeArray[i] == "String") {
       return true;
-    } else if (otherTypeArray[i] == "Number" && !isNaN(parseFloat(block.getFieldValue('TEXT')))) {
-      return true;
+    } else if (otherTypeArray[i] == "Number") {
+      if (shouldIgnoreError) {
+        // Error may be noted by WarningHandler's checkInvalidNumber
+        return true;
+      } else if (Blockly.Blocks.Utilities.NUMBER_REGEX.test(value)) {
+        // Value passes a floating point regex
+        return !isNaN(parseFloat(value));
+      }
     } else if (otherTypeArray[i] == "Key") {
       return true;
     }
   }
   return false;
 };
+
+/**
+ * Bumps the text block out of its connection iff it is connected to a number
+ * input and it no longer contains a number.
+ * @param {string} finalValue The final value typed into the text input.
+ * @this Blockly.Block
+ */
+Blockly.Blocks.text.bumpBlockOnFinishEdit = function(finalValue) {
+  var connection = this.outputConnection.targetConnection;
+  if (!connection) {
+    return;
+  }
+  // If the connections are no longer compatible.
+  if (!Blockly.Blocks.text.connectionCheck(
+      this.outputConnection, connection, finalValue)) {
+    connection.disconnect();
+    connection.sourceBlock_.bumpNeighbours_();
+  }
+}
 
 Blockly.Blocks['text_join'] = {
   // Create a string made up of any number of elements of any type.
@@ -464,10 +502,15 @@ Blockly.Blocks['obfuscated_text'] = {
   helpUrl: Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.appendDummyInput().appendField(Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE
-      + " " + Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE).appendField(
-        new Blockly.FieldTextBlockInput(''),
-        'TEXT').appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
+    var label = Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE + " " +
+        Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE
+    var textInput = new Blockly.FieldTextBlockInput('');
+    textInput.onFinishEditing_ = Blockly.Blocks.text
+        .bumpBlockOnFinishEdit.bind(this);
+    this.appendDummyInput()
+        .appendField(label)
+        .appendField(textInput,'TEXT')
+        .appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
     this.setOutput(true, [Blockly.Blocks.text.connectionCheck]);
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP);
     this.confounder = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8);
