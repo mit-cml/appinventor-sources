@@ -21,7 +21,7 @@
                                    }
      //--><!]]>
     </script>
-    <title>MIT App Inventor Logic Blocks</title></head>
+    <title>Mutators</title></head>
 <body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
     <a class="navbar-brand" href="http://appinventor.mit.edu/">
 	<img src="/static/images/logo2.png" alt="Logo">
@@ -121,70 +121,50 @@
 </nav>
 <div class="default-page">
             <div class="header">
-	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">MIT App Inventor Logic Blocks</h1>
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Mutators</h1>
             </div>
             <div class="container-fluid">
                 <article class="documentation">
-<ul>
-  <li><a href="#true">true</a></li>
-  <li><a href="#false">false</a></li>
-  <li><a href="#not">not</a></li>
-  <li><a href="#=">=</a></li>
-  <li><a href="#not=">≠</a></li>
-  <li><a href="#and">and</a></li>
-  <li><a href="#or">or</a></li>
-</ul>
+<p>App Inventor 2 introduced a new feature that allows certain blocks to expand, shrink, or even change their functionality.</p>
 
-<h3 id="true">true</h3>
+<p><img src="images/mutatoricon.png" alt="Picture of the mutator icon" /></p>
 
-<p><img src="images/logic/true.png" alt="" /></p>
+<p>Any block that has a blue box with a white gear on top that matches the image to the right is considered a mutator block.</p>
 
-<p>Represents the constant value true. Use it for setting boolean property values of components, or as the value of a variable that represents a condition.</p>
+<h2 id="what-does-a-mutator-do">What does a mutator do?</h2>
 
-<h3 id="false">false</h3>
+<p>Mutators change shape. By clicking the blue icon, the user can drag additional smaller blocks into the larger mutator block, thus changing the shape and functionality of the original block. Clicking the icon again will minimize the extra blocks window and show the modified block.</p>
 
-<p><img src="images/logic/false.png" alt="" /></p>
+<p>The example below shows the <span class="math block">min</span> mutator block:</p>
 
-<p>Represents the constant value false. Use it for setting boolean property values of components, or as the value of a variable that represents a condition.</p>
+<p><img src="images/minmutator.gif" alt="Example of using the mutator to extend a min block" /><br />
+<strong>Explanation of the min mutator block.</strong></p>
 
-<h3 id="not">not</h3>
+<p>The user wants to find the minimum number of a list of 3 values. Currently there is only space for 2 to connect to the min block.</p>
 
-<p><img src="images/logic/not.png" alt="" /></p>
+<p>To fix this, the user clicks the blue gear icon on the min block and drags another item over.</p>
 
-<p>Performs logical negation, returning false if the input is true, and true if the input is false.</p>
+<p>Now there are three sockets for blocks to plug into.</p>
 
-<h3 id="---">=   {#=}</h3>
-
-<p><img src="images/logic/equals.png" alt="" /></p>
-
-<p>Tests whether its arguments are equal.</p>
+<p>What are the different mutators?</p>
 
 <ul>
-  <li>Two numbers are equal if they are numerically equal, for example, 1 is equal to 1.0.</li>
-  <li>Two text blocks are equal if they have the same characters in the same order, with the same case. For example, banana is not equal to Banana.</li>
-  <li>Numbers and text are equal if the number is numerically equal to a number that would be printed with that text. For example, 12.0 is equal to the result of joining the first character of 1A to the last character of Teafor2.</li>
-  <li>Two lists are equal if they have the same number of elements and the corresponding elements are equal.</li>
+  <li><a href="../blocks/controls.html#if">if</a></li>
+  <li><a href="../blocks/logic.html#and">and</a></li>
+  <li><a href="../blocks/logic.html#or">or</a></li>
+  <li><a href="../blocks/math.html#add">+</a></li>
+  <li><a href="../blocks/math.html#multiply">*</a></li>
+  <li><a href="../blocks/math.html#min">min</a></li>
+  <li><a href="../blocks/math.html#max">max</a></li>
+  <li><a href="../blocks/text.html#join">join</a></li>
+  <li><a href="../blocks/lists.html#makealist">make a list</a></li>
+  <li><a href="../blocks/lists.html#additems">add items to list</a></li>
+  <li><a href="../blocks/dictionaries.html#make-a-dictionary">make a dictionary</a></li>
+  <li><a href="../blocks/variables.html#do">initialize local name in (do)</a></li>
+  <li><a href="../blocks/variables.html#return">initialize local name in (return)</a></li>
+  <li><a href="../blocks/procedures.html#do">procedure do</a></li>
+  <li><a href="../blocks/procedures.html#return">procedure return</a></li>
 </ul>
-
-<p>Acts exactly the same as the = block found in Math</p>
-
-<h3 id="---not">≠   {#not=}</h3>
-
-<p><img src="images/logic/notequals.png" alt="" /></p>
-
-<p>Tests to see whether two arguments are not equal.</p>
-
-<h3 id="and">and</h3>
-
-<p><img src="images/logic/and.png" alt="" height="36" /></p>
-
-<p>Tests whether all of a set of logical conditions are true. The result is true if and only if all the tested conditions are true. The number of tests can be expanded using the <a href="../concepts/mutators.html">mutator</a>. The conditions are tested left to right, and the testing stops as soon as one of the conditions is false. If there are no conditions to test, then the result is true. You can consider this to be a logician’s joke.</p>
-
-<h3 id="or">or</h3>
-
-<p><img src="images/logic/or.png" alt="" height="36" /></p>
-
-<p>Tests whether any of a set of logical conditions are true. The result is true if one or more of the tested conditions are true. The number of tests can be expanded using the <a href="../concepts/mutators.html">mutator</a>. The conditions are tested left to right, and the testing stops as soon as one of the conditions is true. If there are no conditions to test, then the result is false.</p>
 
 </article>
 <script>
