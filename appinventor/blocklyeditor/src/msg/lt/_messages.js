@@ -501,11 +501,11 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT = 'konvertuoti';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_RAD_TO_DEG = 'radianus į laipsnius';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_DEG_TO_RAD = 'laipsnius į radianus';
-    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG = 'Grąžina laipsnio reikšmę intervale\n' +
-        '[0, 360) atitinkantį jo radianų argumentą.';
+    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG = 'Grąžina laipsnio reikšmę (intervale\n' +
+        '[0, 360)) atitinkančią jo radianų argumentą.';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_HELPURL_RAD_TO_DEG = '/reference/blocks/math.html#convertrad';
-    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_DEG_TO_RAD = 'Grąžina radiano reikšmę intervale\n' +
-        '[-\u03C0, +\u03C0) atitinkantį jos laipsnių argumentą.';
+    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_DEG_TO_RAD = 'Grąžina radiano reikšmę (intervale\n' +
+        '[-\u03C0, +\u03C0)) atitinkančią jos laipsnių argumentą.';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_HELPURL_DEG_TO_RAD = '/reference/blocks/math.html#convertdeg';
 
     Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_HELPURL = '/reference/blocks/math.html#format';
@@ -530,7 +530,6 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = '/reference/blocks/math.html#isnumber';
     Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = 'yra dvejetainis?';
     Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP = 'Tikrina, ar kažkas yra eilutė, kuri reiškia dvejetainį skaičių.';
-
 
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TITLE_CONVERT = 'konvertuoti skaičių';
     Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_HEX = 'dešimtainį į šešioliktainį';
@@ -569,7 +568,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_APPEND_TO = 'į';
     Blockly.Msg.LANG_TEXT_APPEND_APPENDTEXT = 'pridėti tekstą';
     Blockly.Msg.LANG_TEXT_APPEND_VARIABLE = 'elementas';
-    Blockly.Msg.LANG_TEXT_APPEND_TOOLTIP = 'Prideda tekstą prie kintamojo "%1".';
+    Blockly.Msg.LANG_TEXT_APPEND_TOOLTIP = 'Prideda tekstą prie kintamojo „%1“.';
 
     Blockly.Msg.LANG_TEXT_LENGTH_HELPURL = '/reference/blocks/text.html#length';
     Blockly.Msg.LANG_TEXT_LENGTH_INPUT_LENGTH = 'ilgis';
@@ -642,7 +641,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_PIECE = 'dalis';
     Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT = 'prasideda tekste %1 dalyje %2';
     Blockly.Msg.LANG_TEXT_STARTS_AT_TOOLTIP = 'Grąžina tekste esančios dalies pradžios indeksą.\n'
-        + 'Indeksas 1 ymi teksto pradžią. Grąžina 0, jei dalies nėra tekste.';
+        + 'Indeksas 1 žymi teksto pradžią. Grąžina 0, jei dalies nėra tekste.';
 
     Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL = '/reference/blocks/text.html#contains';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'turi';
@@ -656,7 +655,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT = 'esantis';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT_LIST = 'esantis (sąrašas)';
     Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST = 'skaidyti iš pradžių';
-    Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY = 'sskaidyti iš pradžių bet kurį';
+    Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY = 'skaidyti iš pradžių bet kurį';
     Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT = 'skaidyti';
     Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_ANY = 'skaidyti bet kurį';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = 'Pateiktą tekstą skaido į dvi dalis naudojant \n'
@@ -695,7 +694,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_HELPURL = '/reference/blocks/text.html#splitspaces';
     Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_TITLE = 'skaidyti tarpais';
-    Blockly.Msg.LANG_TEXT_SPLIT_AT_TOOLTIP = 'SKaido tekstą į dalis ir atskiria tarpais.';
+    Blockly.Msg.LANG_TEXT_SPLIT_AT_TOOLTIP = 'Skaido tekstą į dalis ir atskiria tarpais.';
 
     Blockly.Msg.LANG_TEXT_SEGMENT_HELPURL = '/reference/blocks/text.html#segment';
     Blockly.Msg.LANG_TEXT_SEGMENT_TITLE_SEGMENT = 'segmentas';
@@ -728,7 +727,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER = 'žodynas';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE = 'pakeisti visus atvaizdavimus';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_LONGEST_STRING_FIRST = '/reference/blocks/text.html#replaceallmappingslongeststring';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST = 'Pateikus atvaizdavimo žodyną kaip įvestį, pagrindiniai teksto įrašai n\'
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST = 'Pateikus atvaizdavimo žodyną kaip įvestį, pagrindiniai teksto įrašai n\'' +
         + 'pakeičiami atitinkamomis žodyno reikšmėmis. Grąžina tekstą su pritaikytais atvaizdavimais.\n'
         + 'Jei pasirenkamas vienas ar kitas raktas, pirmiausia pakeičiamas ilgiausias raktas.';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_DICTIONARY_ORDER = '/reference/blocks/text.html#replaceallmappingsdictionary';
