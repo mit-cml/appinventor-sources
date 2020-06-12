@@ -10,6 +10,7 @@ var fs = require('fs'); //Always required to read from files
 var path = fs.absolute('.');
 var system = require('system');
 var args = system.args;
+var messages = fs.read('src/msg/messages.json');
 
 //Read files from filesystem
 var expected = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/moleMash/MoleMashExpected.yail');
@@ -41,6 +42,8 @@ page.open('src/demos/yail/yail_testing_index.html', function(status) {
   // Evaluate the following:
   var passed = page.evaluate(function(){
 
+    Blockly.Msg = JSON.parse(arguments[5]);
+
     // Get the expected Yail from Classic
     var expected = arguments[0];
 
@@ -54,7 +57,7 @@ page.open('src/demos/yail/yail_testing_index.html', function(status) {
     return doTheyMatch(expected, newblocks);
 
 
-  }, expected, formJson, blocks, args[1], args[2]); // args[1] and args[2] are blocks Version and YaV
+  }, expected, formJson, blocks, args[1], args[2], messages); // args[1] and args[2] are blocks Version and YaV
 
   // Assert that the block position of the global variable matches the pre-upgraded position.
   passed = passed && page.evaluate(function() {
