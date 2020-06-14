@@ -789,6 +789,10 @@ public class YaVersion {
   // - The ContactUri property was added
   public static final int CONTACTPICKER_COMPONENT_VERSION = 6;
 
+  // For CONTEXT_MENU_COMPONENT_VERSION 1:
+  // - Initial Context Menu implementation using Android Menu
+  public static final int CONTEXT_MENU_COMPONENT_VERSION = 1;
+
   // For DATEPICKER_COMPONENT_VERSION 2:
   // The datepicker dialog was updated to show the current date
   // instead of the last set date by default.
