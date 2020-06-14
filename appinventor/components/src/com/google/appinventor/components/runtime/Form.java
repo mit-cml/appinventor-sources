@@ -209,6 +209,7 @@ public class Form extends AppInventorCompatActivity
   private static boolean showListsAsJson;
 
   private final Set<String> permissions = new HashSet<String>();
+  private Map<View,ContextMenu> componentMap = new HashMap<>();
 
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
@@ -228,6 +229,9 @@ public class Form extends AppInventorCompatActivity
   private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
   private final Set<OnPrepareOptionsMenuListener> onPrepareOptionsMenuListeners = Sets.newHashSet();
   private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
+
+  // Listeners for context menu.
+  private final Set<OnCreateContextMenuListener> onCreateContextMenuListeners = Sets.newHashSet();
 
   // Listeners for permission results
   private final HashMap<Integer, PermissionResultHandler> permissionHandlers = Maps.newHashMap();
@@ -829,6 +833,10 @@ public class Form extends AppInventorCompatActivity
 
   public void registerForOnOptionsItemSelected(OnOptionsItemSelectedListener component) {
     onOptionsItemSelectedListeners.add(component);
+  }
+
+  public void registerForOnCreateContextMenu(OnCreateContextMenuListener component) {
+    onCreateContextMenuListeners.add(component);
   }
 
   public Dialog onCreateDialog(int id) {
@@ -2386,6 +2394,20 @@ public class Form extends AppInventorCompatActivity
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }
 
+  public void getComponent(View component,ContextMenu menu){
+    componentMap.put(component,menu);
+  }
+
+  @Override
+  public void onCreateContextMenu(android.view.ContextMenu menu, View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
+    super.onCreateContextMenu(menu, v, menuInfo);
+    for (OnCreateContextMenuListener listener: onCreateContextMenuListeners) {
+      if(listener.equals(componentMap.get(v))) {
+        listener.onCreateContextMenu(menu, v, menuInfo);
+      }
+    }
+  }
+
   // This is called from clear-current-form in runtime.scm.
   public void clear() {
     Log.d(LOG_TAG, "Form " + formName + " clear called");
@@ -2406,6 +2428,7 @@ public class Form extends AppInventorCompatActivity
     onCreateOptionsMenuListeners.clear();
     onPrepareOptionsMenuListeners.clear();
     onOptionsItemSelectedListeners.clear();
+    onCreateContextMenuListeners.clear();
     screenInitialized = false;
     // Notifiy those who care
     for (OnClearListener onClearListener : onClearListeners) {

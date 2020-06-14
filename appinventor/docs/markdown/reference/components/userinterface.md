@@ -10,6 +10,7 @@ Table of Contents:
 
 * [Button](#Button)
 * [CheckBox](#CheckBox)
+* [ContextMenuItem](#ContextMenuItem)
 * [DatePicker](#DatePicker)
 * [Image](#Image)
 * [Label](#Label)
@@ -218,6 +219,15 @@ None
 {:.methods}
 None
 
+
+## ContextMenuItem  {#ContextMenuItem}
+
+### Properties  {#ContextMenuItem-Properties}
+
+{:.properties}
+
+{:id="ContextMenuItem.Text" .text} *Text*
+: Returns the text displayed by the menu item.
 
 ## DatePicker  {#DatePicker}
 

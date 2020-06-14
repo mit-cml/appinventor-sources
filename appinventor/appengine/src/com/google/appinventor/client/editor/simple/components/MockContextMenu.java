@@ -1,6 +1,8 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
@@ -29,4 +31,14 @@ public class MockContextMenu extends MockContainer {
         initComponent(menuWidget);
     }
 
+    @Override
+    protected boolean acceptableSource(DragSource source) {
+        MockComponent component = null;
+        if (source instanceof MockComponent) {
+            component = (MockComponent) source;
+        } else if (source instanceof SimplePaletteItem) {
+            component = (MockComponent) source.getDragWidget();
+        }
+        return component instanceof MockContextMenuItem;
+    }
 }

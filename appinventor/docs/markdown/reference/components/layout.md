@@ -8,12 +8,22 @@ title: Layout
 
 Table of Contents:
 
+* [ContextMenu](#ContextMenu)
 * [HorizontalArrangement](#HorizontalArrangement)
 * [HorizontalScrollArrangement](#HorizontalScrollArrangement)
 * [Menu](#Menu)
 * [TableArrangement](#TableArrangement)
 * [VerticalArrangement](#VerticalArrangement)
 * [VerticalScrollArrangement](#VerticalScrollArrangement)
+
+## ContextMenu  {#ContextMenu}
+
+### Properties  {#ContextMenu-Properties}
+
+{:.properties}
+
+{:id="ContextMenu.ComponentSelector" .component .wo} *ComponentSelector*
+: 
 
 ## HorizontalArrangement  {#HorizontalArrangement}
 

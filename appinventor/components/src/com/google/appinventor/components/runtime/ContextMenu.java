@@ -6,10 +6,17 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.view.View;
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Container for ContextMenuItems
@@ -20,9 +27,13 @@ import com.google.appinventor.components.common.YaVersion;
         category = ComponentCategory.LAYOUT,
         description = "Component for context menu to hold ContextMenuItems.")
 @SimpleObject
-public class ContextMenu implements Component, ComponentContainer {
+public class ContextMenu implements Component, ComponentContainer, OnCreateContextMenuListener {
 
     private Form form;
+    private android.view.ContextMenu menu;
+
+    private List<ContextMenuItem> items;
+    private AndroidViewComponent component;
 
     /**
      * Create a new Context Menu component.
@@ -30,7 +41,38 @@ public class ContextMenu implements Component, ComponentContainer {
      * @param form The form that will render this menu.
      */
     public ContextMenu(Form form) {
+        items = new ArrayList<>();
+        form.registerForOnCreateContextMenu(this);
         this.form = form;
+    }
+
+    @Override
+    public void onCreateContextMenu(android.view.ContextMenu menu, View view, android.view.ContextMenu.ContextMenuInfo menuInfo) {
+        this.menu = menu;
+        menu.clear();
+        for (ContextMenuItem item : items) {
+            item.addToContextMenu(menu);
+        }
+    }
+
+    public void addMenuItem(ContextMenuItem item) {
+        items.add(item);
+        if (menu != null) {
+            item.addToContextMenu(menu);
+        }
+    }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT )
+    @SimpleProperty
+    public void ComponentSelector(AndroidViewComponent component) {
+        this.component=component;
+        form.getComponent(component.getView(),this);
+        if(component instanceof ListView) {
+            this.form.registerForContextMenu(((ListView) component).getListView());
+        }
+        else {
+            this.form.registerForContextMenu(component.getView());
+        }
     }
 
 
