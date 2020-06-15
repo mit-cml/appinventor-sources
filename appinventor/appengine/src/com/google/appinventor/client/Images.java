@@ -683,4 +683,10 @@ public interface Images extends Resources {
   */
   @Source("com/google/appinventor/images/YRLogo.png")
   ImageResource YRLogo();
+
+  /**
+   * Download app icon
+   */
+  @Source("com/google/appinventor/images/get-app.png")
+  ImageResource GetApp();
 }

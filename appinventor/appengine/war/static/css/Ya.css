@@ -2786,3 +2786,30 @@ div.dropdiv p {
   line-height: 30pt;
   color: darkgreen;
 }
+
+.download-button {
+  display: grid;
+  max-width: 130px;
+  margin: 0 !important;
+  margin-top: 12px !important;
+  margin-left: -3px !important;
+  height: 130px;
+}
+
+.download-icon {
+  height: 110px;
+  width: 110px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.download-barcode:before {
+    content: "";
+    background-color: #888;
+    position: absolute;
+    width: 1px;
+    height: 160px;
+    top: 40px;
+    left: 50%;
+    display: block;
+}

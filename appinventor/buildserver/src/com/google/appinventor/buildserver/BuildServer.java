@@ -621,7 +621,7 @@ public class BuildServer {
     // are now handled via a callback mechanism. The "50" here is just a plug
     // number.
     return Response.ok().type(MediaType.TEXT_PLAIN_TYPE)
-      .entity("" + 50).build();
+      .entity("" + 0).build();
   }
 
   private void buildAndCreateZip(String userName, File inputZipFile, ProgressReporter reporter)

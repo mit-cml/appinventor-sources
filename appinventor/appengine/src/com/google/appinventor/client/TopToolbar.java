@@ -80,6 +80,10 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_BUILD_DOWNLOAD = "Download";
   private static final String WIDGET_NAME_BUILD_BARCODE2 = "Barcode2";
   private static final String WIDGET_NAME_BUILD_DOWNLOAD2 = "Download2";
+  private static final String WIDGET_NAME_BUILD_ANDROID_APK = "BuildApk";
+  private static final String WIDGET_NAME_BUILD_ANDROID_AAB = "BuildAab";
+  private static final String WIDGET_NAME_BUILD_ANDROID_APK2 = "BuildApk2";
+  private static final String WIDGET_NAME_BUILD_ANDROID_AAB2 = "BuildAab2";
   private static final String WIDGET_NAME_BUILD_YAIL = "Yail";
   private static final String WIDGET_NAME_CONNECT_TO = "ConnectTo";
   private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
@@ -278,10 +282,11 @@ public class TopToolbar extends Composite {
 
   private void createBuildMenu() {
     List<DropDownItem> buildItems = Lists.newArrayList();
-    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
+    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_APK, MESSAGES.showExportAndroidApk(),
         new BarcodeAction(false)));
-    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerMenuItem(),
-        new DownloadAction(false)));
+    // buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerMenuItem(),
+    //     new DownloadAction(false)));
+    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_AAB, MESSAGES.showExportAndroidAab(), null));
 
     // Second Buildserver Menu Items
     //
@@ -299,10 +304,11 @@ public class TopToolbar extends Composite {
 
     if (Ode.getInstance().hasSecondBuildserver()) {
       buildItems.add(null);
-      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE2, MESSAGES.showBarcodeMenuItem2(),
+      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_APK2, MESSAGES.showExportAndroidApk2(),
           new BarcodeAction(true)));
-      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD2, MESSAGES.downloadToComputerMenuItem2(),
-          new DownloadAction(true)));
+      // buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD2, MESSAGES.downloadToComputerMenuItem2(),
+      //     new DownloadAction(true)));
+      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_AAB2, MESSAGES.showExportAndroidAab2(), null));
     }
 
     if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
@@ -1095,8 +1101,14 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
-      buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
-      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
+      // buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
+      // buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
+      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), false);
+      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), false);
+      if (Ode.getInstance().hasSecondBuildserver()) {
+        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk2(), false);
+        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), false);
+      }
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), false);
@@ -1106,8 +1118,14 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);
-      buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), true);
-      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), true);
+      // buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), true);
+      // buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), true);
+      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), true);
+      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), true);
+      if (Ode.getInstance().hasSecondBuildserver()) {
+        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk2(), true);
+        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), true);
+      }
     }
     updateKeystoreFileMenuButtons(true);
   }
