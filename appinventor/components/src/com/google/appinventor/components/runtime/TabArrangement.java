@@ -14,9 +14,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @DesignerComponent(version = YaVersion.TABARRANGEMENT_COMPONENT_VERSION,
@@ -27,6 +27,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   private ViewPager2 viewPager;
   private RecyclerView.Adapter adapter;
   private List<Tab> tabs;
+  private int tabBackgroundColor;
   
   public TabArrangement(ComponentContainer container) {
     super(container);
@@ -34,7 +35,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     viewPager = new ViewPager2(container.$context());
     viewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
     tabLayout = new TabLayout(container.$context());
-    tabLayout.setBackgroundColor(container.$form().PrimaryColor());
+    TabBackgroundColor($form().PrimaryColor());
     tabLayout.setSelectedTabIndicatorColor(container.$form().AccentColor());
     tabLayout.setTabMode(TabLayout.MODE_FIXED);
     tabLayout.setTabTextColors(Color.GRAY, Color.WHITE);
@@ -42,7 +43,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     adapter = new RecyclerView.Adapter() {
       @Override
       public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        Log.d("tabarrangement","onCreateViewHolder at index: "+i);
+//        Log.d("tabarrangement","onCreateViewHolder at index: "+i);
         FrameLayout layout = new FrameLayout(viewGroup.getContext());
         layout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
         return new RecyclerView.ViewHolder(layout) {
@@ -55,14 +56,14 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
       
       @Override
       public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-        Log.d("tabarrangement","onBindViewHolder at position: " + i);
-        Log.d("tabarrangement", "Tab details: Index: " + i + " Tab: " + tabs.get(i) + " Expected: " + tabs.get(i).getTab() + " Found: " + tabLayout.getTabAt(i));
+//        Log.d("tabarrangement","onBindViewHolder at position: " + i);
+//        Log.d("tabarrangement", "Tab details: Index: " + i + " Tab: " + tabs.get(i) + " Expected: " + tabs.get(i).getTab() + " Found: " + tabLayout.getTabAt(i));
         ViewGroup childViewGroup = tabs.get(i).viewLayout.getLayoutManager();
         if(childViewGroup.getParent()!=null) {
           ((ViewGroup) childViewGroup.getParent()).removeView(childViewGroup);
         }
         ((ViewGroup)(viewHolder.itemView)).addView(childViewGroup);
-        Log.d("tabarrangement","Number of children: " + childViewGroup.getChildCount());
+//        Log.d("tabarrangement","Number of children: " + childViewGroup.getChildCount());
       }
       
       @Override
@@ -99,7 +100,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   void addTab(Tab tab){
     tabLayout.addTab(tabLayout.newTab());
     tabs.add(tab);
-    Log.d("tabarrangement","Current list of tabs: " + Arrays.toString(tabs.toArray()));
+//    Log.d("tabarrangement","Current list of tabs: " + Arrays.toString(tabs.toArray()));
     adapter.notifyDataSetChanged();
   }
   
@@ -146,5 +147,27 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
       height = LENGTH_FILL_PARENT;
     }
     super.Height(height);
+  }
+  
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @IsColor
+  public int TabBackgroundColor() {
+    return tabBackgroundColor;
+  }
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+  defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+  @SimpleProperty
+  public void TabBackgroundColor(int argb) {
+    if (argb == defaultTabBackgroundColor()) {
+      tabBackgroundColor = AppInventorCompatActivity.getPrimaryColor();
+    } else {
+      tabBackgroundColor = argb;
+    }
+    tabLayout.setBackgroundColor(tabBackgroundColor);
+  }
+  
+  private int defaultTabBackgroundColor() {
+    return $form().PrimaryColor();
   }
 }

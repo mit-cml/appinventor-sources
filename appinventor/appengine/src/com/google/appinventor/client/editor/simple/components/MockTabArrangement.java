@@ -3,6 +3,7 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -12,6 +13,7 @@ import static com.google.appinventor.components.common.ComponentConstants.LAYOUT
 public class MockTabArrangement extends MockContainer<MockHVLayout> {
   
   public static final String TYPE = "TabArrangement";
+  public static final String PROPERTY_TAB_BACKGROUND_COLOR = "TabBackgroundColor";
   
   private final SimplePanel tabContentView;
   
@@ -74,6 +76,28 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
       heightHint = LENGTH_FILL_PARENT;
     }
     return heightHint;
+  }
+  
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+    super.onPropertyChange(propertyName, newValue);
+    if(propertyName.equals(PROPERTY_TAB_BACKGROUND_COLOR)) {
+      setPropertyTabBackgroundColor(newValue);
+    }
+  }
+  
+  public void setPropertyTabBackgroundColor (String newValue) {
+    if(MockComponentsUtil.isDefaultColor(newValue)) {
+      newValue = editor.getProjectEditor().getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR);
+    }
+    MockComponentsUtil.setWidgetBackgroundColor(rootPanel,newValue);
+    int nWidgets = rootPanel.getWidgetCount();
+    for(int i = 0; i < nWidgets; i++) {
+      Widget widget = rootPanel.getWidget(i);
+      MockComponentsUtil.setWidgetBackgroundColor(widget,newValue);
+    }
   }
   
   public void selectTab(MockTab mockTab) {

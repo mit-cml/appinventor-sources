@@ -18,7 +18,6 @@ public class MockTab extends MockHVArrangement {
   public static final String PROPERTY_NAME_TEXT = "Text";
   public static final String PROPERTY_NAME_SHOW_TEXT = "ShowText";
   public static final String PROPERTY_NAME_SHOW_ICON = "ShowIcon";
-  public static final String PROPERTY_NAME_ALIGNVERTICAL = "AlignVertical";
   
   private static final int ANDROID_TAB_HEIGHT = 48;
   
@@ -39,7 +38,6 @@ public class MockTab extends MockHVArrangement {
     tab = new AbsolutePanel();
     tab.setWidth("48px");
     tab.setHeight("48px");
-    tab.getElement().getStyle().setBackgroundColor("#ffffff");
     tab.setStylePrimaryName("ode-Tab");
     tabLabel = new Label();
     tab.add(tabLabel);
