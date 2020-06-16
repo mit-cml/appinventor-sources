@@ -60,12 +60,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.BACKPACK_CONFIRM_EMPTY = 'Ar tikrai norite ištuštinti kuprinę?';
     Blockly.Msg.BACKPACK_DOC_TITLE = "Kuprinės informacija";
     Blockly.Msg.SHOW_BACKPACK_DOCUMENTATION = "Rodyti kuprinės dokumentaciją";
-    Blockly.Msg.BACKPACK_DOCUMENTATION = "Kuprinė yra kopijavimo / įklijavimo funkcija. Tai leidžia kopijuoti blokus iš vieno projekto " +
-   " ar ekrano ir įklijuoti juos į kitą projektą ar ekraną. " +
-   " Norėdami nukopijuoti, galite nuvilkti blokus į kuprinę. Norėdami įklijuoti, spustelėkite ant kuprinės piktogramos ir " +
-   " nuvilkite blokus į darbo vietą." +
-   "</p><p>Jei atsijungsite iš „App Inventor“ su kuprinėje paliktais blokais, " +
-   " jie bus ten, kai kitą kartą prisijungsite." +
+    Blockly.Msg.BACKPACK_DOCUMENTATION = "Kuprinė yra kopijavimo / įklijavimo funkcija. Tai leidžia kopijuoti blokus iš vieno projekto ar ekrano ir įklijuoti juos į kitą projektą ar ekraną."
+        + " Norėdami nukopijuoti, galite nuvilkti blokus į kuprinę. Norėdami įklijuoti, spustelėkite ant kuprinės piktogramos ir nuvilkite blokus į darbo vietą." +
+   "</p><p>Jei atsijungsite iš „App Inventor“ su kuprinėje paliktais blokais, jie bus ten, kai kitą kartą prisijungsite." +
    "</p><p><a href='/reference/other/backpack.html' target='_blank'>Spustelėkite čia</a> dėl detalesnės informacijos.";
     Blockly.Msg.ENABLE_GRID = 'Įgalinti darbo vietos tinklelį';
     Blockly.Msg.DISABLE_GRID = 'Išjungti darbo vietos tinklelį';
@@ -125,12 +122,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CATEGORY_CONTROLS = 'Valdymas';
     Blockly.Msg.LANG_CONTROLS_IF_HELPURL = '/reference/blocks/control.html#if';
     Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_1 = 'Jei reikšmė teisinga, tai atliekami keli sakiniai';
-    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_2 = 'Jei reikšmė teisinga, tai atliekamas pirmas sakinių blokas.\n' +
-        'Priešingu atveju, atliekamas antras sakinių blokas.';
-    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_3 = 'Jei pirma reikšmė teisinga, tai atliekamas pirmas sakinių blokas.\n' +
-        'Priešingu atveju, jei antroji reikšmė yra teisinga, tai atliekamas antras sakinių blokas.';
-    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_4 = 'Jei pirma reikšmė teisinga, tai atliekamas pirmas sakinių blokas.\n' +
-        'Priešingu atveju, jei antroji reikšmė yra teisinga, tai atliekamas antras sakinių blokas.\n' +
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_2 = 'Jei reikšmė teisinga, tai atliekamas pirmas sakinių blokas. Priešingu atveju, atliekamas antras sakinių blokas.';
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_3 = 'Jei pirma reikšmė teisinga, tai atliekamas pirmas sakinių blokas. Priešingu atveju, jei antroji reikšmė yra teisinga, tai atliekamas antras sakinių blokas.';
+    Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_4 = 'Jei pirma reikšmė teisinga, tai atliekamas pirmas sakinių blokas. Priešingu atveju, jei antroji reikšmė yra teisinga, tai atliekamas antras sakinių blokas.\n' +
         'Jei nė viena iš reikšmių nėra teisinga, atliekamas paskutinis sakinių blokas.';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_IF = 'jei';
     Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF = 'priešingu atveju jei';
@@ -198,8 +192,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE = 'reikšmė';
     // Used by the typeblock system.
     Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE = 'kiekvienam žodyne';
-    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP =
-        'Veikia blokus, esančius „atlikti“, kiekvienam rakto reikšmės įrašui žodyne.'
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP = 'Veikia blokus, esančius „atlikti“, kiekvienam rakto reikšmės įrašui žodyne.'
         + ' Nurodykite dabartinio žodyno elemento raktą / reikšmę naudodami duotus kintamųjų pavadinimus.';
 
     Blockly.Msg.LANG_CONTROLS_GET_HELPURL = '/reference/blocks/control.html#get';
@@ -209,7 +202,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_INPUT_OFLOOP = 'ciklo';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK = 'nutraukti';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE = 'tęsti su kita iteracija';
-    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK = 'Nutraukti besitęsiantį ciklą.';
+    Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK = 'Nutraukia besitęsiantį ciklą.';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE = 'Praleidžia likusią šio ciklo dalį ir \n' +
         'tęsia su kita iteracija.';
     Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_WARNING = 'Įspėjimas:\n' +
@@ -228,8 +221,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = 'tai';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'priešingu atveju';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'jei';
-    Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = 'Jei tikrinama sąlyga yra tiesa,'
-        + 'grąžinamas išraiškos, pridėtos prie sakinio „tai-grąžinti“, įvertinimo rezultatas.'
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = 'Jei tikrinama sąlyga yra tiesa, grąžinamas išraiškos, pridėtos prie sakinio „tai-grąžinti“, įvertinimo rezultatas.'
         + 'Kitu atveju, grąžinamas išraiškos, pridėtos prie sakinio „priešingu atveju-gražinti“ įvertinimo rezultatas.'
         + 'Bus įvertinta viena iš grąžinimo sakinių išraiškų.';
 
@@ -270,8 +262,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_INPUT_SCREENNAME = 'ekranoPavadinimas';
     Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_INPUT_STARTVALUE = 'pradinėReikšmė';
     Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_COLLAPSED_TEXT = 'gauti pradinę reikšmę';
-    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TOOLTIP = 'Grąžina reikšmę, kuri buvo perduota šiam ekranui, kai jis buvo atidaromas kito ekrano '
-        + 'kelių ekranų programoje. Jei reikšmė nebuvo perduota, grąžinamas tuščias tekstas.';
+    Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TOOLTIP = 'Grąžina reikšmę, kuri buvo perduota šiam ekranui, kai jis buvo atidaromas kito ekrano kelių ekranų programoje. Jei reikšmė nebuvo perduota, grąžinamas tuščias tekstas.';
 
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_HELPURL = '/reference/blocks/control.html#closescreen';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TITLE = 'užverti ekraną';
@@ -313,12 +304,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL = 'http://en.wikipedia.org/wiki/Inequality_(mathematics)';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_EQ = '/reference/blocks/logic.html#=';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_NEQ = '/reference/blocks/logic.html#not=';
-    Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ = 'Testuoja ar du dalykai yra lygūs.\n' +
-        'Lyginami dalykai gali būti bet kokie dalykai, ne tik skaičiai. \n' +
-        'Skaičiai laikomi lygiais jų spausdintai formai kaip eilutės, pavyzdžiui, \n' +
-        'skaičius 0 yra lygus tekstui „0“.\n' +
-        'Be to, dvi eilutės, kurios žymi skaičius, yra lygios, jei skaičiai yra lygūs, pavyzdžiui, \n' +
-        '„1“ yra lygus „01“.';
+    Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ = 'Testuoja ar du dalykai yra lygūs. Lyginami dalykai gali būti bet kokie dalykai, ne tik skaičiai. \n' +
+        'Skaičiai laikomi lygiais jų spausdintai formai kaip eilutės, pavyzdžiui, skaičius 0 yra lygus tekstui „0“.\n' +
+        'Be to, dvi eilutės, kurios žymi skaičius, yra lygios, jei skaičiai yra lygūs, pavyzdžiui, „1“ yra lygus „01“.';
     Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ = 'Grąžina reikšmę „Tiesa“, jei abi įvestys nėra lygios viena kitai.';
     Blockly.Msg.LANG_LOGIC_COMPARE_TRANSLATED_NAME = 'loginė lygybė';
     Blockly.Msg.LANG_LOGIC_COMPARE_EQ = '=';
@@ -367,11 +355,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_EQ = 'Grąžina reikšmę „Tiesa“, jei abu skaičiai yra lygūs vienas kitam.';
     Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ = 'Grąžina reikšmę „Tiesa“, jei abu skaičiai nėra lygūs vienas kitam.';
     Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LT = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra mažesnis už antrą.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LTE = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra mažesnis\n' +
-        'arba lygus antram skaičiui.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LTE = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra mažesnis arba lygus antram skaičiui.';
     Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GT = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra didesnis už antrą.';
-    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GTE = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra didesnis\n' +
-        'arba lygus antram skaičiui.';
+    Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GTE = 'Grąžina reikšmę „Tiesa“, jei pirmas skaičius yra didesnis arba lygus antram skaičiui.';
     Blockly.Msg.LANG_MATH_COMPARE_EQ = '=';
     Blockly.Msg.LANG_MATH_COMPARE_NEQ = '\u2260';
     Blockly.Msg.LANG_MATH_COMPARE_LT = '<';
@@ -486,8 +472,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_FROM = 'nuo';
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO = 'iki';
     Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT = 'atsitiktinis sveikasis skaičius nuo %1 iki %2';
-    Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP = 'Grąžina atsitiktinį sveikąjį skaičių tarp viršutinio ir apatinio rėžio.\n' +
-        'Ribos bus sumažintos, kad būtų mažiau nei 2**30.';
+    Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP = 'Grąžina atsitiktinį sveikąjį skaičių tarp viršutinio ir apatinio rėžio. Ribos bus sumažintos, kad būtų mažiau nei 2**30.';
 
     Blockly.Msg.LANG_MATH_RANDOM_FLOAT_HELPURL = '/reference/blocks/math.html#randomfrac';
     Blockly.Msg.LANG_MATH_RANDOM_FLOAT_TITLE_RANDOM = 'atsitiktinė trupmena';
@@ -501,11 +486,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT = 'konvertuoti';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_RAD_TO_DEG = 'radianus į laipsnius';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_DEG_TO_RAD = 'laipsnius į radianus';
-    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG = 'Grąžina laipsnio reikšmę (intervale\n' +
-        '[0, 360)) atitinkančią jo radianų argumentą.';
+    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG = 'Grąžina laipsnio reikšmę (intervale [0, 360)) atitinkančią jo radianų argumentą.';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_HELPURL_RAD_TO_DEG = '/reference/blocks/math.html#convertrad';
-    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_DEG_TO_RAD = 'Grąžina radiano reikšmę (intervale\n' +
-        '[-\u03C0, +\u03C0)) atitinkančią jos laipsnių argumentą.';
+    Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_DEG_TO_RAD = 'Grąžina radiano reikšmę (intervale [-\u03C0, +\u03C0)) atitinkančią jos laipsnių argumentą.';
     Blockly.Msg.LANG_MATH_CONVERT_ANGLES_HELPURL_DEG_TO_RAD = '/reference/blocks/math.html#convertdeg';
 
     Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_HELPURL = '/reference/blocks/math.html#format';
@@ -557,8 +540,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_TEXT_JOIN_HELPURL = '/reference/blocks/text.html#join';
     Blockly.Msg.LANG_TEXT_JOIN_TITLE_CREATEWITH = 'kurti tekstą su';
-    Blockly.Msg.LANG_TEXT_JOIN_TOOLTIP = 'Prideda visas įvestis ir sudaro vieną teksto eilutę.\n'
-        + 'Jei nėra įvesčių, sukuria tuščią tekstą.';
+    Blockly.Msg.LANG_TEXT_JOIN_TOOLTIP = 'Prideda visas įvestis ir sudaro vieną teksto eilutę. Jei nėra įvesčių, sukuria tuščią tekstą.';
     Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN = 'prijungti';
 
     Blockly.Msg.LANG_TEXT_JOIN_ITEM_TITLE_ITEM = 'eilutė';
@@ -585,20 +567,16 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_COMPARE_HELPURL = '/reference/blocks/text.html#compare';
     Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE = 'palyginti tekstus';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = 'Tikrina ar tekstas1 yra leksikografiškai mažesnis nei tekstas2.\n'
-        + 'Jei vienas tekstas yra kito priešdėlis, trumpesnis tekstas laikomas mažesniu.\n'
-        + 'Didžiosios raidės rašomos prieš mažąsias raides.';
-    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL = 'Testuoja, ar teksto eilutės yra tapačios, t.y., turi tuos pačius\n'
-        + 'simbolius ta pačia tvarka. Skiriasi nuo įprasto „=“ tuo atveju, kai teksto eilutės yra skaitinės: 123 ir 0123 yra\n'
-        + 'lygios, bet ne teksto atžvilgiu.';
-    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ = 'Testuoja, ar teksto eilutės yra skirtingos, t.y., neturi tų pačių\n'
-        + 'simbolių ta pačia tvarka. Skiriasi nuo įprasto „≠“ tuo atveju,\n'
-        + 'kai teksto eilutės yra skaitinės: 123 ir 0123 yra nelygios teksto atžvilgiu,\n'
-        + 'bet matematiškai lygios.';
+        + 'Jei vienas tekstas yra kito priešdėlis, trumpesnis tekstas laikomas mažesniu. Didžiosios raidės rašomos prieš mažąsias raides.';
+    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL = 'Testuoja, ar teksto eilutės yra tapačios, t.y., turi tuos pačius simbolius ta pačia tvarka.\n'
+        + 'Skiriasi nuo įprasto „=“ tuo atveju, kai teksto eilutės yra skaitinės: 123 ir 0123 yra lygios, bet ne teksto atžvilgiu.';
+    Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ = 'Testuoja, ar teksto eilutės yra skirtingos, t.y., neturi tų pačių simbolių ta pačia tvarka.\n'
+        + 'Skiriasi nuo įprasto „≠“ tuo atveju, kai teksto eilutės yra skaitinės: 123 ir 0123 yra nelygios teksto atžvilgiu, bet matematiškai lygios.';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT = 'Tikrina ar tekstas1 yra leksikografiškai didesnis nei tekstas2.\n'
         + 'Jei vienas tekstas yra kito priešdėlis, trumpesnis tekstas laikomas mažesniu.\n'
         + 'Didžiosios raidės rašomos prieš mažąsias raides.';
-    Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP = "Kuria tekstą, kaip teksto bloką. Skirtumas tas, kad tekstas nėra lengvai aptinkamas\n"
-        + "nagrinėjant programos APK. Naudokite tai kurdami programas, kad platintumėte konfidencialią informaciją, pavyzdžiui, API raktus. \n"
+    Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP = "Kuria tekstą, kaip teksto bloką. Skirtumas tas, kad tekstas nėra lengvai aptinkamas nagrinėjant programos APK. \n"
+        + "Naudokite tai kurdami programas, kad platintumėte konfidencialią informaciją, pavyzdžiui, API raktus. \n"
         + "Įspėjimas: tai užtikrina tik labai žemą apsaugą.";
     Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE = 'Neteisingas tekstas';
     Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_HELPURL = '/reference/blocks/text.html#obfuscatetext';
@@ -658,27 +636,20 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY = 'skaidyti iš pradžių bet kurį';
     Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT = 'skaidyti';
     Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_ANY = 'skaidyti bet kurį';
-    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = 'Pateiktą tekstą skaido į dvi dalis naudojant \n'
-        + 'skaidymo tašką, ir grąžina dviejų elementų sąrašą, susidedantį iš dalių prieš ir po skaidymo taško. \n'
-        + 'Tekste „obuolys,bananas,vyšnia,persikas“ skaidymo tašku laikant kablelį bus grąžinamas \n'
-        + 'dviejų elementų sąrašas: pirmoje dalyje tekstas „obuolys“, antroje dalyje „bananas,vyšnia,persikas“. \n'
+    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = 'Pateiktą tekstą skaido į dvi dalis naudojant skaidymo tašką, ir grąžina dviejų elementų sąrašą, susidedantį iš dalių prieš ir po skaidymo taško. \n'
+        + 'Tekste „obuolys,bananas,vyšnia,persikas“ skaidymo tašku laikant kablelį bus grąžinamas dviejų elementų sąrašas: pirmoje dalyje tekstas „obuolys“, antroje dalyje „bananas,vyšnia,persikas“. \n'
         + 'Pastaba, kad kablelio po „obuolys“ nebus, kadangi jis buvo skaidymo taškas.';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = '/reference/blocks/text.html#splitat';
-    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Pateiktą tekstą skaido į dvi dalis naudojant \n'
-        + 'pirmąją bet kurio elemento vietą kaip skaidymo tašką. \n'
+    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Pateiktą tekstą skaido į dvi dalis naudojant pirmąją bet kurio elemento vietą kaip skaidymo tašką. \n'
         + 'Skaidant pagal sąrašą „(ba,ob)“ tekstą „Man patinka obuolys ir bananas.“ bus grąžinamas \n'
-        + 'dviejų elementų sąrašas: pirmoje dalyje bus tekstas „Man patinka“, antroje dalyje bus \n'
-        + '„uolys ir bananas.“';
+        + 'dviejų elementų sąrašas: pirmoje dalyje bus tekstas „Man patinka“, antroje dalyje bus „uolys ir bananas.“';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = '/reference/blocks/text.html#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Skaido tekstą į dalis, naudodamas skaidymo tašką nurodytą „esantis“ ir pateikia rezultatų sąrašą. \n'
         + 'Skaidant tekstą „vienas,du,trys,keturi“ ir skaidymo tašku naudojant kablelį bus grąžinamas sąrašas „(vienas du trys keturi)“. \n'
         + 'Skaidant tekstą „vienas-bulvė,du-bulvė,trys-bulvė,keturi“ ir skaidymo tašku naudojant "-bulvė,", bus grąžinamas sąrašas „(vienas du trys keturi)“.';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT = '/reference/blocks/text.html#split';
-    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Pateiktas tekstas skaidomas į sąrašą, naudojant bet kurį elementą kaip skaidymo tašką,  \n'
-        + 'ir grąžinamas rezultatų sąrašas. \n'
-        + 'Skaidant „nesimokyti,mokytis,tingėti“ pagal sąrašą „(,moky)“ \n'
-        + 'pirmas yra kablelis, antras yra „moky“, bus grąžinamas trijų elementų sąrašas: \n'
-        + '„(nesii tis tingėti)“.';
+    Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Pateiktas tekstas skaidomas į sąrašą, naudojant bet kurį elementą kaip skaidymo tašką, ir grąžinamas rezultatų sąrašas. \n'
+        + 'Skaidant „nesimokyti,mokytis,tingėti“ pagal sąrašą „(,moky)“ pirmas yra kablelis, antras yra „moky“, bus grąžinamas trijų elementų sąrašas: „(nesii tis tingėti)“.';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_ANY = '/reference/blocks/text.html#splitatany';
 
     /*.LANG_TEXT_PRINT_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
@@ -702,8 +673,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_LENGTH = 'ilgis';
     Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_TEXT = 'tekstas';
     Blockly.Msg.LANG_TEXT_SEGMENT_INPUT = 'segmento tekstas %1 pradžia %2 ilgis %3';
-    Blockly.Msg.LANG_TEXT_SEGMENT_AT_TOOLTIP = 'Iš duoto teksto ištraukia nurodyto ilgio segmentą\n'
-        + 'pradedant nuo pateikto teksto, pradedant nuo nurodytos pozicijos.\n'
+    Blockly.Msg.LANG_TEXT_SEGMENT_AT_TOOLTIP = 'Iš duoto teksto ištraukia nurodyto ilgio segmentą pradedant nuo pateikto teksto, pradedant nuo nurodytos pozicijos.\n'
         + 'Pozicija 1 žymi teksto pradžią.';
 
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_HELPURL = '/reference/blocks/text.html#replaceall';
@@ -731,8 +701,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
         + 'pakeičiami atitinkamomis žodyno reikšmėmis. Grąžina tekstą su pritaikytais atvaizdavimais.\n'
         + 'Jei pasirenkamas vienas ar kitas raktas, pirmiausia pakeičiamas ilgiausias raktas.';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_DICTIONARY_ORDER = '/reference/blocks/text.html#replaceallmappingsdictionary';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER = 'Grąžina naują tekstą, kuris gaunamas pakeičiant visus atvejus \n'
-        + 'apibrėžtais įvesties žodyno raktais su atitinkamomis raktų reikšmėmis. \n'
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER = 'Grąžina naują tekstą, kuris gaunamas pakeičiant visus atvejus apibrėžtais įvesties žodyno raktais su atitinkamomis raktų reikšmėmis. \n'
         + 'Jei reikia pasirinkti pakeisti vieną ar kitą raktą, elementas, kuris pirmas atsiranda žodyne, yra pakeičiamas pirmas.';
 
     Blockly.Msg.LANG_TEXT_REVERSE_HELPURL = '/reference/blocks/text.html#reverse';
@@ -849,32 +818,29 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_TO_CSV_ROW_HELPURL = '/reference/blocks/lists.html#listtocsvrow';
     Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TITLE_TO_CSV = 'sąrašą į CSV eilutę';
     Blockly.Msg.LANG_LISTS_TO_CSV_ROW_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TOOLTIP = 'Sąrašą interpretuoja kaip lentelės eilutę ir grąžina CSV '
-        + '(kableliais atskirtos reikšmės) tekstą atvaizduojantį eilutes. Kiekvienas eilučių sąrašo elementas laikomas lauku,'
-        + 'o gautame CSV tekste cituojamas dvigubomis kabutėmis.'
+    Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TOOLTIP = 'Sąrašą interpretuoja kaip lentelės eilutę ir grąžina CSV (kableliais atskirtos reikšmės) tekstą atvaizduojantį eilutes. '
+        + 'Kiekvienas eilučių sąrašo elementas laikomas lauku, o gautame CSV tekste cituojamas dvigubomis kabutėmis.'
         + 'Elementai yra atskirti kableliais. Grąžintos eilutės teksto pabaigoje nėra eilučių skirtuko.';
 
     Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_HELPURL = '/reference/blocks/lists.html#listfromcsvrow';
     Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_TITLE_FROM_CSV = 'sąrašas iš CSV eilutės';
     Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_INPUT_TEXT = 'tekstas';
-    Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_TOOLTIP = 'Analizuoja tekstą kaip CSV (kableliais atskirta reikšmė) suformatuota '
-        + 'eilutė, kad būtų pateiktas laukų sąrašas. Klaida, kai eilutės tekste yra neištrintos naujos eilutės '
-        + '(kelios eilutės). Eilutės tekstas turi pasibaigti viena nauja eilute.';
+    Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_TOOLTIP = 'Analizuoja tekstą kaip CSV (kableliais atskirta reikšmė) suformatuota eilutė, kad būtų pateiktas laukų sąrašas. '
+        + ' Klaida, kai eilutės tekste yra neištrintos naujos eilutės (kelios eilutės). '
+        + ' Eilutės tekstas turi pasibaigti viena nauja eilute.';
 
     Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_HELPURL = '/reference/blocks/lists.html#listtocsvtable';
     Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TITLE_TO_CSV = 'sąrašas į CSV lentelę';
     Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TOOLTIP = 'Interpretuoja sąrašą kaip lentelę su didžiausių eilučių formatu ir '
-        + 'grąžina CSV (kableliais atskirtos reikšmės) tekstą atvaizduojančia lentelę. Kiekvienas elementas sąraše '
-        + 'pats turėtų būti CSV lentelės eilutę atvaizduojantis sąrašas. Kiekvienas elementas eilučių '
-        + 'sąraše laikomas lauku ir pateiktame CSV tekste cituojamas dvigubomis kabutėmis. '
+    Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_TOOLTIP = 'Interpretuoja sąrašą kaip lentelę su didžiausių eilučių formatu ir grąžina CSV (kableliais atskirtos reikšmės) tekstą atvaizduojančia lentelę. '
+        + ' Kiekvienas elementas sąraše pats turėtų būti CSV lentelės eilutę atvaizduojantis sąrašas. '
+        + ' Kiekvienas elementas eilučių sąraše laikomas lauku ir pateiktame CSV tekste cituojamas dvigubomis kabutėmis. '
         + ' Grąžintame tekste eilutės elementai yra atskiriami kableliais, o eilutės yra atskiriamos naujomis eilutėmis.';
 
     Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_HELPURL = '/reference/blocks/lists.html#listfromcsvtable';
     Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TITLE_FROM_CSV = 'sąrašas iš CSV lentelės';
     Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_INPUT_TEXT = 'tekstas';
-    Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TOOLTIP = 'Analizuoja tekstą kaip CSV (kableliais atskirta reikšmė) suformatuota'
-        + 'lentelę, kad būtų pateiktas eilučių sąrašas, iš kurių kiekvienas yra laukų sąrašas.'
+    Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TOOLTIP = 'Analizuoja tekstą kaip CSV (kableliais atskirta reikšmė) suformatuota lentelę, kad būtų pateiktas eilučių sąrašas, iš kurių kiekvienas yra laukų sąrašas.'
         + 'Eilutes galima atskirti naujomis eilutėmis.';
 
     Blockly.Msg.LANG_LISTS_INSERT_ITEM_HELPURL = '/reference/blocks/lists.html#insert';
