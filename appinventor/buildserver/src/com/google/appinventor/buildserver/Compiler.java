@@ -2150,14 +2150,12 @@ public final class Compiler {
           }
 
           String sourcePath = "";
-          String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + ZIPSLASH + lib;
-
           if (simpleCompTypes.contains(type)) {
+            final String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + ZIPSLASH + lib;
             sourcePath = getResource(pathSuffix);
           } else if (extCompTypes.contains(type)) {
+            final String pathSuffix = "/libsNatives/" + sourceDirName + ZIPSLASH + lib;
             sourcePath = getExtCompDirPath(type) + pathSuffix;
-            targetDir = createDir(targetDir, EXT_COMPS_DIR_NAME);
-            targetDir = createDir(targetDir, type);
           } else {
             userErrors.print(String.format(ERROR_IN_STAGE, "Native Code"));
             return false;
