@@ -87,11 +87,6 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   }
   
   public void setPropertyTabBackgroundColor (String newValue) {
-    if(MockComponentsUtil.isDefaultColor(newValue)) {
-      newValue = editor.getProjectEditor().getProjectSettingsProperty(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR);
-    }
     MockComponentsUtil.setWidgetBackgroundColor(rootPanel,newValue);
     int nWidgets = rootPanel.getWidgetCount();
     for(int i = 0; i < nWidgets; i++) {

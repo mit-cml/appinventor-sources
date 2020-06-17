@@ -14,8 +14,11 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.PaintUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +31,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   private RecyclerView.Adapter adapter;
   private List<Tab> tabs;
   private int tabBackgroundColor;
+  private int selectedTabIndicatorColor;
   
   public TabArrangement(ComponentContainer container) {
     super(container);
@@ -35,8 +39,8 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     viewPager = new ViewPager2(container.$context());
     viewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
     tabLayout = new TabLayout(container.$context());
-    TabBackgroundColor($form().PrimaryColor());
-    tabLayout.setSelectedTabIndicatorColor(container.$form().AccentColor());
+    TabBackgroundColor(PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_COLOR));
+    SelectedTabIndicatorColor(PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR));
     tabLayout.setTabMode(TabLayout.MODE_FIXED);
     tabLayout.setTabTextColors(Color.GRAY, Color.WHITE);
     tabs = new ArrayList<>();
@@ -156,18 +160,24 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   }
   
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-  defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+  defaultValue = ComponentConstants.DEFAULT_PRIMARY_COLOR)
   @SimpleProperty
   public void TabBackgroundColor(int argb) {
-    if (argb == defaultTabBackgroundColor()) {
-      tabBackgroundColor = AppInventorCompatActivity.getPrimaryColor();
-    } else {
-      tabBackgroundColor = argb;
-    }
+    tabBackgroundColor = argb;
     tabLayout.setBackgroundColor(tabBackgroundColor);
   }
   
-  private int defaultTabBackgroundColor() {
-    return $form().PrimaryColor();
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @IsColor
+  public int SelectedTabIndicatorColor() {
+    return selectedTabIndicatorColor;
+  }
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = ComponentConstants.DEFAULT_ACCENT_COLOR)
+  @SimpleProperty
+  public void SelectedTabIndicatorColor(int argb) {
+    selectedTabIndicatorColor = argb;
+    tabLayout.setSelectedTabIndicatorColor(selectedTabIndicatorColor);
   }
 }
