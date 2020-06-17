@@ -29,7 +29,19 @@ public class ContextMenuItem implements Component {
     }
 
     public void addToContextMenu(android.view.ContextMenu menu) {
-        item = menu.add(android.view.Menu.NONE, android.view.Menu.NONE, android.view.Menu.NONE, text);
+        item = menu.add(android.view.Menu.NONE, android.view.Menu.NONE, android.view.Menu.NONE, text)
+                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Click();
+                        return false;
+                    }
+                });
+    }
+
+    @SimpleEvent(description = "Event raised when user selects this menu item.")
+    public void Click() {
+        EventDispatcher.dispatchEvent(this, "Click");
     }
 
     /**

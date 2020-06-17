@@ -229,6 +229,13 @@ None
 {:id="ContextMenuItem.Text" .text} *Text*
 : Returns the text displayed by the menu item.
 
+### Events  {#ContextMenuItem-Events}
+
+{:.events}
+
+{:id="ContextMenuItem.Click"} Click()
+: Event raised when user selects this menu item.
+
 ## DatePicker  {#DatePicker}
 
 A button that, when clicked on, launches a popup dialog to allow the user to select a date on
