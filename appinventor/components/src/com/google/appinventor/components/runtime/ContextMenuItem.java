@@ -22,6 +22,8 @@ public class ContextMenuItem implements Component {
     private MenuItem item;
 
     private String text = "";
+    private boolean enabled = true;
+    private boolean visible = true;
 
     public ContextMenuItem(ContextMenu parent) {
         contextMenu = parent;
@@ -37,6 +39,8 @@ public class ContextMenuItem implements Component {
                         return false;
                     }
                 });
+        item.setEnabled(enabled);
+        item.setVisible(visible);
     }
 
     @SimpleEvent(description = "Event raised when user selects this menu item.")
@@ -65,6 +69,59 @@ public class ContextMenuItem implements Component {
         this.text = text;
         if (item != null) {
             item.setTitle(text);
+        }
+    }
+
+    /**
+     * Returns true if the menu item is active and clickable.
+     *
+     * @return  {@code true} indicates enabled, {@code false} disabled
+     */
+    @SimpleProperty(
+            category = PropertyCategory.BEHAVIOR,
+            description = "If true, user can tap menu item to cause action.")
+    public boolean Enabled() {
+        return enabled;
+    }
+
+    /**
+     * Specifies whether the menu item should be active and clickable.
+     *
+     * @param enabled  {@code true} for enabled, {@code false} disabled
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+            defaultValue = "True")
+    @SimpleProperty
+    public void Enabled(boolean enabled) {
+        this.enabled = enabled;
+        if (item != null) {
+            item.setEnabled(enabled);
+        }
+    }
+
+    /**
+     * Returns true if the menu item is visible, false otherwise.
+     *
+     * @return  {@code true} iff the menu item is visible.
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE)
+    public boolean Visible() {
+        return visible;
+    }
+
+    /**
+     * Specifies whether the menu item should be visible or hidden from menu.
+     *
+     * @param  visible  {@code true} iff the menu item should be visible.
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY,
+            defaultValue = "True")
+    @SimpleProperty
+    public void Visible(boolean visible) {
+        this.visible = visible;
+        if (item != null) {
+            item.setVisible(visible);
         }
     }
 

@@ -226,8 +226,14 @@ None
 
 {:.properties}
 
+{:id="ContextMenuItem.Enabled" .boolean} *Enabled*
+: If true, user can tap menu item to cause action.
+
 {:id="ContextMenuItem.Text" .text} *Text*
 : Returns the text displayed by the menu item.
+
+{:id="ContextMenuItem.Visible" .boolean} *Visible*
+: Returns true if the menu item is visible, false otherwise.
 
 ### Events  {#ContextMenuItem-Events}
 
