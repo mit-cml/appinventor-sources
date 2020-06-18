@@ -1,6 +1,5 @@
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.event.dom.client.*;
@@ -48,7 +47,6 @@ public class MockTab extends MockHVArrangement {
       @Override
       public void onClick(ClickEvent clickEvent) {
         MockTab.this.select(clickEvent.getNativeEvent());
-        Ode.CLog("Clicked on the mock tab layout");
       }
     }, ClickEvent.getType());
     initComponent(tab);

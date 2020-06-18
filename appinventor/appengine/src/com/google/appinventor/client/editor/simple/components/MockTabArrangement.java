@@ -3,13 +3,10 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
-import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.List;
 
 import static com.google.appinventor.components.common.ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL;
 
@@ -58,6 +55,8 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   @Override
   protected void addComponent(MockComponent component, int beforeVisibleIndex) {
     super.addComponent(component, beforeVisibleIndex);
+    Label label = ((MockTab)component).getTabLabel();
+    MockComponentsUtil.setWidgetTextColor(label, getPropertyValue(PROPERTY_TAB_TEXT_COLOR));
     if (children.size() == 1) {
       tabContentView.setWidget(((MockTab) children.get(0)).getTabContentView());
     }
