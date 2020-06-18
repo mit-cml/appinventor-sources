@@ -29,6 +29,7 @@ import com.google.appinventor.components.common.ComponentConstants;
 
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.RetValManager;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
 
@@ -124,13 +125,14 @@ public class ReplForm extends Form {
     Log.d(LOG_TAG, "onCreate");
     loadedExternalDexs = new ArrayList<String>();
     Intent intent = getIntent();
-    processExtras(intent, false);
+    processExtrasAndData(intent, false);
     themeHelper.setActionBarAnimation(false);
   }
 
   @Override
   void onCreateFinish() {
     super.onCreateFinish();
+    Log.d(LOG_TAG, "onCreateFinish() Called in Repl");
 
     if (!isEmulator() && AppInventorFeatures.doCompanionSplashScreen())
       {                    // Only show REPL splash if not in emulator and enabled
@@ -138,6 +140,53 @@ public class ReplForm extends Form {
         webviewIntent.setClassName(activeForm.$context(), SPLASH_ACTIVITY_CLASS);
         activeForm.$context().startActivity(webviewIntent);
       }
+    Intent intent = getIntent();
+    Log.d(LOG_TAG, "Intent = " + intent);
+    final String data = intent.getDataString();
+    if (data != null) {
+      Log.d(LOG_TAG, "Got data = " + data);
+    } else {
+      Log.d(LOG_TAG, "Did not receive any data");
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    // Chromebook Support:                                                 //
+    //                                                                     //
+    // The code below parses the data provided in the intent to get the    //
+    // code to use to talk to the rendezvous server. It appears to need to //
+    // run on the UI thread (I'm not sure what thread we are on here in    //
+    // onCreateFinish().  I'm not sure why we need the delay, but it       //
+    // doesn't work if we do not include the delay. I'm continuing to look //
+    // into why that is and the delay may be removed in a future           //
+    // revision. (jis).                                                    //
+    //                                                                     //
+    // Also: the rendezvous server location is hardcoded in this version.  //
+    // a future version will let you customize the location of the         //
+    // rendezvous server.                                                  //
+    /////////////////////////////////////////////////////////////////////////
+
+    if (data != null && (data.startsWith("aicompanion"))) {
+      registerForOnInitialize(new OnInitializeListener() {
+          @Override
+          public void onInitialize() {
+            String code = data.substring(data.indexOf("//comp/") + 7);
+            PhoneStatus status = new PhoneStatus(ReplForm.this);
+            status.WebRTC(true);
+            code = status.setHmacSeedReturnCode(code, "rendezvous.appinventor.mit.edu");
+            String ipAddress = PhoneStatus.GetWifiIpAddress();
+            int api = status.SdkLevel();
+            String version = status.GetVersionName();
+            String aid = status.InstallationId();
+            Log.d(LOG_TAG, "InstallationId = " + aid);
+            Web web = new Web(ReplForm.this);
+            web.Url("http://rendezvous.appinventor.mit.edu/rendezvous/");
+            web.PostText("ipaddr=" + ipAddress + "&port=9987&webrtc=true" +
+              "&version=" + version + "&api=" + api + "&aid=" +
+              aid + "&installer=" + status.GetInstaller() + "&r2=true&key=" + code);
+            status.startWebRTC("rendezvous.appinventor.mit.edu", "OK");
+          }
+        });
+    }
   }
 
   @Override
@@ -243,7 +292,7 @@ public class ReplForm extends Form {
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     Log.d(LOG_TAG, "onNewIntent Called");
-    processExtras(intent, true);
+    processExtrasAndData(intent, true);
   }
 
   void HandleReturnValues() {
@@ -255,7 +304,7 @@ public class ReplForm extends Form {
     }
   }
 
-  protected void processExtras(Intent intent, boolean restart) {
+  private void processExtrasAndData(Intent intent, boolean restart) {
     Bundle extras = intent.getExtras();
     if (extras != null) {
       Log.d(LOG_TAG, "extras: " + extras);
@@ -264,8 +313,13 @@ public class ReplForm extends Form {
         Log.d(LOG_TAG, "Extra Key: " + keys.next());
       }
     }
+    String data = intent.getDataString();
+    if (data != null && (data.startsWith("aicompanion"))) {
+      isDirect = true;
+      assetsLoaded = true;
+    }
     if ((extras != null) && extras.getBoolean("rundirect")) {
-      Log.d(LOG_TAG, "processExtras rundirect is true and restart is " + restart);
+      Log.d(LOG_TAG, "processExtrasAndData rundirect is true and restart is " + restart);
       isDirect = true;
       assetsLoaded = true;
       if (restart) {

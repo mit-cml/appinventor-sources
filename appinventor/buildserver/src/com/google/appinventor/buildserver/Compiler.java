@@ -1013,6 +1013,14 @@ public final class Compiler {
           out.write("        <category android:name=\"android.intent.category.LAUNCHER\" />\n");
         }
         out.write("      </intent-filter>\n");
+        if (isForCompanion) {
+          out.write("<intent-filter>\n");
+          out.write("<action android:name=\"android.intent.action.VIEW\" />\n");
+          out.write("<category android:name=\"android.intent.category.DEFAULT\" />\n");
+          out.write("<category android:name=\"android.intent.category.BROWSABLE\" />\n");
+          out.write("<data android:scheme=\"aicompanion\" android:host=\"comp\" />\n");
+          out.write("</intent-filter>\n");
+        }
 
         if (simpleCompTypes.contains("com.google.appinventor.components.runtime.NearField") &&
             !isForCompanion && isMain) {
