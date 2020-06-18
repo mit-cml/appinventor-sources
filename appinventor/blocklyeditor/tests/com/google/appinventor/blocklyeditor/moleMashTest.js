@@ -10,13 +10,13 @@ var fs = require('fs'); //Always required to read from files
 var path = fs.absolute('.');
 var system = require('system');
 var args = system.args;
-var messages = fs.read('src/msg/messages.json');
 
 //Read files from filesystem
 var expected = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/moleMash/MoleMashExpected.yail');
 var formJson = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/moleMash/Screen1.scm');
 formJson = formJson.substring(9, formJson.length-2);
 var blocks = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/moleMash/Screen1.bky');
+var messages = fs.read('src/msg/messages.json');
 
 // PhantomJS page object to open and load an URL
 var page = require('webpage').create();
@@ -42,6 +42,7 @@ page.open('src/demos/yail/yail_testing_index.html', function(status) {
   // Evaluate the following:
   var passed = page.evaluate(function(){
 
+    // Set the translation messages object
     Blockly.Msg = JSON.parse(arguments[5]);
 
     // Get the expected Yail from Classic

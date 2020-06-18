@@ -78,7 +78,7 @@ public class BlocklyTranslationGenerator {
   // JSON is merged in order, which means duplicate keys are overwritten. The key that occurss in
   // the last object wins. Object should be in the list in order of precedence, with the last entry
   // the highest priority.
-  private static JSONObject merge_string_json(ArrayList<JSONObject> json_to_merge) {
+  private static JSONObject merge_string_json(ArrayList<JSONObject> json_to_merge) throws JSONException {
     JSONObject merged_json = new JSONObject();
     for (JSONObject obj : json_to_merge) {
       Iterator it = obj.keys();
