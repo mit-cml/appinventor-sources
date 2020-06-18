@@ -2811,10 +2811,6 @@ div.dropdiv p {
   text-align: center;
 }
 
-.ode-Tab-disabled {
-  color: gray;
-}
-
 .ode-Tab-selected {
   border: 2px solid #8fc202;
 }

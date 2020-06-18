@@ -32,6 +32,8 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   private List<Tab> tabs;
   private int tabBackgroundColor;
   private int selectedTabIndicatorColor;
+  private int textColor = COLOR_LTGRAY;
+  private int selectedTabTextColor = COLOR_WHITE;
   
   public TabArrangement(ComponentContainer container) {
     super(container);
@@ -41,8 +43,9 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     tabLayout = new TabLayout(container.$context());
     TabBackgroundColor(PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_COLOR));
     SelectedTabIndicatorColor(PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR));
+    TabTextColor(textColor);
+    SelectedTabTextColor(selectedTabTextColor);
     tabLayout.setTabMode(TabLayout.MODE_FIXED);
-    tabLayout.setTabTextColors(Color.GRAY, Color.WHITE);
     tabs = new ArrayList<>();
     adapter = new RecyclerView.Adapter() {
       @Override
@@ -179,5 +182,33 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public void SelectedTabIndicatorColor(int argb) {
     selectedTabIndicatorColor = argb;
     tabLayout.setSelectedTabIndicatorColor(selectedTabIndicatorColor);
+  }
+  
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @IsColor
+  public int TabTextColor() {
+    return textColor;
+  }
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
+  @SimpleProperty
+  public void TabTextColor(int argb) {
+    textColor = argb;
+    tabLayout.setTabTextColors(textColor,selectedTabTextColor);
+  }
+  
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @IsColor
+  public int SelectedTabTextColor() {
+    return selectedTabTextColor;
+  }
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+  @SimpleProperty
+  public void SelectedTabTextColor(int argb) {
+    selectedTabTextColor = argb;
+    tabLayout.setTabTextColors(textColor,selectedTabTextColor);
   }
 }

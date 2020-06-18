@@ -5,8 +5,11 @@ import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.List;
 
 import static com.google.appinventor.components.common.ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL;
 
@@ -14,6 +17,8 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   
   public static final String TYPE = "TabArrangement";
   public static final String PROPERTY_TAB_BACKGROUND_COLOR = "TabBackgroundColor";
+  public static final String PROPERTY_TAB_TEXT_COLOR = "TabTextColor";
+  public static final String PROPERTY_SELECTED_TAB_TEXT_COLOR = "SelectedTabTextColor";
   
   private final SimplePanel tabContentView;
   
@@ -32,14 +37,12 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
     
     tabContentView = new SimplePanel();
     tabContentView.setStylePrimaryName("ode-TabContentView");
-    
     AbsolutePanel tabArrangement = new AbsolutePanel();
     tabArrangement.add(tabContentView);
     tabArrangement.add(rootPanel);
     tabArrangement.setStylePrimaryName("ode-SimpleMockContainer");
     rootPanel.setStylePrimaryName("ode-TabContainer");
     rootPanel.getElement().getStyle().clearPosition();
-    
     initComponent(tabArrangement);
   }
   
@@ -83,6 +86,8 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
     super.onPropertyChange(propertyName, newValue);
     if(propertyName.equals(PROPERTY_TAB_BACKGROUND_COLOR)) {
       setPropertyTabBackgroundColor(newValue);
+    } else if (propertyName.equals(PROPERTY_TAB_TEXT_COLOR)) {
+      setPropertyTabTextColor(newValue);
     }
   }
   
@@ -94,6 +99,16 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
       MockComponentsUtil.setWidgetBackgroundColor(widget,newValue);
     }
   }
+  
+  public void setPropertyTabTextColor (String newValue) {
+    for(MockComponent mockComponent : children) {
+      if(mockComponent instanceof  MockTab) {
+        Label label = ((MockTab)mockComponent).getTabLabel();
+        MockComponentsUtil.setWidgetTextColor(label, newValue);
+      }
+    }
+  }
+  
   
   public void selectTab(MockTab mockTab) {
     tabContentView.setWidget(mockTab.getTabContentView());

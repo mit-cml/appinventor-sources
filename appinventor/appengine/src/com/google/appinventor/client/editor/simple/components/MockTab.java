@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.editor.simple.components.MockTabArrangement.*;
 
 public class MockTab extends MockHVArrangement {
   
@@ -53,6 +54,10 @@ public class MockTab extends MockHVArrangement {
     initComponent(tab);
   }
   
+  public Label getTabLabel() {
+    return tabLabel;
+  }
+  
   protected void addWidthHeightProperties() {
     // Tabs always fill their TabArrangement.
   }
@@ -81,6 +86,11 @@ public class MockTab extends MockHVArrangement {
     if (selected) {
       if (getContainer() instanceof MockTabArrangement) {
         ((MockTabArrangement) getContainer()).selectTab(this);
+        MockComponentsUtil.setWidgetTextColor(tabLabel, getContainer().getPropertyValue(PROPERTY_SELECTED_TAB_TEXT_COLOR));
+      }
+    } else {
+      if (getContainer() instanceof MockTabArrangement) {
+        MockComponentsUtil.setWidgetTextColor(tabLabel, getContainer().getPropertyValue(PROPERTY_TAB_TEXT_COLOR));
       }
     }
     super.onSelectedChange(selected);
