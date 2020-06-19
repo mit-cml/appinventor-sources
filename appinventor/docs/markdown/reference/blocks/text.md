@@ -51,11 +51,11 @@ Returns the number of characters including spaces in the string. This is the len
 
 Returns whether or not the string contains any characters (including spaces). When the string length is 0, returns true otherwise it returns false.
 
-### compare texts < > =   {#compare}
+### compare texts < > = ≠ {#compare}
 
 ![](images/text/compare.gif)
 
-Returns whether or not the first string is lexicographically <, >, or = the second string depending on which dropdown is selected.
+Returns whether or not the first string is lexicographically <, >, =, or ≠ the second string depending on which dropdown is selected.
 
 A string a considered lexicographically greater than another if it is alphabetically greater than the other string. Essentially, it would come after it in the dictionary. All uppercase letters are considered smaller or to occur before lowercase letters. cat would be > Cat.
 

@@ -14,6 +14,8 @@
 
 goog.provide('AI.Blockly.WarningHandler');
 
+goog.require('Blockly.Blocks.Utilities');
+
 Blockly.WarningHandler = function(workspace) {
   this.workspace = workspace;
   this.allBlockErrors = [{name:'checkReplErrors'}];
@@ -438,6 +440,27 @@ Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(b
       block.setErrorIconText(errorMessage);
       return true;
     }
+  }
+  return false;
+};
+
+/**
+ * Checks whether a text block in a number slot has a valid value. If not,
+ * an error is generated.
+ *
+ * @param {!Blockly.BlockSvg} block the text block to evaluate
+ */
+Blockly.WarningHandler.prototype['checkInvalidNumber'] = function(block) {
+  if (!block.outputConnection || !block.outputConnection.isConnected()) {
+    return;
+  }
+  var targetChecks = block.outputConnection.targetConnection.getCheck();
+  var value = block.getFieldValue('TEXT');
+  if (targetChecks && targetChecks.indexOf('String') == -1 &&
+      targetChecks.indexOf('Number') >= 0 &&
+      (value == '' || !Blockly.Blocks.Utilities.NUMBER_REGEX.test(value))) {
+    block.setErrorIconText(Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT);
+    return true;
   }
   return false;
 };

@@ -178,6 +178,10 @@
          POSTs work with URLFetch around 09/20/2018 -->
     <property name="appengine.api.urlfetch.defaultDeadline" value="40"/>
 
+    <!-- Supported maximum size of a project, in MB -->
+    <!-- App Engine HTTP requests/responses are capped at 32 MB -->
+    <property name="project.maxsize" value="30"/>
+
     <!-- So the calls to the buildserver can re-use connections -->
     <property name="http.keepAlive" value="true" />
     <property name="http.maxConnections" value="5" />

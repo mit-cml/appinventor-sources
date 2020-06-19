@@ -15,6 +15,8 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.SimpleBroadcastReceiver;
+import com.google.appinventor.components.annotations.UsesActivityMetadata;
+import com.google.appinventor.components.annotations.UsesApplicationMetadata;
 import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesNativeLibraries;
@@ -672,6 +674,16 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> activities;
 
     /**
+     * Metadata required by this component.
+     */
+    protected final Set<String> metadata;
+
+    /**
+     * Activity metadata required by this component.
+     */
+    protected final Set<String> activityMetadata;
+
+    /**
      * Broadcast receivers required by this component.
      */
     protected final Set<String> broadcastReceivers;
@@ -753,6 +765,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       nativeLibraries = Sets.newHashSet();
       assets = Sets.newHashSet();
       activities = Sets.newHashSet();
+      metadata = Sets.newHashSet();
+      activityMetadata = Sets.newHashSet();
       broadcastReceivers = Sets.newHashSet();
       classNameAndActionsBR = Sets.newHashSet();
       designerProperties = Maps.newTreeMap();
@@ -1099,6 +1113,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.nativeLibraries.addAll(parentComponent.nativeLibraries);
         componentInfo.assets.addAll(parentComponent.assets);
         componentInfo.activities.addAll(parentComponent.activities);
+        componentInfo.metadata.addAll(parentComponent.metadata);
+        componentInfo.activityMetadata.addAll(parentComponent.activityMetadata);
         componentInfo.broadcastReceivers.addAll(parentComponent.broadcastReceivers);
         // TODO(Will): Remove the following call once the deprecated
         //             @SimpleBroadcastReceiver annotation is removed. It should
@@ -1183,6 +1199,42 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       } catch (InvocationTargetException e) {
         messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
             "activity attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      }
+    }
+
+    // Gather the required metadata and build their element strings.
+    UsesApplicationMetadata usesApplicationMetadata = element.getAnnotation(UsesApplicationMetadata.class);
+    if (usesApplicationMetadata != null) {
+      try {
+        for (MetaDataElement me : usesApplicationMetadata.metaDataElements()) {
+          updateWithNonEmptyValue(componentInfo.metadata, metaDataElementToString(me));
+        }
+      } catch (IllegalAccessException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
+            "application metadata and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
+            "application metadata and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      }
+    }
+
+    // Gather the required activity metadata and build their element strings.
+    UsesActivityMetadata usesActivityMetadata = element.getAnnotation(UsesActivityMetadata.class);
+    if (usesActivityMetadata != null) {
+      try {
+        for (MetaDataElement me : usesActivityMetadata.metaDataElements()) {
+          updateWithNonEmptyValue(componentInfo.activityMetadata, metaDataElementToString(me));
+        }
+      } catch (IllegalAccessException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
+                "application metadata and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
+                "application metadata and subelements for component " + componentInfo.name);
         throw new RuntimeException(e);
       }
     }
