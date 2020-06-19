@@ -128,7 +128,7 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
     return func;
   } else {
     var f = function() {
-      var self = /** @type {Blockly.WorkspaceSvg} */ this;
+      var self = /** @type {Blockly.WorkspaceSvg} */ (this);
       var result = func.apply(this, Array.prototype.slice.call(arguments));
       // BEGIN: Configure drag and drop of blocks images to workspace
       result.addEventListener('dragenter', function(e) {
@@ -1259,7 +1259,7 @@ Blockly.WorkspaceSvg.prototype.requestRender = function(block) {
   if (block) {
     // Rendering uses Blockly.BlockSvg.renderDown, so we only need a list of the topmost blocks
     while (block.getParent()) {
-      block = /** @type {Blockly.BlockSvg} */ block.getParent();
+      block = /** @type {Blockly.BlockSvg} */ (block.getParent());
     }
     if (!(block.id in this.pendingBlockIds)) {
       this.pendingBlockIds[block.id] = true;
@@ -1304,7 +1304,7 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
   }
   if (block && !(block.id in this.pendingErrorBlockIds)) {
     while (block.getParent()) {
-      block = /** @type {Blockly.BlockSvg} */ block.getParent();
+      block = /** @type {Blockly.BlockSvg} */ (block.getParent());
     }
     var pendingBlocks = [block];
     while (pendingBlocks.length > 0) {

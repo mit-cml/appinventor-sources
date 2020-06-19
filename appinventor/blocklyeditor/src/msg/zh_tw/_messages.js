@@ -178,9 +178,9 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = '對一定範圍內的數字';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX = '對於 ';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX = ' 範圍內的';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = '按指定範圍和增量依序取值';
-	+ '每次循環均將數值賦予指定變數，'
-	+ '並執行「執行」區段中的程式方塊';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = '按指定範圍和增量依序取值' +
+        '每次循環均將數值賦予指定變數，' +
+        '並執行「執行」區段中的程式方塊';
 
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM = '對於任意';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_VAR = '清單項目';

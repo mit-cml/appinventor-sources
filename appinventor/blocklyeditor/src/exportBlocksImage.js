@@ -521,9 +521,9 @@ Blockly.importPngAsBlock = function(workspace, xy, png) {
     var xmlChunk = png.getCodeChunk();
     if (xmlChunk) {
       var xmlText = new TextDecoder().decode(xmlChunk.data);
-      var xml = /** @type {!Element} */ Blockly.Xml.textToDom(xmlText);
+      var xml = /** @type {!Element} */ (Blockly.Xml.textToDom(xmlText));
       xml = xml.firstElementChild;
-      var block = /** @type {Blockly.BlockSvg} */ Blockly.Xml.domToBlock(xml, workspace);
+      var block = /** @type {Blockly.BlockSvg} */ (Blockly.Xml.domToBlock(xml, workspace));
       block.moveBy(xy.x, xy.y);
       block.initSvg();
       workspace.requestRender(block);
