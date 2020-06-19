@@ -523,6 +523,7 @@
 	"Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP": "Runs the blocks in 'do' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.",
 	"Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT": "do/result",
 	"Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE": "to",
+	"Blockly.Msg.LANG_PROCEDURES_DEFRETURN_PROCEDURE": "procedure",
 	"Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN": "result",
 	"Blockly.Msg.LANG_PROCEDURES_DEFRETURN_COLLAPSED_PREFIX": "to ",
 	"Blockly.Msg.LANG_PROCEDURES_DEFRETURN_TOOLTIP": "A procedure returning a result value.",
