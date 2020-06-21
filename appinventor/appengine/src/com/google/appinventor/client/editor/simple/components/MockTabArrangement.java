@@ -16,6 +16,7 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   public static final String PROPERTY_TAB_BACKGROUND_COLOR = "TabBackgroundColor";
   public static final String PROPERTY_TAB_TEXT_COLOR = "TabTextColor";
   public static final String PROPERTY_SELECTED_TAB_TEXT_COLOR = "SelectedTabTextColor";
+  public static final String PROPERTY_SHOW_TABS_AT_BOTTOM = "ShowTabsAtBottom";
   
   private final SimplePanel tabContentView;
   private static MockTab selectedTab;
@@ -36,8 +37,8 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
     tabContentView = new SimplePanel();
     tabContentView.setStylePrimaryName("ode-TabContentView");
     AbsolutePanel tabArrangement = new AbsolutePanel();
-    tabArrangement.add(tabContentView);
     tabArrangement.add(rootPanel);
+    tabArrangement.add(tabContentView);
     tabArrangement.setStylePrimaryName("ode-SimpleMockContainer");
     rootPanel.setStylePrimaryName("ode-TabContainer");
     rootPanel.getElement().getStyle().clearPosition();
@@ -94,6 +95,8 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
       setPropertyTabTextColor(newValue);
     } else if (propertyName.equals(PROPERTY_SELECTED_TAB_TEXT_COLOR)) {
       setPropertySelectedTabTextColor(newValue);
+    } else if (propertyName.equals(PROPERTY_SHOW_TABS_AT_BOTTOM)) {
+      setPropertyShowTabsAtBottom(newValue);
     }
   }
   
@@ -130,6 +133,21 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
         }
       }
     }
+  }
+  
+  public void setPropertyShowTabsAtBottom (String newValue) {
+    if(newValue.equals("True")) {
+      rootPanel.removeStyleName("ode-TabContainer");
+      rootPanel.setStylePrimaryName("ode-TabContainerBottom");
+      tabContentView.removeStyleName("ode-TabContentView");
+      tabContentView.setStylePrimaryName("ode-TabContentViewBottom");
+    } else {
+      rootPanel.removeStyleName("ode-TabContainerBottom");
+      rootPanel.setStylePrimaryName("ode-TabContainer");
+      tabContentView.removeStyleName("ode-TabContentViewBottom");
+      tabContentView.setStylePrimaryName("ode-TabContentView");
+    }
+    refreshForm();
   }
   
   public void selectTab(MockTab mockTab) {

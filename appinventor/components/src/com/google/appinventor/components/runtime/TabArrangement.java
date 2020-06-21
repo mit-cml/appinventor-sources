@@ -30,14 +30,17 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   private ViewPager2 viewPager;
   private RecyclerView.Adapter adapter;
   private List<Tab> tabs;
+  private final LinearLayout layout;
   private int tabBackgroundColor;
   private int selectedTabIndicatorColor;
   private int textColor = COLOR_LTGRAY;
   private int selectedTabTextColor = COLOR_WHITE;
+  private boolean showTabsAtBottom = false;
   
   public TabArrangement(ComponentContainer container) {
     super(container);
     Log.d("tabarrangement","Constructor of TabArrangement");
+    layout = new LinearLayout($context());
     viewPager = new ViewPager2(container.$context());
     viewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
     tabLayout = new TabLayout(container.$context());
@@ -90,17 +93,29 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   
   @Override
   public LinearLayout getView() {
-    LinearLayout layout = new LinearLayout($context());
     layout.setOrientation(LinearLayout.VERTICAL);
     layout.setGravity(Gravity.TOP);
-    if(tabLayout.getParent() != null) {
-      ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
+    if(showTabsAtBottom) {
+      if(viewPager.getParent() != null) {
+        ((ViewGroup)viewPager.getParent()).removeView(viewPager);
+      }
+      layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
+      if(tabLayout.getParent() != null) {
+        ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
+      }
+      layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+      tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_TOP);
+    } else {
+      if(tabLayout.getParent() != null) {
+        ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
+      }
+      layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+      if(viewPager.getParent() != null) {
+        ((ViewGroup)viewPager.getParent()).removeView(viewPager);
+      }
+      layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
+      tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_BOTTOM);
     }
-    layout.addView(tabLayout, RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT);
-    if(viewPager.getParent() != null) {
-      ((ViewGroup)viewPager.getParent()).removeView(viewPager);
-    }
-    layout.addView(viewPager, RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.FILL_PARENT);
     return layout;
   }
   
@@ -210,5 +225,39 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public void SelectedTabTextColor(int argb) {
     selectedTabTextColor = argb;
     tabLayout.setTabTextColors(textColor,selectedTabTextColor);
+  }
+  
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public boolean ShowTabsAtBottom() {
+    return showTabsAtBottom;
+  }
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+  defaultValue = "False")
+  @SimpleProperty
+  public void ShowTabsAtBottom(boolean showTabsAtBottom) {
+    this.showTabsAtBottom = showTabsAtBottom;
+    layout.removeAllViews();
+    if(showTabsAtBottom) {
+      if(viewPager.getParent() != null) {
+        ((ViewGroup)viewPager.getParent()).removeView(viewPager);
+      }
+      layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
+      if(tabLayout.getParent() != null) {
+        ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
+      }
+      layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+      tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_TOP);
+    } else {
+      if(tabLayout.getParent() != null) {
+        ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
+      }
+      layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+      if(viewPager.getParent() != null) {
+        ((ViewGroup)viewPager.getParent()).removeView(viewPager);
+      }
+      layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
+      tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_BOTTOM);
+    }
   }
 }

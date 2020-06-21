@@ -2789,13 +2789,30 @@ div.dropdiv p {
 
 .ode-TabContentView {
   position: absolute;
+  top: 49px;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+}
+
+.ode-TabContainer {
+  position: absolute;
+  width: 100%;
+  height: 48px;
+  top: 0;
+  border: 0;
+  border-top: 1px solid gray;
+}
+
+.ode-TabContentViewBottom {
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   bottom: 49px;
 }
 
-.ode-TabContainer {
+.ode-TabContainerBottom {
   position: absolute;
   width: 100%;
   height: 48px;
