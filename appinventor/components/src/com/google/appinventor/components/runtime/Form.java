@@ -151,6 +151,8 @@ public class Form extends AppInventorCompatActivity
   // reason, we cannot assume that the activeForm is the foreground activity.
   protected static Form activeForm;
 
+  private Menu menu = null;
+
   private float deviceDensity;
   private float compatScalingFactor;
 
@@ -231,7 +233,7 @@ public class Form extends AppInventorCompatActivity
   private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
 
   // Listeners for context menu.
-  private final Set<OnCreateContextMenuListener> onCreateContextMenuListeners = Sets.newHashSet();
+  private final Set<View.OnCreateContextMenuListener> onCreateContextMenuListeners = Sets.newHashSet();
 
   // Listeners for permission results
   private final HashMap<Integer, PermissionResultHandler> permissionHandlers = Maps.newHashMap();
@@ -835,7 +837,7 @@ public class Form extends AppInventorCompatActivity
     onOptionsItemSelectedListeners.add(component);
   }
 
-  public void registerForOnCreateContextMenu(OnCreateContextMenuListener component) {
+  public void registerForOnCreateContextMenu(View.OnCreateContextMenuListener component) {
     onCreateContextMenuListeners.add(component);
   }
 
@@ -2319,8 +2321,6 @@ public class Form extends AppInventorCompatActivity
   // Configure the system menu to include items to kill the application and to show "about"
   // information
 
-  private Menu menu = null;
-
   public Menu getMenu() {
     return menu;
   }
@@ -2401,7 +2401,7 @@ public class Form extends AppInventorCompatActivity
   @Override
   public void onCreateContextMenu(android.view.ContextMenu menu, View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
     super.onCreateContextMenu(menu, v, menuInfo);
-    for (OnCreateContextMenuListener listener: onCreateContextMenuListeners) {
+    for (View.OnCreateContextMenuListener listener: onCreateContextMenuListeners) {
       if(listener.equals(componentMap.get(v))) {
         listener.onCreateContextMenu(menu, v, menuInfo);
       }

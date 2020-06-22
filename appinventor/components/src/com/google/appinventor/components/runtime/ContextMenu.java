@@ -27,7 +27,7 @@ import java.util.List;
         category = ComponentCategory.LAYOUT,
         description = "Component for context menu to hold ContextMenuItems.")
 @SimpleObject
-public class ContextMenu implements Component, ComponentContainer, OnCreateContextMenuListener {
+public class ContextMenu implements Component, ComponentContainer, View.OnCreateContextMenuListener {
 
     private Form form;
     private android.view.ContextMenu menu;
