@@ -479,15 +479,8 @@ public final class SimpleComponentDescriptor {
         MockComponentFactory mcf = MockComponentRegistry.getMockComponentFactory(name);
 
         // create MockComponent from the factory
-        MockComponent mc = mcf.create(editor);
-
-        // return the MockComponent
-//        return mc;
-
-        // TESTING
-        GWT.log(mc.toString());
-        mc.onCreateFromPalette();
-        mc.onPropertyChange("Text", "lol");
+        // and return the MockComponent
+        return mcf.create(editor);
 
       } else {
         if (SimpleComponentDatabase.getInstance(editor.getProjectId()).isContainer(name)) {
