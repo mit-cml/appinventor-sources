@@ -8,6 +8,8 @@ package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.MockComponentFactory;
+import com.google.appinventor.client.editor.simple.MockComponentRegistry;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.*;
@@ -17,10 +19,12 @@ import com.google.appinventor.shared.storage.StorageUtil;
 
 import com.google.common.collect.Maps;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ImageResource;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import jsinterop.annotations.JsType;
 
 import java.util.Map;
 
@@ -29,6 +33,7 @@ import java.util.Map;
  * This class is immutable.
  *
  */
+@JsType
 public final class SimpleComponentDescriptor {
 
   // Component display name
@@ -426,16 +431,36 @@ public final class SimpleComponentDescriptor {
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
     } else {
-      if (SimpleComponentDatabase.getInstance(editor.getProjectId()).isContainer(name)) {
-        return new MockHVArrangement(editor, name, images.vertical(),
-                ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
-                ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
+
+      // check if Mock has been registered against this component
+      if (MockComponentRegistry.isPresent(name)) {
+
+        // get the factory
+        MockComponentFactory mcf = MockComponentRegistry.getMockComponentFactory(name);
+
+        // create MockComponent from the factory
+        MockComponent mc = mcf.create(editor);
+
+        // return the MockComponent
+//        return mc;
+
+        // TESTING
+        GWT.log(mc.toString());
+        mc.onCreateFromPalette();
+        mc.onPropertyChange("Text", "lol");
+
       } else {
-        String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
-        Image imageFromPath = getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-                pkgName,
-                editor.getProjectId());
-        return new MockVisibleExtension(editor, name, imageFromPath);
+        if (SimpleComponentDatabase.getInstance(editor.getProjectId()).isContainer(name)) {
+          return new MockHVArrangement(editor, name, images.vertical(),
+                  ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
+                  ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
+        } else {
+          String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
+          Image imageFromPath = getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                  pkgName,
+                  editor.getProjectId());
+          return new MockVisibleExtension(editor, name);
+        }
       }
     }
   }
