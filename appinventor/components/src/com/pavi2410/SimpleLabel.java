@@ -3,8 +3,10 @@ package com.pavi2410;
 import android.view.View;
 import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.runtime.AndroidViewComponent;
 import com.google.appinventor.components.runtime.ComponentContainer;
@@ -31,7 +33,8 @@ public class SimpleLabel extends AndroidViewComponent {
         return tv;
     }
 
-    @SimpleFunction()
+    @DesignerProperty
+    @SimpleProperty
     public void Text(String text) {
         tv.setText(text);
     }

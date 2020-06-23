@@ -5,21 +5,22 @@ class MockSimpleLabel extends MVE {
     static TYPE = "SimpleLabel"
 
     constructor(editor) {
-        super(editor, MockSimpleLabel.TYPE, )
+        super(editor, MockSimpleLabel.TYPE)
         console.log("constructor called");
 
         this.label = document.createElement("p")
 
-        initComponent(this.label)
+        this.initComponent(this.label)
     }
 
     onCreateFromPalette() {
         console.log("onCreateFromPalette called")
-        changeProperty("Text", getName())
+        this.changeProperty("Text", this.getName());
     }
 
     onPropertyChange(propertyName, newValue) {
         console.log("onPropChanged", propertyName, newValue);
+        super.onPropertyChange(propertyName, newValue);
 
         switch (propertyName) {
             case "Text":
