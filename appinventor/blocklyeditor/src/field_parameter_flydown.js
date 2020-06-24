@@ -26,15 +26,13 @@ goog.require('AI.Blockly.FieldFlydown');
  * @param {?function=} opt_additionalChangeHandler A one-arg function indicating
  *     what to do in addition to renaming lexical variables. May be
  *     null/undefined to indicate nothing extra to be done.
- * @param {string=} opt_codeName Syntactic identifier of the field in the
- *     source code.
  * @extends {Blockly.FieldFlydown}
  * @constructor
  */
 // [lyn, 10/26/13] Added opt_additionalChangeHandler to handle propagation of
 //    renaming of proc decl params
 Blockly.FieldParameterFlydown =
-  function(name, isEditable, displayLocation, opt_additionalChangeHandler, opt_codeName) {
+  function(name, isEditable, displayLocation, opt_additionalChangeHandler) {
     var changeHandler = function (text) {
       if (!Blockly.FieldParameterFlydown.changeHandlerEnabled) {
         return text;
@@ -48,11 +46,6 @@ Blockly.FieldParameterFlydown =
       return possiblyRenamedText;
     };
 
-    if (opt_codeName) {
-      // Used to create eventparam mutation on lexical_get_variable and
-      // lexical_set_variable
-      this.eventparam = opt_codeName;
-    }
     Blockly.FieldParameterFlydown.superClass_.constructor.call(
         this, name, isEditable, displayLocation, changeHandler);
   };
