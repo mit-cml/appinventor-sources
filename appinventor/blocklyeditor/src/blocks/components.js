@@ -317,7 +317,7 @@ Blockly.Blocks.component_event = {
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
   // Also must create flydown params and DO input if they don't exist.
 
-  // To-DO: consider using top.BlocklyPanel... instead of window.parent.BlocklyPanel
+  // TODO: consider using top.BlocklyPanel... instead of window.parent.BlocklyPanel
 
   setParameterOrientation: function(isHorizontal) {
     var params = this.getParameters();
