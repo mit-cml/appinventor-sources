@@ -20,7 +20,7 @@ goog.require('AI.Blockly.Drawer');
 // App Inventor extensions to Blockly
 goog.require('Blockly.TypeBlock');
 
-goog.require('Blockly.Flyout');
+goog.require('AI.Blockly.Flyout');
 
 // Make dragging a block from flyout work in any direction (default: 70)
 Blockly.Flyout.prototype.dragAngleRange_ = 360;

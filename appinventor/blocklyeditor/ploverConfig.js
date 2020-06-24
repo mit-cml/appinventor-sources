@@ -125,6 +125,7 @@
     "./src/translation_methods.js",
     "./src/translation_params.js",
     "./src/drawer.js",
+    "./src/flyout.js",
     "./src/savefile.js",
     "./src/versioning.js",
     "./src/mutators.js",
