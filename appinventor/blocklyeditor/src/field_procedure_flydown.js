@@ -14,6 +14,7 @@ goog.provide('AI.Blockly.FieldProcedureFlydown');
 
 goog.require('AI.Blockly.FieldFlydown');
 
+// TODO: It doesn't look like this prototype is used?
 /**
  * Class for a clickable parameter field.
  * @param {string} text The initial parameter name in the field.
