@@ -23,9 +23,10 @@ goog.require('Blockly.Options');
  * @param {string} text The initial parameter name in the field.
  * @param {boolean} isEditable Whether the user is allowed to change the name
  *     of this parameter or not.
- * @param {string} displayLocation The position to display the flydown in. Either:
- *     Blockly.FieldFlydown.DISPLAY_BELOW
- *     Blockly.FieldFlydown.DISPLAY_RIGHT
+ * @param {string=} opt_displayLocation The location to display the flydown at
+ *     Either: Blockly.FieldFlydown.DISPLAY_BELOW,
+ *             Blockly.FieldFlydown.DISPLAY_RIGHT
+ *     Defaults to DISPLAY_RIGHT.
  * @param {Function} opt_changeHandler An optional function that is called
  *     to validate any constraints on what the user entered.  Takes the new
  *     text as an argument and returns the accepted text or null to abort
@@ -34,11 +35,11 @@ goog.require('Blockly.Options');
  * @extends {Blockly.FieldTextInput}
  * @constructor
  */
-Blockly.FieldFlydown = function(name, isEditable, displayLocation, opt_changeHandler) {
+Blockly.FieldFlydown = function(name, isEditable, opt_displayLocation, opt_changeHandler) {
   // This by itself does not control editability
   this.EDITABLE = isEditable;
   // [lyn, 10/27/13] Make flydown direction an instance variable
-  this.displayLocation = displayLocation;
+  this.displayLocation = opt_displayLocation;
 
   Blockly.FieldFlydown.superClass_.constructor.call(
       this, name, opt_changeHandler);

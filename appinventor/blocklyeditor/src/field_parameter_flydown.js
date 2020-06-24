@@ -21,8 +21,10 @@ goog.require('AI.Blockly.FieldFlydown');
  * @param {string} name The initial parameter name in the field.
  * @param {boolean} isEditable Indicates whether the the name in the flydown is
  *     editable.
- * @param {?string=} displayLocation Location to display the flydown relative to
- *     the parameter.
+ * @param {?string=} opt_displayLocation The location to display the flydown at
+ *     Either: Blockly.FieldFlydown.DISPLAY_BELOW,
+ *             Blockly.FieldFlydown.DISPLAY_RIGHT
+ *     Defaults to DISPLAY_RIGHT.
  * @param {?function=} opt_additionalChangeHandler A one-arg function indicating
  *     what to do in addition to renaming lexical variables. May be
  *     null/undefined to indicate nothing extra to be done.
@@ -32,7 +34,7 @@ goog.require('AI.Blockly.FieldFlydown');
 // [lyn, 10/26/13] Added opt_additionalChangeHandler to handle propagation of
 //    renaming of proc decl params
 Blockly.FieldParameterFlydown =
-  function(name, isEditable, displayLocation, opt_additionalChangeHandler) {
+  function(name, isEditable, opt_displayLocation, opt_additionalChangeHandler) {
     var changeHandler = function (text) {
       if (!Blockly.FieldParameterFlydown.changeHandlerEnabled) {
         return text;
@@ -47,7 +49,7 @@ Blockly.FieldParameterFlydown =
     };
 
     Blockly.FieldParameterFlydown.superClass_.constructor.call(
-        this, name, isEditable, displayLocation, changeHandler);
+        this, name, isEditable, opt_displayLocation, changeHandler);
   };
 goog.inherits(Blockly.FieldParameterFlydown, Blockly.FieldFlydown);
 

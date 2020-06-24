@@ -20,7 +20,7 @@ goog.require('AI.Blockly.FieldParameterFlydown');
  * @param {!ParameterDescriptor} param The parameter this flydown is representing.
  * @param {!Blockly.ComponentDatabase} componentDb The component database the
  *     previous ParameterDescriptor is associated with.
- * @param {string} opt_displayLocation The location to display the flydown at
+ * @param {string=} opt_displayLocation The location to display the flydown at
  *     Either: Blockly.FieldFlydown.DISPLAY_BELOW,
  *             Blockly.FieldFlydown.DISPLAY_RIGHT
  *     Defaults to DISPLAY_RIGHT.
@@ -31,7 +31,7 @@ Blockly.FieldEventFlydown = function(param, componentDb, opt_displayLocation) {
 
     var name = componentDb.getInternationalizedParameterName(param.name);
 
-    Blockly.FieldParameterFlydown.superClass_.constructor.call(
+    Blockly.FieldEventFlydown.superClass_.constructor.call(
         this, name, false, opt_displayLocation);
 }
-goog.inherits(Blockly.FieldParameterFlydown, Blockly.FieldFlydown);
+goog.inherits(Blockly.FieldEventFlydown, Blockly.FieldParameterFlydown);
