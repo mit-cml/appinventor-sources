@@ -349,8 +349,7 @@ Blockly.Blocks.component_event = {
                                .appendField(" ")
                                .setAlign(Blockly.ALIGN_LEFT);
           for (i = 0; param = params[i]; i++) {
-            var field = new Blockly.FieldParameterFlydown(
-                componentDb.getInternationalizedParameterName(param.name), false);
+            var field = new Blockly.FieldEventFlydown(param, componentDb);
             paramInput.appendField(field, 'VAR' + i)
                 .appendField(" ");
           }
@@ -374,8 +373,7 @@ Blockly.Blocks.component_event = {
 
         // Vertically aligned parameters
         for (i = 0; param = params[i]; i++) {
-          var field = new Blockly.FieldParameterFlydown(
-              componentDb.getInternationalizedParameterName(param.name), false);
+          var field = new Blockly.FieldEventFlydown(param, componentDb);
           this.appendDummyInput('VAR' + i)
               .appendField(field, 'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
