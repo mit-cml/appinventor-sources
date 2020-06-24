@@ -259,7 +259,8 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       // Menu Items are only allowed in Menu, not other containers.
       if (!(component instanceof MockSprite) &&
           !(component instanceof MockMapFeature) &&
-          !(component instanceof MockMenuItem)) {
+          !(component instanceof MockMenuItem) &&
+          !(component instanceof MockContextMenuItem)) {
         return true;
       }
     }
