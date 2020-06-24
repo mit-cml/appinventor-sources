@@ -364,6 +364,8 @@ public final class SimpleComponentDescriptor {
       return new MockContextMenu(editor);
     } else if (name.equals(MockContextMenuItem.TYPE)) {
       return new MockContextMenuItem(editor);
+    } else if (name.equals(MockPopupMenu.TYPE)) {
+      return new MockPopupMenu(editor);
     } else if (name.equals(MockSwitch.TYPE)) {
       return new MockSwitch(editor);
     } else if (name.equals(MockImage.TYPE)) {

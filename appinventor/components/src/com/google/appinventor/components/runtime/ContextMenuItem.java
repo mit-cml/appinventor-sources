@@ -5,7 +5,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Build;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -19,6 +21,7 @@ import com.google.appinventor.components.common.YaVersion;
 public class ContextMenuItem implements Component {
 
     private ContextMenu contextMenu;
+    private PopupMenu popupMenu;
     private MenuItem item;
 
     private String text = "";
@@ -28,6 +31,26 @@ public class ContextMenuItem implements Component {
     public ContextMenuItem(ContextMenu parent) {
         contextMenu = parent;
         contextMenu.addMenuItem(this);
+    }
+
+    public ContextMenuItem(PopupMenu parent) {
+        popupMenu = parent;
+        popupMenu.addPopupMenuItem(this);
+    }
+
+    public void addToPopupMenu(android.widget.PopupMenu menu) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            item = menu.getMenu().add(Menu.NONE, Menu.NONE, Menu.NONE, text)
+                    .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            Click();
+                            return false;
+                        }
+                    });
+        }
+        item.setVisible(enabled);
+        item.setEnabled(enabled);
     }
 
     public void addToContextMenu(android.view.ContextMenu menu) {

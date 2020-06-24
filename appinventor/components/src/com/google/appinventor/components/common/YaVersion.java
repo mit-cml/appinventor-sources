@@ -1145,6 +1145,10 @@ public class YaVersion {
   // - Added fill and stroke opacity properties
   public static final int POLYGON_COMPONENT_VERSION = 2;
 
+  // For POPUP_MENU_COMPONENT_VERSION 1:
+  // - Initial Popup Menu implementation using Android Menu
+  public static final int POPUP_MENU_COMPONENT_VERSION = 1;
+
   // For RECTANGLE_COMPONENT_VERSION 1:
   // - Initial Rectangle implementation for Maps
   // For RECTANGLE_COMPONENT_VERSION 2:
