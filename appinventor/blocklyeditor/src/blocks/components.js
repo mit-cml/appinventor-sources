@@ -349,7 +349,8 @@ Blockly.Blocks.component_event = {
                                .appendField(" ")
                                .setAlign(Blockly.ALIGN_LEFT);
           for (i = 0; param = params[i]; i++) {
-            var field = new Blockly.FieldEventFlydown(param, componentDb);
+            var field = new Blockly.FieldEventFlydown(
+                param, componentDb, Blockly.FieldFlydown.DISPLAY_BELOW);
             paramInput.appendField(field, 'VAR' + i)
                 .appendField(" ");
           }

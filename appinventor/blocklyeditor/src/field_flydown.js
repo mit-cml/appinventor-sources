@@ -185,7 +185,7 @@ Blockly.FieldFlydown.prototype.showFlydown_ = function() {
     xy.x += borderBBox.width * scale;
   }
 
-  flydown.showAt(blocksXMLList, x, y);
+  flydown.showAt(blocksXMLList, xy.x, xy.y);
   Blockly.FieldFlydown.openFieldFlydown_ = this;
 };
 
