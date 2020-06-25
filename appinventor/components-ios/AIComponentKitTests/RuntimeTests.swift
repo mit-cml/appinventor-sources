@@ -197,4 +197,14 @@ class RuntimeTests: XCTestCase {
     interpreter.setCurrentForm(form)
     XCTAssertEqual("4028354713", interpreter.evalForm("(appinventor-number->string 4028354713)"))
   }
+
+  func testListMember() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("#t", interpreter.evalForm("(yail-list-member? \"touch\\u00e9\" (make-yail-list \"en garde\" \"touch\\u00e9\"))"))
+  }
+
+  func testListIndex() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("2", interpreter.evalForm("(yail-list-index \"touch\\u00e9\" (make-yail-list \"en garde\" \"touch\\u00e9\"))"))
+  }
 }
