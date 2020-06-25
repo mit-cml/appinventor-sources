@@ -26,6 +26,8 @@ public final class ComponentDescriptorConstants {
   public static final String NATIVE_TARGET = "native";
   public static final String PERMISSIONS_TARGET = "permissions";
   public static final String BROADCAST_RECEIVERS_TARGET = "broadcastReceivers";
+  public static final String SERVICES_TARGET = "services";
+  public static final String CONTENT_PROVIDERS_TARGET = "contentProviders";
   public static final String ANDROIDMINSDK_TARGET = "androidMinSdk";
   public static final String CONDITIONALS_TARGET = "conditionals";
 
