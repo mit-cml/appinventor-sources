@@ -568,6 +568,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           COMPONENT_DATABASE.addComponents(componentList);
           for (JSONValue component : componentList.getElements()) {
             String name = component.asObject().get("type").asString().getString();
+
+            MockScriptsManager.load(name);
             // group new extensions by package name
             String packageName = name.substring(0, name.lastIndexOf('.'));
             if (!externalCollections.containsKey(packageName)) {
@@ -584,11 +586,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
             name = packageName;
             if (!externalComponents.contains(name)) {
               externalComponents.add(name);
-              MockScriptsManager.load(name);
             } else {
               // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
               saveProject();
-              MockScriptsManager.upgrade(name);
+              MockScriptsManager.upgrade(component.asObject().get("type").asString().getString());
             }
           }
         } else {

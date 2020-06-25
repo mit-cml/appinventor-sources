@@ -20,15 +20,15 @@ public class MockScriptsManager {
 
         Ode ode = Ode.getInstance();
 
-        long projectId = ode.getCurrentFileEditor().getProjectId();
+        long projectId = ode.getCurrentYoungAndroidProjectId();
 
-        String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
+        String pkgName = type.substring(0, type.lastIndexOf('.'));
         String simpleName = type.substring(type.lastIndexOf('.') + 1);
 
         String componentsFolder = ((YoungAndroidProjectNode) ode.getCurrentYoungAndroidProjectRootNode())
                 .getComponentsFolder().getFileId();
 
-        String fileId = componentsFolder + "/" + pkgName + "/aiwebres/Mock" + simpleName + ".js";
+        String fileId = componentsFolder + "/" + pkgName + "/Mock" + simpleName + ".js";
 
         ode.getProjectService().load2(
                 projectId,
