@@ -1,7 +1,4 @@
-let MVE = com.google.appinventor.client.editor.simple.components.MockVisibleExtension
-let MCR = com.google.appinventor.client.editor.simple.MockComponentRegistry
-
-class MockSimpleLabel extends MVE {
+class MockSimpleLabel extends MockVisibleExtension {
     static TYPE = "SimpleLabel"
 
     constructor(editor) {
@@ -34,4 +31,4 @@ class MockSimpleLabel extends MVE {
     }
 }
 
-MCR.register(MockSimpleLabel.TYPE, MockSimpleLabel.create)
+MockComponentRegistry.register(MockSimpleLabel.TYPE, MockSimpleLabel.create)

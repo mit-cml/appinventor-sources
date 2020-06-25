@@ -17,6 +17,7 @@ import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.ProjectEditorFactory;
+import com.google.appinventor.client.editor.simple.MockScriptsManager;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
@@ -583,9 +584,11 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
             name = packageName;
             if (!externalComponents.contains(name)) {
               externalComponents.add(name);
+              MockScriptsManager.load(name);
             } else {
               // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
               saveProject();
+              MockScriptsManager.upgrade(name);
             }
           }
         } else {
@@ -594,9 +597,11 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           // In case of upgrade, we do not need to add entry
           if (!externalComponents.contains(componentJSONObject.get("type").toString())) {
             externalComponents.add(componentJSONObject.get("type").toString());
+            MockScriptsManager.load(componentJSONObject.get("type").toString());
           } else {
             // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
             saveProject();
+            MockScriptsManager.upgrade(componentJSONObject.get("type").toString());
           }
         }
         numExternalComponentsLoaded++;

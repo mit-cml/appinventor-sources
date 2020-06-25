@@ -56,15 +56,10 @@ import com.google.appinventor.client.editor.simple.components.MockVisibleExtensi
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
-
 import com.google.common.collect.Maps;
-
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ImageResource;
-
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
-import jsinterop.annotations.JsType;
 
 import java.util.Map;
 
@@ -73,7 +68,6 @@ import java.util.Map;
  * This class is immutable.
  *
  */
-@JsType
 public final class SimpleComponentDescriptor {
 
   // Component display name
@@ -398,7 +392,7 @@ public final class SimpleComponentDescriptor {
         String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
         return new MockNonVisibleComponent(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            pkgName, editor.getProjectId()));
+                  pkgName, editor.getProjectId()));
       }
     } else if (name.equals(MockButton.TYPE)) {
       return new MockButton(editor);

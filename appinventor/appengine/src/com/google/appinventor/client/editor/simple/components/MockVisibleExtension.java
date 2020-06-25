@@ -4,10 +4,10 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
-import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 
-@JsType
+@JsType(namespace = JsPackage.GLOBAL)
 public class MockVisibleExtension extends MockVisibleComponent {
 
     public MockVisibleExtension(SimpleEditor editor, String type) {
