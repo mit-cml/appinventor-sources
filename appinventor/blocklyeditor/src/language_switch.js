@@ -10,14 +10,15 @@
 'use strict';
 
 goog.provide('Blockly.language_switch');
+goog.provide('AI.Blockly.language_switch');
 
-goog.require('AI.Blockly.Msg.en');
-goog.require('AI.Blockly.Msg.zh_cn');
-goog.require('AI.Blockly.Msg.zh_tw');
+goog.require('AI.Blockly.Msg.ko_kr');
 goog.require('AI.Blockly.Msg.es_es');
+goog.require('AI.Blockly.Msg.zh_tw');
+goog.require('AI.Blockly.Msg.zh_cn');
+goog.require('AI.Blockly.Msg.fr_fr');
 goog.require('AI.Blockly.Msg.it_it');
 goog.require('AI.Blockly.Msg.ru');
-goog.require('AI.Blockly.Msg.ko_kr');
 goog.require('AI.Blockly.Msg.sv');
 goog.require('AI.Blockly.Msg.pt_br');
 goog.require('AI.Blockly.Msg.pt');
@@ -25,6 +26,9 @@ goog.require('AI.Blockly.Msg.hu');
 goog.require('AI.Blockly.Msg.nl');
 goog.require('AI.Blockly.Msg.de');
 goog.require('AI.Blockly.Msg.pl');
+
+// English should always come last as the base language
+goog.require('AI.Blockly.Msg.en');
 
 Blockly.language_switch = {
   // Switch between languages

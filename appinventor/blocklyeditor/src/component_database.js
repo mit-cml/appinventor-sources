@@ -1,7 +1,7 @@
 /* -*- mode: javascript; js-indent-level 2; -*- */
 /**
+ * Copyright © 2016-2020 Massachusetts Institute of Technology. All rights reserved.
  * @license
- * Copyright © 2016 Massachusetts Institute of Technology. All rights reserved.
  */
 
 /**
@@ -35,7 +35,7 @@ Blockly.PROPERTY_READWRITEABLE = 3;
  * @property {Object.<string, Object<string, string>>} blockProperties
  * @property {Object.<string, MethodDescriptor>} methods
  */
-ComponentInfo = function() {};
+function ComponentInfo() {}
 
 /**
  * @typedef ParameterDescriptor
@@ -43,17 +43,17 @@ ComponentInfo = function() {};
  * @property {!string} name
  * @property {!type} type
  */
-ParameterDescriptor = function() {};
+function ParameterDescriptor() {}
 
 /**
  * @typedef {{name: !string, description: !string, deprecated: ?boolean, parameters: !ParameterDescriptor[]}}
  */
-EventDescriptor = function() {};
+function EventDescriptor() {}
 
 /**
  * @typedef {{name: !string, description: !string, deprecated: ?boolean, parameters: !ParameterDescriptor[], returnType: ?string}}
  */
-MethodDescriptor = function() {};
+function MethodDescriptor() {}
 
 /**
  * @typedef PropertyDescriptor
@@ -64,7 +64,7 @@ MethodDescriptor = function() {};
  * @property {!string} rw
  * @property {?boolean} deprecated
  */
-PropertyDescriptor = function() {};
+function PropertyDescriptor() {}
 
 /**
  * @typedef ComponentTypeDescriptor
@@ -78,7 +78,7 @@ PropertyDescriptor = function() {};
  * @property {!string[]} setPropertyList
  * @property {!string[]} getPropertyList
  */
-ComponentTypeDescriptor = function() {};
+function ComponentTypeDescriptor() {}
 
 /**
  * @typedef ComponentInstanceDescriptor
@@ -86,7 +86,7 @@ ComponentTypeDescriptor = function() {};
  * @property {!string} name
  * @property {!string} typeName
  */
-ComponentInstanceDescriptor = function() {};
+function ComponentInstanceDescriptor() {}
 
 /**
  * Database for component type information and instances.
@@ -218,11 +218,9 @@ Blockly.ComponentDatabase.prototype.getType = function(typeName) {
  */
 Blockly.ComponentDatabase.prototype.getInstanceNames = function() {
   var instanceNames = [];
-  for (var uid in this.instances_) {
-    if (this.instances_.hasOwnProperty(uid) && typeof this.instances_[uid] == 'object') {
-      instanceNames.push(this.instances_[uid].name);
-    }
-  }
+  goog.object.forEach(this.instances_, function(item) {
+    instanceNames.push(item.name);
+  })
   return instanceNames;
 };
 
@@ -250,11 +248,11 @@ Blockly.ComponentDatabase.prototype.instanceNameToTypeName = function(instanceNa
 // type is appropriate
 Blockly.ComponentDatabase.prototype.getComponentUidNameMapByType = function(componentType) {
   var componentNameArray = [];
-  for (var uid in this.instances_) {
-    if (this.instances_.hasOwnProperty(uid) && this.instances_[uid].typeName == componentType) {
-      componentNameArray.push([this.instances_[uid].name, uid]);
+  goog.object.forEach(this.instances_, function(item, uid) {
+    if (item.typeName === componentType) {
+      componentNameArray.push([item.name, uid]);
     }
-  }
+  });
   return componentNameArray;
 };
 
@@ -268,13 +266,12 @@ Blockly.ComponentDatabase.prototype.getComponentUidNameMapByType = function(comp
  */
 Blockly.ComponentDatabase.prototype.getComponentNamesByType = function(componentType) {
   var componentNameArray = [];
-  for (var uid in this.instances_) {
-    if (this.instances_.hasOwnProperty(uid) && this.instances_[uid].typeName == componentType) {
-      var name = this.instances_[uid].name;
-      componentNameArray.push([name, name]);
+  goog.object.forEach(this.instances_, function(item) {
+    if (item.typeName === componentType) {
+      componentNameArray.push([item.name, item.name]);
     }
-  }
-  if (componentNameArray.length == 0) {
+  });
+  if (componentNameArray.length === 0) {
     return [[' ', 'none']]
   } else {
     // Sort the components by name
@@ -298,7 +295,18 @@ Blockly.ComponentDatabase.prototype.getComponentNamesByType = function(component
  */
 Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
   var j, event, method, property;
-  for (var i = 0, componentInfo; componentInfo = componentInfos[i]; ++i) {
+  function processDeprecation(info) {
+    info['deprecated'] = typeof info['deprecated'] === 'string' ?
+      JSON.parse(info['deprecated']) : false;
+    return info['deprecated'];
+  }
+  function processParameters(info) {
+    if (info['parameters'] === undefined) {
+      info['parameters'] = info['params'];
+    }
+    delete info['params'];
+  }
+  for (var i = 0, componentInfo; (componentInfo = componentInfos[i]); ++i) {
     var info = this.types_[componentInfo.name] = {
       type: componentInfo.type,
       external: componentInfo.external,
@@ -310,46 +318,33 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
       getPropertyList: []
     };
     // parse type description and fill in all of the fields
-    for (j = 0; event = componentInfo.events[j]; ++j) {
-      if (typeof event['deprecated'] === 'string') {
-        event['deprecated'] = JSON.parse(event['deprecated']);
-      }
-      if (event['parameters'] === undefined) {
-        event['parameters'] = event['params'];
-        delete event['params'];
-      }
+    for (j = 0; (event = componentInfo.events[j]); ++j) {
+      processDeprecation(event);
+      processParameters(event);
       info.eventDictionary[event.name] = event;
     }
-    for (j = 0; method = componentInfo.methods[j]; ++j) {
-      if (typeof method['deprecated'] === 'string') {
-        method['deprecated'] = JSON.parse(method['deprecated']);
-      }
-      if (method['parameters'] === undefined) {
-        method['parameters'] = method['params'];
-        delete method['params'];
-      }
+    for (j = 0; (method = componentInfo.methods[j]); ++j) {
+      processDeprecation(method);
+      processParameters(method);
       info.methodDictionary[method.name] = method;
     }
-    for (j = 0; property = componentInfo.blockProperties[j]; ++j) {
-      info.properties[property.name] = property;
-      if (typeof property['deprecated'] === 'string') {
-        property['deprecated'] = JSON.parse(property['deprecated']);
-        if (property['deprecated']) continue;
-      }
-      if (property['rw'] == 'read-write') {
+    for (j = 0; (property = componentInfo.blockProperties[j]); ++j) {
+      processDeprecation(property);
+      if (property['rw'] === 'read-write') {
         property.mutability = Blockly.PROPERTY_READWRITEABLE;
         info.getPropertyList.push(property.name);
         info.setPropertyList.push(property.name);
-      } else if (property['rw'] == 'read-only') {
+      } else if (property['rw'] === 'read-only') {
         property.mutability = Blockly.PROPERTY_READABLE;
         info.getPropertyList.push(property.name);
-      } else if (property['rw'] == 'write-only') {
+      } else if (property['rw'] === 'write-only') {
         property.mutability = Blockly.PROPERTY_WRITEABLE;
         info.setPropertyList.push(property.name);
       }
+      info.properties[property.name] = property;
     }
     // Copy the designer property information to the block information
-    for (j = 0; property = componentInfo.properties[j]; ++j) {
+    for (j = 0; (property = componentInfo.properties[j]); ++j) {
       var target = info.properties[property['name']];
       // All designer properties should have setters, but if not...
       if (!target) continue;
@@ -361,7 +356,7 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
 };
 
 Blockly.ComponentDatabase.PROPDESC = /PropertyDescriptions$/;
-Blockly.ComponentDatabase.METHODDESC = /MethodDescrptions$/;
+Blockly.ComponentDatabase.METHODDESC = /MethodDescriptions$/;
 Blockly.ComponentDatabase.EVENTDESC = /EventDescriptions$/;
 
 /**
@@ -369,32 +364,30 @@ Blockly.ComponentDatabase.EVENTDESC = /EventDescriptions$/;
  * @param translations
  */
 Blockly.ComponentDatabase.prototype.populateTranslations = function(translations) {
-  var newkey;
-  for (var key in translations) {
-    if (translations.hasOwnProperty(key)) {
-      var parts = key.split('-', 2);
-      if (parts[0] === 'COMPONENT') {
-        this.i18nComponentTypes_[parts[1]] = translations[key];
-      } else if (parts[0] === 'PROPERTY') {
-        this.i18nPropertyNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'EVENT') {
-        this.i18nEventNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'METHOD') {
-        this.i18nMethodNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'PARAM') {
-        this.i18nParamNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'EVENTDESC') {
-        newkey = parts[1].replace(Blockly.ComponentDatabase.EVENTDESC, '');
-        this.i18nEventDescriptions_[parts[1]] = translations[key];
-      } else if (parts[0] === 'METHODDESC') {
-        newkey = parts[1].replace(Blockly.ComponentDatabase.METHODDESC, '');
-        this.i18nMethodDescriptions_[newkey] = translations[key];
-      } else if (parts[0] === 'PROPDESC') {
-        newkey = parts[1].replace(Blockly.ComponentDatabase.PROPDESC, '');
-        this.i18nPropertyDescriptions_[newkey] = translations[key];
-      }
+  goog.object.forEach(translations, function(translation, key) {
+    var newkey;
+    var parts = key.split('-', 2);
+    if (parts[0] === 'COMPONENT') {
+      this.i18nComponentTypes_[parts[1]] = translation;
+    } else if (parts[0] === 'PROPERTY') {
+      this.i18nPropertyNames_[parts[1]] = translation;
+    } else if (parts[0] === 'EVENT') {
+      this.i18nEventNames_[parts[1]] = translation;
+    } else if (parts[0] === 'METHOD') {
+      this.i18nMethodNames_[parts[1]] = translation;
+    } else if (parts[0] === 'PARAM') {
+      this.i18nParamNames_[parts[1]] = translation;
+    } else if (parts[0] === 'EVENTDESC') {
+      newkey = parts[1].replace(Blockly.ComponentDatabase.EVENTDESC, '');
+      this.i18nEventDescriptions_[newkey] = translation;
+    } else if (parts[0] === 'METHODDESC') {
+      newkey = parts[1].replace(Blockly.ComponentDatabase.METHODDESC, '');
+      this.i18nMethodDescriptions_[newkey] = translation;
+    } else if (parts[0] === 'PROPDESC') {
+      newkey = parts[1].replace(Blockly.ComponentDatabase.PROPDESC, '');
+      this.i18nPropertyDescriptions_[newkey] = translation;
     }
-  }
+  }.bind(this));
 };
 
 /**
@@ -465,16 +458,14 @@ Blockly.ComponentDatabase.prototype.forMethodInType = function(typeName, callbac
  * Get the property descriptor for a given typeName named by propertyName.
  * @param {!string} typeName String naming a component type
  * @param {!string} propertyName String naming a property defined on typeName
- * @returns {?PropertyDescriptor} The PropertyDescriptor for the property, or null if no such
+ * @returns {?PropertyDescriptor} The PropertyDescriptor for the property, or undefined if no such
  * property or type is defined.
  */
 Blockly.ComponentDatabase.prototype.getPropertyForType = function(typeName, propertyName) {
-  if (this.types_[typeName]) {
-    if (this.types_[typeName].properties[propertyName]) {
-      return this.types_[typeName].properties[propertyName];
-    }
+  if (typeName in this.types_) {
+    return this.types_[typeName].properties[propertyName];
   }
-  return null;
+  return undefined;
 };
 
 /**
@@ -525,6 +516,7 @@ Blockly.ComponentDatabase.prototype.getInternationalizedEventName = function(nam
 
 /**
  * Get the internationalized string for the given event description tooltip.
+ * @param {!string} component The typename of the component the event belongs to
  * @param {!string} name String naming a component event
  * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.
@@ -545,6 +537,7 @@ Blockly.ComponentDatabase.prototype.getInternationalizedMethodName = function(na
 
 /**
  * Get the internationalized string for the given method name.
+ * @param {!string} component The typename of the component the method belongs to
  * @param {!string} name String naming a component method
  * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.
@@ -575,6 +568,7 @@ Blockly.ComponentDatabase.prototype.getInternationalizedPropertyName = function(
 
 /**
  * Get the internationalized string for the given property description tooltip.
+ * @param {!string} component The typename of the component the property belongs to
  * @param {!string} name String naming a component property
  * @param {?string=name} opt_default Optional default value (default: name parameter)
  * @returns {string} The localized string if available, otherwise the unlocalized name.

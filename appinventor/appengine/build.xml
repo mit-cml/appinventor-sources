@@ -54,11 +54,24 @@
           depends="AiClientLibTests,AiSharedLibTests,AiServerLibTests">
   </target>
 
-
   <!-- =====================================================================
        Import common directory, task, and target definitions.
        ===================================================================== -->
   <import file="../build-common.xml" />
+
+  <condition property="optimization" value="-optimize 9 -localWorkers 8" else="-style pretty">
+    <and>
+      <isset property="release"/>
+      <equals arg1="${release}" arg2="true"/>
+    </and>
+  </condition>
+
+  <condition property="module" value="com.google.appinventor.YaClient" else="com.google.appinventor.YaClient-dev">
+    <and>
+      <isset property="release"/>
+      <equals arg1="${release}" arg2="true"/>
+    </and>
+  </condition>
 
   <property name="gwt.sdk" location="${lib.dir}/gwt/2.8.1-patched" />
   <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.9.46" />
@@ -580,8 +593,9 @@
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg line="-war"/>
       <arg value="${build.war.dir}"/>
-      <arg line="-logLevel INFO -extra ${build.extra.dir} -style pretty"/>
-      <arg value="com.google.appinventor.YaClient"/>
+      <arg line="-logLevel INFO -extra ${build.extra.dir}"/>
+      <arg line="${optimization}"/>
+      <arg value="${module}"/>
     </java>
   </target>
 

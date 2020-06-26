@@ -6,6 +6,13 @@
  *
  */
 
+goog.require('AI.Blockly.Msg.en');
+goog.require('Blockly.Blocks.text');
+goog.require('Blockly');
+
+Blockly.Msg.en.switch_blockly_language_to_en.init();
+Blockly.Msg.en.switch_language_to_english.init();
+
 suite('Text Blocks', function() {
 
   setup(function() {

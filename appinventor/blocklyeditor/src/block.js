@@ -14,6 +14,7 @@
 goog.provide('AI.Blockly.Block');
 
 goog.require('Blockly.Block');
+goog.require('AI.Blockly.Input');
 
 Blockly.Block.mutationToDom = function() {
   var container = details.mutationToDomFunc ? details.mutationToDomFunc()

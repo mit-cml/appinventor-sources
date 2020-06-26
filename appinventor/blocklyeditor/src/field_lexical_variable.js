@@ -10,6 +10,12 @@
 
 'use strict';
 
+goog.provide('AI.Blockly.FieldLexicalVariable');
+
+goog.require('Blockly.FieldTextInput');
+goog.require('Blockly.NameSet');
+goog.require('Blockly.Substitution');
+
 /**
  * Lyn's History:
  *  *  [lyn, written 11/15-17/13 but added 07/01/14] Overhauled parameter renaming:

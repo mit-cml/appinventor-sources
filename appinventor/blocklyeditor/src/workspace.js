@@ -76,6 +76,11 @@ Blockly.Workspace.prototype.removeTopBlock = (function(func) {
   }
 })(Blockly.Workspace.prototype.removeTopBlock);
 
+/**
+ * Gets the top blocks in the workspace as an array.
+ *
+ * @type {function(boolean): !Array<!Blockly.Block>}
+ */
 Blockly.Workspace.prototype.getTopBlocks = (function(func) {
   if (func.isInstrumented) {
     return func;

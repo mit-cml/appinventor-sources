@@ -16,9 +16,12 @@ goog.provide('AI.Blockly');
 goog.require('Blockly');
 
 // App Inventor extensions to Blockly
-goog.require('AI.Blockly.Instrument');
-goog.require('Blockly.TypeBlock');
+goog.require('AI.Blockly.BlockSvg');
+goog.require('AI.Blockly.Field');
 goog.require('AI.Blockly.WorkspaceSvg');
+goog.require('AI.Blockly.Xml');
+goog.require('AI.Blockly.Trashcan');
+goog.require('AI.Blockly.ScrollbarPair');
 
 /**
  * ENUM for an indented value input.  Similar to next_statement but with value

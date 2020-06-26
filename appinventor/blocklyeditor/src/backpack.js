@@ -36,6 +36,7 @@
 
 goog.provide('AI.Blockly.Backpack');
 
+goog.require('Blockly.BackpackFlyout');
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Util');
 

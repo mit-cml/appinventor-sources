@@ -7,6 +7,10 @@
  * Add additional "class methods" to Blockly.RenderedConnection
  */
 
+goog.provide('AI.Blockly.RenderedConnection');
+
+goog.require('Blockly.RenderedConnection');
+
 var oldConnect = Blockly.RenderedConnection.prototype.connect_;
 
 /**
@@ -32,7 +36,7 @@ Blockly.RenderedConnection.prototype.connect_ = function(childConnection) {
   block.getSvgRoot().style.display = visible ? 'block' : 'none';
 };
 
-Blockly.RenderedConnection.prototype.input_;
+Blockly.RenderedConnection.prototype.input_ = undefined;
 
 /**
  * Returns the input this connection belongs to, or null if this connection

@@ -15,6 +15,7 @@
 goog.provide('Blockly.FieldProcedure');
 goog.provide('Blockly.AIProcedure');
 
+goog.require('AI.Blockly.FieldLexicalVariable');
 
 Blockly.FieldProcedure.defaultValue = ["",""];
 

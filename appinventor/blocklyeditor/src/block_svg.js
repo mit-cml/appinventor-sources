@@ -13,11 +13,13 @@
 
 goog.provide('AI.Blockly.BlockSvg');
 
-goog.require('Blockly.BlockSvg');
+goog.require('Blockly.BlockSvg.render');
 
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Instrument');
 goog.require('AI.Blockly.Error');
+goog.require('AI.Blockly.Block');
+goog.require('AI.Blockly.RenderedConnection');
 
 Blockly.BlockSvg.DISTANCE_45_INSIDE = (1 - Math.SQRT1_2) *
   (Blockly.BlockSvg.CORNER_RADIUS - 1) + 1;

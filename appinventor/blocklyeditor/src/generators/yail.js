@@ -10,6 +10,7 @@
 'use strict';
 
 goog.provide('Blockly.Yail');
+goog.provide('AI.Blockly.Yail');
 
 goog.require('Blockly.Generator');
 

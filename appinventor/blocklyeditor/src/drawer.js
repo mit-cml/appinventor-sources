@@ -22,6 +22,7 @@ goog.provide('AI.Blockly.Drawer');
 goog.require('Blockly.Flyout');
 goog.require('Blockly.Options');
 goog.require('goog.object');
+goog.require('bd.toolbox.ctr');
 
 // Some block drawers need to be initialized after all the javascript source is loaded because they
 // use utility functions that may not yet be defined at the time their source is read in. They

@@ -16,6 +16,7 @@
 <project name="CommonDefinitions" xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!-- Always build with debug set... (jis) -->
   <property name="debug" value="true"/>
+  <property name="release" value="false"/>
   <description>
     Definitions common to multiple App Inventor build.xml files."
   </description>

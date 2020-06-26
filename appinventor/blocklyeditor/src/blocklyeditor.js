@@ -13,21 +13,38 @@
 
 'use strict';
 
+goog.provide('Blockly.BlocklyEditor');
 goog.provide('AI.Blockly.BlocklyEditor');
 
-goog.require('AI.Blockly.Drawer');
+goog.require('AI.Blockly');
 
 // App Inventor extensions to Blockly
-goog.require('Blockly.TypeBlock');
-
-goog.require('Blockly.Flyout');
+goog.require('AI.Blockly.Events');
+goog.require('AI.Blockly.ComponentDatabase');
+goog.require('AI.Blockly.ProcedureDatabase');
+goog.require('AI.Blockly.VariableDatabase');
+goog.require('AI.Blockly.Drawer');
+goog.require('AI.Blockly.SaveFile');
+goog.require('AI.Blockly.language_switch');
+goog.require('AI.Blockly.TypeBlock');
+goog.require('AI.Blockly.Util');
+goog.require('AI.Blockly.Blocks');
+goog.require('AI.Blockly.Yail');
+goog.require('Blockly.Yail.componentblock');
+goog.require('Blockly.Yail.lists');
+goog.require('Blockly.Yail.math');
+goog.require('Blockly.Yail.control');
+goog.require('Blockly.Yail.logic');
+goog.require('Blockly.Yail.text');
+goog.require('Blockly.Yail.color');
+goog.require('Blockly.Yail.variables');
+goog.require('Blockly.Yail.procedures');
+goog.require('Blockly.Yail.dictionaries');
+goog.require('AI.Blockly.ReplMgr');
+goog.require('AI.Extras');
 
 // Make dragging a block from flyout work in any direction (default: 70)
 Blockly.Flyout.prototype.dragAngleRange_ = 360;
-
-if (Blockly.BlocklyEditor === undefined) {
-  Blockly.BlocklyEditor = {};
-}
 
 Blockly.allWorkspaces = {};
 
@@ -576,6 +593,8 @@ window['Blockly'] = Blockly;
 top['Blockly'] = Blockly;
 window['AI'] = AI;
 top['AI'] = AI;
+window['goog'] = goog;
+top['goog'] = goog;
 
 /*
  * Calls hideChaff() on the blocks editor iff we receive the mousedown event on

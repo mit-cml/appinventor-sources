@@ -13,6 +13,7 @@
 
 'use strict';
 
+goog.provide('Blockly.Util');
 goog.provide('AI.Blockly.Util');
 
 Blockly.Util = {};

@@ -17,13 +17,12 @@
 
 'use strict';
 
+goog.provide('Blockly.SaveFile');
 goog.provide('AI.Blockly.SaveFile');
 
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Versioning');
 goog.require('AI.Blockly.Instrument');
-
-if (Blockly.SaveFile === undefined) Blockly.SaveFile = {};
 
 Blockly.SaveFile.load = function(preUpgradeFormJson, blocksContent) {
   try {

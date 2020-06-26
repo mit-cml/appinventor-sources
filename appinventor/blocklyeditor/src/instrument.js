@@ -15,18 +15,17 @@
 
 'use strict';
 
+goog.provide('Blockly.Instrument');
 goog.provide('AI.Blockly.Instrument');
 
-if (Blockly.Instrument === undefined) Blockly.Instrument = {};
-
-/** Is instrumentation turned on? */
+/**
+ * Is instrumentation turned on?
+ *
+ * @type {boolean}
+ * @const
+ */
 // Blockly.Instrument.isOn = true;
 Blockly.Instrument.isOn = false; // [lyn, 04/08/14] Turn off for production
-
-/** Turn instrumentation on/off */
-Blockly.Instrument.setOn = function (bool) {
-  Blockly.Instrument.isOn = bool;
-};
 
 /** The following are global flags to control rendering.
  * The default settings give the best performance.
@@ -36,45 +35,69 @@ Blockly.Instrument.setOn = function (bool) {
 /**
  * [lyn, 04/01/14] Should we use the Blockly.Block.isRenderingOn flag?
  * Default value = true.
+ *
+ * @type {boolean}
+ * @const
  */
 Blockly.Instrument.useIsRenderingOn = true;
 
 /**
  * [lyn, 04/01/14] Should we avoid workspace render in Blockly.Block.onMouseUp_?
  * Default value = true.
+ *
+ * @type {boolean}
+ * @const
  */
 Blockly.Instrument.avoidRenderWorkspaceInMouseUp = true;
 
 /** [lyn, 04/01/14] Global flag to control rendering algorithm,
  * Used to show that renderDown() is better than render() in many situations.
  * Default value = true.
+ *
+ * @type {boolean}
+ * @const
  */
 Blockly.Instrument.useRenderDown = true;
 
 /** [lyn, 04/01/14] Should we avoid renderDown on subblocks of collapsed blocks
  * Default value = true.
+ *
+ * @type {boolean}
+ * @const
  */
 Blockly.Instrument.avoidRenderDownOnCollapsedSubblocks = true;
 
 /** [lyn, 04/01/14] Use Neil's fix to Blockly.Block.getHeightWidth, which sidesteps
  *    the inexplicable quadratic problem with getHeightWidth.
  * Default value = true.
+ *
+ * @type {boolean}
+ * @const
  */
 Blockly.Instrument.useNeilGetHeightWidthFix = true;
 
 /** [lyn, 04/01/14] Use my fix to Blockly.Workspace.prototype.getAllBlocks,
  *  which avoids quadratic behavior in Neil's original version.
+ *
+ * @type {boolean}
+ * @const
  */
 Blockly.Instrument.useLynGetAllBlocksFix = true;
 
 /** [lyn, 04/01/14] Use my fix to Blockly.FieldLexicalVariable.getGlobalNames,
  *  which just looks at top blocks in workspace, and not all blocks.
+ *
+ * @type {boolean}
+ * @const
  */
 Blockly.Instrument.useLynGetGlobalNamesFix = true;
 
 /** [lyn, 04/01/14] In Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors,
  * compute Blockly.FieldLexicalVariable.getGlobalNames only once and cache it
  * so that it needn't be computed again.
+ *
+ * @type {boolean}
+ * @const
  */
 Blockly.Instrument.useLynCacheGlobalNames = true;
 

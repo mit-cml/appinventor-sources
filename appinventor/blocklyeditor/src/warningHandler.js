@@ -472,7 +472,7 @@ Blockly.WarningHandler.prototype["checkIsNotInLoop"] = function(block) {
   if (Blockly.dragMode_ === Blockly.DRAG_FREE && Blockly.selected === block) {
     return false;  // wait until the user is done dragging to check validity.
   }
-  if (Blockly_containedInLoop(block)) {
+  if (Blockly.WarningHandler.containedInLoop(block)) {
     return false;  // false means it is within a loop
   } else {
     var errorMessage = Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP;
@@ -483,7 +483,7 @@ Blockly.WarningHandler.prototype["checkIsNotInLoop"] = function(block) {
 
 // TODO: Maybe change this to a property of the block, instead of maintaining
 //   a list. Check how this interacts with extensions first.
-Blockly_loopBlockTypes = [
+Blockly.WarningHandler.LOOP_TYPES = [
     "controls_forEach",
     "controls_for_each_dict",
     "controls_forRange",
@@ -495,15 +495,15 @@ Blockly_loopBlockTypes = [
 //   - warningHandler.js
 //   - a utilities file.
 //  Check how blockly core handles this.
-Blockly_containedInLoop = function(block) {
+Blockly.WarningHandler.containedInLoop = function(block) {
   var enclosingBlock = block.getSurroundParent();
   if (enclosingBlock == null) {
     return false;
   }
-  else if (Blockly_loopBlockTypes.indexOf(enclosingBlock.type) >= 0) {
+  else if (Blockly.WarningHandler.LOOP_TYPES.indexOf(enclosingBlock.type) >= 0) {
     return true;
   } else {
-    return Blockly_containedInLoop(enclosingBlock);
+    return Blockly.WarningHandler.containedInLoop(enclosingBlock);
   }
 };
 
