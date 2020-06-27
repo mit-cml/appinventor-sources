@@ -3,6 +3,7 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -34,6 +35,8 @@ public class MockTab extends MockHVArrangement {
     super(editor, TYPE, images.tab(),
         ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
         ComponentConstants.SCROLLABLE_ARRANGEMENT);
+    layout.setVAlignmentFlags(ComponentConstants.GRAVITY_TOP + "");
+    rootPanel.getElement().getStyle().setOverflowY(Overflow.SCROLL);
     tab = new AbsolutePanel();
     tab.setWidth("48px");
     tab.setHeight("48px");

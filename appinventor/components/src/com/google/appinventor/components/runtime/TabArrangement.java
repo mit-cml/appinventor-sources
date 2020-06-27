@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
@@ -53,8 +54,8 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     adapter = new RecyclerView.Adapter() {
       @Override
       public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-//        Log.d("tabarrangement","onCreateViewHolder at index: "+i);
-        FrameLayout layout = new FrameLayout(viewGroup.getContext());
+        Log.d("tabarrangement","onCreateViewHolder at index: "+i);
+        ScrollView layout = new ScrollView(viewGroup.getContext());
         layout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
         return new RecyclerView.ViewHolder(layout) {
           @Override
