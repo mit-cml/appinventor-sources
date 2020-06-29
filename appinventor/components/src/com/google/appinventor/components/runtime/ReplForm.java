@@ -149,41 +149,11 @@ public class ReplForm extends Form {
       Log.d(LOG_TAG, "Did not receive any data");
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    // Chromebook Support:                                                 //
-    //                                                                     //
-    // The code below parses the data provided in the intent to get the    //
-    // code to use to talk to the rendezvous server. It appears to need to //
-    // run on the UI thread (I'm not sure what thread we are on here in    //
-    // onCreateFinish().  I'm not sure why we need the delay, but it       //
-    // doesn't work if we do not include the delay. I'm continuing to look //
-    // into why that is and the delay may be removed in a future           //
-    // revision. (jis).                                                    //
-    //                                                                     //
-    // Also: the rendezvous server location is hardcoded in this version.  //
-    // a future version will let you customize the location of the         //
-    // rendezvous server.                                                  //
-    /////////////////////////////////////////////////////////////////////////
-
     if (data != null && (data.startsWith("aicompanion"))) {
       registerForOnInitialize(new OnInitializeListener() {
           @Override
           public void onInitialize() {
-            String code = data.substring(data.indexOf("//comp/") + 7);
-            PhoneStatus status = new PhoneStatus(ReplForm.this);
-            status.WebRTC(true);
-            code = status.setHmacSeedReturnCode(code, "rendezvous.appinventor.mit.edu");
-            String ipAddress = PhoneStatus.GetWifiIpAddress();
-            int api = status.SdkLevel();
-            String version = status.GetVersionName();
-            String aid = status.InstallationId();
-            Log.d(LOG_TAG, "InstallationId = " + aid);
-            Web web = new Web(ReplForm.this);
-            web.Url("http://rendezvous.appinventor.mit.edu/rendezvous/");
-            web.PostText("ipaddr=" + ipAddress + "&port=9987&webrtc=true" +
-              "&version=" + version + "&api=" + api + "&aid=" +
-              aid + "&installer=" + status.GetInstaller() + "&r2=true&key=" + code);
-            status.startWebRTC("rendezvous.appinventor.mit.edu", "OK");
+            startChromebook(data);
           }
         });
     }
@@ -293,6 +263,10 @@ public class ReplForm extends Form {
     super.onNewIntent(intent);
     Log.d(LOG_TAG, "onNewIntent Called");
     processExtrasAndData(intent, true);
+    String data = intent.getDataString();
+    if (data != null && (data.startsWith("aicompanion"))) {
+      startChromebook(data);
+    }
   }
 
   void HandleReturnValues() {
@@ -332,6 +306,39 @@ public class ReplForm extends Form {
         }
       }
     }
+  }
+
+  /**
+   *
+   * Chromebook Support:
+   *
+   * The code below parses the data provided in the intent to get the
+   * code to use to talk to the rendezvous server.
+   *
+   * The rendezvous server location is hardcoded in this version.  a
+   * future version will let you customize the location of the
+   * rendezvous server.
+   *
+   * @param data -- The data from the intent
+   *
+   */
+
+  private void startChromebook(String data) {
+    String code = data.substring(data.indexOf("//comp/") + 7);
+    PhoneStatus status = new PhoneStatus(this);
+    status.WebRTC(true);
+    code = status.setHmacSeedReturnCode(code, "rendezvous.appinventor.mit.edu");
+    String ipAddress = PhoneStatus.GetWifiIpAddress();
+    int api = status.SdkLevel();
+    String version = status.GetVersionName();
+    String aid = status.InstallationId();
+    Log.d(LOG_TAG, "InstallationId = " + aid);
+    Web web = new Web(this);
+    web.Url("http://rendezvous.appinventor.mit.edu/rendezvous/");
+    web.PostText("ipaddr=" + ipAddress + "&port=9987&webrtc=true" +
+      "&version=" + version + "&api=" + api + "&aid=" +
+      aid + "&installer=" + status.GetInstaller() + "&r2=true&key=" + code);
+    status.startWebRTC("rendezvous.appinventor.mit.edu", "OK");
   }
 
   public boolean isDirect() {
