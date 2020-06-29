@@ -203,11 +203,17 @@ Blockly.Blocks['logic_operation'] = {
       }
     }
 
+    if (this.itemCount_ > 0) {
+      this.removeInput('A');
+    }
+    if (this.itemCount_ > 1) {
+      this.removeInput('B');
+    }
     for (var x = 2; x < this.itemCount_; x++) {
       this.removeInput(this.repeatingInputName + x);
     }
     this.itemCount_ = window.parseInt(container.getAttribute('items'), 10);
-    for (var x = 2; x < this.itemCount_; x++) {
+    for (var x = 0; x < this.itemCount_; x++) {
       this.addInput(x);
     }
   },
@@ -268,28 +274,25 @@ Blockly.Blocks['logic_operation'] = {
     var name = inputNum > 1 ? this.repeatingInputName + inputNum : ['A', 'B'][inputNum];
     var input = this.appendValueInput(name)
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
+    function makeDropdown() {
+      var op = this.opField.getValue();
+      this.opField = new Blockly.FieldDropdown(
+        Blockly.Blocks.logic_operation.OPERATORS(),
+        this.updateFields.bind(this));
+      this.opField.setValue(op);
+      input.appendField(this.opField, 'OP');
+      this.opField.init();
+    }
     if (this.getInputsInline()) {
       if (inputNum == 1) {
-        var op = this.opField.getValue();
-        this.opField = new Blockly.FieldDropdown(
-          Blockly.Blocks.logic_operation.OPERATORS(),
-          this.updateFields.bind(this));
-        this.opField.setValue(op);
-        input.appendField(this.opField, 'OP');
-        this.opField.init();
+        makeDropdown.call(this);
       } else if (inputNum > 1) {
         var field = new Blockly.FieldLabel(this.opField.getText());
         input.appendField(field);
         field.init();
       }
     } else if (inputNum == 0) {
-      var op = this.opField.getValue();
-      this.opField = new Blockly.FieldDropdown(
-        Blockly.Blocks.logic_operation.OPERATORS.OPERATORS,
-        this.updateFields.bind(this));
-      this.opField.setValue(op);
-      input.appendField(this.opField, 'OP');
-      this.opField.init();
+      makeDropdown.call(this);
     }
     return input;
   },
@@ -401,17 +404,5 @@ Blockly.Blocks['logic_mutator_item'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.contextMenu = false;
-  },
-  isMovable: function() {
-    if (this.previousConnection.targetBlock()) {
-      var parent = this.previousConnection.targetBlock();
-      if (parent.type == 'mutator_container') {
-        return false;
-      } else if(parent.previousConnection.targetBlock() &&
-        parent.previousConnection.targetBlock().type == 'mutator_container') {
-        return false;
-      }
-    }
-    return true;
   }
 };
