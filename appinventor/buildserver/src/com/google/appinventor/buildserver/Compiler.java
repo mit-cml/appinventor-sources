@@ -623,8 +623,7 @@ public final class Compiler {
   void generateServices() {
     try {
       loadJsonInfo(servicesNeeded, ComponentDescriptorConstants.SERVICES_TARGET);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "Services"));
@@ -644,8 +643,7 @@ public final class Compiler {
   void generateContentProviders() {
     try {
       loadJsonInfo(contentProvidersNeeded, ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "Content Providers"));
