@@ -326,7 +326,7 @@ public abstract class CommonProjectService {
    *
    * @return  build results
    */
-  public abstract RpcResult build(User user, long projectId, String nonce, String target, boolean secondBuildserver);
+  public abstract RpcResult build(User user, long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab);
 
   /**
    * Gets the result of a build command for the project.

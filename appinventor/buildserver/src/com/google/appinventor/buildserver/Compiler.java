@@ -1324,16 +1324,18 @@ public final class Compiler {
                                 boolean isForCompanion, boolean isForEmulator,
                                 boolean includeDangerousPermissions, String keystoreFilePath,
                                 int childProcessRam, String dexCacheDir, String outputFileName,
-                                BuildServer.ProgressReporter reporter) throws IOException, JSONException {
+                                BuildServer.ProgressReporter reporter, boolean isAab) throws IOException, JSONException {
     long start = System.currentTimeMillis();
-
-    // Set initial progress to 0%
-    reporter.report(0);
 
     // Create a new compiler instance for the compilation
     Compiler compiler = new Compiler(project, compTypes, compBlocks, out, err, userErrors,
         isForCompanion, isForEmulator, includeDangerousPermissions, childProcessRam, dexCacheDir,
         reporter);
+
+    // Set initial progress to 0%
+    if (reporter != null) {
+      reporter.report(0);
+    }
 
     compiler.generateAssets();
     compiler.generateActivities();
@@ -1515,6 +1517,8 @@ public final class Compiler {
     if (reporter != null) {
       reporter.report(85);
     }
+
+    // TODO: AAB things happen here
 
     // Seal the apk with ApkBuilder
     out.println("________Invoking ApkBuilder");

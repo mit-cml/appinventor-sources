@@ -297,7 +297,7 @@ public interface ProjectService extends RemoteService {
    *
    * @return  results of invoking the build command
    */
-  RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver);
+  RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab);
 
   /**
    * Gets the result of a build command for the project from the back-end.

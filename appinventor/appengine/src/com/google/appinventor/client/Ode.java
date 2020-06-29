@@ -2393,7 +2393,7 @@ public class Ode implements EntryPoint {
    * @return nonce
    */
   public String generateNonce() {
-    int v = random.nextInt(1000000);
+    int v = random.nextInt(10000000);
     nonce = Integer.toString(v, 36); // Base 36 string
     return nonce;
   }

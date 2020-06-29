@@ -37,17 +37,19 @@ public class ShowBarcodeCommand extends ChainableCommand {
 
   // The build target
   private String target;
+  private boolean isAab;
 
   /**
    * Creates a new command for showing a barcode for the target of a project.
    *
    * @param target the build target
    */
-  public ShowBarcodeCommand(String target) {
+  public ShowBarcodeCommand(String target, boolean isAab) {
     // Since we don't know when the barcode dialog is finished, we can't
     // support a command after this one.
     super(null); // no next command
     this.target = target;
+    this.isAab = isAab;
   }
 
   @Override
@@ -59,17 +61,17 @@ public class ShowBarcodeCommand extends ChainableCommand {
   public void execute(final ProjectNode node) {
     // Display a barcode for an url pointing at our server's download servlet
     String barcodeUrl = GWT.getHostPageBaseURL()
-            + "b/" + Ode.getInstance().getNonce();
+        + "b/" + Ode.getInstance().getNonce();
     OdeLog.log("Barcode url is: " + barcodeUrl);
-    new BarcodeDialogBox(node.getName(), barcodeUrl).center();
+    new BarcodeDialogBox(node.getName(), barcodeUrl, isAab).center();
   }
 
   static class BarcodeDialogBox extends DialogBox {
 
-    BarcodeDialogBox(String projectName, final String appInstallUrl) {
+    BarcodeDialogBox(String projectName, final String appInstallUrl, boolean isAab) {
       super(false, true);
       setStylePrimaryName("ode-DialogBox");
-      setText(MESSAGES.downloadApkDialog(projectName));
+      setText(isAab ? MESSAGES.downloadAabDialogTitle(projectName) : MESSAGES.downloadApkDialogTitle(projectName));
 
       // Main layout panel
       VerticalPanel contentPanel = new VerticalPanel();
@@ -100,42 +102,51 @@ public class ShowBarcodeCommand extends ChainableCommand {
       downloadButton.getElement().appendChild(downloadIcon.getElement());
       // Container > Left > Download Button > Inner Text
       SpanElement text = Document.get().createSpanElement();
-      text.setInnerHTML(MESSAGES.barcodeDownload());
+      text.setInnerHTML(isAab ? MESSAGES.barcodeDownloadAab() : MESSAGES.barcodeDownloadApk());
       downloadButton.getElement().appendChild(text);
       downloadButton.addClickHandler(downloadHandler);
       downloadPanel.add(downloadButton);
       downloadPanel.setSize("100%", "30px");
       left.add(downloadPanel);
 
-      // Container > Left > Link
-      // HTML linkQrcode = new HTML("<center><a href=\"" + appInstallUrl + "\" target=\"_blank\">" + appInstallUrl + "</a></center>");
-      // left.add(linkQrcode);
+      // Container > Left
+      container.add(left);
 
-      // Container > Right
-      VerticalPanel right = new VerticalPanel();
+      // The Android App Bundle should only be used to publish the app through Google Play Store. Thus,
+      // it does not make sense to provide a QR code which the user might think they can scan and directly
+      // install in the phone directly.
+      if (!isAab) {
+        // Container > Right
+        VerticalPanel right = new VerticalPanel();
 
-      // Container > Right > Barcode
-      HTML barcodeQrcode = new HTML("<center>" + BlocklyPanel.getQRCode(appInstallUrl) + "</center>");
-      barcodeQrcode.addStyleName("download-barcode");
-      right.add(barcodeQrcode);
+        // Container > Right > Barcode
+        HTML barcodeQrcode = new HTML("<center>" + BlocklyPanel.getQRCode(appInstallUrl) + "</center>");
+        barcodeQrcode.addStyleName("download-barcode");
+        right.add(barcodeQrcode);
+
+        // Container > Right
+        container.add(right);
+      }
 
       // Container
-      container.add(left);
-      container.add(right);
       contentPanel.add(container);
 
       // Warning
-      HorizontalPanel warningPanel = new HorizontalPanel();
-      warningPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
-      HTML warningLabel = new HTML(MESSAGES.barcodeWarning(
-              "<a href=\"" + "http://appinventor.mit.edu/explore/ai2/share.html" +
-                      "\" target=\"_blank\">",
-              "</a>"));
-      warningLabel.setWordWrap(true);
-      warningLabel.setWidth("400px");  // set width to get the text to wrap
-      warningLabel.getElement().getStyle().setMarginTop(10, Style.Unit.PX);
-      warningPanel.add(warningLabel);
-      contentPanel.add(warningPanel);
+      // The warning label is added only in APK files, as there is no QR code for the AAB. It is supposed that
+      // users download the bundle just when they get it.
+      if (!isAab) {
+        HorizontalPanel warningPanel = new HorizontalPanel();
+        warningPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
+        HTML warningLabel = new HTML(MESSAGES.barcodeWarning(
+            "<a href=\"" + "http://appinventor.mit.edu/explore/ai2/share.html" +
+                "\" target=\"_blank\">",
+            "</a>"));
+        warningLabel.setWordWrap(true);
+        warningLabel.setWidth("400px");  // set width to get the text to wrap
+        warningLabel.getElement().getStyle().setMarginTop(10, Style.Unit.PX);
+        warningPanel.add(warningLabel);
+        contentPanel.add(warningPanel);
+      }
 
       // OK button
       ClickHandler buttonHandler = new ClickHandler() {
@@ -146,19 +157,12 @@ public class ShowBarcodeCommand extends ChainableCommand {
       };
       HorizontalPanel buttonPanel = new HorizontalPanel();
       buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-      Button okButton = new Button(MESSAGES.okButton());
+      Button okButton = new Button(MESSAGES.dismissButton());
       okButton.addClickHandler(buttonHandler);
       buttonPanel.add(okButton);
-      // The cancel button is removed from the panel since it has no meaning in this
-      // context. But the logic is still here in case we want to restore it, and as
-      // an example of how to code this stuff in GWT.
-      // buttonPanel.add(cancelButton);
-      // Button cancelButton = new Button(MESSAGES.cancelButton());
-      // cancelButton.addClickHandler(buttonHandler);
       buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
 
-//      contentPanel.setSize("320px", "100%");
       add(contentPanel);
     }
   }

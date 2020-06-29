@@ -121,7 +121,7 @@ public final class ProjectBuilder {
 
   Result build(String userName, ZipFile inputZip, File outputDir, String outputFileName,
     boolean isForCompanion, boolean isForEmulator, boolean includeDangerousPermissions, String[] extraExtensions,
-    int childProcessRam, String dexCachePath, BuildServer.ProgressReporter reporter) {
+    int childProcessRam, String dexCachePath, BuildServer.ProgressReporter reporter, boolean isAab) {
     try {
       // Download project files into a temporary directory
       File projectRoot = createNewTempDir();
@@ -168,7 +168,7 @@ public final class ProjectBuilder {
         boolean success =
             Compiler.compile(project, componentTypes, componentBlocks, console, console, userErrors,
                 isForCompanion, isForEmulator, includeDangerousPermissions, keyStorePath,
-                childProcessRam, dexCachePath, outputFileName, reporter);
+                childProcessRam, dexCachePath, outputFileName, reporter, isAab);
         console.close();
         userErrors.close();
 
@@ -181,7 +181,7 @@ public final class ProjectBuilder {
           // Locate output file
           String fileName = outputFileName;
           if (fileName == null) {
-            fileName = project.getProjectName() + ".apk";
+            fileName = project.getProjectName() + (isAab ? ".aab" : ".apk");
           }
           File outputFile = new File(projectRoot,
               "build/deploy/" + fileName);

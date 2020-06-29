@@ -21,6 +21,7 @@ import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.utils.Security;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.util.UriBuilder;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -673,7 +674,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   @Override
   public RpcResult build(User user, long projectId, String nonce, String target,
-    boolean secondBuildserver) {
+    boolean secondBuildserver, boolean isAab) {
     String userId = user.getUserId();
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + '/' + target;
@@ -696,7 +697,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           userId,
           projectId,
           secondBuildserver,
-          outputFileDir));
+          outputFileDir,
+          isAab));
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");
@@ -805,9 +807,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
   String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
-    return "Request to build failed with " + exceptionName 
-      + ", user=" + userId + ", project=" + projectId 
-      + ", build URL is " + (buildURL != null ? buildURL : "null") + " [" 
+    return "Request to build failed with " + exceptionName
+      + ", user=" + userId + ", project=" + projectId
+      + ", build URL is " + (buildURL != null ? buildURL : "null") + " ["
       + (buildURL != null ? buildURL.toString().length() : "n/a") + "]";
   }
 
@@ -815,21 +817,23 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // a little more complicated when we want to get the URL from an App Engine config file or
   // command line argument.
   private String getBuildServerUrlStr(String userName, String userId,
-    long projectId, boolean secondBuildserver, String fileName)
-      throws UnsupportedEncodingException, EncryptionException {
-    return "http://" + (secondBuildserver ? buildServerHost2.get() : buildServerHost.get()) +
-      "/buildserver/build-all-from-zip-async"
-      + "?uname=" + URLEncoder.encode(userName, "UTF-8")
-      + (sendGitVersion.get()
-        ? "&gitBuildVersion="
-        + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
-        : "")
-      + "&callback="
-      + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
-        + ServerLayout.RECEIVE_BUILD_SERVLET + "/"
-        + Security.encryptUserAndProjectId(userId, projectId)
-        + "/" + fileName,
-        "UTF-8");
+    long projectId, boolean secondBuildserver, String fileName, boolean isAab)
+      throws EncryptionException {
+    UriBuilder uriBuilder = new UriBuilder(
+        "http://" +
+        (secondBuildserver ? buildServerHost2.get() : buildServerHost.get()) +
+        "/buildserver/build-all-from-zip-async"
+    )
+        .add("uname", userName)
+        .add("callback", "http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH +
+            ServerLayout.RECEIVE_BUILD_SERVLET + "/" +
+            Security.encryptUserAndProjectId(userId, projectId) + "/" +
+            fileName)
+        .add("ext", isAab ? "aab" : "apk");
+    if (sendGitVersion.get()) {
+      uriBuilder.add("gitBuildVersion", GitBuildId.getVersion());
+    }
+    return uriBuilder.build();
   }
 
   private String getCurrentHost() {
