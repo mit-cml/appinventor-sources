@@ -198,6 +198,20 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
 };
 
 /**
+ * Marks the passed block as a badBlock() and disables it if the data associated
+ * with the block is not defined, or the data is marked as deprecated.
+ * @param {Blockly.BlockSvg} block The block to check for deprecation.
+ * @param {EventDescriptor|MethodDescriptor|PropertyDescriptor} data The data
+ *     associated with the block which is possibly deprecated.
+ */
+Blockly.ComponentBlock.checkDeprecated = function(block, data) {
+  if ((!data || data.deprecated) && block.workspace == Blockly.mainWorkspace) {
+    block.badBlock();
+    block.setDisabled(true);
+  }
+}
+
+/**
  * Create an event block of the given type for a component with the given
  * instance name. eventType is one of the "events" objects in a typeJsonString
  * passed to Blockly.Component.add.
@@ -301,10 +315,7 @@ Blockly.Blocks.component_event = {
       input.init();
     }
 
-    if (eventType && eventType.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
-      this.badBlock();
-      this.setDisabled(true);
-    }
+    Blockly.ComponentBlock.checkDeprecated(this, eventType);
 
     this.verify(); // verify the block and mark it accordingly
 
@@ -769,13 +780,7 @@ Blockly.Blocks.component_method = {
     this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkIsInDefinition"},
       {name:"checkComponentNotExistsError"}, {name: "checkGenericComponentSocket"}];
 
-    // mark the block bad if the method isn't defined or is marked deprecated
-    var method = this.getMethodTypeObject();
-    if ((!method || method.deprecated === true || method.deprecated === 'true') &&
-        this.workspace === Blockly.mainWorkspace) {
-      this.badBlock();
-      this.setDisabled(true);
-    }
+    Blockly.ComponentBlock.checkDeprecated(this, this.getMethodTypeObject());
 
     this.verify(); // verify the block and mark it accordingly
 
@@ -1125,11 +1130,7 @@ Blockly.Blocks.component_set_get = {
       {name:"checkComponentNotExistsError"}, {name: 'checkGenericComponentSocket'},
       {name: 'checkEmptySetterSocket'}];
 
-    if (thisBlock.propertyObject && this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
-      // [lyn, 2015/12/27] mark deprecated properties as bad
-      this.badBlock();
-      this.setDisabled(true);
-    }
+    Blockly.ComponentBlock.checkDeprecated(this, this.propertyObject);
 
     this.verify();
 
