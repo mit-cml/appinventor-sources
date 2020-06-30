@@ -169,14 +169,6 @@ Blockly.Blocks['logic_operation'] = {
      * @type {Blockly.WorkspaceSvg}
      */
     this.lastMutator = null;
-    // NOTE(ewp): Blockly doesn't trigger the validation function when the field is set during
-    // load, so we override setValue here to make sure that the additional and/or labels (if
-    // present) match the dropdown's value.
-    var oldSetValue = this.opField.setValue;
-    this.opField.setValue = function(newValue) {
-      oldSetValue.call(this, newValue);
-      thisBlock.updateFields(newValue);
-    };
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('A')
@@ -203,19 +195,34 @@ Blockly.Blocks['logic_operation'] = {
       }
     }
 
+    if (this.itemCount_ === 0) {
+      this.removeInput(this.emptyInputName, true);
+    }
     if (this.itemCount_ > 0) {
-      this.removeInput('A');
+      this.removeInput('A', true);
     }
     if (this.itemCount_ > 1) {
-      this.removeInput('B');
+      this.removeInput('B', true);
     }
     for (var x = 2; x < this.itemCount_; x++) {
-      this.removeInput(this.repeatingInputName + x);
+      this.removeInput(this.repeatingInputName + x, true);
     }
     this.itemCount_ = window.parseInt(container.getAttribute('items'), 10);
     for (var x = 0; x < this.itemCount_; x++) {
       this.addInput(x);
     }
+    if (this.itemCount_ === 0) {
+      this.addEmptyInput();
+    }
+    // NOTE(ewp): Blockly doesn't trigger the validation function when the field is set during
+    // load, so we override setValue here to make sure that the additional and/or labels (if
+    // present) match the dropdown's value.
+    var oldSetValue = this.opField.setValue;
+    var thisBlock = this;
+    this.opField.setValue = function(newValue) {
+      oldSetValue.call(this, newValue);
+      thisBlock.updateFields(newValue);
+    };
   },
   decompose: function(workspace) {
     var containerBlockName = 'mutator_container';
@@ -239,9 +246,12 @@ Blockly.Blocks['logic_operation'] = {
         this.valuesToSave[name] = this.getFieldValue(name);
       }
     }
+    if (this.itemCount_ === 0) {
+      this.removeInput(this.emptyInputName, true);
+    }
     // Disconnect all input blocks and destroy all inputs.
     for (var x = this.itemCount_ - 1; x >= 0; x--) {
-      this.removeInput(x > 1 ? this.repeatingInputName + x : ['A', 'B'][x]);
+      this.removeInput(x > 1 ? this.repeatingInputName + x : ['A', 'B'][x], true);
     }
     this.itemCount_ = 0;
     // Rebuild the block's inputs.
@@ -257,6 +267,9 @@ Blockly.Blocks['logic_operation'] = {
       this.itemCount_++;
       itemBlock = itemBlock.nextConnection &&
         itemBlock.nextConnection.targetBlock();
+    }
+    if (this.itemCount_ === 0) {
+      this.addEmptyInput();
     }
   },
   saveConnections: function(containerBlock) {
@@ -274,26 +287,35 @@ Blockly.Blocks['logic_operation'] = {
     var name = inputNum > 1 ? this.repeatingInputName + inputNum : ['A', 'B'][inputNum];
     var input = this.appendValueInput(name)
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
-    function makeDropdown() {
-      var op = this.opField.getValue();
-      this.opField = new Blockly.FieldDropdown(
-        Blockly.Blocks.logic_operation.OPERATORS(),
-        this.updateFields.bind(this));
-      this.opField.setValue(op);
-      input.appendField(this.opField, 'OP');
-      this.opField.init();
-    }
     if (this.getInputsInline()) {
-      if (inputNum == 1) {
-        makeDropdown.call(this);
+      if (inputNum === 1) {
+        this.makeDropdown(input);
       } else if (inputNum > 1) {
         var field = new Blockly.FieldLabel(this.opField.getText());
         input.appendField(field);
         field.init();
+      } else if (this.itemCount_ === 1) {
+        input.appendField(this.opField.getValue() === 'AND' ?
+          Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE : Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE,
+          'IDENTITY');
+        this.makeDropdown(input);
       }
-    } else if (inputNum == 0) {
-      makeDropdown.call(this);
+    } else if (inputNum === 0) {
+      this.makeDropdown(input);
     }
+    return input;
+  },
+  addEmptyInput: function() {
+    this.makeDropdown(this.appendDummyInput(this.emptyInputName));
+  },
+  makeDropdown: function(input) {
+    var op = this.opField.getValue();
+    this.opField = new Blockly.FieldDropdown(
+      Blockly.Blocks.logic_operation.OPERATORS(),
+      this.updateFields.bind(this));
+    this.opField.setValue(op);
+    input.appendField(this.opField, 'OP');
+    this.opField.init();
     return input;
   },
   helpUrl: function () {
@@ -303,10 +325,10 @@ Blockly.Blocks['logic_operation'] = {
   setInputsInline: function(inline) {
     if (inline) {
       var ainput = this.getInput('A');
-      if (ainput.fieldRow.length > 0) {
+      if (ainput && ainput.fieldRow.length > 0) {
         ainput.fieldRow.splice(0, 1);
         var binput = this.getInput('B');
-        binput.fieldRow.splice(0, 0, this.opField);
+        this.makeDropdown(binput);
       }
       for (var input, i = 2; (input = this.inputList[i]); i++) {
         var field = new Blockly.FieldLabel(this.opField.getText());
@@ -315,10 +337,10 @@ Blockly.Blocks['logic_operation'] = {
       }
     } else {
       var binput = this.getInput('B');
-      if (binput.fieldRow.length > 0) {
+      if (binput && binput.fieldRow.length > 0) {
         binput.fieldRow.splice(0, 1);
         var ainput = this.getInput('A');
-        ainput.fieldRow.splice(0, 0, this.opField);
+        this.makeDropdown(ainput);
       }
       for (var input, i = 2; (input = this.inputList[i]); i++) {
         input.fieldRow[0].dispose();
@@ -329,10 +351,17 @@ Blockly.Blocks['logic_operation'] = {
   },
   updateFields: function(op) {
     if (this.getInputsInline()) {
-      var text = op == 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
+      var text = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
         Blockly.Msg.LANG_LOGIC_OPERATION_OR;
       for (var input, i = 2; (input = this.inputList[i]); i++) {
         input.fieldRow[0].setText(text);
+      }
+    }
+    if (this.itemCount_ === 1) {
+      var identity = this.getField('IDENTITY');
+      if (identity) {
+        identity.setText(op === 'AND' ?
+          Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE : Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE);
       }
     }
     // Update the mutator container block if the mutator is open
@@ -391,6 +420,8 @@ Blockly.Blocks['logic_or'] = {
   compose: Blockly.Blocks['logic_operation'].compose,
   saveConnections: Blockly.Blocks['logic_operation'].saveConnections,
   addInput: Blockly.Blocks['logic_operation'].addInput,
+  addEmptyInput: Blockly.Blocks['logic_operation'].addEmptyInput,
+  makeDropdown: Blockly.Blocks['logic_operation'].makeDropdown,
   helpUrl: Blockly.Blocks['logic_operation'].helpUrl,
   setInputsInline: Blockly.Blocks['logic_operation'].setInputsInline,
   updateFields: Blockly.Blocks['logic_operation'].updateFields
