@@ -318,5 +318,13 @@
     "Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT_LIST": "ցուցակ",
     "Blockly.Msg.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD": "ցուցակ",
     "Blockly.Msg.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST": "ստեղծել ցուցակ",
-    "Blockly.Msg.LANG_LISTS_CREATE_EMPTY_TITLE": "ստեղծել դատարկ ցուցակ"
+    "Blockly.Msg.LANG_LISTS_CREATE_EMPTY_TITLE": "ստեղծել դատարկ ցուցակ",
+    "Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TITLE_CONVERT": "փոխարկել թիվը",
+    "Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT": "ձևավորել որպես տասնորդական թվեր %1-ը %2 տեղերում",
+    "Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TOOLTIP": "Վերադարձնում է տասնորդականի ձևափոխված թիվը\nըստ տրված տեղերի քանակի:",
+    "Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT_PLACES": "տեղեր",
+    "Blockly.Msg.LANG_TEXT_SEGMENT_TITLE_SEGMENT": "բաժին",
+    "Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_PIECE": "հատված",
+    "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX": " միջակայքում",
+    "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP": "կողմից"
 }
