@@ -36,6 +36,7 @@ import javax.tools.FileObject;
  *   "showOnPalette": "true"|"false",
  *   "nonVisible": "true"|"false",
  *   "isContainer": "true"|"false",
+ *   "hasCustomMock": "true"|"false",
  *   "iconName": "ICON-FILE-NAME",
  *   "androidMinSdk": "ANDROID-MIN-SDK",
  *   "conditionals": {
@@ -112,6 +113,8 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append(component.getNonVisible());
     sb.append("\",\n  \"isContainer\": \"");
     sb.append(component.getIsContainer());
+    sb.append("\",\n  \"hasCustomMock\": \"");
+    sb.append(component.getHasCustomMock());
     sb.append("\",\n  \"iconName\": \"");
     sb.append(component.getIconName());
     sb.append("\",\n  \"androidMinSdk\": ");

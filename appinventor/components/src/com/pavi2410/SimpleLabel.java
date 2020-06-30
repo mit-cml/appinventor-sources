@@ -14,7 +14,8 @@ import com.google.appinventor.components.runtime.ComponentContainer;
 @DesignerComponent(version = 1,
         description = "Simple Label extension",
         category = ComponentCategory.EXTENSION,
-        iconName = "images/extension.png")
+        iconName = "images/extension.png",
+        hasCustomMock = true)
 @SimpleObject(external = true)
 public class SimpleLabel extends AndroidViewComponent {
 

@@ -348,6 +348,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
         Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
         Boolean.valueOf(properties.get("nonVisible").asString().getString()),
         Boolean.parseBoolean(properties.get("isContainer").asString().getString()),
+        Boolean.parseBoolean(properties.get("hasCustomMock").asString().getString()),
         properties.get("iconName").asString().getString(), componentNode.toJson());
     findComponentProperties(component, properties.get("properties").asArray());
     findComponentBlockProperties(component, properties.get("blockProperties").asArray());
