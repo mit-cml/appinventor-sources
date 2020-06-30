@@ -217,6 +217,7 @@ Blockly.Blocks['logic_operation'] = {
     // NOTE(ewp): Blockly doesn't trigger the validation function when the field is set during
     // load, so we override setValue here to make sure that the additional and/or labels (if
     // present) match the dropdown's value.
+    // TODO: BeksOmega says that this can be removed once we update Blockly.
     var oldSetValue = this.opField.setValue;
     var thisBlock = this;
     this.opField.setValue = function(newValue) {
@@ -295,8 +296,7 @@ Blockly.Blocks['logic_operation'] = {
         input.appendField(field);
         field.init();
       } else if (this.itemCount_ === 1) {
-        input.appendField(this.opField.getValue() === 'AND' ?
-          Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE : Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE,
+        input.appendField(Blockly.Blocks.logic_operation.IDENTITY(this.opField.getValue()),
           'IDENTITY');
         this.makeDropdown(input);
       }
@@ -351,8 +351,7 @@ Blockly.Blocks['logic_operation'] = {
   },
   updateFields: function(op) {
     if (this.getInputsInline()) {
-      var text = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
-        Blockly.Msg.LANG_LOGIC_OPERATION_OR;
+      var text = Blockly.Blocks.logic_operation.IDENTITY(op);
       for (var input, i = 2; (input = this.inputList[i]); i++) {
         input.fieldRow[0].setText(text);
       }
@@ -360,15 +359,13 @@ Blockly.Blocks['logic_operation'] = {
     if (this.itemCount_ === 1) {
       var identity = this.getField('IDENTITY');
       if (identity) {
-        identity.setText(op === 'AND' ?
-          Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE : Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE);
+        identity.setText(Blockly.Blocks.logic_operation.IDENTITY(op));
       }
     }
     // Update the mutator container block if the mutator is open
     if (this.lastMutator) {
       var mutatorBlock = this.lastMutator.getTopBlocks()[0];
-      var title = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
-        Blockly.Msg.LANG_LOGIC_OPERATION_OR;
+      var title = Blockly.Blocks.logic_operation.IDENTITY(op);
       mutatorBlock.setFieldValue(title, 'CONTAINER_TEXT');
     }
     return op;
@@ -394,6 +391,11 @@ Blockly.Blocks.logic_operation.OPERATORS = function () {
     [Blockly.Msg.LANG_LOGIC_OPERATION_OR, 'OR']
   ]
 };
+
+Blockly.Blocks.logic_operation.IDENTITY = function(op) {
+  return {'AND': Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE,
+    'OR': Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE}[op];
+}
 
 Blockly.Blocks.logic_operation.HELPURLS = function () {
   return {
