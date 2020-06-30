@@ -17,6 +17,9 @@ public class MockScriptsManager {
     private static final Map<String, String> scriptsMap = new HashMap<>();
 
     public static void load(final String type) {
+        if (scriptsMap.containsKey(type)) {
+            return; // script already loaded; don't load again!
+        }
 
         Ode ode = Ode.getInstance();
 
