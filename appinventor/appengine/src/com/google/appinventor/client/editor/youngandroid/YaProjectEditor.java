@@ -584,8 +584,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
             name = packageName;
             if (!externalComponents.contains(name)) {
-              MockScriptsManager.load(component.asObject().get("type").asString().getString());
               externalComponents.add(name);
+              MockScriptsManager.load(component.asObject().get("type").asString().getString());
             } else {
               // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
               saveProject();
@@ -597,8 +597,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           COMPONENT_DATABASE.addComponent(componentJSONObject);
           // In case of upgrade, we do not need to add entry
           if (!externalComponents.contains(componentJSONObject.get("type").toString())) {
-            MockScriptsManager.load(componentJSONObject.get("type").toString());
             externalComponents.add(componentJSONObject.get("type").toString());
+            MockScriptsManager.load(componentJSONObject.get("type").toString());
           } else {
             // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
             saveProject();

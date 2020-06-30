@@ -17,10 +17,6 @@ public class MockScriptsManager {
     private static final Map<String, String> scriptsMap = new HashMap<>();
 
     public static void load(final String type) {
-        if (!SimpleComponentDatabase.getInstance().hasCustomMock(type)) {
-            return; // Component doesn't have its own custom Mock, so don't try to load it
-        }
-
         if (scriptsMap.containsKey(type)) {
             return; // script already loaded; don't load again!
         }
@@ -31,6 +27,10 @@ public class MockScriptsManager {
 
         String pkgName = type.substring(0, type.lastIndexOf('.'));
         String simpleName = type.substring(type.lastIndexOf('.') + 1);
+
+        if (!SimpleComponentDatabase.getInstance(projectId).hasCustomMock(simpleName)) {
+            return; // Component doesn't have its own custom Mock, so don't try to load it
+        }
 
         String componentsFolder = ((YoungAndroidProjectNode) ode.getCurrentYoungAndroidProjectRootNode())
                 .getComponentsFolder().getFileId();
