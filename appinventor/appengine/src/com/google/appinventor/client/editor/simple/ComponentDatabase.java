@@ -253,6 +253,15 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
+  public boolean hasCustomMock(String componentName) {
+    ComponentDefinition component = components.get(componentName);
+    if (component == null) {
+      throw new ComponentNotFoundException(componentName);
+    }
+    return component.hasCustomMock();
+  }
+
+  @Override
   public String getIconName(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {

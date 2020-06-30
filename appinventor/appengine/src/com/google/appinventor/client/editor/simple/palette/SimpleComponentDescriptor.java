@@ -467,7 +467,8 @@ public final class SimpleComponentDescriptor {
     } else {
 
       // check if Mock has been registered against this component
-      if (MockComponentRegistry.isPresent(name)) {
+      if (SimpleComponentDatabase.getInstance(editor.getProjectId()).hasCustomMock(name) &&
+              MockComponentRegistry.isPresent(name)) {
 
         // get the factory
         MockComponentFactory mcf = MockComponentRegistry.getMockComponentFactory(name);
@@ -477,6 +478,11 @@ public final class SimpleComponentDescriptor {
         return mcf.create(editor);
 
       } else {
+
+        // TODO(pavi2410)
+
+        // The following code provides a default Mock implementation as a fallback for components which do not have one.
+
         if (SimpleComponentDatabase.getInstance(editor.getProjectId()).isContainer(name)) {
           return new MockHVArrangement(editor, name, images.vertical(),
                   ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
