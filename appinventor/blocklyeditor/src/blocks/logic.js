@@ -241,6 +241,15 @@ Blockly.Blocks['logic_operation'] = {
     this.lastMutator = workspace;
     return containerBlock;
   },
+  countNumberOfInputs: function(containerBlock) {
+    var start = containerBlock.getInputTargetBlock('STACK');
+    var i = 0;
+    while (start) {
+      i++;
+      start = start.getNextBlock();
+    }
+    return i;
+  },
   compose: function(containerBlock) {
     if (this.valuesToSave != null) {
       for (var name in this.valuesToSave) {
@@ -254,18 +263,19 @@ Blockly.Blocks['logic_operation'] = {
     for (var x = this.itemCount_ - 1; x >= 0; x--) {
       this.removeInput(x > 1 ? this.repeatingInputName + x : ['A', 'B'][x], true);
     }
-    this.itemCount_ = 0;
     // Rebuild the block's inputs.
-    var itemBlock = containerBlock.getInputTargetBlock('STACK')
+    var itemBlock = containerBlock.getInputTargetBlock('STACK');
+    this.itemCount_ = this.countNumberOfInputs(containerBlock);
+    var i = 0;
     while (itemBlock) {
 
-      var input = this.addInput(this.itemCount_)
+      var input = this.addInput(i);
 
       // Reconnect any child blocks.
       if (itemBlock.valueConnection_) {
         input.connection.connect(itemBlock.valueConnection_);
       }
-      this.itemCount_++;
+      i++;
       itemBlock = itemBlock.nextConnection &&
         itemBlock.nextConnection.targetBlock();
     }
@@ -364,9 +374,12 @@ Blockly.Blocks['logic_operation'] = {
     }
     // Update the mutator container block if the mutator is open
     if (this.lastMutator) {
-      var mutatorBlock = this.lastMutator.getTopBlocks()[0];
-      var title = Blockly.Blocks.logic_operation.IDENTITY(op);
-      mutatorBlock.setFieldValue(title, 'CONTAINER_TEXT');
+      var mutatorBlock = this.lastMutator.getTopBlocks(false)[0];
+      if (mutatorBlock) {
+        var title = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
+          Blockly.Msg.LANG_LOGIC_OPERATION_OR;
+        mutatorBlock.setFieldValue(title, 'CONTAINER_TEXT');
+      }
     }
     return op;
   },
