@@ -102,6 +102,13 @@ public class ComponentConstants {
   public static final int POLYGON_PREFERRED_HEIGHT = 30;
   public static final int RECTANGLE_PREFERRED_WIDTH = 50;
   public static final int RECTANGLE_PREFERRED_HEIGHT = 30;
+  
+  /**
+   * Tab Bar Arrangement
+   */
+  public static final int TAB_POSITION_DEFAULT = 1;
+  public static final int TAB_POSITION_TOP = 2;
+  public static final int TAB_POSITION_BOTTOM = 3;
 
 }
 

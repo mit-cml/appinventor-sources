@@ -1,13 +1,16 @@
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.appinventor.components.common.ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL;
 
 public class MockTabArrangement extends MockContainer<MockHVLayout> {
@@ -16,7 +19,7 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   public static final String PROPERTY_TAB_BACKGROUND_COLOR = "TabBackgroundColor";
   public static final String PROPERTY_TAB_TEXT_COLOR = "TabTextColor";
   public static final String PROPERTY_SELECTED_TAB_TEXT_COLOR = "SelectedTabTextColor";
-  public static final String PROPERTY_SHOW_TABS_AT_BOTTOM = "ShowTabsAtBottom";
+  public static final String PROPERTY_TAB_BAR_POSITION = "TabBarPosition";
   
   private final SimplePanel tabContentView;
   private static MockTab selectedTab;
@@ -95,8 +98,8 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
       setPropertyTabTextColor(newValue);
     } else if (propertyName.equals(PROPERTY_SELECTED_TAB_TEXT_COLOR)) {
       setPropertySelectedTabTextColor(newValue);
-    } else if (propertyName.equals(PROPERTY_SHOW_TABS_AT_BOTTOM)) {
-      setPropertyShowTabsAtBottom(newValue);
+    } else if (propertyName.equals(PROPERTY_TAB_BAR_POSITION)) {
+      setPropertyTabBarPosition(newValue);
     }
   }
   
@@ -135,18 +138,42 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
     }
   }
   
-  public void setPropertyShowTabsAtBottom (String newValue) {
-    if(newValue.equals("True")) {
-      rootPanel.removeStyleName("ode-TabContainer");
-      rootPanel.setStylePrimaryName("ode-TabContainerBottom");
-      tabContentView.removeStyleName("ode-TabContentView");
-      tabContentView.setStylePrimaryName("ode-TabContentViewBottom");
-    } else {
-      rootPanel.removeStyleName("ode-TabContainerBottom");
-      rootPanel.setStylePrimaryName("ode-TabContainer");
-      tabContentView.removeStyleName("ode-TabContentViewBottom");
-      tabContentView.setStylePrimaryName("ode-TabContentView");
+  public void setPropertyTabBarPosition(String newValue) {
+    try {
+      switch (Integer.parseInt(newValue)) {
+        case ComponentConstants.TAB_POSITION_DEFAULT:
+          alignTabsAtTop();
+          break;
+        case ComponentConstants.TAB_POSITION_TOP:
+          alignTabsAtTop();
+          break;
+        case ComponentConstants.TAB_POSITION_BOTTOM:
+          alignTabsAtBottom();
+          break;
+        default:
+          // This error should not happen because the higher level
+          // setter for TabBarAlignment should screen out illegal inputs.
+          ErrorReporter.reportError(MESSAGES.badValueForTabBarPosition(newValue));
+      }
+    } catch (NumberFormatException e) {
+      // As above, this error should not happen
+      ErrorReporter.reportError(MESSAGES.badValueForTabBarPosition(newValue));
     }
+  }
+  
+  public void alignTabsAtTop() {
+    rootPanel.removeStyleName("ode-TabContainerBottom");
+    rootPanel.setStylePrimaryName("ode-TabContainer");
+    tabContentView.removeStyleName("ode-TabContentViewBottom");
+    tabContentView.setStylePrimaryName("ode-TabContentView");
+    refreshForm();
+  }
+  
+  public void alignTabsAtBottom() {
+    rootPanel.removeStyleName("ode-TabContainer");
+    rootPanel.setStylePrimaryName("ode-TabContainerBottom");
+    tabContentView.removeStyleName("ode-TabContentView");
+    tabContentView.setStylePrimaryName("ode-TabContentViewBottom");
     refreshForm();
   }
   

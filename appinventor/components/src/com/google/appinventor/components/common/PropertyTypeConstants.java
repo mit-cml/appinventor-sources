@@ -327,4 +327,11 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidNavigationMethodChoicePropertyEditor}
    */
   public static final String PROPERTY_TYPE_NAVIGATION_METHOD = "navigation_method";
+  
+  /**
+   * Tab Bar Position
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTabBarPositionChoicePropertyEditior
+   */
+  public static final String PROPERTY_TYPE_TAB_BAR_POSITION = "tab_bar_position";
 }

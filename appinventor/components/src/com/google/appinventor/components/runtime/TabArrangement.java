@@ -1,12 +1,10 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +34,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   private int selectedTabIndicatorColor;
   private int textColor = COLOR_LTGRAY;
   private int selectedTabTextColor = COLOR_WHITE;
-  private boolean showTabsAtBottom = false;
+  private int tabBarPosition;
   
   public TabArrangement(ComponentContainer container) {
     super(container);
@@ -96,27 +94,15 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public LinearLayout getView() {
     layout.setOrientation(LinearLayout.VERTICAL);
     layout.setGravity(Gravity.TOP);
-    if(showTabsAtBottom) {
-      if(viewPager.getParent() != null) {
-        ((ViewGroup)viewPager.getParent()).removeView(viewPager);
-      }
-      layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
-      if(tabLayout.getParent() != null) {
-        ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
-      }
-      layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-      tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_TOP);
-    } else {
-      if(tabLayout.getParent() != null) {
-        ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
-      }
-      layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-      if(viewPager.getParent() != null) {
-        ((ViewGroup)viewPager.getParent()).removeView(viewPager);
-      }
-      layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
-      tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_BOTTOM);
+    if(tabLayout.getParent() != null) {
+      ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
     }
+    layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+    if(viewPager.getParent() != null) {
+      ((ViewGroup)viewPager.getParent()).removeView(viewPager);
+    }
+    layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
+    tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_BOTTOM);
     return layout;
   }
   
@@ -229,36 +215,51 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   }
   
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
-  public boolean ShowTabsAtBottom() {
-    return showTabsAtBottom;
+  public int TabBarPosition() {
+    return tabBarPosition;
   }
   
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-  defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TAB_BAR_POSITION,
+      defaultValue = ComponentConstants.TAB_POSITION_DEFAULT + "")
   @SimpleProperty
-  public void ShowTabsAtBottom(boolean showTabsAtBottom) {
-    this.showTabsAtBottom = showTabsAtBottom;
-    layout.removeAllViews();
-    if(showTabsAtBottom) {
-      if(viewPager.getParent() != null) {
-        ((ViewGroup)viewPager.getParent()).removeView(viewPager);
-      }
-      layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
-      if(tabLayout.getParent() != null) {
-        ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
-      }
-      layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-      tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_TOP);
-    } else {
-      if(tabLayout.getParent() != null) {
-        ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
-      }
-      layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-      if(viewPager.getParent() != null) {
-        ((ViewGroup)viewPager.getParent()).removeView(viewPager);
-      }
-      layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
-      tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_BOTTOM);
+  public void TabBarPosition(int tabBarPosition) {
+    this.tabBarPosition = tabBarPosition;
+    switch (tabBarPosition){
+      case ComponentConstants.TAB_POSITION_DEFAULT:
+        alignTabsAtTop();
+        break;
+      case ComponentConstants.TAB_POSITION_TOP:
+        alignTabsAtTop();
+        break;
+      case ComponentConstants.TAB_POSITION_BOTTOM:
+        alignTabsAtBottom();
+        break;
     }
+  }
+  
+  public void alignTabsAtTop() {
+    layout.removeAllViews();
+    if(tabLayout.getParent() != null) {
+      ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
+    }
+    layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+    if(viewPager.getParent() != null) {
+      ((ViewGroup)viewPager.getParent()).removeView(viewPager);
+    }
+    layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
+    tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_BOTTOM);
+  }
+  
+  public void alignTabsAtBottom() {
+    layout.removeAllViews();
+    if(viewPager.getParent() != null) {
+      ((ViewGroup)viewPager.getParent()).removeView(viewPager);
+    }
+    layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
+    if(tabLayout.getParent() != null) {
+      ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
+    }
+    layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+    tabLayout.setSelectedTabIndicatorGravity(TabLayout.INDICATOR_GRAVITY_TOP);
   }
 }
