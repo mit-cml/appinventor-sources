@@ -8,6 +8,7 @@ import GEOSwift
 @objc open class LineString: PolygonBaseWithPoints, MapLineString {
   @objc public init(_ container: MapFeatureContainer) {
     super.init(container: container)
+    Type = MapFeatureType.TYPE_LINESTRING.rawValue
     StrokeWidth = 3
     StrokeColor = colorToArgb(UIColor.black)
   }
