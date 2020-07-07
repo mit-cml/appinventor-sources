@@ -11,6 +11,7 @@ protocol SpinnerDelegate: UITableViewDelegate, UITableViewDataSource, UIPickerVi
 protocol SpinnerController {
   func selectItem(_ row: Int)
   func reloadComponents()
+  var menuView: UIView { get }
 }
 
 fileprivate class SpinnerPadController: PickerPadController, SpinnerController {
@@ -53,6 +54,12 @@ fileprivate class SpinnerPadController: PickerPadController, SpinnerController {
     _menuView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     _menuView.isScrollEnabled = true
   }
+  
+  open var menuView: UIView {
+    get {
+      return _menuView
+    }
+  }
 }
 
 fileprivate class SpinnerPhoneController: PickerPhoneController, SpinnerController {
@@ -88,6 +95,12 @@ fileprivate class SpinnerPhoneController: PickerPhoneController, SpinnerControll
       self._delegate.AfterSelecting()
     }
   }
+  
+  open var menuView: UIView {
+    get {
+      return _pickerView
+    }
+  }
 }
 
 open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
@@ -105,8 +118,10 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     super.setDelegate(self)
     if _isPhone {
       _viewController = SpinnerPhoneController(self, screen: parent.form)
+      _viewController?.menuView.setValue(preferredTextColor(parent.form), forKeyPath: "textColor")
     } else {
       _viewController = SpinnerPadController(self)
+      _viewController?.menuView.setValue(preferredTextColor(parent.form), forKeyPath: "textColor")
     }
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     parent.add(self)

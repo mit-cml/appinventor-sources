@@ -20,6 +20,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     _view.numberOfLines = 0
     _view.lineBreakMode = .byWordWrapping
     _view.font = _view.font.withSize(14.0)
+    _view.textColor = preferredTextColor(parent.form)
     super.init(parent)
     super.setDelegate(self)
     parent.add(self)

@@ -197,6 +197,7 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
     super.setDelegate(self)
     _view._button.addTarget(self, action: #selector(changeSwitch), for: .touchUpInside)
     _view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(changeSwitch)))
+    _view._text.textColor = preferredTextColor(parent.form)
     parent.add(self)
     Checked = false
     Enabled = true

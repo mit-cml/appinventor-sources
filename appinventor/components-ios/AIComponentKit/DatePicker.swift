@@ -28,6 +28,7 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     super.setDelegate(self)
     
     _viewController = getDateTimePickerController(self, screen: parent.form, isDatePicker: true, isPhone: _isPhone)
+    _viewController?.pickerView.setValue(preferredTextColor(parent.form), forKeyPath: "textColor")
     _viewController?.setDateTime(calendar)
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
   }

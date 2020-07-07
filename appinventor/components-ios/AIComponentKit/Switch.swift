@@ -29,6 +29,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
     super.setDelegate(self)
     _switch.addTarget(self, action: #selector(changeSwitch), for: .touchUpInside)
     _view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(changeSwitch)))
+    _text.textColor = preferredTextColor(parent.form)
     FontSize = 14.0
     parent.add(self)
     

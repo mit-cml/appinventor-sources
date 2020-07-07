@@ -60,7 +60,7 @@ public func preferredBackgroundColor(_ form: Form) -> UIColor {
 }
 
 public func preferredTextColor(_ form: Form) -> UIColor {
-  if #available(iOS 13.0, *) {
+  if #available(iOS 13.0, *), form.Theme == "DeviceDefault" {
     return UIColor.label
   } else if form.Theme == "Dark" {
     return UIColor.white

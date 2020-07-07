@@ -7,6 +7,7 @@ protocol DateTimePickerController {
   func setDateTime(_ calendar: Calendar)
   func setDate(_ date: Date)
   func setTime(_ date: Date)
+  var pickerView: UIDatePicker { get }
 }
 
 protocol DateTimePickerDelegate: UIPopoverPresentationControllerDelegate {
@@ -74,6 +75,12 @@ class DateTimePickerPadController: PickerPadController, DateTimePickerController
   func setDate(_ date: Date) {
     _pickerView.date = date
   }
+  
+  open var pickerView: UIDatePicker {
+    get {
+      return _pickerView
+    }
+  }
 }
 
 class DateTimePickerPhoneController: PickerPhoneController, DateTimePickerController {
@@ -106,6 +113,12 @@ class DateTimePickerPhoneController: PickerPhoneController, DateTimePickerContro
 
   override func doDismissPicker() {
     _delegate.dateTimePicked(_pickerView.date)
+  }
+  
+  open var pickerView: UIDatePicker {
+    get {
+      return _pickerView
+    }
   }
 }
 
