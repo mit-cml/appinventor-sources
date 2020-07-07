@@ -47,12 +47,14 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     super.init(parent)
     parent.add(self)
     _canvas.addSprite(self)
-    restartTimer()
   }
   
   @objc open func Initialize() {
     _initialized = true
     _canvas.registerChange(self)
+    if Enabled {
+      restartTimer()
+    }
   }
   
   // MARK: Properties
@@ -557,8 +559,9 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
     removeTimer()
     
     if Enabled {
-      _timer = Foundation.Timer(timeInterval: TimeInterval(Double(Interval) / 1000.0), target: self, selector: #selector(animate), userInfo: nil, repeats: true)
-      RunLoop.main.add(_timer!, forMode: RunLoop.Mode.default)
+      let timer = Timer.scheduledTimer(timeInterval: TimeInterval(Double(Interval) / 1000.0), target: self, selector: #selector(animate), userInfo: nil, repeats: true)
+      RunLoop.main.add(timer, forMode: RunLoop.Mode.common)
+      self._timer = timer
     }
   }
   
@@ -577,12 +580,12 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
 
     let headingCos = cos(_headingRadians)
     let headingSin = sin(_headingRadians)
-    let newX = layer.position.x + CGFloat(Speed) * headingCos
-    let newY = layer.position.y + CGFloat(Speed) * headingSin
-
+    let newX = CGFloat(X) + CGFloat(Speed) * headingCos
+    let newY = CGFloat(Y) + CGFloat(Speed) * headingSin
+    
     // Update position.
-    _xLeft = CGFloat(Double(newX) - Double(Width)/2)
-    _yTop = CGFloat(Double(newY) - Double(Height)/2)
+    X = Double(newX)
+    Y = Double(newY)
     registerChanges()
   }
 }
