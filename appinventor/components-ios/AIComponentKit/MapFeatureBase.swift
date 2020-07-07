@@ -160,7 +160,7 @@ import GEOSwift
 
   open var Title: String? {
     get {
-      return " "
+      return _title
     }
     set(title) {
       _title = title!
