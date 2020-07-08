@@ -19,13 +19,6 @@ Table of Contents:
 
 ## ContextMenu  {#ContextMenu}
 
-### Properties  {#ContextMenu-Properties}
-
-{:.properties}
-
-{:id="ContextMenu.ComponentSelector" .component .wo} *ComponentSelector*
-: 
-
 ## HorizontalArrangement  {#HorizontalArrangement}
 
 ![HorizontalArrangement icon](images/horizontalarrangement.png)
@@ -77,6 +70,9 @@ Table of Contents:
 : Specifies the background color of the HorizontalArrangement as an alpha-red-green-blue
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
+
+{:id="HorizontalArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: 
 
 {:id="HorizontalArrangement.Height" .number .bo} *Height*
 : Specifies the `HorizontalArrangement`'s vertical height, measured in pixels.
@@ -139,6 +135,9 @@ A formatting element in which to place components that should be displayed from 
 : Specifies the background color of the HorizontalScrollArrangement as an alpha-red-green-blue
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
+
+{:id="HorizontalScrollArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: 
 
 {:id="HorizontalScrollArrangement.Height" .number .bo} *Height*
 : Specifies the `HorizontalScrollArrangement`'s vertical height, measured in pixels.
@@ -242,6 +241,9 @@ Use a table arrangement component to display a group of components in a tabular 
 {:id="TableArrangement.Columns" .number .do} *Columns*
 : Determines the number of columns in the table.
 
+{:id="TableArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: 
+
 {:id="TableArrangement.Height" .number .bo} *Height*
 : Specifies the `TableArrangement`'s vertical height, measured in pixels.
 
@@ -327,6 +329,9 @@ None
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
 
+{:id="VerticalArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: 
+
 {:id="VerticalArrangement.Height" .number .bo} *Height*
 : Specifies the `VerticalArrangement`'s vertical height, measured in pixels.
 
@@ -388,6 +393,9 @@ A formatting element in which to place components that should be displayed one b
 : Specifies the background color of the VerticalScrollArrangement as an alpha-red-green-blue
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
+
+{:id="VerticalScrollArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: 
 
 {:id="VerticalScrollArrangement.Height" .number .bo} *Height*
 : Specifies the `VerticalScrollArrangement`'s vertical height, measured in pixels.

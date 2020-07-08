@@ -105,6 +105,9 @@ A special-purpose button. When the user taps an `ImagePicker`, the device's imag
  integer.  If an [`Image`](#ImagePicker.Image) has been set, the color
  change will not be visible until the [`Image`](#ImagePicker.Image) is removed.
 
+{:id="ImagePicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: 
+
 {:id="ImagePicker.Enabled" .boolean} *Enabled*
 : Specifies whether the `ImagePicker` should be active and clickable.
 
@@ -521,6 +524,9 @@ A multimedia component capable of playing videos. When the application is run, t
 ### Properties  {#VideoPlayer-Properties}
 
 {:.properties}
+
+{:id="VideoPlayer.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: 
 
 {:id="VideoPlayer.FullScreen" .boolean .bo} *FullScreen*
 : Sets whether the video should be shown in fullscreen or not.

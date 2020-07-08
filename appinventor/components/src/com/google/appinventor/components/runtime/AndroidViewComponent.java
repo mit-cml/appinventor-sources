@@ -76,6 +76,18 @@ public abstract class AndroidViewComponent extends VisibleComponent {
     getView().setVisibility(visibility ? View.VISIBLE : View.GONE);
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":com.google.appinventor.components.runtime.ContextMenu")
+  @SimpleProperty
+  public void ContextMenuSelector(ContextMenu menu) {
+    container.$form().getComponent(this.getView(),menu);
+    if(this instanceof ListView) {
+      container.$form().registerForContextMenu(((ListView) this).getListView());
+    }
+    else {
+      container.$form().registerForContextMenu(this.getView());
+    }
+  }
+
   /**
    * Returns the horizontal width of the `%type%`, measured in pixels.
    *

@@ -153,6 +153,9 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 
 {:.properties}
 
+{:id="FeatureCollection.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: 
+
 {:id="FeatureCollection.Features" .list .bo} *Features*
 : Gets the list of features attached to the `FeatureCollection` (without regard to the value of the
  feature's `Visible`{:.getter.block} property). This list also includes any features created on
@@ -392,6 +395,9 @@ A two-dimensional container that renders map tiles in the background and allows 
    In blocks code, it is recommended for performance reasons to use
  [`PanTo`](#Map.PanTo) with numerical latitude and longitude rather than convert
  to the string representation for use with this property.
+
+{:id="Map.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: 
 
 {:id="Map.EnablePan" .boolean} *EnablePan*
 : Enables or disables the ability of the user to move the Map.

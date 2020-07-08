@@ -62,19 +62,6 @@ public class ContextMenu implements Component, ComponentContainer, View.OnCreate
         }
     }
 
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COMPONENT )
-    @SimpleProperty
-    public void ComponentSelector(AndroidViewComponent component) {
-        this.component=component;
-        form.getComponent(component.getView(),this);
-        if(component instanceof ListView) {
-            this.form.registerForContextMenu(((ListView) component).getListView());
-        }
-        else {
-            this.form.registerForContextMenu(component.getView());
-        }
-    }
-
 
 
     // ComponentContainer implementation
