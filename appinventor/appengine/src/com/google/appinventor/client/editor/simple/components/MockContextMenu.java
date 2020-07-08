@@ -26,6 +26,7 @@ public class MockContextMenu extends MockContainer {
         rootPanel.setHeight("100%");
         menuWidget = new AbsolutePanel();
         menuWidget.setStylePrimaryName("ode-SimpleMockContainer");
+        menuWidget.addStyleName("ode-SimpleMockFormMenu");
         menuWidget.add(rootPanel);
 
         initComponent(menuWidget);
@@ -40,5 +41,15 @@ public class MockContextMenu extends MockContainer {
             component = (MockComponent) source.getDragWidget();
         }
         return component instanceof MockContextMenuItem;
+    }
+
+    @Override
+    protected void onSelectedChange(boolean selected) {
+        if (selected) {
+            setVisible(true);
+        } else {
+            setVisible(false);
+        }
+        super.onSelectedChange(selected);
     }
 }

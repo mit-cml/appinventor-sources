@@ -877,6 +877,7 @@ public final class MockForm extends MockContainer {
         for (MockComponent child : layoutInfo.visibleChildren) {
           child.setVisible(true);
           collectLayoutInfos(layoutInfoMap, child);
+          if (child instanceof MockContextMenu) child.setVisible(false);
         }
       }
 

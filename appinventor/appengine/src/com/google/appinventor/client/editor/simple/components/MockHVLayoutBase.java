@@ -411,6 +411,14 @@ abstract class MockHVLayoutBase extends MockLayout {
         continue;
       }
 
+      if (child instanceof MockContextMenu) {
+        container.setChildSizeAndPosition(child, childLayoutInfo,
+                (containerLayoutInfo.width - childWidthWithBorder)/2,
+                (containerLayoutInfo.height - childWidthWithBorder)/2);
+        index++;
+        continue;
+      }
+
       dividerLocations[index] = topY;
       topY += COMPONENT_SPACING;
 

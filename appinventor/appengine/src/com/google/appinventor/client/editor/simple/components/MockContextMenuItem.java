@@ -73,4 +73,12 @@ public final class MockContextMenuItem extends MockVisibleComponent {
         }
     }
 
+    @Override
+    protected void onSelectedChange(boolean selected) {
+        if (selected) {
+            getContainer().setVisible(true);
+        }
+        super.onSelectedChange(selected);
+    }
+
 }

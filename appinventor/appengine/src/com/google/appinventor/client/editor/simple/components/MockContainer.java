@@ -171,7 +171,13 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       // NOTE: The order of widgets in the root panel does not necessarily
       //       match the order of their associated children of this container
       rootPanel.add(component);
-      refreshForm();
+      refreshForm(true);
+      if (component instanceof MockContextMenu) {
+        component.setVisible(true);
+      }
+      if (component instanceof  MockContextMenuItem) {
+        component.getContainer().setVisible(true);
+      }
     }
 
     getForm().fireComponentAdded(component);
@@ -195,7 +201,10 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     if (component.isVisibleComponent()) {
       rootPanel.remove(component);
       if (permanentlyDeleted) {
-        refreshForm();
+        refreshForm(true);
+        if (component instanceof  MockContextMenuItem) {
+          component.getContainer().setVisible(true);
+        }
       }
     } else {
       editor.getNonVisibleComponentsPanel().removeComponent(component);
