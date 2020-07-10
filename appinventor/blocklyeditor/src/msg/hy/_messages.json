@@ -145,7 +145,7 @@
     "Blockly.Msg.DISABLE_GRID": "Ապակտիվացնել աշխատանքային միջավայրի ցանցը",
     "Blockly.Msg.ENABLE_GRID": "Ակտիվացնել աշխատանքային միջավայրի ցանցը",
     "Blockly.Msg.BACKPACK_DOCUMENTATION": "ՈՒսապարկ -ը պատճենել/ներդնել հատկանիշ է: Այն թույլ է տալիս մի նախագծից կամ էկրանից պատճենել Բլոկները և ներդնել մեկ այլ նախագծի կամ էկրանի վրա: Պատճենելու համար կարող եք քաշել-տանել Բլոկները Ուսապարկի մեջ: Ներդնելու համար քաշեք-տարեք Բլոկները աշխատանքային միջավայր:</p><p> Եթե ելք գործեք MIT App Inventor -ից և թողնեք Բլոկները Ուսապարկի մեջ, դրանք այնտեղ կլինեն, երբ մյուս անգամ մուտք գործեք:</p><p><a href='/reference/other/backpack.html' target='_blank'>Սեղմեք այստեղ</a> ավելի մանրամասն ձևակերպման և \"ինչպե՞ս անել\" տեսանյութը դիտելու համար:",
-    "Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR": "տարանջատել գույները",
+    "Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR": "բաժանել գույները",
     "Blockly.Msg.LANG_COLOUR_GRAY": "մոխրագույն",
     "Blockly.Msg.LANG_COLOUR_DARK_GRAY": "մուգ մոխրագույն",
     "Blockly.Msg.LANG_COLOUR_LIGHT_GRAY": "բաց մոխրագույն",
@@ -382,5 +382,6 @@
     "Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN": "Տրամադրում է տրված տանգեսի արժեքով անկյունը`\nաստիճանային (-90, + 90] միջակայքում:",
     "Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ASIN": "Տրամադրում է տրված սինուսի արժեքով անկյունը`\nաստիճանային (-90, + 90] միջակայքում:",
     "Blockly.Msg.REPL_NETWORK_CONNECTION_ERROR": "Ցանցային կապի սխալ",
-    "Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_POWER": "Վերադարձնել` առաջին թիվը երկրորդ թվի\nաստիճանին բարձրացրած արժեքը:"
+    "Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_POWER": "Վերադարձնել` առաջին թիվը երկրորդ թվի\nաստիճանին բարձրացրած արժեքը:",
+    "Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING": "առարկա"
 }
