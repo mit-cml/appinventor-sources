@@ -272,7 +272,7 @@ Blockly.Blocks['logic_operation'] = {
       if (inputNum == 1) {
         var op = this.opField.getValue();
         this.opField = new Blockly.FieldDropdown(
-          Blockly.Blocks.logic_operation.OPERATORS(),
+          Blockly.Blocks.logic_operation.OPERATORS,
           this.updateFields.bind(this));
         this.opField.setValue(op);
         input.appendField(this.opField, 'OP');
@@ -285,7 +285,7 @@ Blockly.Blocks['logic_operation'] = {
     } else if (inputNum == 0) {
       var op = this.opField.getValue();
       this.opField = new Blockly.FieldDropdown(
-        Blockly.Blocks.logic_operation.OPERATORS.OPERATORS,
+        Blockly.Blocks.logic_operation.OPERATORS,
         this.updateFields.bind(this));
       this.opField.setValue(op);
       input.appendField(this.opField, 'OP');
