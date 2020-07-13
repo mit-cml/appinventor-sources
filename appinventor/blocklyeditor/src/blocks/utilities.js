@@ -27,33 +27,70 @@ Blockly.Blocks.Utilities.InstantInTime = function () { return 'InstantInTime'; }
 // The Yail type 'any' is repsented by Javascript null, to match
 // Blockly's convention
 Blockly.Blocks.Utilities.YailTypeToBlocklyTypeMap = {
-  'number':{input:"Number",output:["Number","String", "Key"]},
-  'text':{input:"String",output:["Number","String", "Key"]},
-  'boolean':{input:"Boolean",output:["Boolean","String"]},
-  'list':{input:"Array",output:["Array","String"]},
-  'component':{input:"COMPONENT",output:["COMPONENT", "Key"]},
-  'InstantInTime':{input:Blockly.Blocks.Utilities.InstantInTime,output:Blockly.Blocks.Utilities.InstantInTime},
-  'any':{input:null,output:null},
-  'dictionary':{input:"Dictionary",output:["Dictionary", "String", "Array"]},
-  'pair':{input:"Pair",output:["Pair", "String", "Array"]},
-  'key':{input:"Key",output:["String", "Key"]}
-  //add  more types here
+  'number': {
+    input: ['Number'],
+    output: ['Number', 'String', 'Key']
+  },
+  'text': {
+    input: ['String'],
+    output: ['Number', 'String', 'Key']
+  },
+  'boolean': {
+    input: ['Boolean'],
+    output: ['Boolean', 'String']
+  },
+  'list': {
+    input: ['Array'],
+    output: ['Array', 'String']
+  },
+  'component': {
+    input: ['COMPONENT'],
+    output: ['COMPONENT', 'Key']
+  },
+  'InstantInTime': {
+    input: ['InstantInTime'],
+    output: ['InstantInTime'],
+  },
+  'any': {
+    input: null,
+    output: null
+  },
+  'dictionary': {
+    input: ['Dictionary'],
+    output: ['Dictionary', 'String', 'Array']
+  },
+  'pair': {
+    input: ['Pair'],
+    output: ['Pair', 'String', 'Array']
+  },
+  'key': {
+    input: ['Key'],
+    output: ['String', 'Key']
+  }
 };
 
-Blockly.Blocks.Utilities.OUTPUT = 1;
-Blockly.Blocks.Utilities.INPUT = 0;
+Blockly.Blocks.Utilities.OUTPUT = 'output';
+Blockly.Blocks.Utilities.INPUT = 'input';
 
-Blockly.Blocks.Utilities.YailTypeToBlocklyType = function(yail,inputOrOutput) {
-
-    var inputOrOutputName = (inputOrOutput == Blockly.Blocks.Utilities.OUTPUT ? "output" : "input");
-    var bType = Blockly.Blocks.Utilities.YailTypeToBlocklyTypeMap[yail][inputOrOutputName];
-
-    if (bType !== null || yail == 'any') {
-        return bType;
-    } else {
-        throw new Error("Unknown Yail type: " + yail + " -- YailTypeToBlocklyType");
+/**
+ * Gets the equivalent Blockly type for a given Yail type.
+ * @param {string} yail The Yail type.
+ * @param {!string} inputOrOutput Either Utilities.OUTPUT or Utilities.INPUT.
+ * @param {Array<string>=} opt_currentType A type array to append, or null.
+ */
+Blockly.Blocks.Utilities.YailTypeToBlocklyType =
+  function(yail, inputOrOutput, opt_currentType) {
+    var type = Blockly.Blocks.Utilities
+        .YailTypeToBlocklyTypeMap[yail][inputOrOutput];
+    if (type === undefined) {
+      throw new Error("Unknown Yail type: " + yail + " -- YailTypeToBlocklyType");
     }
-};
+    if (!opt_currentType || !type) {
+      return type;
+    }
+    Array.prototype.push.apply(type, opt_currentType);
+    return type;
+  };
 
 
 // Blockly doesn't wrap tooltips, so these can get too wide.  We'll create our own tooltip setter
