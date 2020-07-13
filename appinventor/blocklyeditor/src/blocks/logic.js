@@ -432,6 +432,7 @@ Blockly.Blocks['logic_or'] = {
   mutationToDom: Blockly.Blocks['logic_operation'].mutationToDom,
   domToMutation: Blockly.Blocks['logic_operation'].domToMutation,
   decompose: Blockly.Blocks['logic_operation'].decompose,
+  countNumberOfInputs: Blockly.Blocks['logic_operation'].countNumberOfInputs,
   compose: Blockly.Blocks['logic_operation'].compose,
   saveConnections: Blockly.Blocks['logic_operation'].saveConnections,
   addInput: Blockly.Blocks['logic_operation'].addInput,
