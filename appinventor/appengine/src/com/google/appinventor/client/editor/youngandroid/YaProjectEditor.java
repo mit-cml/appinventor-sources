@@ -598,10 +598,15 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           // In case of upgrade, we do not need to add entry
           if (!externalComponents.contains(componentJSONObject.get("type").toString())) {
             externalComponents.add(componentJSONObject.get("type").toString());
+
+            // fixme: should add a callback here? because COMPONENT_DATABASE.addComponent is called above,
+            //  but can't say whether an extension is already added or has been upgraded
             MockScriptsManager.load(componentJSONObject.get("type").toString());
           } else {
             // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
             saveProject();
+
+            // fixme: same as above
             MockScriptsManager.upgrade(componentJSONObject.get("type").toString());
           }
         }
