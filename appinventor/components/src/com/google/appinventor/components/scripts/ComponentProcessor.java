@@ -152,6 +152,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   private static final String ARM64_V8A_SUFFIX = "-v8a";
   // Must match buildserver.compiler.X86_64_SUFFIX
   private static final String X86_64_SUFFIX = "-x8a";
+  // Must match buildserver.compiler.X86_SUFFIX
+  private static final String X86_SUFFIX = "-x8";
 
   private static final String TYPE_PLACEHOLDER = "%type%";
 
@@ -1165,6 +1167,12 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         String trimmedValue = x8664Library.trim();
         if (!trimmedValue.isEmpty()) {
           updateWithNonEmptyValue(componentInfo.nativeLibraries, trimmedValue + X86_64_SUFFIX);
+        }
+      }
+      for (String x86Library : usesNativeLibraries.x86_Libraries().split(",")) {
+        String trimmedValue = x86Library.trim();
+        if (!trimmedValue.isEmpty()) {
+          updateWithNonEmptyValue(componentInfo.nativeLibraries, trimmedValue + X86_SUFFIX);
         }
       }
     }

@@ -235,15 +235,18 @@ public class ExternalComponentGenerator {
       String ARMEABI_V7A_SUFFIX = "-v7a";
       String ARM64_V8A_SUFFIX = "-v8a";
       String X86_64_SUFFIX = "-x8a";
+      String X86_SUFFIX = "-x8";
 
       String ARMEABI_DIR_NAME = "armeabi";
       String ARMEABI_V7A_DIR_NAME = "armeabi-v7a";
       String ARM64_V8A_DIR_NAME = "arm64-v8a";
       String X86_64_DIR_NAME = "x86_64";
+      String X86_DIR_NAME = "x86";
 
       boolean isV7a = lib.endsWith(ARMEABI_V7A_SUFFIX);
       boolean isV8a = lib.endsWith(ARM64_V8A_SUFFIX);
       boolean isx8664 = lib.endsWith(X86_64_SUFFIX);
+      boolean isx86 = lib.endsWith(X86_SUFFIX);
 
       String sourceDirName;
       if (isV7a) {
@@ -255,6 +258,9 @@ public class ExternalComponentGenerator {
       } else if (isx8664) {
         sourceDirName = X86_64_DIR_NAME;
         lib = lib.substring(0, lib.length() - X86_64_SUFFIX.length());
+      } else if (isx86) {
+        sourceDirName = X86_DIR_NAME;
+        lib = lib.substring(0, lib.length() - X86_SUFFIX.length());
       } else {
         sourceDirName = ARMEABI_DIR_NAME;
       }
