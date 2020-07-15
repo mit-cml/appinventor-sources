@@ -6,6 +6,7 @@ import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -23,7 +24,10 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
     public static MockScriptsManager INSTANCE;
 
-    private Map<String, String> scriptsMap = new HashMap<>(); // component type and script file
+    private final Map<String, String> scriptsMap = new HashMap<>(); // component type and script file
+    private long projectId;
+    private YaProjectEditor projectEditor;
+    private ProjectRootNode projectRootNode;
 
     private MockScriptsManager() {
         // Do not instantiate
@@ -32,17 +36,19 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     /**
      * Initialises the [MockScriptsManager] on project load and registers the necessary listeners.
      *
-     * @param projectEditor The [ProjectEditor] associated with the currently opened project
+     * @param projectEditor   The [ProjectEditor] associated with the currently opened project
      * @param projectRootNode The [ProjectRootNode] associated with the currently opened project
      */
-    public static void init(YaProjectEditor projectEditor, ProjectRootNode projectRootNode) {
+    public static void init(long projectId, YaProjectEditor projectEditor, ProjectRootNode projectRootNode) {
         if (INSTANCE != null) {
             destroy();
         }
         INSTANCE = new MockScriptsManager();
+        INSTANCE.projectId = projectId;
+        INSTANCE.projectEditor = projectEditor;
+        INSTANCE.projectRootNode = projectRootNode;
 
         projectEditor.addComponentDatbaseListener(INSTANCE);
-
         Ode.getInstance()
                 .getProjectManager()
                 .getProject(projectRootNode)
@@ -50,6 +56,11 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     }
 
     private static void destroy() {
+        INSTANCE.projectEditor.removeComponentDatbaseListener(INSTANCE);
+        Ode.getInstance()
+                .getProjectManager()
+                .getProject(INSTANCE.projectRootNode)
+                .removeProjectChangeListener(INSTANCE);
         INSTANCE.unloadAll();
         INSTANCE = null;
     }
@@ -64,23 +75,20 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
             return; // script already loaded; don't load again!
         }
 
-        Ode ode = Ode.getInstance();
-
-        long projectId = ode.getCurrentYoungAndroidProjectId();
-
         String pkgName = type.substring(0, type.lastIndexOf('.'));
         String simpleName = type.substring(type.lastIndexOf('.') + 1);
 
-        if (!SimpleComponentDatabase.getInstance(projectId).hasCustomMock(simpleName)) {
+        if (!SimpleComponentDatabase.getInstance(this.projectId).hasCustomMock(simpleName)) {
             return; // Component doesn't have its own custom Mock, so don't try to load it
         }
 
-        String componentsFolder = ((YoungAndroidProjectNode) ode.getCurrentYoungAndroidProjectRootNode())
-                .getComponentsFolder().getFileId();
+        OdeLog.log("type = " + type);
+        OdeLog.log("pkgName = " + pkgName);
 
+        String componentsFolder = ((YoungAndroidProjectNode) projectRootNode).getComponentsFolder().getFileId();
         String fileId = componentsFolder + "/" + pkgName + "/Mock" + simpleName + ".js";
 
-        ode.getProjectService().load2(
+        Ode.getInstance().getProjectService().load2(
                 projectId,
                 fileId,
                 new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
@@ -93,6 +101,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
                             ScriptInjector.fromString(mockJsFile)
                                     .setWindow(ScriptInjector.TOP_WINDOW)
+                                    .setRemoveTag(false)
                                     .inject();
 
                         } catch (ChecksumedFileException e) {
@@ -131,8 +140,16 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
     @Override
     public void onComponentTypeAdded(List<String> componentTypes) {
+        SimpleComponentDatabase scd = SimpleComponentDatabase.getInstance(this.projectId);
+        OdeLog.log("components added:");
         for (String componentType : componentTypes) {
-            load(componentType);
+            String fqcn = scd.getComponentType(componentType); // Ensure [componentType] is a FQCN
+            OdeLog.log(fqcn);
+            if (scriptsMap.containsKey(fqcn)) {
+                load(fqcn);
+            } else {
+                upgrade(fqcn);
+            }
         }
     }
 

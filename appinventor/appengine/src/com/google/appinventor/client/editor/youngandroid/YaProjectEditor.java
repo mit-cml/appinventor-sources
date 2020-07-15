@@ -585,11 +585,11 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
             name = packageName;
             if (!externalComponents.contains(name)) {
               externalComponents.add(name);
-              MockScriptsManager.load(component.asObject().get("type").asString().getString());
+//              MockScriptsManager.load(component.asObject().get("type").asString().getString());
             } else {
               // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
               saveProject();
-              MockScriptsManager.upgrade(component.asObject().get("type").asString().getString());
+//              MockScriptsManager.upgrade(component.asObject().get("type").asString().getString());
             }
           }
         } else {
@@ -601,13 +601,13 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
             // fixme: should add a callback here? because COMPONENT_DATABASE.addComponent is called above,
             //  but can't say whether an extension is already added or has been upgraded
-            MockScriptsManager.load(componentJSONObject.get("type").toString());
+//            MockScriptsManager.load(componentJSONObject.get("type").toString());
           } else {
             // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
             saveProject();
 
             // fixme: same as above
-            MockScriptsManager.upgrade(componentJSONObject.get("type").toString());
+//            MockScriptsManager.upgrade(componentJSONObject.get("type").toString());
           }
         }
         numExternalComponentsLoaded++;
