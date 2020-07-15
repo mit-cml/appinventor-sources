@@ -214,6 +214,7 @@ public class Form extends AppInventorCompatActivity
   private final Set<OnClearListener> onClearListeners = Sets.newHashSet();
   private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
   private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
+  private final Set<OnOrientationChangeListener> onOrientationChangeListeners = Sets.newHashSet();
   private final Set<OnPauseListener> onPauseListeners = Sets.newHashSet();
   private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
 
@@ -737,6 +738,10 @@ public class Form extends AppInventorCompatActivity
     onResumeListeners.add(component);
   }
 
+  public void registerForOnOrientationChange(OnOrientationChangeListener component) {
+    onOrientationChangeListeners.add(component);
+  }
+
   /**
    * An app can register to be notified when App Inventor's Initialize
    * block has fired.  They will be called in Initialize().
@@ -918,6 +923,9 @@ public class Form extends AppInventorCompatActivity
 
   @SimpleEvent(description = "Screen orientation changed")
   public void ScreenOrientationChanged() {
+    for (OnOrientationChangeListener onOrientationChangeListener : onOrientationChangeListeners) {
+      onOrientationChangeListener.onOrientationChange();
+    }
     EventDispatcher.dispatchEvent(this, "ScreenOrientationChanged");
   }
 
@@ -2394,6 +2402,7 @@ public class Form extends AppInventorCompatActivity
     onStopListeners.clear();
     onNewIntentListeners.clear();
     onResumeListeners.clear();
+    onOrientationChangeListeners.clear();
     onPauseListeners.clear();
     onDestroyListeners.clear();
     onInitializeListeners.clear();
@@ -2420,6 +2429,9 @@ public class Form extends AppInventorCompatActivity
     }
     if (component instanceof OnResumeListener) {
       onResumeListeners.remove(component);
+    }
+    if (component instanceof OnOrientationChangeListener) {
+      onOrientationChangeListeners.remove(component);
     }
     if (component instanceof OnPauseListener) {
       onPauseListeners.remove(component);
