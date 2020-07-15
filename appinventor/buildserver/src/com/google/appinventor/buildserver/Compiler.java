@@ -104,6 +104,7 @@ public final class Compiler {
   private static final String X86_64_DIR_NAME = "x86_64";
 
   private static final String ASSET_DIR_NAME = "assets";
+  private static final String NATIVE_DIR_NAME = "jni";
   private static final String EXT_COMPS_DIR_NAME = "external_comps";
 
   private static final String DEFAULT_APP_NAME = "";
@@ -2154,7 +2155,7 @@ public final class Compiler {
             final String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + ZIPSLASH + lib;
             sourcePath = getResource(pathSuffix);
           } else if (extCompTypes.contains(type)) {
-            final String pathSuffix = "/libsNatives/" + sourceDirName + ZIPSLASH + lib;
+            final String pathSuffix = ZIPSLASH + NATIVE_DIR_NAME + ZIPSLASH + sourceDirName + ZIPSLASH + lib;
             sourcePath = getExtCompDirPath(type) + pathSuffix;
           } else {
             userErrors.print(String.format(ERROR_IN_STAGE, "Native Code"));

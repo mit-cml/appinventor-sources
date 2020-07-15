@@ -32,18 +32,18 @@ public class ExternalComponentGenerator {
   private static String externalComponentsTempDirPath;
   private static boolean useFQCN = false;
 
-  private static Map<String, List<ExternalComponentInfo>> externalComponentsByPackage = new TreeMap<>();
+  private static Map<String, List<ExternalComponentInfo>> externalComponentsByPackage =
+      new TreeMap<>();
 
   /**
-   * The definitions of the arguments used by this script
-   *
-   * args[0]: the path to simple_component.json args[1]: the path to
-   * simple_component_build_info.json args[2]: the path to
-   * ExternalComponentAsset.dir: "${local.build.dir}/ExternalComponents" args[3]:
-   * the path to "${AndroidRuntime-class.dir}" args[4]: the path to
-   * /build/classes/BuildServer/files args[5]: the path to external componentsTemp
-   * directory
-   */
+  *
+  * args[0]: the path to simple_component.json
+  * args[1]: the path to simple_component_build_info.json
+  * args[2]: the path to ExternalComponentAsset.dir: "${local.build.dir}/ExternalComponents"
+  * args[3]: the path to "${AndroidRuntime-class.dir}"
+  * args[4]: the path to /build/classes/BuildServer/files
+  * args[5]: the path to external componentsTemp directory
+  */
   public static void main(String[] args) throws IOException, JSONException {
     String simple_component_json = readFile(args[0], Charset.defaultCharset());
     String simple_component_build_info_json = readFile(args[1], Charset.defaultCharset());
@@ -218,17 +218,14 @@ public class ExternalComponentGenerator {
     }
 
     // Get natives source directory
-    String packagePath = packageName.replace('.', File.separatorChar);
-    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator
-        + "src" + File.separator + packagePath);
-    File assetSrcDir = new File(sourceDir, "libsNatives");
-    if (!assetSrcDir.exists() || !assetSrcDir.isDirectory()) {
+    File sourceDir = new File(buildServerClassDirPath + File.separator);
+    if (!sourceDir.exists()) {
       return;
     }
 
     // Get natives dest directory
     File destDir = new File(externalComponentsDirPath + File.separator + packageName + File.separator);
-    File assetDestDir =  new File(destDir, "libsNatives");
+    File assetDestDir =  new File(destDir, "jni");
     ensureFreshDirectory(assetDestDir.getPath(), "Unable to delete the assets directory for the extension.");
 
     // Copy natives
@@ -263,7 +260,7 @@ public class ExternalComponentGenerator {
       }
 
       if (!lib.isEmpty()) {
-        File nativeAssets = new File(assetSrcDir, sourceDirName);
+        File nativeAssets = new File(sourceDir, sourceDirName);
         File srcNative = new File(nativeAssets, lib);
         if (srcNative.exists()) {
           File nativeAssetsDest = new File(assetDestDir, sourceDirName);

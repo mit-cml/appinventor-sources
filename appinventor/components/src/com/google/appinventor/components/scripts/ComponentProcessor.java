@@ -1152,19 +1152,19 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       for (String v7aLibrary : usesNativeLibraries.v7aLibraries().split(",")) {
         String trimmedValue = v7aLibrary.trim();
         if (!trimmedValue.isEmpty()) {
-          updateWithNonEmptyValue(componentInfo.nativeLibraries, v7aLibrary.trim() + ARMEABI_V7A_SUFFIX);
+          updateWithNonEmptyValue(componentInfo.nativeLibraries, trimmedValue + ARMEABI_V7A_SUFFIX);
         }
       }
       for (String v8aLibrary : usesNativeLibraries.v8aLibraries().split(",")) {
         String trimmedValue = v8aLibrary.trim();
         if (!trimmedValue.isEmpty()) {
-          updateWithNonEmptyValue(componentInfo.nativeLibraries, v8aLibrary.trim() + ARM64_V8A_SUFFIX);
+          updateWithNonEmptyValue(componentInfo.nativeLibraries, trimmedValue + ARM64_V8A_SUFFIX);
         }
       }
       for (String x8664Library : usesNativeLibraries.x86_64Libraries().split(",")) {
         String trimmedValue = x8664Library.trim();
         if (!trimmedValue.isEmpty()) {
-          updateWithNonEmptyValue(componentInfo.nativeLibraries, x8664Library.trim() + X86_64_SUFFIX);
+          updateWithNonEmptyValue(componentInfo.nativeLibraries, trimmedValue + X86_64_SUFFIX);
         }
       }
     }

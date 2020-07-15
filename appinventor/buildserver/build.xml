@@ -72,20 +72,6 @@
       <fileset dir="${appinventor.dir}/components/src" includes="**/assets/*"/>
     </copy>
 
-    <!-- Copy natives libray -->
-    <copy todir="${classes.files.dir}/armeabi" flatten="true">
-      <fileset dir="${appinventor.dir}/components/src" includes="**/jni/armeabi/*"/>
-    </copy>
-    <copy todir="${classes.files.dir}/armeabi-v7a" flatten="true">
-      <fileset dir="${appinventor.dir}/components/src" includes="**/jni/armeabi-v7a/*"/>
-    </copy>
-    <copy todir="${classes.files.dir}/arm64-v8a" flatten="true">
-      <fileset dir="${appinventor.dir}/components/src" includes="**/jni/arm64-v8a/*"/>
-    </copy>
-    <copy todir="${classes.files.dir}/x86_64/" flatten="true">
-      <fileset dir="${appinventor.dir}/components/src" includes="**/jni/x86_64/*"/>
-    </copy>
-
     <!-- Component library dependencies -->
     <copy todir="${classes.files.dir}">
       <fileset dir="${build.dir}/components/deps" />
