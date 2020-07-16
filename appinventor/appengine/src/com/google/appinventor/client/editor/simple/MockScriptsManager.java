@@ -146,9 +146,9 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
             String fqcn = scd.getComponentType(componentType); // Ensure [componentType] is a FQCN
             OdeLog.log(fqcn);
             if (scriptsMap.containsKey(fqcn)) {
-                load(fqcn);
-            } else {
                 upgrade(fqcn);
+            } else {
+                load(fqcn);
             }
         }
     }
@@ -161,6 +161,9 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     @Override
     public void onComponentTypeRemoved(Map<String, String> componentTypes) {
         // returns map??
+        for (String fqcn : componentTypes.keySet()) {
+            unload(fqcn);
+        }
     }
 
     @Override
@@ -177,7 +180,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
     @Override
     public void onProjectNodeAdded(Project project, ProjectNode node) {
-
+        // todo: handle project change
     }
 
     @Override
