@@ -133,6 +133,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     }
 
     private static native void cleanup(String name)/*-{
+        // fixme: it doesn't delete the Mock class!!
         delete $wnd["Mock" + name];
     }-*/;
 

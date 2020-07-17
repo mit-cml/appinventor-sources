@@ -1,8 +1,6 @@
-class MockSimpleLabel extends MockVisibleExtension {
-    static TYPE = "SimpleLabel"
-
+MockComponentRegistry.register("SimpleLabel", editor => new (class extends MockVisibleExtension {
     constructor(editor) {
-        super(editor, MockSimpleLabel.TYPE)
+        super(editor, "SimpleLabel")
         console.log("constructor called");
 
         this.label = document.createElement("p")
@@ -25,10 +23,4 @@ class MockSimpleLabel extends MockVisibleExtension {
                 break
         }
     }
-
-    static create(editor) {
-        return new MockSimpleLabel(editor)
-    }
-}
-
-MockComponentRegistry.register(MockSimpleLabel.TYPE, MockSimpleLabel.create)
+}))
