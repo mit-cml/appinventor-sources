@@ -49,7 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MediaUtil {
 
-  private enum MediaSource { ASSET, REPL_ASSET, SDCARD, FILE_URL, URL, CONTENT_URI, CONTACT_URI }
+  enum MediaSource { ASSET, REPL_ASSET, SDCARD, FILE_URL, URL, CONTENT_URI, CONTACT_URI }
 
   private static final String LOG_TAG = "MediaUtil";
   private static String REPL_ASSET_DIR = null;
@@ -98,7 +98,7 @@ public class MediaUtil {
   private MediaUtil() {
   }
 
-  private static String replAssetPath(String assetName) {
+  static String replAssetPath(String assetName) {
     // We have to initialize this here. We used to set REPL_ASSET_DIR
     // in the initializer, but now that we fetch it from the Android
     // SDK we have to do this here otherwise we get a "Stub!" error
@@ -141,7 +141,7 @@ public class MediaUtil {
    * @param form the Form
    * @param mediaPath the path to the media
    */
-  private static MediaSource determineMediaSource(Form form, String mediaPath) {
+  static MediaSource determineMediaSource(Form form, String mediaPath) {
     if (mediaPath.startsWith("/sdcard/") ||
         mediaPath.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
       return MediaSource.SDCARD;

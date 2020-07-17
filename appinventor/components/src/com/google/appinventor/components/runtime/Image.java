@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.Manifest;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -14,6 +15,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -28,7 +30,6 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -49,6 +50,7 @@ import java.io.IOException;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
     "android.permission.READ_EXTERNAL_STORAGE")
+@UsesLibraries(libraries = "glide.jar")
 public final class Image extends AndroidViewComponent {
 
   private final ImageView view;
@@ -156,16 +158,7 @@ public final class Image extends AndroidViewComponent {
       return;
     }
     picturePath = (path == null) ? "" : path;
-
-    Drawable drawable;
-    try {
-      drawable = MediaUtil.getBitmapDrawable(container.$form(), picturePath);
-    } catch (IOException ioe) {
-      Log.e("Image", "Unable to load " + picturePath);
-      drawable = null;
-    }
-
-    ViewUtil.setImage(view, drawable);
+    ViewUtil.setImage(container, view, picturePath);
   }
 
   /**
