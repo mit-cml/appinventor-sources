@@ -629,5 +629,15 @@
     "Blockly.Msg.CLEAN_UP": "Blokken opschonen",
     "Blockly.Msg.REDO": "Opnieuw doen",
     "Blockly.Msg.UNDO": "Ongedaan maken",
-    "Blockly.Msg.DIALOG_SUBMIT": "Versturen"
+    "Blockly.Msg.DIALOG_SUBMIT": "Versturen",
+    "Blockly.Msg.DIALOG_RENDEZVOUS_NEGOTIATING": "15 Rendezvous (even geduld)",
+    "Blockly.Msg.DO_IT_DISCONNECTED": "Doe het (Companion niet aangesloten)",
+    "Blockly.Msg.REPL_EMULATOR_ONLY": "Je kunt deze optie alleen gebruiken om de emulator bij te werken",
+    "Blockly.Msg.REPL_UPDATE_NO_CONNECTION": "Je moet verbonden zijn met een Companion om deze bij te werken",
+    "Blockly.Msg.REPL_COMPANION_WRONG_PACKAGE": "De Companion die u gebruikt, is gebouwd voor een ander instantie van App Inventor. Kijk voor de juiste companion op het App Inventor scherm onder het menu Help-> Companion Informatie.",
+    "Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2": "Je Companion-app is verouderd. Start de Companion opnieuw op en gebruik deze om de onderstaande QRCode te scannen om bij te werken",
+    "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE": "wanneer een ",
+    "Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TOOLTIP": "Geeft tekst met lijstelementen samen met scheidingsteken",
+    "Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP": "Produceert tekst, zoals een tekstblok. Het verschil is dat\ntekst niet makkelijk te vinden is door de applicatie's APK te onderzoeken. Gebruik dit wanneer \nje applicaties maakt die vertrouwelijke informatie bevat, zoals API sleutels.\nWaarschuwing: Dit biedt slechts een zeer lage beveiliging tegen deskundige vijanden.",
+    "Blockly.Msg.LANG_MATH_BITWISE_XOR": "bitsgewijze xor"
 }
