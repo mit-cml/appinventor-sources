@@ -35,3 +35,30 @@ Blockly.FieldEventFlydown = function(param, componentDb, opt_displayLocation) {
         this, name, false, opt_displayLocation);
 }
 goog.inherits(Blockly.FieldEventFlydown, Blockly.FieldParameterFlydown);
+
+Blockly.FieldEventFlydown.prototype.flydownBlocksXML_ = function() {
+  // TODO: Refactor this to use getValue() instead of getText(). getText()
+  //   refers to the view, while getValue refers to the model (in MVC terms).
+
+  var name = this.getText();
+  var mutation =
+      '<mutation>' +
+        '<event param name="' + this.param.name + '" />' +
+      '</mutation>';
+  var getterSetterXML =
+      '<xml>' +
+        '<block type="lexical_variable_get">' +
+          mutation +
+          '<field name="VAR">' +
+            name +
+          '</field>' +
+        '</block>' +
+        '<block type="lexical_variable_set">' +
+          mutation +
+          '<field name="VAR">' +
+            name +
+          '</field>' +
+        '</block>' +
+      '</xml>';
+  return getterSetterXML;
+}

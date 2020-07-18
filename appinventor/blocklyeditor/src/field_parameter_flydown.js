@@ -96,20 +96,14 @@ Blockly.FieldParameterFlydown.prototype.flydownBlocksXML_ = function() {
 
   // Name in this parameter field.
   var name = this.getText();
-  var mutation = '';
-  if (this.eventparam) {
-    mutation = '<mutation><eventparam name="' + this.eventparam + '"/></mutation>';
-  }
   var getterSetterXML =
       '<xml>' +
         '<block type="lexical_variable_get">' +
-          mutation +
           '<field name="VAR">' +
             name +
           '</field>' +
         '</block>' +
         '<block type="lexical_variable_set">' +
-          mutation +
           '<field name="VAR">' +
             name +
           '</field>' +
