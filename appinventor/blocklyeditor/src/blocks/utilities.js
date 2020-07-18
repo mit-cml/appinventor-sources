@@ -15,9 +15,24 @@
 
 goog.provide('Blockly.Blocks.Utilities');
 
-// Create a unique object to represent the type InstantInTime,
-// used in the Clock component
-Blockly.Blocks.Utilities.InstantInTime = function () { return 'InstantInTime'; };
+/**
+ * Checks that the given otherConnection is compatible with an InstantInTime
+ * connection. If the workspace is currently loading (eg the blocks are not
+ * yet rendered) this always returns true for backwards compatibility.
+ * @param {!Blockly.Connection} myConn The parent connection.
+ * @param {!Blockly.Connection} otherConn The child connection.
+ */
+Blockly.Blocks.Utilities.InstantInTime = function (myConn, otherConn) {
+  if (!myConn.sourceBlock_.rendered ||
+      !otherConn.sourceBlock_.rendered) {
+    console.log(otherConn.check_);
+    if (otherConn.check_ && !otherConn.check_.includes('InstantInTime')) {
+      otherConn.sourceBlock_.badBlock();
+    }
+    return true;
+  }
+  return !otherConn.check_ || otherConn.check_.includes('InstantInTime');
+};
 
 
 // Convert Yail types to Blockly types
@@ -48,8 +63,8 @@ Blockly.Blocks.Utilities.YailTypeToBlocklyTypeMap = {
     output: ['COMPONENT', 'Key']
   },
   'InstantInTime': {
-    input: ['InstantInTime'],
-    output: ['InstantInTime'],
+    input: ['InstantInTime', Blockly.Blocks.Utilities.InstantInTime],
+    output: ['InstantInTime', Blockly.Blocks.Utilities.InstantInTime],
   },
   'any': {
     input: null,
