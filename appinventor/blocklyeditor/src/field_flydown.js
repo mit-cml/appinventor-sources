@@ -107,7 +107,7 @@ Blockly.FieldFlydown.prototype.init = function(block) {
       'blocklyEditableText');
   Blockly.utils.removeClass(/** @type {!Element} */ (this.fieldGroup_),
       'blocklyNoNEditableText');
-  // And add new ones, so that look and feel of flyout fields can be customized
+  // ... and add new ones, so that look and feel of flyout fields can be customized
   Blockly.utils.addClass(/** @type {!Element} */ (this.fieldGroup_),
       this.fieldCSSClassName);
 
