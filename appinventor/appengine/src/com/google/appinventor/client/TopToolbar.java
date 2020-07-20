@@ -894,7 +894,8 @@ public class TopToolbar extends Composite {
 
       String downloadinfo = "";
       if (!YaVersion.COMPANION_UPDATE_URL1.equals("")) {
-        String url = "http://" + Window.Location.getHost() + YaVersion.COMPANION_UPDATE_URL1;
+        String url = Window.Location.getProtocol() + "//" + Window.Location.getHost()
+            + YaVersion.COMPANION_UPDATE_URL1;
         downloadinfo = "<br/>\n<a href=" + url + ">Download URL: " + url + "</a><br/>\n";
         downloadinfo += BlocklyPanel.getQRCode(url);
       }
