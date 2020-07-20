@@ -1,6 +1,8 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.dom.client.Style.Overflow;
@@ -18,6 +20,7 @@ public class MockTab extends MockHVArrangement {
   public static final String PROPERTY_NAME_TEXT = "Text";
   public static final String PROPERTY_NAME_SHOW_TEXT = "ShowText";
   public static final String PROPERTY_NAME_SHOW_ICON = "ShowIcon";
+  private static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = "AlignVertical";
   
   private static final int ANDROID_TAB_HEIGHT = 48;
   
@@ -25,6 +28,8 @@ public class MockTab extends MockHVArrangement {
   private Image tabImage = null;
   private Label tabLabel;
   private String imagePath = "";
+  
+  private YoungAndroidVerticalAlignmentChoicePropertyEditor myVAlignmentPropertyEditor;
   
   /**
    * Creates a new MockVerticalArrangement component.
@@ -52,6 +57,9 @@ public class MockTab extends MockHVArrangement {
       }
     }, ClickEvent.getType());
     initComponent(tab);
+    myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
+    changeProperty(PROPERTY_NAME_VERTICAL_ALIGNMENT, ComponentConstants.GRAVITY_TOP + "");
+    myVAlignmentPropertyEditor.disable();
   }
   
   public Label getTabLabel() {
