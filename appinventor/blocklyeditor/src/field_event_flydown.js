@@ -6,7 +6,8 @@
 /**
  * @license
  * @fileoverview Non-editable field with flydown representing a component event
- *     parameter.
+ *     parameter. Necessary to support eventparam mutation and helper blocks in
+ *     the flydown.
  */
 
 'use strict';
@@ -43,7 +44,7 @@ Blockly.FieldEventFlydown.prototype.flydownBlocksXML_ = function() {
   var name = this.getText();
   var mutation =
       '<mutation>' +
-        '<event param name="' + this.param.name + '" />' +
+        '<eventparam name="' + this.param.name + '" />' +
       '</mutation>';
   var getterSetterXML =
       '<xml>' +
