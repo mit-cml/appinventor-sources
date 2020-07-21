@@ -26,7 +26,7 @@
   </head>
 <body>
   <center>
-    <h1>${pleaselogin}</h1></center>
+    <h1>${pleaselogin}</h1>
   </center>
 <% if (error != null) {
 out.println("<center><font color=red><b>" + error + "</b></font></center><br/>");
