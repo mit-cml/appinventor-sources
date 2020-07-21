@@ -94,6 +94,7 @@ public final class OdeLog extends Composite {
    */
   public static void log(String message) {
     if (isLogAvailable() && !Ode.isWindowClosing()) {
+      consoleInfo(message);
       getOdeLog().println(StringUtils.escape(message));
     }
   }
@@ -105,6 +106,7 @@ public final class OdeLog extends Composite {
    */
   public static void wlog(String message) {
     if (isLogAvailable() && !Ode.isWindowClosing()) {
+      consoleWarn(message);
       getOdeLog().wprintln(StringUtils.escape(message));
     }
   }
@@ -116,6 +118,7 @@ public final class OdeLog extends Composite {
    */
   public static void elog(String message) {
     if (isLogAvailable() && !Ode.isWindowClosing()) {
+      consoleError(message);
       getOdeLog().eprintln(StringUtils.escape(message));
     }
   }
@@ -171,7 +174,6 @@ public final class OdeLog extends Composite {
    * Prints a log message.
    */
   private void println(String message) {
-    consoleInfo(unescape(message));
     doPrintln("INFO", "green", message);
   }
 
@@ -179,7 +181,6 @@ public final class OdeLog extends Composite {
    * Prints a log warning message.
    */
   private void wprintln(String message) {
-    consoleWarn(unescape(message));
     doPrintln("WARNING", "orange", message);
   };
 
@@ -187,7 +188,6 @@ public final class OdeLog extends Composite {
    * Prints a log error message.
    */
   private void eprintln(String message) {
-    consoleError(unescape(message));
     doPrintln("ERROR", "red", message);
   }
 
@@ -214,28 +214,19 @@ public final class OdeLog extends Composite {
     }
   }
 
-  native void consoleLog(String message) /*-{
+  static native void consoleLog(String message) /*-{
     console.log(message);
   }-*/;
 
-  native void consoleInfo(String message) /*-{
+  static native void consoleInfo(String message) /*-{
     console.info(message);
   }-*/;
 
-  native void consoleWarn(String message) /*-{
+  static native void consoleWarn(String message) /*-{
     console.warn(message);
   }-*/;
 
-  native void consoleError(String message) /*-{
+  static native void consoleError(String message) /*-{
     console.error(message);
   }-*/;
-
-  static String unescape(String str) {
-      return str
-              .replaceAll("<br>", "\n")
-              .replaceAll("&quot;", "\"")
-              .replaceAll("&gt;", ">")
-              .replaceAll("&lt;", "<")
-              .replaceAll("&amp;", "&");
-  }
 }
