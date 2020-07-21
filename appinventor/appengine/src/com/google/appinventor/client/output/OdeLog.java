@@ -171,6 +171,7 @@ public final class OdeLog extends Composite {
    * Prints a log message.
    */
   private void println(String message) {
+    consoleInfo(unescape(message));
     doPrintln("INFO", "green", message);
   }
 
@@ -178,6 +179,7 @@ public final class OdeLog extends Composite {
    * Prints a log warning message.
    */
   private void wprintln(String message) {
+    consoleWarn(unescape(message));
     doPrintln("WARNING", "orange", message);
   };
 
@@ -185,6 +187,7 @@ public final class OdeLog extends Composite {
    * Prints a log error message.
    */
   private void eprintln(String message) {
+    consoleError(unescape(message));
     doPrintln("ERROR", "red", message);
   }
 
@@ -209,5 +212,30 @@ public final class OdeLog extends Composite {
     if (!Ode.isWindowClosing()) {
       text.setText("");
     }
+  }
+
+  native void consoleLog(String message) /*-{
+    console.log(message);
+  }-*/;
+
+  native void consoleInfo(String message) /*-{
+    console.info(message);
+  }-*/;
+
+  native void consoleWarn(String message) /*-{
+    console.warn(message);
+  }-*/;
+
+  native void consoleError(String message) /*-{
+    console.error(message);
+  }-*/;
+
+  static String unescape(String str) {
+      return str
+              .replaceAll("<br>", "\n")
+              .replaceAll("&quot;", "\"")
+              .replaceAll("&gt;", ">")
+              .replaceAll("&lt;", "<")
+              .replaceAll("&amp;", "&");
   }
 }
