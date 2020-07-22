@@ -3,6 +3,9 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.properties.Properties;
+import com.google.appinventor.client.properties.Property;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -20,6 +23,7 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   public static final String PROPERTY_TAB_TEXT_COLOR = "TabTextColor";
   public static final String PROPERTY_SELECTED_TAB_TEXT_COLOR = "SelectedTabTextColor";
   public static final String PROPERTY_TAB_BAR_POSITION = "TabBarPosition";
+  public static final String PROPERTY_TAB_BAR_VISIBLE = "TabBarVisible";
   
   private final SimplePanel tabContentView;
   private static MockTab selectedTab;
@@ -38,7 +42,7 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
     super(editor, TYPE, images.tabArrangement(), new MockHVLayout(LAYOUT_ORIENTATION_HORIZONTAL));
     
     tabContentView = new SimplePanel();
-    tabContentView.setStylePrimaryName("ode-TabContentView");
+    tabContentView.setStylePrimaryName("ode-TabContentViewTop");
     AbsolutePanel tabArrangement = new AbsolutePanel();
     tabArrangement.add(rootPanel);
     tabArrangement.add(tabContentView);
@@ -100,6 +104,8 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
       setPropertySelectedTabTextColor(newValue);
     } else if (propertyName.equals(PROPERTY_TAB_BAR_POSITION)) {
       setPropertyTabBarPosition(newValue);
+    } else if (propertyName.equals(PROPERTY_TAB_BAR_VISIBLE)) {
+      setPropertyTabBarVisible(newValue);
     }
   }
   
@@ -139,25 +145,47 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   }
   
   public void setPropertyTabBarPosition(String newValue) {
+    boolean tabBarVisible = true;
     try {
-      switch (Integer.parseInt(newValue)) {
-        case ComponentConstants.TAB_POSITION_DEFAULT:
-          alignTabsAtTop();
-          break;
-        case ComponentConstants.TAB_POSITION_TOP:
-          alignTabsAtTop();
-          break;
-        case ComponentConstants.TAB_POSITION_BOTTOM:
-          alignTabsAtBottom();
-          break;
-        default:
-          // This error should not happen because the higher level
-          // setter for TabBarAlignment should screen out illegal inputs.
-          ErrorReporter.reportError(MESSAGES.badValueForTabBarPosition(newValue));
+      tabBarVisible = Boolean.parseBoolean(getPropertyValue(PROPERTY_TAB_BAR_VISIBLE));
+    } catch (Exception e){
+      OdeLog.log("Exception in retrieving tab bar visibility: " + e);
+    }
+    if (tabBarVisible) {
+      try {
+        switch (Integer.parseInt(newValue)) {
+          case ComponentConstants.TAB_POSITION_DEFAULT:
+            alignTabsAtTop();
+            break;
+          case ComponentConstants.TAB_POSITION_TOP:
+            alignTabsAtTop();
+            break;
+          case ComponentConstants.TAB_POSITION_BOTTOM:
+            alignTabsAtBottom();
+            break;
+          default:
+            // This error should not happen because the higher level
+            // setter for TabBarAlignment should screen out illegal inputs.
+            ErrorReporter.reportError(MESSAGES.badValueForTabBarPosition(newValue));
+        }
+      } catch (NumberFormatException e) {
+        // As above, this error should not happen
+        ErrorReporter.reportError(MESSAGES.badValueForTabBarPosition(newValue));
       }
-    } catch (NumberFormatException e) {
-      // As above, this error should not happen
-      ErrorReporter.reportError(MESSAGES.badValueForTabBarPosition(newValue));
+    }
+  }
+  
+  public void setPropertyTabBarVisible (String newValue) {
+    boolean tabBarVisible = Boolean.parseBoolean(newValue);
+    rootPanel.setVisible(tabBarVisible);
+    if(tabBarVisible) {
+      tabContentView.removeStyleName("ode-TabContentView");
+      setPropertyTabBarPosition(getPropertyValue(PROPERTY_TAB_BAR_POSITION));
+    } else {
+      tabContentView.removeStyleName("ode-TabContentViewBottom");
+      tabContentView.removeStyleName("ode-TabContentViewTop");
+      tabContentView.setStylePrimaryName("ode-TabContentView");
+      refreshForm();
     }
   }
   
@@ -165,14 +193,14 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
     rootPanel.removeStyleName("ode-TabContainerBottom");
     rootPanel.setStylePrimaryName("ode-TabContainer");
     tabContentView.removeStyleName("ode-TabContentViewBottom");
-    tabContentView.setStylePrimaryName("ode-TabContentView");
+    tabContentView.setStylePrimaryName("ode-TabContentViewTop");
     refreshForm();
   }
   
   public void alignTabsAtBottom() {
     rootPanel.removeStyleName("ode-TabContainer");
     rootPanel.setStylePrimaryName("ode-TabContainerBottom");
-    tabContentView.removeStyleName("ode-TabContentView");
+    tabContentView.removeStyleName("ode-TabContentViewTop");
     tabContentView.setStylePrimaryName("ode-TabContentViewBottom");
     refreshForm();
   }
