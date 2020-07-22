@@ -478,5 +478,11 @@
     "Blockly.Msg.LANG_TEXT_SEGMENT_AT_TOOLTIP": "Հանում է տրված տեքստի տրված երկարությամբ\nբաժինը` սկսած տրված տեքստի տրված դիրքից:\n1-ը նշում է տեքստի սկիզբը:",
     "Blockly.Msg.LANG_TEXT_SEGMENT_INPUT": "տեքստը բաժանել %1 սկիզբ %2  երկարություն %3",
     "Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE": "Վերադարձնում է տեքստային տողի արգումենտի կրկնօրինակը` փոքրատառերի ձևափոխած:",
-    "Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE": "Վերադարձնում է տեքստային տողի արգումենտի կրկնօրինակը` մեծատառերի ձևափոխած:"
+    "Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE": "Վերադարձնում է տեքստային տողի արգումենտի կրկնօրինակը` մեծատառերի ձևափոխած:",
+    "Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP": "Գործարկում է «կատարե» բաժնում գտնվող բլոկները, քանի դեռ ստուգումը ճշմարիտ է։",
+    "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_WARNING": "Զգուշացում.\nԱյս բլոկը կարող է օգտագործվել\nմիայն ցիկլի մեջ:",
+    "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE": "Բաց թողնել այս ցիկլի մնացած մասը և\nշարունակել հաջորդ իտերացիան (կրկնությունը):",
+    "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK": "Դուրս գալ պարունակող ցիկլից։",
+    "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_INPUT_OFLOOP": "ցիկլից",
+    "Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP": "Գործարկում է «կատարել» բաժնի բլոկները յուրաքանչյուր թվային արժեքի համար` միջակայքի սկզբից մինչև վերջ` ամեն անգամ անցնելով ըստ արժեքի։ Օգտագործել տվյալ փոփոխականի անունը` ներկայիս արժեքին անդրադառնալու համար:"
 }
