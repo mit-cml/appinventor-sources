@@ -12,6 +12,7 @@ public class MockComponentRegistry {
     private static final Map<String, MockComponentFactory> registry = new HashMap<>();
 
     public static void register(String type, MockComponentFactory mockComponentFactory) {
+        // todo: use FQCN, not simple name
         registry.put(type, mockComponentFactory);
     }
 
@@ -25,5 +26,9 @@ public class MockComponentRegistry {
 
     public static MockComponentFactory getMockComponentFactory(String type) {
         return registry.get(type);
+    }
+
+    public static void reset() {
+        registry.clear();
     }
 }

@@ -114,7 +114,7 @@ public final class EditorManager {
         // Tell the DesignToolbar about this project
         Ode.getInstance().getDesignToolbar().addProject(projectId, projectRootNode.getName());
 
-        MockScriptsManager.init(projectId, (YaProjectEditor) projectEditor, projectRootNode); // there is only subtype!!
+        MockScriptsManager.init(projectId, (YaProjectEditor) projectEditor); // there is only subtype!!
 
         // Prepare the project before Loading into the editor.
         // Components are prepared before the project is actually loaded.

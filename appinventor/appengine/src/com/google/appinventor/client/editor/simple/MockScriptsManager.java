@@ -10,11 +10,12 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ScriptElement;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,45 +25,46 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
     public static MockScriptsManager INSTANCE;
 
-    private final Map<String, String> scriptsMap = new HashMap<>(); // component type and script file
-    private long projectId;
-    private YaProjectEditor projectEditor;
-    private ProjectRootNode projectRootNode;
+    private final long projectId;
+    private final YaProjectEditor projectEditor;
 
-    private MockScriptsManager() {
-        // Do not instantiate
+    private final List<String> loadedMocks = new ArrayList<>(); // list of component types
+
+    private MockScriptsManager(long projectId, YaProjectEditor projectEditor) {
+        this.projectId = projectId;
+        this.projectEditor = projectEditor;
+
+        projectEditor.addComponentDatbaseListener(INSTANCE);
+        Ode.getInstance().getProjectManager().getProject(projectId).addProjectChangeListener(INSTANCE);
     }
 
     /**
      * Initialises the [MockScriptsManager] on project load and registers the necessary listeners.
      *
-     * @param projectEditor   The [ProjectEditor] associated with the currently opened project
-     * @param projectRootNode The [ProjectRootNode] associated with the currently opened project
+     * @param projectId     Project ID of the currently "visible" project
+     * @param projectEditor The [ProjectEditor] associated with the currently opened project
      */
-    public static void init(long projectId, YaProjectEditor projectEditor, ProjectRootNode projectRootNode) {
+    public static void init(long projectId, YaProjectEditor projectEditor) {
         if (INSTANCE != null) {
+            OdeLog.log("<MSM:init:45> INSTANCE != null; destroying...");
             destroy();
         }
-        INSTANCE = new MockScriptsManager();
-        INSTANCE.projectId = projectId;
-        INSTANCE.projectEditor = projectEditor;
-        INSTANCE.projectRootNode = projectRootNode;
+        INSTANCE = new MockScriptsManager(projectId, projectEditor);
 
-        projectEditor.addComponentDatbaseListener(INSTANCE);
-        Ode.getInstance()
-                .getProjectManager()
-                .getProject(projectRootNode)
-                .addProjectChangeListener(INSTANCE);
+        OdeLog.log("<MSM:init:57> inited! projectId = " + projectId);
     }
 
-    private static void destroy() {
+    public static void destroy() {
+        OdeLog.log("<MSM:destroy:63> destroying project = " + INSTANCE.projectId);
         INSTANCE.projectEditor.removeComponentDatbaseListener(INSTANCE);
         Ode.getInstance()
                 .getProjectManager()
-                .getProject(INSTANCE.projectRootNode)
+                .getProject(INSTANCE.projectId)
                 .removeProjectChangeListener(INSTANCE);
         INSTANCE.unloadAll();
         INSTANCE = null;
+
+        MockComponentRegistry.reset();
     }
 
     /**
@@ -71,39 +73,54 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
      * @param type The FQCN of the component
      */
     public void load(final String type) {
-        if (scriptsMap.containsKey(type)) {
+        if (loadedMocks.contains(type)) {
             return; // script already loaded; don't load again!
         }
 
         String pkgName = type.substring(0, type.lastIndexOf('.'));
         String simpleName = type.substring(type.lastIndexOf('.') + 1);
 
-        if (!SimpleComponentDatabase.getInstance(this.projectId).hasCustomMock(simpleName)) {
+        SimpleComponentDatabase scd = SimpleComponentDatabase.getInstance(this.projectId);
+        if (!scd.getComponentExternal(simpleName)
+                || scd.getNonVisible(simpleName)
+                || !scd.hasCustomMock(simpleName)) {
             return; // Component doesn't have its own custom Mock, so don't try to load it
         }
 
-        OdeLog.log("type = " + type);
-        OdeLog.log("pkgName = " + pkgName);
+        OdeLog.log("<MSM:load:91> loading for type = " + type + " pkgName = " + pkgName + " simpleName = " + simpleName + " package = " + projectId);
 
-        String componentsFolder = ((YoungAndroidProjectNode) projectRootNode).getComponentsFolder().getFileId();
+        YoungAndroidProjectNode youngAndroidProjectNode = (YoungAndroidProjectNode) Ode.getInstance()
+                .getProjectManager()
+                .getProject(projectId)
+                .getRootNode();
+        String componentsFolder = youngAndroidProjectNode.getComponentsFolder().getFileId();
         String fileId = componentsFolder + "/" + pkgName + "/Mock" + simpleName + ".js";
 
-        Ode.getInstance().getProjectService().load2(
-                projectId,
-                fileId,
+        Ode.getInstance().getProjectService().load2(projectId, fileId,
                 new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
                     @Override
                     public void onSuccess(ChecksumedLoadFile result) {
                         try {
+                            OdeLog.log("<MSM:load:110> loading success for type = " + type + " project = " + projectId);
+
                             String mockJsFile = result.getContent();
+                            mockJsFile = "(function(){'use strict';" + mockJsFile + "})();";
 
-                            scriptsMap.put(type, mockJsFile);
+//                            ScriptInjector.fromString(mockJsFile).setWindow(ScriptInjector.TOP_WINDOW).setRemoveTag(false).inject();
 
-                            ScriptInjector.fromString(mockJsFile)
-                                    .setWindow(ScriptInjector.TOP_WINDOW)
-                                    .setRemoveTag(false)
-                                    .inject();
+//                            IFrameElement iFrameElement = Document.get().createIFrameElement();
+//                            iFrameElement.setId("Mock_" + uniqueId);
+//                            iFrameElement.setAttribute("sandbox", "allow-scripts");
+//                            iFrameElement.setInnerHTML(mockJsFile); // append script element inside
+//                            Document.get().getBody().appendChild(iFrameElement);
 
+                            ScriptElement scriptElement = Document.get().createScriptElement();
+                            scriptElement.setId("Mock_for_" + type);
+                            scriptElement.setType("text/javascript");
+                            scriptElement.setInnerHTML(mockJsFile);
+                            Document.get().getBody().appendChild(scriptElement);
+
+                            loadedMocks.add(type);
                         } catch (ChecksumedFileException e) {
                             e.printStackTrace();
                         }
@@ -113,28 +130,36 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     }
 
     public void upgrade(String type) {
-        if (scriptsMap.containsKey(type)) {
+        if (loadedMocks.contains(type)) {
             unload(type);
             load(type);
         }
     }
 
     public void unload(String type) {
-        String simpleName = type.substring(type.lastIndexOf('.') + 1);
-        scriptsMap.remove(type);
+        OdeLog.log("<MSM:unload:132> unloading type = " + type + " project = " + projectId);
+        loadedMocks.remove(type);
+
+        Element iframeElement = Document.get().getElementById("Mock_for_" + type);
+        Document.get().getBody().removeChild(iframeElement);
+
+        String simpleName = type.substring(type.lastIndexOf('.') + 1); // todo: See MCR#register
         MockComponentRegistry.unregister(simpleName);
-        cleanup(simpleName);
+        cleanup(simpleName); // todo: check if it's required
     }
 
     private void unloadAll() {
-        for (String type : scriptsMap.keySet()) {
+        OdeLog.log("<MSM:unloadAll:140> unloading all... project = " + projectId);
+        for (String type : loadedMocks) {
             unload(type);
         }
     }
 
     private static native void cleanup(String name)/*-{
         // fixme: it doesn't delete the Mock class!!
+        console.log("<MSM:cleanup:159>", $wnd["Mock" + name]);
         delete $wnd["Mock" + name];
+        console.log("<MSM:cleanup:161>", $wnd["Mock" + name]);
     }-*/;
 
     //// ComponentDatabaseChangeListener
@@ -142,11 +167,11 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     @Override
     public void onComponentTypeAdded(List<String> componentTypes) {
         SimpleComponentDatabase scd = SimpleComponentDatabase.getInstance(this.projectId);
-        OdeLog.log("components added:");
+        OdeLog.log("<MSM:onCompAdded:156> components added: project = " + projectId);
         for (String componentType : componentTypes) {
             String fqcn = scd.getComponentType(componentType); // Ensure [componentType] is a FQCN
-            OdeLog.log(fqcn);
-            if (scriptsMap.containsKey(fqcn)) {
+            OdeLog.log("<MSM:onCompAdded:159> fqcn = " + fqcn);
+            if (loadedMocks.contains(fqcn)) {
                 upgrade(fqcn);
             } else {
                 load(fqcn);
@@ -162,7 +187,9 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
     @Override
     public void onComponentTypeRemoved(Map<String, String> componentTypes) {
         // returns map??
-        for (String fqcn : componentTypes.keySet()) {
+        OdeLog.log("<MSM:onCompRemoved:176> components removed: project = " + projectId);
+        for (String fqcn : componentTypes.values()) {
+            OdeLog.log("<MSM:onCompRemoved:178> fqcn = " + fqcn);
             unload(fqcn);
         }
     }
@@ -176,16 +203,34 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
     @Override
     public void onProjectLoaded(Project project) {
-
+        // todo: figure out when this is called
+        OdeLog.log("<MSM:onProjectLoaded:192> " + "loadedProject = " + project.getProjectId() + " project = " + projectId);
+        // init only if the project is different
+//        if (project.getProjectId() != projectId) {
+//            YaProjectEditor projectEditor = (YaProjectEditor) Ode.getInstance().getEditorManager()
+//                    .getOpenProjectEditor(project.getProjectId());
+//            MockScriptsManager.init(project.getProjectId(), projectEditor, project.getRootNode());
+//        }
     }
 
     @Override
     public void onProjectNodeAdded(Project project, ProjectNode node) {
+        // called when a form/block editor (new screen) is added
+        OdeLog.log("<MSM:onProjectNodeAdded:203> " + "loadedProject = " + project.getProjectId() + " node = " + node.getProjectId() + " project = " + projectId);
         // todo: handle project change
+//        if (project.getProjectId() == projectId) { // ensure this is the same project
+//            if (node.getProjectId() != projectId) { // res
+//                destroy();
+//                MockComponentRegistry.reset();
+//            }
+//        }
     }
 
     @Override
     public void onProjectNodeRemoved(Project project, ProjectNode node) {
-        destroy();
+        // called when a form/block editor (new screen) is removed
+        OdeLog.log("<MSM:onProjectNodeRemoved:215> " + "loadedProject = " + project.getProjectId() + " node = " + node.getProjectId() + " project = " + projectId);
+//        destroy();
+//        MockComponentRegistry.reset();
     }
 }
