@@ -34,8 +34,8 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
         this.projectId = projectId;
         this.projectEditor = projectEditor;
 
-        projectEditor.addComponentDatbaseListener(INSTANCE);
-        Ode.getInstance().getProjectManager().getProject(projectId).addProjectChangeListener(INSTANCE);
+        projectEditor.addComponentDatbaseListener(this);
+        Ode.getInstance().getProjectManager().getProject(projectId).addProjectChangeListener(this);
     }
 
     /**
