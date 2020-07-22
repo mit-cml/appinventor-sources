@@ -245,8 +245,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     OdeLog.log("YaProjectEditor: got onHide");
     AssetListBox.getAssetListBox().getAssetList().refreshAssetList(0);
 
-    MockScriptsManager.destroy();
-
     FileEditor selectedFileEditor = getSelectedFileEditor();
     if (selectedFileEditor != null) {
       selectedFileEditor.onHide();
