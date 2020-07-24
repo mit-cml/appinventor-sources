@@ -69,7 +69,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
 //        Log.d("tabarrangement","onBindViewHolder at position: " + i);
 //        Log.d("tabarrangement", "Tab details: Index: " + i + " Tab: " + tabs.get(i) + " Expected: " + tabs.get(i).getTab() + " Found: " + tabLayout.getTabAt(i));
         ViewGroup childViewGroup = tabs.get(i).viewLayout.getLayoutManager();
-        if(childViewGroup.getParent()!=null) {
+        if (childViewGroup.getParent()!=null) {
           ((ViewGroup) childViewGroup.getParent()).removeView(childViewGroup);
         }
         ((ViewGroup)(viewHolder.itemView)).addView(childViewGroup);
@@ -96,11 +96,11 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     Log.d("TabArrangement", "Setting default view");
     layout.setOrientation(LinearLayout.VERTICAL);
     layout.setGravity(Gravity.TOP);
-    if(tabLayout.getParent() != null) {
+    if (tabLayout.getParent() != null) {
       ((ViewGroup)tabLayout.getParent()).removeView(tabLayout);
     }
     layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-    if(viewPager.getParent() != null) {
+    if (viewPager.getParent() != null) {
       ((ViewGroup)viewPager.getParent()).removeView(viewPager);
     }
     layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
@@ -273,13 +273,13 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public void alignTabsAtTop() {
     Log.d("TabArrangement", "Aligning tabs at top with visibility: " + tabBarVisible);
     layout.removeAllViews();
-    if(tabBarVisible) {
+    if (tabBarVisible) {
       if (tabLayout.getParent() != null) {
         ((ViewGroup) tabLayout.getParent()).removeView(tabLayout);
       }
       layout.addView(tabLayout, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
     }
-    if(viewPager.getParent() != null) {
+    if (viewPager.getParent() != null) {
       ((ViewGroup)viewPager.getParent()).removeView(viewPager);
     }
     layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
@@ -289,11 +289,11 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public void alignTabsAtBottom() {
     Log.d("TabArrangement", "Aligning tabs at bottom with visibility: " + tabBarVisible);
     layout.removeAllViews();
-    if(viewPager.getParent() != null) {
+    if (viewPager.getParent() != null) {
       ((ViewGroup)viewPager.getParent()).removeView(viewPager);
     }
     layout.addView(viewPager, new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 1));
-    if(tabBarVisible) {
+    if (tabBarVisible) {
       if (tabLayout.getParent() != null) {
         ((ViewGroup) tabLayout.getParent()).removeView(tabLayout);
       }

@@ -96,7 +96,7 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
-    if(propertyName.equals(PROPERTY_TAB_BACKGROUND_COLOR)) {
+    if (propertyName.equals(PROPERTY_TAB_BACKGROUND_COLOR)) {
       setPropertyTabBackgroundColor(newValue);
     } else if (propertyName.equals(PROPERTY_TAB_TEXT_COLOR)) {
       setPropertyTabTextColor(newValue);
@@ -112,17 +112,17 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   public void setPropertyTabBackgroundColor (String newValue) {
     MockComponentsUtil.setWidgetBackgroundColor(rootPanel,newValue);
     int nWidgets = rootPanel.getWidgetCount();
-    for(int i = 0; i < nWidgets; i++) {
+    for (int i = 0; i < nWidgets; i++) {
       Widget widget = rootPanel.getWidget(i);
       MockComponentsUtil.setWidgetBackgroundColor(widget,newValue);
     }
   }
   
   public void setPropertyTabTextColor (String newValue) {
-    for(MockComponent mockComponent : children) {
-      if(mockComponent instanceof  MockTab) {
+    for (MockComponent mockComponent : children) {
+      if (mockComponent instanceof  MockTab) {
         Label label = ((MockTab)mockComponent).getTabLabel();
-        if(mockComponent == selectedTab) {
+        if (mockComponent == selectedTab) {
           MockComponentsUtil.setWidgetTextColor(label, getPropertyValue(PROPERTY_SELECTED_TAB_TEXT_COLOR));
         } else {
           MockComponentsUtil.setWidgetTextColor(label, newValue);
@@ -132,10 +132,10 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   }
   
   public void setPropertySelectedTabTextColor (String newValue) {
-    for(MockComponent mockComponent : children) {
-      if(mockComponent instanceof  MockTab) {
+    for (MockComponent mockComponent : children) {
+      if (mockComponent instanceof  MockTab) {
         Label label = ((MockTab)mockComponent).getTabLabel();
-        if(mockComponent == selectedTab) {
+        if (mockComponent == selectedTab) {
           MockComponentsUtil.setWidgetTextColor(label, newValue);
         } else {
           MockComponentsUtil.setWidgetTextColor(label, getPropertyValue(PROPERTY_TAB_TEXT_COLOR));
@@ -178,7 +178,7 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   public void setPropertyTabBarVisible (String newValue) {
     boolean tabBarVisible = Boolean.parseBoolean(newValue);
     rootPanel.setVisible(tabBarVisible);
-    if(tabBarVisible) {
+    if (tabBarVisible) {
       tabContentView.removeStyleName("ode-TabContentView");
       setPropertyTabBarPosition(getPropertyValue(PROPERTY_TAB_BAR_POSITION));
     } else {
@@ -206,7 +206,7 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   }
   
   public void selectTab(MockTab mockTab) {
-    if(selectedTab != null) {
+    if (selectedTab != null) {
       MockComponentsUtil.setWidgetTextColor(selectedTab.getTabLabel(), getPropertyValue(PROPERTY_TAB_TEXT_COLOR));
     }
     selectedTab = mockTab;
