@@ -108,7 +108,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     return layout;
   }
   
-  void addTab(Tab tab){
+  void addTab(Tab tab) {
     tabLayout.addTab(tabLayout.newTab());
     tabs.add(tab);
 //    Log.d("tabarrangement","Current list of tabs: " + Arrays.toString(tabs.toArray()));
@@ -227,7 +227,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public void TabBarPosition(int tabBarPosition) {
     Log.d("TabArrangement", "Setting tab bar position property: " + tabBarPosition + "\t" + tabBarVisible);
     this.tabBarPosition = tabBarPosition;
-    switch (tabBarPosition){
+    switch (tabBarPosition) {
       case ComponentConstants.TAB_POSITION_DEFAULT:
         alignTabsAtTop();
         break;
@@ -254,7 +254,7 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
   public void TabBarVisible(boolean tabBarVisible) {
     Log.d("TabArrangement", "Setting tab bar visibility property: " + tabBarPosition + "\t" + tabBarVisible);
     this.tabBarVisible = tabBarVisible;
-    switch (tabBarPosition){
+    switch (tabBarPosition) {
       case ComponentConstants.TAB_POSITION_DEFAULT:
         alignTabsAtTop();
         break;

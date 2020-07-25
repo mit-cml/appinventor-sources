@@ -148,7 +148,7 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
     boolean tabBarVisible = true;
     try {
       tabBarVisible = Boolean.parseBoolean(getPropertyValue(PROPERTY_TAB_BAR_VISIBLE));
-    } catch (Exception e){
+    } catch (Exception e) {
       OdeLog.log("Exception in retrieving tab bar visibility: " + e);
     }
     if (tabBarVisible) {
