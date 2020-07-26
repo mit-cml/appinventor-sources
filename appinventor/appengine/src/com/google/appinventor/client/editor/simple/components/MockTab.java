@@ -20,6 +20,7 @@ public class MockTab extends MockHVArrangement {
   public static final String PROPERTY_NAME_TEXT = "Text";
   public static final String PROPERTY_NAME_SHOW_TEXT = "ShowText";
   public static final String PROPERTY_NAME_SHOW_ICON = "ShowIcon";
+  public static final String PROPERTY_NAME_SCROLLABLE = "Scrollable";
   private static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = "AlignVertical";
   
   private static final int ANDROID_TAB_HEIGHT = 48;
@@ -28,8 +29,6 @@ public class MockTab extends MockHVArrangement {
   private Image tabImage = null;
   private Label tabLabel;
   private String imagePath = "";
-  
-  private YoungAndroidVerticalAlignmentChoicePropertyEditor myVAlignmentPropertyEditor;
   
   /**
    * Creates a new MockVerticalArrangement component.
@@ -40,8 +39,6 @@ public class MockTab extends MockHVArrangement {
     super(editor, TYPE, images.tab(),
         ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
         ComponentConstants.SCROLLABLE_ARRANGEMENT);
-    layout.setVAlignmentFlags(ComponentConstants.GRAVITY_TOP + "");
-    rootPanel.getElement().getStyle().setOverflowY(Overflow.SCROLL);
     tab = new AbsolutePanel();
     tab.setWidth("48px");
     tab.setHeight("48px");
@@ -57,9 +54,6 @@ public class MockTab extends MockHVArrangement {
       }
     }, ClickEvent.getType());
     initComponent(tab);
-    myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
-    changeProperty(PROPERTY_NAME_VERTICAL_ALIGNMENT, ComponentConstants.GRAVITY_TOP + "");
-    myVAlignmentPropertyEditor.disable();
   }
   
   public Label getTabLabel() {
@@ -111,6 +105,11 @@ public class MockTab extends MockHVArrangement {
       setShowText(newValue);
     } else if (PROPERTY_NAME_SHOW_ICON.equals(propertyName)) {
       setShowIcon(newValue);
+    }  else if (PROPERTY_NAME_SCROLLABLE.equals(propertyName)) {
+      layout.setVAlignmentFlags(ComponentConstants.GRAVITY_TOP + "");
+      rootPanel.getElement().getStyle().setOverflowY("True".equals(newValue) ? Overflow.SCROLL : Overflow.HIDDEN);
+      ((YoungAndroidVerticalAlignmentChoicePropertyEditor)
+          getProperties().getExistingProperty(PROPERTY_NAME_VERTICAL_ALIGNMENT).getEditor()).disable();
     }
   }
   

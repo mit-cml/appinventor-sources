@@ -24,6 +24,7 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   private String iconPath = "";
   private Drawable icon = null;
   private boolean showIcon = true;
+  public boolean isScrollable = false;
   
   public Tab (TabArrangement container) {
     super(container, HVArrangement.LAYOUT_ORIENTATION_VERTICAL, new FrameLayout(container.$context()));
@@ -95,6 +96,18 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   @SimpleProperty
   public boolean ShowIcon() {
     return showIcon;
+  }
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void Scrollable(boolean isScrollable) {
+    this.isScrollable = isScrollable;
+  }
+  
+  @SimpleProperty
+  public boolean Scrollable() {
+    return isScrollable;
   }
   
   @SimpleEvent

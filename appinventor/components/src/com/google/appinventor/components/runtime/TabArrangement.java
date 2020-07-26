@@ -1,10 +1,12 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,16 +54,22 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
     tabs = new ArrayList<>();
     adapter = new RecyclerView.Adapter() {
       @Override
-      public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-//        Log.d("tabarrangement","onCreateViewHolder at index: "+i);
-        ScrollView layout = new ScrollView(viewGroup.getContext());
+      public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        Log.d("tabarrangement","onCreateViewHolder at index: "+viewType);
+        int position = viewType;
+        FrameLayout layout = new FrameLayout(viewGroup.getContext());
+        if (tabs.get(position).isScrollable) {
+          layout = new ScrollView(viewGroup.getContext());
+        }
         layout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
-        return new RecyclerView.ViewHolder(layout) {
+        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(layout) {
           @Override
           public String toString() {
             return super.toString();
           }
         };
+        Log.d("tabarrangement","onCreateViewHolder at adapter position: "+viewHolder.getAdapterPosition());
+        return viewHolder;
       }
       
       @Override
@@ -74,6 +82,11 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
         }
         ((ViewGroup)(viewHolder.itemView)).addView(childViewGroup);
 //        Log.d("tabarrangement","Number of children: " + childViewGroup.getChildCount());
+      }
+  
+      @Override
+      public int getItemViewType(int position) {
+        return position;
       }
       
       @Override
