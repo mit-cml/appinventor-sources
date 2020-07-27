@@ -94,6 +94,14 @@ public class MockTab extends MockHVArrangement {
   }
   
   @Override
+  protected boolean isPropertyVisible(String propertyName) {
+    if (propertyName.equals(PROPERTY_NAME_VISIBLE)) {
+      return false;
+    }
+    return super.isPropertyVisible(propertyName);
+  }
+  
+  @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
     

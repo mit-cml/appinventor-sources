@@ -68,7 +68,6 @@ public class TabArrangement extends AndroidViewComponent<LinearLayout> implement
             return super.toString();
           }
         };
-        Log.d("tabarrangement","onCreateViewHolder at adapter position: "+viewHolder.getAdapterPosition());
         return viewHolder;
       }
       
