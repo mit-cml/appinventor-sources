@@ -39,7 +39,8 @@ Blockly.FieldFlydown = function(name, isEditable, opt_displayLocation, opt_chang
   // This by itself does not control editability
   this.EDITABLE = isEditable;
   // [lyn, 10/27/13] Make flydown direction an instance variable
-  this.displayLocation = opt_displayLocation;
+  this.displayLocation = opt_displayLocation ||
+      Blockly.FieldFlydown.DISPLAY_RIGHT;
 
   Blockly.FieldFlydown.superClass_.constructor.call(
       this, name, opt_changeHandler);
