@@ -1102,7 +1102,7 @@ select.ode-PropertyEditor[disabled] {
 .ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormTitle {
   padding: 16px;
   top: 0;
-  left: 0;
+  left: 55px;
 }
 
 .ode-SimpleMockFormMenuButton {
@@ -1119,6 +1119,28 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormMenuButton {
   display: inline-block;
+}
+
+.ode-SimpleMockFormSidebarButton {
+  left: 0;
+  padding: 16px;
+  position: absolute;
+  border: 0;
+  background-color: transparent;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  display: none;
+}
+
+.ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormSidebarButton {
+  display: inline-block;
+}
+
+.ode-SimpleMockFormSidebar {
+  background-color: white;
+  z-index: 100;
 }
 
 .ode-SimpleMockFormNavigationBarPortrait,

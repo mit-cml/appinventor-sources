@@ -32,6 +32,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 
 import com.google.gwt.user.client.Window;
@@ -63,9 +65,12 @@ public final class MockForm extends MockContainer {
     // UI elements
     private Label title;
     private Button menuButton;
+    private MockSidebar sidebar;
+    private Button sidebarButton;
     private AbsolutePanel bar;
     private boolean actionBar;
     private String backgroundColor;
+    private MockSidebarHeader sidebarHeader;
 
     public String getTitle() {
       return title.getText();
@@ -83,14 +88,52 @@ public final class MockForm extends MockContainer {
       menuButton.setText("\u22ee");
       menuButton.setStylePrimaryName("ode-SimpleMockFormMenuButton");
 
+      sidebarButton = new Button();
+      sidebarButton.setText("\u2630");
+      sidebarButton.setStylePrimaryName("ode-SimpleMockFormSidebarButton");
+
       bar = new AbsolutePanel();
       bar.add(title);
       bar.add(menuButton);
+      bar.add(sidebarButton);
 
       initWidget(bar);
 
       setStylePrimaryName("ode-SimpleMockFormTitleBar");
       setSize("100%", TITLEBAR_HEIGHT + "px");
+    }
+
+    /*
+     * Initialize sidebar (should only be called after components are loaded).
+     */
+    void loadSidebar() {
+      for (MockComponent child : children) {
+        if (child instanceof MockSidebar) {
+          sidebar = (MockSidebar) child;
+          break;
+        }
+      }
+      if (sidebar == null) {
+        sidebarHeader= new MockSidebarHeader(editor);
+        sidebar = new MockSidebar(editor);
+        addComponent(sidebar);
+        sidebar.addComponent(sidebarHeader, 0);
+      }
+      sidebarButton.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          sidebar.toggle();
+        }
+      });
+      updateSidebarEnabled();
+    }
+
+    /*
+     * Disable sidebar if action bar is absent.
+     */
+    void updateSidebarEnabled() {
+      if(sidebar != null) {
+        sidebar.setEnabled(actionBar && isVisible());
+      }
     }
 
     /*
@@ -110,6 +153,7 @@ public final class MockForm extends MockContainer {
         removeStyleDependentName("ActionBar");
         MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, "&HFF696969");
       }
+      updateSidebarEnabled();
     }
 
     void setBackgroundColor(String color) {
@@ -314,6 +358,12 @@ public final class MockForm extends MockContainer {
     initialized = true;
     // Now that the default for Scrollable is false, we need to force setting the property when creating the MockForm
     setScrollableProperty(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    titleBar.loadSidebar();
   }
 
   public void changePreviewSize(int width, int height, int idx) {
@@ -665,6 +715,7 @@ public final class MockForm extends MockContainer {
   private void setTitleVisibleProperty(String text) {
     boolean visible = Boolean.parseBoolean(text);
     titleBar.setVisible(visible);
+    titleBar.updateSidebarEnabled();
   }
 
   private void setActionBarProperty(String actionBar) {
@@ -718,11 +769,13 @@ public final class MockForm extends MockContainer {
       final String newColor = "&HFF000000";
       MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);
+      MockComponentsUtil.setWidgetTextColor(titleBar.sidebarButton, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);
     } else {
       final String newColor = "&HFFFFFFFF";
       MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);
+      MockComponentsUtil.setWidgetTextColor(titleBar.sidebarButton, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);
     }
     if (theme.equals("AppTheme")) {

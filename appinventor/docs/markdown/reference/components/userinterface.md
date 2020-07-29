@@ -18,6 +18,7 @@ Table of Contents:
 * [Notifier](#Notifier)
 * [PasswordTextBox](#PasswordTextBox)
 * [Screen](#Screen)
+* [SidebarItem](#SidebarItem)
 * [Slider](#Slider)
 * [Spinner](#Spinner)
 * [Switch](#Switch)
@@ -1111,6 +1112,40 @@ Top-level component containing all other components in the program.
 
 {:id="Screen.HideKeyboard" class="method"} <i/> HideKeyboard()
 : Hide the soft keyboard
+
+## SidebarItem  {#SidebarItem}
+
+A Sidebar Item can only be placed inside Sidebar component.
+ It displays a piece of text specified by the Text property and
+ an icon specified by the Icon property.
+
+
+
+### Properties  {#SidebarItem-Properties}
+
+{:.properties}
+
+{:id="SidebarItem.Icon" .text} *Icon*
+: Specifies the path of the menu item's icon.
+
+{:id="SidebarItem.Text" .text} *Text*
+: Returns the text displayed by the menu item.
+
+{:id="SidebarItem.Visible" .boolean} *Visible*
+: Specifies whether the menu item should be visible or hidden from menu.
+
+### Events  {#SidebarItem-Events}
+
+{:.events}
+
+{:id="SidebarItem.Click"} Click()
+: Event raised when user selects this sidebar item.
+
+### Methods  {#SidebarItem-Methods}
+
+{:.methods}
+None
+
 
 ## Slider  {#Slider}
 

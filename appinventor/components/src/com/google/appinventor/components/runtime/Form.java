@@ -6,11 +6,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import static android.Manifest.permission.ACCESS_NETWORK_STATE;
-import static android.Manifest.permission.ACCESS_WIFI_STATE;
-import static android.Manifest.permission.INTERNET;
-import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -45,9 +40,7 @@ import android.widget.ScrollView;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import com.google.appinventor.common.version.AppInventorFeatures;
-
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -78,6 +71,7 @@ import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+import org.json.JSONException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -96,7 +90,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.json.JSONException;
+import static android.Manifest.permission.*;
+import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
 
 
 /**
@@ -200,7 +195,7 @@ public class Form extends AppInventorCompatActivity
   private int primaryColorDark = DEFAULT_PRIMARY_COLOR_DARK;
   private int accentColor = DEFAULT_ACCENT_COLOR;
 
-  private FrameLayout frameLayout;
+  protected static FrameLayout frameLayout;
   private boolean scrollable;
 
   private ScaledFrameLayout scaleLayout;
@@ -338,6 +333,7 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
+
   /*
    * Finish the work of setting up the Screen.
    *
@@ -399,6 +395,7 @@ public class Form extends AppInventorCompatActivity
 
   private void onCreateFinish2() {
     defaultPropertyValues();
+
 
     // Get startup text if any before adding components
     Intent startIntent = getIntent();
@@ -511,7 +508,12 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
-// What's this code?
+  @Override
+  protected void onPostCreate(Bundle savedInstanceState) {
+    super.onPostCreate(savedInstanceState);
+  }
+
+  // What's this code?
 //
 // There is either an App Inventor bug, or Android bug (likely both)
 // that results in the contents of the screen being rendered "too
@@ -1220,6 +1222,10 @@ public class Form extends AppInventorCompatActivity
         }
       }
     });
+  }
+
+  public static View getLayout() {
+    return frameLayout;
   }
 
   /**
@@ -2347,9 +2353,14 @@ public class Form extends AppInventorCompatActivity
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
-      if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
-        return true;
+    if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
+      return true;
+    }
+    else {
+      for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
+        if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
+          return true;
+        }
       }
     }
     return false;
