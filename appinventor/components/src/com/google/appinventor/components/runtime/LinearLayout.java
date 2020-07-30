@@ -106,7 +106,7 @@ public final class LinearLayout implements Layout {
   }
 
   public void add(AndroidViewComponent component) {
-    if(component instanceof TabArrangement) {
+    if (component instanceof TabArrangement) {
       layoutManager.addView(component.getView(), new android.widget.LinearLayout.LayoutParams(
           ViewGroup.LayoutParams.MATCH_PARENT,
           0,
