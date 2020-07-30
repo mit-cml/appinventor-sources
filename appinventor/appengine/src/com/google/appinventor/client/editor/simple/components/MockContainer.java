@@ -125,7 +125,7 @@ public abstract class MockContainer<T extends MockLayout> extends MockVisibleCom
    * @param beforeVisibleIndex  visible-index at which the inserted component will appear,
    *                            or {@code -1} to insert the component at the end
    */
-  protected void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
+  public void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
     List<MockComponent> visibleChildren = getShowingVisibleChildren();
 
     int beforeActualIndex;
