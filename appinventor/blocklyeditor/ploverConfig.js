@@ -146,6 +146,7 @@
     "./src/field.js",
     "./src/rendered_connection.js",
     "./src/input.js",
+    "./src/field_event_flydown.js",
 
     // Dialog Utiltiy
     "./src/util.js",

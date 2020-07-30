@@ -317,7 +317,7 @@ Blockly.Blocks.component_event = {
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
   // Also must create flydown params and DO input if they don't exist.
 
-  // To-DO: consider using top.BlocklyPanel... instead of window.parent.BlocklyPanel
+  // TODO: consider using top.BlocklyPanel... instead of window.parent.BlocklyPanel
 
   setParameterOrientation: function(isHorizontal) {
     var params = this.getParameters();
@@ -343,15 +343,16 @@ Blockly.Blocks.component_event = {
           this.removeInput('DO');
         }
 
-        // .. and insert new ones:
+        // ... and insert new ones:
         if (params.length > 0) {
           var paramInput = this.appendDummyInput('PARAMETERS')
                                .appendField(" ")
                                .setAlign(Blockly.ALIGN_LEFT);
           for (i = 0; param = params[i]; i++) {
-            paramInput.appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false, null, null, param.name), // false means not editable
-                                   'VAR' + i)
-                      .appendField(" ");
+            var field = new Blockly.FieldEventFlydown(
+                param, componentDb, Blockly.FieldFlydown.DISPLAY_BELOW);
+            paramInput.appendField(field, 'VAR' + i)
+                .appendField(" ");
           }
         }
 
@@ -369,13 +370,13 @@ Blockly.Blocks.component_event = {
           this.removeInput('DO');
         }
 
-        // .. and insert new ones:
+        // ... and insert new ones:
 
         // Vertically aligned parameters
         for (i = 0; param = params[i]; i++) {
+          var field = new Blockly.FieldEventFlydown(param, componentDb);
           this.appendDummyInput('VAR' + i)
-              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false),
-                           'VAR' + i)
+              .appendField(field, 'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
         newDoInput = this.appendStatementInput("DO")
