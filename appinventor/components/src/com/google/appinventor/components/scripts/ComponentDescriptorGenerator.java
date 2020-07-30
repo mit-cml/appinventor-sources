@@ -282,7 +282,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append("\", \"description\": ");
     sb.append(formatDescription(prop.getDescription()));
     sb.append(", \"type\": \"");
-    sb.append(javaTypeToYailType(prop.getType()));
+    sb.append(prop.getYailType());
     sb.append("\", \"rw\": \"");
     sb.append(prop.isUserVisible() ? prop.getRwString() : "invisible");
     // [lyn, 2015/12/20] Added deprecated field to JSON.
@@ -332,7 +332,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     outputParameters(method.parameters, sb);
     if (method.getReturnType() != null) {
       sb.append(", \"returnType\": \"");
-      sb.append(javaTypeToYailType(method.getReturnType()));
+      sb.append(method.getYailReturnType());
       sb.append("\"}");
     } else {
       sb.append("}");
@@ -350,7 +350,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       sb.append("{ \"name\": \"");
       sb.append(p.name);
       sb.append("\", \"type\": \"");
-      sb.append(javaTypeToYailType(p.type));
+      sb.append(p.getYailType());
       sb.append("\"}");
       separator = ",";
     }

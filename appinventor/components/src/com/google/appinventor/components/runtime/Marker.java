@@ -15,16 +15,17 @@ import org.osmdroid.util.GeoPoint;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.MapFeature;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
-import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureVisitor;
 import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
@@ -192,10 +193,18 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * Return the type of the map feature. For Marker, this returns the text "Marker".
    * @return the type of the feature
    */
-  @SimpleProperty
   @Override
-  public String Type() {
-    return MapFactory.MapFeatureType.TYPE_MARKER;
+  @SimpleProperty(description = "Returns the type of the feature. For Markers, "
+      + "this returns MapFeature.Marker (\"Marker\").")
+  public @Options(MapFeature.class) String Type() {
+    return TypeAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * @return the abstract MapFeature type of this feature. In this case MapFeature.Marker.
+   */
+  public MapFeature TypeAbstract() {
+    return MapFeature.Marker;
   }
 
   /**
@@ -509,7 +518,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
       "in degrees from due north. If the centroids parameter is true, the bearing will be to the " +
       "center of the map feature. Otherwise, the bearing will be computed to the point in the " +
       "feature nearest the Marker.")
-  public double BearingToFeature(MapFeature mapFeature, final boolean centroids) {
+  public double BearingToFeature(MapFactory.MapFeature mapFeature, final boolean centroids) {
     return mapFeature == null ? -1 : mapFeature.accept(bearingComputation, this, centroids);
   }
 

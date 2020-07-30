@@ -18,10 +18,12 @@ import org.osmdroid.util.GeoPoint;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.MapFeature;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
@@ -108,10 +110,17 @@ public class LineString extends MapFeatureBase implements MapLineString {
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Returns the type of the map feature. For LineString, this returns "
-          + "the text \"LineString\".")
+          + "MapFeature.LineString (\"LineString\").")
   @Override
-  public String Type() {
-    return MapFactory.MapFeatureType.TYPE_LINESTRING;
+  public @Options(MapFeature.class) String Type() {
+    return TypeAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * @return the abstract MapFeature type of this feature. In this case MapFeature.LineStrin.
+   */
+  public MapFeature TypeAbstract() {
+    return MapFeature.LineString;
   }
 
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
