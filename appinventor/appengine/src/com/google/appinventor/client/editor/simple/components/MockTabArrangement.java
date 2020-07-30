@@ -4,8 +4,6 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.client.properties.Properties;
-import com.google.appinventor.client.properties.Property;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.AbsolutePanel;
