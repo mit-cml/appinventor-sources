@@ -118,10 +118,7 @@ public class MockTab extends MockHVArrangement {
     } else if (PROPERTY_NAME_SHOW_ICON.equals(propertyName)) {
       setShowIcon(newValue);
     }  else if (PROPERTY_NAME_SCROLLABLE.equals(propertyName)) {
-      layout.setVAlignmentFlags(ComponentConstants.GRAVITY_TOP + "");
-      rootPanel.getElement().getStyle().setOverflowY("True".equals(newValue) ? Overflow.SCROLL : Overflow.HIDDEN);
-      ((YoungAndroidVerticalAlignmentChoicePropertyEditor)
-          getProperties().getExistingProperty(PROPERTY_NAME_VERTICAL_ALIGNMENT).getEditor()).disable();
+      setScrollable(newValue);
     }
   }
   
@@ -176,5 +173,18 @@ public class MockTab extends MockHVArrangement {
         tabImage.removeFromParent();
       }
     }
+  }
+  
+  private void setScrollable(String newValue) {
+    if ("True".equals(newValue)) {
+      layout.setVAlignmentFlags(ComponentConstants.GRAVITY_TOP + "");
+      changeProperty(PROPERTY_NAME_VERTICAL_ALIGNMENT, ComponentConstants.GRAVITY_TOP + "");
+      ((YoungAndroidVerticalAlignmentChoicePropertyEditor)
+          getProperties().getExistingProperty(PROPERTY_NAME_VERTICAL_ALIGNMENT).getEditor()).disable();
+    } else {
+      ((YoungAndroidVerticalAlignmentChoicePropertyEditor)
+          getProperties().getExistingProperty(PROPERTY_NAME_VERTICAL_ALIGNMENT).getEditor()).enable();
+    }
+    rootPanel.getElement().getStyle().setOverflowY("True".equals(newValue) ? Overflow.SCROLL : Overflow.HIDDEN);
   }
 }
