@@ -23,6 +23,10 @@ public class OptionHelper {
   public static Map<String, Map<String, Method>> componentMethods =
       new HashMap<String, Map<String, Method>>();
     
+  /**
+   * Returns the OptionList version of the value if the function's return type has an @Options
+   * annotation notating that the value can be coerced to an OptionList.
+   */
   public static <T> Object optionListFromValue(Component c, String func, T value) {
     Method calledFunc = getMethod(c, func);
     if (calledFunc == null) {
@@ -46,6 +50,10 @@ public class OptionHelper {
     }
   }
 
+  /**
+   * Returns the args after any coercable args have been coerced to an OptionList. An arg is
+   * coercable if the function header has an @Options annotation associated with that arguement.
+   */
   public static Object[] optionListsFromValues(Component c, String func, Object...args) {
     if (args.length == 0) {
       return args;
@@ -79,6 +87,10 @@ public class OptionHelper {
     return args;
   }
 
+  /**
+   * Returns the Method associated with the given component and function name. Returns null if the
+   * Method does not exist or shouldn't be operated on in this context (e.g. a void method).
+   */
   private static Method getMethod(Component c, String func) {
     Class<?> componentClass = c.getClass();
     String componentKey = componentClass.getSimpleName();
@@ -92,6 +104,10 @@ public class OptionHelper {
     return methodMap.get(func);
   }
 
+  /**
+   * Returns a map populated with all relevant Methods of the given Class. This includes all events,
+   * property getters, and non-void methods.
+   */
   private static Map<String, Method> populateMap(Class<?> clazz) {
     Map<String, Method> methodMap = new HashMap<String, Method>();
     Method[] methods = clazz.getMethods();
