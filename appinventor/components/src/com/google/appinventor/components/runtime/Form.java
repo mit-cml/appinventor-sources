@@ -1640,7 +1640,7 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "The animation for switching to another screen. Valid" +
     " options are default, fade, zoom, slidehorizontal, slidevertical, and none"    )
-  public String OpenScreenAnimation() {
+  public @Options(ScreenAnimation.class) String OpenScreenAnimation() {
     if (openAnimType != null) {
       return openAnimType.toUnderlyingValue();
     }
@@ -1692,7 +1692,7 @@ public class Form extends AppInventorCompatActivity
     description = "The animation for closing current screen and returning " +
     " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, " +
     "slidevertical, and none")
-  public String CloseScreenAnimation() {
+  public @Options(ScreenAnimation.class) String CloseScreenAnimation() {
     if (closeAnimType != null) {
       return closeAnimType.toUnderlyingValue();
     }
