@@ -9,6 +9,7 @@ import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -43,6 +44,39 @@ public class OptionHelper {
       }
       return value;
     }
+  }
+
+  public static Object[] optionListsFromValues(Component c, String func, Object...args) {
+    if (args.length == 0) {
+      return args;
+    }
+    Method calledFunc = getMethod(c, func);
+    if (calledFunc == null) {
+      return args;
+    }
+    Annotation[][] paramAnnotations = calledFunc.getParameterAnnotations();
+    int i = 0;
+    for (Annotation[] annotations : paramAnnotations) {
+      for (Annotation annotation : annotations) {
+        if (annotation.annotationType() == Options.class) {
+          Options castAnnotation = (Options) annotation;
+          Class<?> optionListClass = castAnnotation.value();
+          try {
+            Method fromValue = optionListClass.getMethod("fromUnderlyingValue", args[i].getClass());
+            args[i] = fromValue.invoke(optionListClass, args[i]);
+          } catch (NoSuchMethodException e) {
+            // If it doesn't exist just continue.
+          } catch (IllegalAccessException e) {
+            // If it's not accessible just continue.
+          } catch (InvocationTargetException e) {
+            // If it doesn't work just continue.
+          }
+          break;
+        }
+      }
+      i++;
+    }
+    return args;
   }
 
   private static Method getMethod(Component c, String func) {
