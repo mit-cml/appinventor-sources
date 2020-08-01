@@ -198,7 +198,7 @@
 ;;; (get-property 'Label1 'Text)
 (define (get-property component prop-name)
   (let ((component (coerce-to-component-and-verify component)))
-    (sanitize-component-data (invoke component prop-name))))
+    (sanitize-return-value component prop-name (invoke component prop-name))))
 
 (define (coerce-to-component-and-verify possible-component)
   (let ((component (coerce-to-component possible-component)))
@@ -217,7 +217,7 @@
                  component-type
                  (*:getSimpleName (*:getClass possible-component)))
          "Problem with application")
-        (sanitize-component-data (invoke component prop-name)))))
+        (sanitize-return-value component prop-name (invoke component prop-name)))))
 
 (define (set-and-coerce-property-and-check! possible-component comp-type prop-sym property-value property-type)
   (let ((component (coerce-to-component-of-type possible-component comp-type)))
@@ -1044,19 +1044,20 @@
 ;;; values they will receive.
 
 (define (call-component-method component-name method-name arglist typelist)
-  (let ((coerced-args (coerce-args method-name arglist typelist)))
+  (let ((coerced-args (coerce-args method-name arglist typelist))
+        (component (lookup-in-current-form-environment component-name)))
     (let ((result
            (if (all-coercible? coerced-args)
                (try-catch
                 (apply invoke
-                       `(,(lookup-in-current-form-environment component-name)
+                       `(,component
                          ,method-name
                          ,@coerced-args))
                 (exception PermissionException
-                           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) (lookup-in-current-form-environment component-name) method-name exception)))
+                           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
                (generate-runtime-type-error method-name arglist))))
       ;; TODO(markf): this should probably be generalized but for now this is OK, I think
-      (sanitize-component-data result))))
+      (sanitize-return-value component method-name result))))
 
 ;;; CALL-COMPONENT-TYPE-METHOD
 ;;; Call the component method for the given component object with the given list of args,
@@ -1084,7 +1085,7 @@
                             ,@coerced-args))
                    (generate-runtime-type-error method-name arglist))))
           ;; TODO(markf): this should probably be generalized but for now this is OK, I think
-          (sanitize-component-data result)))))
+          (sanitize-return-value component-value method-name result)))))
 
 
 ;;; CALL-USER-PROCEDURE
@@ -1181,6 +1182,15 @@
    ((list? data) (kawa-list->yail-list data))
    ((instance? data JavaCollection) (java-collection->yail-list data))
    (#t (sanitize-atomic data))))
+
+(define (sanitize-return-value component func-name value)
+  (define-alias OptionHelper com.google.appinventor.components.runtime.OptionHelper)
+  (if (enum? value)
+      value
+      (let ((value (OptionHelper:optionListFromValue component func-name value)))
+      (if (enum? value)
+          value
+          (sanitize-component-data value)))))
 
 ;;; If we are handed a collection that contains a yail list as an item,
 ;;; then the result of converting it to a kawa list will be a kawa list that
