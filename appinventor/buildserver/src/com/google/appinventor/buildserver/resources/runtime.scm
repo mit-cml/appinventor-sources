@@ -1454,6 +1454,7 @@
    ;;;   arg if (number? arg) is true. So why don't we just return arg here?
    ((number? arg) (coerce-to-number arg))
    ((string? arg) (coerce-to-string arg))
+   ((enum? arg) arg)
    ((instance? arg com.google.appinventor.components.runtime.Component) arg)
    (else *non-coercible-value*)))
 
@@ -2589,8 +2590,11 @@ Dictionary implementation.
             (*:get (as YailDictionary yail-dictionary) key))
           (#t default))))
     (if (eq? result #!null)
-      default
-      result)))
+        ;; if we don't find anything associated with the abstract type, try the underlying type.
+        (if (enum? key)
+            (yail-dictionary-lookup (sanitize-component-data (key:toUnderlyingValue)) yail-dictionary default)
+            default)
+        result)))
 
 (define (yail-dictionary-recursive-lookup keys yail-dictionary default)
   (let ((result (*:getObjectAtKeyPath (as YailDictionary yail-dictionary) (yail-list-contents keys))))

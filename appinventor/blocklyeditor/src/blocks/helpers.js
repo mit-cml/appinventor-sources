@@ -38,9 +38,6 @@ Blockly.Blocks['helpers_dropdown'] = {
 
   domToMutation: function(xml) {
     this.key_ = xml.getAttribute('key');
-    var type = Blockly.Blocks.Utilities.helperKeyToBlocklyType(
-      { type: 'OPTION_LIST', key: this.key_ }, this);
-    this.setOutput(true, type);
 
     var db = this.getTopWorkspace().getComponentDatabase();
     var optionList = db.getOptionList(this.key_);
@@ -52,13 +49,35 @@ Blockly.Blocks['helpers_dropdown'] = {
     // to connect to inputs which expect its specific type of enum. Currently
     // this is only used for Blockly connection checks, as no output types are
     // encoded in Yail.
-    this.setOutput(true, type);
+    this.setOutput(true, this.getOutputType());
     this.appendDummyInput()
         .appendField(tag)
         .appendField(dropdown, 'OPTION');
     
     var value = xml.getAttribute('value') || optionList.defaultOpt;
     this.setFieldValue(value, 'OPTION');
+  },
+
+  getOutputType: function() {
+    var check = [];
+    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
+        'enum', Blockly.Blocks.Utilities.OUTPUT);
+    if (blocklyType) {
+      if (Array.isArray(blocklyType)) {
+        // Clone array.
+        check = blocklyType.slice();
+      } else {
+        check.push(blocklyType);
+      }
+    }
+
+    var helperType = Blockly.Blocks.Utilities.helperKeyToBlocklyType(
+      { type: 'OPTION_LIST', key: this.key_ }, this);
+    if (helperType && helperType != blocklyType) {
+      check.push(helperType);
+    }
+
+    return !check.length ? null : check;
   },
 
   /**
