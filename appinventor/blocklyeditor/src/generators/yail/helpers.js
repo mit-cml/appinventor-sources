@@ -12,22 +12,20 @@ Blockly.Yail['helpers_dropdown'] = function() {
     return opt.name == enumConstantName;
   });
 
-  var code = option.value;
+  // See https://www.gnu.org/software/kawa/Enumerations.html
+  var enumValue = optionList.className + ":" + enumConstantName;
+
+  var concreteValue = option.value;
   if (optionList.underlyingType == "java.lang.String") {
-    code = Blockly.Yail.quote_(code);
+    concreteValue = Blockly.Yail.quote_(concreteValue);
   } // Otherwise assume it doesn't need to be quoted.
 
+  // protect-enum is a macro which checks if the companion supports OptionLists
+  // and if it does it will return the abstract enum value. If the companion
+  // does not support OptionLists it will continue to return the concrete value.
+  var code = '(protect-enum ' + enumValue + ' ' + concreteValue + ')';
+
   return [code, Blockly.Yail.ORDER_ATOMIC]
-
-  // TODO: This will be used after we add abstraction.
-  // See https://www.gnu.org/software/kawa/Enumerations.html
-  // var code = optionList.className + ":" + enumConstantName;
-
-  // Currently we are returning the concrete values of the optionList option for
-  // easy backwards compatibility with the companion. But in the future we will
-  // return a macro which checks if the companion supports OptionLists and if
-  // it does it will return the abstract enum value. If the companion does not
-  // support OptionLists it will continue to return the concrete value.
 }
 
 Blockly.Yail['helpers_screen_names'] = function() {

@@ -742,6 +742,14 @@
        #`(begin
            (define-event-helper ,(gen-generic-event-name #`component-type #`event-name) args body))))))
 
+
+(define-syntax protect-enum
+  (lambda (x)
+    (syntax-case x ()
+      ((_ enum-value number-value)
+       (if (< com.google.appinventor.components.common.YaVersion:BLOCKS_LANGUAGE_VERSION 33)
+           #'number-value
+           #'enum-value)))))
 ;;;; def
 
 ;;; Def here is putting things (1) in the form environment; (2) in a
