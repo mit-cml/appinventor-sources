@@ -815,10 +815,11 @@ Blockly.Blocks.component_method = {
     var check = [];
 
     var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
-        param.type, Blockly.Blocks.Utilities.Input);
+        param.type, Blockly.Blocks.Utilities.INPUT);
     if (blocklyType) {
       if (Array.isArray(blocklyType)) {
-        check = blocklyType;
+        // Clone array.
+        check = blocklyType.slice();
       } else {
         check.push(blocklyType);
       }
@@ -829,6 +830,28 @@ Blockly.Blocks.component_method = {
     if (helperType && helperType != blocklyType) {
       check.push(helperType);
     }
+    return !check.length ? null : check;
+  },
+
+  getReturnBlocklyType : function(methodObj) {
+    var check = [];
+    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
+        methodObj.returnType, Blockly.Blocks.Utilities.OUTPUT);
+    if (blocklyType) {
+      if (Array.isArray(blocklyType)) {
+        // Clone array.
+        check = blocklyType.slice();
+      } else {
+        check.push(blocklyType);
+      }
+    }
+
+    var helperType = Blockly.Blocks.Utilities
+        .helperKeyToBlocklyType(methodObj.returnHelperKey, this);
+    if (helperType && helperType != blocklyType) {
+      check.push(helperType);
+    }
+
     return !check.length ? null : check;
   },
 
@@ -949,7 +972,7 @@ Blockly.Blocks.component_method = {
           modifiedReturnType = true; // missing return type
         }
         else {
-          this.outputConnection.setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType(method.returnType,Blockly.Blocks.Utilities.OUTPUT));
+          this.outputConnection.setCheck(this.getReturnBlocklyType(method));
         }
       }
       else if (!method.returnType) {
@@ -1200,22 +1223,17 @@ Blockly.Blocks.component_set_get = {
         .YailTypeToBlocklyType(yailType, inputOrOutput);
     if (blocklyType) {
       if (Array.isArray(blocklyType)) {
-        check = blocklyType;
+        // Clone array.
+        check = blocklyType.slice();
       } else {
         check.push(blocklyType);
       }
     }
 
-    // Aka if this is a setter. We don't want blockly to think properties that
-    // return strings but accept options actually return options. Once we add
-    // support for sanitizing returned values to their enum types, this will
-    // change.
-    if (inputOrOutput == Blockly.Blocks.Utilities.INPUT) {
-      var helperType = Blockly.Blocks.Utilities
-          .helperKeyToBlocklyType(property.helperKey, this);
-      if (helperType && helperType != blocklyType) {
-          check.push(helperType);
-      }
+    var helperType = Blockly.Blocks.Utilities
+        .helperKeyToBlocklyType(property.helperKey, this);
+    if (helperType && helperType != blocklyType) {
+        check.push(helperType);
     }
 
     return !check.length ? null : check;
