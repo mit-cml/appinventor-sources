@@ -176,7 +176,7 @@ public class TextViewUtil {
    * @param text  new text to be shown
    */
   public static void setTextHTML(TextView textview, String text) {
-    if (android.os.Build.VERSION.SDK_INT => 24 {
+    if (android.os.Build.VERSION.SDK_INT >= 24 {
       textView.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT));
     } else {
       textView.setText(Html.fromHtml(text));
