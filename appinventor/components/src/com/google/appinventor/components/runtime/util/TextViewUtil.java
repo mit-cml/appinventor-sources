@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.widget.TextView;
 import android.text.Html;
 import android.content.Context;
+import android.os.build.VERSION;
 
 /**
  * Helper methods for manipulating {@link TextView} objects.
@@ -175,7 +176,12 @@ public class TextViewUtil {
    * @param text  new text to be shown
    */
   public static void setTextHTML(TextView textview, String text) {
-    textview.setText(Html.fromHtml(text));
+    if (android.os.Build.VERSION.SDK_INT => 24 {
+      textView.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT));
+    } else {
+      textView.setText(Html.fromHtml(text));
+    }
+        
     textview.requestLayout();
   }
 
