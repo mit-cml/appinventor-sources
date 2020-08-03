@@ -14,7 +14,7 @@ import android.view.Gravity;
 import android.widget.TextView;
 import android.text.Html;
 import android.content.Context;
-import android.os.build.VERSION;
+import android.os.Build;
 
 /**
  * Helper methods for manipulating {@link TextView} objects.
