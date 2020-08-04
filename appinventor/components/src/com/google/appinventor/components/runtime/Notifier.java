@@ -308,14 +308,15 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @param cancelable indicates whether the user should be able to cancel out of dialog.
    *                   When true, an additional CANCEL button will be added allowing user to cancel
    *                   out of dialog. If selected, it will raise AfterTextInput with text of CANCEL.
+   * @param defaultText the default text for the alert box
    */
   @SimpleFunction(description = "Shows a dialog box where the user can enter text, after which the "
      + "AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button. "
      + "Entering text will raise the AfterTextInput event.  The \"response\" parameter to AfterTextInput "
      + "will be the text that was entered, or \"Cancel\" if the CANCEL button was pressed.")
 
-  public void ShowTextDialog(String message, String title, boolean cancelable) {
-    textInputDialog(message, title, cancelable, false);
+  public void ShowTextDialog(String message, String title, boolean cancelable, String defaultText) {
+    textInputDialog(message, title, defaultText, cancelable, false);
   }
 
   /**
@@ -337,7 +338,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
      + "parameter to AfterTextInput will be the entered password, or \"Cancel\" if CANCEL button was pressed.")
 
   public void ShowPasswordDialog(String message, String title, boolean cancelable) {
-    textInputDialog(message, title, cancelable, true);
+    textInputDialog(message, title, " ", cancelable, true);
   }
 
   /**
@@ -348,6 +349,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    *
    * @param message the text in the alert box
    * @param title the title for the alert box
+   * @param defaultText the default text for the alert box
    * @param cancelable indicates whether the user should be able to cancel out of dialog.
    *                   When true, an additional CANCEL button will be added allowing user to cancel
    *                   out of dialog. On selection, will raise AfterTextInput with text of CANCEL.
@@ -356,7 +358,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   // TODO(hal):  It would be cleaner to define this in terms of oneButtonAlert and generalize
   // oneButtonAlert so it can be used both for messages and text input.  We could have merged
   // this method into ShowTextDialog, but that would make it harder to do the generalization.
-  private void textInputDialog(String message, String title, boolean cancelable, boolean maskInput) {
+  private void textInputDialog(String message, String title, String defaultText, boolean cancelable, boolean maskInput) {
     final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
     alertDialog.setMessage(stringToHTML(message));
@@ -365,6 +367,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     if (maskInput) {
       input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
+    input.setText(defaultText);
     alertDialog.setView(input);
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);
