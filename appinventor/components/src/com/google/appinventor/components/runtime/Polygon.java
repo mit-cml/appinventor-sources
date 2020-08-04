@@ -1,22 +1,26 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2016-2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.annotation.VisibleForTesting;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.errors.DispatchableError;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
@@ -28,14 +32,15 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
 import com.google.appinventor.components.runtime.util.YailList;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.locationtech.jts.geom.Geometry;
-import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.locationtech.jts.geom.Geometry;
+import org.osmdroid.util.GeoPoint;
 
 /**
  * `Polygon` encloses an arbitrary 2-dimensional area on a {@link Map}. `Polygon`s can be used for

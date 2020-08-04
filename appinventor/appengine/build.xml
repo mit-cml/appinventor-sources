@@ -238,6 +238,7 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/objectify-3.1/objectify-3.1.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-2.1.jar" />  <!-- for keyczar -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/log4j/log4j-1.2.16.jar" />  <!-- for keyczar -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-lang3/commons-lang3-3.10.jar" />
     <!-- GCS Libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/jackson-core-2.1.3.jar" />

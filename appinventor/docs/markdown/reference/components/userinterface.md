@@ -1626,7 +1626,14 @@ Component for viewing Web pages.
 
  You can use the [`WebViewString`](#WebViewer.WebViewString) property to communicate between your app and
  Javascript code running in the `WebViewer` page. In the app, you get and set
- [`WebViewString`](#WebViewer.WebViewString) to "hello", then the web page will show
+ [`WebViewString`](#WebViewer.WebViewString). In the `WebViewer`, you include Javascript that references the
+ `window.AppInventor` object, using the methods `getWebViewString()` and `setWebViewString(text)`.
+
+ For example, if the `WebViewer` opens to a page that contains the Javascript command
+ ```javascript
+ document.write("The answer is" + window.AppInventor.getWebViewString());
+ ```
+ and if you set [`WebViewString`](#WebViewer.WebViewString) to "hello", then the web page will show
  ```
  The answer is hello.
  ```

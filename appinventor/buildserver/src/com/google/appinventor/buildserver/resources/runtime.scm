@@ -1412,6 +1412,7 @@
   (cond
    ((number? arg) (coerce-to-number arg))
    ((string? arg) (coerce-to-string arg))
+   ((instance? arg com.google.appinventor.components.runtime.Component) arg)
    (else *non-coercible-value*)))
 
 (define-syntax use-json-format

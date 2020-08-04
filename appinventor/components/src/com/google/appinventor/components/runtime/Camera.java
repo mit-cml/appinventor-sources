@@ -1,13 +1,20 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
-import android.support.v4.content.FileProvider;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -20,16 +27,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.NougatUtil;
-
-import android.app.Activity;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.Manifest;
-
+import com.google.appinventor.components.runtime.util.QUtil;
 import java.io.File;
 import java.util.Date;
 
@@ -141,8 +139,12 @@ public class Camera extends AndroidNonvisibleComponent
     if (Environment.MEDIA_MOUNTED.equals(state)) {
       Log.i("CameraComponent", "External storage is available and writable");
 
-      File image = new File(Environment.getExternalStorageDirectory(),
-          "/Pictures/app_inventor_" + new Date().getTime()
+      File directory = new File(QUtil.getExternalStorageDir(form), "Pictures/");
+      if (!directory.exists()) {
+        directory.mkdir();
+      }
+      File image = new File(QUtil.getExternalStorageDir(form),
+          "Pictures/app_inventor_" + new Date().getTime()
               + ".jpg");
       imageFile = Uri.fromFile(image);
 

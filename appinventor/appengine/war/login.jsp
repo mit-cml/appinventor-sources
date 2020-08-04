@@ -1,15 +1,16 @@
 <%@page import="javax.servlet.http.HttpServletRequest"%>
 <%@page import="com.google.appinventor.server.util.UriBuilder"%>
+<%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <%
-   String error = request.getParameter("error");
+   String error = StringEscapeUtils.escapeHtml4(request.getParameter("error"));
    String useGoogleLabel = (String) request.getAttribute("useGoogleLabel");
-   String locale = request.getParameter("locale");
-   String redirect = request.getParameter("redirect");
-   String repo = (String) request.getAttribute("repo");
-   String autoload = (String) request.getAttribute("autoload");
-   String galleryId = (String) request.getAttribute("galleryId");
+   String locale = StringEscapeUtils.escapeHtml4(request.getParameter("locale"));
+   String redirect = StringEscapeUtils.escapeHtml4(request.getParameter("redirect"));
+   String repo = StringEscapeUtils.escapeHtml4((String) request.getAttribute("repo"));
+   String autoload = StringEscapeUtils.escapeHtml4((String) request.getAttribute("autoload"));
+   String galleryId = StringEscapeUtils.escapeHtml4((String) request.getAttribute("galleryId"));
    if (locale == null) {
        locale = "en";
    }
@@ -25,7 +26,7 @@
   </head>
 <body>
   <center>
-    <h1>${pleaselogin}</h1></center>
+    <h1>${pleaselogin}</h1>
   </center>
 <% if (error != null) {
 out.println("<center><font color=red><b>" + error + "</b></font></center><br/>");

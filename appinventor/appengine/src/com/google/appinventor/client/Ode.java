@@ -616,7 +616,7 @@ public class Ode implements EntryPoint {
             MESSAGES.galleryError()) {
           @Override
           public void onSuccess(GalleryApp app) {
-            if (app == null) {
+            if (app == null || !app.getActive()) {
               Window.alert(MESSAGES.galleryIdNotExist());
               // Reset the galleryId flag and then load the previous project
               galleryIdLoadingFlag = false;
