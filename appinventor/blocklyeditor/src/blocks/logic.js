@@ -320,6 +320,8 @@ Blockly.Blocks['logic_operation'] = {
   },
   makeDropdown: function(input) {
     var op = this.opField.getValue();
+    // Dispose of the old field first (issue #2266)
+    this.opField.dispose();
     this.opField = new Blockly.FieldDropdown(
       Blockly.Blocks.logic_operation.OPERATORS(),
       this.updateFields.bind(this));
