@@ -181,7 +181,7 @@ public final class MockScriptsManager implements ComponentDatabaseChangeListener
 
     @Override
     public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
-        return false;
+        return true;
     }
 
     @Override
