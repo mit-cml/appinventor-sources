@@ -126,7 +126,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param beforeVisibleIndex  visible-index at which the inserted component will appear,
    *                            or {@code -1} to insert the component at the end
    */
-  public final void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
+  public void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
     List<MockComponent> visibleChildren = getShowingVisibleChildren();
 
     int beforeActualIndex;
