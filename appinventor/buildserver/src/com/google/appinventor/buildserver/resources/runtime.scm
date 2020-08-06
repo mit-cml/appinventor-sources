@@ -1691,10 +1691,6 @@
 
 (define (yail-atomic-equal? x1 x2)
   (cond
-   ;; enums must be coerced to their underlying values for backwards compatibility.
-   ((enum? x1) (yail-atomic-equal? (x1:toUnderlyingValue) x2))
-   ((enum? x2) (yail-atomic-equal? x1 (x2:toUnderlyingValue)))
-
    ;; equal? covers the case where x1 and x2 are equal objects or equal strings.
    ((equal? x1 x2) #t)
    ;; This implementation says that "0" is equal to "00" since
@@ -1707,6 +1703,9 @@
    ;; Uncomment these two lines to use string=? on strings
    ;; ((and (string? x1) (string? x2))
    ;;  (equal? x1 x2))
+
+   ((and (enum? x1) (not (enum? x2))) (equal? (x1:toUnderlyingValue) x2))
+   ((and (not (enum? x1)) (enum? x2)) (equal? x1 (x2:toUnderlyingValue)))
 
    ;; If the x1 and x2 are not equal?, try comparing coverting x1 and x2 to numbers
    ;; and comparing them numerically
