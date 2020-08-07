@@ -6,12 +6,15 @@
 
 package com.google.appinventor.client.explorer.project;
 
+import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.settings.project.ProjectSettings;
+import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
 import java.util.ArrayList;
@@ -221,6 +224,71 @@ public final class Project {
       parent.removeChild(node);
     }
     fireProjectNodeRemoved(node);
+  }
+
+  public void moveToTrash() {
+    Tracking.trackEvent(Tracking.PROJECT_EVENT,
+        Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, getProjectName());
+    Ode.getInstance().getProjectService().moveToTrash(getProjectId(),
+        new OdeAsyncCallback<UserProject>(
+            // failure message
+            MESSAGES.moveToTrashProjectError()) {
+          @Override
+          public void onSuccess(UserProject project) {
+            if (project.getProjectId() == projectInfo.getProjectId()) {
+              projectInfo.moveToTrash();
+              Ode.getInstance().getProjectManager().trashProject(getProjectId());
+            }
+          }
+        });
+  }
+
+
+  public void restoreFromTrash() {
+    Tracking.trackEvent(Tracking.PROJECT_EVENT,
+            Tracking.PROJECT_ACTION_RESTORE_PROJECT_YA, getProjectName());
+    Ode.getInstance().getProjectService().restoreProject(getProjectId(),
+            new OdeAsyncCallback<UserProject>(
+                    // failure message
+                    MESSAGES.restoreProjectError()) {
+              @Override
+              public void onSuccess(UserProject project) {
+                if (project.getProjectId() == projectInfo.getProjectId()) {
+                  projectInfo.restoreFromTrash();
+                  Ode.getInstance().getProjectManager().restoreTrashProject(getProjectId());
+                }
+              }
+            });
+  }
+
+  public void deleteFromTrash() {
+    Tracking.trackEvent(Tracking.PROJECT_EVENT,
+        Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, getProjectName());
+    final ProjectServiceAsync projectService = Ode.getInstance().getProjectService();
+    final OdeAsyncCallback<Void> deleteCallback = new OdeAsyncCallback<Void>() {
+      @Override
+      public void onSuccess(Void result) {
+        Ode.getInstance().getProjectManager().removeDeletedProject(getProjectId());
+      }
+    };
+    if (isPublished()) {
+      Ode.getInstance().getGalleryService().deleteApp(projectInfo.getGalleryId(),
+          new OdeAsyncCallback<Void>(MESSAGES.galleryDeleteError()) {
+            @Override
+            public void onSuccess(Void result) {
+              // need to update gallery list
+              GalleryClient.getInstance().appWasChanged();
+              // Delete the app
+              projectService.deleteProject(getProjectId(), deleteCallback);
+            }
+          });
+    } else {
+      Ode.getInstance().getProjectService().deleteProject(getProjectId(), deleteCallback);
+    }
+  }
+
+  public boolean isInTrash() {
+    return projectInfo.isInTrash();
   }
 
   /**

@@ -381,7 +381,9 @@ None
 
 {:id="SpeechRecognizer.UseLegacy" .boolean} *UseLegacy*
 : If true, a separate dialog is used to recognize speech (the default). If false, speech is
- recognized in the background and partial results are also provided. See
+recognized in the background and updates are received as it recognizes words. [`AfterGettingText`](#SpeechRecognizer.AfterGettingText) may get several calls with `partial` set to `true`. Once sufficient
+time has elapsed since the last utterance, or `StopListening` is called, the last string will be returned with `partial` set to `false` to indicate that it is the
+final recognized string and no more data will be provided until recognition is again started. See
  [`AfterGettingText`](#SpeechRecognizer.AfterGettingText) for more details on partial speech recognition.
 
 ### Events  {#SpeechRecognizer-Events}
@@ -598,8 +600,12 @@ Use this component to translate words and sentences between different languages.
 ### Properties  {#YandexTranslate-Properties}
 
 {:.properties}
-None
 
+{:id="YandexTranslate.ApiKey" .text .wo} *ApiKey*
+: The Yandex API Key to use. If set to DEFAULT the platform default key (if any)
+ will be used. Otherwise should be set to a valid API key which can be obtained
+ from https://tech.yandex.com/translate/. If the platform doesn't have a default
+ key and one isn't provided here, an error will be raised.
 
 ### Events  {#YandexTranslate-Events}
 

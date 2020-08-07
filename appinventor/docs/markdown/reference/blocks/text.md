@@ -23,6 +23,7 @@ layout: documentation
 * [obfuscated text](#obfuscatetext)
 * [is a string?](#isstring)
 * [reverse](#reverse)
+* [replace all mappings](#replaceallmappings)
 
 ### " " (string block)   {#string}
 
@@ -50,11 +51,11 @@ Returns the number of characters including spaces in the string. This is the len
 
 Returns whether or not the string contains any characters (including spaces). When the string length is 0, returns true otherwise it returns false.
 
-### compare texts < > =   {#compare}
+### compare texts < > = ≠ {#compare}
 
 ![](images/text/compare.gif)
 
-Returns whether or not the first string is lexicographically <, >, or = the second string depending on which dropdown is selected.
+Returns whether or not the first string is lexicographically <, >, =, or ≠ the second string depending on which dropdown is selected.
 
 A string a considered lexicographically greater than another if it is alphabetically greater than the other string. Essentially, it would come after it in the dictionary. All uppercase letters are considered smaller or to occur before lowercase letters. cat would be > Cat.
 
@@ -155,3 +156,20 @@ Returns true if *thing* is a text object, otherwise false.
 ![](images/text/text_reverse.png)
 
 Reverse the given text. For example, "reverse" would become "esrever".
+
+### replace all mappings {#replaceallmappings}
+
+![](images/text/replaceallmappings.png)
+
+Given a dictionary of mappings as input, replaces the key entries in the text with the corresponding values in the dictionary.
+Returns the text with the mappings applied.
+
+#### dictionary order {#replaceallmappingsdictionary}
+
+If the dictionary order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
+is based on the entry order in the dictionary (the earliest one gets replaced first).
+
+#### longest string first order {#replaceallmappingslongeststring}
+
+If the longest string order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
+is the one which is longer.

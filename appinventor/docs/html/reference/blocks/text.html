@@ -146,6 +146,7 @@
   <li><a href="#obfuscatetext">obfuscated text</a></li>
   <li><a href="#isstring">is a string?</a></li>
   <li><a href="#reverse">reverse</a></li>
+  <li><a href="#replaceallmappings">replace all mappings</a></li>
 </ul>
 
 <h3 id="string">” “ (string block)</h3>
@@ -174,11 +175,11 @@
 
 <p>Returns whether or not the string contains any characters (including spaces). When the string length is 0, returns true otherwise it returns false.</p>
 
-<h3 id="compare">compare texts &lt; &gt; =</h3>
+<h3 id="compare">compare texts &lt; &gt; = ≠</h3>
 
 <p><img src="images/text/compare.gif" alt="" /></p>
 
-<p>Returns whether or not the first string is lexicographically &lt;, &gt;, or = the second string depending on which dropdown is selected.</p>
+<p>Returns whether or not the first string is lexicographically &lt;, &gt;, =, or ≠ the second string depending on which dropdown is selected.</p>
 
 <p>A string a considered lexicographically greater than another if it is alphabetically greater than the other string. Essentially, it would come after it in the dictionary. All uppercase letters are considered smaller or to occur before lowercase letters. cat would be &gt; Cat.</p>
 
@@ -279,6 +280,23 @@
 <p><img src="images/text/text_reverse.png" alt="" /></p>
 
 <p>Reverse the given text. For example, “reverse” would become “esrever”.</p>
+
+<h3 id="replaceallmappings">replace all mappings</h3>
+
+<p><img src="images/text/replaceallmappings.png" alt="" /></p>
+
+<p>Given a dictionary of mappings as input, replaces the key entries in the text with the corresponding values in the dictionary.
+Returns the text with the mappings applied.</p>
+
+<h4 id="replaceallmappingsdictionary">dictionary order</h4>
+
+<p>If the dictionary order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
+is based on the entry order in the dictionary (the earliest one gets replaced first).</p>
+
+<h4 id="replaceallmappingslongeststring">longest string first order</h4>
+
+<p>If the longest string order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
+is the one which is longer.</p>
 
 </article>
 <script>

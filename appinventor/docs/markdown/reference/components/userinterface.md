@@ -1638,7 +1638,14 @@ Component for viewing Web pages.
 
  You can use the [`WebViewString`](#WebViewer.WebViewString) property to communicate between your app and
  Javascript code running in the `WebViewer` page. In the app, you get and set
- [`WebViewString`](#WebViewer.WebViewString) to "hello", then the web page will show
+ [`WebViewString`](#WebViewer.WebViewString). In the `WebViewer`, you include Javascript that references the
+ `window.AppInventor` object, using the methods `getWebViewString()` and `setWebViewString(text)`.
+
+ For example, if the `WebViewer` opens to a page that contains the Javascript command
+ ```javascript
+ document.write("The answer is" + window.AppInventor.getWebViewString());
+ ```
+ and if you set [`WebViewString`](#WebViewer.WebViewString) to "hello", then the web page will show
  ```
  The answer is hello.
  ```
@@ -1714,6 +1721,12 @@ Component for viewing Web pages.
 
 {:.events}
 
+{:id="WebViewer.BeforePageLoad"} BeforePageLoad(*url*{:.text})
+: When a page is about to load this event is run.
+
+{:id="WebViewer.ErrorOccurred"} ErrorOccurred(*errorCode*{:.number},*description*{:.text},*failingUrl*{:.text})
+: When an error occurs this event is run.
+
 {:id="WebViewer.PageLoaded"} PageLoaded(*url*{:.text})
 : When a page is finished loading this event is run.
 
@@ -1736,6 +1749,10 @@ Component for viewing Web pages.
  when using the `WebViewer` to poll a page that may not be sending
  appropriate cache control headers.
 
+{:id="WebViewer.ClearCookies" class="method"} <i/> ClearCookies()
+: Clear the webview's cookies. This is useful if you want to
+ sign the user out of a website that uses them to store logins.
+
 {:id="WebViewer.ClearLocations" class="method"} <i/> ClearLocations()
 : Clear Stored Location permissions. When the geolocation API is used in
  the `WebViewer`, the end user is prompted on a per URL basis for whether
@@ -1757,3 +1774,12 @@ Component for viewing Web pages.
 
 {:id="WebViewer.GoToUrl" class="method"} <i/> GoToUrl(*url*{:.text})
 : Load the page at the given URL.
+
+{:id="WebViewer.Reload" class="method"} <i/> Reload()
+: Reload the current page.
+
+{:id="WebViewer.RunJavaScript" class="method"} <i/> RunJavaScript(*js*{:.text})
+: Run JavaScript in the current page.
+
+{:id="WebViewer.StopLoading" class="method"} <i/> StopLoading()
+: Stop loading a page.

@@ -57,7 +57,7 @@
         </target>
 
 	<target name="BlocklyCompile"
-		      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library" 
+		      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library"
 		      depends="init,CheckBlocklyCompile"
                       unless="BlocklyCompile.uptodate">
 		<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
@@ -75,11 +75,11 @@
   </target-->
 
 	<!-- =====================================================================
-       BlocklyeditorTests: build and run the Blocklyeditor tests and 
+       BlocklyeditorTests: build and run the Blocklyeditor tests and
        generate the output results
        ===================================================================== -->
-	
-	<target name="BlocklyTestbed" 
+
+	<target name="BlocklyTestbed"
 		      description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser"
 		      depends="components_AndroidRuntime, common_CommonTestUtils">
 		<mkdir dir="${run.lib.dir}" />
@@ -109,7 +109,26 @@
 	<target name="BlocklyeditorTests"
 		      description="Blocklyeditor: build and run the test suite"
 		      depends="BlocklyCompile, BlocklyTestbed" >
-		<ai.dojunit aij-testingtarget="BlocklyeditorTests" aij-dir="${blocklyeditor.pkg}">
-		</ai.dojunit>
+		<sequential>
+			<ai.dojunit aij-testingtarget="BlocklyeditorTests" aij-dir="${blocklyeditor.pkg}">
+			</ai.dojunit>
+			<exec executable="phantomjs" output="reports/raw/TEST-MochaTests.xml">
+				<arg value="../node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js"/>
+				<arg value="tests/com/google/appinventor/mocha/index.html"/>
+				<arg value="xunit"/>
+			</exec>
+			<!--Remove anything before the first < (start of xml)-->
+			<replaceregexp file="reports/raw/TEST-MochaTests.xml"
+				match="^[^&lt;]*"
+				replace=""/>
+			<!--Add package name to file-->
+			<replace file="reports/raw/TEST-MochaTests.xml"
+					 token="name=&quot;Mocha Tests&quot;"
+					 value="name=&quot;com.google.appinventor.blocklyeditor.MochaTests&quot;"/>
+			<junitreport todir="${reports.dir}">
+				<fileset file="reports/raw/TEST-*.xml"/>
+				<report format="frames" todir="${reports.dir}/html"/>
+			</junitreport>
+		</sequential>
 	</target>
 </project>
