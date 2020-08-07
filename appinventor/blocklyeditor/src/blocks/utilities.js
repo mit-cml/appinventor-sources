@@ -44,8 +44,14 @@ Blockly.Blocks.Utilities.OUTPUT = 1;
 Blockly.Blocks.Utilities.INPUT = 0;
 
 Blockly.Blocks.Utilities.YailTypeToBlocklyType = function(yail,inputOrOutput) {
+    if (yail.indexOf('Enum') != -1) {
+      return yail;
+    }
 
-    var inputOrOutputName = (inputOrOutput == Blockly.Blocks.Utilities.OUTPUT ? "output" : "input");
+    // TODO: Might be better to just swith OUTPUT and INPUT to strings. Would
+    //   require investigation.
+    var inputOrOutputName = (inputOrOutput == Blockly.Blocks.Utilities.OUTPUT) ?
+        "output" : "input";
     var bType = Blockly.Blocks.Utilities.YailTypeToBlocklyTypeMap[yail][inputOrOutputName];
 
     if (bType !== null || yail == 'any') {
@@ -54,6 +60,40 @@ Blockly.Blocks.Utilities.YailTypeToBlocklyType = function(yail,inputOrOutput) {
         throw new Error("Unknown Yail type: " + yail + " -- YailTypeToBlocklyType");
     }
 };
+
+/**
+ * Returns the blockly type associated with the given helper key, or null if
+ * there is not one.
+ * @param {!HelperKey} helperKey The helper key to find the equivalent blockly
+ *     type of.
+ * @param {!Blockly.Block} block The block which we will apply the type to. Used
+ *     to access the component database etc.
+ * @return {string?} The correct string representation of the type, or null.
+ */
+Blockly.Blocks.Utilities.helperKeyToBlocklyType = function(helperKey, block) {
+  if (!helperKey) {
+    return null;
+  }
+  var utils = Blockly.Blocks.Utilities;
+  switch (helperKey.type) {
+    case "OPTION_LIST":
+      return utils.optionListKeyToBlocklyType(helperKey.key, block);
+  }
+  return null;
+}
+
+/**
+ * Returns the blockly type associated with the given option list helper key.
+ * @param {HelperKey} key The key to find the equivalent blockly type of.
+ * @param {!Blockly.Block} block The block which we will apply the type to. Used
+ *     to access the component database etc.
+ * @return {!string} The correct string representation of the type.
+ */
+Blockly.Blocks.Utilities.optionListKeyToBlocklyType = function(key, block) {
+  var optionList = block.getTopWorkspace().getComponentDatabase()
+      .getOptionList(key);
+  return optionList.className + 'Enum';
+}
 
 
 // Blockly doesn't wrap tooltips, so these can get too wide.  We'll create our own tooltip setter
