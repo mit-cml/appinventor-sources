@@ -15,7 +15,7 @@ public class MockVisibleExtension extends MockVisibleComponent {
     }
 
     public void initComponent(Element component) {
-        initComponent(HTMLPanel.wrap(component));
+        super.initComponent(HTMLPanel.wrap(component));
     }
 
     public String getName() {
