@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatCallback;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.ActionMode.Callback;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -56,6 +57,7 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
   private static int primaryColor;
   private AppCompatDelegate appCompatDelegate;
   android.widget.LinearLayout frameWithTitle;
+  private FloatingActionButton floatingActionButton;
   TextView titleBar;
   private static boolean didSetClassicModeFromYail = false;
   @SuppressWarnings("WeakerAccess")  // Potentially useful to extensions with custom activities

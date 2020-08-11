@@ -22,6 +22,7 @@ import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
+import com.google.appinventor.client.editor.simple.components.MockFloatingActionButton;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
@@ -167,6 +168,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/navigation.png", images.navigationComponent());
     bundledImages.put("images/arduino.png", images.arduino());
     bundledImages.put("images/magneticSensor.png", images.magneticSensor());
+    bundledImages.put("images/fab.png", images.fab());
 
     imagesInitialized = true;
   }
@@ -459,6 +461,8 @@ public final class SimpleComponentDescriptor {
       return new MockRectangle(editor);
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
+    } else if(name.equals(MockFloatingActionButton.TYPE)) {
+      return new MockFloatingActionButton(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);

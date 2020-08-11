@@ -1,0 +1,75 @@
+package com.google.appinventor.components.runtime;
+
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import androidx.core.widget.ImageViewCompat;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.MediaUtil;
+
+import java.io.IOException;
+
+@DesignerComponent(version = YaVersion.FLOATING_ACTION_BUTTON_COMPONENT_VERSION,
+        category = ComponentCategory.USERINTERFACE,
+        description = " ",
+        showOnPalette = false)
+@SimpleObject
+public class FloatingActionButton extends AndroidViewComponent{
+    private com.google.android.material.floatingactionbutton.FloatingActionButton floatingActionButton;
+    private String iconPath = "";
+    private Drawable icon = null;
+
+    /**
+     * Creates a new AndroidViewComponent.
+     *
+     * @param container container, component will be placed in
+     */
+    public FloatingActionButton(ComponentContainer container) {
+        super(container);
+        floatingActionButton = new com.google.android.material.floatingactionbutton.FloatingActionButton(container.$context());
+        container.$add(this);
+        floatingActionButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        ((LinearLayout.LayoutParams)floatingActionButton.getLayoutParams()).gravity=Gravity.BOTTOM;
+        floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(android.graphics.Color.rgb(255,64,129)));
+        if(icon==null) {
+        floatingActionButton.setImageResource(android.R.drawable.ic_input_add);
+        ImageViewCompat.setImageTintList(floatingActionButton, ColorStateList.valueOf(COLOR_WHITE));
+        }
+        floatingActionButton.show();
+        Log.d("fab", floatingActionButton+" ");
+    }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
+    @SimpleProperty(category = PropertyCategory.APPEARANCE)
+    public void Icon(String path) {
+        try {
+            icon = MediaUtil.getBitmapDrawable(container.$form(), path);
+            iconPath = path;
+            floatingActionButton.setImageDrawable(icon);
+        } catch (IOException e) {
+            Log.d("FloatingActionButton", "Unable to load icon" + iconPath);
+        }
+    }
+
+    @SimpleProperty
+    public String Icon() {
+        return iconPath;
+    }
+
+    @Override
+    public View getView() {
+        return floatingActionButton;
+    }
+}

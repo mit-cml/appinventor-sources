@@ -11,6 +11,7 @@ Table of Contents:
 * [Button](#Button)
 * [CheckBox](#CheckBox)
 * [DatePicker](#DatePicker)
+* [FloatingActionButton](#FloatingActionButton)
 * [Image](#Image)
 * [Label](#Label)
 * [ListPicker](#ListPicker)
@@ -348,6 +349,49 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 
 {:id="DatePicker.SetDateToDisplayFromInstant" class="method"} <i/> SetDateToDisplayFromInstant(*instant*{:.InstantInTime})
 : Allows the user to set the date from the instant to be displayed when the date picker opens.
+
+## FloatingActionButton  {#FloatingActionButton}
+
+Component for FloatingActionButton
+
+
+
+### Properties  {#FloatingActionButton-Properties}
+
+{:.properties}
+
+{:id="FloatingActionButton.Height" .number .bo} *Height*
+: Specifies the `FloatingActionButton`'s vertical height, measured in pixels.
+
+{:id="FloatingActionButton.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `FloatingActionButton`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="FloatingActionButton.Icon" .text} *Icon*
+: Property for Icon
+
+{:id="FloatingActionButton.Visible" .boolean} *Visible*
+: Specifies whether the `FloatingActionButton` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `FloatingActionButton` is showing and `false`{:.logic.block} if hidden.
+
+{:id="FloatingActionButton.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `FloatingActionButton`, measured in pixels.
+
+{:id="FloatingActionButton.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `FloatingActionButton` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#FloatingActionButton-Events}
+
+{:.events}
+None
+
+
+### Methods  {#FloatingActionButton-Methods}
+
+{:.methods}
+None
+
 
 ## Image  {#Image}
 

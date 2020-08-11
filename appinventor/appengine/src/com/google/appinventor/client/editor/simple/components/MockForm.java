@@ -234,6 +234,7 @@ public final class MockForm extends MockContainer {
   AbsolutePanel phoneWidget;
   AbsolutePanel responsivePanel;
 
+  MockFloatingActionButton floatingActionButton;
   ScrollPanel scrollPanel;
   private TitleBar titleBar;
   private NavigationBar navigationBar;
@@ -314,6 +315,25 @@ public final class MockForm extends MockContainer {
     initialized = true;
     // Now that the default for Scrollable is false, we need to force setting the property when creating the MockForm
     setScrollableProperty(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    loadFab();
+  }
+
+  private void loadFab() {
+    for (MockComponent child : children) {
+      if (child instanceof MockFloatingActionButton) {
+        floatingActionButton = (MockFloatingActionButton) child;
+        break;
+      }
+    }
+    if (floatingActionButton == null) {
+      floatingActionButton = new MockFloatingActionButton(editor);
+      addComponent(floatingActionButton);
+    }
   }
 
   public void changePreviewSize(int width, int height, int idx) {
