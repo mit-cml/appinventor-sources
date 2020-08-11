@@ -15,6 +15,8 @@ public class MockVisibleExtension extends MockVisibleComponent {
     }
 
     public void initComponent(Element component) {
+        HTMLPanel componentElement = HTMLPanel.wrap(component);
+        componentElement.setStylePrimaryName("ode-SimpleMockComponent");
         super.initComponent(HTMLPanel.wrap(component));
     }
 
