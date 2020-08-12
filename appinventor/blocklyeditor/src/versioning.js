@@ -958,6 +958,126 @@ Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName,
 };
 
 /**
+ * Upgrades the given method param to use a dropdown. Upgrades iff the block
+ * currently used as the arguement is a constant (like a number or text block).
+ * @param {string} componentType Name of the component type for method.
+ * @param {string} methodName Name of the method.
+ * @param {number} argNum The arguement that needs to be upgraded (zero indexed).
+ * @param {string} dropdownKey The key for the dropdown block we want to use now.
+ */
+Blockly.Versioning.makeMethodUseDropdown =
+  function(componentType, methodName, argNum, dropdownKey) {
+    return function (blocksRep, workspace) {
+      var valueMap = Blockly.Versioning
+          .getOptionListValueMap(workspace, dropdownKey);
+      var dom = Blockly.Versioning.ensureDom(blocksRep);
+      var methodNodes = Blockly.Versioning
+          .findAllMethodCalls(dom, componentType, methodName);
+      for (var i = 0, method; method = methodNodes[i]; i++) {
+        for (var j = 0, child; child = method.children[j]; j++) {
+          if (child.tagName == 'value' && 
+              child.getAttribute('name') == 'ARG' + argNum) {
+            Blockly.Versioning.tryReplaceTargetBlock(
+                child, valueMap, dropdownKey);
+            break;
+          }
+        }
+      }
+      return blocksRep;
+    }
+  }
+
+/**
+ * Upgrades the given setter to use a dropdown. Upgrades iff the block
+ * currently used as the arguement is a constant (like a number or text block).
+ * @param {string} componentType Name of the component type for method.
+ * @param {string} propertyName Name of the property.
+ * @param {string} dropdownKey The key for the dropdown block we want to use now.
+ */
+Blockly.Versioning.makeSetterUseDropdown =
+  function(componentType, propertyName, dropdownKey) {
+    return function(blocksRep, workspace) {
+      var valueMap = Blockly.Versioning
+          .getOptionListValueMap(workspace, dropdownKey);
+      var dom = Blockly.Versioning.ensureDom(blocksRep);
+      var props = Blockly.Versioning
+          .findAllPropertyBlocks(dom, componentType, propertyName);
+      for (var i = 0, prop; prop = props[i]; i++) {
+        var mutation = Blockly.Versioning.firstChildWithTagName(prop, 'mutation');
+        if (mutation.getAttribute('set_or_get') != 'set') {
+          continue;
+        }
+        var value = Blockly.Versioning.firstChildWithTagName(prop, 'value');
+        Blockly.Versioning.tryReplaceTargetBlock(value, valueMap, dropdownKey);
+      }
+      return dom;
+    }
+  }
+
+/**
+ * Gets the available option values for the given option list key.
+ * @param {!Blockly.Workspace} workspace Used to get the component database.
+ * @param {string} key The key to the option list.
+ * @return {!Object<!string, !string>} A map of values to their enum constant
+ *     names.
+ */
+Blockly.Versioning.getOptionListValueMap = function(workspace, key) {
+  var map = {};
+  var db = workspace.getComponentDatabase();
+  var optionList = db.getOptionList(key);
+  for (var i = 0, option; option = optionList.options[i]; i++) {
+    map[option.value] = option.name;
+  }
+  return map;
+}
+
+/**
+ * Replaces the block currently attached to the passed value input with a
+ * dropdown block. The currently block is replaced iff it is a constant (eg a
+ * text or number block) and the value is present in the passed valueMap.
+ * @param {Element} valueNode The node to modify.
+ * @param {!Object<!string, !string>} valueToNameMap A map of values to their
+ *     enum constant names.
+ * @param {string} dropdownKey The key for the dropdown block we want to create.
+ */
+Blockly.Versioning.tryReplaceTargetBlock =
+  function(valueNode, valueToNameMap, dropdownKey) {
+    if (!valueNode) {
+      return;
+    }
+
+    // The node describing the value input's target block.
+    var targetNode = Blockly.Versioning
+        .firstChildWithTagName(valueNode, 'block');
+    if (!targetNode) {
+      return;
+    }
+
+    var name = targetNode.getAttribute('type');
+    if (name != 'text' && name != 'math_number') {
+      return;
+    }
+    var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+    var targetValue = field.textContent;
+    if (!valueToNameMap[targetValue]) {
+      return;
+    }
+
+    valueNode.removeChild(targetNode);
+    var newBlock = document.createElement('block');
+    newBlock.setAttribute('type', 'helpers_dropdown');
+    var mutation = document.createElement('mutation');
+    mutation.setAttribute('key', dropdownKey);
+    var field = document.createElement('field');
+    field.setAttribute('name', 'OPTION');
+    var option = document.createTextNode(valueToNameMap[targetValue]);
+    field.appendChild(option);
+    newBlock.appendChild(mutation);
+    newBlock.appendChild(field);
+    valueNode.appendChild(newBlock);
+  }
+
+/**
  * Returns the list of top-level blocks that are event handlers for the given eventName for
  * componentType.
  * @param dom  DOM for XML workspace
@@ -1213,7 +1333,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The CenterAtOrigin property was added.
     // The default value of false is correct for upgraded apps.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // Adds dropdown blocks for Direction.
+    7: Blockly.Versioning.makeMethodUseDropdown('Ball', 'Bounce', 0, 'Direction')
   }, // End Ball upgraders
 
   "BarcodeScanner": {
@@ -1650,7 +1773,10 @@ Blockly.Versioning.AllUpgradeMaps =
           markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
         }
     */
-    6: "ai1CantDoUpgrade" // Just indicates we couldn't do upgrade even if we wanted to
+    6: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
+
+    // Adds dropdown blocks for Direction.
+    7: Blockly.Versioning.makeMethodUseDropdown('Sprite', 'Bounce', 0, 'Direction')
 
   }, // End ImageSprite upgraders
 
@@ -2347,8 +2473,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 27:
     // - Platform and PlatformVersion read-only blocks were added
-    27: "noUpgrade"
+    27: "noUpgrade",
 
+    // For FORM_COMPONENT_VERSION 28:
+    // - Adds dropdown blocks for ScreenAnimation.
+    28: [Blockly.Versioning.makeSetterUseDropdown(
+            'Form', 'OpenScreenAnimation', 'ScreenAnimation'),
+         Blockly.Versioning.makeSetterUseDropdown(
+            'Form', 'CloseScreenAnimation', 'ScreenAnimation')]
 
   }, // End Screen
 

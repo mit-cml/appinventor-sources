@@ -520,6 +520,10 @@ public final class YoungAndroidFormUpgrader {
       // The OriginAtCenter property was added.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Direction dropdown blocks were added.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
   private static int upgradeBarcodeScannerProperties(Map<String, JSONValue> componentProperties,
@@ -1034,6 +1038,11 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 27;
     }
 
+    if (srcCompVersion < 28) {
+      // ScreenAnimation dropdown blocks were added.
+      srcCompVersion = 28;
+    }
+
     return srcCompVersion;
   }
 
@@ -1149,6 +1158,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // Direction dropdown blocks were added.
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }
