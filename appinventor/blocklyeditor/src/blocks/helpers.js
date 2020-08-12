@@ -57,7 +57,8 @@ Blockly.Blocks['helpers_dropdown'] = {
         .appendField(tag)
         .appendField(dropdown, 'OPTION');
     
-    this.setFieldValue(optionList.defaultOpt, 'OPTION');
+    var value = xml.getAttribute('value') || optionList.defaultOpt;
+    this.setFieldValue(value, 'OPTION');
   },
 
   /**
@@ -96,5 +97,28 @@ Blockly.Blocks['helpers_dropdown'] = {
       }
     }
     return options;
+  },
+
+  typeblock: function() {
+    var db = Blockly.mainWorkspace.getComponentDatabase();
+    var tb = [];
+
+    db.forEachOptionList(function(optionList) {
+      for (var i = 0, option; option = optionList.options[i]; i++) {
+        var tag = db.getInternationalizedOptionListTag(optionList.tag);
+        var key = optionList.tag + option.name;
+        var i18nName = db.getInternationalizedOptionName(key, option.name);
+        tb.push({
+          // TODO: This doesn't handle rtl langs, anyway to fix that?
+          translatedName: tag + i18nName,
+          mutatorAttributes: {
+            key: optionList.tag,
+            value: option.name
+          }
+        });
+      }
+    });
+
+    return tb;
   }
 }

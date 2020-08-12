@@ -674,6 +674,16 @@ Blockly.ComponentDatabase.prototype.getOptionList = function(key) {
 }
 
 /**
+ * Iterate over all option list definitions calling the callback function with
+ * the OptionList
+ *
+ * @param {function(!OptionList)} callback
+ */
+Blockly.ComponentDatabase.prototype.forEachOptionList = function(callback) {
+  goog.object.forEach(this.optionLists_, callback);
+}
+
+/**
  * Get the internationalized string for the given component type.
  * @param {!string} name String naming a component type
  * @param {?string=name} opt_default Optional default value (default: name parameter)
