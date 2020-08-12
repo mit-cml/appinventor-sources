@@ -227,9 +227,14 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   var screenName = formName.substring(formName.indexOf("_") + 1);
   var subsetJsonString = "";
   if (window.parent.BlocklyPanel_getComponentInstancePropertyValue) {
-    subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(formName, screenName, "BlocksToolkit");
+    subsetJsonString = window.parent.BlocklyPanel_getComponentInstancePropertyValue(
+        formName, screenName, "BlocksToolkit");
   }
+  // Create the subset of blocks.
   if (subsetJsonString.length > 0) {
+    // TODO: All of this code should be cleaned up and moved into a separate
+    //   function. Logs should be removed.
+    
     var subsetArray = [];
     var subsetBlocks = [];
     subsetArray = JSON.parse(subsetJsonString);
@@ -256,49 +261,167 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
       xmlArray.push(xml);
     }
   } else {
-
-    //create event blocks
-    goog.object.forEach(componentInfo.eventDictionary, function (event, name) {
-      if (event.deprecated != 'true' && event.deprecated !== true) {
-        Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
-          'component_type': typeName, 'instance_name': instanceRecord.name, 'event_name': name
-        }));
-      }
-    }, this);
-
-    //create non-generic method blocks
-    goog.object.forEach(componentInfo.methodDictionary, function (method, name) {
-      if (method.deprecated != 'true' && method.deprecated !== true) {
-        Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_method', {
-          'component_type': typeName, 'instance_name': instanceRecord.name, 'method_name': name
-        }));
-      }
-    }, this);
-
-    //for each property
-    goog.object.forEach(componentInfo.properties, function (property, name) {
-      if (property.deprecated != 'true' && property.deprecated !== true) {
-        var params = {
-          'component_type': typeName, 'instance_name': instanceRecord.name,
-          'property_name': name
-        };
-        if ((property.mutability & Blockly.PROPERTY_READABLE) == Blockly.PROPERTY_READABLE) {
-          params['set_or_get'] = 'get';
-          Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
-        }
-        if ((property.mutability & Blockly.PROPERTY_WRITEABLE) == Blockly.PROPERTY_WRITEABLE) {
-          params['set_or_get'] = 'set';
-          Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
-        }
-      }
-    }, this);
-
-    //create component literal block
-    var mutatorAttributes = {component_type: typeName, instance_name: instanceRecord.name};
-    Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray("component_component_block", mutatorAttributes));
+    xmlArray = this.createAllComponentBlocks(componentInfo, instanceRecord);
   }
   return xmlArray;
 };
+
+/**
+ * Creates all of the blocks for a given component. -- These are actual blocks
+ * not generic ones.
+ * @param {!ComponentTypeDescriptor} componentInfo An object describing all of
+ *     the information about a component. Eg events, methods, properties, etc.
+ * @param {!{name: string, typeName: string}} instanceRecord An object
+ *     describing all of the information about a component instance.
+ */
+Blockly.Drawer.prototype.createAllComponentBlocks =
+  function(componentInfo, instanceRecord) {
+    var xmlArray = [];
+    // Collect helper keys used in events, methods, and properties so that we
+    // can add all the helper blocks used by the component near the bottom of
+    // its drawer.
+    var helperKeys = [];
+    var typeName = instanceRecord.typeName;
+    var instanceName = instanceRecord.name;
+
+    /**
+     * Adds the feature's helper key to the list of HelperKeys if the key is
+     * not currently in the list. This list is then used to add the helper keys
+     * to the bottom of the drawer.
+     * @param {{helperKey: Object}} feature The feature to check for a helperKey.
+     */
+    function getHelper(feature) {
+      if (!feature.helperKey) {
+        return;
+      }
+      var curKey = feature.helperKey;
+      containsKey = helperKeys.some(function(altKey) {
+        return altKey.key == curKey.key && altKey.type == curKey.type;
+      });
+      if (!containsKey) {
+        helperKeys.push(feature.helperKey);
+      }
+    }
+
+    // Create event blocks.
+    goog.object.forEach(componentInfo.eventDictionary, function (event, name) {
+      if (event.deprecated) {
+        return;
+      }
+
+      var eventObj = {
+        component_type: typeName,
+        instance_name: instanceName,
+        event_name: name
+      };
+      var eventXml = this.blockTypeToXMLArray('component_event', eventObj);
+      Array.prototype.push.apply(xmlArray, eventXml);
+
+      // Determine if any parameters are associated with a helper which should
+      // be added at the bottom of the drawer.
+      event.parameters.forEach(getHelper);
+    }, this);
+
+    // Create method blocks.
+    goog.object.forEach(componentInfo.methodDictionary, function (method, name) {
+      if (method.deprecated) {
+        return;
+      }
+
+      var methodObj = {
+        component_type: typeName,
+        instance_name: instanceName,
+        method_name: name
+      };
+      var methodXml = this.blockTypeToXML('component_method', methodObj);
+
+      method.parameters.forEach(function(param, index) {
+        if (!param.helperKey) {
+          return;
+        }
+        // Determine if any parameters are associated with a helper which should
+        // be added at the bottom of the drawer.
+        getHelper(param);
+        // Adds dropdown blocks to inputs which expect them.
+        var inputXml = this.valueWithHelperXML('ARG' + index, param.helperKey);
+        // First child b/c these are wrapped in an <xml/> node.
+        methodXml.firstChild.appendChild(inputXml.firstChild);
+      }.bind(this));
+
+      Array.prototype.push.apply(xmlArray, this.XMLToArray(methodXml));
+    }, this);
+
+    // Create getter and setter blocks.
+    goog.object.forEach(componentInfo.properties, function (property, name) {
+      if (property.deprecated) {
+        return;
+      }
+
+      var propertyObj = {
+        component_type: typeName,
+        instance_name: instanceName,
+        property_name: name
+      }
+      var readable = Blockly.PROPERTY_READABLE;
+      var writable = Blockly.PROPERTY_WRITEABLE;
+
+      if ((property.mutability & readable) == readable) {
+        propertyObj.set_or_get = 'get';
+        var getXml = this.blockTypeToXMLArray('component_set_get', propertyObj);
+        Array.prototype.push.apply(xmlArray, getXml);
+      }
+      if ((property.mutability & writable) == writable) {
+        propertyObj.set_or_get = 'set';
+        var setXml = this.blockTypeToXML('component_set_get', propertyObj);
+
+        if (property.helperKey) {
+          // Adds dropdown blocks to inputs which expect them.
+          var inputXml = this.valueWithHelperXML('VALUE', property.helperKey);
+          // First child b/c these are wrapped in an <xml/> node.
+          setXml.firstChild.appendChild(inputXml.firstChild);
+        }
+
+        Array.prototype.push.apply(xmlArray, this.XMLToArray(setXml));
+      }
+
+      // Collects up helper blocks for properties which use them so they can
+      // be added to the bottom of the drawer.
+      getHelper(property);
+    }, this);
+
+    // Create helper blocks at the bottom of the drawer, right above the
+    // component block.
+    // Another option was to create a separate drawer for helper blocks, but it
+    // was decided that it was better to keep helpers close to the components/
+    // blocks that use them.
+    helperKeys.forEach(function(helper) {
+      var xml = this.helperKeyToXML(helper);
+      Array.prototype.push.apply(xmlArray, this.XMLToArray(xml));
+    }.bind(this));
+
+    // Create component literal block.
+    var componentObj = {
+      component_type: typeName,
+      instance_name: instanceName
+    };
+    var componentXml = this.blockTypeToXMLArray(
+        'component_component_block', componentObj);
+    Array.prototype.push.apply(xmlArray, componentXml);
+
+
+    return xmlArray;
+  }
+
+/**
+ * Creates an XML Array which defines the block for the given helper key.
+ * @param {HelperKey} helperKey The helper key we want to get the block for.
+ */
+Blockly.Drawer.prototype.helperKeyToXML= function(helperKey) {
+  switch(helperKey.type) {
+    case 'OPTION_LIST':
+      return this.blockTypeToXML('helpers_dropdown', {key: helperKey.key});
+  }
+}
 
 Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   var xmlArray = [];
@@ -341,6 +464,10 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
 };
 
 Blockly.Drawer.prototype.blockTypeToXMLArray = function(blockType,mutatorAttributes) {
+  return this.XMLToArray(this.blockTypeToXML(blockType, mutatorAttributes));
+};
+
+Blockly.Drawer.prototype.blockTypeToXML = function(blockType, mutatorAttributes) {
   var xmlString = Blockly.Drawer.getDefaultXMLString(blockType,mutatorAttributes);
   if(xmlString == null) {
     // [lyn, 10/23/13] Handle procedure calls in drawers specially
@@ -357,16 +484,8 @@ Blockly.Drawer.prototype.blockTypeToXMLArray = function(blockType,mutatorAttribu
       xmlString += '</block></xml>';
     }
   }
-  var xmlBlockArray = [];
-  var xmlFromString = Blockly.Xml.textToDom(xmlString);
-  // [lyn, 11/10/13] Use goog.dom.getChildren rather than .children or .childNodes
-  //   to make this code work across browsers.
-  var children = goog.dom.getChildren(xmlFromString);
-  for(var i=0;i<children.length;i++) {
-    xmlBlockArray.push(children[i]);
-  }
-  return xmlBlockArray;
-};
+  return Blockly.Xml.textToDom(xmlString);
+}
 
 Blockly.Drawer.mutatorAttributesToXMLString = function(mutatorAttributes){
   var xmlString = '<mutation ';
@@ -377,6 +496,47 @@ Blockly.Drawer.mutatorAttributesToXMLString = function(mutatorAttributes){
   xmlString += '></mutation>';
   return xmlString;
 };
+
+/**
+ * Creates the xml for a value input with the given name.
+ * @param {string} name The name of the value input.
+ * @return {!Node} Two xml nodes defining the value input. The outer is an <xml>
+ *     node and the inner is a <value> node.
+ */
+Blockly.Drawer.prototype.valueInputToXML = function(name) {
+  var xmlString = '<xml><value name="' + name + '"></value></xml>';
+  return Blockly.Xml.textToDom(xmlString);
+}
+
+/**
+ * @param {string} name The name of the value input.
+ * @param {HelperKey} helperKey Key defining the helper block to create.
+ * @return {!Node} XML nodes defining a value input with a helper block attached.
+ */
+Blockly.Drawer.prototype.valueWithHelperXML = function(name, helperKey) {
+  var inputXml= this.valueInputToXML(name);
+  var helperXml= this.helperKeyToXML(helperKey);
+  // First child b/c these are wrapped in an <xml/> node.
+  inputXml.firstChild.appendChild(helperXml.firstChild);
+  return inputXml;
+}
+
+/**
+ * Converts a group of nodes (the outer-most one being a <xml> node) int an
+ * array of all of the child nodes.
+ * @param {!Node} xml A group of nodes, the outer most one being an <xml> node.
+ * @return {!Array<!Node>} An array of xml nodes.
+ */
+Blockly.Drawer.prototype.XMLToArray = function(xml) {
+  var xmlArray = [];
+  // [lyn, 11/10/13] Use goog.dom.getChildren rather than .children or
+  //   .childNodes to make this code work across browsers.
+  var children = goog.dom.getChildren(xml);
+  for(var i = 0, child; child = children[i]; i++) {
+    xmlArray.push(child);
+  }
+  return xmlArray;
+}
 
 // [lyn, 10/22/13] return an XML string including one procedure caller for each procedure declaration
 // in main workspace.
