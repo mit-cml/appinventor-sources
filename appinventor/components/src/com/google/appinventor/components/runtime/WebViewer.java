@@ -74,7 +74,9 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  * to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
  * `file:///android_asset/` in compiled apps and `/sdcard/AppInventor/assets/` in the Companion.
  * Both of these options will continue to work but the `http://localhost/` approach will work in
- * both scenarios.
+ * both scenarios. You may also use "file:///appinventor_asset/" which provides more security by
+ * preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ * web.
  *
  * @internaldoc
  * Component for displaying web pages

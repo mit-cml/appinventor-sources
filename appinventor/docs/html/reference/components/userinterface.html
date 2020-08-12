@@ -1459,7 +1459,9 @@ having dark grey components.</li>
  to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
  <code class="highlighter-rouge">file:///android_asset/</code> in compiled apps and <code class="highlighter-rouge">/sdcard/AppInventor/assets/</code> in the Companion.
  Both of these options will continue to work but the <code class="highlighter-rouge">http://localhost/</code> approach will work in
- both scenarios.</p>
+ both scenarios. You may also use “file:///appinventor_asset/” which provides more security by
+ preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ web.</p>
 
 <h3 id="WebViewer-Properties">Properties</h3>
 

@@ -22,8 +22,10 @@ import java.util.Map;
 /**
  * A WebViewClient that provides functionality that needs Android 3.0 Honeycomb or higher.
  */
+@androidx.annotation.RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
 public class HoneycombWebViewClient extends FroyoWebViewClient<WebViewer> {
   private static final String TAG = HoneycombWebViewClient.class.getSimpleName();
+  private static final String ASSET_PREFIX = "file:///appinventor_asset/";
 
   public HoneycombWebViewClient(boolean followLinks, boolean ignoreErrors, Form form,
       WebViewer component) {
@@ -33,7 +35,7 @@ public class HoneycombWebViewClient extends FroyoWebViewClient<WebViewer> {
   @SuppressWarnings("deprecation")
   @Override
   public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-    if (url.startsWith("http://localhost/")) {
+    if (url.startsWith("http://localhost/") || url.startsWith(ASSET_PREFIX)) {
       return handleAppRequest(url);
     }
     return super.shouldInterceptRequest(view, url);
@@ -42,14 +44,21 @@ public class HoneycombWebViewClient extends FroyoWebViewClient<WebViewer> {
   @androidx.annotation.RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   @Override
   public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-    if (request.getUrl().getAuthority().equals("localhost")) {
+    Log.d(TAG, "scheme = " + request.getUrl().getScheme());
+    if (request.getUrl().getAuthority().equals("localhost")
+        || request.getUrl().toString().startsWith(ASSET_PREFIX)) {
       return handleAppRequest(request.getUrl().toString());
     }
     return super.shouldInterceptRequest(view, request);
   }
 
   protected WebResourceResponse handleAppRequest(String url) {
-    String path = url.substring(url.indexOf("//localhost/") + 12);
+    String path;
+    if (url.startsWith(ASSET_PREFIX)) {
+      path = url.substring(ASSET_PREFIX.length());
+    } else {
+      path = url.substring(url.indexOf("//localhost/") + 12);
+    }
     InputStream stream;
     try {
       Log.i(TAG, "webviewer requested path = " + path);
