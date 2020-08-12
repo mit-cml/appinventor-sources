@@ -21,8 +21,10 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.HorizontalAlignment;
 import com.google.appinventor.components.common.MapFeature;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.VerticalAlignment;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
@@ -58,16 +60,14 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   private String imagePath = "";
 
   /**
-   * Horizontal alignment of the marker drawable relative to its longitude. The default value is 3,
-   * which places the anchor at the horizontal center of the drawable.
+   * Horizontal alignment of the marker drawable relative to its longitude. Defaults to center.
    */
-  private int anchorHAlign = 3;
+  private HorizontalAlignment anchorHAlign = HorizontalAlignment.Center;
 
   /**
-   * Vertical alignment of the marker drawable relative to its latitude. The default value is 3,
-   * which places the anchor at the bottom of the drawable.
+   * Vertical alignment of the marker relative to its latitude. Defaults to bottom.
    */
-  private int anchorVAlign = 3;
+  private VerticalAlignment anchorVAlign = VerticalAlignment.Bottom;
 
   /**
    * Location of the marker's anchor.
@@ -305,15 +305,26 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
       defaultValue = "3")
   @SimpleProperty
-  public void AnchorHorizontal(int horizontal) {
-    if (horizontal == anchorHAlign) {
-      return;
-    } else if (horizontal > 3 || horizontal < 1) {
-      container.$form().dispatchErrorOccurredEvent(this, "AnchorHorizontal", ErrorMessages.ERROR_INVALID_ANCHOR_HORIZONTAL, horizontal);
+  public void AnchorHorizontal(@Options(HorizontalAlignment.class) int horizontal) {
+    // Make sure the horizontal alignment is a valid HorizontalAlignment.
+    HorizontalAlignment alignment = HorizontalAlignment.fromUnderlyingValue(horizontal);
+    if (alignment == null) {
+      container.$form().dispatchErrorOccurredEvent(this, "AnchorHorizontal",
+          ErrorMessages.ERROR_INVALID_ANCHOR_HORIZONTAL, horizontal);
       return;
     }
-    anchorHAlign = horizontal;
-    map.getController().updateFeaturePosition(this);
+    AnchorHorizontalAbstract(alignment);
+  }
+
+  /**
+   * Sets the horizontal anchor point of this marker relative to its longitude.
+   * @param alignment the alignment to set the anchor point to.
+   */
+  public void AnchorHorizontalAbstract(HorizontalAlignment alignment) {
+    if (alignment != anchorHAlign) {
+      anchorHAlign = alignment;
+      map.getController().updateFeaturePosition(this);
+    }
   }
 
   /**
@@ -322,8 +333,17 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @Override
   @SimpleProperty(description = "The horizontal alignment property controls where the Marker's " +
-      "anchor is located relative to its width.")
-  public int AnchorHorizontal() {
+      "anchor is located relative to its width. The choices are: 1 = left aligned, 3 = horizontally" +
+      " centered, 2 = right aligned.")
+  public @Options(HorizontalAlignment.class) int AnchorHorizontal() {
+    return anchorHAlign.toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current horizontal alignment of this marker relative to its longitude.
+   * @return the current horizontal alignment of this marker relative to its longitude.
+   */
+  public HorizontalAlignment AnchorHorizontalAbstract() {
     return anchorHAlign;
   }
 
@@ -331,15 +351,25 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
       defaultValue = "3")
   @SimpleProperty
-  public void AnchorVertical(int vertical) {
-    if (vertical == anchorVAlign) {
-      return;
-    } else if (vertical > 3 || vertical < 1) {
+  public void AnchorVertical(@Options(VerticalAlignment.class) int vertical) {
+    // Make sure the vertical alignment is a valid VerticalAlignment.
+    VerticalAlignment alignment = VerticalAlignment.fromUnderlyingValue(vertical);
+    if (alignment == null) {
       container.$form().dispatchErrorOccurredEvent(this, "AnchorVertical", ErrorMessages.ERROR_INVALID_ANCHOR_VERTICAL, vertical);
       return;
     }
-    anchorVAlign = vertical;
-    map.getController().updateFeaturePosition(this);
+    AnchorVerticalAbstract(alignment);
+  }
+  
+  /**
+   * Sets the vertical anchor point of this marker relative to its latitude.
+   * @param alignment the alignment to set the anchor point to.
+   */
+  public void AnchorVerticalAbstract(VerticalAlignment alignment) {
+    if (alignment != null) {
+      anchorVAlign = alignment;
+      map.getController().updateFeaturePosition(this);
+    }
   }
 
   /**
@@ -348,8 +378,17 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @Override
   @SimpleProperty(description = "The vertical alignment property controls where the Marker's " +
-      "anchor is located relative to its height.")
-  public int AnchorVertical() {
+      "anchor is located relative to its height. The choices are: 1 = aligned at the top, 2 = vertically " +
+      "centered, 3 = aligned at the bottom.")
+  public @Options(VerticalAlignment.class) int AnchorVertical() {
+    return anchorVAlign.toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current vertical alignment of this marker relative to its latitude.
+   * @return the current vertical alignment of this marker relative to its latitude.
+   */
+  public VerticalAlignment AnchorVerticalAbstract() {
     return anchorVAlign;
   }
 

@@ -884,6 +884,7 @@ public class YaVersion {
   // - Added the Platform and PlatformVersion read-only blocks
   // For FORM_COMPONENT_VERSION 28:
   // - Adds dropdown blocks for ScreenAnimation.
+  // - Adds dropdown blocks for HorizontalAlignment and VerticalAlignment.
   public static final int FORM_COMPONENT_VERSION = 28;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
@@ -906,9 +907,13 @@ public class YaVersion {
   // - The AlignVertical property was added
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 3:
   // - Added background color & image
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
+  // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
 
-  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 1;
+  // For HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
+  // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
@@ -1023,7 +1028,9 @@ public class YaVersion {
   // - The ShowShadow property was removed
   // For MARKER_COMPONENT_VERSION 3:
   // - Added fill and stroke opacity properties
-  public static final int MARKER_COMPONENT_VERSION = 3;
+  // For MARKER_COMPONENT_VERSION 4:
+  // - Add AlignHorizontal and AlignVertical dropdown blocks.
+  public static final int MARKER_COMPONENT_VERSION = 4;
 
   // For NAVIGATION_COMPONENT_VERSION 1:
   // - Initial Navigation implementation
@@ -1281,9 +1288,13 @@ public class YaVersion {
   // - The AlignVertical property was added
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 3:
   // - Added background color & image
-  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 3;
+  // For VERTICALARRANGEMENT_COMPONENT_VERSION 4:
+  // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 4;
 
-  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 1;
+  // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
+  // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
   // - The VideoPlayer.VideoPlayerError event was added.

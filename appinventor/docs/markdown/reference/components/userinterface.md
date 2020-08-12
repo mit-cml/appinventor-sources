@@ -943,7 +943,7 @@ Top-level component containing all other components in the program.
 
 {:id="Screen.AlignHorizontal" .number} *AlignHorizontal*
 : A number that encodes how contents of the screen are aligned horizontally. The choices are:
- `1` (left aligned), `2` (horizontally centered), `3` (right aligned).
+ `1` (left aligned), `3` (horizontally centered), `2` (right aligned).
 
 {:id="Screen.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the arrangement are aligned vertically. The choices
@@ -979,8 +979,7 @@ Top-level component containing all other components in the program.
  The build server will generate images of standard dimensions for Android devices.
 
 {:id="Screen.OpenScreenAnimation" .text} *OpenScreenAnimation*
-: The animation for switching to another screen. Valid options are `default`, `fade`, `zoom`,
- `slidehorizontal`, `slidevertical`, and `none`.
+: Sets the animation type for the transition of this form opening.
 
 {:id="Screen.Platform" .text .ro .bo} *Platform*
 : Gets the name of the underlying platform running the app. Currently, this is the text

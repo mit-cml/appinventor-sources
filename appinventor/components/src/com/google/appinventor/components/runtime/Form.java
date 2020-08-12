@@ -55,6 +55,8 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.HorizontalAlignment;
+import com.google.appinventor.components.common.VerticalAlignment;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.ScreenAnimation;
 import com.google.appinventor.components.common.YaVersion;
@@ -186,9 +188,9 @@ public class Form extends AppInventorCompatActivity
   // translates App Inventor alignment codes to Android gravity
   private AlignmentUtil alignmentSetter;
 
-  // the alignment for this component's LinearLayout
-  private int horizontalAlignment;
-  private int verticalAlignment;
+  // The alignment for this component's LinearLayout
+  private HorizontalAlignment horizontalAlignment;
+  private VerticalAlignment verticalAlignment;
 
   // Represents the transition animation type.
   private ScreenAnimation openAnimType;
@@ -1521,12 +1523,6 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
-  // Note(halabelson): This section on centering is duplicated between Form and HVArrangement
-  // I did not see a clean way to abstract it.  Someone should have a look.
-
-  // Note(halabelson): The numeric encodings of the alignment specifications are specified
-  // in ComponentConstants
-
   /**
   * Returns a number that encodes how contents of the screen are aligned horizontally.
   * The choices are: 1 = left aligned, 2 = horizontally centered, 3 = right aligned
@@ -1534,49 +1530,73 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(
      category = PropertyCategory.APPEARANCE,
      description = "A number that encodes how contents of the screen are aligned " +
-         " horizontally. The choices are: 1 = left aligned, 2 = horizontally centered, " +
-         " 3 = right aligned.")
- public int AlignHorizontal() {
-   return horizontalAlignment;
- }
+         " horizontally. The choices are: 1 = left aligned, 3 = horizontally centered, " +
+         " 2 = right aligned.")
+  public @Options(HorizontalAlignment.class) int AlignHorizontal() {
+    return horizontalAlignment.toUnderlyingValue();
+  }
+
+ /**
+  * Returns the current alignment of the screen.
+  * @return the current alignment of the screen.
+  */
+  public HorizontalAlignment AlignHorizontalAbstract() {
+    return horizontalAlignment;
+  }
 
  /**
   * A number that encodes how contents of the screen are aligned horizontally. The choices are:
-  * `1` (left aligned), `2` (horizontally centered), `3` (right aligned).
+  * `1` (left aligned), `3` (horizontally centered), `2` (right aligned).
   *
   * @internaldoc
   * Sets the horizontal alignment for contents of the screen
   *
   * @param alignment
   */
- @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
-     defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
- @SimpleProperty
- public void AlignHorizontal(int alignment) {
-   try {
-     // notice that the throw will prevent the alignment from being changed
-     // if the argument is illegal
-     alignmentSetter.setHorizontalAlignment(alignment);
-     horizontalAlignment = alignment;
-   } catch (IllegalArgumentException e) {
-     this.dispatchErrorOccurredEvent(this, "HorizontalAlignment",
-         ErrorMessages.ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT, alignment);
-   }
- }
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
+      defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
+  @SimpleProperty
+  public void AlignHorizontal(@Options(HorizontalAlignment.class) int alignment) {
+    // Make sure the alignment is a valid HorizontalAlignment.
+    HorizontalAlignment align = HorizontalAlignment.fromUnderlyingValue(alignment);
+    if (align == null) {
+      this.dispatchErrorOccurredEvent(this, "HorizontalAlignment",
+          ErrorMessages.ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT, alignment);
+      return;
+    }
+    AlignHorizontalAbstract(align);
+  }
+
+  /**
+   * Sets the horizontal alignment for the contents of the screen.
+   * @param alignment the alignment to set the contents of the screen to.
+   */
+  public void AlignHorizontalAbstract(HorizontalAlignment alignment) {
+    alignmentSetter.setHorizontalAlignment(alignment);
+    horizontalAlignment = alignment;
+  }
 
  /**
   * Returns a number that encodes how contents of the arrangement are aligned vertically.
   * The choices are: 1 = top, 2 = vertically centered, 3 = aligned at the bottom.
   * Vertical alignment has no effect if the screen is scrollable.
   */
- @SimpleProperty(
-     category = PropertyCategory.APPEARANCE,
-     description = "A number that encodes how the contents of the arrangement are aligned " +
-     "vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
-     "3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.")
- public int AlignVertical() {
-   return verticalAlignment;
- }
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "A number that encodes how the contents of the arrangement are aligned " +
+      "vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
+      "3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.")
+  public @Options(VerticalAlignment.class) int AlignVertical() {
+    return verticalAlignment.toUnderlyingValue();
+  }
+
+ /**
+  * Returns the vertical alignment of the screen's contents.
+  * @return the vertical alignment of the screen's contents.
+  */
+  public VerticalAlignment AlignVerticalAbstract() {
+    return verticalAlignment;
+  }
 
  /**
   * A number that encodes how the contents of the arrangement are aligned vertically. The choices
@@ -1588,20 +1608,28 @@ public class Form extends AppInventorCompatActivity
   *
   * @param alignment
   */
- @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
-     defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
- @SimpleProperty
- public void AlignVertical(int alignment) {
-   try {
-     // notice that the throw will prevent the alignment from being changed
-     // if the argument is illegal
-     alignmentSetter.setVerticalAlignment(alignment);
-     verticalAlignment = alignment;
-   } catch (IllegalArgumentException e) {
-     this.dispatchErrorOccurredEvent(this, "VerticalAlignment",
-         ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
-   }
- }
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
+      defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
+  @SimpleProperty
+  public void AlignVertical(@Options(VerticalAlignment.class) int alignment) {
+    // Make sure the alignment is a valid VerticalAlignment.
+    VerticalAlignment align = VerticalAlignment.fromUnderlyingValue(alignment);
+    if (align == null) {
+      this.dispatchErrorOccurredEvent(this, "VerticalAlignment",
+          ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
+      return;
+    }
+    AlignVerticalAbstract(align);
+  }
+
+  /**
+   * Sets the vertical alignment of the screen's contents.
+   * @param alignment the alignment to set the screen's contents to.
+   */
+  public void AlignVerticalAbstract(VerticalAlignment alignment) {
+    alignmentSetter.setVerticalAlignment(alignment);
+    verticalAlignment = alignment;
+  }
 
  /**
   * Returns the type of open screen animation (default, fade, zoom, slidehorizontal,

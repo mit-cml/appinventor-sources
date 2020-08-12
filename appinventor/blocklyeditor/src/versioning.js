@@ -1690,14 +1690,28 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
+    // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+    4: [Blockly.Versioning.makeSetterUseDropdown(
+           'HorizontalArrangement', 'AlignHorizontal', 'HorizontalAlignment'),
+        Blockly.Versioning.makeSetterUseDropdown(
+           'HorizontalArrangement', 'AlignVertical', 'VerticalAlignment')]
 
   }, // End HorizontalArrangement upgraders
 
   "HorizontalScrollArrangement": {
 
     // This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // For HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
+    // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+    2: [Blockly.Versioning.makeSetterUseDropdown(
+           'HorizontalScrollArrangement', 'AlignHorizontal', 'HorizontalAlignment'),
+        Blockly.Versioning.makeSetterUseDropdown(
+           'HorizontalScrollArrangement', 'AlignVertical', 'VerticalAlignment')]
 
   }, // End HorizontalScrollArrangement upgraders
 
@@ -2069,7 +2083,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:
     // - The FillOpacity and StrokeOpacity properties were added
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // For MARKER_COMPONENT_VERSION 4:
+    // - Add AlignHorizontal and AlignVertical dropdown blocks.
+    4: [Blockly.Versioning.makeSetterUseDropdown(
+           'Marker', 'AnchorHorizontal', 'HorizontalAlignment'),
+        Blockly.Versioning.makeSetterUseDropdown(
+           'Marker', 'AnchorVertical', 'VerticalAlignment')]
   }, // End Marker upgraders
 
   "Polygon": {
@@ -2477,10 +2498,15 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 28:
     // - Adds dropdown blocks for ScreenAnimation.
+    // - Adds dropdown blocks for HorizontalAlignment and VerticalAlignment.
     28: [Blockly.Versioning.makeSetterUseDropdown(
             'Form', 'OpenScreenAnimation', 'ScreenAnimation'),
          Blockly.Versioning.makeSetterUseDropdown(
-            'Form', 'CloseScreenAnimation', 'ScreenAnimation')]
+            'Form', 'CloseScreenAnimation', 'ScreenAnimation'),
+         Blockly.Versioning.makeSetterUseDropdown(
+           'Form', 'AlignHorizontal', 'HorizontalAlignment'),
+         Blockly.Versioning.makeSetterUseDropdown(
+           'Form', 'AlignVertical', 'VerticalAlignment')]
 
   }, // End Screen
 
@@ -2706,15 +2732,27 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade"
+    3: "noUpgrade",
 
+    // For VERTICALARRANGEMENT_COMPONENT_VERSION 4:
+    // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+    4: [Blockly.Versioning.makeSetterUseDropdown(
+           'VerticalArrangement', 'AlignHorizontal', 'HorizontalAlignment'),
+        Blockly.Versioning.makeSetterUseDropdown(
+           'VerticalArrangement', 'AlignVertical', 'VerticalAlignment')]
   }, // End VerticalArrangement upgraders
 
   "VerticalScrollArrangement": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
 
+    // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
+    // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+    2: [Blockly.Versioning.makeSetterUseDropdown(
+           'VerticalScrollArrangement', 'AlignHorizontal', 'HorizontalAlignment'),
+        Blockly.Versioning.makeSetterUseDropdown(
+           'VerticalScrollArrangement', 'AlignVertical', 'VerticalAlignment')]
   }, // End VerticalScrollArrangement upgraders
 
   "VideoPlayer": {
