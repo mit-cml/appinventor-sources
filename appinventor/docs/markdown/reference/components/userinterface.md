@@ -384,8 +384,9 @@ Component for FloatingActionButton
 ### Events  {#FloatingActionButton-Events}
 
 {:.events}
-None
 
+{:id="FloatingActionButton.Click"} Click()
+: Event raised when user clicks on Floating Action Button
 
 ### Methods  {#FloatingActionButton-Methods}
 

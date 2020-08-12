@@ -11,6 +11,7 @@ import androidx.core.widget.ImageViewCompat;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -48,7 +49,12 @@ public class FloatingActionButton extends AndroidViewComponent{
         ImageViewCompat.setImageTintList(floatingActionButton, ColorStateList.valueOf(COLOR_WHITE));
         }
         floatingActionButton.show();
-        Log.d("fab", floatingActionButton+" ");
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Click();
+            }
+        });
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
@@ -66,6 +72,11 @@ public class FloatingActionButton extends AndroidViewComponent{
     @SimpleProperty
     public String Icon() {
         return iconPath;
+    }
+
+    @SimpleEvent(description = "Event raised when user clicks on Floating Action Button")
+    public void Click() {
+        EventDispatcher.dispatchEvent(this, "Click");
     }
 
     @Override
