@@ -166,6 +166,8 @@ Blockly.ComponentDatabase = function() {
   this.i18nParamNames_ = {};
   this.i18nPropertyNames_ = {};
   this.i18nPropertyDescriptions_ = {};
+  this.i18nOptionNames_ = {};
+  this.i18nOptionListTags_ = {};
 };
 
 /**
@@ -513,28 +515,44 @@ Blockly.ComponentDatabase.EVENTDESC = /EventDescriptions$/;
 Blockly.ComponentDatabase.prototype.populateTranslations = function(translations) {
   var newkey;
   for (var key in translations) {
-    if (translations.hasOwnProperty(key)) {
-      var parts = key.split('-', 2);
-      if (parts[0] === 'COMPONENT') {
-        this.i18nComponentTypes_[parts[1]] = translations[key];
-      } else if (parts[0] === 'PROPERTY') {
-        this.i18nPropertyNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'EVENT') {
-        this.i18nEventNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'METHOD') {
-        this.i18nMethodNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'PARAM') {
-        this.i18nParamNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'EVENTDESC') {
-        newkey = parts[1].replace(Blockly.ComponentDatabase.EVENTDESC, '');
-        this.i18nEventDescriptions_[parts[1]] = translations[key];
-      } else if (parts[0] === 'METHODDESC') {
-        newkey = parts[1].replace(Blockly.ComponentDatabase.METHODDESC, '');
-        this.i18nMethodDescriptions_[newkey] = translations[key];
-      } else if (parts[0] === 'PROPDESC') {
-        newkey = parts[1].replace(Blockly.ComponentDatabase.PROPDESC, '');
-        this.i18nPropertyDescriptions_[newkey] = translations[key];
-      }
+    if (!translations.hasOwnProperty(key)) {
+      continue;
+    }
+    var parts = key.split('-', 2);
+    var type = parts[0];
+    var jsKey = parts[1];
+    var translation = translations[key];
+    switch(type) {
+      case 'COMPONENT':
+        this.i18nComponentTypes_[jsKey] = translation;
+        break;
+      case 'PROPERTY':
+        this.i18nPropertyNames_[jsKey] = translation;
+        break;
+      case 'EVENT':
+        this.i18nEventNames_[jsKey] = translation;
+        break;
+      case 'METHOD':
+        this.i18nMethodNames_[jsKey] = translation;
+        break;
+      case 'PARAM':
+        this.i18nParamNames_[jsKey] = translation;
+        break;
+      case 'EVENTDESC':
+        this.i18nEventDescriptions_[jsKey] = translation;
+        break;
+      case 'METHODDESC':
+        this.i18nMethodDescriptions_[jsKey] = translation;
+        break;
+      case 'PROPDESC':
+        this.i18nPropertyDescriptions_[jsKey] = translation;
+        break;
+      case 'OPTION':
+        this.i18nOptionNames_[jsKey] = translation;
+        break;
+      case 'OPTIONLIST':
+        this.i18nOptionListTags_[jsKey] = translation;
+        break;
     }
   }
 };
@@ -734,3 +752,31 @@ Blockly.ComponentDatabase.prototype.getInternationalizedPropertyName = function(
 Blockly.ComponentDatabase.prototype.getInternationalizedPropertyDescription = function(component, name, opt_default) {
   return this.i18nPropertyDescriptions_[component + '.' + name] || this.i18nPropertyDescriptions_[name] || opt_default || name;
 };
+
+/**
+ * Returns the internationalized string for the given option name.
+ * @param {string} key The tag name of the option list + the name of the option.
+ *     Used to get the internationalized name.
+ * @param {string} opt_default The default name if an internationalized one is
+ *     not found.
+ * @return {string} The localized string if available, otherwise the unlocalized
+ *     one.
+ */
+Blockly.ComponentDatabase.prototype.getInternationalizedOptionName =
+  function(key, opt_default) {
+    return this.i18nOptionNames_[key] || opt_default;
+  };
+
+/**
+ * Returns the internationalized string for the given option list tag.
+ * @param {string} name The name of the tag used to get the internationlized
+ *     version.
+ * @param {string} opt_default The default name if the internationalized name
+ *     is not available.
+ * @return {string} The localized string if available, otherwise the unlocalized
+ *     string.
+ */
+Blockly.ComponentDatabase.prototype.getInternationalizedOptionListTag =
+  function(name, opt_default) {
+    return this.i18nOptionListTags_[name] || opt_default || name;
+  }

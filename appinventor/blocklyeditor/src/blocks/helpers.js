@@ -40,10 +40,11 @@ Blockly.Blocks['helpers_dropdown'] = {
     this.key_ = xml.getAttribute('key');
     var type = Blockly.Blocks.Utilities.helperKeyToBlocklyType(
       { type: 'OPTION_LIST', key: this.key_ }, this);
+    this.setOutput(true, type);
 
-    var optionList = this.getTopWorkspace().getComponentDatabase()
-        .getOptionList(this.key_);
-
+    var db = this.getTopWorkspace().getComponentDatabase();
+    var optionList = db.getOptionList(this.key_);
+    var tag = db.getInternationalizedOptionListTag(optionList.tag);
     var dropdown = new Blockly.FieldInvalidDropdown(
         this.getValidOptions(), this.getInvalidOptions());
 
@@ -53,7 +54,7 @@ Blockly.Blocks['helpers_dropdown'] = {
     // encoded in Yail.
     this.setOutput(true, type);
     this.appendDummyInput()
-        .appendField(optionList.tag)
+        .appendField(tag)
         .appendField(dropdown, 'OPTION');
     
     this.setFieldValue(optionList.defaultOpt, 'OPTION');
@@ -65,13 +66,14 @@ Blockly.Blocks['helpers_dropdown'] = {
    * language neutral value.
    */
   getValidOptions: function() {
-    var optionList = this.getTopWorkspace().getComponentDatabase()
-        .getOptionList(this.key_);
+    var db = this.getTopWorkspace().getComponentDatabase();
+    var optionList = db.getOptionList(this.key_);
     var options = [];
     for (var i = 0, option; option = optionList.options[i]; i++) {
-      // TODO: First will eventually be the translated name.
+      var key = optionList.tag + option.name;
+      var i18nName = db.getInternationalizedOptionName(key, option.name);
       if (!option.deprecated) {
-        options.push([option.name, option.name]);
+        options.push([i18nName, option.name]);
       }
     }
     return options;
@@ -83,13 +85,14 @@ Blockly.Blocks['helpers_dropdown'] = {
    * language neutral value.
    */
   getInvalidOptions: function() {
-    var optionList = this.getTopWorkspace().getComponentDatabase()
-        .getOptionList(this.key_);
+    var db = this.getTopWorkspace().getComponentDatabase();
+    var optionList = db.getOptionList(this.key_);
     var options = [];
     for (var i = 0, option; option = optionList.options[i]; i++) {
-      // TODO: First will eventually be the translated name.
+      var key = optionList.tag + option.name;
+      var i18nName = db.getInternationalizedOptionName(key, option.name);
       if (option.deprecated) {
-        options.push([option.name, option.name]);
+        options.push([i18nName, option.name]);
       }
     }
     return options;
