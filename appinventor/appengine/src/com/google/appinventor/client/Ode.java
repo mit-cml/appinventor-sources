@@ -430,6 +430,14 @@ public class Ode implements EntryPoint {
     return currentView;
   }
 
+  public DeckPanel getDeckPanel() {
+    return deckPanel;
+  }
+
+  public HorizontalPanel getOverDeckPanel() {
+    return overDeckPanel;
+  }
+
   /**
    * Switch to the Projects tab
    */
