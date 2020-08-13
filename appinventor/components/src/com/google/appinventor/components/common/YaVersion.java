@@ -512,8 +512,10 @@ public class YaVersion {
   // - YANDEX_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 207:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 32
+  // For YOUNG_ANDROID_VERION 208:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 7
 
-  public static final int YOUNG_ANDROID_VERSION = 207;
+  public static final int YOUNG_ANDROID_VERSION = 208;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1035,7 +1037,9 @@ public class YaVersion {
   // - Added TextInputCanceled & ChoosingCanceled event
   // For NOTIFIER_COMPONENT_VERSION 6:
   // - Added a ShowPasswordDialog method
-  public static final int NOTIFIER_COMPONENT_VERSION = 6;
+  // For NOTIFIER_COMPONENT_VERSION 7:
+  // - Added defaultText argument to ShowTextDialog method
+  public static final int NOTIFIER_COMPONENT_VERSION = 7;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 

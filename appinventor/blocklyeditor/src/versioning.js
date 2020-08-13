@@ -2000,7 +2000,14 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // Added a PasswordDialog for masked text input.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    //Added default value to the defaultText parameter of the ShowTextDialog method.
+    7: Blockly.Versioning.addDefaultMethodArgument("Notifier", "ShowTextDialog", 3,
+       '<block type="text">' +
+       '<field name="TEXT"></field>' +
+       '</block>')
+
 
   }, // End Notifier upgraders
 

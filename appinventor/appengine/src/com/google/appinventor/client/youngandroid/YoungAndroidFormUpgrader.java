@@ -1459,6 +1459,10 @@ public final class YoungAndroidFormUpgrader {
       // Added PasswordDialog
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Added defaultText argument to ShowTextDialog
+      srcCompVersion = 7;
+   }
     return srcCompVersion;
   }
 
@@ -1677,7 +1681,7 @@ public final class YoungAndroidFormUpgrader {
     }
     return srcCompVersion;
   }
-  
+
   private static int upgradeCircleProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
     if (srcCompVersion < 2) {

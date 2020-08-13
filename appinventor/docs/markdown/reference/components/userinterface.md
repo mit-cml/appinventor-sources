@@ -812,7 +812,7 @@ The Notifier component displays alert messages and creates Android log entries t
  It cannot be canceled by the user but must be dismissed by the App Inventor Program by using
  the [`DismissProgressDialog`](#Notifier.DismissProgressDialog) method.
 
-{:id="Notifier.ShowTextDialog" class="method"} <i/> ShowTextDialog(*message*{:.text},*title*{:.text},*cancelable*{:.boolean})
+{:id="Notifier.ShowTextDialog" class="method"} <i/> ShowTextDialog(*message*{:.text},*title*{:.text},*cancelable*{:.boolean},*defaultText*{:.text})
 : Shows a dialog box where the user can enter text, after which the
  [`AfterTextInput`](#Notifier.AfterTextInput)  event will be raised. If `cancelable` is `true`{:.logic.block}
  there will be an additional CANCEL button. Entering text will raise the
