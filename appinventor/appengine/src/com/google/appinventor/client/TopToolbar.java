@@ -155,7 +155,7 @@ public class TopToolbar extends Composite {
     isReadOnly = Ode.getInstance().isReadOnly();
 
     // Create the TopToolbar drop down menus.
-    fileDropDown = makeButton(WIDGET_NAME_PROJECT, MESSAGES.projectsTabName()); 
+    fileDropDown = makeButton(WIDGET_NAME_PROJECT, MESSAGES.projectsTabName());
     connectDropDown = makeButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectTabName());
     buildDropDown = makeButton(WIDGET_NAME_BUILD, MESSAGES.buildTabName());
     settingsDropDown = makeButton(WIDGET_NAME_SETTINGS, MESSAGES.settingsTabName());
