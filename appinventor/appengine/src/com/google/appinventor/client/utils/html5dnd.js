@@ -1,4 +1,4 @@
-// -*- mode: java; c-basic-offset: 2; -*-
+// -*- mode: javascript; js-indent-level: 2; -*-
 // Copyright 2017-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
@@ -23,6 +23,7 @@ top.HTML5DragDrop_getOpenProjectId = function() { return ''; };
 top.HTML5DragDrop_handleUploadResponse = function(_projectId, type, name, response) {};
 top.HTML5DragDrop_reportError = function(errorCode) {};
 top.HTML5DragDrop_confirmOverwriteKey = function(callback) {};
+top.HTML5DragDrop_confirmOverwriteAsset = function(proejctId, name, callback) {};
 
 var dropdiv = document.createElement('div');
 dropdiv.className = 'dropdiv';
@@ -109,8 +110,8 @@ function uploadAsset(droppedItem) {
     top.HTML5DragDrop_reportError(1);
     return;
   }
+  var projectId = top.HTML5DragDrop_getOpenProjectId();
   function doUploadAsset(blob) {
-    var projectId = top.HTML5DragDrop_getOpenProjectId();
     var xhr = new XMLHttpRequest();
     var formData = new FormData();
     formData.append('uploadFile', blob);
@@ -126,7 +127,11 @@ function uploadAsset(droppedItem) {
     };
     xhr.send(formData);
   }
-  handleDroppedItem(droppedItem, doUploadAsset);
+  handleDroppedItem(droppedItem, function(blob) {
+    top.HTML5DragDrop_confirmOverwriteAsset(projectId, blob.name, function() {
+      doUploadAsset(blob);
+    });
+  });
 }
 
 function uploadKeystore(droppedItem) {

@@ -1,10 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
+
+import android.Manifest;
+import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -18,17 +21,13 @@ import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-
-import android.Manifest;
-import android.app.Activity;
-import android.os.Environment;
-import android.util.Log;
+import com.google.appinventor.components.runtime.util.QUtil;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 
@@ -52,10 +51,7 @@ import java.io.StringWriter;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public class File extends AndroidNonvisibleComponent implements Component {
-  public static final String NO_ASSETS = "No_Assets";
-  private final Activity activity;
-  private boolean isRepl = false;
-  private final int BUFFER_LENGTH = 4096;
+  private static final int BUFFER_LENGTH = 4096;
   private static final String LOG_TAG = "FileComponent";
 
   /**
@@ -64,10 +60,6 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   public File(ComponentContainer container) {
     super(container.$form());
-    if (form instanceof ReplForm) { // Note: form is defined in our superclass
-      isRepl = true;
-    }
-    activity = (Activity) container.$context();
   }
 
   /**
@@ -153,7 +145,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
             } else {
               String filepath = AbsoluteFileName(fileName);
               Log.d(LOG_TAG, "filepath = " + filepath);
-              inputStream = FileUtil.openFile(filepath);
+              inputStream = FileUtil.openFile(form, filepath);
             }
 
             final InputStream asyncInputStream = inputStream;
@@ -207,7 +199,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
             return;
           }
           String filepath = AbsoluteFileName(fileName);
-          if (MediaUtil.isExternalFile(fileName)) {
+          if (MediaUtil.isExternalFile(form, fileName)) {
             if (form.isDeniedPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
               form.dispatchPermissionDeniedEvent(File.this, "Delete",
                   new PermissionException(Manifest.permission.WRITE_EXTERNAL_STORAGE));
@@ -244,7 +236,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
       @Override
       public void run() {
         final String filepath = AbsoluteFileName(filename);
-        if (MediaUtil.isExternalFile(filepath)) {
+        if (MediaUtil.isExternalFile(form, filepath)) {
           form.assertPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
         final java.io.File file = new java.io.File(filepath);
@@ -271,7 +263,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
           out.close();
           fileWriter.close();
 
-          activity.runOnUiThread(new Runnable() {
+          form.runOnUiThread(new Runnable() {
             @Override
             public void run() {
               AfterFileSaved(filename);
@@ -344,7 +336,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
 
       final String text = normalizeNewLines(output.toString());
 
-      activity.runOnUiThread(new Runnable() {
+      form.runOnUiThread(new Runnable() {
         @Override
         public void run() {
           GotText(text);
@@ -398,15 +390,16 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   private String AbsoluteFileName(String filename) {
     if (filename.startsWith("/")) {
-      return Environment.getExternalStorageDirectory().getPath() + filename;
+      return QUtil.getExternalStoragePath(form) + filename;
     } else {
-      java.io.File dirPath = activity.getFilesDir();
-      if (isRepl) {
-        String path = Environment.getExternalStorageDirectory().getPath() + "/AppInventor/data/";
-        dirPath = new java.io.File(path);
-        if (!dirPath.exists()) {
-          dirPath.mkdirs();           // Make sure it exists
-        }
+      java.io.File dirPath;
+      if (form.isRepl()) {
+        dirPath = new java.io.File(QUtil.getReplDataPath(form, false));
+      } else {
+        dirPath = form.getFilesDir();
+      }
+      if (!dirPath.exists()) {
+        dirPath.mkdirs();           // Make sure it exists
       }
       return dirPath.getPath() + "/" + filename;
     }
