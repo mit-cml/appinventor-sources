@@ -5,8 +5,13 @@ import com.google.appinventor.components.common.ComponentConstants;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+/**
+ * Property editor for tab bar position.
+ *
+ */
 public class YoungAndroidTabBarPositionChoicePropertyEditior extends ChoicePropertyEditor {
   
+  // Tab bar position choices
   public static final String DEFAULT = ComponentConstants.TAB_POSITION_DEFAULT + "";
   public static final String TOP = ComponentConstants.TAB_POSITION_TOP + "";
   public static final String BOTTOM = ComponentConstants.TAB_POSITION_BOTTOM + "";

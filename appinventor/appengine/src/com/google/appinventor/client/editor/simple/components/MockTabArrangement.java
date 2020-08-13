@@ -14,9 +14,21 @@ import com.google.gwt.user.client.ui.Widget;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.appinventor.components.common.ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL;
 
+/**
+ * Mock tab arrangement component.
+ *
+ * @author jsuyash1514@gmail.com (Suyash Jain)
+ */
 public class MockTabArrangement extends MockContainer<MockHVLayout> {
   
+  /**
+   * Component type name.
+   */
   public static final String TYPE = "TabArrangement";
+  
+  /**
+   * Component properties.
+   */
   public static final String PROPERTY_TAB_BACKGROUND_COLOR = "TabBackgroundColor";
   public static final String PROPERTY_TAB_TEXT_COLOR = "TabTextColor";
   public static final String PROPERTY_SELECTED_TAB_TEXT_COLOR = "SelectedTabTextColor";
@@ -38,7 +50,8 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
    */
   public MockTabArrangement(SimpleEditor editor) {
     super(editor, TYPE, images.tabArrangement(), new MockHVLayout(LAYOUT_ORIENTATION_HORIZONTAL));
-    
+  
+    // Initialize MockTabArrangement UI.
     tabContentView = new SimplePanel();
     tabContentView.setStylePrimaryName("ode-TabContentViewTop");
     AbsolutePanel tabArrangement = new AbsolutePanel();
@@ -52,6 +65,7 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   
   @Override
   protected boolean acceptableSource(DragSource source) {
+    // Tab Arrangement can only accept Tab component.
     if (source instanceof SimplePaletteItem) {
       return source.getDragWidget() instanceof MockTab;
     } else {
@@ -108,7 +122,9 @@ public class MockTabArrangement extends MockContainer<MockHVLayout> {
   }
   
   public void setPropertyTabBackgroundColor (String newValue) {
+    // Set background color of root panel
     MockComponentsUtil.setWidgetBackgroundColor(rootPanel,newValue);
+    // Set background color of all the tabs
     int nWidgets = rootPanel.getWidgetCount();
     for (int i = 0; i < nWidgets; i++) {
       Widget widget = rootPanel.getWidget(i);

@@ -255,6 +255,7 @@ public abstract class MockContainer<T extends MockLayout> extends MockVisibleCom
     if (component instanceof MockVisibleComponent) {
       // Sprites are only allowed on Canvas, not other containers.
       // Map features are only allowed on Map, not other containers.
+      // Tabs are only allowed on TabArrangement, not other containers.
       if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature)
           && !(component instanceof MockTab)) {
         return true;

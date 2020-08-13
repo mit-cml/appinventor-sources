@@ -17,9 +17,22 @@ import com.google.gwt.user.client.ui.Widget;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+/**
+ * Mock tab component.
+ *
+ * @author jsuyash1514@gmail.com (Suyash Jain)
+ */
+
 public class MockTab extends MockHVArrangement {
   
+  /**
+   * Component type name.
+   */
   public static final String TYPE = "Tab";
+  
+  /**
+   * Component properties.
+   */
   public static final String PROPERTY_NAME_ICON = "Icon";
   public static final String PROPERTY_NAME_TEXT = "Text";
   public static final String PROPERTY_NAME_SHOW_TEXT = "ShowText";
@@ -27,15 +40,21 @@ public class MockTab extends MockHVArrangement {
   public static final String PROPERTY_NAME_SCROLLABLE = "Scrollable";
   private static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = "AlignVertical";
   
+  /**
+   * Default Tab height.
+   */
   private static final int ANDROID_TAB_HEIGHT = 48;
   
+  /**
+   * UI components.
+   */
   private final AbsolutePanel tab;
   private Image tabImage = null;
   private Label tabLabel;
   private String imagePath = "";
   
   /**
-   * Creates a new MockVerticalArrangement component.
+   * Creates a new MockTab component.
    *
    * @param editor editor of source file the component belongs to
    */
@@ -43,6 +62,8 @@ public class MockTab extends MockHVArrangement {
     super(editor, TYPE, images.tab(),
         ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
         ComponentConstants.SCROLLABLE_ARRANGEMENT);
+    
+    // Initialize MockTab UI.
     tab = new AbsolutePanel();
     tab.setWidth("48px");
     tab.setHeight("48px");
@@ -70,6 +91,7 @@ public class MockTab extends MockHVArrangement {
   
   @Override
   public void onCreateFromPalette() {
+    // Change tab text to component name
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
   }
   

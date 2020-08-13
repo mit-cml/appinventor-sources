@@ -684,10 +684,15 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/YRLogo.png")
   ImageResource YRLogo();
   
-  
+  /**
+   * Designer palette item: TabArrangement
+   */
   @Source("com/google/appinventor/images/horizontal.png")
   ImageResource tabArrangement();
   
+  /**
+   * Designer palette item: Tab
+   */
   @Source("com/google/appinventor/images/vertical.png")
   ImageResource tab();
 }

@@ -553,6 +553,9 @@ abstract class MockHVLayoutBase extends MockLayout {
 
       // If the child is a container then call layoutChildren for it.
       if (child instanceof MockContainer) {
+        // If the child is a tab, its children should get the
+        // parent height as (height of tab arrangement - tab height)
+        // and parent width as (width of tab arrangement).
         if (child instanceof MockTab) {
           int tabHeight = childLayoutInfo.height;
           int tabWidth = childLayoutInfo.width;

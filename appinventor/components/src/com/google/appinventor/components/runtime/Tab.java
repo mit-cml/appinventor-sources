@@ -1,7 +1,6 @@
 package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.google.android.material.tabs.TabLayout;
@@ -19,8 +18,19 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 
 import java.io.IOException;
 
+/**
+ * Use a tab component to add a new tab in a tab arrangement.
+ *
+ * This component extends `HVArrangement`, within which the components of this particular tab can be placed.
+ * The components are vertically aligned within a tab.
+ *
+ * This component can be placed only in a `TabArrangement` component.
+ *
+ * @author jsuyash1514@gmail.com (Suyash Jain)
+ */
 @DesignerComponent(version = YaVersion.TAB_COMPONENT_VERSION,
-    category = ComponentCategory.LAYOUT)
+    category = ComponentCategory.LAYOUT,
+    description = "<p>A component used to add a new tab in a tab arrangement.</p>")
 @SimpleObject
 public class Tab extends HVArrangement<ViewGroup> implements Component, ComponentContainer {
   private static final String LOG_TAG = Tab.class.getSimpleName();
@@ -32,9 +42,13 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
   private boolean showIcon = true;
   public boolean isScrollable = false;
   
+  /**
+   * Creates a new Tab component.
+   *
+   * @param container  container, component will be placed in
+   */
   public Tab (TabArrangement container) {
     super(container, HVArrangement.LAYOUT_ORIENTATION_VERTICAL, new FrameLayout(container.$context()));
-    Log.d("tabarrangement" ,"Constructor for tab: " + this);
     container.addTab(this);
   }
   
@@ -46,64 +60,112 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
     this.tab = tab;
   }
   
+  /**
+   * Specifies the text displayed by the tab label.
+   *
+   * @param text
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Specifies the text displayed by the tab label.")
   public void Text(String text) {
     this.text = text;
     tab.setText(showText ? text : "");
-    Log.d("tabarrangement", "Setting text for tab: " + this + " " + tab + " to: " + tab.getText());
   }
   
-  @SimpleProperty
+  /**
+   * Returns the text displayed by the tab label.
+   *
+   * @return text
+   */
+  @SimpleProperty(description = "Returns the text displayed by the tab label")
   public String Text() {
     CharSequence text = tab.getText();
     return (text == null ? "" : text.toString());
   }
   
+  /**
+   * Specifies the visibility of the tab label.
+   *
+   * @param show true if the tab label should be visible
+   */
   @DesignerProperty(editorType =  PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Specifies the visibility of the tab label")
   public void ShowText(boolean show) {
     showText = show;
     tab.setText(show ? text : "");
-    Log.d("tabarrangement","Setting text on the basis of showText: " + showText + " " + (show ? text : ""));
   }
   
-  @SimpleProperty
+  /**
+   * Returns the visibility of the tab label.
+   *
+   * @return true if the tab label is visible
+   */
+  @SimpleProperty(description = "Returns the visibility of the tab label")
   public boolean ShowText() {
     return showText;
   }
   
+  /**
+   * Specifies the icon displayed in the tab.
+   *
+   * @param path
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Specifies the icon displayed in the tab")
   public void Icon(String path) {
     try {
       icon = MediaUtil.getBitmapDrawable($form(), path);
       iconPath = path;
       tab.setIcon(showIcon ? icon : null);
     } catch (IOException e) {
-      Log.d(LOG_TAG, "Unable to load icon " + iconPath);
     }
   }
   
-  @SimpleProperty
+  /**
+   * Returns the icon displayed in the tab.
+   *
+   * @return
+   */
+  @SimpleProperty(description = "Returns the icon displayed in the tab")
   public String Icon() {
     return iconPath;
   }
   
+  /**
+   * Specifies the visibility of the tab icon.
+   *
+   * @param show true if the tab icon should be visible
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Specifies the visibility of the tab icon")
   public void ShowIcon(boolean show) {
     showIcon = show;
     tab.setIcon(show ? icon : null);
   }
   
-  @SimpleProperty
+  /**
+   * Returns the visibility of the tab icon.
+   *
+   * @return true if the tab icon is visible
+   */
+  @SimpleProperty(description = "Returns the visibility of the tab icon")
   public boolean ShowIcon() {
     return showIcon;
   }
   
+  /**
+   * When checked, there will be a vertical scrollbar on the tab arrangement, and the height of the
+   * tab content can exceed the physical height of the tab arrangement. When unchecked, the tab content
+   * height is constrained to the height of the tab arrangement.
+   *
+   * @param isScrollable  true if the tab content should be vertically scrollable
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
@@ -111,6 +173,11 @@ public class Tab extends HVArrangement<ViewGroup> implements Component, Componen
     this.isScrollable = isScrollable;
   }
   
+  /**
+   * Scrollable property getter method.
+   *
+   * @return  true if the tab content is vertically scrollable
+   */
   @SimpleProperty
   public boolean Scrollable() {
     return isScrollable;
