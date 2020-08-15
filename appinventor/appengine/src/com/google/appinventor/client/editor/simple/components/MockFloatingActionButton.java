@@ -32,6 +32,14 @@ public class MockFloatingActionButton extends MockVisibleComponent {
         initComponent(fabWidget);
     }
 
+    @Override
+    protected boolean isPropertyVisible(String propertyName) {
+        if(propertyName.equals(PROPERTY_NAME_HEIGHT) || propertyName.equals(PROPERTY_NAME_WIDTH)) {
+           return false;
+        }
+        return super.isPropertyVisible(propertyName);
+    }
+
     private void setIconProperty(String newValue) {
         if (fabImage == null) {
             fabImage = new Image();
