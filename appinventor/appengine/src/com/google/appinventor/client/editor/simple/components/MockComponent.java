@@ -365,7 +365,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
       @Override
       public void delete() {
-        if (!isForm()) {
+        if (canDelete()) {
           new DeleteDialog().center();
         }
       }

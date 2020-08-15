@@ -22,7 +22,7 @@ public class MockSidebarItem extends MockVisibleComponent {
      * @param editor editor of source file the component belongs to
      */
     public MockSidebarItem(SimpleEditor editor) {
-        super(editor, TYPE, images.sidebar());
+        super(editor, TYPE, images.sidebarItem());
 
         // Initialize mock sidebar item UI
         itemWidget = new InlineHTML();

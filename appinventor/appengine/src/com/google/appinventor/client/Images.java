@@ -354,6 +354,18 @@ public interface Images extends Resources {
   ImageResource sidebar();
 
   /**
+   * Designer palette item: SidebarHeader
+   */
+  @Source("com/google/appinventor/images/sidebarHeader.png")
+  ImageResource sidebarHeader();
+
+  /**
+   * Designer palette item: SidebarItem
+   */
+  @Source("com/google/appinventor/images/sidebarItem.png")
+  ImageResource sidebarItem();
+
+  /**
    * Designer palette item: Slider
    */
   @Source("com/google/appinventor/images/slider.png")
