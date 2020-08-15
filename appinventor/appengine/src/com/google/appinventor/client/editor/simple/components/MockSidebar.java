@@ -15,8 +15,8 @@ public class MockSidebar extends MockContainer {
     public static final String TYPE = "Sidebar";
     private AbsolutePanel sidebarWidget;
 
-    //whether the mock sidebar is opened or closed.
-    private boolean open;
+    // whether the mock sidebar is opened or closed.
+    private boolean opened;
 
     // whether the mock sidebar is openable (false when Action Bar is absent)
     private boolean enabled;
@@ -75,7 +75,7 @@ public class MockSidebar extends MockContainer {
      * @return {@code true} iff sidebar is visible
      */
     public boolean isOpen() {
-        return open;
+        return opened;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class MockSidebar extends MockContainer {
     @Override
     protected void onSelectedChange(boolean selected) {
         super.onSelectedChange(selected);
-        if (selected && !open) {
+        if (selected && !opened) {
             toggle();
         }
     }
@@ -101,7 +101,7 @@ public class MockSidebar extends MockContainer {
      * @param enabled  {@code true} iff sidebar can be opened
      */
     public void setEnabled(boolean enabled) {
-        if (!enabled && open) {
+        if (!enabled && opened) {
             toggle();
         }
         this.enabled = enabled;
@@ -112,7 +112,7 @@ public class MockSidebar extends MockContainer {
      */
     public void toggle() {
         if (enabled) {
-            open = !open;
+            opened = !opened;
             refreshForm();
         }
     }

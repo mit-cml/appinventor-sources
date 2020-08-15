@@ -195,7 +195,7 @@ public class Form extends AppInventorCompatActivity
   private int primaryColorDark = DEFAULT_PRIMARY_COLOR_DARK;
   private int accentColor = DEFAULT_ACCENT_COLOR;
 
-  protected static FrameLayout frameLayout;
+  private FrameLayout frameLayout;
   private boolean scrollable;
 
   private ScaledFrameLayout scaleLayout;
@@ -332,7 +332,6 @@ public class Form extends AppInventorCompatActivity
       onCreateFinish();
     }
   }
-
 
   /*
    * Finish the work of setting up the Screen.
@@ -506,11 +505,6 @@ public class Form extends AppInventorCompatActivity
         }
       });
     }
-  }
-
-  @Override
-  protected void onPostCreate(Bundle savedInstanceState) {
-    super.onPostCreate(savedInstanceState);
   }
 
   // What's this code?
@@ -1222,10 +1216,6 @@ public class Form extends AppInventorCompatActivity
         }
       }
     });
-  }
-
-  public static View getLayout() {
-    return frameLayout;
   }
 
   /**
@@ -2353,9 +2343,11 @@ public class Form extends AppInventorCompatActivity
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    // handles the navigation drawer icon touch event
     if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
       return true;
     }
+    // handles the options menu item touch event
     else {
       for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
         if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
