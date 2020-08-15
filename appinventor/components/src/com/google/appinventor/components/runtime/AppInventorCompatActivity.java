@@ -92,27 +92,7 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
     super.onCreate(icicle);
 
     frameWithTitle = new android.widget.LinearLayout(this);
-    drawerLayout = new DrawerLayout(this);
-    navigationView = new NavigationView(this);
-    actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, android.R.string.yes, android.R.string.no) {
-      @Override
-      public void onDrawerOpened(View drawerView) {
-        super.onDrawerOpened(drawerView);
-        setTitle(android.R.string.yes);
-        actionBarDrawerToggle.syncState();
-      }
-
-      @Override
-      public void onDrawerClosed(View drawerView) {
-        super.onDrawerClosed(drawerView);
-        setTitle(android.R.string.no);
-        actionBarDrawerToggle.syncState();
-      }
-    };
-    drawerLayout.setDrawerListener(actionBarDrawerToggle);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    getSupportActionBar().setHomeButtonEnabled(true);
-    actionBarDrawerToggle.syncState();
+    getSidebar();
     frameWithTitle.setOrientation(android.widget.LinearLayout.VERTICAL);
     setContentView(frameWithTitle);  // Due to a bug in Honeycomb 3.0 and 3.1, a content view must
                                      // exist before attempting to check the ActionBar status,
@@ -256,6 +236,30 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
       getWindow().setCallback(classicCallback);
       return null;
     }
+  }
+
+  private void getSidebar() {
+    drawerLayout = new DrawerLayout(this);
+    navigationView = new NavigationView(this);
+    actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, android.R.string.yes, android.R.string.no) {
+      @Override
+      public void onDrawerOpened(View drawerView) {
+        super.onDrawerOpened(drawerView);
+        setTitle(android.R.string.yes);
+        actionBarDrawerToggle.syncState();
+      }
+
+      @Override
+      public void onDrawerClosed(View drawerView) {
+        super.onDrawerClosed(drawerView);
+        setTitle(android.R.string.no);
+        actionBarDrawerToggle.syncState();
+      }
+    };
+    drawerLayout.setDrawerListener(actionBarDrawerToggle);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setHomeButtonEnabled(true);
+    actionBarDrawerToggle.syncState();
   }
 
   public static boolean isEmulator() {

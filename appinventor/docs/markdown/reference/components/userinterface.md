@@ -1139,7 +1139,7 @@ A Sidebar Item can only be placed inside Sidebar component.
 {:.events}
 
 {:id="SidebarItem.Click"} Click()
-: Event raised when user selects this sidebar item.
+: Event to handle when user selects this sidebar item.
 
 ### Methods  {#SidebarItem-Methods}
 
