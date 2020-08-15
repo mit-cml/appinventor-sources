@@ -1145,9 +1145,9 @@ public class YaVersion {
   // - Initial sidebar header implementation
   public static final int SIDEBAR_HEADER_COMPONENT_VERSION = 1;
 
-  // For SIDEBARITEM_COMPONENT_VERSION 1:
+  // For SIDEBAR_ITEM_COMPONENT_VERSION 1:
   // - Initial sidebar item implementation
-  public static final int SIDEBARITEM_COMPONENT_VERSION = 1;
+  public static final int SIDEBAR_ITEM_COMPONENT_VERSION = 1;
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.

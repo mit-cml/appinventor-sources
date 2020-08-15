@@ -28,7 +28,7 @@ import java.io.IOException;
  *
  * @author singhalsara48@gmail.com (Sara Singhal)
  */
-@DesignerComponent(version = YaVersion.SIDEBARITEM_COMPONENT_VERSION,
+@DesignerComponent(version = YaVersion.SIDEBAR_ITEM_COMPONENT_VERSION,
         description = "A Sidebar Item can only be placed inside Sidebar component. " +
                 "It displays a piece of text specified by the <code>Text</code> property and " +
                 " an icon specified by the <code>Icon</code> property. ",
