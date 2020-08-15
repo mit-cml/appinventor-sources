@@ -5,6 +5,11 @@ import com.google.gwt.user.client.ui.InlineHTML;
 
 import static com.google.appinventor.client.explorer.youngandroid.ReportList.MESSAGES;
 
+/**
+ * Mock Sidebar Item component.
+ *
+ * @author singhalsara48@gmail.com (Sara Singhal)
+ */
 public class MockSidebarItem extends MockVisibleComponent {
 
     // Component type names

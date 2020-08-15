@@ -24,7 +24,7 @@ import com.google.appinventor.components.common.YaVersion;
 @SimpleObject
 public class Sidebar extends AndroidViewComponent implements ComponentContainer{
 
-    private Menu menu;
+    private Menu sidebarMenu;
 
     /**
      * Creates a new AndroidViewComponent.
@@ -33,17 +33,18 @@ public class Sidebar extends AndroidViewComponent implements ComponentContainer{
      */
     public Sidebar(ComponentContainer container) {
         super(container);
-        menu = $form().navigationView.getMenu();
-        menu.clear();
+        sidebarMenu = $form().navigationView.getMenu();
+        sidebarMenu.clear();
         $form().navigationView.removeHeaderView($form().navigationView.getHeaderView(0));
     }
 
     public int additem(SidebarItem item) {
-        menu.add("");
+        sidebarMenu.add("");
         $form().navigationView.invalidate();
-        return (menu.size()-1);
+        return (sidebarMenu.size()-1);
     }
 
+    //
     public void addHeader(SidebarHeader sidebarHeader) {
         if(sidebarHeader.viewLayout.getLayoutManager().getParent()!=null) {
             ((ViewGroup)sidebarHeader.viewLayout.getLayoutManager().getParent()).removeView(sidebarHeader.viewLayout.getLayoutManager());

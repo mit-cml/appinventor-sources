@@ -43,6 +43,7 @@ public class SidebarItem implements Component{
     private Drawable iconDrawable;
     private boolean visible;
 
+    // call for getItem method requires minimum API level 3
     @TargetApi(Build.VERSION_CODES.CUPCAKE)
     public SidebarItem (ComponentContainer container) {
         sidebar = (Sidebar)container;
@@ -142,6 +143,9 @@ public class SidebarItem implements Component{
         }
     }
 
+    /**
+     * Event to handle when user selects this sidebar item.
+     */
     @SimpleEvent(description = "Event raised when user selects this sidebar item.")
     public void Click() {
         EventDispatcher.dispatchEvent(this, "Click");

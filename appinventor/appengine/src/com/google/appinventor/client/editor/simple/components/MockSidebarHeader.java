@@ -3,6 +3,11 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 
+/**
+ * Mock SidebarHeader component.
+ *
+ * @author singhalsara48@gmail.com (Sara Singhal)
+ */
 public class MockSidebarHeader extends MockHVArrangement {
     public static final String TYPE = "SidebarHeader";
 
