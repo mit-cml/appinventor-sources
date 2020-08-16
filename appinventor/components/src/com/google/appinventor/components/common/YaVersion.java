@@ -596,8 +596,10 @@ public class YaVersion {
   // - The replace-all-mappings block was added.
   // For BLOCKS_LANGUAGE_VERSION 32
   // - The and/or blocks gained mutators.
+  // For BLOCKS_LANGUAGE_VERSION 33
+  // - The helpers_screen_names block was added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 32;
+  public static final int BLOCKS_LANGUAGE_VERSION = 33;
 
   // ................................. Target SDK Version Number ..................................
 

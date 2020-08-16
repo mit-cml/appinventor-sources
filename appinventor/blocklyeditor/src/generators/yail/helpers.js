@@ -29,3 +29,8 @@ Blockly.Yail['helpers_dropdown'] = function() {
   // it does it will return the abstract enum value. If the companion does not
   // support OptionLists it will continue to return the concrete value.
 }
+
+Blockly.Yail['helpers_screen_names'] = function() {
+  var value = Blockly.Yail.quote_(this.getFieldValue('SCREEN'));
+  return [value, Blockly.Yail.ORDER_ATOMIC];
+}

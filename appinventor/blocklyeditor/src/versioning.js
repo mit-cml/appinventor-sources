@@ -744,6 +744,26 @@ Blockly.Versioning.v17_translateComponentSetGetProperty = function(blockElem) {
 };
 
 /******************************************************************************
+ Upgrade screen names to use dropdown block.
+ ******************************************************************************/
+
+Blockly.Versioning.makeScreenNamesBeDropdowns = function (blocksRep, workspace) {
+  var dom = Blockly.Versioning.ensureDom(blocksRep);
+  var allBlocks = dom.getElementsByTagName('block');
+  for (var i = 0, block; block = allBlocks[i]; i++) {
+    if (block.getAttribute('type') == 'controls_openAnotherScreen' ||
+        block.getAttribute('type') == 'controls_openAnotherScreenWithStartValue') {
+      var value = Blockly.Versioning.firstChildWithTagName(block, 'value');
+      var name = value.getAttribute('name');
+      if (name == 'SCREENNAME' || name == 'SCREEN') {
+        Blockly.Versioning.tryReplaceBlockWithScreen(value);
+      }
+    }
+  }
+  return blocksRep;
+};
+
+/******************************************************************************
  General helper methods for upgrades go in this section
  ******************************************************************************/
 
@@ -1076,6 +1096,42 @@ Blockly.Versioning.tryReplaceTargetBlock =
     newBlock.appendChild(field);
     valueNode.appendChild(newBlock);
   }
+
+/**
+ * Replaces the block currently attached to the passed value input with a screen
+ * names block. The current block is replaced iff it is a constant (eg a text or
+ * number block). 
+ * @param {Element} valueNode The node to modify.
+ */
+Blockly.Versioning.tryReplaceBlockWithScreen = function(valueNode) {
+  if (!valueNode) {
+    return;
+  }
+
+  // The node describing the value input's target block.
+  var targetNode = Blockly.Versioning
+      .firstChildWithTagName(valueNode, 'block');
+  if (!targetNode) {
+    return;
+  }
+
+  var name = targetNode.getAttribute('type');
+  if (name != 'text') {
+    return;
+  }
+  var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+  var targetValue = field.textContent;
+
+  valueNode.removeChild(targetNode);
+  var newBlock = document.createElement('block');
+  newBlock.setAttribute('type', 'helpers_screen_names');
+  var field = document.createElement('field');
+  field.setAttribute('name', 'SCREEN');
+  var option = document.createTextNode(targetValue);
+  field.appendChild(option);
+  newBlock.appendChild(field);
+  valueNode.appendChild(newBlock);
+}
 
 /**
  * Returns the list of top-level blocks that are event handlers for the given eventName for
@@ -1966,7 +2022,10 @@ Blockly.Versioning.AllUpgradeMaps =
     31: "noUpgrade",
 
     // AI2: Added mutators for and/or blocks
-    32: "noUpgrade"
+    32: "noUpgrade",
+
+    // AI2: Add screen names dropdown block.
+    33: Blockly.Versioning.makeScreenNamesBeDropdowns,
 
   }, // End Language upgraders
 

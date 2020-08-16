@@ -122,3 +122,55 @@ Blockly.Blocks['helpers_dropdown'] = {
     return tb;
   }
 }
+
+Blockly.Blocks['helpers_screen_names'] = {
+  init: function() {
+    var utils = Blockly.Blocks.Utilities;
+    var dropdown = new Blockly.FieldInvalidDropdown(
+        this.generateOptions.bind(this));
+
+    this.setColour(Blockly.COLOUR_HELPERS);
+
+    this.setOutput(true, utils.YailTypeToBlocklyType('text', utils.OUTPUT));
+    this.appendDummyInput()
+        .appendField(dropdown, 'SCREEN');
+  },
+
+  domToMutation: function(xml) {
+    var value = xml.getAttribute('value');
+    this.setFieldValue(value, 'SCREEN');
+  },
+
+  getScreens: function() {
+    return Blockly.mainWorkspace.getScreenList();
+  },
+
+  generateOptions: function() {
+    if (!this.workspace) {
+      return [['', '']]
+    }
+    var screens = this.getScreens();
+    if (!screens.length) {
+      return [['', '']]
+    }
+    return screens.map(function (elem) {
+      return [elem, elem];
+    });
+  },
+
+  typeblock: function() {
+    var tb = [];
+
+    var screens = Blockly.mainWorkspace.getScreenList();
+    for (var i = 0, screen; (screen = screens[i]); i++) {
+      tb.push({
+        translatedName: Blockly.Msg.LANG_SCREENS_TITLE + screen,
+        mutatorAttributes: {
+          value: screen
+        }
+      })
+    }
+
+    return tb;
+  }
+}

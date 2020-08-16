@@ -659,6 +659,24 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '</block>' +
   '</xml>' },
 
+  controls_openAnotherScreen: {xmlString:
+  '<xml>' +
+    '<block type="controls_openAnotherScreen">' +
+      '<value name="SCREEN">' +
+        '<block type="helpers_screen_names"></block>' +
+      '</value>' +
+    '</block>' +
+  '</xml>' },
+
+  controls_openAnotherScreenWithStartValue: {xmlString:
+  '<xml>' +
+    '<block type="controls_openAnotherScreenWithStartValue">' +
+      '<value name="SCREENNAME">' +
+        '<block type="helpers_screen_names"></block>' +
+      '</value>' +
+    '</block>' +
+  '</xml>' },
+
    math_random_int: {xmlString:
   '<xml>' +
     '<block type="math_random_int">' +
