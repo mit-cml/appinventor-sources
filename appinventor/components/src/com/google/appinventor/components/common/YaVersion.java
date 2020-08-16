@@ -650,7 +650,9 @@ public class YaVersion {
   // - AccelerometerSensor.Sensitivty property was added.
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 4:
   // - Added the LegacyMode property.
-  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 4;
+  // For ACCELEROMERTERSENSOR_COMPONENT_VERSION 5:
+  // - Adds Sensitivity dropdown block.
+  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 5;
 
   // For ACTIVITYSTARTER_COMPONENT_VERSION 2:
   // - The ActivityStarter.DataType, ActivityStarter.ResultType, and ActivityStarter.ResultUri
