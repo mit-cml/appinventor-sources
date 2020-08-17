@@ -49,6 +49,14 @@ public final class CrashReport {
       new RuntimeException(exception);
   }
 
+  public static RuntimeException createAndLogError(org.apache.log4j.Logger log, HttpServletRequest req,
+    String extraInfo, Throwable exception) {
+    log.error(exception.getMessage() + ": " + extraInfo + "\n" + extraExtraInfo(req));
+    return (exception instanceof RuntimeException) ?
+      (RuntimeException) exception :
+      new RuntimeException(exception);
+  }
+
   /**
    * Gets extra system information to add to logs.
    *

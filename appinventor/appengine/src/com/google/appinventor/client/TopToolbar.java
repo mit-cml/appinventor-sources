@@ -36,7 +36,6 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.Config;
@@ -695,12 +694,8 @@ public class TopToolbar extends Composite {
 
     private boolean deleteConfirmation(List<Project> projects) {
       String message;
-      GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
       if (projects.size() == 1) {
-        if (projects.get(0).isPublished())
-          message = MESSAGES.confirmDeleteSinglePublishedProjectWarning(projects.get(0).getProjectName());
-        else
-          message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
+        message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
       } else {
         StringBuilder sb = new StringBuilder();
         String separator = "";
@@ -709,11 +704,7 @@ public class TopToolbar extends Composite {
           separator = ", ";
         }
         String projectNames = sb.toString();
-        if(!gallerySettings.galleryEnabled()){
-          message = MESSAGES.confirmMoveToTrash(projectNames);
-        } else {
-          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
-        }
+        message = MESSAGES.confirmMoveToTrash(projectNames);
       }
       return Window.confirm(message);
     }

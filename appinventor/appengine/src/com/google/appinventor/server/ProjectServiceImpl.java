@@ -6,10 +6,6 @@
 
 package com.google.appinventor.server;
 
-import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.cloudstorage.GcsInputChannel;
-import com.google.appengine.tools.cloudstorage.GcsService;
-import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.CommonProjectService;
@@ -34,14 +30,11 @@ import com.google.common.collect.Lists;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.Channels;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -228,16 +221,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       String userId = userInfoProvider.getUserId();
       storageIo.setMoveToTrashFlag(userId,projectId,false);
       return storageIo.getUserProject(userId,projectId);
-  }
-
- /**
-   * On publish this sets the project's gallery id
-   * @param projectId  project ID
-   * @param galleryId  gallery ID
-   */
-  public void setGalleryId(long projectId, long galleryId) {
-    final String userId = userInfoProvider.getUserId();
-    getProjectRpcImpl(userId, projectId).setGalleryId(userId, projectId, galleryId);
   }
 
   /**
@@ -618,73 +601,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).importMedia(userId, projectId, url, save);
-  }
-
-  /**
-   * This service is passed a URL to an aia file in GCS, of the form
-   *    /gallery/apps/<galleryid>/aia
-   * It converts it to a byte array and imports the project using FileImporter.
-   * It also sets the attributionId of the project to point to the galleryID
-   * it is remixing.
-   */
-  @Override
-  public UserProject newProjectFromGallery(String projectName, String galleryPath,
-      long galleryId) {
-    try {
-      GcsService fileService = GcsServiceFactory.createGcsService();
-      GcsFilename readableFile = new GcsFilename(Flag.createFlag("gallery.bucket", "").get(), galleryPath);
-      GcsInputChannel readChannel = fileService.openPrefetchingReadChannel(readableFile, 0, 16384);
-      if (DEBUG) {
-        LOG.log(Level.INFO, "#### in newProjectFromGallery, past readChannel");
-      }
-      InputStream gcsis = Channels.newInputStream(readChannel);
-      // ok, we don't want to send the gcs stream because it can time out as we
-      // process the zip. We need to copy to a byte buffer first, then send a bytestream
-
-      byte[] buffer = new byte[16384];
-      int bytesRead = 0;
-      ByteArrayOutputStream bao = new ByteArrayOutputStream();
-
-      while ((bytesRead = gcsis.read(buffer)) != -1) {
-        bao.write(buffer, 0, bytesRead);
-      }
-
-      InputStream bais = new ByteArrayInputStream(bao.toByteArray());
-      if (DEBUG) {
-        LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
-      }
-
-      // close the gcs
-      readChannel.close();
-      // now use byte stream to process aia file
-      FileImporter fileImporter = new FileImporterImpl();
-      UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
-        projectName, bais);
-      if (DEBUG) {
-        LOG.log(Level.INFO, "#### in newProjectFromGallery, past importProject");
-      }
-
-      // set the attribution id of the project
-      storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),galleryId);
-      //To-Do: this is a temperory fix for the error that getAttributionId before setAttributionId
-      userProject.setAttributionId(galleryId);
-
-      return userProject;
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
-         throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath,
-          e);
-      } catch (IOException e) {
-        e.printStackTrace();
-
-        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath+":"+projectName,
-          e);
-      } catch (FileImporterException e) {
-        e.printStackTrace();
-
-        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath,
-          e);
-      }
   }
 
   @Override
