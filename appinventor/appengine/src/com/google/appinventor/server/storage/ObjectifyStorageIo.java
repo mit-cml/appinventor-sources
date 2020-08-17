@@ -1723,7 +1723,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     if (!useGcs)                // Using legacy blob store solution
       return false;
     boolean shouldUse =  fileName.contains("assets/")
-      || fileName.endsWith(".apk");
+      || fileName.endsWith(".apk") || fileName.endsWith(".aab");
     if (shouldUse)
       return true;              // Use GCS for package output and assets
     boolean mayUse = (fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files

@@ -78,6 +78,7 @@
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
+      <fileset dir="${lib.dir}/android/tools" includes="*/aapt2" />
       <fileset dir="${lib.dir}/android/tools" includes="*/libwinpthread-1.dll" />
       <fileset dir="${lib.dir}/android/tools" includes="*/lib64/*" />
     </copy>

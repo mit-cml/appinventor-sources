@@ -189,9 +189,9 @@ public interface StorageIo {
    *
    * @param userId user ID
    * @param projectId project ID
-   * @param boolean flag
+   * @param flag
    */
-  void setMoveToTrashFlag(final String userId, final long projectId,boolean flag);
+  void setMoveToTrashFlag(final String userId, final long projectId, boolean flag);
 
   /**
    * Returns an array with the user's projects.
