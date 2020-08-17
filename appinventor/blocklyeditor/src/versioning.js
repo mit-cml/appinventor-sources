@@ -2683,7 +2683,11 @@ Blockly.Versioning.AllUpgradeMaps =
     */
     3: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
-    4: 'noUpgrade'
+    4: 'noUpgrade',
+
+    // Adds ReceivingState dropdown block.
+    5: Blockly.Versioning.makeSetterUseDropdown(
+         'Texting', 'ReceivingEnabled', 'ReceivingState')
 
   }, // End Texting
 

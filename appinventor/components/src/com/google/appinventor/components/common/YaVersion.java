@@ -1213,7 +1213,9 @@ public class YaVersion {
   //   conditional permissions
   // - The SendMessage method was added
   // - The ReceivingEnabled method was given conditional permissions
-  public static final int TEXTING_COMPONENT_VERSION = 4;
+  // For TEXTING_COMPONENT_VERSION 5:
+  // - Adds ReceivingState dropdown block.
+  public static final int TEXTING_COMPONENT_VERSION = 5;
 
   // For TEXTTOSPEECH_COMPONENT_VERSION 2:
   // - added speech pitch and rate

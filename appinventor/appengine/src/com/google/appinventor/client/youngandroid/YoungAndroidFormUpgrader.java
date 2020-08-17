@@ -1590,6 +1590,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 4) {
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // Adds ReceivingState dropdown block.
+      srcCompVersion = 5;
+    }
 
     return srcCompVersion;
   }
