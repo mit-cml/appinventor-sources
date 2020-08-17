@@ -158,7 +158,7 @@ public final class Image extends AndroidViewComponent {
       return;
     }
     picturePath = (path == null) ? "" : path;
-    ViewUtil.setImage(container, view, picturePath);
+    ViewUtil.setImage(this, container, view, picturePath);
   }
 
   /**

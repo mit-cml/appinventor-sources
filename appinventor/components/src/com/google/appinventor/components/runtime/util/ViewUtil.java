@@ -199,8 +199,8 @@ public final class ViewUtil {
   /**
    * Sets the image for an ImageView.
    */
-  public static void setImage(ComponentContainer container, ImageView view, String picturePath) {
-    if (picturePath.endsWith(".gif") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+  public static void setImage(Component component, ComponentContainer container, ImageView view, String picturePath) {
+    if (picturePath.toLowerCase().endsWith(".gif") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
       GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(view);
       MediaUtil.MediaSource mediaSource = MediaUtil.determineMediaSource(container.$form(), picturePath);
       switch (mediaSource) {
@@ -219,6 +219,8 @@ public final class ViewUtil {
                 .into(imageViewTarget);
           } catch (IOException e) {
             Log.e("Image", "Unable to load " + picturePath);
+            container.$form().dispatchErrorOccurredEvent(component,"Picture",
+                ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
           }
           break;
         case REPL_ASSET:
@@ -229,6 +231,19 @@ public final class ViewUtil {
                 .into(imageViewTarget);
           } catch (Exception e) {
             Log.e("Image", "Unable to load " + picturePath);
+            container.$form().dispatchErrorOccurredEvent(component,"Picture",
+                ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
+          }
+          break;
+        case URL:
+          try {
+            Glide.with(container.$context())
+                .load(picturePath)
+                .into(imageViewTarget);
+          } catch (Exception e) {
+            Log.e("Image", "Unable to load " + picturePath);
+            container.$form().dispatchErrorOccurredEvent(component,"Picture",
+                ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
           }
           break;
         default:
@@ -238,6 +253,8 @@ public final class ViewUtil {
                 .into(imageViewTarget);
           } catch (Exception e) {
             Log.e("Image", "Unable to load " + picturePath);
+            container.$form().dispatchErrorOccurredEvent(component,"Picture",
+                ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
           }
       }
     } else {

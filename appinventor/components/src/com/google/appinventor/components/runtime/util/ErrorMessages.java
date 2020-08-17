@@ -208,6 +208,7 @@ public final class ErrorMessages {
 
   // Image errors
   public static final int ERROR_IMAGE_CANNOT_ROTATE = 3001;
+  public static final int ERROR_UNABLE_TO_LOAD_IMAGE = 3002;
 
   // LegoMindstormsEv3 errors
   public static final int ERROR_EV3_BLUETOOTH_NOT_SET = 3100;
@@ -596,6 +597,8 @@ public final class ErrorMessages {
     // Image errors
     errorMessages.put(ERROR_IMAGE_CANNOT_ROTATE,
         "The version of Android on this device does not support image rotation.");
+    errorMessages.put(ERROR_UNABLE_TO_LOAD_IMAGE,
+        "Unable to load image: %s");
     // Form errors signaled in runtime.scm.   The error number used in runtime.scm to call
     // signal-runtime-form-error must match the error number used here.
     errorMessages.put(ERROR_DIVISION_BY_ZERO,
