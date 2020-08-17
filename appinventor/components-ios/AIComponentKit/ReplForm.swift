@@ -8,6 +8,7 @@ open class ReplForm: Form {
   @objc internal static weak var topform: ReplForm?
   fileprivate static var _httpdServer: AppInvHTTPD?
   fileprivate var _assetsLoaded = false
+  fileprivate var _isScreenClosed = false
   
   public override init(nibName nibNameOrNil: String?, bundle bundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: bundleOrNil)
@@ -85,7 +86,9 @@ open class ReplForm: Form {
   open override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
     if self.isMovingFromParent {
-      RetValManager.shared()?.popScreen("")
+      if _isScreenClosed == false {
+        RetValManager.shared()?.popScreen("")
+      }
     }
   }
 
@@ -124,6 +127,7 @@ open class ReplForm: Form {
 
   override func doCloseScreen(withValue value: AnyObject? = nil) {
     super.doCloseScreen(withValue: value)
+    _isScreenClosed = true
     do {
       RetValManager.shared().popScreen(try getJsonRepresentation(value))
     } catch {
@@ -133,6 +137,7 @@ open class ReplForm: Form {
 
   override func doCloseScreen(withPlainText text: String) {
     super.doCloseScreen(withPlainText: text)
+    _isScreenClosed = true
     RetValManager.shared().popScreen(text)
   }
 
