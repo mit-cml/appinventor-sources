@@ -13,6 +13,7 @@ import static java.util.Arrays.asList;
 import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -21,6 +22,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.TransportMethod;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -65,24 +67,6 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
   private String language = "en";
   private YailDictionary lastResponse = YailDictionary.makeDictionary();
 
-  enum TransportMethod {
-    DEFAULT ("foot-walking"),
-    DRIVING ("driving-car"),
-    CYCLING ("cycling-regular"),
-    WALKING ("foot-walking"),
-    WHEELCHAIR ("wheelchair");
-
-    private final String method;
-    
-    TransportMethod(String method) {
-      this.method = method;
-    }
-    
-    private String method() { 
-      return method;
-    }
-  }
-
   /**
    * Creates a Navigation component.
    *
@@ -93,7 +77,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     apiKey = "";
     startLocation = new GeoPoint(0.0, 0.0);
     endLocation = new GeoPoint(0.0, 0.0);
-    method = TransportMethod.DEFAULT;
+    method = TransportMethod.Foot;
   }
 
   /**
@@ -238,8 +222,15 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public String TransportationMethod() {
-    return method.method();
+  public @Options(TransportMethod.class) String TransportationMethod() {
+    return method.toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current transportation method.
+   */
+  public TransportMethod TransportationMethodAbstract() {
+    return method;
   }
 
   /**
@@ -255,12 +246,18 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NAVIGATION_METHOD,
       defaultValue = "foot-walking")
   @SimpleProperty(description = "The transportation method used for determining the route.")
-  public void TransportationMethod(String method) {
-    for (TransportMethod t : TransportMethod.values()) {
-      if (method.equals(t.method())) {
-        this.method = t;
-      }
+  public void TransportationMethod(@Options(TransportMethod.class) String method) {
+    TransportMethod t = TransportMethod.fromUnderlyingValue(method);
+    if (t != null) {
+      TransportationMethodAbstract(t);
     }
+  }
+
+  /**
+   * Sets the current transportation method.
+   */
+  public void TransportationMethodAbstract(TransportMethod method) {
+    this.method = method;
   }
 
   @SimpleProperty(description = "Set the end location.")
@@ -332,7 +329,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
 
   private void performRequest(GeoPoint start, GeoPoint end, TransportMethod method)
       throws IOException, JSONException {
-    final String finalURL = serviceUrl + method.method() + "/geojson/";
+    final String finalURL = serviceUrl + method.toUnderlyingValue() + "/geojson/";
     URL url = new URL(finalURL);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setDoInput(true);

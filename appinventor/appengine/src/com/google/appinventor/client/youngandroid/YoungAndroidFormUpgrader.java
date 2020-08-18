@@ -376,6 +376,8 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeRectangleProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("FeatureCollection")) {
         srcCompVersion = upgradeFeatureCollection(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Navigation")) {
+        srcCompVersion = upgradeNavigationProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("YandexTranslate")) {
         srcCompVersion = upgradeYandexTranslateProperties(componentProperties, srcCompVersion);
       }
@@ -1732,6 +1734,21 @@ public final class YoungAndroidFormUpgrader {
       // Verison 5
       // The ScaleUnits and ShowScale properties were added
       srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // Adds Units and MapType dropdowns.
+      srcCompVersion = 6;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeNavigationProperties(
+    Map<String, JSONValue> componentProperties,
+    int srcCompVersion
+  ) {
+    if (srcCompVersion < 2) {
+      // - Adds TransportMethod dropdown.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }

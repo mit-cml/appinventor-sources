@@ -2123,7 +2123,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:
     // - The ScaleUnits and ShowScale properties were added to Map
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2:
+    // - Adds Units and MapType dropdowns.
+    6: [Blockly.Versioning.makeSetterUseDropdown(
+          'Map', 'ScaleUnits', 'Units'),
+        Blockly.Versioning.makeSetterUseDropdown(
+          'Map', 'MapType', 'MapType')]
 
   }, // End Map upgraders
 
@@ -2167,6 +2174,16 @@ Blockly.Versioning.AllUpgradeMaps =
     // - The FillOpacity and StrokeOpacity properties were added
     2: "noUpgrade"
   }, // End Rectangle upgraders
+
+  "Navigation": {
+    // This is an initial version. Placehoder for future upgrades.
+    1: "noUpgrade",
+
+    // Adds TransportMethod dropdown.
+    2: [Blockly.Versioning.makeSetterUseDropdown(
+          'Navigation', 'TransportationMethod', 'TransportMethod')]
+
+  }, // End Navigation upgraders.
 
   "NearField": {
 

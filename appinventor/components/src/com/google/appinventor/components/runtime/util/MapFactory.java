@@ -8,6 +8,8 @@ package com.google.appinventor.components.runtime.util;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.appinventor.components.common.MapType;
+import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.Form;
@@ -183,14 +185,24 @@ public final class MapFactory {
      *
      * @return the type of the map's active tile layer
      */
-    MapType getMapType();
+    MapFactory.MapType getMapType();
 
     /**
      * Set the type of the map being used.
      *
      * @param type the new map type for the map
      */
-    void setMapType(MapType type);
+    void setMapType(MapFactory.MapType type);
+
+    /**
+     * Get the type of map being used.
+     */
+    com.google.appinventor.components.common.MapType getMapTypeAbstract();
+
+    /**
+     * Set the type of map being used.
+     */
+    void setMapTypeAbstract(com.google.appinventor.components.common.MapType type);
 
     /**
      * Set whether the compass is displayed on the map.
@@ -575,6 +587,16 @@ public final class MapFactory {
      * @return the units used for the scale overlay
      */
     MapScaleUnits getScaleUnits();
+
+    /**
+     * Sets the units for the scale.
+     */
+    void setScaleUnitsAbstract(ScaleUnits units);
+
+    /**
+     * Returns the units for the scale.
+     */
+    ScaleUnits getScaleUnitsAbstract();
   }
 
   /**

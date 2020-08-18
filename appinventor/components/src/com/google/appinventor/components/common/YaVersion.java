@@ -1024,7 +1024,9 @@ public class YaVersion {
   // For MAP_COMPONENT_VERSION 5:
   // - Added ShowScale property
   // - Added ScaleUnits property
-  public static final int MAP_COMPONENT_VERSION = 5;
+  // For MAP_COMPONENT_VERSION 6:
+  // - Adds Units and MapType dropdowns.
+  public static final int MAP_COMPONENT_VERSION = 6;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap
@@ -1038,7 +1040,9 @@ public class YaVersion {
 
   // For NAVIGATION_COMPONENT_VERSION 1:
   // - Initial Navigation implementation
-  public static final int NAVIGATION_COMPONENT_VERSION = 1;
+  // For NAVIGATION_COMPONENT_VERSION 2:
+  // - Adds TransportMethod dropdown.
+  public static final int NAVIGATION_COMPONENT_VERSION = 2;
 
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;
