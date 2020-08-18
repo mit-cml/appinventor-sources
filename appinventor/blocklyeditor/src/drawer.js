@@ -135,9 +135,9 @@ Blockly.Drawer.buildToolkitTree_ = function(jsonToolkit) {
 Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   drawerName = Blockly.Drawer.PREFIX_ + drawerName;
   var blockSet = this.options.languageTree[drawerName];
-  if(drawerName == "cat_Procedures") {
+  if (drawerName == "cat_Procedures") {
     var newBlockSet = [];
-    for(var i=0;i<blockSet.length;i++) {
+    for (var i = 0; i < blockSet.length; i++) {
       if(!(blockSet[i] == "procedures_callnoreturn" // Include callnoreturn only if at least one defnoreturn declaration
            && this.workspace_.getProcedureDatabase().voidProcedures == 0)
          &&
@@ -209,8 +209,9 @@ Blockly.Drawer.prototype.isShowing = function() {
 
 Blockly.Drawer.prototype.blockListToXMLArray = function(blockList) {
   var xmlArray = [];
-  for(var i=0;i<blockList.length;i++) {
-    Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray(blockList[i],null));
+  for (var i = 0; i < blockList.length; i++) {
+    Array.prototype.push.apply(
+        xmlArray, this.blockTypeToXMLArray(blockList[i], null));
   }
   return xmlArray;
 };
@@ -283,6 +284,7 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     var helperKeys = [];
     var typeName = instanceRecord.typeName;
     var instanceName = instanceRecord.name;
+    var xmlUtils = Blockly.Util.xml;
 
     /**
      * Adds the feature's helper key to the list of HelperKeys if the key is
@@ -343,12 +345,12 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
         // be added at the bottom of the drawer.
         getHelper(param);
         // Adds dropdown blocks to inputs which expect them.
-        var inputXml = this.valueWithHelperXML('ARG' + index, param.helperKey);
+        var inputXml = xmlUtils.valueWithHelperXML('ARG' + index, param.helperKey);
         // First child b/c these are wrapped in an <xml/> node.
         methodXml.firstChild.appendChild(inputXml.firstChild);
       }.bind(this));
 
-      Array.prototype.push.apply(xmlArray, this.XMLToArray(methodXml));
+      Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(methodXml));
     }, this);
 
     // Create getter and setter blocks.
@@ -376,12 +378,12 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
 
         if (property.helperKey) {
           // Adds dropdown blocks to inputs which expect them.
-          var inputXml = this.valueWithHelperXML('VALUE', property.helperKey);
+          var inputXml = xmlUtils.valueWithHelperXML('VALUE', property.helperKey);
           // First child b/c these are wrapped in an <xml/> node.
           setXml.firstChild.appendChild(inputXml.firstChild);
         }
 
-        Array.prototype.push.apply(xmlArray, this.XMLToArray(setXml));
+        Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(setXml));
       }
 
       // Collects up helper blocks for properties which use them so they can
@@ -395,8 +397,8 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     // was decided that it was better to keep helpers close to the components/
     // blocks that use them.
     helperKeys.forEach(function(helper) {
-      var xml = this.helperKeyToXML(helper);
-      Array.prototype.push.apply(xmlArray, this.XMLToArray(xml));
+      var xml = xmlUtils.helperKeyToXML(helper);
+      Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(xml));
     }.bind(this));
 
     // Create component literal block.
@@ -411,17 +413,6 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
 
     return xmlArray;
   }
-
-/**
- * Creates an XML Array which defines the block for the given helper key.
- * @param {HelperKey} helperKey The helper key we want to get the block for.
- */
-Blockly.Drawer.prototype.helperKeyToXML= function(helperKey) {
-  switch(helperKey.type) {
-    case 'OPTION_LIST':
-      return this.blockTypeToXML('helpers_dropdown', {key: helperKey.key});
-  }
-}
 
 Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   var xmlArray = [];
@@ -463,140 +454,43 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   return xmlArray;
 };
 
-Blockly.Drawer.prototype.blockTypeToXMLArray = function(blockType,mutatorAttributes) {
-  return this.XMLToArray(this.blockTypeToXML(blockType, mutatorAttributes));
-};
+Blockly.Drawer.prototype.blockTypeToXMLArray =
+  function(blockType, mutatorAttributes) {
+    return Blockly.Util.xml.XMLToArray(
+        this.blockTypeToXML(blockType, mutatorAttributes));
+  };
 
 Blockly.Drawer.prototype.blockTypeToXML = function(blockType, mutatorAttributes) {
-  var xmlString = Blockly.Drawer.getDefaultXMLString(blockType,mutatorAttributes);
-  if(xmlString == null) {
-    // [lyn, 10/23/13] Handle procedure calls in drawers specially
-    if (blockType == 'procedures_callnoreturn' || blockType == 'procedures_callreturn') {
-      xmlString = this.procedureCallersXMLString(blockType == 'procedures_callreturn');
-    } else {
-      xmlString = '<xml><block type="' + blockType + '">';
-      if(mutatorAttributes) {
-        if (mutatorAttributes['is_generic'] === undefined) {
-          mutatorAttributes['is_generic'] = !mutatorAttributes['instance_name']
+    var utils = Blockly.Util.xml;
+
+    if (mutatorAttributes && mutatorAttributes['is_generic'] === undefined) {
+      mutatorAttributes['is_generic'] = !mutatorAttributes['instance_name']
+    }
+
+    switch (blockType) {
+      case 'procedures_callnoreturn':
+        return Blockly.Xml.textToDom(
+            utils.procedureCallersXMLString(false, this.workspace_));
+      case 'procedures_callreturn':
+        return Blockly.Xml.textToDom(
+            utils.procedureCallersXMLString(true, this.workspace_));
+      default:
+        var xmlString = Blockly.Drawer.getDefaultXMLString(
+            blockType, mutatorAttributes);
+        if (xmlString != null) {
+          return Blockly.Xml.textToDom(xmlString);
+        } else {
+          return utils.blockTypeToXML(blockType, mutatorAttributes);
         }
-        xmlString += Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes);
-      }
-      xmlString += '</block></xml>';
     }
-  }
-  return Blockly.Xml.textToDom(xmlString);
 }
-
-Blockly.Drawer.mutatorAttributesToXMLString = function(mutatorAttributes){
-  var xmlString = '<mutation ';
-  for(var attributeName in mutatorAttributes) {
-    if (!mutatorAttributes.hasOwnProperty(attributeName)) continue;
-    xmlString += attributeName + '="' + mutatorAttributes[attributeName] + '" ';
-  }
-  xmlString += '></mutation>';
-  return xmlString;
-};
-
-/**
- * Creates the xml for a value input with the given name.
- * @param {string} name The name of the value input.
- * @return {!Node} Two xml nodes defining the value input. The outer is an <xml>
- *     node and the inner is a <value> node.
- */
-Blockly.Drawer.prototype.valueInputToXML = function(name) {
-  var xmlString = '<xml><value name="' + name + '"></value></xml>';
-  return Blockly.Xml.textToDom(xmlString);
-}
-
-/**
- * @param {string} name The name of the value input.
- * @param {HelperKey} helperKey Key defining the helper block to create.
- * @return {!Node} XML nodes defining a value input with a helper block attached.
- */
-Blockly.Drawer.prototype.valueWithHelperXML = function(name, helperKey) {
-  var inputXml= this.valueInputToXML(name);
-  var helperXml= this.helperKeyToXML(helperKey);
-  // First child b/c these are wrapped in an <xml/> node.
-  inputXml.firstChild.appendChild(helperXml.firstChild);
-  return inputXml;
-}
-
-/**
- * Converts a group of nodes (the outer-most one being a <xml> node) int an
- * array of all of the child nodes.
- * @param {!Node} xml A group of nodes, the outer most one being an <xml> node.
- * @return {!Array<!Node>} An array of xml nodes.
- */
-Blockly.Drawer.prototype.XMLToArray = function(xml) {
-  var xmlArray = [];
-  // [lyn, 11/10/13] Use goog.dom.getChildren rather than .children or
-  //   .childNodes to make this code work across browsers.
-  var children = goog.dom.getChildren(xml);
-  for(var i = 0, child; child = children[i]; i++) {
-    xmlArray.push(child);
-  }
-  return xmlArray;
-}
-
-// [lyn, 10/22/13] return an XML string including one procedure caller for each procedure declaration
-// in main workspace.
-// [jos, 10/18/15] if we pass a proc_name, we only want one procedure returned as xmlString
-Blockly.Drawer.prototype.procedureCallersXMLString = function(returnsValue, proc_name) {
-  var xmlString = '<xml>';  // Used to accumulate xml for each caller
-  var decls = this.workspace_.getProcedureDatabase().getDeclarationBlocks(returnsValue);
-
-  if (proc_name) {
-    for (var i = 0; i < decls.length; i++) {
-      if (decls[i].getFieldValue('NAME').toLocaleLowerCase() == proc_name){
-        xmlString += Blockly.Drawer.procedureCallerBlockString(decls[i]);
-        break;
-      }
-    }
-  }
-  else {
-    decls.sort(Blockly.Drawer.compareDeclarationsByName); // sort decls lexicographically by procedure name
-    for (var i = 0; i < decls.length; i++) {
-      xmlString += Blockly.Drawer.procedureCallerBlockString(decls[i]);
-    }
-  }
-  xmlString += '</xml>';
-  return xmlString;
-};
-
-Blockly.Drawer.compareDeclarationsByName = function (decl1, decl2) {
-  var name1 = decl1.getFieldValue('NAME').toLocaleLowerCase();
-  var name2 = decl2.getFieldValue('NAME').toLocaleLowerCase();
-  return name1.localeCompare(name2);
-};
-
-// [lyn, 10/22/13] return an XML string for a caller block for the give procedure declaration block
-// Here's an example:
-//   <block type="procedures_callnoreturn" inline="false">
-//     <title name="PROCNAME">p2</title>
-//     <mutation name="p2">
-//       <arg name="b"></arg>
-//       <arg name="c"></arg>
-//    </mutation>
-//  </block>
-Blockly.Drawer.procedureCallerBlockString = function(procDeclBlock) {
-  var declType = procDeclBlock.type;
-  var callerType = (declType == 'procedures_defreturn') ? 'procedures_callreturn' : 'procedures_callnoreturn';
-  var blockString = '<block type="' + callerType + '" inline="false">'
-  var procName = procDeclBlock.getFieldValue('NAME');
-  blockString += '<title name="PROCNAME">' + procName + '</title>';
-  var mutationDom = procDeclBlock.mutationToDom();
-  mutationDom.setAttribute('name', procName); // Decl doesn't have name attribute, but caller does
-  blockString += Blockly.Xml.domToText(mutationDom);
-  blockString += '</block>';
-  return blockString;
-};
 
 /**
  * Given the blockType and a dictionary of the mutator attributes
  * either return the xml string associated with the default block
  * or return null, since there are no default blocks associated with the blockType.
  */
-Blockly.Drawer.getDefaultXMLString = function(blockType,mutatorAttributes) {
+Blockly.Drawer.getDefaultXMLString = function(blockType, mutatorAttributes) {
   //return null if the
   if(Blockly.Drawer.defaultBlockXMLStrings[blockType] == null) {
     return null;
@@ -610,7 +504,7 @@ Blockly.Drawer.getDefaultXMLString = function(blockType,mutatorAttributes) {
     var matchingAttributes;
     var allMatch;
     //go through each of the possible matching cases
-    for(var i=0;i<possibleMutatorDefaults.length;i++) {
+    for (var i=0;i<possibleMutatorDefaults.length;i++) {
       matchingAttributes = possibleMutatorDefaults[i].matchingMutatorAttributes;
       //if the object doesn't have a matchingAttributes object, then skip it
       if(!matchingAttributes) {
@@ -619,7 +513,7 @@ Blockly.Drawer.getDefaultXMLString = function(blockType,mutatorAttributes) {
       //go through each of the mutator attributes.
       //if one attribute does not match then move to the next possibility
       allMatch = true;
-      for(var mutatorAttribute in matchingAttributes) {
+      for (var mutatorAttribute in matchingAttributes) {
         if (!matchingAttributes.hasOwnProperty(mutatorAttribute)) continue;
         if(mutatorAttributes[mutatorAttribute] != matchingAttributes[mutatorAttribute]){
           allMatch = false;
@@ -749,7 +643,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<xml>' +
          '<block type="component_method">' +
          //mutator generator
-         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
          '</block>' +
          '</xml>';}},
@@ -760,7 +654,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
             '<xml>' +
             '<block type="component_method">' +
               //mutator generator
-            Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+            Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
             '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
             '</block>' +
             '</xml>';}},
@@ -772,7 +666,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<xml>' +
          '<block type="component_method">' +
          //mutator generator
-         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG2"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
          '</block>' +
          '</xml>';}},
@@ -784,7 +678,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<xml>' +
          '<block type="component_method">' +
          //mutator generator
-         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG4"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
          '</block>' +
          '</xml>';}},
@@ -796,7 +690,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<xml>' +
          '<block type="component_method">' +
          //mutator generator
-         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
          '</block>' +
          '</xml>';}},
@@ -808,7 +702,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<xml>' +
          '<block type="component_method">' +
          //mutator generator
-         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG1"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
          '</block>' +
          '</xml>';}},
@@ -820,7 +714,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<xml>' +
          '<block type="component_method">' +
          //mutator generator
-         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG6"><block type="logic_boolean"><field name="BOOL">FALSE</field></block></value>' +
          '<value name="ARG7"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value>' +
          '</block>' +
@@ -833,7 +727,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<xml>' +
          '<block type="component_method">' +
          //mutator generator
-         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG1"><block type="text"><field name="TEXT">MMM d, yyyy</field></block></value>' +
          '</block>' +
          '</xml>';}},
@@ -845,7 +739,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<xml>' +
          '<block type="component_method">' +
          //mutator generator
-         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
          '<value name="ARG1"><block type="text"><field name="TEXT">MM/dd/yyyy hh:mm:ss a</field></block></value>' +
          '</block>' +
          '</xml>';}}
