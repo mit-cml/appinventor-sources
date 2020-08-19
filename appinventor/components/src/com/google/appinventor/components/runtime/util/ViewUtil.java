@@ -6,6 +6,8 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
 
@@ -202,61 +204,7 @@ public final class ViewUtil {
   public static void setImage(Component component, ComponentContainer container, ImageView view, String picturePath) {
     if (picturePath.toLowerCase().endsWith(".gif") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
       GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(view);
-      MediaUtil.MediaSource mediaSource = MediaUtil.determineMediaSource(container.$form(), picturePath);
-      switch (mediaSource) {
-        case ASSET:
-          try {
-            InputStream is = container.$form().getAssets().open(picturePath);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] buf = new byte[4096];
-            int read;
-            while ((read = is.read(buf)) > 0) {
-              bos.write(buf, 0, read);
-            }
-            buf = bos.toByteArray();
-            Glide.with(container.$context())
-                .load(buf)
-                .into(imageViewTarget);
-          } catch (IOException e) {
-            Log.e("Image", "Unable to load " + picturePath);
-            container.$form().dispatchErrorOccurredEvent(component,"Picture",
-                ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
-          }
-          break;
-        case REPL_ASSET:
-          String replAssetPath = MediaUtil.replAssetPath(picturePath);
-          try {
-            Glide.with(container.$context())
-                .load(Uri.fromFile(new File(replAssetPath)))
-                .into(imageViewTarget);
-          } catch (Exception e) {
-            Log.e("Image", "Unable to load " + picturePath);
-            container.$form().dispatchErrorOccurredEvent(component,"Picture",
-                ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
-          }
-          break;
-        case URL:
-          try {
-            Glide.with(container.$context())
-                .load(picturePath)
-                .into(imageViewTarget);
-          } catch (Exception e) {
-            Log.e("Image", "Unable to load " + picturePath);
-            container.$form().dispatchErrorOccurredEvent(component,"Picture",
-                ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
-          }
-          break;
-        default:
-          try {
-            Glide.with(container.$context())
-                .load(Uri.fromFile(new File(picturePath)))
-                .into(imageViewTarget);
-          } catch (Exception e) {
-            Log.e("Image", "Unable to load " + picturePath);
-            container.$form().dispatchErrorOccurredEvent(component,"Picture",
-                ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
-          }
-      }
+      loadImageWithGlide(component,container,picturePath,imageViewTarget);
     } else {
       Drawable drawable = null;
       try {
@@ -275,5 +223,63 @@ public final class ViewUtil {
   public static void setBackgroundDrawable(View view, Drawable drawable) {
     view.setBackgroundDrawable(drawable);
     view.invalidate();
+  }
+  
+  public static void loadImageWithGlide(Component component, ComponentContainer container, String picturePath, Target<GlideDrawable> target){
+    MediaUtil.MediaSource mediaSource = MediaUtil.determineMediaSource(container.$form(), picturePath);
+    switch (mediaSource) {
+      case ASSET:
+        try {
+          InputStream is = container.$form().getAssets().open(picturePath);
+          ByteArrayOutputStream bos = new ByteArrayOutputStream();
+          byte[] buf = new byte[4096];
+          int read;
+          while ((read = is.read(buf)) > 0) {
+            bos.write(buf, 0, read);
+          }
+          buf = bos.toByteArray();
+          Glide.with(container.$context())
+              .load(buf)
+              .into(target);
+        } catch (IOException e) {
+          Log.e("Image", "Unable to load " + picturePath);
+          container.$form().dispatchErrorOccurredEvent(component,"Picture",
+              ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
+        }
+        break;
+      case REPL_ASSET:
+        String replAssetPath = MediaUtil.replAssetPath(picturePath);
+        try {
+          Glide.with(container.$context())
+              .load(Uri.fromFile(new File(replAssetPath)))
+              .into(target);
+        } catch (Exception e) {
+          Log.e("Image", "Unable to load " + picturePath);
+          container.$form().dispatchErrorOccurredEvent(component,"Picture",
+              ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
+        }
+        break;
+      case URL:
+        try {
+          Glide.with(container.$context())
+              .load(picturePath)
+              .into(target);
+        } catch (Exception e) {
+          Log.e("Image", "Unable to load " + picturePath);
+          container.$form().dispatchErrorOccurredEvent(component,"Picture",
+              ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
+        }
+        break;
+      default:
+        try {
+          Glide.with(container.$context())
+              .load(Uri.fromFile(new File(picturePath)))
+              .into(target);
+        } catch (Exception e) {
+          Log.e("Image", "Unable to load " + picturePath);
+          container.$form().dispatchErrorOccurredEvent(component,"Picture",
+              ErrorMessages.ERROR_UNABLE_TO_LOAD_IMAGE, picturePath);
+        }
+    }
   }
 }

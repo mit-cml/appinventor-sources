@@ -8,6 +8,9 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -347,7 +350,19 @@ public abstract class ButtonBase extends AndroidViewComponent
     // Load image from file.
     if (imagePath.length() > 0) {
       try {
-        backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+        if(imagePath.toLowerCase().endsWith(".gif") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+          SimpleTarget<GlideDrawable> simpleTarget = new SimpleTarget<GlideDrawable>() {
+            @Override
+            public void onResourceReady(GlideDrawable glideDrawable, GlideAnimation<? super GlideDrawable> glideAnimation) {
+              glideDrawable.start();
+              backgroundImageDrawable = glideDrawable;
+              updateAppearance();
+            }
+          };
+          ViewUtil.loadImageWithGlide(this,container,imagePath,simpleTarget);
+        } else {
+          backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+        }
       } catch (IOException ioe) {
         // TODO(user): Maybe raise Form.ErrorOccurred.
         Log.e(LOG_TAG, "Unable to load " + imagePath);

@@ -10,6 +10,7 @@ import android.app.Activity;
 
 import android.graphics.drawable.Drawable;
 
+import android.os.Build;
 import android.os.Handler;
 
 import android.util.Log;
@@ -21,6 +22,9 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -356,7 +360,19 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         // Load image from file.
         if (imagePath.length() > 0) {
             try {
+              if(imagePath.toLowerCase().endsWith(".gif") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+                SimpleTarget<GlideDrawable> simpleTarget = new SimpleTarget<GlideDrawable>() {
+                  @Override
+                  public void onResourceReady(GlideDrawable glideDrawable, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                    glideDrawable.start();
+                    backgroundImageDrawable = glideDrawable;
+                    updateAppearance();
+                  }
+                };
+                ViewUtil.loadImageWithGlide(this,container,imagePath,simpleTarget);
+              } else {
                 backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+              }
             } catch (IOException ioe) {
                 // Fall through with a value of null for backgroundImageDrawable.
             }
