@@ -41,6 +41,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.appinventor.common.version.AppInventorFeatures;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -1273,12 +1276,24 @@ public class Form extends AppInventorCompatActivity
     backgroundImagePath = (path == null) ? "" : path;
 
     try {
-      backgroundDrawable = MediaUtil.getBitmapDrawable(this, backgroundImagePath);
+      if(backgroundImagePath.toLowerCase().endsWith(".gif") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+        SimpleTarget<GlideDrawable> simpleTarget = new SimpleTarget<GlideDrawable>() {
+          @Override
+          public void onResourceReady(GlideDrawable glideDrawable, GlideAnimation<? super GlideDrawable> glideAnimation) {
+            glideDrawable.start();
+            backgroundDrawable = glideDrawable;
+            ViewUtil.setBackgroundImage(frameLayout,backgroundDrawable);
+          }
+        };
+        ViewUtil.loadImageWithGlide(this,this,backgroundImagePath,simpleTarget);
+      } else {
+        backgroundDrawable = MediaUtil.getBitmapDrawable(this, backgroundImagePath);
+      }
     } catch (IOException ioe) {
       Log.e(LOG_TAG, "Unable to load " + backgroundImagePath);
       backgroundDrawable = null;
     }
-    setBackground(frameLayout);
+//    setBackground(frameLayout);
   }
 
   /**
