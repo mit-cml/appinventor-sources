@@ -182,19 +182,19 @@ Blockly.Yail['text_contains'] = function() {
 };
 
 Blockly.Yail.text_contains.OPERATORS = {
-  CONTAINS: {
+  'CONTAINS': {
     operator: 'string-contains',
     blockName: 'string contains',
     order: Blockly.Yail.ORDER_ATOMIC,
     type: 'text'
   },
-  CONTAINS_ANY: {
+  'CONTAINS_ANY': {
     operator: 'string-contains-any',
     blockName: 'string contains any',
     order: Blockly.Yail.ORDER_ATOMIC,
     type: 'list'
   },
-  CONTAINS_ALL: {
+  'CONTAINS_ALL': {
     operator: 'string-contains-all',
     blockName: 'string contains all',
     order: Blockly.Yail.ORDER_ATOMIC,

@@ -95,13 +95,17 @@ Returns true if *piece* appears in text; otherwise, returns false.
 
 ![](images/text/containsany.png)
 
-Returns true any of the pieces in the piece list appear in text; otherwise, returns false.
+Returns true if any of the pieces in the piece list appear in text; otherwise, returns false.
+
+This block can be obtained by changing the dropdown on the contains block.
 
 ### contains all   {#containsall}
 
 ![](images/text/containsall.png)
 
-Returns true all of the pieces in the piece list appear in text; otherwise, returns false.
+Returns true if all of the pieces in the piece list appear in text; otherwise, returns false.
+
+This block can be obtained by changing the dropdown on the contains block.
 
 ### split at first   {#splitatfirst}
 

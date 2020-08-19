@@ -599,7 +599,7 @@ public class YaVersion {
   // - The and/or blocks gained mutators.
   // For BLOCKS_LANGUAGE_VERSION 32
   // - Added "contains any" and "contains all" options to the text contains block.
-  public static final int BLOCKS_LANGUAGE_VERSION = 32;
+  public static final int BLOCKS_LANGUAGE_VERSION = 33;
 
   // ................................. Target SDK Version Number ..................................
 

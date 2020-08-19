@@ -321,7 +321,7 @@ Blockly.Blocks['text_contains'] = {
 
   helpUrl: function() {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.text_contains.HELPURLS[mode];
+    return Blockly.Blocks.text_contains.HELPURLS()[mode];
   },
 
   init: function () {
@@ -330,7 +330,7 @@ Blockly.Blocks['text_contains'] = {
     var utils = Blockly.Blocks.Utilities;
     var getType = utils.YailTypeToBlocklyType;
     var dropdown = new Blockly.FieldDropdown(
-        Blockly.Blocks.text_contains.OPERATORS,
+        Blockly.Blocks.text_contains.OPERATORS(),
         Blockly.Blocks.text_contains.adjustToMode.bind(this));
     var text = new Blockly.FieldLabel(
         Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE);
@@ -347,7 +347,7 @@ Blockly.Blocks['text_contains'] = {
 
     this.setTooltip(function() {
       var mode = this.getFieldValue('OP');
-      return Blockly.Blocks.text_contains.TOOLTIPS[mode];
+      return Blockly.Blocks.text_contains.TOOLTIPS()[mode];
     }.bind(this));
   },
 
@@ -415,22 +415,28 @@ Blockly.Blocks.text_contains.adjustToMode = function (mode) {
 };
 
 // The order here determines the order in the dropdown
-Blockly.Blocks.text_contains.OPERATORS = [
-  [Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS, 'CONTAINS'],
-  [Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY, 'CONTAINS_ANY'],
-  [Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL, 'CONTAINS_ALL'],
-];
-
-Blockly.Blocks.text_contains.TOOLTIPS = {
-  CONTAINS: Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS,
-  CONTAINS_ANY: Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY,
-  CONTAINS_ALL: Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL,
+Blockly.Blocks.text_contains.OPERATORS = function() {
+  return [
+    [Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS, 'CONTAINS'],
+    [Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY, 'CONTAINS_ANY'],
+    [Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL, 'CONTAINS_ALL'],
+  ]
 };
 
-Blockly.Blocks.text_contains.HELPURLS = {
-  CONTAINS: Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS,
-  CONTAINS_ANY: Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ANY,
-  CONTAINS_ALL: Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL,
+Blockly.Blocks.text_contains.TOOLTIPS = function() {
+  return {
+    CONTAINS: Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS,
+    CONTAINS_ANY: Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY,
+    CONTAINS_ALL: Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL,
+  }
+};
+
+Blockly.Blocks.text_contains.HELPURLS = function() {
+  return {
+    CONTAINS: Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS,
+    CONTAINS_ANY: Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ANY,
+    CONTAINS_ALL: Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL,
+  }
 };
 
 Blockly.Blocks['text_split'] = {
