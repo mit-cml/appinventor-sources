@@ -675,8 +675,8 @@ public interface Images extends Resources {
   /**
    * Floating Action button default Icon
    */
-  @Source("com/google/appinventor/images/whiteAddIcon.png")
-  ImageResource addIcon();
+  @Source("com/google/appinventor/images/fabDefaultImage.png")
+  ImageResource defaultImage();
 
   /**
    * Floating Action button Logo
