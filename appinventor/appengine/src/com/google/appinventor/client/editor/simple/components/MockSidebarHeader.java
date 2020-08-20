@@ -18,7 +18,6 @@ public class MockSidebarHeader extends MockHVArrangement {
      */
    public MockSidebarHeader(SimpleEditor editor) {
         super(editor, TYPE, images.sidebarHeader(), ComponentConstants.LAYOUT_ORIENTATION_VERTICAL, ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
-        finishConfiguration();
    }
 
     @Override

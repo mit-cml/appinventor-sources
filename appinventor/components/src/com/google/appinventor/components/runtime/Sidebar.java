@@ -44,7 +44,6 @@ public class Sidebar extends AndroidViewComponent implements ComponentContainer{
         return (sidebarMenu.size()-1);
     }
 
-    //
     public void addHeader(SidebarHeader sidebarHeader) {
         if(sidebarHeader.viewLayout.getLayoutManager().getParent()!=null) {
             ((ViewGroup)sidebarHeader.viewLayout.getLayoutManager().getParent()).removeView(sidebarHeader.viewLayout.getLayoutManager());
@@ -68,16 +67,16 @@ public class Sidebar extends AndroidViewComponent implements ComponentContainer{
     }
 
     @Override
-    public void $add(AndroidViewComponent<? extends View> component) {
+    public void $add(AndroidViewComponent component) {
     }
 
     @Override
-    public void setChildWidth(AndroidViewComponent<? extends View> component, int width) {
+    public void setChildWidth(AndroidViewComponent component, int width) {
 
     }
 
     @Override
-    public void setChildHeight(AndroidViewComponent<? extends View> component, int height) {
+    public void setChildHeight(AndroidViewComponent component, int height) {
 
     }
 }

@@ -21,12 +21,12 @@ import com.google.appinventor.components.common.YaVersion;
         category = ComponentCategory.LAYOUT,
         showOnPalette = false)
 @SimpleObject
-public class SidebarHeader extends HVArrangement<FrameLayout> implements Component,ComponentContainer{
+public class SidebarHeader extends HVArrangement implements Component,ComponentContainer{
 
     private Sidebar sidebar;
 
     public SidebarHeader(ComponentContainer container) {
-        super(container, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL, new FrameLayout(container.$context()));
+        super(container, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL, ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
         container.$add(this);
         sidebar = (Sidebar) container;
         sidebar.addHeader(this);
