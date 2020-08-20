@@ -1,12 +1,10 @@
 package com.google.appinventor.components.runtime;
 
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import androidx.core.widget.ImageViewCompat;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -15,7 +13,6 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.MediaUtil;
@@ -39,14 +36,11 @@ public class FloatingActionButton extends AndroidViewComponent{
      */
     public FloatingActionButton(ComponentContainer container) {
         super(container);
-        floatingActionButton = new com.google.android.material.floatingactionbutton.FloatingActionButton(container.$context());
-        container.$add(this);
-        floatingActionButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        ((LinearLayout.LayoutParams)floatingActionButton.getLayoutParams()).gravity=Gravity.BOTTOM;
+        floatingActionButton = container.$form().floatingActionButton;
         floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(android.graphics.Color.rgb(255,64,129)));
         if(icon==null) {
-        floatingActionButton.setImageResource(android.R.drawable.ic_input_add);
-        ImageViewCompat.setImageTintList(floatingActionButton, ColorStateList.valueOf(COLOR_WHITE));
+            floatingActionButton.setImageResource(android.R.drawable.ic_input_add);
+            ImageViewCompat.setImageTintList(floatingActionButton, ColorStateList.valueOf(Color.WHITE));
         }
         floatingActionButton.show();
         floatingActionButton.setOnClickListener(new View.OnClickListener() {

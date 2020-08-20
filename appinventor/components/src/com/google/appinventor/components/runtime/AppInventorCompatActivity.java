@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -22,6 +24,7 @@ import androidx.appcompat.app.AppCompatCallback;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.ActionMode.Callback;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -55,6 +58,8 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
   private static Theme currentTheme = Theme.PACKAGED;
   private static int primaryColor;
   private AppCompatDelegate appCompatDelegate;
+  private RelativeLayout relativeLayout;
+  FloatingActionButton floatingActionButton;
   android.widget.LinearLayout frameWithTitle;
   TextView titleBar;
   private static boolean didSetClassicModeFromYail = false;
@@ -85,6 +90,9 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
 
     super.onCreate(icicle);
 
+    relativeLayout = new RelativeLayout(this);
+    floatingActionButton = new FloatingActionButton(this);
+    floatingActionButton.hide();
     frameWithTitle = new android.widget.LinearLayout(this);
     frameWithTitle.setOrientation(android.widget.LinearLayout.VERTICAL);
     setContentView(frameWithTitle);  // Due to a bug in Honeycomb 3.0 and 3.1, a content view must
@@ -192,8 +200,17 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
     if (view != frameWithTitle) {
       frameWithTitle.addView(view, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
           ViewGroup.LayoutParams.MATCH_PARENT));
-      view = frameWithTitle;
     }
+
+    relativeLayout.addView(frameWithTitle,new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT));
+    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+    int px = (int)(24*(Resources.getSystem().getDisplayMetrics().density));
+    layoutParams.setMargins(0,0,px,px);
+    relativeLayout.addView(floatingActionButton,layoutParams);
+    view = relativeLayout;
 
     // Update the content view based on AppCompat support
     if (appCompatDelegate != null) {
