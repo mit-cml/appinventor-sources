@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -71,7 +71,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
     RecordingController(String savedRecording) throws IOException {
       // pick a pathname if none was specified
       file = (savedRecording.equals("")) ?
-          FileUtil.getRecordingFile("3gp").getAbsolutePath() :
+          FileUtil.getRecordingFile(form, "3gp").getAbsolutePath() :
             savedRecording;
 
       recorder = new MediaRecorder();

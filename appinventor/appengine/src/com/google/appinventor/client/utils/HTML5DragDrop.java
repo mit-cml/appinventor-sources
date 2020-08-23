@@ -76,6 +76,8 @@ public final class HTML5DragDrop {
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::reportError(*));
     top.HTML5DragDrop_confirmOverwriteKey =
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::confirmOverwriteKey(*));
+    top.HTML5DragDrop_confirmOverwriteAsset =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::confirmOverwriteAsset(*));
     top.HTML5DragDrop_isBlocksEditorOpen =
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::isBlocksEditorOpen());
   }-*/;
@@ -146,6 +148,32 @@ public final class HTML5DragDrop {
             }
           }
         });
+  }
+
+  protected static void confirmOverwriteAsset(String _projectId, String name, final ConfirmCallback callback) {
+    // Get the target project
+    long projectId = Long.parseLong(_projectId);
+    Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+    if (project == null) {
+      // Project not open so we have nothing to do.
+      return;
+    }
+
+    // Check if an asset already exists with the given name
+    YoungAndroidProjectNode projectNode = (YoungAndroidProjectNode) project.getRootNode();
+    YoungAndroidAssetNode node = (YoungAndroidAssetNode) projectNode.getAssetsFolder().findNode("assets/" + name);
+    if (node == null) {
+      // No asset exists by that name so it is safe to upload.
+      callback.run();
+      return;
+    }
+
+    // Ask user to confirm overwriting the asset
+    // This currently uses the same mechanism as FileUploadWizard, but should be rewritten to use a
+    // dialog at some point.
+    if (Window.confirm(MESSAGES.confirmOverwrite(name, name))) {
+      callback.run();
+    }
   }
 
   protected static void handleUploadResponse(String _projectId, String type, String name, String body) {

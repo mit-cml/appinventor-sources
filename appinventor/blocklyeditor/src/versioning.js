@@ -1513,7 +1513,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The AfterFileSaved event was added.
     // No blocks need to be modified to upgrade to version 2.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: The LegacyMode property was added.
+    // No blocks need to be modified to upgrade to version 3.
+    3: "noUpgrade"
 
   }, // End File upgraders
 

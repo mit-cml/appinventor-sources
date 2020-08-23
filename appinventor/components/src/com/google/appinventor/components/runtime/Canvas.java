@@ -1,36 +1,16 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.IsColor;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesPermissions;
-import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.collect.Sets;
-import com.google.appinventor.components.runtime.errors.PermissionException;
-import com.google.appinventor.components.runtime.util.BoundingBox;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.FileUtil;
-import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.PaintUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
-import com.google.appinventor.components.runtime.util.YailList;
-
+import android.Manifest;
 import android.app.Activity;
+
 import android.content.Context;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -42,17 +22,51 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+
 import android.text.TextUtils;
+
 import android.util.Base64;
 import android.util.Log;
+
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+
+import androidx.annotation.RequiresApi;
+
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesPermissions;
+
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
+
+import com.google.appinventor.components.runtime.collect.Sets;
+
+import com.google.appinventor.components.runtime.errors.PermissionException;
+
+import com.google.appinventor.components.runtime.util.BoundingBox;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.PaintUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -114,8 +128,7 @@ import java.util.Set;
     "and circles.</p>",
     category = ComponentCategory.ANIMATION)
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-                 "android.permission.WRITE_EXTERNAL_STORAGE")
+@UsesPermissions(permissionNames = "android.permission.INTERNET")
 public final class Canvas extends AndroidViewComponent implements ComponentContainer {
   private static final String LOG_TAG = "Canvas";
 
@@ -158,6 +171,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   // will typically be implemented by extension components that add the detector to this set.
 
   private final Set<ExtensionGestureDetector> extensionGestureDetectors = Sets.newHashSet();
+
+  private Form form = $form();
+
+  // Do we have storage permission?
+  private boolean havePermission = false;
 
   // additional gesture detectors must implement this interface
   public interface ExtensionGestureDetector {
@@ -590,7 +608,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       clearDrawingLayer();  // will call invalidate()
     }
 
-    @android.support.annotation.RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
+    @RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
     void setBackgroundImageBase64(String imageUrl) {
       backgroundImagePath = (imageUrl == null) ? "" : imageUrl;
       backgroundDrawable = null;
@@ -750,6 +768,24 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     sprites = new LinkedList<Sprite>();
     motionEventParser = new MotionEventParser();
     mGestureDetector = new GestureDetector(context, new FlingGestureListener());
+  }
+
+  public void Initialize() {
+    // Note: The code below does not call ourselves after the
+    // onGranted because we don't do anything beyond getting
+    // permissions. If we ever add code to this Initialize method,
+    // that requires permissions, then be sure to call ourselves in
+    // onGranted().
+    if (!havePermission && form.doesAppDeclarePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+      final Canvas me = this;
+      form.askPermission(new BulkPermissionRequest(this, "Canvas",
+          Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+          @Override
+          public void onGranted() {
+            me.havePermission = true;
+          }
+        });
+    }
   }
 
   @Override
@@ -1036,7 +1072,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @suppressdoc
    * @param imageUrl the base64 format for an image
    */
-  @android.support.annotation.RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
+  @RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
   @SimpleProperty (
       description = "Set the background image in Base64 format. This requires API level >= 8. For "
           + "devices with API level less than 8, setting this will end up with an empty background."
@@ -1565,12 +1601,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @return the full path name of the saved file, or the empty string if the
    *         save failed
    */
-    @SimpleFunction(description = "Saves a picture of this Canvas to the " +
+  @UsesPermissions({Manifest.permission.WRITE_EXTERNAL_STORAGE})
+  @SimpleFunction(description = "Saves a picture of this Canvas to the " +
        "device's external storage. If an error occurs, the Screen's ErrorOccurred " +
        "event will be called.")
   public String Save() {
     try {
-      File file = FileUtil.getPictureFile("png");
+      File file = FileUtil.getPictureFile($form(), "png");
       return saveFile(file, Bitmap.CompressFormat.PNG, "Save");
     } catch (PermissionException e) {
       container.$form().dispatchPermissionDeniedEvent(this, "Save", e);
@@ -1592,6 +1629,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @return the full path name of the saved file, or the empty string if the
    *         save failed
    */
+  @UsesPermissions({Manifest.permission.WRITE_EXTERNAL_STORAGE})
   @SimpleFunction(description =  "Saves a picture of this Canvas to the device's " +
    "external storage in the file " +
    "named fileName. fileName must end with one of .jpg, .jpeg, or .png, " +
@@ -1612,7 +1650,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       return "";
     }
     try {
-      File file = FileUtil.getExternalFile(fileName);
+      File file = FileUtil.getExternalFile($form(), fileName);
       return saveFile(file, format, "SaveAs");
     } catch (PermissionException e) {
       container.$form().dispatchPermissionDeniedEvent(this, "SaveAs", e);

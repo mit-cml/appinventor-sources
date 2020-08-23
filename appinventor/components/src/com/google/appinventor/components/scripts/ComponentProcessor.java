@@ -1758,10 +1758,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
               && !newProperty.description.isEmpty() && !newProperty.isDefaultDescription()) {
             priorProperty.setDescription(newProperty.description);
           }
-          if (!newProperty.longDescription.isEmpty()) {  /* Latter descriptions of the same property
-                                                            override earlier descriptions. */
+          if (!newProperty.longDescription.isEmpty() && !newProperty.isDefaultDescription()) {  /* Latter descriptions of the same property override earlier descriptions. */
             priorProperty.longDescription = newProperty.longDescription;
           }
+
           if (priorProperty.propertyCategory == PropertyCategory.UNSET) {
             priorProperty.propertyCategory = newProperty.propertyCategory;
           } else if (newProperty.propertyCategory != priorProperty.propertyCategory &&
