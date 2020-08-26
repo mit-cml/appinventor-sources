@@ -165,7 +165,7 @@ Blockly.Yail.text_starts_at = function() {
 Blockly.Yail['text_contains'] = function() {
   var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var argument1 = Blockly.Yail.valueToCode(this, 'PIECE', Blockly.Yail.ORDER_NONE) || "\"\"";
-  var mode = Blockly.Yail.text_contains.OPERATORS[this.getFieldValue('OP')];
+  var mode = Blockly.Yail.text_contains.OPERATORS[this.getMode()];
 
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + mode.operator
       + Blockly.Yail.YAIL_SPACER;
@@ -178,7 +178,7 @@ Blockly.Yail['text_contains'] = function() {
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code += Blockly.Yail.YAIL_DOUBLE_QUOTE + mode.blockName
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, mode.order];
+  return [code, mode.order];
 };
 
 Blockly.Yail.text_contains.OPERATORS = {

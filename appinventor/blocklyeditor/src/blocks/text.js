@@ -320,8 +320,7 @@ Blockly.Blocks['text_contains'] = {
   category: 'Text',
 
   helpUrl: function() {
-    var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.text_contains.HELPURLS()[mode];
+    return Blockly.Blocks.text_contains.HELPURLS()[this.getMode()];
   },
 
   init: function () {
@@ -346,8 +345,7 @@ Blockly.Blocks['text_contains'] = {
     this.setInputsInline(false);
 
     this.setTooltip(function() {
-      var mode = this.getFieldValue('OP');
-      return Blockly.Blocks.text_contains.TOOLTIPS()[mode];
+      return Blockly.Blocks.text_contains.TOOLTIPS()[this.getMode()];
     }.bind(this));
   },
 
@@ -360,9 +358,12 @@ Blockly.Blocks['text_contains'] = {
 
   mutationToDom: function () {
     var container = document.createElement('mutation');
-    var savedMode = this.getFieldValue('OP');
-    container.setAttribute('mode', savedMode);
+    container.setAttribute('mode', this.getMode());
     return container;
+  },
+
+  getMode: function() {
+    return this.getFieldValue('OP');
   },
 
   typeblock: [
@@ -425,17 +426,17 @@ Blockly.Blocks.text_contains.OPERATORS = function() {
 
 Blockly.Blocks.text_contains.TOOLTIPS = function() {
   return {
-    CONTAINS: Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS,
-    CONTAINS_ANY: Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY,
-    CONTAINS_ALL: Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL,
+    'CONTAINS': Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS,
+    'CONTAINS_ANY': Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY,
+    'CONTAINS_ALL': Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL,
   }
 };
 
 Blockly.Blocks.text_contains.HELPURLS = function() {
   return {
-    CONTAINS: Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS,
-    CONTAINS_ANY: Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ANY,
-    CONTAINS_ALL: Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL,
+    'CONTAINS': Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS,
+    'CONTAINS_ANY': Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ANY,
+    'CONTAINS_ALL': Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL,
   }
 };
 
