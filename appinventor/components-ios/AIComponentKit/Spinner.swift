@@ -124,7 +124,6 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
       _viewController?.menuView.setValue(preferredTextColor(parent.form), forKeyPath: "textColor")
     }
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
-    parent.add(self)
     Prompt = ""
     _currSelectionIndex = SelectionIndex
   }
