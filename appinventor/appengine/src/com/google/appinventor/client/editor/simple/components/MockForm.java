@@ -128,7 +128,10 @@ public final class MockForm extends MockContainer {
     }
 
     /*
-     * Disable sidebar if action bar is absent.
+     * This method updates the visibility of sidebar depending
+     * on the presence/absence of Action Bar and Visible property
+     * ofSidebar. Sidebar is visible only when action bar is
+     * present and sidebar is set visible.
      */
     void updateSidebarEnabled() {
       if(sidebar != null) {

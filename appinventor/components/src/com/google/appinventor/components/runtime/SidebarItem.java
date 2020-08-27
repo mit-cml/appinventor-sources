@@ -49,6 +49,8 @@ public class SidebarItem implements Component{
         sidebar = (Sidebar)container;
         index = sidebar.additem(this);
         menuItem = sidebar.$form().navigationView.getMenu().getItem(index);
+
+        Visible(false);
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
@@ -122,7 +124,7 @@ public class SidebarItem implements Component{
             return;
         }
 
-        iconPath = (path == null) ? "" : path;
+        iconPath = path;
 
         // Load image from file.
         if (iconPath.length() > 0) {
