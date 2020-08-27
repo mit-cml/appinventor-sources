@@ -29,6 +29,7 @@ import com.google.appinventor.components.common.ComponentConstants;
 
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.QUtil;
 import com.google.appinventor.components.runtime.util.RetValManager;
@@ -474,6 +475,11 @@ public class ReplForm extends Form {
   }
 
   @Override
+  public String getPrivatePath(String fileName) {
+    return "file://" + new java.io.File(QUtil.getReplDataPath(this), fileName).getAbsolutePath();
+  }
+
+  @Override
   public String getAssetPathForExtension(Component component, String asset)
       throws FileNotFoundException {
     // For testing extensions, we allow external = false, but still compile the assets into the
@@ -509,7 +515,7 @@ public class ReplForm extends Form {
   }
 
   @Override
-  protected boolean isRepl() {
+  public boolean isRepl() {
     return true;
   }
 

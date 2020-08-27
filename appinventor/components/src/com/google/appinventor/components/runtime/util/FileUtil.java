@@ -7,8 +7,10 @@
 package com.google.appinventor.components.runtime.util;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
@@ -34,7 +36,21 @@ import java.net.URL;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
+@SuppressLint("InlinedApi")
 public class FileUtil {
+  /**
+   * The minimum SDK version for which we enforce the use of app-specific directories on the
+   * external storage. Starting with Android Q, apps cannot write to arbitrary locations on
+   * external storage unless a specific attribute is set in the manifest. Starting with Android R,
+   * this will only be allowed if the app is installed prior to the device being upgraded to
+   * Android R and only if the app continues to be upgraded. A fresh install wipes the privileges
+   * and apps must write to the app-specific directory.
+   *
+   * This must be 8 or more. App-specific directories are not supported on versions of Android
+   * before SDK 8 (2.2 Froyo).
+   */
+  public static final int MIN_SDK_FOR_APP_SPECIFIC_DIRS = Build.VERSION_CODES.Q;
+
   private static final String LOG_TAG = FileUtil.class.getSimpleName();
   // Note: Some phones come with a "Documents" directory rather than a
   // "My Documents" directory.  Should we check for this and try to be
@@ -54,6 +70,13 @@ public class FileUtil {
   private static final String DIRECTORY_PICTURES = "Pictures";
 
   private static final String DIRECTORY_DOWNLOADS = "Downloads";
+
+  static {
+    //noinspection ConstantConditions
+    if (MIN_SDK_FOR_APP_SPECIFIC_DIRS < Build.VERSION_CODES.FROYO) {
+      throw new IllegalStateException("MIN_SDK_FOR_APP_SPECIFIC_DIRS must be 8 or greater");
+    }
+  }
 
   private FileUtil() {
   }
@@ -524,31 +547,99 @@ public class FileUtil {
   /**
    * Returns the File for fileName in the external storage directory in
    * preparation for writing the file. fileName may contain sub-directories.
+   *
+   * @param form the form to use as an Android context
+   * @param fileName The path name of the file relative to the external storage
+   *     directory
+   * @return the File object for creating fileName in the external storage
+   * @throws FileException if the external storage is not writeable.
+   */
+  public static File getExternalFile(Form form, String fileName) throws FileException {
+    checkExternalStorageWriteable();
+    File file = new File(QUtil.getExternalStoragePath(form), fileName);
+    if (form != null) {
+      form.assertPermission(WRITE_EXTERNAL_STORAGE);
+    }
+    return file;
+  }
+
+  /**
+   * Returns the File for fileName in the external storage directory in
+   * preparation for writing the file. fileName may contain sub-directories.
    * Ensures that all subdirectories exist and that fileName does not exist
    * (deleting it if necessary).
    *
    * @param form the form to use as an Android context
    * @param fileName The path name of the file relative to the external storage
    *     directory
+   * @param mkdirs true if the ancestor directories should be created, otherwise false
+   * @param overwrite true if the file is going to be overwritten, otherwise false
    * @return the File object for creating fileName in the external storage
    * @throws IOException if we are unable to create necessary parent directories
    *     or delete an existing file
    * @throws FileException if the external storage is not writeable.
    */
-  public static File getExternalFile(Form form, String fileName)
-      throws IOException, FileException, SecurityException {
-    checkExternalStorageWriteable();
-    File file = new File(QUtil.getExternalStoragePath(form), fileName);
+  public static File getExternalFile(Form form, String fileName, boolean mkdirs, boolean overwrite)
+      throws IOException, FileException {
+    File file = getExternalFile(form, fileName);
     File directory = file.getParentFile();
-    if (form != null) {
-      form.assertPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-    if (!directory.exists() && !directory.mkdirs()) {
+    if (mkdirs && !directory.exists() && !directory.mkdirs()) {
       throw new IOException("Unable to create directory " + directory.getAbsolutePath());
     }
-    if (file.exists()) {
-      if (!file.delete()) {
-        throw new IOException("Cannot overwrite existing file " + file.getAbsolutePath());
+    if (overwrite && file.exists() && !file.delete()) {
+      throw new IOException("Cannot overwrite existing file " + file.getAbsolutePath());
+    }
+    return file;
+  }
+
+  /**
+   * Gets an external file {@code fileName} on the external storage.
+   *
+   * <p>The {@code form} is used as a context for asking for permissions and generating an
+   * app-specific directory based on the {@code accessMode} provided.
+   *
+   * @param form The form to use as the context for the operation(s)
+   * @param fileName The filename to read/write/append
+   * @param permissionMode The permission model to apply to determine the file location
+   * @return The File representing the filename on the external storage. The exact location depends
+   *     on the value of {@code accessMode}.
+   * @throws FileException if the external storage is not writeable
+   * @throws PermissionException if the app doesn't have the necessary permissions to write the file
+   */
+  public static File getExternalFile(Form form, String fileName, FilePermissionMode permissionMode)
+      throws FileException, PermissionException {
+
+    checkExternalStorageWriteable();
+    return new File(
+        QUtil.getExternalStoragePath(form, permissionMode == FilePermissionMode.PRIVATE,
+            permissionMode == FilePermissionMode.LEGACY),
+        fileName);
+  }
+
+  /**
+   * Gets an external file {@code fileName} on the external storage.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param fileName the name of the file to be accessed, using the File semantics
+   * @param permissionMode permission mode to use for locating the file and asking permissions
+   * @param accessMode the direction of the access (read, write, append)
+   * @param mkdirs true if any ancestor directories should be made if they don't exist
+   * @return a new File object representing the external file
+   * @throws IOException if mkdirs is true but the directories cannot be created
+   * @throws FileException if the external storage is not writeable
+   * @throws PermissionException if the app doesn't have the necessary permissions to write the file
+   */
+  public static File getExternalFile(Form form, String fileName, FilePermissionMode permissionMode,
+      FileAccessMode accessMode, boolean mkdirs)
+      throws IOException, FileException, PermissionException {
+    File file = getExternalFile(form, fileName, permissionMode);
+    if (mkdirs) {
+      // Create intermediate directories, if needed.
+      if (accessMode != FileAccessMode.READ) {
+        File directory = file.getParentFile();
+        if (!directory.exists() && !directory.mkdirs()) {
+          throw new IOException("Unable to create directory " + directory.getAbsolutePath());
+        }
       }
     }
     return file;
@@ -568,6 +659,115 @@ public class FileUtil {
     } else {
       throw new FileException(ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_NOT_AVAILABLE);
     }
+  }
+
+  /**
+   * Given a file name of the form "name", "/name", or "//name", resolves the name to an absolute
+   * file URI.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param fileName the name of the file to be accessed, using the File semantics
+   * @param permissionMode permission mode to use for locating the file and asking permissions
+   * @return a String of the form "file://..." with the full path to the file based on the
+   *     permission mode in effect
+   */
+  public static String resolveFileName(Form form, String fileName,
+      FilePermissionMode permissionMode) {
+    if (fileName.startsWith("//")) {  // Asset files
+      return form.getAssetPath(fileName.substring(2));
+    } else if (!fileName.startsWith("/")) {  // Private files
+      return form.getPrivatePath(fileName);
+    } else {
+      /* Starting with nb186, files will be placed in different locations when the file name starts
+       * with a single "/" character. For Android Q and later, this is the app-specific directory
+       * on external storage. For Android versions prior to Q, it will be the root of the external
+       * storage, such as /sdcard or /storage/external/0/.
+       */
+      return "file://" + getExternalFile(form, fileName, permissionMode).getAbsolutePath();
+    }
+  }
+
+  /**
+   * Checks whether the app will need permission to access {@code fileUri} due to it being in the
+   * external storage directory. Starting with Android KitKat, READ/WRITE external storage
+   * permissions are not required for files stored in the app-specific directory.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param fileUri the absolute URI to a file
+   * @return true if the fileUri represents a file in external storage and permission will be
+   *     needed to access it, otherwise false
+   */
+  public static boolean needsPermission(Form form, String fileUri) {
+    if (isAssetUri(form, fileUri)) {
+      return false;
+    } else if (isPrivateUri(form, fileUri)) {
+      return false;
+    } else if (isAppSpecificExternalUri(form, fileUri)) {
+      // App-specific directories don't need READ/WRITE permission on KitKat and higher.
+      return Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT;
+    } else {
+      return isExternalStorageUri(form, fileUri);
+    }
+  }
+
+  /**
+   * Checks whether the given {@code fileUri} represents an asset. In the case of a standard Form
+   * object, this implies that the {@code fileUri} always starts with "file:///android_asset/".
+   * For the REPL, the location will depend on the version of Android. For Android 10+, the REPL
+   * stores its assets in the app-specific directory in external storage. Prior to Android 10, the
+   * REPL stores its assets in AppInventor/assets in the root of the external storage.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param fileUri the absolute URI to a file
+   * @return true if the fileUri represents an asset, otherwise false
+   */
+  public static boolean isAssetUri(Form form, String fileUri) {
+    return fileUri.startsWith(form.getAssetPath(""));
+  }
+
+  /**
+   * Checks whether the given {@code fileUri} represents a file in the app's private data
+   * directory. For the REPL, "private" files are still stored on the external storage partition.
+   * On Android 10 and later, the REPL places private files in a directory called data in the
+   * app-specific directory. On Android versions prior to 10, the REPL places private files in
+   * AppInventor/data in the root of the external storage.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param fileUri the absolute URI to a file
+   * @return true if the fileUri represents a private data file, otherwise false
+   */
+  public static boolean isPrivateUri(Form form, String fileUri) {
+    return fileUri.startsWith(form.getPrivatePath(""));
+  }
+
+  /**
+   * Checks whether the given {@code fileUri} represents a file in the app-specific directory on
+   * external storage. Because app-specific directories were introduced in SDK level 8
+   * (Android 2.2 Froyo), this will always return false on earlier versions.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param fileUri the absolute URI to a file
+   * @return true if the fileUri represents a file in app-specific external storage, otherwise false
+   */
+  public static boolean isAppSpecificExternalUri(Form form, String fileUri) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+      // App-specific directories were introduced in Android 2.2 Froyo; earlier versions don't have
+      // an equivalent concept.
+      return false;
+    }
+    return fileUri.startsWith(form.getExternalFilesDir("").toURI().toString());
+  }
+
+  /**
+   * Checks whether the given {@code fileUri} represents a file in external storage.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param fileUri the absolute URI to a file
+   * @return true if the fileUri represents a file in external storage, otherwise false
+   */
+  @SuppressWarnings({"unused", "deprecation"})
+  public static boolean isExternalStorageUri(Form form, String fileUri) {
+    return fileUri.startsWith(Environment.getExternalStorageDirectory().toURI().toString());
   }
 
   /**

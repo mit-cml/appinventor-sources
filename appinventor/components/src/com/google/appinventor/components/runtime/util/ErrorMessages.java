@@ -179,6 +179,7 @@ public final class ErrorMessages {
   public static final int ERROR_CANNOT_WRITE_TO_FILE = 2104;
   public static final int ERROR_CANNOT_DELETE_ASSET = 2105;
   public static final int ERROR_CANNOT_WRITE_ASSET = 2106;
+  public static final int ERROR_CANNOT_DELETE_FILE = 2107;
 
   // Yandex.Translate errors
   public static final int ERROR_TRANSLATE_NO_KEY_FOUND = 2201;
@@ -577,6 +578,7 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_CANNOT_WRITE_TO_FILE, "Cannot write to file %s");
     errorMessages.put(ERROR_CANNOT_DELETE_ASSET, "Cannot delete asset file at %s");
     errorMessages.put(ERROR_CANNOT_WRITE_ASSET, "Cannot write asset file at %s");
+    errorMessages.put(ERROR_CANNOT_DELETE_FILE, "Cannot delete file at %s");
     //Yandex.Translate translate Errors
     errorMessages.put(ERROR_TRANSLATE_NO_KEY_FOUND, "Missing API key for the Yandex.Translate " +
         "service.");

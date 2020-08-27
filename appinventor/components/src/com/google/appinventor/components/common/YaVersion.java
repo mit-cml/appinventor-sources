@@ -514,8 +514,10 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 32
   // For YOUNG_ANDROID_VERSION 208:
   // - FILE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 209:
+  // - FILE_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 208;
+  public static final int YOUNG_ANDROID_VERSION = 209;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -820,7 +822,10 @@ public class YaVersion {
   // - The AfterFileSaved event was added.
   // For FILE_COMPONENT_VERSION 3:
   // - The LegacyMode property was added.
-  public static final int FILE_COMPONENT_VERSION = 3;
+  // For FILE_COMPONENT_VERSION 4:
+  // - The AccessMode property was added.
+  // - The LegacyMode property was removed. Use AccessMode instead.
+  public static final int FILE_COMPONENT_VERSION = 4;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.

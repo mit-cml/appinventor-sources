@@ -70,6 +70,11 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_COMPONENT = "component";
 
   /**
+   * File access mode constants.
+   */
+  public static final String PROPERTY_TYPE_FILEACCESSMODE = "file_access_mode";
+
+  /**
    * Floating-point values.
    * @see com.google.appinventor.client.widgets.properties.FloatPropertyEditor
    */

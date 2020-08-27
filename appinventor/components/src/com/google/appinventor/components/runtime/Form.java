@@ -2742,6 +2742,17 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
+   * Gets the path to an app-private data file identified by {@code fileName}.
+   *
+   * @param fileName the file name
+   * @return an absolute file: URI to the app-private file name
+   * @see ReplForm#getPrivatePath(String)
+   */
+  public String getPrivatePath(String fileName) {
+    return "file://" + new java.io.File(getFilesDir(), fileName).getAbsolutePath();
+  }
+
+  /**
    * Opens an application asset.
    *
    * @param asset The filename of an application asset

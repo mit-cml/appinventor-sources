@@ -104,10 +104,83 @@ The `CloudDB` component is a Non-visible component that allows you to store data
 ## File  {#File}
 
 Non-visible component for storing and retrieving files. Use this component to write or read files
- on the device. The default behavior is to write files to the private data directory associated
- with the app. The Companion writes files to `/sdcard/AppInventor/data` for easy debugging. If
- the file path starts with a slash (`/`), then the file is created relative to `/sdcard`.
- For example, writing a file to `/myFile.txt` will write the file in `/sdcard/myFile.txt`.
+ on the device. File names can take one of three forms:
+
+ - Private files have no leading `/` and are written to app private storage (e.g., "file.txt")
+ - External files have a single leading `/` and are written to public storage (e.g., "/file.txt")
+ - Bundled app assets have two leading `//` and can only be read (e.g., "//file.txt")
+
+ The exact location where external files are placed is a function of the value of the
+ [`AccessMode`](#AccessMode) property, whether the app is running in the Companion or compiled,
+ and which version of Android the app is running on. The following table shows the different
+ combinations where files may be placed:
+
+ <style>
+   table.file-doc { margin: auto; font-size: 10pt; }
+   table.file-doc th,
+   table.file-doc td { border: 1px solid black; white-space: nowrap; padding: 4pt; }
+   table.file-doc th { background-color: lightblue; }
+   table.file-doc th[colspan] { background-color: lightgray; }
+ </style>
+ <table class="file-doc">
+   <tr>
+     <th style="text-align: center;">AccessMode</th>
+     <th style="text-align: center;">Companion</th>
+     <th style="text-align: center;">Compiled</th>
+   </tr>
+   <tr>
+     <th colspan="3" style="text-align: center;">Prior to Android 10</th>
+   </tr>
+   <tr>
+     <td>Default</td>
+     <td>/sdcard/<i>filename</i></td>
+     <td>/sdcard/<i>filename</i></td>
+   </tr>
+   <tr>
+     <td>Legacy [Note&nbsp;2]</td>
+     <td>/sdcard/<i>filename</i></td>
+     <td>/sdcard/<i>filename</i></td>
+   </tr>
+   <tr>
+     <td>Private [Note&nbsp;3]</td>
+     <td>/sdcard/Android/data/edu.mit.appinventor.aicompanion3/<i>filename</i></td>
+     <td>/sdcard/Android/data/<i>app package</i>/<i>filename</i></td>
+   </tr>
+   <tr>
+     <th colspan="3" style="text-align: center;">Android 10 and Later</th>
+   </tr>
+   <tr>
+     <td>Default</td>
+     <td>/sdcard/Android/data/edu.mit.appinventor.aicompanion3/<i>filename</i></td>
+     <td>/sdcard/Android/data/<i>app package</i>/<i>filename</i></td>
+   </tr>
+   <tr>
+     <td>Legacy</td>
+     <td>/sdcard/<i>filename</i></td>
+     <td>/sdcard/<i>filename</i></td>
+   </tr>
+   <tr>
+     <td>Private</td>
+     <td>/sdcard/Android/data/edu.mit.appinventor.aicompanion3/<i>filename</i></td>
+     <td>/sdcard/Android/data/<i>app package</i>/<i>filename</i></td>
+   </tr>
+ </table>
+
+ **Notes**
+
+ Note 1: The exact location of the external storage depends on the particular device. We use
+ `/sdcard` above as a placeholder for the device-specific location.
+
+ Note 2: Legacy mode only takes effect on Android 10 and later. On earlier versions of Android,
+ legacy mode is the same as Default mode. On Android 11 and later, Legacy mode may result in
+ errors due to changes in how Android manages file access.
+
+ Note 3: Private mode only takes effect on Android 2.2 Froyo and later. On earlier versions of
+ Android private mode is the same as Default mode.
+
+ Because newer versions of Android will require files to be stored in app-specific directories
+ on external storage, you may want to set `AccessMode` to `Private` wherever it makes sense in
+ your existing apps. Future versions of App Inventor may switch to using `Private` by default.
 
 
 
@@ -115,15 +188,15 @@ Non-visible component for storing and retrieving files. Use this component to wr
 
 {:.properties}
 
-{:id="File.LegacyMode" .boolean} *LegacyMode*
-: Allows app to access files from the root of the external storage directory (legacy mode).
- Starting with Android 11, this will no longer be allowed and the behavior is strongly
- discouraged on Android 10. Starting with Android 10, App Inventor by default will attempt to
- store files relative to the app-specific private directory on external storage in accordance
- with this security change.
+{:id="File.AccessMode" .number .wo .do} *AccessMode*
+: Specifying the AccessMode allows you to control the scope of files read/written by the File
+ component when using a file name starting with a single `/` character.
 
-   **Note:** Apps that enable this property will likely stop working after upgrading to
- Android 11, which strongly enforces that apps only write to app-private directories.
+   1. Default stores files on Android 10 and higher in app-specific storage.
+   2. Legacy will attempt to read/write files at the old locations and raise errors if this
+      fails on newer versions of Android.
+   3. Private will prefer app-specific directories on all versions of Android that support them
+      (Android 2.2 Froyo and later).
 
 ### Events  {#File-Events}
 
