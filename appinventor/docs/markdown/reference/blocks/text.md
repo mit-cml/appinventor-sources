@@ -13,6 +13,8 @@ layout: documentation
 * [downcase](#downcase)
 * [starts at](#startsat)
 * [contains](#contains)
+* [contains any](#containsany)
+* [contains all](#containsall)
 * [split at first](#splitatfirst)
 * [split at first of any](#splitatfirstofany)
 * [split](#split)
@@ -88,6 +90,22 @@ Returns the character position where the first character of *piece* first appear
 ![](images/text/contains.png)
 
 Returns true if *piece* appears in text; otherwise, returns false.
+
+### contains any   {#containsany}
+
+![](images/text/containsany.png)
+
+Returns true if any of the pieces in the piece list appear in text; otherwise, returns false.
+
+This block can be obtained by changing the dropdown on the contains block.
+
+### contains all   {#containsall}
+
+![](images/text/containsall.png)
+
+Returns true if all of the pieces in the piece list appear in text; otherwise, returns false.
+
+This block can be obtained by changing the dropdown on the contains block.
 
 ### split at first   {#splitatfirst}
 

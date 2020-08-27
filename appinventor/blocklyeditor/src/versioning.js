@@ -1830,7 +1830,10 @@ Blockly.Versioning.AllUpgradeMaps =
     31: "noUpgrade",
 
     // AI2: Added mutators for and/or blocks
-    32: "noUpgrade"
+    32: "noUpgrade",
+
+    // AI2: Added "contains any" and "contains all" options to the text contains block.
+    33:"noUpgrade"
 
   }, // End Language upgraders
 
