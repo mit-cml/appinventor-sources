@@ -106,7 +106,7 @@ A special-purpose button. When the user taps an `ImagePicker`, the device's imag
  change will not be visible until the [`Image`](#ImagePicker.Image) is removed.
 
 {:id="ImagePicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="ImagePicker.Enabled" .boolean} *Enabled*
 : Specifies whether the `ImagePicker` should be active and clickable.
@@ -384,9 +384,11 @@ None
 
 {:id="SpeechRecognizer.UseLegacy" .boolean} *UseLegacy*
 : If true, a separate dialog is used to recognize speech (the default). If false, speech is
-recognized in the background and updates are received as it recognizes words. [`AfterGettingText`](#SpeechRecognizer.AfterGettingText) may get several calls with `partial` set to `true`. Once sufficient
-time has elapsed since the last utterance, or `StopListening` is called, the last string will be returned with `partial` set to `false` to indicate that it is the
-final recognized string and no more data will be provided until recognition is again started. See
+ recognized in the background and updates are received as it recognizes words.
+ [`AfterGettingText`](#SpeechRecognizer.AfterGettingText) may get several calls with `partial` set to `true`{:.logic.block}.
+ Once sufficient time has elapsed since the last utterance, or `StopListening` is called,
+ the last string will be returned with `partial` set to `false`{:.logic.block} to indicate that it is the
+ final recognized string and no more data will be provided until recognition is again started. See
  [`AfterGettingText`](#SpeechRecognizer.AfterGettingText) for more details on partial speech recognition.
 
 ### Events  {#SpeechRecognizer-Events}
@@ -526,7 +528,7 @@ A multimedia component capable of playing videos. When the application is run, t
 {:.properties}
 
 {:id="VideoPlayer.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="VideoPlayer.FullScreen" .boolean .bo} *FullScreen*
 : Sets whether the video should be shown in fullscreen or not.

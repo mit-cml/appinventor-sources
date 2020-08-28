@@ -55,7 +55,7 @@ A button that, when clicked on, displays a list of the contacts to choose among.
 : Returns a URI that specifies the location of the contact on the device.
 
 {:id="ContactPicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="ContactPicker.EmailAddress" .text .ro .bo} *EmailAddress*
 : Returns the primary email address of the selected contact, or the empty string if an email
@@ -202,7 +202,7 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
  the Blocks Editor. The default background color is 'default' (shaded 3-D look).
 
 {:id="EmailPicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="EmailPicker.Enabled" .boolean} *Enabled*
 : If set, user can enter text into the `EmailPicker`.
@@ -373,7 +373,7 @@ A button that, when clicked on, displays a list of the contacts' phone numbers t
 : Returns a URI that specifies the location of the contact on the device.
 
 {:id="PhoneNumberPicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="PhoneNumberPicker.EmailAddress" .text .ro .bo} *EmailAddress*
 : Returns the primary email address of the selected contact, or the empty string if an email

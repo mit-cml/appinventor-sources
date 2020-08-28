@@ -196,7 +196,7 @@ A two-dimensional touch-sensitive rectangular panel on which drawing can
 : Set the background image in Base64 format. This requires API level >= 8. For devices with API level less than 8, setting this will end up with an empty background.
 
 {:id="Canvas.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="Canvas.ExtendMovesOutsideCanvas" .boolean} *ExtendMovesOutsideCanvas*
 : Determines whether moves can extend beyond the canvas borders.   Default is false. This should normally be false, and the property is provided for backwards compatibility.

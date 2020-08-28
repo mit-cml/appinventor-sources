@@ -154,7 +154,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 {:.properties}
 
 {:id="FeatureCollection.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="FeatureCollection.Features" .list .bo} *Features*
 : Gets the list of features attached to the `FeatureCollection` (without regard to the value of the
@@ -397,7 +397,7 @@ A two-dimensional container that renders map tiles in the background and allows 
  to the string representation for use with this property.
 
 {:id="Map.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="Map.EnablePan" .boolean} *EnablePan*
 : Enables or disables the ability of the user to move the Map.

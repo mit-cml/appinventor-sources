@@ -45,7 +45,7 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
  change will not be visible until the [`Image`](#Button.Image) is removed.
 
 {:id="Button.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="Button.Enabled" .boolean} *Enabled*
 : Specifies whether the `Button` should be active and clickable.
@@ -162,7 +162,7 @@ None
 : Set to `true`{:.logic.block} if the box is checked, `false`{:.logic.block} otherwise.
 
 {:id="CheckBox.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="CheckBox.Enabled" .boolean} *Enabled*
 : Specifies whether the `CheckBox` should be active and clickable.
@@ -228,18 +228,22 @@ None
 
 ## ContextMenuItem  {#ContextMenuItem}
 
+Component for ContextMenuItem
+
+
+
 ### Properties  {#ContextMenuItem-Properties}
 
 {:.properties}
 
 {:id="ContextMenuItem.Enabled" .boolean} *Enabled*
-: If true, user can tap menu item to cause action.
+: Specifies whether the menu item should be active and clickable.
 
 {:id="ContextMenuItem.Text" .text} *Text*
-: Returns the text displayed by the menu item.
+: Specifies the text displayed by the menu item.
 
 {:id="ContextMenuItem.Visible" .boolean} *Visible*
-: Returns true if the menu item is visible, false otherwise.
+: Specifies whether the menu item should be visible or hidden from menu.
 
 ### Events  {#ContextMenuItem-Events}
 
@@ -247,6 +251,12 @@ None
 
 {:id="ContextMenuItem.Click"} Click()
 : Event raised when user selects this menu item.
+
+### Methods  {#ContextMenuItem-Methods}
+
+{:.methods}
+None
+
 
 ## DatePicker  {#DatePicker}
 
@@ -267,7 +277,7 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
  change will not be visible until the [`Image`](#DatePicker.Image) is removed.
 
 {:id="DatePicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="DatePicker.Day" .number .ro .bo} *Day*
 : Returns the Day of the month that was last picked using the DatePicker.
@@ -404,7 +414,7 @@ Component for displaying images and basic animations.
 : Specifies whether the image should be clickable or not.
 
 {:id="Image.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="Image.Height" .number .bo} *Height*
 : Specifies the `Image`'s vertical height, measured in pixels.
@@ -469,7 +479,7 @@ Labels are components used to show text.
  integer.
 
 {:id="Label.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="Label.FontBold" .boolean .do} *FontBold*
 : Specifies whether the label's text should be bold.
@@ -566,7 +576,7 @@ A button that, when clicked on, displays a list of texts for the user to choose 
  change will not be visible until the [`Image`](#ListPicker.Image) is removed.
 
 {:id="ListPicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="ListPicker.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
@@ -709,7 +719,7 @@ This is a visible component that allows to place a list of text elements in your
 : The color of the `ListView` background.
 
 {:id="ListView.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="ListView.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
@@ -773,31 +783,44 @@ None
 
 ## MenuItem  {#MenuItem}
 
+Component for MenuItem
+
+
+
 ### Properties  {#MenuItem-Properties}
 
 {:.properties}
 
 {:id="MenuItem.Enabled" .boolean} *Enabled*
-: If true, user can tap menu item to cause action.
+: Specifies whether the menu item should be active and clickable.
 
 {:id="MenuItem.Icon" .text} *Icon*
-: Path of the icon to display for this menu item.
+: Specifies the path of the menu item's icon.
 
 {:id="MenuItem.ShowOnActionBar" .boolean} *ShowOnActionBar*
-: Returns true if the menu item is shown on action bar, false otherwise.
+: Specifies whether the menu item should show on action bar:
+ If `true`, then item will appear as an icon on the action bar
+ (given that there is enough space);
+ If `false`, then item will always appear as text in the overflow menu.
 
 {:id="MenuItem.Text" .text} *Text*
-: Returns the text displayed by the menu item.
+: Specifies the text displayed by the menu item.
 
 {:id="MenuItem.Visible" .boolean} *Visible*
-: Returns true if the menu item is visible, false otherwise.
+: Specifies whether the menu item should be visible or hidden from menu.
 
 ### Events  {#MenuItem-Events}
 
 {:.events}
 
 {:id="MenuItem.Click"} Click()
-: Event raised when user selects this menu item.
+: Event to handle when user selects this menu item.
+
+### Methods  {#MenuItem-Methods}
+
+{:.methods}
+None
+
 
 ## Notifier  {#Notifier}
 
@@ -920,7 +943,7 @@ Users enter passwords in a password text box component, which hides the text tha
  the Blocks Editor. The default background color is 'default' (shaded 3-D look).
 
 {:id="PasswordTextBox.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="PasswordTextBox.Enabled" .boolean} *Enabled*
 : If set, user can enter text into the `PasswordTextBox`.
@@ -1225,7 +1248,7 @@ This class is used to display a `Slider`.
  indicates fully transparent and `FF` means opaque.
 
 {:id="Slider.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="Slider.HeightPercent" .number .wo .bo} *HeightPercent*
 : Specifies the `Slider`'s vertical height as a percentage
@@ -1293,7 +1316,7 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 {:.properties}
 
 {:id="Spinner.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="Spinner.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
@@ -1364,7 +1387,7 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
  integer.
 
 {:id="Switch.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="Switch.Enabled" .boolean} *Enabled*
 : Specifies whether the `Switch` should be active and clickable.
@@ -1480,7 +1503,7 @@ Users enter text in a text box component.
  the Blocks Editor. The default background color is 'default' (shaded 3-D look).
 
 {:id="TextBox.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="TextBox.Enabled" .boolean} *Enabled*
 : If set, user can enter text into the `TextBox`.
@@ -1591,7 +1614,7 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
  change will not be visible until the [`Image`](#TimePicker.Image) is removed.
 
 {:id="TimePicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="TimePicker.Enabled" .boolean} *Enabled*
 : Specifies whether the `TimePicker` should be active and clickable.
@@ -1746,7 +1769,7 @@ Component for viewing Web pages.
 {:.properties}
 
 {:id="WebViewer.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="WebViewer.CurrentPageTitle" .text .ro .bo} *CurrentPageTitle*
 : Returns the title of the page currently being viewed

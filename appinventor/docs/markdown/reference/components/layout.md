@@ -19,6 +19,28 @@ Table of Contents:
 
 ## ContextMenu  {#ContextMenu}
 
+Container for ContextMenuItems
+
+
+
+### Properties  {#ContextMenu-Properties}
+
+{:.properties}
+None
+
+
+### Events  {#ContextMenu-Events}
+
+{:.events}
+None
+
+
+### Methods  {#ContextMenu-Methods}
+
+{:.methods}
+None
+
+
 ## HorizontalArrangement  {#HorizontalArrangement}
 
 ![HorizontalArrangement icon](images/horizontalarrangement.png)
@@ -72,7 +94,7 @@ Table of Contents:
  until the Image is removed.
 
 {:id="HorizontalArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="HorizontalArrangement.Height" .number .bo} *Height*
 : Specifies the `HorizontalArrangement`'s vertical height, measured in pixels.
@@ -137,7 +159,7 @@ A formatting element in which to place components that should be displayed from 
  until the Image is removed.
 
 {:id="HorizontalScrollArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="HorizontalScrollArrangement.Height" .number .bo} *Height*
 : Specifies the `HorizontalScrollArrangement`'s vertical height, measured in pixels.
@@ -174,6 +196,10 @@ None
 
 ## Menu  {#Menu}
 
+Component for Menu
+
+
+
 ### Properties  {#Menu-Properties}
 
 {:.properties}
@@ -185,29 +211,51 @@ None
  to properties of its elements will be reflected in the corresponding item.
 
 {:id="Menu.ShowAbout" .boolean} *ShowAbout*
-: Returns true if an About option that displays additional info is shown.
+: Specifies whether to show an About option that displays additional info.
 
 {:id="Menu.ShowStop" .boolean} *ShowStop*
-: Returns true if a Stop option for users to exit the app is shown.
+: Specifies whether to show a Stop option for users to exit the app.
 
 ### Events  {#Menu-Events}
 
 {:.events}
 
 {:id="Menu.Initialize"} Initialize()
-: Menu created (occurs after screen initialization)
+: Event to handle when the menu is first created and its items loaded.
 
 {:id="Menu.ItemSelected"} ItemSelected(*itemIndex*{:.number},*item*{:.component})
-: Event raised when user selects an item from the options menu.
+: Event to handle when the app user selects an item from the options menu.
+
+### Methods  {#Menu-Methods}
+
+{:.methods}
+None
+
 
 ## PopupMenu  {#PopupMenu}
+
+Container for MenuItems
+
+
 
 ### Properties  {#PopupMenu-Properties}
 
 {:.properties}
 
 {:id="PopupMenu.ComponentSelector" .component} *ComponentSelector*
-: 
+: Property for ComponentSelector
+
+### Events  {#PopupMenu-Events}
+
+{:.events}
+None
+
+
+### Methods  {#PopupMenu-Methods}
+
+{:.methods}
+None
+
 
 ## TableArrangement  {#TableArrangement}
 
@@ -242,7 +290,7 @@ Use a table arrangement component to display a group of components in a tabular 
 : Determines the number of columns in the table.
 
 {:id="TableArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="TableArrangement.Height" .number .bo} *Height*
 : Specifies the `TableArrangement`'s vertical height, measured in pixels.
@@ -330,7 +378,7 @@ None
  until the Image is removed.
 
 {:id="VerticalArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="VerticalArrangement.Height" .number .bo} *Height*
 : Specifies the `VerticalArrangement`'s vertical height, measured in pixels.
@@ -395,7 +443,7 @@ A formatting element in which to place components that should be displayed one b
  until the Image is removed.
 
 {:id="VerticalScrollArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: 
+: Property for ContextMenuSelector
 
 {:id="VerticalScrollArrangement.Height" .number .bo} *Height*
 : Specifies the `VerticalScrollArrangement`'s vertical height, measured in pixels.
