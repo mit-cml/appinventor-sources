@@ -1025,7 +1025,7 @@ public class YaVersion {
   // - Added ShowScale property
   // - Added ScaleUnits property
   // For MAP_COMPONENT_VERSION 6:
-  // - Adds Units and MapType dropdowns.
+  // - Adds ScaleUnits and MapType dropdowns.
   public static final int MAP_COMPONENT_VERSION = 6;
 
   // For MARKER_COMPONENT_VERSION 1:

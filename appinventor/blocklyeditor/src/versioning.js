@@ -2128,7 +2128,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2:
     // - Adds Units and MapType dropdowns.
     6: [Blockly.Versioning.makeSetterUseDropdown(
-          'Map', 'ScaleUnits', 'Units'),
+          'Map', 'ScaleUnits', 'ScaleUnits'),
         Blockly.Versioning.makeSetterUseDropdown(
           'Map', 'MapType', 'MapType')]
 
