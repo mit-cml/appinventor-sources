@@ -178,6 +178,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     return listViewLayout;
   }
 
+  // Returns the android ListView placed inside a LinearLayout
   public android.widget.ListView getListView() {
     return view;
   }

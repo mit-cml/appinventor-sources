@@ -45,11 +45,7 @@ public class MockContextMenu extends MockContainer {
 
     @Override
     protected void onSelectedChange(boolean selected) {
-        if (selected) {
-            setVisible(true);
-        } else {
-            setVisible(false);
-        }
+        setVisible(selected);
         super.onSelectedChange(selected);
     }
 }
