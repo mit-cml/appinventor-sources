@@ -230,6 +230,35 @@ Component for Menu
 
 ### Methods  {#Menu-Methods}
 
+{:.methods}
+None
+
+
+## PopupMenu  {#PopupMenu}
+
+Container for MenuItems
+
+
+
+### Properties  {#PopupMenu-Properties}
+
+{:.properties}
+
+{:id="PopupMenu.ComponentSelector" .component} *ComponentSelector*
+: Property for ComponentSelector
+
+### Events  {#PopupMenu-Events}
+
+{:.events}
+None
+
+
+### Methods  {#PopupMenu-Methods}
+
+{:.methods}
+None
+
+
 ## Sidebar  {#Sidebar}
 
 Container for sidebarItems.
@@ -239,6 +268,9 @@ Container for sidebarItems.
 ### Properties  {#Sidebar-Properties}
 
 {:.properties}
+
+{:id="Sidebar.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="Sidebar.Height" .number .bo} *Height*
 : Specifies the `Sidebar`'s vertical height, measured in pixels.
@@ -270,21 +302,6 @@ None
 None
 
 
-## PopupMenu  {#PopupMenu}
-
-Container for MenuItems
-
-
-
-### Properties  {#PopupMenu-Properties}
-
-{:.properties}
-
-{:id="PopupMenu.ComponentSelector" .component} *ComponentSelector*
-: Property for ComponentSelector
-
-### Events  {#PopupMenu-Events}
-
 ## SidebarHeader  {#SidebarHeader}
 
 Container to contain components for Sidebar Header.
@@ -309,6 +326,9 @@ Container to contain components for Sidebar Header.
 : Specifies the background color of the SidebarHeader as an alpha-red-green-blue
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
+
+{:id="SidebarHeader.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="SidebarHeader.Height" .number .bo} *Height*
 : Specifies the `SidebarHeader`'s vertical height, measured in pixels.
@@ -337,10 +357,7 @@ Container to contain components for Sidebar Header.
 None
 
 
-### Methods  {#PopupMenu-Methods}
-
 ### Methods  {#SidebarHeader-Methods}
-
 
 {:.methods}
 None

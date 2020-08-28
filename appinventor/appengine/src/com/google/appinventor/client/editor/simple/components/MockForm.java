@@ -31,10 +31,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
-<<<<<<< HEAD
-=======
 
->>>>>>> GSoC-sidebar
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -402,11 +399,8 @@ public final class MockForm extends MockContainer {
   @Override
   protected void onLoad() {
     super.onLoad();
-<<<<<<< HEAD
     titleBar.loadMenu();
-=======
     titleBar.loadSidebar();
->>>>>>> GSoC-sidebar
   }
 
   public void changePreviewSize(int width, int height, int idx) {
@@ -758,11 +752,8 @@ public final class MockForm extends MockContainer {
   private void setTitleVisibleProperty(String text) {
     boolean visible = Boolean.parseBoolean(text);
     titleBar.setVisible(visible);
-<<<<<<< HEAD
     titleBar.updateMenuEnabled();
-=======
     titleBar.updateSidebarEnabled();
->>>>>>> GSoC-sidebar
   }
 
   private void setActionBarProperty(String actionBar) {
