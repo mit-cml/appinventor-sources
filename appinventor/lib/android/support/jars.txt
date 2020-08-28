@@ -10,6 +10,7 @@ core-common.jar
 core-runtime.jar
 cursoradapter.jar
 customview.jar
+design.jar
 documentfile.jar
 drawerlayout.jar
 fragment.jar

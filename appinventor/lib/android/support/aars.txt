@@ -6,6 +6,7 @@ core.aar
 core-runtime.aar
 cursoradapter.aar
 customview.aar
+design.aar
 documentfile.aar
 drawerlayout.aar
 fragment.aar
