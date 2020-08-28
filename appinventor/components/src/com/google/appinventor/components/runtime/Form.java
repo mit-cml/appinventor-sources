@@ -6,11 +6,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import static android.Manifest.permission.ACCESS_NETWORK_STATE;
-import static android.Manifest.permission.ACCESS_WIFI_STATE;
-import static android.Manifest.permission.INTERNET;
-import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -34,7 +29,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -45,9 +39,7 @@ import android.widget.ScrollView;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import com.google.appinventor.common.version.AppInventorFeatures;
-
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -78,6 +70,7 @@ import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+import org.json.JSONException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -96,7 +89,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.json.JSONException;
+import static android.Manifest.permission.*;
+import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
 
 
 /**
