@@ -416,7 +416,6 @@ public final class MockForm extends MockContainer {
       floatingActionButton = new MockFloatingActionButton(editor);
       addComponent(floatingActionButton);
     }
->>>>>>> GSoC-FAB
   }
 
   public void changePreviewSize(int width, int height, int idx) {

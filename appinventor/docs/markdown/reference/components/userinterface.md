@@ -404,6 +404,9 @@ Component for FloatingActionButton
 
 {:.properties}
 
+{:id="FloatingActionButton.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
+
 {:id="FloatingActionButton.Height" .number .bo} *Height*
 : Specifies the `FloatingActionButton`'s vertical height, measured in pixels.
 

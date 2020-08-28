@@ -49,8 +49,6 @@ public class SidebarItem implements Component{
         sidebar = (Sidebar)container;
         index = sidebar.additem(this);
         menuItem = sidebar.$form().navigationView.getMenu().getItem(index);
-
-        Visible(false);
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
