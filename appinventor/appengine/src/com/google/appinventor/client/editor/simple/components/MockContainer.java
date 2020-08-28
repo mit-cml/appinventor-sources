@@ -126,7 +126,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param beforeVisibleIndex  visible-index at which the inserted component will appear,
    *                            or {@code -1} to insert the component at the end
    */
-  public final void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
+  public void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
     List<MockComponent> visibleChildren = getShowingVisibleChildren();
 
     int beforeActualIndex;
@@ -153,7 +153,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param beforeIndex  index at which the inserted component will reside in the children,
    *                     or {@code -1} to insert the component at the end
    */
-  private void addComponent(MockComponent component, int beforeIndex) {
+  protected void addComponent(MockComponent component, int beforeIndex) {
     // Set the container to be the parent of the component
     component.setContainer(this);
 
@@ -269,7 +269,9 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       if (!(component instanceof MockSprite) &&
           !(component instanceof MockMapFeature) &&
           !(component instanceof MockMenuItem) &&
-          !(component instanceof MockContextMenuItem)) {
+          !(component instanceof MockContextMenuItem)&&
+          !(component instanceof MockSidebarHeader) &&
+          !(component instanceof MockSidebarItem)) {
         return true;
       }
     }

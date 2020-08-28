@@ -13,6 +13,8 @@ Table of Contents:
 * [HorizontalScrollArrangement](#HorizontalScrollArrangement)
 * [Menu](#Menu)
 * [PopupMenu](#PopupMenu)
+* [Sidebar](#Sidebar)
+* [SidebarHeader](#SidebarHeader)
 * [TableArrangement](#TableArrangement)
 * [VerticalArrangement](#VerticalArrangement)
 * [VerticalScrollArrangement](#VerticalScrollArrangement)
@@ -228,6 +230,42 @@ Component for Menu
 
 ### Methods  {#Menu-Methods}
 
+## Sidebar  {#Sidebar}
+
+Container for sidebarItems.
+
+
+
+### Properties  {#Sidebar-Properties}
+
+{:.properties}
+
+{:id="Sidebar.Height" .number .bo} *Height*
+: Specifies the `Sidebar`'s vertical height, measured in pixels.
+
+{:id="Sidebar.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `Sidebar`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="Sidebar.Visible" .boolean} *Visible*
+: Specifies whether the `Sidebar` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `Sidebar` is showing and `false`{:.logic.block} if hidden.
+
+{:id="Sidebar.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `Sidebar`, measured in pixels.
+
+{:id="Sidebar.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `Sidebar` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#Sidebar-Events}
+
+{:.events}
+None
+
+
+### Methods  {#Sidebar-Methods}
+
 {:.methods}
 None
 
@@ -247,11 +285,62 @@ Container for MenuItems
 
 ### Events  {#PopupMenu-Events}
 
+## SidebarHeader  {#SidebarHeader}
+
+Container to contain components for Sidebar Header.
+
+
+
+### Properties  {#SidebarHeader-Properties}
+
+{:.properties}
+
+{:id="SidebarHeader.AlignHorizontal" .number} *AlignHorizontal*
+: A number that encodes how contents of the `SidebarHeader` are aligned horizontally. The choices
+ are: `1` = left aligned, `2` = right aligned, `3` = horizontally centered. Alignment has no
+ effect if the `SidebarHeader`'s [`Width`](#SidebarHeader.Width) is `Automatic`.
+
+{:id="SidebarHeader.AlignVertical" .number} *AlignVertical*
+: A number that encodes how the contents of the `SidebarHeader` are aligned vertically. The choices
+ are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ Alignment has no effect if the `SidebarHeader`'s [`Height`](#SidebarHeader.Height) is `Automatic`.
+
+{:id="SidebarHeader.BackgroundColor" .color} *BackgroundColor*
+: Specifies the background color of the SidebarHeader as an alpha-red-green-blue
+ integer.  If an Image has been set, the color change will not be visible
+ until the Image is removed.
+
+{:id="SidebarHeader.Height" .number .bo} *Height*
+: Specifies the `SidebarHeader`'s vertical height, measured in pixels.
+
+{:id="SidebarHeader.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `SidebarHeader`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="SidebarHeader.Image" .text} *Image*
+: Specifies the path of the background image of the `SidebarHeader`.
+
+{:id="SidebarHeader.Visible" .boolean} *Visible*
+: Specifies whether the `SidebarHeader` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `SidebarHeader` is showing and `false`{:.logic.block} if hidden.
+
+{:id="SidebarHeader.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `SidebarHeader`, measured in pixels.
+
+{:id="SidebarHeader.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `SidebarHeader` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#SidebarHeader-Events}
+
 {:.events}
 None
 
 
 ### Methods  {#PopupMenu-Methods}
+
+### Methods  {#SidebarHeader-Methods}
+
 
 {:.methods}
 None

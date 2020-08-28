@@ -10,14 +10,52 @@ import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.editor.simple.components.*;
-
+import com.google.appinventor.client.editor.simple.components.MockBall;
+import com.google.appinventor.client.editor.simple.components.MockButton;
+import com.google.appinventor.client.editor.simple.components.MockCanvas;
+import com.google.appinventor.client.editor.simple.components.MockCheckBox;
+import com.google.appinventor.client.editor.simple.components.MockCircle;
+import com.google.appinventor.client.editor.simple.components.MockCloudDB;
+import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockContactPicker;
+import com.google.appinventor.client.editor.simple.components.MockDatePicker;
+import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
+import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
+import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
+import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
+import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockImage;
+import com.google.appinventor.client.editor.simple.components.MockImagePicker;
+import com.google.appinventor.client.editor.simple.components.MockImageSprite;
+import com.google.appinventor.client.editor.simple.components.MockLabel;
+import com.google.appinventor.client.editor.simple.components.MockLineString;
+import com.google.appinventor.client.editor.simple.components.MockListPicker;
+import com.google.appinventor.client.editor.simple.components.MockListView;
+import com.google.appinventor.client.editor.simple.components.MockMap;
+import com.google.appinventor.client.editor.simple.components.MockMarker;
+import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
+import com.google.appinventor.client.editor.simple.components.MockPasswordTextBox;
+import com.google.appinventor.client.editor.simple.components.MockPhoneNumberPicker;
+import com.google.appinventor.client.editor.simple.components.MockPolygon;
+import com.google.appinventor.client.editor.simple.components.MockRadioButton;
+import com.google.appinventor.client.editor.simple.components.MockRectangle;
+import com.google.appinventor.client.editor.simple.components.MockScrollHorizontalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockSidebar;
+import com.google.appinventor.client.editor.simple.components.MockSidebarHeader;
+import com.google.appinventor.client.editor.simple.components.MockSidebarItem;
+import com.google.appinventor.client.editor.simple.components.MockSlider;
+import com.google.appinventor.client.editor.simple.components.MockSpinner;
+import com.google.appinventor.client.editor.simple.components.MockSwitch;
+import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
+import com.google.appinventor.client.editor.simple.components.MockTextBox;
+import com.google.appinventor.client.editor.simple.components.MockTimePicker;
+import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
+import com.google.appinventor.client.editor.simple.components.MockWebViewer;
 import com.google.appinventor.shared.storage.StorageUtil;
-
 import com.google.common.collect.Maps;
-
 import com.google.gwt.resources.client.ImageResource;
-
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -117,6 +155,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/web.png", images.web());
     bundledImages.put("images/mediastore.png", images.mediastore());
     bundledImages.put("images/sharing.png", images.sharingComponent());
+    bundledImages.put("images/sidebar.png", images.sidebar());
     bundledImages.put("images/spinner.png", images.spinner());
     bundledImages.put("images/listView.png", images.listview());
     bundledImages.put("images/yandex.png", images.yandex());
@@ -132,6 +171,8 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/navigation.png", images.navigationComponent());
     bundledImages.put("images/arduino.png", images.arduino());
     bundledImages.put("images/magneticSensor.png", images.magneticSensor());
+    bundledImages.put("images/sidebarHeader.png", images.sidebarHeader());
+    bundledImages.put("images/sidebarItem.ong", images.sidebarItem());
 
     imagesInitialized = true;
   }
@@ -434,6 +475,12 @@ public final class SimpleComponentDescriptor {
       return new MockRectangle(editor);
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
+    } else if (name.equals(MockSidebar.TYPE)) {
+      return new MockSidebar(editor);
+    } else if (name.equals(MockSidebarHeader.TYPE)) {
+      return new MockSidebarHeader(editor);
+    } else if (name.equals(MockSidebarItem.TYPE)) {
+      return new MockSidebarItem(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);

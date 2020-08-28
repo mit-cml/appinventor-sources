@@ -18,10 +18,13 @@ import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatCallback;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.ActionMode.Callback;
+import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.material.navigation.NavigationView;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -57,6 +60,9 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
   private AppCompatDelegate appCompatDelegate;
   android.widget.LinearLayout frameWithTitle;
   TextView titleBar;
+  private DrawerLayout drawerLayout;
+  protected NavigationView navigationView;
+  protected ActionBarDrawerToggle actionBarDrawerToggle;
   private static boolean didSetClassicModeFromYail = false;
   @SuppressWarnings("WeakerAccess")  // Potentially useful to extensions with custom activities
   protected ThemeHelper themeHelper;
@@ -86,6 +92,7 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
     super.onCreate(icicle);
 
     frameWithTitle = new android.widget.LinearLayout(this);
+    getSidebar();
     frameWithTitle.setOrientation(android.widget.LinearLayout.VERTICAL);
     setContentView(frameWithTitle);  // Due to a bug in Honeycomb 3.0 and 3.1, a content view must
                                      // exist before attempting to check the ActionBar status,
@@ -115,6 +122,16 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
     }
   }
 
+  @Override
+  public void onBackPressed() {
+    if(drawerLayout.isDrawerOpen(Gravity.LEFT)) {
+      drawerLayout.closeDrawer(Gravity.LEFT);
+    }
+    else {
+      super.onBackPressed();
+    }
+  }
+
   @SuppressWarnings("WeakerAccess")
   public final boolean isAppCompatMode() {
     return appCompatDelegate != null;
@@ -126,6 +143,7 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
     if (appCompatDelegate != null) {
       appCompatDelegate.onPostCreate(savedInstanceState);
     }
+    actionBarDrawerToggle.syncState();
   }
 
   @Override
@@ -142,6 +160,8 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
     if (appCompatDelegate != null) {
       appCompatDelegate.onConfigurationChanged(newConfig);
     }
+    actionBarDrawerToggle.onConfigurationChanged(newConfig);
+    actionBarDrawerToggle.syncState();
   }
 
   @Override
@@ -192,9 +212,10 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
     if (view != frameWithTitle) {
       frameWithTitle.addView(view, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
           ViewGroup.LayoutParams.MATCH_PARENT));
-      view = frameWithTitle;
     }
-
+    drawerLayout.addView(frameWithTitle, DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
+    drawerLayout.addView(navigationView, new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.WRAP_CONTENT, DrawerLayout.LayoutParams.MATCH_PARENT, Gravity.LEFT));
+    view = drawerLayout;
     // Update the content view based on AppCompat support
     if (appCompatDelegate != null) {
       appCompatDelegate.setContentView(view);
@@ -224,6 +245,29 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
     } else {
       super.invalidateOptionsMenu();
     }
+  }
+  private void getSidebar() {
+    drawerLayout = new DrawerLayout(this);
+    navigationView = new NavigationView(this);
+    actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, android.R.string.yes, android.R.string.no) {
+      @Override
+      public void onDrawerOpened(View drawerView) {
+        super.onDrawerOpened(drawerView);
+        setTitle(android.R.string.yes);
+        actionBarDrawerToggle.syncState();
+      }
+
+      @Override
+      public void onDrawerClosed(View drawerView) {
+        super.onDrawerClosed(drawerView);
+        setTitle(android.R.string.no);
+        actionBarDrawerToggle.syncState();
+      }
+    };
+    drawerLayout.setDrawerListener(actionBarDrawerToggle);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setHomeButtonEnabled(true);
+    actionBarDrawerToggle.syncState();
   }
 
   public static boolean isEmulator() {

@@ -401,6 +401,7 @@ public class Form extends AppInventorCompatActivity
   private void onCreateFinish2() {
     defaultPropertyValues();
 
+
     // Get startup text if any before adding components
     Intent startIntent = getIntent();
     if (startIntent != null && startIntent.hasExtra(ARGUMENT_NAME)) {
@@ -512,7 +513,7 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
-// What's this code?
+  // What's this code?
 //
 // There is either an App Inventor bug, or Android bug (likely both)
 // that results in the contents of the screen being rendered "too
@@ -2341,9 +2342,17 @@ public class Form extends AppInventorCompatActivity
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    Log.d(LOG_TAG, "onOptionsItemSelected " + item);
-    for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
-      onOptionsItemSelectedListener.onOptionsItemSelected(item);
+    // handles the navigation drawer icon touch event
+    if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
+      return true;
+    }
+    // handles the options menu item touch event
+    else {
+      for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
+        if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
+          return true;
+        }
+      }
     }
     return false;
   }

@@ -31,6 +31,10 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
+<<<<<<< HEAD
+=======
+
+>>>>>>> GSoC-sidebar
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -65,9 +69,12 @@ public final class MockForm extends MockContainer {
     private Label title;
     private MockMenu menu;
     private Button menuButton;
+    private MockSidebar sidebar;
+    private Button sidebarButton;
     private AbsolutePanel bar;
     private boolean actionBar;
     private String backgroundColor;
+    private MockSidebarHeader sidebarHeader;
 
     public String getTitle() {
       return title.getText();
@@ -85,9 +92,14 @@ public final class MockForm extends MockContainer {
       menuButton.setText("\u22ee");
       menuButton.setStylePrimaryName("ode-SimpleMockFormMenuButton");
 
+      sidebarButton = new Button();
+      sidebarButton.setText("\u2630");
+      sidebarButton.setStylePrimaryName("ode-SimpleMockFormSidebarButton");
+
       bar = new AbsolutePanel();
       bar.add(title);
       bar.add(menuButton);
+      bar.add(sidebarButton);
 
       initWidget(bar);
 
@@ -127,6 +139,42 @@ public final class MockForm extends MockContainer {
     }
 
     /*
+     * Initialize sidebar (should only be called after components are loaded).
+     */
+    void loadSidebar() {
+      for (MockComponent child : children) {
+        if (child instanceof MockSidebar) {
+          sidebar = (MockSidebar) child;
+          break;
+        }
+      }
+      if (sidebar == null) {
+        sidebarHeader= new MockSidebarHeader(editor);
+        sidebar = new MockSidebar(editor);
+        addComponent(sidebar);
+        sidebar.addComponent(sidebarHeader, 0);
+      }
+      sidebarButton.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          sidebar.toggle();
+        }
+      });
+      updateSidebarEnabled();
+    }
+
+    /*
+     * This method updates the visibility of sidebar depending
+     * on the presence/absence of Action Bar and Visible property
+     * ofSidebar. Sidebar is visible only when action bar is
+     * present and sidebar is set visible.
+     */
+    void updateSidebarEnabled() {
+      if(sidebar != null) {
+        sidebar.setEnabled(actionBar && isVisible());
+      }
+    }
+
+    /*
      * Changes the title in the title bar.
      */
     void changeTitle(String newTitle) {
@@ -144,6 +192,7 @@ public final class MockForm extends MockContainer {
         MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, "&HFF696969");
       }
       updateMenuEnabled();
+      updateSidebarEnabled();
     }
 
     void setBackgroundColor(String color) {
@@ -353,7 +402,11 @@ public final class MockForm extends MockContainer {
   @Override
   protected void onLoad() {
     super.onLoad();
+<<<<<<< HEAD
     titleBar.loadMenu();
+=======
+    titleBar.loadSidebar();
+>>>>>>> GSoC-sidebar
   }
 
   public void changePreviewSize(int width, int height, int idx) {
@@ -705,7 +758,11 @@ public final class MockForm extends MockContainer {
   private void setTitleVisibleProperty(String text) {
     boolean visible = Boolean.parseBoolean(text);
     titleBar.setVisible(visible);
+<<<<<<< HEAD
     titleBar.updateMenuEnabled();
+=======
+    titleBar.updateSidebarEnabled();
+>>>>>>> GSoC-sidebar
   }
 
   private void setActionBarProperty(String actionBar) {
@@ -759,11 +816,13 @@ public final class MockForm extends MockContainer {
       final String newColor = "&HFF000000";
       MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);
+      MockComponentsUtil.setWidgetTextColor(titleBar.sidebarButton, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);
     } else {
       final String newColor = "&HFFFFFFFF";
       MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);
+      MockComponentsUtil.setWidgetTextColor(titleBar.sidebarButton, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);
     }
     if (theme.equals("AppTheme")) {

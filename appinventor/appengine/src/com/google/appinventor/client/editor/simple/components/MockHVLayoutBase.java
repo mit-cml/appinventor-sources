@@ -290,6 +290,13 @@ abstract class MockHVLayoutBase extends MockLayout {
     // The height will be the sum of the child heights.
     int height = 0;
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
+      // skip sidebar when calculating height constraints
+      if(child.isSidebar()) {
+        continue;
+      }
+      if(child.isSidebarHeader()) {
+        continue;
+      }
       height += COMPONENT_SPACING;
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       // If the height is fill parent, use automatic height.
@@ -413,8 +420,17 @@ abstract class MockHVLayoutBase extends MockLayout {
 
       if (child instanceof MockContextMenu) {
         container.setChildSizeAndPosition(child, childLayoutInfo,
-                (containerLayoutInfo.width - childWidthWithBorder)/2,
-                (containerLayoutInfo.height - childWidthWithBorder)/2);
+                (containerLayoutInfo.width - childWidthWithBorder) / 2,
+                (containerLayoutInfo.height - childWidthWithBorder) / 2);
+        index++;
+        continue;
+      }
+
+      if(child.isSidebar()) {
+        // always position mock sidebar at top-left corner
+        container.setChildSizeAndPosition(child, childLayoutInfo,
+                0,
+                0);
         index++;
         continue;
       }
