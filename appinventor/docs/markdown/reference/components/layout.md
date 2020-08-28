@@ -10,6 +10,7 @@ Table of Contents:
 
 * [HorizontalArrangement](#HorizontalArrangement)
 * [HorizontalScrollArrangement](#HorizontalScrollArrangement)
+* [Menu](#Menu)
 * [TableArrangement](#TableArrangement)
 * [VerticalArrangement](#VerticalArrangement)
 * [VerticalScrollArrangement](#VerticalScrollArrangement)
@@ -160,6 +161,34 @@ None
 {:.methods}
 None
 
+
+## Menu  {#Menu}
+
+### Properties  {#Menu-Properties}
+
+{:.properties}
+
+{:id="Menu.Items" .list .ro .bo} *Items*
+: Items property getter method: returns a YailList copy containing
+ all items under this menu, or an empty list if no menu item exists.
+ Changes to the YailList itself will have no effect on the menu, but changes
+ to properties of its elements will be reflected in the corresponding item.
+
+{:id="Menu.ShowAbout" .boolean} *ShowAbout*
+: Returns true if an About option that displays additional info is shown.
+
+{:id="Menu.ShowStop" .boolean} *ShowStop*
+: Returns true if a Stop option for users to exit the app is shown.
+
+### Events  {#Menu-Events}
+
+{:.events}
+
+{:id="Menu.Initialize"} Initialize()
+: Menu created (occurs after screen initialization)
+
+{:id="Menu.ItemSelected"} ItemSelected(*itemIndex*{:.number},*item*{:.component})
+: Event raised when user selects an item from the options menu.
 
 ## TableArrangement  {#TableArrangement}
 

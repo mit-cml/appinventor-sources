@@ -1,12 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019 MIT, All rights reserved
+// Copyright 2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import java.io.IOException;
-
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.MenuItem.OnMenuItemClickListener;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -16,12 +17,8 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-
-import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.view.MenuItem.OnMenuItemClickListener;
+import java.io.IOException;
 
 @DesignerComponent(version = YaVersion.MENUITEM_COMPONENT_VERSION,
     description = "A Menu Item can only be placed inside Menu components. " +
@@ -36,7 +33,7 @@ public final class MenuItem implements Component {
   private static final String LOG_TAG = "MenuItem";
 
   private android.view.MenuItem item;
-  private ComponentContainer container;
+  private Menu menu;
 
   private String text = "";
   private String iconPath = "";
@@ -45,12 +42,9 @@ public final class MenuItem implements Component {
   private boolean visible = true;
   private boolean showOnActionBar;
 
-  public MenuItem(ComponentContainer container) {
-    this.container = container;
-    if (!(container instanceof Menu)) {
-      throw new IllegalArgumentError("MenuItem constructor called with container " + container);
-    }
-    ((Menu) container).addMenuItem(this);
+  public MenuItem(Menu parent) {
+    menu = parent;
+    menu.addMenuItem(this);
   }
 
   public void addToMenu(android.view.Menu menu) {
@@ -84,8 +78,7 @@ public final class MenuItem implements Component {
    *
    * @param text  new text for menu item
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty
   public void Text(String text) {
     this.text = text;
@@ -109,13 +102,9 @@ public final class MenuItem implements Component {
   /**
    * Specifies the path of the menu item's icon.
    *
-   * <p/>See {@link MediaUtil#determineMediaSource} for information about what
-   * a path can be.
-   *
    * @param path  the path of the menu item's icon
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
-      defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
   @SimpleProperty(description = "Specifies the path of the menu item's icon.")
   public void Icon(String path) {
     // If it's the same as on the prior call and the prior load was successful,
@@ -129,7 +118,7 @@ public final class MenuItem implements Component {
     // Load image from file.
     if (iconPath.length() > 0) {
       try {
-        iconDrawable = MediaUtil.getBitmapDrawable(container.$form(), iconPath);
+        iconDrawable = MediaUtil.getBitmapDrawable(menu.$form(), iconPath);
       } catch (IOException ioe) {
         Log.e(LOG_TAG, "Unable to load " + iconPath);
         return;
@@ -198,7 +187,7 @@ public final class MenuItem implements Component {
   /**
    * Specifies whether the menu item should be visible or hidden from menu.
    *
-   * @param  visibility  {@code true} iff the menu item should be visible.
+   * @param  visible  {@code true} iff the menu item should be visible.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY,
       defaultValue = "True")
@@ -254,7 +243,7 @@ public final class MenuItem implements Component {
 
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
-    return container.$form();
+    return menu.$form();
   }
 
 }

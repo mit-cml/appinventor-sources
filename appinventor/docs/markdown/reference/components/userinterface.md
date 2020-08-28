@@ -15,6 +15,7 @@ Table of Contents:
 * [Label](#Label)
 * [ListPicker](#ListPicker)
 * [ListView](#ListView)
+* [MenuItem](#MenuItem)
 * [Notifier](#Notifier)
 * [PasswordTextBox](#PasswordTextBox)
 * [Screen](#Screen)
@@ -725,6 +726,34 @@ This is a visible component that allows to place a list of text elements in your
 {:.methods}
 None
 
+
+## MenuItem  {#MenuItem}
+
+### Properties  {#MenuItem-Properties}
+
+{:.properties}
+
+{:id="MenuItem.Enabled" .boolean} *Enabled*
+: If true, user can tap menu item to cause action.
+
+{:id="MenuItem.Icon" .text} *Icon*
+: Path of the icon to display for this menu item.
+
+{:id="MenuItem.ShowOnActionBar" .boolean} *ShowOnActionBar*
+: Returns true if the menu item is shown on action bar, false otherwise.
+
+{:id="MenuItem.Text" .text} *Text*
+: Returns the text displayed by the menu item.
+
+{:id="MenuItem.Visible" .boolean} *Visible*
+: Returns true if the menu item is visible, false otherwise.
+
+### Events  {#MenuItem-Events}
+
+{:.events}
+
+{:id="MenuItem.Click"} Click()
+: Event raised when user selects this menu item.
 
 ## Notifier  {#Notifier}
 

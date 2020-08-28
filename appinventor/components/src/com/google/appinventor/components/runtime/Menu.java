@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.MenuItem.OnMenuItemClickListener;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -23,16 +24,15 @@ import java.util.List;
 
 @DesignerComponent(version = YaVersion.MENU_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
-    description = "Component for options menu (one per Screen) used to hold MenuItems. " +
-    "Menu is located on the action bar and is not accessible in classic theme.",
+    description = "Component for options menu (one per Screen) used to hold MenuItems. "
+        + "Menu is located on the action bar and is not accessible in classic theme.",
     showOnPalette = false)
 @SimpleObject
 public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuListener,
     OnPrepareOptionsMenuListener, OnOptionsItemSelectedListener, OnClearListener {
   private static final String LOG_TAG = "Menu";
 
-  private ComponentContainer container;
-  private final Activity context;
+  private Form form;
   private android.view.Menu menu;
   private List<MenuItem> items;
 
@@ -44,35 +44,50 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
   private boolean showAboutItem = true;
   private boolean showStopItem = true;
 
-  public Menu(ComponentContainer container) {
-    this.container = container;
-    context = container.$context();
-    items = new ArrayList<>();
+  /**
+   * Create a new Menu component. There should only be one Menu component per form.
+   *
+   * @param form The form that will render this menu.
+   */
+  public Menu(Form form) {
+    this.form = form;
+    items = new ArrayList<MenuItem>();
     createAboutItem();
     createStopItem();
-    container.$form().registerForOnCreateOptionsMenu(this);
-    container.$form().registerForOnPrepareOptionsMenu(this);
-    container.$form().registerForOnOptionsItemSelected(this);
-    container.$form().registerForOnClear(this);
+    form.registerForOnCreateOptionsMenu(this);
+    form.registerForOnPrepareOptionsMenu(this);
+    form.registerForOnOptionsItemSelected(this);
+    form.registerForOnClear(this);
   }
 
   public void onCreateOptionsMenu(android.view.Menu menu) {
     this.menu = menu;
+    for (MenuItem item : items) {
+      Log.d(LOG_TAG, "Adding menu item");
+      item.addToMenu(menu);
+    }
   }
 
   @Override
   public void onPrepareOptionsMenu(android.view.Menu menu) {
     this.menu = menu;
     for (MenuItem item : items) {
+      Log.d(LOG_TAG, "Adding menu item");
       item.addToMenu(menu);
     }
   }
 
+  /**
+   * Add an item to the menu.
+   *
+   * @param item The menu item to add.
+   */
   public void addMenuItem(MenuItem item) {
     items.add(item);
     if (menu != null) {
       item.addToMenu(menu);
     }
+    form.invalidateOptionsMenu();
   }
 
   private void createAboutItem() {
@@ -82,8 +97,8 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     aboutItem.Visible(showAboutItem);
     aboutItem.setOnClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(android.view.MenuItem item) {
-        container.$form().showAboutApplicationNotification();
-        return false;
+        form.showAboutApplicationNotification();
+        return true;
       }
     });
   }
@@ -95,8 +110,8 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     stopItem.Visible(showStopItem);
     stopItem.setOnClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(android.view.MenuItem item) {
-        container.$form().showExitApplicationNotification();
-        return false;
+        form.showExitApplicationNotification();
+        return true;
       }
     });
   }
@@ -156,7 +171,7 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
    */
   @SimpleEvent(description = "Menu created (occurs after screen initialization)")
   public void Initialize() {
-    $form().invalidateOptionsMenu();
+    form.invalidateOptionsMenu();
     EventDispatcher.dispatchEvent(this, "Initialize");
   }
 
@@ -166,6 +181,7 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     if (itemIndex > 0 && itemIndex <= items.size()) {
       ItemSelected(itemIndex, items.get(itemIndex - 1));
     }
+    Log.d(LOG_TAG, "ItemSelected = " + itemIndex);
     return true;
   }
 
@@ -195,17 +211,17 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
 
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
-    return container.$form();
+    return form;
   }
 
   @Override
   public Activity $context() {
-    return context;
+    return form;
   }
 
   @Override
   public Form $form() {
-    return container.$form();
+    return form;
   }
 
   @Override

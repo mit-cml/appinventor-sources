@@ -2311,12 +2311,26 @@ public class Form extends AppInventorCompatActivity
   // Configure the system menu to include items to kill the application and to show "about"
   // information
 
+  private Menu menu = null;
+
+  public Menu getMenu() {
+    return menu;
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    this.menu = menu;
+    Log.d(LOG_TAG, "onCreateOptionsMenu");
+    menu.add("dummy item");
+    for (OnCreateOptionsMenuListener listener : onCreateOptionsMenuListeners) {
+      listener.onCreateOptionsMenu(menu);
+    }
+    return true;
+  }
+
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
-    // This procedure is called only once.  To change the items dynamically
-    // we would use onPrepareOptionsMenu.
     menu.clear();
-    super.onPrepareOptionsMenu(menu);
     for (OnPrepareOptionsMenuListener listener : onPrepareOptionsMenuListeners) {
       listener.onPrepareOptionsMenu(menu);
     }
@@ -2325,15 +2339,15 @@ public class Form extends AppInventorCompatActivity
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    Log.d(LOG_TAG, "onOptionsItemSelected " + item);
     for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
-      if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
-        return true;
-      }
+      onOptionsItemSelectedListener.onOptionsItemSelected(item);
     }
     return false;
   }
 
   public void showExitApplicationNotification() {
+    Log.d(LOG_TAG, "showExitApplicationNotification");
     String title = "Stop application?";
     String message = "Stop this application and exit? You'll need to relaunch " +
         "the application to use it again.";
@@ -2362,6 +2376,7 @@ public class Form extends AppInventorCompatActivity
   }
 
   public void showAboutApplicationNotification() {
+    Log.d(LOG_TAG, "showAboutApplicationNotification");
     String title = "About this app";
     String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
     // Users can hide the taglines by including an HTML open comment <!-- in the about screen message

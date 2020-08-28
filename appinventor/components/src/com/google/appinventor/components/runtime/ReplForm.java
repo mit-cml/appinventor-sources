@@ -224,8 +224,6 @@ public class ReplForm extends Form {
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
-    // This procedure is called only once.  To change the items dynamically
-    // we would use onPrepareOptionsMenu.
     super.onPrepareOptionsMenu(menu); // sets up the exit and about buttons
     addLogcatButton(menu);           // Add button to report LogCat information
     return true;
