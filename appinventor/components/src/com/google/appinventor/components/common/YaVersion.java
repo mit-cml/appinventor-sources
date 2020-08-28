@@ -514,8 +514,10 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 32
   // For YOUNG_ANDROID_VERSION 208:
   // - FILE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 209:
+  // - WEB_COMPONENT_VERSION was incremented to 8.
 
-  public static final int YOUNG_ANDROID_VERSION = 208;
+  public static final int YOUNG_ANDROID_VERSION = 209;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1314,7 +1316,9 @@ public class YaVersion {
   // For WEB_COMPONENT_VERSION 7:
   // - The JsonTextDecodeWithDictionaries method was added
   // - The XMLTextDecodeAsDictionary method was added.
-  public static final int WEB_COMPONENT_VERSION = 7;
+  // For WEB_COMPONENT_VERSION 8:
+  // - PATCH methods added (PatchText, PatchTextWithEncoding, and PatchFile).
+  public static final int WEB_COMPONENT_VERSION = 8;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added

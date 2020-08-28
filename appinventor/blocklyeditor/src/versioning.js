@@ -2664,6 +2664,9 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added methods JsonTextDecodeWithDictionaries and XMLTextDecodeAsDictionary
     7: "noUpgrade"
+	
+	// AI2: Added methods PatchText, PatchTextWithEncoding, and PatchFile
+    8: "noUpgrade"
 
   }, // End Web upgraders
 
