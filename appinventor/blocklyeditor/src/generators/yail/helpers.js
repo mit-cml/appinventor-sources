@@ -25,7 +25,7 @@ Blockly.Yail['helpers_dropdown'] = function() {
   // does not support OptionLists it will continue to return the concrete value.
   var code = '(protect-enum ' + enumValue + ' ' + concreteValue + ')';
 
-  return [code, Blockly.Yail.ORDER_ATOMIC]
+  return [code, Blockly.Yail.ORDER_ATOMIC];
 }
 
 Blockly.Yail['helpers_screen_names'] = function() {

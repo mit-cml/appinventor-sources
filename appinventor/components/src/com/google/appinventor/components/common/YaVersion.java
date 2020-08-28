@@ -598,7 +598,7 @@ public class YaVersion {
   // - The and/or blocks gained mutators.
   // For BLOCKS_LANGUAGE_VERSION 33
   // - The helpers_screen_names block was added.
-
+  // - Add sanitizing concrete values to OptionLists.
   public static final int BLOCKS_LANGUAGE_VERSION = 33;
 
   // ................................. Target SDK Version Number ..................................

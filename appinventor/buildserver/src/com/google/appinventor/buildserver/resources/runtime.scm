@@ -1194,11 +1194,11 @@
 (define (sanitize-return-value component func-name value)
   (define-alias OptionHelper com.google.appinventor.components.runtime.OptionHelper)
   (if (enum? value)
-      value
-      (let ((value (OptionHelper:optionListFromValue component func-name value)))
+    value
+    (let ((value (OptionHelper:optionListFromValue component func-name value)))
       (if (enum? value)
-          value
-          (sanitize-component-data value)))))
+        value
+        (sanitize-component-data value)))))
 
 ;;; If we are handed a collection that contains a yail list as an item,
 ;;; then the result of converting it to a kawa list will be a kawa list that
@@ -2584,16 +2584,16 @@ Dictionary implementation.
 (define (yail-dictionary-lookup key yail-dictionary default)
   (let ((result
     (cond ((instance? yail-dictionary YailList)
-           (yail-alist-lookup key yail-dictionary default))
+            (yail-alist-lookup key yail-dictionary default))
           ((instance? yail-dictionary YailDictionary)
             (*:get (as YailDictionary yail-dictionary) key))
           (#t default))))
     (if (eq? result #!null)
-        ;; if we don't find anything associated with the abstract type, try the underlying type.
-        (if (enum? key)
-            (yail-dictionary-lookup (sanitize-component-data (key:toUnderlyingValue)) yail-dictionary default)
-            default)
-        result)))
+      ;; if we don't find anything associated with the abstract type, try the underlying type.
+      (if (enum? key)
+        (yail-dictionary-lookup (sanitize-component-data (key:toUnderlyingValue)) yail-dictionary default)
+        default)
+      result)))
 
 (define (yail-dictionary-recursive-lookup keys yail-dictionary default)
   (let ((result (*:getObjectAtKeyPath (as YailDictionary yail-dictionary) (yail-list-contents keys))))

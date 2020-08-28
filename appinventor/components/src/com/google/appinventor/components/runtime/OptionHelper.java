@@ -12,20 +12,28 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-import android.util.Log;
 
+/**
+ * Includes helper methods for getting the abstract enum value associated with a concrete value for
+ * a given SimpleMethod, SimpleProperty, or SimpleEvent. Used in combination with the @Options
+ * annotation in the declaration of the component.
+ */
 public class OptionHelper {
 
-  public static final String TAG = "OptionHelper";
-
-  public static Map<String, Map<String, Method>> componentMethods =
+  private static final Map<String, Map<String, Method>> componentMethods =
       new HashMap<String, Map<String, Method>>();
     
   /**
    * Returns the OptionList version of the value if the function's return type has an @Options
    * annotation notating that the value can be coerced to an OptionList.
+   * @param c The component that returned the concrete value.
+   * @param func The function on the component that returned the concrete value.
+   * @param value The concrete value that was returned.
+   * @return The OptionList value if one is associated with the concrete value, otherwise the
+   *     concrete value.
    */
   public static <T> Object optionListFromValue(Component c, String func, T value) {
     Method calledFunc = getMethod(c, func);
@@ -38,14 +46,14 @@ public class OptionHelper {
       return value;
     }
     Class<?> optionListClass = annotation.value();
-    Object newValue = null;
     try {
       Method fromValue = optionListClass.getMethod("fromUnderlyingValue", value.getClass());
-      newValue = fromValue.invoke(optionListClass, value);
-    } finally {
-      if (newValue != null) {
-        return newValue;
-      }
+      return fromValue.invoke(optionListClass, value);
+    } catch (NoSuchMethodException e) {
+      return value;
+    } catch (IllegalAccessException e) {
+      return value;
+    } catch (InvocationTargetException e) {
       return value;
     }
   }
@@ -53,6 +61,11 @@ public class OptionHelper {
   /**
    * Returns the args after any coercable args have been coerced to an OptionList. An arg is
    * coercable if the function header has an @Options annotation associated with that arguement.
+   * @param c The component containing the function.
+   * @param func The function on the component that has the concrete args.
+   * @param args The concrete args we want to attempt to cerce to OptionLists.
+   * @return The args converted to OptionLists if OptionLists are associated with the args,
+   *     otherwise the concrete values of the args.
    */
   public static Object[] optionListsFromValues(Component c, String func, Object...args) {
     if (args.length == 0) {
@@ -90,6 +103,9 @@ public class OptionHelper {
   /**
    * Returns the Method associated with the given component and function name. Returns null if the
    * Method does not exist or shouldn't be operated on in this context (e.g. a void method).
+   * @param c The component to get the method of.
+   * @param func The function on the component we want to get the Method of.
+   * @return The Method representation of the method.
    */
   private static Method getMethod(Component c, String func) {
     Class<?> componentClass = c.getClass();
@@ -114,6 +130,9 @@ public class OptionHelper {
 
     // Add all the relevant methods to the map.
     for (Method m : methods) {
+      if ((m.getModifiers() & Modifier.PUBLIC) == 0) {
+        continue;
+      }
       String methodKey = m.getName();
 
       // Always add events.
