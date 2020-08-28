@@ -314,6 +314,7 @@ public final class MockForm extends MockContainer {
   AbsolutePanel phoneWidget;
   AbsolutePanel responsivePanel;
 
+  MockFloatingActionButton floatingActionButton;
   ScrollPanel scrollPanel;
   private TitleBar titleBar;
   private NavigationBar navigationBar;
@@ -401,6 +402,21 @@ public final class MockForm extends MockContainer {
     super.onLoad();
     titleBar.loadMenu();
     titleBar.loadSidebar();
+    loadFab();
+  }
+
+  private void loadFab() {
+    for (MockComponent child : children) {
+      if (child instanceof MockFloatingActionButton) {
+        floatingActionButton = (MockFloatingActionButton) child;
+        break;
+      }
+    }
+    if (floatingActionButton == null) {
+      floatingActionButton = new MockFloatingActionButton(editor);
+      addComponent(floatingActionButton);
+    }
+>>>>>>> GSoC-FAB
   }
 
   public void changePreviewSize(int width, int height, int idx) {

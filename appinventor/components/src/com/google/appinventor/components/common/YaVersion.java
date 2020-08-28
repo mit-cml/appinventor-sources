@@ -826,6 +826,10 @@ public class YaVersion {
   // - The AfterFileSaved event was added.
   public static final int FILE_COMPONENT_VERSION = 2;
 
+  // For FLOATING_ACTION_BUTTON_COMPONENT_VERSION 1:
+  // - Initial FloatingActionButton implementation
+  public static final int FLOATING_ACTION_BUTTON_COMPONENT_VERSION = 1;
+
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
   // For FORM_COMPONENT_VERSION 3:

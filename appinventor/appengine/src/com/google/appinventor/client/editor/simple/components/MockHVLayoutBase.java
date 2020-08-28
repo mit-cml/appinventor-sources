@@ -435,6 +435,15 @@ abstract class MockHVLayoutBase extends MockLayout {
         continue;
       }
 
+      if(child instanceof MockFloatingActionButton) {
+        // always position mock sidebar at bottom-right corner
+        container.setChildSizeAndPosition(child, childLayoutInfo,
+                containerLayoutInfo.width - childWidthWithBorder,
+                containerLayoutInfo.height - childWidthWithBorder);
+        index++;
+        continue;
+      }
+
       dividerLocations[index] = topY;
       topY += COMPONENT_SPACING;
 

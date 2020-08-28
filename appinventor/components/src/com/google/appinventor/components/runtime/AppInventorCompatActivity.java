@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -24,6 +26,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.ActionMode.Callback;
 import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.PaintUtil;
@@ -58,6 +61,8 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
   private static Theme currentTheme = Theme.PACKAGED;
   private static int primaryColor;
   private AppCompatDelegate appCompatDelegate;
+  private RelativeLayout relativeLayout;
+  com.google.android.material.floatingactionbutton.FloatingActionButton floatingActionButton;
   android.widget.LinearLayout frameWithTitle;
   TextView titleBar;
   private DrawerLayout drawerLayout;
@@ -91,6 +96,9 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
 
     super.onCreate(icicle);
 
+    relativeLayout = new RelativeLayout(this);
+    floatingActionButton = new FloatingActionButton(this);
+    floatingActionButton.hide();
     frameWithTitle = new android.widget.LinearLayout(this);
     getSidebar();
     frameWithTitle.setOrientation(android.widget.LinearLayout.VERTICAL);
@@ -213,9 +221,19 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
       frameWithTitle.addView(view, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
           ViewGroup.LayoutParams.MATCH_PARENT));
     }
-    drawerLayout.addView(frameWithTitle, DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
+
+    relativeLayout.addView(frameWithTitle,new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT));
+    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+    int px = (int)(24*(Resources.getSystem().getDisplayMetrics().density));
+    layoutParams.setMargins(0,0,px,px);
+    relativeLayout.addView(floatingActionButton,layoutParams);
+    drawerLayout.addView(relativeLayout, DrawerLayout.LayoutParams.MATCH_PARENT, DrawerLayout.LayoutParams.MATCH_PARENT);
     drawerLayout.addView(navigationView, new DrawerLayout.LayoutParams(DrawerLayout.LayoutParams.WRAP_CONTENT, DrawerLayout.LayoutParams.MATCH_PARENT, Gravity.LEFT));
     view = drawerLayout;
+
     // Update the content view based on AppCompat support
     if (appCompatDelegate != null) {
       appCompatDelegate.setContentView(view);

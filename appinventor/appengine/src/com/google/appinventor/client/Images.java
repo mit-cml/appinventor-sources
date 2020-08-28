@@ -703,6 +703,18 @@ public interface Images extends Resources {
   ImageResource wilson();
 
   /**
+   * Floating Action button default Icon
+   */
+  @Source("com/google/appinventor/images/fabDefaultImage.png")
+  ImageResource defaultImage();
+
+  /**
+   * Floating Action button Logo
+   */
+  @Source("com/google/appinventor/images/fab.png")
+  ImageResource fab();
+
+  /**
   * Talk to Me Logo
   */
   @Source("com/google/appinventor/images/talkToMeLogo.png")
