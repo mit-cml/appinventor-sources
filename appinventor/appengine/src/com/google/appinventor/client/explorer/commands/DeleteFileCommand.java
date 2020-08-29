@@ -56,8 +56,7 @@ public class DeleteFileCommand extends ChainableCommand {
       return;
     }
 
-    boolean deleteConfirmation = deleteConfirmation();
-    if (deleteConfirmation) {
+    if (deleteConfirmation()) {
       // Asset files
       final Ode ode = Ode.getInstance();
       ode.getProjectService().deleteFile(ode.getSessionId(),
