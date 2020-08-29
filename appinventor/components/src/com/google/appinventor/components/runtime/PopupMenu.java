@@ -82,7 +82,7 @@ public class PopupMenu implements Component, ComponentContainer {
 
     @Override
     public Form $form() {
-        return $form();
+        return container.$form();
     }
 
     @Override

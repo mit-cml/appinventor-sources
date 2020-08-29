@@ -100,6 +100,9 @@ public final class MenuItem implements Component {
     }
     item.setVisible(enabled);
     item.setEnabled(enabled);
+    if (listener != null) {
+      item.setOnMenuItemClickListener(listener);
+    }
   }
 
   public void addToContextMenu(android.view.ContextMenu menu) {
@@ -113,6 +116,9 @@ public final class MenuItem implements Component {
             });
     item.setEnabled(enabled);
     item.setVisible(visible);
+    if (listener != null) {
+      item.setOnMenuItemClickListener(listener);
+    }
   }
 
   public void addToSidebarMenu(android.view.Menu menu) {
@@ -124,8 +130,12 @@ public final class MenuItem implements Component {
                 return false;
               }
             });
+    item.setIcon(iconDrawable);
     item.setEnabled(enabled);
     item.setVisible(visible);
+    if (listener != null) {
+      item.setOnMenuItemClickListener(listener);
+    }
   }
 
   /**
@@ -178,12 +188,17 @@ public final class MenuItem implements Component {
       return;
     }
 
-    iconPath = (path == null) ? "" : path;
+    iconPath = path;
 
     // Load image from file.
     if (iconPath.length() > 0) {
       try {
-        iconDrawable = MediaUtil.getBitmapDrawable(menu.$form(), iconPath);
+        if(menu!=null) {
+          iconDrawable = MediaUtil.getBitmapDrawable(menu.$form(), iconPath);
+        }
+        else if(sidebarMenu!=null) {
+          iconDrawable = MediaUtil.getBitmapDrawable(sidebarMenu.$form(), iconPath);
+        }
       } catch (IOException ioe) {
         Log.e(LOG_TAG, "Unable to load " + iconPath);
         return;
@@ -311,7 +326,18 @@ public final class MenuItem implements Component {
 
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
-    return menu.$form();
+    if(menu!=null) {
+      return menu.$form();
+    }
+    else if(contextMenu!=null) {
+      return contextMenu.$form();
+    }
+    else if(popupMenu!=null) {
+      return popupMenu.$form();
+    }
+    else {
+      return sidebarMenu.$form();
+    }
   }
 
 }

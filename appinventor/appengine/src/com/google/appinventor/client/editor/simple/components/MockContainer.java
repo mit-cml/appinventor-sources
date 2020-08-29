@@ -176,6 +176,13 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
         component.setVisible(true);
       }
       if (component instanceof  MockMenuItem) {
+        if(component.getContainer() instanceof MockContextMenu || component.getContainer() instanceof MockPopupMenu) {
+          component.getProperties().removeProperty("Icon");
+          component.getProperties().removeProperty("ShowOnActionBar");
+        }
+        else if(component.getContainer() instanceof MockSidebar) {
+          component.getProperties().removeProperty("ShowOnActionBar");
+        }
         component.getContainer().setVisible(true);
       }
     }
