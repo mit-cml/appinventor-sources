@@ -19,7 +19,6 @@ import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
 import com.google.appinventor.client.editor.simple.components.MockContextMenu;
-import com.google.appinventor.client.editor.simple.components.MockContextMenuItem;
 import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
@@ -49,7 +48,6 @@ import com.google.appinventor.client.editor.simple.components.MockScrollHorizont
 import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockSidebar;
 import com.google.appinventor.client.editor.simple.components.MockSidebarHeader;
-import com.google.appinventor.client.editor.simple.components.MockSidebarItem;
 import com.google.appinventor.client.editor.simple.components.MockSlider;
 import com.google.appinventor.client.editor.simple.components.MockSpinner;
 import com.google.appinventor.client.editor.simple.components.MockSwitch;
@@ -178,7 +176,6 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/arduino.png", images.arduino());
     bundledImages.put("images/magneticSensor.png", images.magneticSensor());
     bundledImages.put("images/sidebarHeader.png", images.sidebarHeader());
-    bundledImages.put("images/sidebarItem.ong", images.sidebarItem());
     bundledImages.put("images/fab.png", images.fab());
 
     imagesInitialized = true;
@@ -410,8 +407,6 @@ public final class SimpleComponentDescriptor {
       return new MockCheckBox(editor);
     } else if (name.equals(MockContextMenu.TYPE)) {
       return new MockContextMenu(editor);
-    } else if (name.equals(MockContextMenuItem.TYPE)) {
-      return new MockContextMenuItem(editor);
     } else if (name.equals(MockPopupMenu.TYPE)) {
       return new MockPopupMenu(editor);
     } else if (name.equals(MockSwitch.TYPE)) {
@@ -486,8 +481,6 @@ public final class SimpleComponentDescriptor {
       return new MockSidebar(editor);
     } else if (name.equals(MockSidebarHeader.TYPE)) {
       return new MockSidebarHeader(editor);
-    } else if (name.equals(MockSidebarItem.TYPE)) {
-      return new MockSidebarItem(editor);
     } else if(name.equals(MockFloatingActionButton.TYPE)) {
       return new MockFloatingActionButton(editor);
     } else {

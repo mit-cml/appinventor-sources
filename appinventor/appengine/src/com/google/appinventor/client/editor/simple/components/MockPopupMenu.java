@@ -39,6 +39,6 @@ public class MockPopupMenu extends MockContainer {
         } else if (source instanceof SimplePaletteItem) {
             component = (MockComponent) source.getDragWidget();
         }
-        return component instanceof MockContextMenuItem;
+        return component instanceof MockMenuItem;
     }
 }

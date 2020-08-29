@@ -175,7 +175,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       if (component instanceof MockContextMenu) {
         component.setVisible(true);
       }
-      if (component instanceof  MockContextMenuItem) {
+      if (component instanceof  MockMenuItem) {
         component.getContainer().setVisible(true);
       }
     }
@@ -202,7 +202,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       rootPanel.remove(component);
       if (permanentlyDeleted) {
         refreshForm(true);
-        if (component instanceof  MockContextMenuItem) {
+        if (component instanceof  MockMenuItem) {
           component.getContainer().setVisible(true);
         }
       }
@@ -269,9 +269,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       if (!(component instanceof MockSprite) &&
           !(component instanceof MockMapFeature) &&
           !(component instanceof MockMenuItem) &&
-          !(component instanceof MockContextMenuItem)&&
-          !(component instanceof MockSidebarHeader) &&
-          !(component instanceof MockSidebarItem)) {
+          !(component instanceof MockSidebarHeader)) {
         return true;
       }
     }

@@ -5,9 +5,10 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.user.client.ui.InlineHTML;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Mock Menu Item component.
@@ -56,6 +57,12 @@ public final class MockMenuItem extends MockVisibleComponent {
   public void onCreateFromPalette() {
     // Change item text to component name
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
+  }
+
+  @Override
+  protected void onSelectedChange(boolean selected) {
+    getContainer().setVisible(selected);
+    super.onSelectedChange(selected);
   }
 
   /*

@@ -29,7 +29,7 @@ public class PopupMenu implements Component, ComponentContainer {
     private AndroidViewComponent component;
     private ComponentContainer container;
 
-    private List<ContextMenuItem> items;
+    private List<MenuItem> items;
 
     /**
      * Create a new Popup Menu component.
@@ -43,14 +43,14 @@ public class PopupMenu implements Component, ComponentContainer {
         android.widget.PopupMenu popupMenu = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             popupMenu = new android.widget.PopupMenu(container.$context(),view);
-            for (ContextMenuItem item : items) {
+            for (MenuItem item : items) {
                 item.addToPopupMenu(popupMenu);
             }
             popupMenu.show();
         }
     }
 
-    public void addPopupMenuItem(ContextMenuItem item) {
+    public void addPopupMenuItem(MenuItem item) {
         items.add(item);
     }
 

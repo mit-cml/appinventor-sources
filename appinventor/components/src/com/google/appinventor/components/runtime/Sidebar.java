@@ -5,6 +5,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,9 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Container for sidebarItems.
@@ -22,9 +26,12 @@ import com.google.appinventor.components.common.YaVersion;
         category = ComponentCategory.LAYOUT,
         showOnPalette = false)
 @SimpleObject
-public class Sidebar extends AndroidViewComponent implements ComponentContainer{
+public class Sidebar extends AndroidViewComponent implements Component, ComponentContainer{
 
+    private ComponentContainer container;
     private Menu sidebarMenu;
+
+    private List<MenuItem> items;
 
     /**
      * Creates a new AndroidViewComponent.
@@ -33,15 +40,21 @@ public class Sidebar extends AndroidViewComponent implements ComponentContainer{
      */
     public Sidebar(ComponentContainer container) {
         super(container);
+        this.container = container;
+        items = new ArrayList<>();
         sidebarMenu = $form().navigationView.getMenu();
         sidebarMenu.clear();
         $form().navigationView.removeHeaderView($form().navigationView.getHeaderView(0));
+        for (MenuItem item : items) {
+            item.addToSidebarMenu(sidebarMenu);
+        }
     }
 
-    public int additem(SidebarItem item) {
-        sidebarMenu.add("");
-        $form().navigationView.invalidate();
-        return (sidebarMenu.size()-1);
+    public void addSidebarItem(MenuItem item) {
+        items.add(item);
+        if(sidebarMenu!=null) {
+            item.addToSidebarMenu(sidebarMenu);
+        }
     }
 
     public void addHeader(SidebarHeader sidebarHeader) {

@@ -29,8 +29,7 @@ public class ContextMenu implements Component, ComponentContainer, View.OnCreate
     private Form form;
     private android.view.ContextMenu menu;
 
-    private List<ContextMenuItem> items;
-    private AndroidViewComponent component;
+    private List<MenuItem> items;
 
     /**
      * Create a new Context Menu component.
@@ -47,12 +46,12 @@ public class ContextMenu implements Component, ComponentContainer, View.OnCreate
     public void onCreateContextMenu(android.view.ContextMenu menu, View view, android.view.ContextMenu.ContextMenuInfo menuInfo) {
         this.menu = menu;
         menu.clear();
-        for (ContextMenuItem item : items) {
+        for (MenuItem item : items) {
             item.addToContextMenu(menu);
         }
     }
 
-    public void addMenuItem(ContextMenuItem item) {
+    public void addMenuItem(MenuItem item) {
         items.add(item);
         if (menu != null) {
             item.addToContextMenu(menu);

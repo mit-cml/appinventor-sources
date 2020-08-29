@@ -56,7 +56,7 @@ public class MockSidebar extends MockContainer {
             component = (MockComponent) source.getDragWidget();
         }
         if (component instanceof MockVisibleComponent) {
-            if(component instanceof MockSidebarHeader || component instanceof MockSidebarItem) {
+            if(component instanceof MockSidebarHeader || component instanceof MockMenuItem) {
                 return true;
             }
         }

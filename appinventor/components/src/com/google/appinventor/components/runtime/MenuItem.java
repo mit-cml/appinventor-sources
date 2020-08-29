@@ -5,7 +5,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.annotation.TargetApi;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.Log;
 import android.view.MenuItem.OnMenuItemClickListener;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -32,7 +34,10 @@ import java.io.IOException;
 public final class MenuItem implements Component {
   private static final String LOG_TAG = "MenuItem";
 
-  private final Menu menu;
+  private Menu menu;
+  private ContextMenu contextMenu;
+  private PopupMenu popupMenu;
+  private Sidebar sidebarMenu;
   private android.view.MenuItem item;
 
   private String text = "";
@@ -46,6 +51,21 @@ public final class MenuItem implements Component {
   public MenuItem(Menu parent) {
     menu = parent;
     menu.addMenuItem(this);
+  }
+
+  public MenuItem(ContextMenu parent) {
+    contextMenu = parent;
+    contextMenu.addMenuItem(this);
+  }
+
+  public MenuItem(PopupMenu parent) {
+    popupMenu = parent;
+    popupMenu.addPopupMenuItem(this);
+  }
+
+  public MenuItem(Sidebar parent) {
+    sidebarMenu = parent;
+    sidebarMenu.addSidebarItem(this);
   }
 
   public void addToMenu(android.view.Menu menu) {
@@ -65,6 +85,47 @@ public final class MenuItem implements Component {
       item.setOnMenuItemClickListener(listener);
     }
     ShowOnActionBar(showOnActionBar);
+  }
+
+  public void addToPopupMenu(android.widget.PopupMenu menu) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+      item = menu.getMenu().add(android.view.Menu.NONE, android.view.Menu.NONE, android.view.Menu.NONE, text)
+              .setOnMenuItemClickListener(new android.view.MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(android.view.MenuItem item) {
+                  Click();
+                  return false;
+                }
+              });
+    }
+    item.setVisible(enabled);
+    item.setEnabled(enabled);
+  }
+
+  public void addToContextMenu(android.view.ContextMenu menu) {
+    item = menu.add(android.view.Menu.NONE, android.view.Menu.NONE, android.view.Menu.NONE, text)
+            .setOnMenuItemClickListener(new android.view.MenuItem.OnMenuItemClickListener() {
+              @Override
+              public boolean onMenuItemClick(android.view.MenuItem item) {
+                Click();
+                return false;
+              }
+            });
+    item.setEnabled(enabled);
+    item.setVisible(visible);
+  }
+
+  public void addToSidebarMenu(android.view.Menu menu) {
+    item = menu.add(android.view.Menu.NONE, android.view.Menu.NONE, menu.size()+1, text)
+            .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+              @Override
+              public boolean onMenuItemClick(android.view.MenuItem item) {
+                Click();
+                return false;
+              }
+            });
+    item.setEnabled(enabled);
+    item.setVisible(visible);
   }
 
   /**
