@@ -512,8 +512,10 @@ public class YaVersion {
   // - YANDEX_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 207:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 32
-
-  public static final int YOUNG_ANDROID_VERSION = 207;
+  // For YOUNG_ANDROID_VERSION 208:
+  // - FILE_COMPONENT_VERSION was incremented to 3
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 33
+  public static final int YOUNG_ANDROID_VERSION = 208;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -595,8 +597,9 @@ public class YaVersion {
   // - The replace-all-mappings block was added.
   // For BLOCKS_LANGUAGE_VERSION 32
   // - The and/or blocks gained mutators.
-
-  public static final int BLOCKS_LANGUAGE_VERSION = 32;
+  // For BLOCKS_LANGUAGE_VERSION 33
+  // - Added "contains any" and "contains all" options to the text contains block.
+  public static final int BLOCKS_LANGUAGE_VERSION = 33;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -816,7 +819,9 @@ public class YaVersion {
 
   // For FILE_COMPONENT_VERSION 2:
   // - The AfterFileSaved event was added.
-  public static final int FILE_COMPONENT_VERSION = 2;
+  // For FILE_COMPONENT_VERSION 3:
+  // - The LegacyMode property was added.
+  public static final int FILE_COMPONENT_VERSION = 3;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
