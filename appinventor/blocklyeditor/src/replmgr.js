@@ -332,6 +332,16 @@ Blockly.ReplMgr.putYail = (function() {
                 console.log('putYail: phone not connected');
                 return;
             }
+
+            // Add the protect-enum macro (used by dropdown blocks).
+            code += "(define-syntax protect-enum " +
+                "  (lambda (x) "+
+                "    (syntax-case x () " +
+                "      ((_ enum-value number-value) " +
+                "        (if (< com.google.appinventor.components.common.YaVersion:BLOCKS_LANGUAGE_VERSION 33) " +
+                "          #'number-value " +
+                "          #'enum-value)))))";
+
             if (!rs.phoneState.phoneQueue) {
                 rs.phoneState.phoneQueue = [];
             }
