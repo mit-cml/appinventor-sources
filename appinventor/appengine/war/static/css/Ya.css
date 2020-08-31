@@ -2821,7 +2821,7 @@ div.dropdiv p {
   border: 2px solid transparent;
   width: 60px;
   height: 60px;
-  z-index: 999;
+  z-index: 100;
   cursor: pointer;
 }
 
