@@ -48,7 +48,14 @@ public class OptionHelper {
     Class<?> optionListClass = annotation.value();
     try {
       Method fromValue = optionListClass.getMethod("fromUnderlyingValue", value.getClass());
-      return fromValue.invoke(optionListClass, value);
+      // Java generally shouldn't return values that aren't defined in the OptionList, but
+      // extensions might override a function to return values that aren't included. If the value
+      // isn't included, just return the concrete value.
+      Object abstractVal = fromValue.invoke(optionListClass, value);
+      if (abstractVal != null) {
+        return abstractVal;
+      }
+      return value;
     } catch (NoSuchMethodException e) {
       return value;
     } catch (IllegalAccessException e) {
@@ -84,7 +91,13 @@ public class OptionHelper {
           Class<?> optionListClass = castAnnotation.value();
           try {
             Method fromValue = optionListClass.getMethod("fromUnderlyingValue", args[i].getClass());
-            args[i] = fromValue.invoke(optionListClass, args[i]);
+            // Extensions might send values to events which aren't covered by the OptionList
+            // definition. In that case send the concrete value. See here for an example:
+            // https://github.com/BeksOmega/appinventor-sources/pull/24#discussion_r480355676
+            Object abstractVal = fromValue.invoke(optionListClass, args[i]);
+            if (abstractVal != null) {
+              args[i] = abstractVal;
+            }
           } catch (NoSuchMethodException e) {
             // If it doesn't exist just continue.
           } catch (IllegalAccessException e) {
