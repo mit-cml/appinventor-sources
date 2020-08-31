@@ -897,6 +897,7 @@ public class YaVersion {
   // - Adds dropdown blocks for HorizontalAlignment and VerticalAlignment.
   // - Adds dropdown block for ScreenOrientation.
   // - Assets helper block was added.
+  // - Adds Permission dropdown block.
   public static final int FORM_COMPONENT_VERSION = 28;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:

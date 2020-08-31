@@ -741,7 +741,7 @@ Blockly.Versioning.v17_translateComponentSetGetProperty = function(blockElem) {
   // old blocks had a 'yailtype' attribute in mutator, lets get rid of
   if (mutationElement.getAttribute('yailtype')!=null)
     mutationElement.removeAttribute('yailtype');
-};
+}
 
 /******************************************************************************
  Upgrade screen names to use dropdown block.
@@ -1032,8 +1032,7 @@ Blockly.Versioning.makeSetterUseHelper =
         if (mutation.getAttribute('set_or_get') != 'set') {
           continue;
         }
-        replaceFunc(Blockly.Versioning.firstChildWithTagName(prop, 'value'),
-            workspace);
+        replaceFunc(Blockly.Versioning.firstChildWithTagName(prop, 'value'), workspace);
       }
       return dom;
     }
@@ -1233,6 +1232,30 @@ Blockly.Versioning.tryReplaceBlockWithAssets = function(valueNode, workspace) {
   newBlock.appendChild(field);
   valueNode.appendChild(newBlock);
 }
+
+/**
+ * Replaces the block currently attached to the passed value input with a
+ * permissions dropdown block. The current block is replaced iff it is a text
+ * or number block.
+ * @param {Element} valueNode The node to modify.
+ */
+Blockly.Versioning.tryReplaceBlockWithPermissions =
+  function(valueNode, workspace) {
+    if (!valueNode) {
+      return;
+    }
+    var valueMap = Blockly.Versioning
+        .getOptionListValueMap(workspace, 'Permission');
+    var entries = Object.entries(valueMap);
+    for (var i = 0, pair; pair = entries[i]; i++) {
+      var key = pair[0];
+      var value = pair[1];
+      if (valueMap.hasOwnProperty(key)) {
+        valueMap['android.permission.' + key] = value;
+      }
+    }
+    Blockly.Versioning.tryReplaceBlockWithDropdown(valueNode, valueMap, 'Permission');
+  };
 
 /**
  * Returns the list of top-level blocks that are event handlers for the given eventName for
@@ -2773,6 +2796,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // - Adds dropdown blocks for HorizontalAlignment and VerticalAlignment.
     // - Adds dropdown block for ScreenOrientation.
     // - Assets helper block was added.
+    // - Adds Permission dropdown block.
     28: [Blockly.Versioning.makeSetterUseDropdown(
             'Form', 'OpenScreenAnimation', 'ScreenAnimation'),
          Blockly.Versioning.makeSetterUseDropdown(
@@ -2784,7 +2808,9 @@ Blockly.Versioning.AllUpgradeMaps =
          Blockly.Versioning.makeSetterUseDropdown(
             'Form', 'ScreenOrientation', 'ScreenOrientation'),
          Blockly.Versioning.makeSetterUseHelper(
-           'Form', 'BackgroundImage', Blockly.Versioning.tryReplaceBlockWithAssets)]
+            'Form', 'BackgroundImage', Blockly.Versioning.tryReplaceBlockWithAssets),
+         Blockly.Versioning.makeMethodUseHelper(
+            'Form', 'AskForPermission', 0, Blockly.Versioning.tryReplaceBlockWithPermissions)]
 
   }, // End Screen
 
