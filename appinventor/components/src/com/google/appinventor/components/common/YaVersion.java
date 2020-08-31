@@ -889,6 +889,7 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 28:
   // - Adds dropdown blocks for ScreenAnimation.
   // - Adds dropdown blocks for HorizontalAlignment and VerticalAlignment.
+  // - Adds dropdown block for ScreenOrientation.
   public static final int FORM_COMPONENT_VERSION = 28;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:

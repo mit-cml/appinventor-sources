@@ -59,6 +59,7 @@ import com.google.appinventor.components.common.HorizontalAlignment;
 import com.google.appinventor.components.common.VerticalAlignment;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.ScreenAnimation;
+import com.google.appinventor.components.common.ScreenOrientation;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
@@ -1424,35 +1425,42 @@ public class Form extends AppInventorCompatActivity
       "landscape, portrait, sensor, user and unspecified.  " +
       "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
       "complete list of possible settings.")
-  public String ScreenOrientation() {
+  public @Options(ScreenOrientation.class) String ScreenOrientation() {
+    return ScreenOrientationAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Returns the requested screen orientation.
+   */
+  public ScreenOrientation ScreenOrientationAbstract() {
     switch (getRequestedOrientation()) {
       case ActivityInfo.SCREEN_ORIENTATION_BEHIND:
-        return "behind";
+        return ScreenOrientation.Behind;
       case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
-        return "landscape";
+        return ScreenOrientation.Landscape;
       case ActivityInfo.SCREEN_ORIENTATION_NOSENSOR:
-        return "nosensor";
+        return ScreenOrientation.NoSensor;
       case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
-        return "portrait";
+        return ScreenOrientation.Portrait;
       case ActivityInfo.SCREEN_ORIENTATION_SENSOR:
-        return "sensor";
+        return ScreenOrientation.Sensor;
       case ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED:
-        return "unspecified";
+        return ScreenOrientation.Unspecified;
       case ActivityInfo.SCREEN_ORIENTATION_USER:
-        return "user";
+        return ScreenOrientation.User;
       case 10: // ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
-        return "fullSensor";
+        return ScreenOrientation.FullSensor;
       case 8: // ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-        return "reverseLandscape";
+        return ScreenOrientation.ReverseLandscape;
       case 9: // ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-        return "reversePortrait";
+        return ScreenOrientation.ReversePortrait;
       case 6: // ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        return "sensorLandscape";
+        return ScreenOrientation.SensorLandscape;
       case 7: // ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-        return "sensorPortrait";
+        return ScreenOrientation.SensorPortrait;
+      default:
+        return ScreenOrientation.Unspecified;
     }
-
-    return "unspecified";
   }
 
   /**
@@ -1466,40 +1474,28 @@ public class Form extends AppInventorCompatActivity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION,
       defaultValue = "unspecified")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
-  public void ScreenOrientation(String screenOrientation) {
-    if (screenOrientation.equalsIgnoreCase("behind")) {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_BEHIND);
-    } else if (screenOrientation.equalsIgnoreCase("landscape")) {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-    } else if (screenOrientation.equalsIgnoreCase("nosensor")) {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-    } else if (screenOrientation.equalsIgnoreCase("portrait")) {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    } else if (screenOrientation.equalsIgnoreCase("sensor")) {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-    } else if (screenOrientation.equalsIgnoreCase("unspecified")) {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    } else if (screenOrientation.equalsIgnoreCase("user")) {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
-    } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD) {
-      if (screenOrientation.equalsIgnoreCase("fullSensor")) {
-        setRequestedOrientation(10); // ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
-      } else if (screenOrientation.equalsIgnoreCase("reverseLandscape")) {
-        setRequestedOrientation(8); // ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-      } else if (screenOrientation.equalsIgnoreCase("reversePortrait")) {
-        setRequestedOrientation(9); // ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-      } else if (screenOrientation.equalsIgnoreCase("sensorLandscape")) {
-        setRequestedOrientation(6); // ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-      } else if (screenOrientation.equalsIgnoreCase("sensorPortrait")) {
-        setRequestedOrientation(7); // ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-      } else {
-        dispatchErrorOccurredEvent(this, "ScreenOrientation",
-            ErrorMessages.ERROR_INVALID_SCREEN_ORIENTATION, screenOrientation);
-      }
-    } else {
+  public void ScreenOrientation(@Options(ScreenOrientation.class) String screenOrientation) {
+    // Make sure screenOrientation is a valid ScreenOrientation.
+    ScreenOrientation orientation = ScreenOrientation.fromUnderlyingValue(screenOrientation);
+    if (orientation == null) {
       dispatchErrorOccurredEvent(this, "ScreenOrientation",
           ErrorMessages.ERROR_INVALID_SCREEN_ORIENTATION, screenOrientation);
+      return;
     }
+    ScreenOrientationAbstract(orientation);
+  }
+
+  /**
+   * Sets the requested screen orientation.
+   */
+  public void ScreenOrientationAbstract(ScreenOrientation orientation) {
+    int orientationConst = orientation.getOrientationConstant();
+    if (orientationConst > 5 && SdkLevel.getLevel() < SdkLevel.LEVEL_GINGERBREAD) {
+      dispatchErrorOccurredEvent(this, "ScreenOrientation",
+          ErrorMessages.ERROR_INVALID_SCREEN_ORIENTATION, orientation);
+      return;
+    }
+    setRequestedOrientation(orientationConst);
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,

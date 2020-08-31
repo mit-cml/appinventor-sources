@@ -1061,6 +1061,7 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 28) {
       // ScreenAnimation dropdown blocks were added.
       // HorizontalAlignment and VerticalAlignment dropdown blocks were added.
+      // Adds dropdown block for ScreenOrientation.
       srcCompVersion = 28;
     }
 
