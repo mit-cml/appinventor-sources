@@ -142,7 +142,13 @@ class FeatureCollection: MapFeatureContainerBase, MapFeatureCollection {
       return _form!
     }
   }
-
+  
+  public var container: ComponentContainer {
+    get {
+      return _container
+    }
+  }
+  
   func add(_ component: ViewComponent) {}
 
   func setChildWidth(of component: ViewComponent, to width: Int32) {}
@@ -155,5 +161,9 @@ class FeatureCollection: MapFeatureContainerBase, MapFeatureCollection {
 
   func isVisible(component: ViewComponent) -> Bool {
     return !component.view.isHidden
+  }
+  
+  public func isVisible() -> Bool {
+    return _container.isVisible(component: self)
   }
 }

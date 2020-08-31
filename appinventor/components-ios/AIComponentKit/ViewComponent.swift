@@ -44,6 +44,10 @@ import Foundation
     }
     set(visibility) {
       _container.setVisible(component: self, to: visibility)
+      if (_container.isVisible() && _container.isVisible(component: self)) {
+        _container.setChildWidth(of: self, to: _lastSetWidth)
+        _container.setChildHeight(of: self, to: _lastSetHeight)
+      }
     }
   }
 
@@ -53,7 +57,9 @@ import Foundation
       return Int32(view.bounds.width)
     }
     set(width) {
-      _container.setChildWidth(of: self, to: width)
+      if (_container.isVisible() && _container.isVisible(component: self)) {
+        _container.setChildWidth(of: self, to: width)
+      }
       _lastSetWidth = width
     }
   }
@@ -74,7 +80,9 @@ import Foundation
       return Int32(view.bounds.height)
     }
     set(height) {
-      _container.setChildHeight(of: self, to: height)
+      if (_container.isVisible() && _container.isVisible(component: self)) {
+        _container.setChildHeight(of: self, to: height)
+      }
       _lastSetHeight = height
     }
   }
@@ -115,9 +123,13 @@ import Foundation
 
     _container.form.view.removeConstraints(constraintsToRemove)
     _lastSetHeight = height
-    _container.setChildHeight(of: self, to: height)
+    if (_container.isVisible() && _container.isVisible(component: self)) {
+      _container.setChildHeight(of: self, to: height)
+    }
     _lastSetWidth = width
-    _container.setChildWidth(of: self, to: width)
+    if (_container.isVisible() && _container.isVisible(component: self)) {
+      _container.setChildWidth(of: self, to: width)
+    }
     if shouldAddConstraint {
       nestedView.frame = view.bounds
       let topAnchor = nestedView.topAnchor.constraint(equalTo: view.topAnchor)

@@ -108,6 +108,12 @@ import Toast_Swift
     }
   }
 
+  public var container: ComponentContainer {
+    get {
+      return self
+    }
+  }
+
   open override func viewDidLoad() {
     super.viewDidLoad()
     view.accessibilityIdentifier = String(describing: type(of: self))
@@ -152,6 +158,10 @@ import Toast_Swift
       _linearView.setHeight(of: component.view, to: Length(pixels: height))
     }
     _linearView.setNeedsLayout()
+  }
+  
+  public func isVisible() -> Bool {
+    return true
   }
 
   open func isVisible(component: ViewComponent) -> Bool {

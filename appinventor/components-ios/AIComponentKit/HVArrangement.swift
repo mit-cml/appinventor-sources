@@ -76,7 +76,26 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     }
     _view.setNeedsLayout()
   }
-
+  
+  open var container:  ComponentContainer {
+    get {
+      return _container
+    }
+  }
+ 
+  open func isVisible() -> Bool {
+    var visible = true
+    var parent = _container
+    while (type(of: parent) != ReplForm.self) {
+      visible = parent.isVisible(component: self)
+      if visible == false {
+        return visible
+      }
+      parent = container.container
+    }
+    return parent.isVisible(component: self)
+  }
+  
   open func isVisible(component: ViewComponent) -> Bool {
     return _view.contains(component.view)
   }

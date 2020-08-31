@@ -100,7 +100,9 @@ fileprivate enum ConstraintUpdate {
         let height = -(child._lastSetHeight + 1000)
         let pHeight = CGFloat(height) / 100
         _heightConstraint = child.view.heightAnchor.constraint(equalTo: child._container.form.view.heightAnchor, multiplier: pHeight)
-        child._container.form.view.addConstraint(_heightConstraint!)
+        if (child._container.isVisible()) {
+          child._container.form.view.addConstraint(_heightConstraint!)
+        }
       }
     }
   }
@@ -115,7 +117,9 @@ fileprivate enum ConstraintUpdate {
         let width = -(child._lastSetWidth + 1000)
         let pWidth = CGFloat(width) / 100
         _widthConstraint = child.view.widthAnchor.constraint(equalTo: child._container.form.view.widthAnchor, multiplier: pWidth)
-        child._container.form.view.addConstraint(_widthConstraint!)
+        if (child._container.isVisible()) {
+          child._container.form.view.addConstraint(_widthConstraint!)
+        }
       }
     }
   }
@@ -304,6 +308,19 @@ fileprivate enum ConstraintUpdate {
 }
 
 open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, ComponentContainer {
+  public func isVisible() -> Bool {
+    var visible = true
+    var parent = _container
+    while (type(of: parent) != ReplForm.self) {
+      visible = parent.isVisible(component: self)
+      if visible == false {
+        return visible
+      }
+      parent = container.container
+    }
+    return parent.isVisible(component: self)
+  }
+  
   private var _view: TableCellCollection!
   private var _initialized = false
 
@@ -355,6 +372,12 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
   @objc open var form: Form {
     get {
       return _container.form
+    }
+  }
+
+  open var container:  ComponentContainer {
+    get {
+      return _container
     }
   }
 

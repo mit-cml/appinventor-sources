@@ -904,6 +904,12 @@ extension Canvas: ComponentContainer {
       return _container.form
     }
   }
+  
+  public var container: ComponentContainer {
+    get {
+      return _container
+    }
+  }
 
   public func add(_ component: ViewComponent) {
     // unsupported
@@ -924,6 +930,10 @@ extension Canvas: ComponentContainer {
 
   public func setVisible(component: ViewComponent, to visibility: Bool) {
     // unsupported
+  }
+  
+  public func isVisible() -> Bool {
+    return _container.isVisible(component: self)
   }
 }
 

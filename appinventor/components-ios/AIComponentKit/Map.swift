@@ -1000,7 +1000,13 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
       return _container.form
     }
   }
-
+  
+  public var container: ComponentContainer {
+    get {
+      return _container
+    }
+  }
+  
   public func add(_ component: ViewComponent) {}
 
   public func setChildWidth(of component: ViewComponent, to width: Int32) {}
@@ -1013,6 +1019,10 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
 
   public func setVisible(component: ViewComponent, to visibility: Bool) {
     component.view.isHidden = !visibility
+  }
+  
+  public func isVisible() -> Bool {
+    return _container.isVisible(component: self)
   }
 }
 
