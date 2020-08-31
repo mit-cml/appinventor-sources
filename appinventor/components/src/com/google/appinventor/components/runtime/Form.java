@@ -43,6 +43,7 @@ import android.widget.ScrollView;
 
 import com.google.appinventor.common.version.AppInventorFeatures;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -1276,7 +1277,7 @@ public class Form extends AppInventorCompatActivity
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "The screen background image.")
-  public void BackgroundImage(String path) {
+  public void BackgroundImage(@Asset String path) {
     backgroundImagePath = (path == null) ? "" : path;
 
     try {

@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -370,7 +371,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
     @SimpleProperty(description = "Specifies the path of the background image for the %type%.  " +
             "If there is both an Image and a BackgroundColor, only the Image will be visible.")
-    public void Image(String path) {
+    public void Image(@Asset String path) {
         // If it's the same as on the prior call and the prior load was successful,
         // do nothing.
         if (path.equals(imagePath) && backgroundImageDrawable != null) {

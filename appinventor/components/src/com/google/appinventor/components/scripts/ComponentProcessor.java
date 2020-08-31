@@ -209,6 +209,12 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    */
   protected final Map<String, OptionList> optionLists = Maps.newTreeMap();
 
+  /**
+   * A list of asset filters, which are in fact lists of strings. This gets intialized with an empty
+   * filter by the ComponentProcessor constructor.
+   */
+  protected List<List<String>> filters;
+
   private final List<String> componentTypes = Lists.newArrayList();
 
   /**
@@ -217,6 +223,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * from O(n^2) to O(n) by tracking visited nodes to prevent repeat explorations of the class tree.
    */
   private final Set<String> visitedTypes = new HashSet<>();
+
+  public ComponentProcessor() {
+    filters = new ArrayList<List<String>>();
+    filters.add(new ArrayList<String>());
+  }
 
   /**
    * Represents a parameter consisting of a name and a type.
@@ -727,24 +738,23 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * editor. This is associated with the OptionList data type, ie OptionList data always has an
    * OPTOIN_LIST style UI in the blocks editor (as of now).
    */
-  protected enum HelperType { OPTION_LIST }
+  protected enum HelperType { OPTION_LIST, ASSET }
 
   /**
    * A key that allows you to access info about a helper block.
    * 
-   * Currently HelperKeys are only used to define OptionList style helper blocks. Aka dropdown
-   * blocks for the current UI implementation in the blocks editor. In the future helper keys could
-   * be used to define other kinds of helper blocks like range blocks, default color blocks, etc.
+   * This class could be generic, and we could use subtyping to define the different HelperTypes
+   * but I (Beka) think it makes more sense to make this closely match the JavaScript implementation.
    */
   protected final class HelperKey {
     private HelperType helperType;
 
-    private String key;
+    private Object key;
 
     /**
      * Creates a HelperKey which can be used to access data about a helper block.
      */
-    protected HelperKey(HelperType type, String key) {
+    protected HelperKey(HelperType type, Object key) {
       this.helperType = type;
       this.key = key;
     }
@@ -760,9 +770,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     /**
      * Returns the key to the specific helper data. Eg in the case of an option list helper, this
      * key could be used to look up values in the optionLists Map.
+     * If the helper block doesn't need any special data, this can just return null.
      * @return key to the helper data.
      */
-    protected String getKey() {
+    protected Object getKey() {
       return key;
     }
   }
@@ -1731,6 +1742,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (key != null) {
       return key;
     }
+    key = hasAssetsHelper(elem, type);
+    if (key != null) {
+      return key;
+    }
     // Add more possibilities here.
     return null;
   }
@@ -1942,6 +1957,40 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       description,
       elementUtils.isDeprecated(field)
     );
+  }
+
+  /**
+   * Returns the associated helper key if the element has an @Asset annotation. Null otherwise.
+   *
+   * @param elem the Element which represents a function (for return types) or a parameter.
+   * @param type the TypeMirror representing the type of that element.
+   * @return the associated helper key if the element has an @Asset annotation.
+   */
+  private HelperKey hasAssetsHelper(Element elem, TypeMirror type) {
+    for (AnnotationMirror mirror : elem.getAnnotationMirrors()) {
+      if (mirror.getAnnotationType().asElement().getSimpleName().contentEquals("Asset")) {
+        int index = 0;  // Index 0 is the empty filter.
+        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
+            mirror.getElementValues().entrySet()) {
+          // Make sure we are looking at the value attribute.
+          if (!entry.getKey().getSimpleName().contentEquals("value")) {
+            continue;
+          }
+          List<AnnotationValue> values = (List<AnnotationValue>)entry.getValue().getValue();
+          List<String> filter = new ArrayList<String>();
+          for (AnnotationValue v : values) {
+            filter.add(((String)v.getValue()).toLowerCase());
+          }
+          Collections.sort(filter);
+          if (!filters.contains(filter)) {
+            filters.add(filter);
+          }
+          index = filters.indexOf(filter);
+        }
+        return new HelperKey(HelperType.ASSET, index);
+      }
+    }
+    return null;
   }
 
   /**

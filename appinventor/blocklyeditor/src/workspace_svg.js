@@ -407,6 +407,37 @@ Blockly.WorkspaceSvg.prototype.getScreenList = function() {
   return this.screenList_;
 };
 
+/**
+ * Adds an asset name to the list tracked by the workspace.
+ * @param {string} name The name of the new asset.
+ */
+Blockly.Workspace.prototype.addAsset = function(name) {
+  if (!this.assetList_.includes(name)) {
+    this.assetList_.push(name);
+    this.typeBlock_.needsReload.assets = true;
+  }
+};
+
+/**
+ * Removes an asset name from the list tracked by the workspace.
+ * @param {string} name The name of the asset to remove.
+ */
+Blockly.Workspace.prototype.removeAsset = function(name) {
+  var index = this.assetList_.indexOf(name);
+  if (index != -1) {  // Make sure it is actually an asset.
+    this.assetList_.splice(index, 1);
+    this.typeBlock_.needsReload.assets = true;
+  }
+};
+
+/**
+ * Returns the list of asset names tracked by the workspace.
+ * @return {!Array<string>} The list of asset names.
+ */
+Blockly.Workspace.prototype.getAssetList = function() {
+  return this.assetList_;
+}
+
 //noinspection JSUnusedGlobalSymbols Called from BlocklyPanel.java
 /**
  * Add a new component to the workspace.

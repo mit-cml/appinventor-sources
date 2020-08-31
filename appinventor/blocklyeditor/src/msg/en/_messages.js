@@ -1551,6 +1551,7 @@ Blockly.Msg.en.switch_language_to_english = {
 
 // Helper Blocks
     Blockly.Msg.LANG_SCREENS_TITLE = "Screen Name: ";
+    Blockly.Msg.LANG_NO_ASSETS = 'No available assets';
 
 //Misc
     Blockly.Msg.SHOW_WARNINGS = "Show Warnings";

@@ -410,7 +410,10 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append("    \"data\": {\n");
     switch (helper.getType()) {
       case OPTION_LIST:
-        outputOptionList(helper.getKey(), sb);
+        outputOptionList((String)helper.getKey(), sb);
+        break;
+      case ASSET:
+        outputAsset((Integer)helper.getKey(), sb);
     }
     sb.append("    }\n}");
   }
@@ -440,6 +443,23 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
         .add("\"options\": " + optsJoiner.toString());
 
     sb.append(sj.toString());
+  }
+
+  private void outputAsset(int key, StringBuilder sb) {
+    List<String> filter = filters.get(key);
+    if (filter == null || filter.size() == 0) {
+      return;
+    }
+    sb.append("      \"filter\": [ ");
+    String prefix = "";
+    for (String s : filter) {
+      sb.append(prefix);
+      sb.append("\"");
+      sb.append(s);
+      sb.append("\"");
+      prefix = ", ";
+    }
+    sb.append(" ]\n");
   }
 
   @Override

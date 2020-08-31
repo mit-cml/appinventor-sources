@@ -7,7 +7,6 @@
 
 goog.provide('AI.Blockly.FieldInvalidDropdown');
 
-goog.require('AI.Events');
 goog.require('Blockly.FieldDropdown');
 
 /**
@@ -34,20 +33,6 @@ Blockly.FieldInvalidDropdown = function(
   this.invalidOptions_ = opt_invalidOptions || [];
 }
 goog.inherits(Blockly.FieldInvalidDropdown, Blockly.FieldDropdown);
-
-/**
- * Adds a change listener to the workspace that makes sure the current value is
- * valid whenever we switch between workspaces.
- */
-Blockly.FieldInvalidDropdown.prototype.init = function() {
-  Blockly.FieldInvalidDropdown.superClass_.init.call(this);
-  this.sourceBlock_.workspace.addChangeListener(function(e) {
-    if (e.type == AI.Events.SCREEN_SWITCH) {
-      // Make sure value is still valid.
-      this.setValue(this.getValue());
-    }
-  }.bind(this))
-}
 
 /**
  * Displays the invalid value and marks the block this field belongs to as a

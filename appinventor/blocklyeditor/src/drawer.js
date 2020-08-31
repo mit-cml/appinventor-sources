@@ -296,11 +296,21 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
       if (!feature.helperKey) {
         return;
       }
-      var curKey = feature.helperKey;
-      containsKey = helperKeys.some(function(altKey) {
-        return altKey.key == curKey.key && altKey.type == curKey.type;
-      });
-      if (!containsKey) {
+
+      function addToHelpers(curKey) {
+        switch (curKey.type) {
+          case "OPTION_LIST":
+            return !helperKeys.some(function(altKey) {
+              return altKey.key == curKey.key && altKey.type == curKey.type;
+            });
+          default:  // Most types probably only want one instance in the drawer.
+            return !helperKeys.some(function(altKey) {
+              return altKey.type == curKey.type;
+            });
+        }
+      }
+
+      if (addToHelpers(feature.helperKey)) {
         helperKeys.push(feature.helperKey);
       }
     }

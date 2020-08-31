@@ -722,7 +722,9 @@ public class YaVersion {
   // For BUTTON_COMPONENT_VERSION 6:
   // - Added TouchUp and TouchDown events
   // - FontSize, FontBold, FontItalic properties made visible in block editor
-  public static final int BUTTON_COMPONENT_VERSION = 6;
+  // For BUTTON_COMPONENT_VERSION 7:
+  // - Assets helper block was added.
+  public static final int BUTTON_COMPONENT_VERSION = 7;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
@@ -762,7 +764,9 @@ public class YaVersion {
   // - ExtendMovesOutsideCanvas was added
   // For CANVAS_COMPONENT_VERSION 13
   // - BackgroundImageinBase64 was added
-  public static final int CANVAS_COMPONENT_VERSION = 13;
+  // For CANVAS_COMPONENT_VERSION 14
+  // - Assets helper block was added.
+  public static final int CANVAS_COMPONENT_VERSION = 14;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -804,7 +808,9 @@ public class YaVersion {
   // datepicker dialog.
   // For DATEPICKER_COMPONENT_VERSION 3:
   // - SetDateToDisplayFromInstant, and Instant property are added.
-  public static final int DATEPICKER_COMPONENT_VERSION = 3;
+  // For DATEPICKER_COMPONENT_VERSION 3:
+  // - Assets helper block was added.
+  public static final int DATEPICKER_COMPONENT_VERSION = 4;
 
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -890,6 +896,7 @@ public class YaVersion {
   // - Adds dropdown blocks for ScreenAnimation.
   // - Adds dropdown blocks for HorizontalAlignment and VerticalAlignment.
   // - Adds dropdown block for ScreenOrientation.
+  // - Assets helper block was added.
   public static final int FORM_COMPONENT_VERSION = 28;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
@@ -914,10 +921,12 @@ public class YaVersion {
   // - Added background color & image
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  // - Assets helper block was added.
   public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
 
   // For HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  // - Assets helper block was added.
   public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
 
   // For IMAGE_COMPONENT_VERSION 2:
@@ -927,7 +936,9 @@ public class YaVersion {
   // For IMAGE_COMPONENT_VERSION 4:
   // - The Click event was added.
   // - The Clickable property was added.
-  public static final int IMAGE_COMPONENT_VERSION = 4;
+  // For IMAGE_COMPONENT_VERSION 5:
+  // - Assets helper block was added.
+  public static final int IMAGE_COMPONENT_VERSION = 5;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -954,6 +965,7 @@ public class YaVersion {
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
   // For IMAGESPRITE_COMPONENT_VERSION 7:
   // - Adds dropdown blocks for Direction.
+  // - Assets helper block was added.
   public static final int IMAGESPRITE_COMPONENT_VERSION = 7;
 
   // For LABEL_COMPONENT_VERSION 2:
@@ -1037,6 +1049,7 @@ public class YaVersion {
   // - Added fill and stroke opacity properties
   // For MARKER_COMPONENT_VERSION 4:
   // - Add AlignHorizontal and AlignVertical dropdown blocks.
+  // - Assets helper block was added.
   public static final int MARKER_COMPONENT_VERSION = 4;
 
   // For NAVIGATION_COMPONENT_VERSION 1:
@@ -1184,7 +1197,9 @@ public class YaVersion {
   // - The Sound.SoundError event was added.
   // For SOUND_COMPONENT_VERSION 3:
   // - The Sound.SoundError event was marked userVisible false and is no longer used.
-  public static final int SOUND_COMPONENT_VERSION = 3;
+  // For SOUND_COMPONENT_VERSION 4:
+  // - Assets helper block was added.
+  public static final int SOUND_COMPONENT_VERSION = 4;
 
   // For SOUND_RECORDER_COMPONENT_VERSION 2:
   // - The SavedRecording property was added.
@@ -1254,7 +1269,9 @@ public class YaVersion {
   // timepicker dialog.
   // For TIMEPICKER_COMPONENT_VERSION 3:
   // - SetTimeToDisplayFromInstant, and Instant property are added.
-  public static final int TIMEPICKER_COMPONENT_VERSION = 3;
+  // For TIMEPICKER_COMPONENT_VERSION 4:
+  // - Assets helper block was added.
+  public static final int TIMEPICKER_COMPONENT_VERSION = 4;
 
   // For TINYDB_COMPONENT_VERSION 2:
   // - Added Property: Namespace
@@ -1312,10 +1329,12 @@ public class YaVersion {
   // - Added background color & image
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 4:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  // - Assets helper block was added.
   public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 4;
 
   // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  // - Assets helper block was added.
   public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
@@ -1329,7 +1348,9 @@ public class YaVersion {
   // - The Volume property (setter only) was added to the VideoPlayer.
   // For VIDEOPLAYER_COMPONENT_VERSION 6:
   // - The Stop method was added to the VideoPlayer.
-  public static final int VIDEOPLAYER_COMPONENT_VERSION = 6;
+  // For VIDEOPLAYER_COMPONENT_VERSION 7:
+  // - Assets helper block was added.
+  public static final int VIDEOPLAYER_COMPONENT_VERSION = 7;
 
   public static final int VOTING_COMPONENT_VERSION = 1;
 

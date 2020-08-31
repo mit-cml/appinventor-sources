@@ -678,6 +678,10 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 6.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Assets helper block was added.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
@@ -764,6 +768,10 @@ public final class YoungAndroidFormUpgrader {
       // The BackgroundImageinBase64 property was added in version 13.
       srcCompVersion = 13;
     }
+    if (srcCompVersion < 14) {
+      // Assets helper block was added.
+      srcCompVersion = 14;
+    }
     return srcCompVersion;
   }
 
@@ -833,6 +841,10 @@ public final class YoungAndroidFormUpgrader {
       // SetDateToDisplayFromInstant, and Instant property are added.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // Assets helper block was added.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -1062,6 +1074,7 @@ public final class YoungAndroidFormUpgrader {
       // ScreenAnimation dropdown blocks were added.
       // HorizontalAlignment and VerticalAlignment dropdown blocks were added.
       // Adds dropdown block for ScreenOrientation.
+      // Assets helper block was added.
       srcCompVersion = 28;
     }
 
@@ -1102,7 +1115,8 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 3;
     }
     if (srcCompVersion < 4) {
-      // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Assets helper block was added.
       srcCompVersion = 4;
     }
     return srcCompVersion;
@@ -1113,7 +1127,8 @@ public final class YoungAndroidFormUpgrader {
     int srcCompVersion
   ) {
     if (srcCompVersion < 2) {
-      // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Assets helper block was added.
       srcCompVersion = 2;
     }
     return srcCompVersion;
@@ -1142,6 +1157,10 @@ public final class YoungAndroidFormUpgrader {
      // The Click event was added.
      // The Clickable property was added.
      srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // Assets helper block was added.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -1198,6 +1217,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 7) {
       // Direction dropdown blocks were added.
+      // Assets helper block was added.
       srcCompVersion = 7;
     }
     return srcCompVersion;
@@ -1411,6 +1431,10 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // Assets helper block was added.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -1448,6 +1472,10 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // Assets helper block was added.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -1482,7 +1510,8 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 3;
     }
     if (srcCompVersion < 4) {
-      // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Assets helper block was added.
       srcCompVersion = 4;
     }
     return srcCompVersion;
@@ -1493,7 +1522,8 @@ public final class YoungAndroidFormUpgrader {
     int srcCompVersion
   ) {
     if (srcCompVersion < 2) {
-      // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Assets helper block was added.
       srcCompVersion = 2;
     }
     return srcCompVersion;
@@ -1555,6 +1585,10 @@ public final class YoungAndroidFormUpgrader {
       // The Stop method was created.
       // No properties need to be modified to upgrade to version 6.
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // Assets helper block was added.
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }
@@ -1795,6 +1829,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 4) {
       // Add AlignHorizontal and AlignVertical dropdown blocks.
+      // Assets helper block was added.
       srcCompVersion = 4;
     }
     return srcCompVersion;
@@ -1870,6 +1905,7 @@ public final class YoungAndroidFormUpgrader {
       // Add UnltrasonicSensorMode dropdown block.
       srcCompVersion = 2;
     }
+    return srcCompVersion;
   }
 
   private static int upgradeNxtDirectCommandsProperties(

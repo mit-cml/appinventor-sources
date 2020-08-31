@@ -33,8 +33,12 @@ import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Callback;
@@ -439,14 +443,6 @@ public final class YaBlocksEditor extends FileEditor
     // Nothing to do after blocks are saved.
   }
 
-  public void addScreen(String name) {
-    blocksArea.addScreen(name);
-  }
-
-  public void removeScreen(String name) {
-    blocksArea.removeScreen(name);
-  }
-
   public static String getComponentInfo(String typeName) {
     return SimpleComponentDatabase.getInstance().getTypeDescription(typeName);
   }
@@ -734,16 +730,23 @@ public final class YaBlocksEditor extends FileEditor
   @Override
   public void onProjectLoaded(Project project) {
     for (ProjectNode node : project.getRootNode().getAllSourceNodes()) {
-      if (node instanceof YoungAndroidSourceNode) {
-        addScreen(((YoungAndroidSourceNode)node).getFormName());
+      if (node instanceof YoungAndroidFormNode) {
+        blocksArea.addScreen(((YoungAndroidSourceNode) node).getFormName());
       }
+    }
+    YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode())
+        .getAssetsFolder();
+    for (ProjectNode node : assetsFolder.getChildren()) {
+      blocksArea.addAsset(((YoungAndroidAssetNode) node).getName());
     }
   }
 
   @Override
   public void onProjectNodeAdded(Project project, ProjectNode node) {
     if (node instanceof YoungAndroidSourceNode) {
-      addScreen(((YoungAndroidSourceNode)node).getFormName());
+      blocksArea.addScreen(((YoungAndroidSourceNode) node).getFormName());
+    } else if (node instanceof YoungAndroidAssetNode) {
+      blocksArea.addAsset(((YoungAndroidAssetNode) node).getName());
     }
   }
 
@@ -751,7 +754,9 @@ public final class YaBlocksEditor extends FileEditor
   @Override
   public void onProjectNodeRemoved(Project project, ProjectNode node) {
     if (node instanceof YoungAndroidSourceNode) {
-      removeScreen(((YoungAndroidSourceNode)node).getFormName());
+      blocksArea.removeScreen(((YoungAndroidSourceNode) node).getFormName());
+    } else if (node instanceof YoungAndroidAssetNode) {
+      blocksArea.removeAsset(((YoungAndroidAssetNode) node).getName());
     }
   }
 

@@ -136,6 +136,12 @@ Blockly.Blocks['helpers_screen_names'] = {
         .appendField(dropdown, 'SCREEN');
   },
 
+  onchange: function(e) {
+    if (e.type == AI.Events.SCREEN_SWITCH) {
+      this.setFieldValue(this.getFieldValue('SCREEN'), 'SCREEN');
+    }
+  },
+
   domToMutation: function(xml) {
     var value = xml.getAttribute('value');
     this.setFieldValue(value, 'SCREEN');
@@ -171,6 +177,128 @@ Blockly.Blocks['helpers_screen_names'] = {
       })
     }
 
+    return tb;
+  }
+}
+
+Blockly.Blocks['helpers_assets'] = {
+  init: function() {
+    var utils = Blockly.Blocks.Utilities;
+
+    this.setColour(Blockly.COLOUR_HELPERS);
+
+    this.setOutput(true, utils.YailTypeToBlocklyType('text', utils.OUTPUT));
+    this.appendDummyInput('INPUT')
+
+    this.addField();
+  },
+
+  onchange: function(e) {
+    if (e.type != AI.Events.SCREEN_SWITCH &&
+        !(e.type == Blockly.Events.MOVE)) {
+      return;
+    }
+
+    if (this.addField()) {
+      var value = this.getFieldValue('ASSET');
+      var options = this.generateOptions();
+      if (this.isInFlyout && options.length) {
+        value = options[0][1];
+      }
+      this.setFieldValue(value, 'ASSET');
+    }
+  },
+
+  domToMutation: function(xml) {
+    var field = this.getField('ASSET');
+    if (!field) {
+      return;
+    }
+    var value = xml.getAttribute('value');
+    field.setValue(value);
+  },
+
+  addField: function() {
+    if (!this.workspace) {  // Disposed.
+      return;
+    }
+    var input = this.getInput('INPUT');
+    var assets = Blockly.mainWorkspace.getAssetList();
+
+    if (assets.length) { // We should have an asset dropdown.
+      if (!this.getField('ASSET')) {
+        dropdown = new Blockly.FieldInvalidDropdown(
+            this.generateOptions.bind(this));
+        input.appendField(dropdown, 'ASSET');
+      }
+      if (this.getField('TEXT')) {
+        input.removeField('TEXT');
+      }
+    } else {
+      if (!this.getField('TEXT')) {
+        var label = new Blockly.FieldLabel(Blockly.Msg.LANG_NO_ASSETS);
+        input.appendField(label, 'TEXT');
+      }
+      if (this.getField('ASSET')) {
+        input.removeField('ASSET');
+      }
+    }
+
+    return assets.length;
+  },
+
+  generateOptions: function() {
+    if (!this.workspace) {
+      return [['', '']];
+    }
+
+    // Must include the '' so .some returns true if no restrictions.
+    var restrictedFormats = [''];
+    var types = this.outputConnection.targetConnection &&
+        this.outputConnection.targetConnection.check_;
+    if (types) {
+      for (var i = 0, type; type = types[i]; i++) {
+        if (Array.isArray(type)) {
+          // Not actually a type check. An array in the type check array is used
+          // to restrict formats.
+          restrictedFormats = type;
+        }
+      }
+    }
+
+    var assets = Blockly.mainWorkspace.getAssetList();
+    if (assets.length) {
+      var values = assets.map(function (elem) {
+        var assetValid = restrictedFormats.some(function(fileType) {
+          return elem.includes(fileType);
+        })
+        if (assetValid) {
+          return [elem, elem];
+        }
+        return undefined;  // Not necessary just more explicit.
+      });
+      values = values.filter(function(elem) {
+        return elem !== undefined;
+      })
+      if (values.length) {
+        return values;
+      }
+    }
+
+    return [['', '']]
+  },
+
+  typeblock: function() {
+    tb = [];
+    var assets = Blockly.mainWorkspace.getAssetList();
+    for (var i = 0, asset; (asset = assets[i]); i++) {
+      tb.push({
+        translatedName: asset,
+        mutatorAttributes: {
+          value: asset
+        }
+      })
+    }
     return tb;
   }
 }

@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.Manifest;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -139,7 +140,7 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void Picture(final String path) {
+  public void Picture(@Asset final String path) {
     if (MediaUtil.isExternalFile(path) &&
         container.$form().isDeniedPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
       container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,

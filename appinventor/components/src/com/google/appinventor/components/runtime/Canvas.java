@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -1026,7 +1027,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void BackgroundImage(String path) {
+  public void BackgroundImage(@Asset String path) {
     view.setBackgroundImage(path);
   }
 

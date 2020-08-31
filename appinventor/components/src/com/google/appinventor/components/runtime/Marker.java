@@ -13,6 +13,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.util.GeoPoint;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.Options;
@@ -275,7 +276,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
   @SimpleProperty
-  public void ImageAsset(String path) {
+  public void ImageAsset(@Asset String path) {
     Log.d(TAG, "ImageAsset");
     this.imagePath = path;
     map.getController().updateFeatureImage(this);
