@@ -1061,7 +1061,9 @@ public class YaVersion {
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 
-  public static final int NXT_DIRECT_COMMANDS_COMPONENT_VERSION = 1;
+  // For NXT_DIRECT_COMMANDS_COMPONENT_VERSION 2:
+  // - Adds dropdown blocks.
+  public static final int NXT_DIRECT_COMMANDS_COMPONENT_VERSION = 2;
 
   public static final int NXT_DRIVE_COMPONENT_VERSION = 1;
 

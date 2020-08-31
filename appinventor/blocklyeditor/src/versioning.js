@@ -1080,6 +1080,7 @@ Blockly.Versioning.getOptionListValueMap = function(workspace, key) {
   var optionList = db.getOptionList(key);
   for (var i = 0, option; option = optionList.options[i]; i++) {
     map[option.value] = option.name;
+    map[option.value.toLowerCase()] = option.name;
   }
   return map;
 }
@@ -2274,7 +2275,41 @@ Blockly.Versioning.AllUpgradeMaps =
   "NxtDirectCommands": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Add dropdown blocks.
+    2: [Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetOutputState', 0, 'NxtMotorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetOutputState', 2, 'NxtMotorMode'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetOutputState', 3, 'NxtRegulationMode'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetOutputState', 5, 'NxtRunState'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetInputMode', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetInputMode', 1, 'NxtSensorType'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetInputMode', 2, 'NxtSensorMode'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'GetOutputState', 0, 'NxtMotorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'GetInputValues', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'ResetInputScaledValue', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'ResetMotorPosition', 0, 'NxtMotorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'LsGetStatus', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'LsWrite', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'LsRead', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'MessageRead', 0, 'NxtMailbox'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'MessageWrite', 0, 'NxtMailbox')]
 
   }, // End NxtDirectCommands upgraders
 
