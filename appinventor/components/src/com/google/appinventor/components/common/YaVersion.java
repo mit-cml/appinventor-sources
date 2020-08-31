@@ -1075,13 +1075,22 @@ public class YaVersion {
 
   public static final int EV3_MOTORS_COMPONENT_VERSION = 1;
 
-  public static final int EV3_COLORSENSOR_COMPONENT_VERSION = 1;
+  // For EV3_COLORSENSOR_COMPONENT_VERSION 2:
+  // - Remove SetAmbientMode, SetColorMode, and SetReflectedMode. Use Mode setter instead.
+  // - Add ColorSensorMode dropdown.
+  public static final int EV3_COLORSENSOR_COMPONENT_VERSION = 2;
 
-  public static final int EV3_GYROSENSOR_COMPONENT_VERSION = 1;
+  // For EV3_GYROSENSOR_COMPONENT_VERSION 2:
+  // - Remove SetAngleMode and SetRateMode. Use Mode setter instead.
+  // - Add GyroSensorMode dropdown block.
+  public static final int EV3_GYROSENSOR_COMPONENT_VERSION = 2;
 
   public static final int EV3_TOUCHSENSOR_COMPONENT_VERSION = 1;
 
-  public static final int EV3_ULTRASONICSENSOR_COMPONENT_VERSION = 1;
+  // For EV3_ULTRASONICSENSOR_COMPONENT_VERSION 2:
+  // - Remove SetCmUnit and SetInchUnit. Use Unit setter instead.
+  // - Add UltrasonicSensorUnit dropdown block.
+  public static final int EV3_ULTRASONICSENSOR_COMPONENT_VERSION = 2;
 
   public static final int EV3_SOUND_COMPONENT_VERSION = 1;
 
