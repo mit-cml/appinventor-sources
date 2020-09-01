@@ -14,14 +14,20 @@
 
 goog.provide('AI.Blockly.WarningHandler');
 
+goog.require('Blockly.Blocks.Utilities');
+
 Blockly.WarningHandler = function(workspace) {
   this.workspace = workspace;
   this.allBlockErrors = [{name:'checkReplErrors'}];
   this.allBlockWarnings = [{name:'checkBlockAtRoot'},{name:'checkEmptySockets'}];
   this.cachedGlobalNames = [];
   this.showWarningsToggle = false;
-  this.warningIdHash = {};
-  this.errorIdHash = {};
+  this.warningIdHash = Object.create(null);
+  this.errorIdHash = Object.create(null);
+  this.warningCollapseStack = [];
+  this.errorCollapseStack = [];
+  this.currentWarningBlockId = '';
+  this.currentErrorBlockId = '';
 };
 
 Blockly.WarningHandler.prototype.cacheGlobalNames = false;
@@ -49,21 +55,27 @@ Blockly.WarningHandler.prototype.currentWarning = -1;
  */
 Blockly.WarningHandler.prototype.currentError = -1;
 
+/**
+ * Tells the indicator to stop displaying the current error/warning, and update
+ * the total number of warnings and errors it is displaying.
+ */
 Blockly.WarningHandler.prototype.updateWarningErrorCount = function() {
-  //update the error and warning count in the UI
   var indicator = this.workspace.getWarningIndicator();
   if (indicator) {
-    // indicator is only available after the workspace has been drawn.
+    // Indicator is only available after the workspace has been drawn.
     indicator.updateWarningAndErrorCount();
   }
 };
 
+/**
+ * Tells the indicator to display the currently selected warnings and errors.
+ */
 Blockly.WarningHandler.prototype.updateCurrentWarningAndError = function() {
-  //update the error and warning count in the UI
   var indicator = this.workspace.getWarningIndicator();
   if (indicator) {
-    // indicator is only available after the workspace has been drawn.
-    indicator.updateCurrentWarningAndError(this.currentWarning, this.currentError);
+    // Indicator is only available after the workspace has been drawn.
+    indicator.updateCurrentWarningAndError(
+        this.currentWarning, this.currentError);
   }
 };
 
@@ -135,70 +147,132 @@ Blockly.WarningHandler.prototype.checkAllBlocksForWarningsAndErrors = function()
 };
 
 Blockly.WarningHandler.prototype.previousWarning = function() {
-  var k = Object.keys(this.warningIdHash);
-  if (k.length === 0) return;  // nothing to see here.
-  if (0 <= this.currentWarning && this.currentWarning < k.length)
-    this.workspace.getBlockById(k[this.currentWarning]).setHighlighted(false);
+  var blockIds = Object.keys(this.warningIdHash);
+  var length = blockIds.length;
+  if (!length) return;
+  if (this.currentWarningBlockId) {
+    this.unHighlightBlock_(this.currentWarningBlockId, this.warningCollapseStack);
+  }
   if (this.currentWarning > 0) {
     this.currentWarning--;
-  } else this.currentWarning = k.length - 1;
-  this.workspace.centerOnBlock(k[this.currentWarning]);
-  this.workspace.getBlockById(k[this.currentWarning]).setHighlighted(true);
-  this.updateCurrentWarningAndError();
+  } else {
+    this.currentWarning = length - 1;
+  }
+  this.currentWarningBlockId = blockIds[this.currentWarning];
+  this.warningCollapseStack = this.highlightBlock_(this.currentWarningBlockId);
 };
 
 Blockly.WarningHandler.prototype.nextWarning = function() {
-  var k = Object.keys(this.warningIdHash);
-  if (k.length === 0) return;  // nothing to see here.
-  if (0 <= this.currentWarning && this.currentWarning < k.length)
-    this.workspace.getBlockById(k[this.currentWarning]).setHighlighted(false);
-  if (this.currentWarning < k.length - 1) {
+  var blockIds = Object.keys(this.warningIdHash);
+  var length = blockIds.length;
+  if (!length) return;
+  if (this.currentWarningBlockId) {
+    this.unHighlightBlock_(this.currentWarningBlockId, this.warningCollapseStack);
+  }
+  if (this.currentWarning < length - 1) {
     this.currentWarning++;
-  } else this.currentWarning = 0;
-  this.workspace.centerOnBlock(k[this.currentWarning]);
-  this.workspace.getBlockById(k[this.currentWarning]).setHighlighted(true);
-  this.updateCurrentWarningAndError();
+  } else {
+    this.currentWarning = 0;
+  }
+  this.currentWarningBlockId = blockIds[this.currentWarning];
+  this.warningCollapseStack = this.highlightBlock_(this.currentWarningBlockId);
 };
 
-
 Blockly.WarningHandler.prototype.previousError = function() {
-  var k = Object.keys(this.errorIdHash);
-  if (k.length === 0) return;  // nothing to see here.
-  if (0 <= this.currentError && this.currentError < k.length)
-    this.workspace.getBlockById(k[this.currentError]).setHighlighted(false);
-  if (k.length > 0) {
-    if (this.currentError > 0) {
-      this.currentError--;
-    } else this.currentError = k.length - 1;
-    this.workspace.centerOnBlock(k[this.currentError]);
-    this.workspace.getBlockById(k[this.currentError]).setHighlighted(true);
-    this.updateCurrentWarningAndError();
+  var blockIds = Object.keys(this.errorIdHash);
+  var length = blockIds.length;
+  if (!length) return;
+  if (this.currentErrorBlockId) {
+    this.unHighlightBlock_(this.currentErrorBlockId, this.errorCollapseStack);
   }
+  if (this.currentError > 0) {
+    this.currentError--;
+  } else {
+    this.currentError = length - 1;
+  }
+  this.currentErrorBlockId = blockIds[this.currentError];
+  this.errorCollapseStack = this.highlightBlock_(this.currentErrorBlockId);
 };
 
 Blockly.WarningHandler.prototype.nextError = function() {
-  var k = Object.keys(this.errorIdHash);
-  if (k.length === 0) return;  // nothing to see here.
-  if (0 <= this.currentError && this.currentError < k.length)
-    this.workspace.getBlockById(k[this.currentError]).setHighlighted(false);
-  if (k.length > 0) {
-    if (this.currentError < k.length - 1) {
-      this.currentError++;
-    } else this.currentError = 0;
-    this.workspace.centerOnBlock(k[this.currentError]);
-    this.workspace.getBlockById(k[this.currentError]).setHighlighted(true);
-    this.updateCurrentWarningAndError();
+  var blockIds = Object.keys(this.errorIdHash);
+  var length = blockIds.length;
+  if (!length) return;
+  if (this.currentErrorBlockId) {
+    this.unHighlightBlock_(this.currentErrorBlockId, this.errorCollapseStack);
   }
+  if (this.currentError < length - 1) {
+    this.currentError++;
+  } else {
+    this.currentError = 0;
+  }
+  this.currentErrorBlockId = blockIds[this.currentError];
+  this.errorCollapseStack = this.highlightBlock_(this.currentErrorBlockId);
 };
 
-//Takes a block as the context (this), puts
-//the appropriate error or warning on the block,
-//and returns the corresponding warning state
+/**
+ * Highlights the block with the given block id. Expands all collapsed parent
+ * blocks so that the highlighted block is visible.
+ * @return A list of the ids of all of the blocks that had to be expanded.
+ * @private
+ */
+Blockly.WarningHandler.prototype.highlightBlock_ = function(blockId) {
+  var block = this.workspace.getBlockById(blockId);
+  block.setHighlighted(true);
+
+  var collapseStack = [];
+  do {
+    if (block.isCollapsed()) {
+      collapseStack.push(block.id);
+      block.setCollapsed(false);
+    }
+  } while ((block = block.getSurroundParent()))
+
+  this.workspace.centerOnBlock(blockId);
+  this.updateCurrentWarningAndError();
+
+  return collapseStack;
+};
+
+/**
+ * Unhighlights the block with the given block id, and collapses all blocks
+ * with the ids in the passed collapseStack.
+ * @private
+ */
+Blockly.WarningHandler.prototype.unHighlightBlock_ =
+  function(blockId, collapseStack) {
+    var workspace = this.workspace;
+    workspace.getBlockById(blockId).setHighlighted(false);
+
+    for (var i = 0, blockId; (blockId = collapseStack[i]); i++) {
+      workspace.getBlockById(blockId).setCollapsed(true);
+    }
+  };
+
+/**
+ * Hides any currently highlighted blocks (either highlighted for warning or
+ * error).
+ */
+Blockly.WarningHandler.prototype.hideCurrentHighlight_ = function() {
+  if (this.currentErrorBlockId) {
+    this.unHighlightBlock_(this.currentErrorBlockId, this.errorCollapseStack);
+    this.currentErrorBlockId = '';
+  }
+  if (this.currentWarningBlockId) {
+    this.unHighlightBlock_(this.currentWarningBlockId, this.warningCollapseStack);
+    this.currentWarningBlockId = '';
+  }
+}
+
+/**
+ * Takes a block as the context (this), puts the appropriate error or warning on
+ * the block, and returns the corresponding warning state.
+ */
 Blockly.WarningHandler.prototype.checkErrors = function(block) {
   // [lyn, 11/11/2013] Special case: ignore blocks in flyout for purposes of error handling
   //   Otherwise, blocks in drawer having connected subblocks (see Blockly.Drawer.defaultBlockXMLStrings)
   //   will increment warning indicator.
-  block.setHighlighted(false);
+  this.hideCurrentHighlight_();
   this.updateWarningErrorCount();
   if (block.isInFlyout) {
     return Blockly.WarningHandler.WarningState.NO_ERROR;
@@ -366,6 +440,27 @@ Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(b
       block.setErrorIconText(errorMessage);
       return true;
     }
+  }
+  return false;
+};
+
+/**
+ * Checks whether a text block in a number slot has a valid value. If not,
+ * an error is generated.
+ *
+ * @param {!Blockly.BlockSvg} block the text block to evaluate
+ */
+Blockly.WarningHandler.prototype['checkInvalidNumber'] = function(block) {
+  if (!block.outputConnection || !block.outputConnection.isConnected()) {
+    return;
+  }
+  var targetChecks = block.outputConnection.targetConnection.getCheck();
+  var value = block.getFieldValue('TEXT');
+  if (targetChecks && targetChecks.indexOf('String') == -1 &&
+      targetChecks.indexOf('Number') >= 0 &&
+      (value == '' || !Blockly.Blocks.Utilities.NUMBER_REGEX.test(value))) {
+    block.setErrorIconText(Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT);
+    return true;
   }
   return false;
 };

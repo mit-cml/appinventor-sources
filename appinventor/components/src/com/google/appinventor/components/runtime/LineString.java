@@ -1,21 +1,15 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2016-2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
+import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
 
-import android.support.annotation.NonNull;
-import com.google.appinventor.components.runtime.errors.DispatchableError;
-import com.google.appinventor.components.runtime.util.MapFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.locationtech.jts.geom.Geometry;
-import org.osmdroid.util.GeoPoint;
-
+import android.util.Log;
+import androidx.annotation.NonNull;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -24,20 +18,23 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.DispatchableError;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.GeometryUtil;
+import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureVisitor;
 import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.YailList;
-
-import android.util.Log;
-
-import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
-import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
+import java.util.ArrayList;
+import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.locationtech.jts.geom.Geometry;
+import org.osmdroid.util.GeoPoint;
 
 /**
  * `LineString` is a component for drawing an open, continuous sequence of lines on a `Map`. To add
@@ -146,8 +143,7 @@ public class LineString extends MapFeatureBase implements MapLineString {
 
   /**
    * Set the points of the LineString from a specially-coded character string of the form:
-   * [[longitude1, latitude1], [longitude2, latitude2], ...]
-   * Note the reversal of latitude and longitude versus how they are typically represented.
+   * [[latitude1, longitude1], [latitude2, longitude2], ...]
    *
    * @param points String containing a sequence of points for the LineString.
    */

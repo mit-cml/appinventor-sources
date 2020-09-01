@@ -1,11 +1,19 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+
+import android.app.Activity;
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.os.Vibrator;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -17,20 +25,11 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
-
-import android.app.Activity;
-import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.os.Vibrator;
-
 import java.io.IOException;
 
 // TODO: This implementation does nothing about releasing the Media
@@ -175,8 +174,25 @@ public final class Player extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
+  @UsesPermissions(READ_EXTERNAL_STORAGE)
   public void Source(String path) {
-    sourcePath = (path == null) ? "" : path;
+    final String tempPath = (path == null) ? "" : path;
+    if (MediaUtil.isExternalFile(form, tempPath)
+        && form.isDeniedPermission(READ_EXTERNAL_STORAGE)) {
+      form.askPermission(READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
+        @Override
+        public void HandlePermissionResponse(String permission, boolean granted) {
+          if (granted) {
+            Player.this.Source(tempPath);
+          } else {
+            form.dispatchPermissionDeniedEvent(Player.this, "Source", permission);
+          }
+        }
+      });
+      return;
+    }
+
+    sourcePath = tempPath;
 
     // Clear the previous MediaPlayer.
     if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {

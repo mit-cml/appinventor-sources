@@ -13,6 +13,8 @@ layout: documentation
 * [downcase](#downcase)
 * [starts at](#startsat)
 * [contains](#contains)
+* [contains any](#containsany)
+* [contains all](#containsall)
 * [split at first](#splitatfirst)
 * [split at first of any](#splitatfirstofany)
 * [split](#split)
@@ -51,11 +53,11 @@ Returns the number of characters including spaces in the string. This is the len
 
 Returns whether or not the string contains any characters (including spaces). When the string length is 0, returns true otherwise it returns false.
 
-### compare texts < > =   {#compare}
+### compare texts < > = ≠ {#compare}
 
 ![](images/text/compare.gif)
 
-Returns whether or not the first string is lexicographically <, >, or = the second string depending on which dropdown is selected.
+Returns whether or not the first string is lexicographically <, >, =, or ≠ the second string depending on which dropdown is selected.
 
 A string a considered lexicographically greater than another if it is alphabetically greater than the other string. Essentially, it would come after it in the dictionary. All uppercase letters are considered smaller or to occur before lowercase letters. cat would be > Cat.
 
@@ -88,6 +90,22 @@ Returns the character position where the first character of *piece* first appear
 ![](images/text/contains.png)
 
 Returns true if *piece* appears in text; otherwise, returns false.
+
+### contains any   {#containsany}
+
+![](images/text/containsany.png)
+
+Returns true if any of the pieces in the piece list appear in text; otherwise, returns false.
+
+This block can be obtained by changing the dropdown on the contains block.
+
+### contains all   {#containsall}
+
+![](images/text/containsall.png)
+
+Returns true if all of the pieces in the piece list appear in text; otherwise, returns false.
+
+This block can be obtained by changing the dropdown on the contains block.
 
 ### split at first   {#splitatfirst}
 

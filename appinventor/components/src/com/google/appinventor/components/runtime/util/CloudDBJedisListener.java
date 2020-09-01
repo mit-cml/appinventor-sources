@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2017 MIT, All rights reserved
+// Copyright 2017-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 //Notification Listener from: http://stackoverflow.com/questions/26406303/redis-key-expire-notification-with-jedis
@@ -57,7 +57,7 @@ public class CloudDBJedisListener extends JedisPubSub {
       for (Object value : valueList) {
         // Note: DataChanged will arrange to dispatch the event
         // on the UI thread.
-        String retValue = JsonUtil.getJsonRepresentationIfValueFileName(value);
+        String retValue = JsonUtil.getJsonRepresentationIfValueFileName(cloudDB.getForm(), value);
         if (retValue == null) {
           cloudDB.DataChanged(tag, value);
         } else {

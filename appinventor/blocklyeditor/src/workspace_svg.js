@@ -230,7 +230,11 @@ Blockly.WorkspaceSvg.prototype.addWarningIndicator = function() {
  */
 Blockly.WorkspaceSvg.prototype.addBackpack = function() {
   if (Blockly.Backpack && !this.options.readOnly) {
-    this.backpack_ = new Blockly.Backpack(this, {scrollbars: true, media: './assets/'});
+    this.backpack_ = new Blockly.Backpack(this, {
+        scrollbars: true,
+        media: './assets/',
+        disabledPatternId: this.options.disabledPatternId,
+      });
     var svgBackpack = this.backpack_.createDom(this);
     this.svgGroup_.appendChild(svgBackpack);
     this.backpack_.init();
@@ -467,6 +471,7 @@ Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent
   if (blocksContent.length != 0) {
     try {
       Blockly.Events.disable();
+      this.isLoading = true;
       if (Blockly.Versioning.upgrade(formJson, blocksContent, this)) {
         var self = this;
         setTimeout(function() {
@@ -474,6 +479,7 @@ Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent
         });
       }
     } finally {
+      this.isLoading = false;
       Blockly.Events.enable();
     }
     if (this.getCanvas() != null) {
@@ -1230,13 +1236,18 @@ Blockly.WorkspaceSvg.prototype.requestRender = function(block) {
   if (!this.pendingRender) {
     this.needsRendering = [];
     this.pendingBlockIds = {};
-    this.pendingRender = setTimeout(function() {
+    this.pendingRenderFunc = function() {
       try {
         this.render(this.needsRendering.length === 0 ? undefined : this.needsRendering);
       } finally {
         this.pendingRender = null;
       }
-    }.bind(this));
+    }.bind(this);
+    if (this.svgGroup_.parentElement.parentElement.parentElement.style.display === 'none') {
+      this.pendingRender = true;
+    } else {
+      this.pendingRender = setTimeout(this.pendingRenderFunc, 0);
+    }
   }
   if (block) {
     // Rendering uses Blockly.BlockSvg.renderDown, so we only need a list of the topmost blocks

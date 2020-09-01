@@ -99,6 +99,7 @@ public class LoginServlet extends HttpServlet {
     String repo = params.get("repo");
     String galleryId = params.get("galleryId");
     String redirect = params.get("redirect");
+    String autoload = params.get("autoload");
 
     if (DEBUG) {
       LOG.info("locale = " + locale + " bundle: " + new Locale(locale));
@@ -151,6 +152,7 @@ public class LoginServlet extends HttpServlet {
       uri = new UriBuilder(uri)
         .add("locale", locale)
         .add("repo", repo)
+        .add("autoload", autoload)
         .add("galleryId", galleryId).build();
       resp.sendRedirect(uri);
       return;
@@ -245,6 +247,7 @@ public class LoginServlet extends HttpServlet {
     req.setAttribute("localeLabel", locale);
     req.setAttribute("pleaselogin", bundle.getString("pleaselogin"));
     req.setAttribute("login", bundle.getString("login"));
+    req.setAttribute("autoload", autoload);
     req.setAttribute("repo", repo);
     req.setAttribute("locale", locale);
     req.setAttribute("galleryId", galleryId);
@@ -279,6 +282,7 @@ public class LoginServlet extends HttpServlet {
     String repo = params.get("repo");
     String galleryId = params.get("galleryId");
     String redirect = params.get("redirect");
+    String autoload = params.get("autoload");
 
     if (locale == null) {
       locale = "en";
@@ -332,6 +336,7 @@ public class LoginServlet extends HttpServlet {
       String uri = new UriBuilder("/")
         .add("locale", locale)
         .add("repo", repo)
+        .add("autoload", autoload)
         .add("galleryId", galleryId).build();
       resp.sendRedirect(uri);   // Logged in, go to service
       return;
@@ -380,6 +385,7 @@ public class LoginServlet extends HttpServlet {
     }
     uri = new UriBuilder(uri)
       .add("locale", locale)
+      .add("autoload", autoload)
       .add("repo", repo)
       .add("galleryId", galleryId).build();
     resp.sendRedirect(uri);

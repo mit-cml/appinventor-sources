@@ -1,11 +1,25 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
+import android.media.MediaPlayer.OnPreparedListener;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.widget.MediaController;
+import android.widget.VideoView;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -23,20 +37,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
-
-import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
-import android.media.MediaPlayer.OnPreparedListener;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.View;
-import android.widget.MediaController;
-import android.widget.VideoView;
-
 import java.io.IOException;
 
 /**
@@ -193,7 +193,24 @@ public final class VideoPlayer extends AndroidViewComponent implements
       description = "The \"path\" to the video.  Usually, this will be the "
           + "name of the video file, which should be added in the Designer.",
       category = PropertyCategory.BEHAVIOR)
+  @UsesPermissions(READ_EXTERNAL_STORAGE)
   public void Source(String path) {
+    final String tempPath = (path == null) ? "" : path;
+    if (MediaUtil.isExternalFile(container.$context(), tempPath)
+        && container.$form().isDeniedPermission(READ_EXTERNAL_STORAGE)) {
+      container.$form().askPermission(READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
+        @Override
+        public void HandlePermissionResponse(String permission, boolean granted) {
+          if (granted) {
+            VideoPlayer.this.Source(tempPath);
+          } else {
+            container.$form().dispatchPermissionDeniedEvent(VideoPlayer.this, "Source", permission);
+          }
+        }
+      });
+      return;
+    }
+
     if (inFullScreen) {
       container.$form().fullScreenVideoAction(
           FullScreenVideoUtil.FULLSCREEN_VIDEO_ACTION_SOURCE, this, path);

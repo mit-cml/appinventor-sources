@@ -592,6 +592,16 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   }
 
   /**
+   * Renames the component to {@code newName}.
+   * @param newName The new name for the component.
+   */
+  public void rename(String newName) {
+    String oldName = getPropertyValue(PROPERTY_NAME_NAME);
+    properties.changePropertyValue(PROPERTY_NAME_NAME, newName);
+    getForm().fireComponentRenamed(this, oldName);
+  }
+
+  /**
    * Returns the properties set for the component.
    *
    * @return  properties
@@ -762,7 +772,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    *
    * @return  owning component container for this component
    */
-  protected final MockContainer getContainer() {
+  public final MockContainer getContainer() {
     return container;
   }
 

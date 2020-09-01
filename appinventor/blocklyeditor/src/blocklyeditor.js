@@ -576,3 +576,24 @@ window['Blockly'] = Blockly;
 top['Blockly'] = Blockly;
 window['AI'] = AI;
 top['AI'] = AI;
+
+/*
+ * Calls hideChaff() on the blocks editor iff we receive the mousedown event on
+ * an element that is not contained by the blocks editor.
+ */
+top.document.addEventListener('mousedown', function(e) {
+  if (!e.target) return;
+  var target = e.target;
+  while (target) {
+    var classes = target.classList;
+    // Use 'contains' in case the elements gain extra classes in the future.
+    if (classes.contains('blocklyWidgetDiv') || classes.contains('blocklySvg')) {
+      return;
+    }
+    target = target.parentElement;
+  }
+  // Make sure the workspace has been injected.
+  if (Blockly.mainWorkspace) {
+    Blockly.hideChaff();
+  }
+}, false);

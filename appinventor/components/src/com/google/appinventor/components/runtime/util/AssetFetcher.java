@@ -1,14 +1,9 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2018 MIT, All rights reserved
+// Copyright 2018-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
-import android.content.Intent;
-
-import android.net.Uri;
-
-import android.os.Environment;
 
 import android.util.Log;
 
@@ -55,10 +50,6 @@ import org.json.JSONException;
 public class AssetFetcher {
 
   private static final String LOG_TAG = AssetFetcher.class.getSimpleName();
-
-  private static final String REPL_ASSET_DIR =
-    Environment.getExternalStorageDirectory().getAbsolutePath() +
-    "/AppInventor/";
 
   // We use a single threaded executor so we only load one asset at a time!
   private static ExecutorService background = Executors.newSingleThreadExecutor();
@@ -143,13 +134,13 @@ public class AssetFetcher {
   }
 
   private static File getFile(final String fileName, String cookieValue, String asset, int depth) {
+    Form form = Form.getActiveForm();
     if (depth > 1) {
       synchronized (semaphore) { // We are protecting the inError variable
         if (inError) {
           return null;
         } else {
           inError = true;
-          Form form = Form.getActiveForm();
           form.runOnUiThread(new Runnable() {
               public void run() {
                 RuntimeErrorAlert.alert(Form.getActiveForm(), "Unable to load file: " + fileName,
@@ -170,10 +161,10 @@ public class AssetFetcher {
         connection.addRequestProperty("Cookie",  "AppInventor = " + cookieValue);
         int responseCode = connection.getResponseCode();
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);
-        outFile = new File(REPL_ASSET_DIR + asset);
+        outFile = new File(QUtil.getReplAssetPath(form), asset.substring("assets/".length()));
         File parentOutFile = outFile.getParentFile();
-        if (!parentOutFile.exists()) {
-          parentOutFile.mkdirs();
+        if (!parentOutFile.exists() && !parentOutFile.mkdirs()) {
+          throw new IOException("Unable to create assets directory " + parentOutFile);
         }
         BufferedInputStream in = new BufferedInputStream(connection.getInputStream(), 0x1000);
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outFile), 0x1000);
@@ -201,7 +192,7 @@ public class AssetFetcher {
       }
       return outFile;
     } catch (Exception e) {
-      Log.e(LOG_TAG, "Exception while fetching " + fileName);
+      Log.e(LOG_TAG, "Exception while fetching " + fileName, e);
       // Try again recursively
       return getFile(fileName, cookieValue, asset, depth + 1);
     }

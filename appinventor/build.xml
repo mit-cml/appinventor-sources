@@ -157,6 +157,35 @@
     </javadoc>
   </target>
 
+  <target name="checkstyle-all">
+    <java classname="com.puppycrawl.tools.checkstyle.Main" fork="true">
+      <classpath>
+        <pathelement path="lib/checkstyle/checkstyle.jar"/>
+        <pathelement path="lib/checkstyle/appinventor-checks.jar"/>
+      </classpath>
+      <arg value="-c"/>
+      <arg value="lib/checkstyle/appinventor-checks.xml"/>
+      <arg value="appengine/src"/>
+      <arg value="appengine/tests"/>
+      <arg value="blocklyeditor/src"/>
+      <arg value="blocklyeditor/tests"/>
+      <arg value="buildserver/src"/>
+      <arg value="buildserver/tests"/>
+      <arg value="common/src"/>
+      <arg value="common/tests"/>
+      <arg value="components/src"/>
+      <arg value="components/tests"/>
+    </java>
+  </target>
+
+  <target name="checkstyle">
+    <property name="commit" value="HEAD"/>
+    <exec executable="misc/checkstyle/checkstyle-git.py"
+          failonerror="true">
+      <arg value="${commit}"/>
+    </exec>
+  </target>
+
   <target name="clean">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="clean"/>

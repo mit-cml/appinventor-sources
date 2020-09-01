@@ -193,6 +193,14 @@
         <classpath refid="libsFor@{aij-testingtarget}.path"/>
       </ai.javactests>
 
+      <!-- Copy test resources -->
+      <copy todir="${classdir}">
+        <fileset dir="${tests.dir}">
+          <include name="@{aij-dir}/**/*" />
+          <exclude name="@{aij-dir}/**/*.java" />
+        </fileset>
+      </copy>
+
       <jar basedir="${classdir}"
            destfile="${local.build.dir}/@{aij-testingtarget}.jar" />
 

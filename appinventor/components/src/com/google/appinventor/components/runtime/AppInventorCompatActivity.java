@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2018 MIT, All rights reserved
+// Copyright 2018-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,12 +9,6 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatCallback;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.view.ActionMode;
-import android.support.v7.view.ActionMode.Callback;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -22,6 +16,12 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatCallback;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.view.ActionMode;
+import androidx.appcompat.view.ActionMode.Callback;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -48,7 +48,8 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
   }
 
   private static final String LOG_TAG = AppInventorCompatActivity.class.getSimpleName();
-  static final int DEFAULT_PRIMARY_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_COLOR);
+  static final int DEFAULT_PRIMARY_COLOR =
+      PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_COLOR);
   private static boolean classicMode = false;
   private static boolean actionBarEnabled;
   private static Theme currentTheme = Theme.PACKAGED;
@@ -308,7 +309,9 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
 
   @SuppressWarnings("WeakerAccess")
   protected void setAppInventorTheme(Theme theme) {
-    if (!Form.getActiveForm().isRepl()) return;  // Theme changing only allowed in REPL
+    if (!Form.getActiveForm().isRepl()) {
+      return;  // Theme changing only allowed in REPL
+    }
     if (theme == currentTheme) {
       return;
     }

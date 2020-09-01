@@ -85,3 +85,13 @@ Blockly.Blocks.Utilities.MAX_COLLAPSE = 4;
 
 // unicode multiplication symbol
 Blockly.Blocks.Utilities.times_symbol = '\u00D7';
+
+/**
+ * Regular expression for floating point numbers.
+ *
+ * @type {!RegExp}
+ * @const
+ */
+Blockly.Blocks.Utilities.NUMBER_REGEX =
+  new RegExp("^([-+]?[0-9]+)?(\\.[0-9]+)?([eE][-+]?[0-9]+)?$|" +
+    "^[-+]?[0-9]+(\\.[0-9]*)?([eE][-+]?[0-9]+)?$");

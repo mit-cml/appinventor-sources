@@ -56,6 +56,14 @@ public final class YailNumberToString {
   // This implementation assumes that Kawa inexact numbers are passed to this routine
   // as doubles.
   public static String format(double number) {
+    // Handle positive and negative infinities (which are "round" and therefore coerce to long)
+    if (Double.isInfinite(number)) {
+      if (number < 0.0) {
+        return "-infinity";
+      } else {
+        return "+infinity";
+      }
+    }
     // We will print integer values without a decimal point.
     if (number == Math.rint(number)) {
       return String.valueOf((long) number);

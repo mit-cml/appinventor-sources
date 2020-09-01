@@ -1,16 +1,16 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2020 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.Manifest;
-import android.os.Environment;
 import com.google.appinventor.components.runtime.shadows.ShadowActivityCompat;
 import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.util.IOUtils;
+import com.google.appinventor.components.runtime.util.QUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.Shadows;
@@ -123,10 +123,9 @@ public class FileTest extends RobolectricTestBase {
   public String writeTempFile(String name, String content, boolean external) {
     String target;
     if (external) {
-      target = Environment.getExternalStorageDirectory().getAbsolutePath();
+      target = QUtil.getExternalStoragePath(getForm());
     } else if (getForm().isRepl()) {
-      target = Environment.getExternalStorageDirectory().getAbsolutePath() +
-          "/AppInventor/data";
+      target = QUtil.getReplDataPath(getForm(), false);
     } else {
       target = getForm().getFilesDir().getAbsolutePath();
     }

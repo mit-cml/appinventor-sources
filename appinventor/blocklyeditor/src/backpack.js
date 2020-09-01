@@ -53,6 +53,8 @@ Blockly.Backpack = function(targetWorkspace, opt_options) {
   } else {
     opt_options = opt_options || {};
     this.options = new Blockly.Options(opt_options);
+    // Parsing loses this option so we have to reassign.
+    this.options.disabledPatternId = opt_options.disabledPatternId;
   }
   this.workspace_ = targetWorkspace;
   this.flyout_ = new Blockly.BackpackFlyout(this.options);

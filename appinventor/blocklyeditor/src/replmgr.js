@@ -380,15 +380,7 @@ Blockly.ReplMgr.putYail = (function() {
             var haveoffer = false;
             var connectionstate = "none";
             var webrtcerror = function(doalert, msg) {
-              webrtcdata = null;
-              webrtcstarting = false;
-              webrtcrunning = false;
-              webrtcforcestop = true;
-              top.BlocklyPanel_indicateDisconnect();
-              top.ConnectProgressBar_hide();
-              if (!webrtcpeer) {
-                webrtcpeer.close();
-              }
+              engine.resetcompanion();
               if (doalert) {
                   var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_NETWORK_ERROR, msg, Blockly.Msg.REPL_OK, false, null, 0,
                       function() {
@@ -444,11 +436,24 @@ Blockly.ReplMgr.putYail = (function() {
             };
             webrtcpeer = new RTCPeerConnection(top.ReplState.iceservers);
             webrtcpeer.oniceconnectionstatechange = function(evt) {
-                console.log("oniceconnectionstatechange: evt.type = " + evt.type + " connection state = " + this.iceConnectionState);
-                connectionstate = webrtcpeer.iceConnectionState;
-                if (connectionstate == "disconnected" ||
-                    connectionstate == "failed") {
-                    webrtcerror(true, Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + "state = " + connectionstate);
+              //////////////////////////////////////////////////////////////
+              // So Firefox will transiently issue an iceConnectionState  //
+              // of "disconnected" when everything is fine. It usually    //
+              // immediately issues a new event declaring the             //
+              // iceConnectionState as "connected". When the connection   //
+              // is really dead, Firefox issues an event with             //
+              // iceConnectionState of failed.  Chrome on the other-hand  //
+              // never issues an event with iceConnectionState of failed, //
+              // but just disconnected. The detection method below was    //
+              // found on Stack Overflow.                                 //
+              //////////////////////////////////////////////////////////////
+              var isFirefox = typeof InstallTrigger !== 'undefined';
+              console.log("oniceconnectionstatechange: evt.type = " + evt.type + " ice connection state = " +
+                          this.iceConnectionState);
+              connectionstate = this.iceConnectionState;
+              if ((connectionstate == "disconnected" && !isFirefox) ||
+                  connectionstate == "failed") {
+                  webrtcerror(true, Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED);
                 }
             };
             webrtcpeer.onsignalingstatechange = function(evt) {
@@ -480,7 +485,9 @@ Blockly.ReplMgr.putYail = (function() {
                 // Ready to actually exchange data
                 webrtcrunning = true;
                 top.webrtcdata = webrtcdata; // For debugging
-                rs.dialog.hide();            // Take down QR Code dialog
+                if (rs.dialog) {
+                    rs.dialog.hide();            // Take down QR Code dialog
+                }
                 RefreshAssets(function() {
                     Blockly.ReplMgr.loadExtensions();
                 });
@@ -795,6 +802,8 @@ Blockly.ReplMgr.putYail = (function() {
             if (top.usewebrtc) {
                 if (webrtcdata) {
                     webrtcdata.close();
+                }
+                if (webrtcpeer) {
                     webrtcpeer.close();
                 }
                 webrtcforcestop = true;
@@ -802,12 +811,10 @@ Blockly.ReplMgr.putYail = (function() {
                 webrtcrunning = false;
                 webrtcstarting = false;
             }
-            if (rxhr)
+            if (rxhr) {
                 rxhr.abort();
+            }
             rxhr = null;
-//            if (conn)  // This seems to cause disconnects on project switch
-//                conn.abort();
-//            conn = null;
             top.usewebrtc = false;
             phonereceiving = false;
         },
@@ -821,6 +828,7 @@ Blockly.ReplMgr.putYail = (function() {
 //          context.hardreset(context.formName); // kill adb and emulator
             rs.didversioncheck = false;
             top.BlocklyPanel_indicateDisconnect();
+            top.ConnectProgressBar_hide();
             engine.reset();
         },
         "checkversionupgrade" : function(fatal, installer, force) {
@@ -1109,27 +1117,22 @@ Blockly.ReplMgr.processRetvals = function(responses) {
 };
 
 Blockly.ReplMgr.setDoitResult = function(block, value) {
-    var patt = /Do It Result:.*?\n---\n/m;
-    var comment = "";
-    var result = 'Do It Result: ' + value + '\n---\n';
+    var oldPatt = /Do It Result:.*?\n---\n/m;
+    var patt = new RegExp(Blockly.Msg.DO_IT_RESULT + '.*?\n---\n');
+    var result = Blockly.Msg.DO_IT_RESULT + ' ' + value + '\n---\n';
+    var text = "";
+
     if (block.comment) {
-        comment = block.comment.getText();
+        text = block.comment.getText().replace(oldPatt, '');
     }
-    if (!comment) {
-        comment = result;
+    if (!text) {
+        text = result;
+    } else if (patt.test(text)) { // Already a result there.
+        text = text.replace(patt, result);
     } else {
-        if (patt.test(comment)) { // Already a doit there!
-            comment = comment.replace(patt, result);
-        } else {
-            comment = result + comment;
-        }
+        text = result + text;
     }
-    // If we don't set visible to false, the comment
-    // doesn't always change when it should...
-    if (block.comment) {
-        block.comment.setVisible(false);
-    }
-    block.setCommentText(comment);
+    block.setCommentText(text);
     block.comment.setVisible(true);
 };
 
@@ -1347,7 +1350,7 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
     return sb.join("");
 };
 
-Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
+Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
     var rs = top.ReplState;
     var me = this;
     rs.didversioncheck = false; // Re-check
@@ -1375,20 +1378,29 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
         rs = top.ReplState;
         rs.state = this.rsState.RENDEZVOUS; // We are now rendezvousing
         rs.replcode = this.genCode();
+        if (chromebook) {
+            window.open("intent://comp/" + rs.replcode + "#Intent;scheme=aicompanion;package=" +
+                        top.ACCEPTABLE_COMPANION_PACKAGE +
+                        ";end");
+        }
         rs.rendezvouscode = this.sha1(rs.replcode);
         rs.seq_count = 1;          // used for the creating the hmac mac
         rs.count = 0;
-        rs.dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECT_TO_COMPANION, this.makeDialogMessage(rs.replcode), Blockly.Msg.REPL_CANCEL, false, null, 1, function() {
-            rs.dialog.hide();
-            rs.state = Blockly.ReplMgr.rsState.IDLE; // We're punting
-            rs.connection = null;
-            me.putYail.reset(true); // Shutdown any polling
-            top.BlocklyPanel_indicateDisconnect();
-        });
+        if (!chromebook) {
+            rs.dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECT_TO_COMPANION, this.makeDialogMessage(rs.replcode), Blockly.Msg.REPL_CANCEL, false, null, 1, function() {
+                rs.dialog.hide();
+                rs.state = Blockly.ReplMgr.rsState.IDLE; // We're punting
+                rs.connection = null;
+                me.putYail.reset(true); // Shutdown any polling
+                top.BlocklyPanel_indicateDisconnect();
+            });
+        }
         this.getFromRendezvous();
     } else {
         if (top.ReplState.state == this.rsState.RENDEZVOUS) {
-            top.ReplState.dialog.hide();
+            if (top.ReplState.dialog) { // It might not be showing if we are on a Chromebook
+                top.ReplState.dialog.hide();
+            }
         }
         try {
             top.webrtcdata.send("#DONE#"); // This should kill the companion
@@ -1433,7 +1445,9 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                     setTimeout(poller, 2000);
                     return;
                 }
-                rs.dialog.hide(); // Take down the QRCode dialog
+                if (rs.dialog) {      // Dialog won't be present when we connect via chromebook
+                    rs.dialog.hide(); // Take down the QRCode dialog
+                }
                 // Keep the user informed about the connection
                 top.ConnectProgressBar_start();
                 top.ConnectProgressBar_setProgress(10, Blockly.Msg.DIALOG_FOUND_COMPANION);
@@ -1600,7 +1614,9 @@ Blockly.ReplMgr.rendPoll = function() {
         top.ReplState.count = top.ReplState.count + 1;
         if (top.ReplState.count > 40) {
             top.ReplState.state = this.rsState.IDLE;
-            top.ReplState.dialog.hide(); // Punt the dialog
+            if (top.ReplState.dialog) {
+                top.ReplState.dialog.hide(); // Punt the dialog
+            }
             dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECTION_FAILURE1, Blockly.Msg.REPL_TRY_AGAIN1, Blockly.Msg.REPL_OK, false, null, 0, function() {
                 dialog.hide();
             });

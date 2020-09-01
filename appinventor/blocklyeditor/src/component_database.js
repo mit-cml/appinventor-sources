@@ -113,6 +113,20 @@ Blockly.ComponentDatabase = function() {
 };
 
 /**
+ * Regular expression to split a component name into a prefix and suffix where the suffix contains
+ * only a numeric value (if any).
+ *
+ * Examples:
+ *
+ * "Button1" => ["Button", "1"]
+ * "Nonumber" => ["Nonumber"]
+ * "Button1Button2" => ["Button1Button", "2"]
+ *
+ * @type {!RegExp}
+ */
+Blockly.ComponentDatabase.prototype.SUFFIX_REGEX = new RegExp('^(.*?)([0-9]*)$')
+
+/**
  * Add a new instance to the ComponentDatabase.
  * @param {!string} uid UUID of the component instance
  * @param {!string} name Name of the component instance
@@ -271,7 +285,8 @@ Blockly.ComponentDatabase.prototype.getComponentNamesByType = function(component
   for (var uid in this.instances_) {
     if (this.instances_.hasOwnProperty(uid) && this.instances_[uid].typeName == componentType) {
       var name = this.instances_[uid].name;
-      componentNameArray.push([name, name]);
+      var match = name.match(this.SUFFIX_REGEX) || [name, '0'];
+      componentNameArray.push([name, name, match[1], parseInt(match[2] || '0', 10)]);
     }
   }
   if (componentNameArray.length == 0) {
@@ -279,7 +294,9 @@ Blockly.ComponentDatabase.prototype.getComponentNamesByType = function(component
   } else {
     // Sort the components by name
     componentNameArray.sort(function(a, b) {
-      if (a[0] < b[0]) {
+      if (a[2] === b[2]) {
+        return a[3] - b[3];
+      } else if (a[0] < b[0]) {
         return -1;
       } else if (a[0] > b[0]) {
         return 1;

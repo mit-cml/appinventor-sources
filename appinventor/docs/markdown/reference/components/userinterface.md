@@ -1626,7 +1626,14 @@ Component for viewing Web pages.
 
  You can use the [`WebViewString`](#WebViewer.WebViewString) property to communicate between your app and
  Javascript code running in the `WebViewer` page. In the app, you get and set
- [`WebViewString`](#WebViewer.WebViewString) to "hello", then the web page will show
+ [`WebViewString`](#WebViewer.WebViewString). In the `WebViewer`, you include Javascript that references the
+ `window.AppInventor` object, using the methods `getWebViewString()` and `setWebViewString(text)`.
+
+ For example, if the `WebViewer` opens to a page that contains the Javascript command
+ ```javascript
+ document.write("The answer is" + window.AppInventor.getWebViewString());
+ ```
+ and if you set [`WebViewString`](#WebViewer.WebViewString) to "hello", then the web page will show
  ```
  The answer is hello.
  ```
@@ -1640,6 +1647,14 @@ Component for viewing Web pages.
  ```
  Calling `setWebViewString` from JavaScript will also run the [`WebViewStringChange`](#WebViewer.WebViewStringChange)
  event so that the blocks can handle when the [`WebViewString`](#WebViewer.WebViewString) property changes.
+
+ Beginning with release nb184a, you can specify a HomeUrl beginning with `http://localhost/`
+ to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ `file:///android_asset/` in compiled apps and `/sdcard/AppInventor/assets/` in the Companion.
+ Both of these options will continue to work but the `http://localhost/` approach will work in
+ both scenarios. You may also use "file:///appinventor_asset/" which provides more security by
+ preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ web.
 
 
 

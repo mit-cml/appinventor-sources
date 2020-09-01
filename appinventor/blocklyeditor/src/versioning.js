@@ -1513,7 +1513,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The AfterFileSaved event was added.
     // No blocks need to be modified to upgrade to version 2.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: The LegacyMode property was added.
+    // No blocks need to be modified to upgrade to version 3.
+    3: "noUpgrade"
 
   }, // End File upgraders
 
@@ -1823,7 +1827,13 @@ Blockly.Versioning.AllUpgradeMaps =
     30: "noUpgrade",
 
     // AI2: Added "replace all mappings" block
-    31: "noUpgrade"
+    31: "noUpgrade",
+
+    // AI2: Added mutators for and/or blocks
+    32: "noUpgrade",
+
+    // AI2: Added "contains any" and "contains all" options to the text contains block.
+    33:"noUpgrade"
 
   }, // End Language upgraders
 

@@ -748,6 +748,12 @@ body {
   text-shadow: none;
 }
 
+.destructive-action[disabled],
+.destructive-action[disabled]:hover {
+  background: #faa;
+  color: #888;
+}
+
 .ya-Toolbar .ode-TextButton {
   font-size: 11px;
 }
@@ -2745,4 +2751,40 @@ div.vector-marker>svg, div.leaflet-marker-icon>img {
   height: 100%;
   box-sizing: border-box;
   padding: 2px;
+}
+
+div.dropdiv {
+  position: fixed;
+  z-index: 1000000;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  top: 0;
+  left: 0;
+  display: none;
+  pointer-events: none;
+}
+
+div.dropdiv.good {
+  background-color: rgba(128, 255, 128, 0.3);
+  border: 8px dashed darkgreen;
+  display: block;
+}
+
+div.dropdiv div {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+
+div.dropdiv p {
+  text-align: center;
+  top: -15pt;
+  font-size: 18pt;
+  line-height: 30pt;
+  color: darkgreen;
+  margin: 0;
+  position: relative;
 }

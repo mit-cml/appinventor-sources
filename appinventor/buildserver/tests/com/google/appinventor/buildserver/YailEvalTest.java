@@ -7,6 +7,8 @@
 package com.google.appinventor.buildserver;
 
 import com.google.appinventor.common.testutils.TestUtils;
+import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.HandlesEventDispatching;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -14,6 +16,9 @@ import gnu.kawa.functions.Arithmetic;
 import gnu.math.DFloNum;
 import gnu.math.IntNum;
 import gnu.math.Numeric;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Random;
 import junit.framework.TestCase;
 import kawa.standard.Scheme;
@@ -1432,5 +1437,42 @@ public class YailEvalTest extends TestCase {
     "  1) '(list number) \"select list item\")";
     String schemeResultString = "(key {})";
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
+  }
+
+  /**
+   * Tests that dictionaries can accept components as keys and that lookups with component keys
+   * works.
+   */
+  public void testComponentsAsDictKeys() throws Throwable {
+    String sym = gensym();
+    Component fakeComponent = new Component() {
+      @Override
+      public HandlesEventDispatching getDispatchDelegate() {
+        return null;
+      }
+    };
+    scheme.define(sym, fakeComponent);
+    String code = readTestCode("testComponentsAsDictKeys");
+    assertTrue((Boolean) scheme.eval(String.format(code, sym)));
+  }
+
+  private static String gensym() {
+    return "gensym$" + Math.round(Math.random() * Long.MAX_VALUE);
+  }
+
+  private String readTestCode(String test) {
+    try (InputStream is = getClass().getClassLoader()
+        .getResourceAsStream("com/google/appinventor/buildserver/" + test + ".scm");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+      assertNotNull(is);
+      byte[] buffer = new byte[4096];
+      int read;
+      while ((read = is.read(buffer)) > 0) {
+        baos.write(buffer, 0, read);
+      }
+      return baos.toString("UTF-8");
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to read required test resource", e);
+    }
   }
 }

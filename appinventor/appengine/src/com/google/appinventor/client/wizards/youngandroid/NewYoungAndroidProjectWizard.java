@@ -60,6 +60,7 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
           disableOkButton();
           return false;
         }
+          errorMessage = TextValidators.getWarningMessages(value);
           enableOkButton();
           return true;
       }
@@ -113,8 +114,8 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     initFinishCommand(new Command() {
       @Override
       public void execute() {
-        String projectName = projectNameTextBox.getText();
-
+        String projectName = projectNameTextBox.getText().trim();
+        projectName = projectName.replaceAll("( )+", " ").replace(" ","_");
         if (TextValidators.checkNewProjectName(projectName)) {
           String packageName = StringUtils.getProjectPackage(
               Ode.getInstance().getUser().getUserEmail(), projectName);

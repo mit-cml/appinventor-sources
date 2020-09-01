@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,16 +8,9 @@
  * and was original published under Apache 2.0 license.
  *
  */
+
 package com.google.appinventor.components.runtime.util;
 
-import java.util.List;
-
-import android.support.v4.app.NotificationCompat;
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.runtime.Texting;
-import com.google.appinventor.components.runtime.ReplForm;
-
-import android.R;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,6 +20,11 @@ import android.content.Intent;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import androidx.core.app.NotificationCompat;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.runtime.ReplForm;
+import com.google.appinventor.components.runtime.Texting;
+import java.util.List;
 
 /**
  * This broadcast receiver accepts incoming SMS messages from either
@@ -227,7 +225,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
       PendingIntent activity = PendingIntent.getActivity(context, 0, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
       NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
       Notification note = new NotificationCompat.Builder(context)
-          .setSmallIcon(R.drawable.sym_call_incoming)
+          .setSmallIcon(android.R.drawable.sym_call_incoming)
           .setTicker(phone + " : " + msg)
           .setWhen(System.currentTimeMillis())
           .setAutoCancel(true)

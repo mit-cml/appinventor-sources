@@ -78,19 +78,14 @@ Blockly.BackpackFlyout.prototype.dispose = function() {
 };
 
 /**
- * Filter the blocks on the flyout to disable the ones that are above the
- * capacity limit.
+ * Returns if the flyout allows a new instance of the given block to be created.
+ * Always returns true to allow disabled blocks to be dragged out.
+ * @param {!Blockly.BlockSvg} _block The block to copy from the flyout.
+ * @return {boolean} True if the flyout allows the block to be instantiated.
  */
-Blockly.BackpackFlyout.prototype.filterForCapacity_ = function() {
-  if (!this.targetWorkspace_) return;
-  var remainingCapacity = this.targetWorkspace_.remainingCapacity();
-  var blocks = this.workspace_.getTopBlocks(false);
-  for (var i = 0, block; block = blocks[i]; i++) {
-    var allBlocks = block.getDescendants();
-    var disabled = allBlocks.length > remainingCapacity;
-    block.setDisabled(disabled);
-  }
-};
+Blockly.BackpackFlyout.prototype.isBlockCreatable_ = function(_block) {
+  return true;
+}
 
 /**
  * Stop binding to the global mouseup and mousemove events.

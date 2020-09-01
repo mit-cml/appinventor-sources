@@ -28,6 +28,7 @@ public class NoProjectDialogBox extends DialogBox {
 
   private static NoProjectDialogBoxUiBinder uiBinder =
       GWT.create(NoProjectDialogBoxUiBinder.class);
+  private static NoProjectDialogBox lastDialog = null;
 
   interface NoProjectDialogBoxUiBinder extends UiBinder<Widget, NoProjectDialogBox> {
   }
@@ -64,6 +65,7 @@ public class NoProjectDialogBox extends DialogBox {
     this.center();
     this.setAnimationEnabled(true);
     this.setAutoHideEnabled(true);
+    lastDialog = this;
   }
 
   @UiHandler("closeDialogBox")
@@ -93,5 +95,12 @@ public class NoProjectDialogBox extends DialogBox {
   void handleNewProject(ClickEvent e) {
     this.hide();
     new NewYoungAndroidProjectWizard(null).show();
+  }
+
+  public static void closeIfOpen() {
+    if (lastDialog != null) {
+      lastDialog.removeFromParent();;
+      lastDialog = null;
+    }
   }
 }

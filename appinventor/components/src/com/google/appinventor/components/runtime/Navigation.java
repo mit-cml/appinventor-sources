@@ -18,6 +18,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -50,6 +51,7 @@ import org.osmdroid.util.GeoPoint;
     nonVisible = true,
     iconName = "images/navigation.png")
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesLibraries({"osmdroid.jar"})
 @SimpleObject
 public class Navigation extends AndroidNonvisibleComponent implements Component {
 

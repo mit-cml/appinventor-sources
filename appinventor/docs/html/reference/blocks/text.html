@@ -136,6 +136,8 @@
   <li><a href="#downcase">downcase</a></li>
   <li><a href="#startsat">starts at</a></li>
   <li><a href="#contains">contains</a></li>
+  <li><a href="#containsany">contains any</a></li>
+  <li><a href="#containsall">contains all</a></li>
   <li><a href="#splitatfirst">split at first</a></li>
   <li><a href="#splitatfirstofany">split at first of any</a></li>
   <li><a href="#split">split</a></li>
@@ -175,11 +177,11 @@
 
 <p>Returns whether or not the string contains any characters (including spaces). When the string length is 0, returns true otherwise it returns false.</p>
 
-<h3 id="compare">compare texts &lt; &gt; =</h3>
+<h3 id="compare">compare texts &lt; &gt; = ≠</h3>
 
 <p><img src="images/text/compare.gif" alt="" /></p>
 
-<p>Returns whether or not the first string is lexicographically &lt;, &gt;, or = the second string depending on which dropdown is selected.</p>
+<p>Returns whether or not the first string is lexicographically &lt;, &gt;, =, or ≠ the second string depending on which dropdown is selected.</p>
 
 <p>A string a considered lexicographically greater than another if it is alphabetically greater than the other string. Essentially, it would come after it in the dictionary. All uppercase letters are considered smaller or to occur before lowercase letters. cat would be &gt; Cat.</p>
 
@@ -212,6 +214,22 @@
 <p><img src="images/text/contains.png" alt="" /></p>
 
 <p>Returns true if <em>piece</em> appears in text; otherwise, returns false.</p>
+
+<h3 id="containsany">contains any</h3>
+
+<p><img src="images/text/containsany.png" alt="" /></p>
+
+<p>Returns true if any of the pieces in the piece list appear in text; otherwise, returns false.</p>
+
+<p>This block can be obtained by changing the dropdown on the contains block.</p>
+
+<h3 id="containsall">contains all</h3>
+
+<p><img src="images/text/containsall.png" alt="" /></p>
+
+<p>Returns true if all of the pieces in the piece list appear in text; otherwise, returns false.</p>
+
+<p>This block can be obtained by changing the dropdown on the contains block.</p>
 
 <h3 id="splitatfirst">split at first</h3>
 

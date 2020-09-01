@@ -116,6 +116,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST = "Component does not exist";
     Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED = "This block is not defined. Delete this block!";
     Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP = "The break block should be used only within loops";
+    Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT = 'This text block does not contain a valid number';
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = '/reference/blocks/colors.html#basic';
@@ -687,12 +688,22 @@ Blockly.Msg.en.switch_language_to_english = {
         + 'where index 1 denotes the beginning of the text. Returns 0 if the\n'
         + 'piece is not in the text.';
 
-    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL = '/reference/blocks/text.html#contains';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'contains';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = 'text';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = 'piece';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = 'contains  text %1 piece %2';
-    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = 'Tests whether the piece is contained in the text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST = 'piece list';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '%1 text %2 %3 %4';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS = 'contains';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY = 'contains any';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL = 'contains all';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS = 'Tests whether the piece is contained in the '
+        + 'text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS = '/reference/blocks/text.html#contains';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY = 'Tests whether the any of the pieces are '
+        + 'contained in the text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ANY = '/reference/blocks/text.html#containsany';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL = 'Tests whether the all of the pieces are '
+        + 'contained in the text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL = '/reference/blocks/text.html#containsall';
 
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL = '';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = 'text';
@@ -1613,6 +1624,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Do You Really?";
     Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
     Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "Companion Connection Error";
+    Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED = "The Companion has disconnected";
     Blockly.Msg.REPL_EMULATOR_ONLY = 'You can only use this option to update the Emulator';
 
 // Messages from Blockly.js
@@ -1621,6 +1633,7 @@ Blockly.Msg.en.switch_language_to_english = {
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "Generate Yail";
     Blockly.Msg.DO_IT = "Do It";
+    Blockly.Msg.DO_IT_RESULT = "Do It Result:";
     Blockly.Msg.DO_IT_DISCONNECTED = 'Do It (Companion not connected)';
     Blockly.Msg.CLEAR_DO_IT_ERROR = "Clear Error";
     Blockly.Msg.CAN_NOT_DO_IT = "Cannot Do it";

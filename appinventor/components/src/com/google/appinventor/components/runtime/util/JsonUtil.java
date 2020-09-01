@@ -1,15 +1,15 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
-import android.os.Environment;
-
+import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
 import gnu.lists.FString;
@@ -359,6 +359,27 @@ public class JsonUtil {
   }
 
   /**
+   * This method converts a file path to a JSON representation.
+   * The code in the method was part of GetValue. For better modularity and reusability
+   * the logic is now part of this method, which can be invoked from wherever and
+   * whenever required.
+   *
+   * <p>
+   * This function is deprecated. Developers should use
+   * {@link #getJsonRepresentationIfValueFileName(Context, Object)} instead.
+   * </p>
+   *
+   * @param value value to be serialized into JSON
+   * @return JSON representation
+   */
+  @Deprecated
+  public static String getJsonRepresentationIfValueFileName(Object value) {
+    Log.w(LOG_TAG, "Calling deprecated function getJsonRepresentationIfValueFileName",
+        new IllegalAccessException());
+    return getJsonRepresentationIfValueFileName(Form.getActiveForm(), value);
+  }
+
+  /**
    * Written by joymitro@gmail.com (Joydeep Mitra)
    * This method converts a file path to a JSON representation.
    * The code in the method was part of GetValue. For better modularity and reusability
@@ -375,10 +396,11 @@ public class JsonUtil {
    *                   this function, we just do the initial JSON parsing
    *                   if we are handed a string.
    *
-   * @param file path
+   * @param context the Android context to use for placing files, if needed.
+   * @param value value to be serialized into JSON
    * @return JSON representation
    */
-  public static String getJsonRepresentationIfValueFileName(Object value){
+  public static String getJsonRepresentationIfValueFileName(Context context, Object value) {
     try {
       List<String> valueList;
       if (value instanceof String) {
@@ -392,7 +414,7 @@ public class JsonUtil {
       }
       if (valueList.size() == 2) {
         if (valueList.get(0).startsWith(".")) {
-          String filename = writeFile(valueList.get(1), valueList.get(0).substring(1));
+          String filename = writeFile(context, valueList.get(1), valueList.get(0).substring(1));
           System.out.println("Filename Written: " + filename);
           filename = filename.replace("file:/", "file:///");
           return getJsonRepresentation(filename);
@@ -415,18 +437,19 @@ public class JsonUtil {
    *
    * Written by Jeff Schiller (jis) for the BinFile Extension
    *
+   * @param context The Android context to use for placing the file in the file system
    * @param input Base64 input string
    * @param fileExtension three character file extension
    * @return the name of the created file
    */
-  private static String writeFile(String input, String fileExtension) {
+  private static String writeFile(Context context, String input, String fileExtension) {
     FileOutputStream outStream = null;
     try {
       if (fileExtension.length() != 3 && fileExtension.length() != 4) {
         throw new YailRuntimeError("File Extension must be three or four characters", "Write Error");
       }
       byte [] content = Base64.decode(input, Base64.DEFAULT);
-      String fullDirName = Environment.getExternalStorageDirectory() + BINFILE_DIR;
+      String fullDirName = QUtil.getExternalStoragePath(context) + BINFILE_DIR;
       File destDirectory = new File(fullDirName);
       destDirectory.mkdirs();
       File dest = File.createTempFile("BinFile", "." + fileExtension, destDirectory);

@@ -130,7 +130,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     List<MockComponent> visibleChildren = getShowingVisibleChildren();
 
     int beforeActualIndex;
-    if ((beforeVisibleIndex == -1) || (beforeVisibleIndex == visibleChildren.size())) {
+    if ((beforeVisibleIndex == -1) || (beforeVisibleIndex >= visibleChildren.size())) {
       // Insert after last visible component
       if (visibleChildren.size() == 0) {
         beforeActualIndex = 0;
@@ -261,6 +261,10 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       }
     }
     return false;
+  }
+
+  public boolean willAcceptComponentType(String type) {
+    return !MockCanvas.ACCEPTABLE_TYPES.contains(type) && !MockMap.ACCEPTABLE_TYPES.contains(type);
   }
 
   // TODO(user): Draw a colored border around the edges of the container

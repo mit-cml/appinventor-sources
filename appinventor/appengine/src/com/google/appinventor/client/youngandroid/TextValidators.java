@@ -47,11 +47,13 @@ public final class TextValidators {
    * @param projectName the project name to validate
    * @return {@code true} if the project name is valid, {@code false} otherwise
    */
-  public static boolean checkNewProjectName(String projectName) {
+  public static boolean checkNewProjectName(String projectName, boolean quietly) {
 
     // Check the format of the project name
     if (!isValidIdentifier(projectName)) {
-      Window.alert(MESSAGES.malformedProjectNameError());
+      if (!quietly) {
+        Window.alert(MESSAGES.malformedProjectNameError());
+      }
       return false;
     }
 
@@ -65,13 +67,17 @@ public final class TextValidators {
     if (Ode.getInstance().getProjectManager().getProject(projectName) != null) {
       if (Ode.getInstance().getProjectManager().getProject(projectName).isInTrash()) {
         Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));
-      } else {
+      } else if (!quietly) {
         Window.alert(MESSAGES.duplicateProjectNameError(projectName));
       }
       return false;
     }
 
     return true;
+  }
+
+  public static boolean checkNewProjectName(String projectName) {
+    return checkNewProjectName(projectName, false);
   }
 
   public static boolean checkNewComponentName(String componentName) {
@@ -187,15 +193,35 @@ public final class TextValidators {
     String errorMessage = "";
     String noWhitespace = "[\\S]+";
     String firstCharacterLetter = "[A-Za-z].*";
-    if(!filename.matches("[A-Za-z][A-Za-z0-9_]*") && filename.length() > 0) {
-      if(!filename.matches(noWhitespace)) { //Check to make sure that this project does not contain any whitespace
-        errorMessage = MESSAGES.whitespaceProjectNameError();
-      } else if (!filename.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
-        errorMessage = MESSAGES.firstCharProjectNameError();
-      } else { //The text contains a character that is not a letter, number, or underscore
-        errorMessage = MESSAGES.invalidCharProjectNameError();
+    String temp = filename.trim().replaceAll("( )+", " ").replace(" ","_");
+    if (temp.length() > 0) {
+      if (!temp.matches("[A-Za-z][A-Za-z0-9_]*")) {
+        if (!temp.matches(firstCharacterLetter)) { 
+          //Check to make sure that the first character is a letter
+          errorMessage = MESSAGES.firstCharProjectNameError();
+        } else { //The text contains a character that is not a letter, number, or underscore
+          errorMessage = MESSAGES.invalidCharProjectNameError();
+        }
       }
     }
     return errorMessage;
+  }
+
+  /**
+   * Determines human-readable message for specific warning if there are no errors.
+   * @param filename The filename (not path) of uploaded file
+   * @return String representing warning message, empty string if no warning and no error
+   */
+  public static String getWarningMessages(String filename) {
+    String warningMessage = "";
+    if (getErrorMessage(filename).length() == 0 && filename.trim().length() > 0) {
+      if (!filename.matches("[A-Za-z][A-Za-z0-9_]*")) {
+        // check to make sure if filename has no spaces
+        String errorMessage = MESSAGES.whitespaceProjectNameError();
+        filename = filename.trim().replaceAll("( )+", " ").replace(" ","_");
+        warningMessage = errorMessage + ". \n '" + filename + "' will be used if continued.";
+      }
+    }
+    return warningMessage;
   }
 }

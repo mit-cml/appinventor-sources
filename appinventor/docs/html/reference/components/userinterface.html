@@ -1437,7 +1437,13 @@ having dark grey components.</li>
 
 <p>You can use the <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> property to communicate between your app and
  Javascript code running in the <code class="highlighter-rouge">WebViewer</code> page. In the app, you get and set
- <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> to “hello”, then the web page will show</p>
+ <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a>. In the <code class="highlighter-rouge">WebViewer</code>, you include Javascript that references the
+ <code class="highlighter-rouge">window.AppInventor</code> object, using the methods <code class="highlighter-rouge">getWebViewString()</code> and <code class="highlighter-rouge">setWebViewString(text)</code>.</p>
+
+<p>For example, if the <code class="highlighter-rouge">WebViewer</code> opens to a page that contains the Javascript command</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">"The answer is"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">AppInventor</span><span class="p">.</span><span class="nx">getWebViewString</span><span class="p">());</span>
+</code></pre></div></div>
+<p>and if you set <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> to “hello”, then the web page will show</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> The answer is hello.
 </code></pre></div></div>
 <p>And if the Web page contains Javascript that executes the command</p>
@@ -1448,6 +1454,14 @@ having dark grey components.</li>
 </code></pre></div></div>
 <p>Calling <code class="highlighter-rouge">setWebViewString</code> from JavaScript will also run the <a href="#WebViewer.WebViewStringChange"><code class="highlighter-rouge">WebViewStringChange</code></a>
  event so that the blocks can handle when the <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> property changes.</p>
+
+<p>Beginning with release nb184a, you can specify a HomeUrl beginning with <code class="highlighter-rouge">http://localhost/</code>
+ to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ <code class="highlighter-rouge">file:///android_asset/</code> in compiled apps and <code class="highlighter-rouge">/sdcard/AppInventor/assets/</code> in the Companion.
+ Both of these options will continue to work but the <code class="highlighter-rouge">http://localhost/</code> approach will work in
+ both scenarios. You may also use “file:///appinventor_asset/” which provides more security by
+ preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ web.</p>
 
 <h3 id="WebViewer-Properties">Properties</h3>
 

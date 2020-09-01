@@ -6,7 +6,13 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.ACCESS_NETWORK_STATE;
+import static android.Manifest.permission.ACCESS_WIFI_STATE;
+import static android.Manifest.permission.INTERNET;
+import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
+
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -25,11 +31,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -40,6 +42,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.appinventor.common.version.AppInventorFeatures;
 
@@ -63,18 +68,16 @@ import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.multidex.MultiDex;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
-import com.google.appinventor.components.runtime.util.PaintUtil;
-import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
-import org.json.JSONException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -93,6 +96,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.json.JSONException;
+
 
 /**
  * Top-level component containing all other components in the program.
@@ -100,29 +105,27 @@ import java.util.Set;
  * @internaldoc
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
  *
- * This is the root container of any Android activity and also the
- * superclass for Simple/Android UI applications.
+ * <p>This is the root container of any Android activity and also the
+ *     superclass for Simple/Android UI applications.</p>
  *
- * The main form is always named "Screen1".
+ * <p>The main form is always named "Screen1".</p>
  *
- * NOTE WELL: There are many places in the code where the name "Screen1" is
- * directly referenced. If we ever change App Inventor to support renaming
- * screens and Screen1 in particular, we need to make sure we find all those
- * places and make the appropriate code changes.
+ * <p>NOTE WELL: There are many places in the code where the name "Screen1" is
+ *     directly referenced. If we ever change App Inventor to support renaming
+ *     screens and Screen1 in particular, we need to make sure we find all those
+ *     places and make the appropriate code changes.</p>
  *
  */
 
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
     category = ComponentCategory.USERINTERFACE,
     description = "Top-level component containing all other components in the program",
-    androidMinSdk = 7,
     showOnPalette = false)
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE," +
-    "android.permission.ACCESS_NETWORK_STATE")
+@UsesPermissions({INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE})
 public class Form extends AppInventorCompatActivity
-  implements Component, ComponentContainer, HandlesEventDispatching,
-  OnGlobalLayoutListener {
+    implements Component, ComponentContainer, HandlesEventDispatching,
+    OnGlobalLayoutListener {
 
   private static final String LOG_TAG = "Form";
 
@@ -134,10 +137,10 @@ public class Form extends AppInventorCompatActivity
 
   public static final String ASSETS_PREFIX = "file:///android_asset/";
 
-  private static final boolean DEBUG = false;
-
-  private static final int DEFAULT_PRIMARY_COLOR_DARK = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR);
-  private static final int DEFAULT_ACCENT_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
+  private static final int DEFAULT_PRIMARY_COLOR_DARK =
+      hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR);
+  private static final int DEFAULT_ACCENT_COLOR =
+      hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
 
   // Keep track of the current form object.
   // activeForm always holds the Form that is currently handling event dispatching so runtime.scm
@@ -214,6 +217,7 @@ public class Form extends AppInventorCompatActivity
   private final Set<OnClearListener> onClearListeners = Sets.newHashSet();
   private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
   private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
+  private final Set<OnOrientationChangeListener> onOrientationChangeListeners = Sets.newHashSet();
   private final Set<OnPauseListener> onPauseListeners = Sets.newHashSet();
   private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
 
@@ -737,6 +741,10 @@ public class Form extends AppInventorCompatActivity
     onResumeListeners.add(component);
   }
 
+  public void registerForOnOrientationChange(OnOrientationChangeListener component) {
+    onOrientationChangeListeners.add(component);
+  }
+
   /**
    * An app can register to be notified when App Inventor's Initialize
    * block has fired.  They will be called in Initialize().
@@ -918,6 +926,9 @@ public class Form extends AppInventorCompatActivity
 
   @SimpleEvent(description = "Screen orientation changed")
   public void ScreenOrientationChanged() {
+    for (OnOrientationChangeListener onOrientationChangeListener : onOrientationChangeListeners) {
+      onOrientationChangeListener.onOrientationChange();
+    }
     EventDispatcher.dispatchEvent(this, "ScreenOrientationChanged");
   }
 
@@ -1459,6 +1470,7 @@ public class Form extends AppInventorCompatActivity
    *
    * @param screenOrientation  the screen orientation as a string
    */
+  @SuppressLint("SourceLockedOrientationActivity")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION,
       defaultValue = "unspecified")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
@@ -2394,6 +2406,7 @@ public class Form extends AppInventorCompatActivity
     onStopListeners.clear();
     onNewIntentListeners.clear();
     onResumeListeners.clear();
+    onOrientationChangeListeners.clear();
     onPauseListeners.clear();
     onDestroyListeners.clear();
     onInitializeListeners.clear();
@@ -2420,6 +2433,9 @@ public class Form extends AppInventorCompatActivity
     }
     if (component instanceof OnResumeListener) {
       onResumeListeners.remove(component);
+    }
+    if (component instanceof OnOrientationChangeListener) {
+      onOrientationChangeListeners.remove(component);
     }
     if (component instanceof OnPauseListener) {
       onPauseListeners.remove(component);
@@ -2773,9 +2789,9 @@ public class Form extends AppInventorCompatActivity
       final AssetManager am = getAssets();
       return am.open(path.substring(ASSETS_PREFIX.length()));
     } else if (path.startsWith("file:")) {
-      return FileUtil.openFile(URI.create(path));
+      return FileUtil.openFile(this, URI.create(path));
     } else {
-      return FileUtil.openFile(path);
+      return FileUtil.openFile(this, path);
     }
   }
 }

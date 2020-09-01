@@ -49,7 +49,7 @@ public class ComponentImportWizard extends Wizard {
 
   final static String external_components = "assets/external_comps/";
 
-  private static class ImportComponentCallback extends OdeAsyncCallback<ComponentImportResponse> {
+  public static class ImportComponentCallback extends OdeAsyncCallback<ComponentImportResponse> {
     @Override
     public void onSuccess(ComponentImportResponse response) {
       if (response.getStatus() == ComponentImportResponse.Status.FAILED){
