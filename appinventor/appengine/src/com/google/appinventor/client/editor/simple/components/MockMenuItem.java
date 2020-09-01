@@ -33,7 +33,7 @@ public final class MockMenuItem extends MockVisibleComponent {
   /**
    * Creates a new MockMenuItem component.
    *
-   * @param editor  editor of source file the component belongs to
+   * @param editor editor of source file the component belongs to
    */
   public MockMenuItem(SimpleEditor editor) {
     super(editor, TYPE, images.menuitem());
@@ -47,7 +47,7 @@ public final class MockMenuItem extends MockVisibleComponent {
   @Override
   protected boolean isPropertyVisible(String propertyName) {
     if (propertyName.equals(PROPERTY_NAME_WIDTH) ||
-        propertyName.equals(PROPERTY_NAME_HEIGHT)) {
+            propertyName.equals(PROPERTY_NAME_HEIGHT)) {
       return false;
     }
     return super.isPropertyVisible(propertyName);

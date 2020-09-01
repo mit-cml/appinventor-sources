@@ -17,91 +17,91 @@ import java.util.List;
 
 /**
  * Container for ContextMenuItems
+ *
  * @author singhalsara48@gmail.com (Sara Singhal)
  *
  */
 @DesignerComponent(version = YaVersion.CONTEXT_MENU_COMPONENT_VERSION,
-        category = ComponentCategory.LAYOUT,
-        description = "Component for context menu to hold ContextMenuItems.")
+    category = ComponentCategory.LAYOUT,
+    description = "Component for context menu to hold ContextMenuItems.")
 @SimpleObject
 public class ContextMenu implements Component, ComponentContainer, View.OnCreateContextMenuListener {
 
-    private Form form;
-    private android.view.ContextMenu menu;
+  private Form form;
+  private android.view.ContextMenu menu;
 
-    private List<MenuItem> items;
+  private List<MenuItem> items;
 
-    /**
-     * Create a new Context Menu component.
-     *
-     * @param form The form that will render this menu.
-     */
-    public ContextMenu(Form form) {
-        items = new ArrayList<>();
-        form.registerForOnCreateContextMenu(this);
-        this.form = form;
+  /**
+   * Create a new Context Menu component.
+   *
+   * @param form The form that will render this menu.
+   */
+  public ContextMenu(Form form) {
+    items = new ArrayList<>();
+    form.registerForOnCreateContextMenu(this);
+    this.form = form;
+  }
+
+  @Override
+  public void onCreateContextMenu(android.view.ContextMenu menu, View view, android.view.ContextMenu.ContextMenuInfo menuInfo) {
+    this.menu = menu;
+    menu.clear();
+    for (MenuItem item : items) {
+      item.addToContextMenu(menu);
     }
+  }
 
-    @Override
-    public void onCreateContextMenu(android.view.ContextMenu menu, View view, android.view.ContextMenu.ContextMenuInfo menuInfo) {
-        this.menu = menu;
-        menu.clear();
-        for (MenuItem item : items) {
-            item.addToContextMenu(menu);
-        }
+  public void addMenuItem(MenuItem item) {
+    items.add(item);
+    if (menu != null) {
+      item.addToContextMenu(menu);
     }
-
-    public void addMenuItem(MenuItem item) {
-        items.add(item);
-        if (menu != null) {
-            item.addToContextMenu(menu);
-        }
-    }
+  }
 
 
+  // ComponentContainer implementation
 
-    // ComponentContainer implementation
+  @Override
+  public Activity $context() {
+    return form;
+  }
 
-    @Override
-    public Activity $context() {
-        return form;
-    }
+  @Override
+  public Form $form() {
+    return form;
+  }
 
-    @Override
-    public Form $form() {
-        return form;
-    }
+  @Override
+  public void $add(AndroidViewComponent component) {
+    throw new UnsupportedOperationException("Menu.$add() called");
+  }
 
-    @Override
-    public void $add(AndroidViewComponent component) {
-        throw new UnsupportedOperationException("Menu.$add() called");
-    }
+  @Override
+  public void setChildWidth(AndroidViewComponent component, int width) {
+    throw new UnsupportedOperationException("Menu.setChildWidth() called");
+  }
 
-    @Override
-    public void setChildWidth(AndroidViewComponent component, int width) {
-        throw new UnsupportedOperationException("Menu.setChildWidth() called");
-    }
+  @Override
+  public void setChildHeight(AndroidViewComponent component, int height) {
+    throw new UnsupportedOperationException("Menu.setChildHeight() called");
+  }
 
-    @Override
-    public void setChildHeight(AndroidViewComponent component, int height) {
-        throw new UnsupportedOperationException("Menu.setChildHeight() called");
-    }
+  @Override
+  public int Width() {
+    return 0;
+  }
 
-    @Override
-    public int Width() {
-        return 0;
-    }
+  @Override
+  public int Height() {
+    return 0;
+  }
 
-    @Override
-    public int Height() {
-        return 0;
-    }
+  // Component implementation
 
-    // Component implementation
-
-    @Override
-    public HandlesEventDispatching getDispatchDelegate() {
-        return form;
-    }
+  @Override
+  public HandlesEventDispatching getDispatchDelegate() {
+    return form;
+  }
 
 }

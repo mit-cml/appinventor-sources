@@ -16,72 +16,72 @@ import com.google.gwt.user.client.ui.Image;
 
 public class MockFloatingActionButton extends MockVisibleComponent {
 
-    public static final String TYPE = "FloatingActionButton";
-    public static final String PROPERTY_NAME_ICON = "Icon";
+  public static final String TYPE = "FloatingActionButton";
+  public static final String PROPERTY_NAME_ICON = "Icon";
 
-    private AbsolutePanel fabWidget;
-    private Button fabButton;
-    private Image fabImage = null;
-    private String imagePath = "";
+  private AbsolutePanel fabWidget;
+  private Button fabButton;
+  private Image fabImage = null;
+  private String imagePath = "";
 
-    public MockFloatingActionButton(SimpleEditor editor) {
-        super(editor, TYPE, images.fab());
+  public MockFloatingActionButton(SimpleEditor editor) {
+    super(editor, TYPE, images.fab());
 
-        fabWidget = new AbsolutePanel();
-        fabWidget.setStylePrimaryName("ode-SimpleMockFormFABContainer");
+    fabWidget = new AbsolutePanel();
+    fabWidget.setStylePrimaryName("ode-SimpleMockFormFABContainer");
 
-        fabButton = new Button();
-        fabButton.setStylePrimaryName("ode-SimpleMockFormFABButton");
-        fabWidget.add(fabButton);
+    fabButton = new Button();
+    fabButton.setStylePrimaryName("ode-SimpleMockFormFABButton");
+    fabWidget.add(fabButton);
 
-        initComponent(fabWidget);
+    initComponent(fabWidget);
+  }
+
+  @Override
+  protected boolean isPropertyVisible(String propertyName) {
+    if (propertyName.equals(PROPERTY_NAME_HEIGHT) || propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      return false;
     }
+    return super.isPropertyVisible(propertyName);
+  }
 
-    @Override
-    protected boolean isPropertyVisible(String propertyName) {
-        if(propertyName.equals(PROPERTY_NAME_HEIGHT) || propertyName.equals(PROPERTY_NAME_WIDTH)) {
-           return false;
+  private void setIconProperty(String newValue) {
+    if (fabImage == null) {
+      fabImage = new Image();
+      fabImage.addErrorHandler(new ErrorHandler() {
+        @Override
+        public void onError(ErrorEvent errorEvent) {
+          refreshForm(true);
         }
-        return super.isPropertyVisible(propertyName);
+      });
+      fabImage.addLoadHandler(new LoadHandler() {
+        @Override
+        public void onLoad(LoadEvent loadEvent) {
+          refreshForm(true);
+        }
+      });
+      fabImage.setWidth("24px");
+      fabImage.setHeight("24px");
     }
-
-    private void setIconProperty(String newValue) {
-        if (fabImage == null) {
-            fabImage = new Image();
-            fabImage.addErrorHandler(new ErrorHandler() {
-                @Override
-                public void onError(ErrorEvent errorEvent) {
-                    refreshForm(true);
-                }
-            });
-            fabImage.addLoadHandler(new LoadHandler() {
-                @Override
-                public void onLoad(LoadEvent loadEvent) {
-                    refreshForm(true);
-                }
-            });
-            fabImage.setWidth("24px");
-            fabImage.setHeight("24px");
-        }
-        String url = convertImagePropertyValueToUrl(newValue);
-        if (url == null) {
-            fabImage.removeFromParent();
-            fabImage.setUrl(images.defaultImage().getURL());
-        } else {
-            fabImage.setUrl(url);
-        }
-            if (!fabImage.isAttached()) {
-                fabButton.getElement().appendChild(fabImage.getElement());
-            }
-        imagePath = newValue;
+    String url = convertImagePropertyValueToUrl(newValue);
+    if (url == null) {
+      fabImage.removeFromParent();
+      fabImage.setUrl(images.defaultImage().getURL());
+    } else {
+      fabImage.setUrl(url);
     }
-
-    @Override
-    public void onPropertyChange(String propertyName, String newValue) {
-        super.onPropertyChange(propertyName, newValue);
-
-        if (PROPERTY_NAME_ICON.equals(propertyName)) {
-            setIconProperty(newValue);
-        }
+    if (!fabImage.isAttached()) {
+      fabButton.getElement().appendChild(fabImage.getElement());
     }
+    imagePath = newValue;
+  }
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+    super.onPropertyChange(propertyName, newValue);
+
+    if (PROPERTY_NAME_ICON.equals(propertyName)) {
+      setIconProperty(newValue);
+    }
+  }
 }

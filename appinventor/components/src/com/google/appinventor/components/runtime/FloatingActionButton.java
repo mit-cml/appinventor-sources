@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2020 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.content.res.ColorStateList;
@@ -20,60 +25,60 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 import java.io.IOException;
 
 @DesignerComponent(version = YaVersion.FLOATING_ACTION_BUTTON_COMPONENT_VERSION,
-        category = ComponentCategory.USERINTERFACE,
-        description = " ")
+    category = ComponentCategory.USERINTERFACE,
+    description = " ")
 @SimpleObject
-public class FloatingActionButton extends AndroidViewComponent{
-    private com.google.android.material.floatingactionbutton.FloatingActionButton floatingActionButton;
-    private String iconPath = "";
-    private Drawable icon = null;
+public class FloatingActionButton extends AndroidViewComponent {
+  private com.google.android.material.floatingactionbutton.FloatingActionButton floatingActionButton;
+  private String iconPath = "";
+  private Drawable icon = null;
 
-    /**
-     * Creates a new AndroidViewComponent.
-     *
-     * @param container container, component will be placed in
-     */
-    public FloatingActionButton(ComponentContainer container) {
-        super(container);
-        floatingActionButton = container.$form().floatingActionButton;
-        floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(android.graphics.Color.rgb(255,64,129)));
-        if(icon==null) {
-            floatingActionButton.setImageResource(android.R.drawable.ic_input_add);
-            ImageViewCompat.setImageTintList(floatingActionButton, ColorStateList.valueOf(Color.WHITE));
-        }
-        floatingActionButton.show();
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Click();
-            }
-        });
+  /**
+   * Creates a new AndroidViewComponent.
+   *
+   * @param container container, component will be placed in
+   */
+  public FloatingActionButton(ComponentContainer container) {
+    super(container);
+    floatingActionButton = container.$form().floatingActionButton;
+    floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(android.graphics.Color.rgb(255, 64, 129)));
+    if (icon == null) {
+      floatingActionButton.setImageResource(android.R.drawable.ic_input_add);
+      ImageViewCompat.setImageTintList(floatingActionButton, ColorStateList.valueOf(Color.WHITE));
     }
+    floatingActionButton.show();
+    floatingActionButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Click();
+      }
+    });
+  }
 
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
-    @SimpleProperty(category = PropertyCategory.APPEARANCE)
-    public void Icon(String path) {
-        try {
-            icon = MediaUtil.getBitmapDrawable(container.$form(), path);
-            iconPath = path;
-            floatingActionButton.setImageDrawable(icon);
-        } catch (IOException e) {
-            Log.d("FloatingActionButton", "Unable to load icon" + iconPath);
-        }
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void Icon(String path) {
+    try {
+      icon = MediaUtil.getBitmapDrawable(container.$form(), path);
+      iconPath = path;
+      floatingActionButton.setImageDrawable(icon);
+    } catch (IOException e) {
+      Log.d("FloatingActionButton", "Unable to load icon" + iconPath);
     }
+  }
 
-    @SimpleProperty
-    public String Icon() {
-        return iconPath;
-    }
+  @SimpleProperty
+  public String Icon() {
+    return iconPath;
+  }
 
-    @SimpleEvent(description = "Event raised when user clicks on Floating Action Button")
-    public void Click() {
-        EventDispatcher.dispatchEvent(this, "Click");
-    }
+  @SimpleEvent(description = "Event raised when user clicks on Floating Action Button")
+  public void Click() {
+    EventDispatcher.dispatchEvent(this, "Click");
+  }
 
-    @Override
-    public View getView() {
-        return floatingActionButton;
-    }
+  @Override
+  public View getView() {
+    return floatingActionButton;
+  }
 }
