@@ -126,8 +126,8 @@ public final class ErrorMessages {
   // Web errors
   public static final int ERROR_WEB_UNABLE_TO_GET = 1101;
   public static final int ERROR_WEB_UNSUPPORTED_ENCODING = 1102;
-  public static final int ERROR_WEB_UNABLE_TO_POST_OR_PUT = 1103;
-  public static final int ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE = 1104;
+  public static final int ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE = 1103;
+  public static final int ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE_FILE = 1104;
   public static final int ERROR_WEB_JSON_TEXT_DECODE_FAILED = 1105;
   public static final int ERROR_WEB_HTML_TEXT_DECODE_FAILED = 1106;
   // There is a gap here because two ContactPicker errors below use the numbers 1107 and 1108.
@@ -496,10 +496,10 @@ public final class ErrorMessages {
         "Unable to get a response with the specified URL: %s");
     errorMessages.put(ERROR_WEB_UNSUPPORTED_ENCODING,
         "The encoding %s is not supported.");
-    errorMessages.put(ERROR_WEB_UNABLE_TO_POST_OR_PUT,
-        "Unable to post or put the text \"%s\" with the specified URL: %s");
-    errorMessages.put(ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE,
-        "Unable to post or put the file \"%s\" with the specified URL %s.");
+    errorMessages.put(ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE,
+        "Unable to post, put, or patch the text \"%s\" with the specified URL: %s");
+    errorMessages.put(ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE_FILE,
+        "Unable to post, put, or patch the file \"%s\" with the specified URL %s.");
     errorMessages.put(ERROR_WEB_JSON_TEXT_DECODE_FAILED,
         "Unable to decode the JSON text: %s");
     errorMessages.put(ERROR_WEB_HTML_TEXT_DECODE_FAILED,

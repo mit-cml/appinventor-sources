@@ -514,10 +514,8 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 32
   // For YOUNG_ANDROID_VERSION 208:
   // - FILE_COMPONENT_VERSION was incremented to 3
-  // For YOUNG_ANDROID_VERSION 209:
-  // - WEB_COMPONENT_VERSION was incremented to 8.
-
-  public static final int YOUNG_ANDROID_VERSION = 209;
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 33
+  public static final int YOUNG_ANDROID_VERSION = 208;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -599,8 +597,9 @@ public class YaVersion {
   // - The replace-all-mappings block was added.
   // For BLOCKS_LANGUAGE_VERSION 32
   // - The and/or blocks gained mutators.
-
-  public static final int BLOCKS_LANGUAGE_VERSION = 32;
+  // For BLOCKS_LANGUAGE_VERSION 33
+  // - Added "contains any" and "contains all" options to the text contains block.
+  public static final int BLOCKS_LANGUAGE_VERSION = 33;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -1405,11 +1404,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.59";
+  public static final String PREFERRED_COMPANION = "2.60";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.59", "2.59u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.60", "2.60u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

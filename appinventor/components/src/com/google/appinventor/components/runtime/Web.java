@@ -1229,11 +1229,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       } else if (method.equals("Delete")) {
         message = ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE;
         args = new String[] { webProps.urlString };
-      } else if (method.equals("PostFile") || method.equals("PutFile")) {
-        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
+      } else if (method.equals("PostFile") || method.equals("PutFile") || method.equals("PatchFile")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE_FILE;
         args = new String[] { postFile, webProps.urlString };
       } else {
-        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT;
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE;
         String content = "";
         try {
           if (postData != null) {
