@@ -32,7 +32,7 @@ public class MockSidebar extends MockContainer {
         rootPanel.setHeight("100%");
         sidebarWidget = new AbsolutePanel();
         sidebarWidget.setStylePrimaryName("ode-SimpleMockContainer");
-        sidebarWidget.addStyleName("ode-SimpleMockFormSidebar");
+        sidebarWidget.addStyleName("ode-SimpleMockFormMenu");
         sidebarWidget.add(rootPanel);
 
         initComponent(sidebarWidget);

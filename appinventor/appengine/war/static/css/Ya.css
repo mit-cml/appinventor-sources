@@ -1139,11 +1139,6 @@ select.ode-PropertyEditor[disabled] {
   display: inline-block;
 }
 
-.ode-SimpleMockFormSidebar {
-  background-color: white;
-  z-index: 100;
-}
-
 .ode-SimpleMockFormNavigationBarPortrait,
 .ode-SimpleMockFormNavigationBarLandscape {
   background-color: #000000;
