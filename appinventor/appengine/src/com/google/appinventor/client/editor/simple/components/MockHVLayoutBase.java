@@ -325,7 +325,7 @@ abstract class MockHVLayoutBase extends MockLayout {
     int countFillParent = 0;
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
       // skip menu when calculating height constraints
-      if (child.isMenu()) {
+      if (child.isMenu() || child instanceof MockFloatingActionButton) {
         continue;
       }
       usedHeight += COMPONENT_SPACING;
@@ -436,7 +436,7 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
 
       if(child instanceof MockFloatingActionButton) {
-        // always position mock sidebar at bottom-right corner
+        // always position mock floating action button at bottom-right corner
         container.setChildSizeAndPosition(child, childLayoutInfo,
                 containerLayoutInfo.width - childWidthWithBorder,
                 containerLayoutInfo.height - childWidthWithBorder);
