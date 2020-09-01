@@ -21,8 +21,7 @@ import java.io.IOException;
 
 @DesignerComponent(version = YaVersion.FLOATING_ACTION_BUTTON_COMPONENT_VERSION,
         category = ComponentCategory.USERINTERFACE,
-        description = " ",
-        showOnPalette = false)
+        description = " ")
 @SimpleObject
 public class FloatingActionButton extends AndroidViewComponent{
     private com.google.android.material.floatingactionbutton.FloatingActionButton floatingActionButton;

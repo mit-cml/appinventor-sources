@@ -63,12 +63,6 @@ public class MockSidebar extends MockContainer {
         return false;
     }
 
-
-    @Override
-    public boolean isSidebar() {
-        return true;
-    }
-
     /**
      * Whether the sidebar is shown in designer.
      *

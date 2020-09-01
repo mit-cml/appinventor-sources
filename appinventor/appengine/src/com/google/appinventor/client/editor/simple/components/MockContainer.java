@@ -12,6 +12,7 @@ import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.common.base.Preconditions;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,6 +28,7 @@ import java.util.Map;
  */
 public abstract class MockContainer extends MockVisibleComponent implements DropTarget {
 
+  private boolean containsFloatingActionButton = false;
   protected final MockLayout layout;
 
   // List of components within the container
@@ -157,6 +159,16 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     // Set the container to be the parent of the component
     component.setContainer(this);
 
+    if(component instanceof MockFloatingActionButton) {
+      if(containsFloatingActionButton) {
+        Window.alert("Floating Action Button is already present");
+        return;
+      }
+      else {
+        containsFloatingActionButton = true;
+      }
+    }
+
     // Add the component as a child component of the container
     if (beforeIndex == -1) {
       children.add(component);
@@ -201,6 +213,9 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    *        to another container
    */
   public void removeComponent(MockComponent component, boolean permanentlyDeleted) {
+    if(component instanceof MockFloatingActionButton) {
+      containsFloatingActionButton = false;
+    }
     // Remove the component from the list of child components
     children.remove(component);
 
@@ -270,13 +285,15 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       component = (MockComponent) source.getDragWidget();
     }
     if (component instanceof MockVisibleComponent) {
+      if(component instanceof MockFloatingActionButton) {
+        return (this instanceof MockForm);
+      }
       // Sprites are only allowed on Canvas, not other containers.
       // Map features are only allowed on Map, not other containers.
       // Menu Items are only allowed in Menu, not other containers.
       if (!(component instanceof MockSprite) &&
           !(component instanceof MockMapFeature) &&
-          !(component instanceof MockMenuItem) &&
-          !(component instanceof MockSidebarHeader)) {
+          !(component instanceof MockMenuItem)) {
         return true;
       }
     }

@@ -44,11 +44,6 @@ public final class MockMenu extends MockContainer {
   }
 
   @Override
-  public boolean isMenu() {
-    return true;
-  }
-
-  @Override
   protected boolean isPropertyVisible(String propertyName) {
     if (propertyName.equals(PROPERTY_NAME_WIDTH) ||
         propertyName.equals(PROPERTY_NAME_HEIGHT)) {

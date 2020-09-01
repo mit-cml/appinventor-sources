@@ -6,15 +6,6 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
@@ -31,11 +22,9 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -46,6 +35,15 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TreeItem;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Mock Form component. This implementation provides two main preview sizes corresponding to
@@ -314,7 +312,6 @@ public final class MockForm extends MockContainer {
   AbsolutePanel phoneWidget;
   AbsolutePanel responsivePanel;
 
-  MockFloatingActionButton floatingActionButton;
   ScrollPanel scrollPanel;
   private TitleBar titleBar;
   private NavigationBar navigationBar;
@@ -402,20 +399,6 @@ public final class MockForm extends MockContainer {
     super.onLoad();
     titleBar.loadMenu();
     titleBar.loadSidebar();
-    loadFab();
-  }
-
-  private void loadFab() {
-    for (MockComponent child : children) {
-      if (child instanceof MockFloatingActionButton) {
-        floatingActionButton = (MockFloatingActionButton) child;
-        break;
-      }
-    }
-    if (floatingActionButton == null) {
-      floatingActionButton = new MockFloatingActionButton(editor);
-      addComponent(floatingActionButton);
-    }
   }
 
   public void changePreviewSize(int width, int height, int idx) {

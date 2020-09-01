@@ -73,7 +73,6 @@ public class MockFloatingActionButton extends MockVisibleComponent {
             if (!fabImage.isAttached()) {
                 fabButton.getElement().appendChild(fabImage.getElement());
             }
-       // }
         imagePath = newValue;
     }
 
