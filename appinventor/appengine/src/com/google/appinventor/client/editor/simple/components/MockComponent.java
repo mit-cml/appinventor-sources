@@ -394,7 +394,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   }
 
   private boolean isDraggable() {
-    if(isForm()
+    if (isForm()
         || this instanceof MockMenu
         || this instanceof MockSidebar
         || this instanceof MockSidebarHeader

@@ -2324,7 +2324,6 @@ public class Form extends AppInventorCompatActivity
   public boolean onCreateOptionsMenu(Menu menu) {
     this.menu = menu;
     Log.d(LOG_TAG, "onCreateOptionsMenu");
-    menu.add("dummy item");
     for (OnCreateOptionsMenuListener listener : onCreateOptionsMenuListeners) {
       listener.onCreateOptionsMenu(menu);
     }
@@ -2343,11 +2342,10 @@ public class Form extends AppInventorCompatActivity
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     // handles the navigation drawer icon touch event
-    if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
+    if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
       return true;
-    }
-    // handles the options menu item touch event
-    else {
+    } else {
+      // handles the options menu item touch event
       for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
         if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
           return true;
@@ -2358,7 +2356,6 @@ public class Form extends AppInventorCompatActivity
   }
 
   public void showExitApplicationNotification() {
-    Log.d(LOG_TAG, "showExitApplicationNotification");
     String title = "Stop application?";
     String message = "Stop this application and exit? You'll need to relaunch " +
         "the application to use it again.";
@@ -2387,7 +2384,6 @@ public class Form extends AppInventorCompatActivity
   }
 
   public void showAboutApplicationNotification() {
-    Log.d(LOG_TAG, "showAboutApplicationNotification");
     String title = "About this app";
     String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
     // Users can hide the taglines by including an HTML open comment <!-- in the about screen message
@@ -2397,15 +2393,15 @@ public class Form extends AppInventorCompatActivity
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }
 
-  public void getComponent(View component,ContextMenu menu){
-    componentMap.put(component,menu);
+  public void getComponent(View component, ContextMenu menu){
+    componentMap.put(component, menu);
   }
 
   @Override
   public void onCreateContextMenu(android.view.ContextMenu menu, View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
     super.onCreateContextMenu(menu, v, menuInfo);
     for (View.OnCreateContextMenuListener listener: onCreateContextMenuListeners) {
-      if(listener.equals(componentMap.get(v))) {
+      if (listener.equals(componentMap.get(v))) {
         listener.onCreateContextMenu(menu, v, menuInfo);
       }
     }

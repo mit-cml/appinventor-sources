@@ -164,7 +164,7 @@ public final class MockForm extends MockContainer {
      * present and sidebar is set visible.
      */
     void updateSidebarEnabled() {
-      if(sidebar != null) {
+      if (sidebar != null) {
         sidebar.setEnabled(actionBar && isVisible());
       }
     }
@@ -925,7 +925,9 @@ public final class MockForm extends MockContainer {
         for (MockComponent child : layoutInfo.visibleChildren) {
           child.setVisible(true);
           collectLayoutInfos(layoutInfoMap, child);
-          if (child instanceof MockContextMenu) child.setVisible(false);
+          if (child instanceof MockContextMenu) {
+            child.setVisible(false);
+          }
         }
       }
 

@@ -159,8 +159,8 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     // Set the container to be the parent of the component
     component.setContainer(this);
 
-    if(component instanceof MockFloatingActionButton) {
-      if(containsFloatingActionButton) {
+    if (component instanceof MockFloatingActionButton) {
+      if (containsFloatingActionButton) {
         Window.alert("Floating Action Button is already present");
         return;
       }
@@ -212,7 +212,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    *        to another container
    */
   public void removeComponent(MockComponent component, boolean permanentlyDeleted) {
-    if(component instanceof MockFloatingActionButton) {
+    if (component instanceof MockFloatingActionButton) {
       containsFloatingActionButton = false;
     }
     // Remove the component from the list of child components

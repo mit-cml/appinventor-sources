@@ -193,10 +193,9 @@ public final class MenuItem implements Component {
     // Load image from file.
     if (iconPath.length() > 0) {
       try {
-        if(menu!=null) {
+        if (menu!=null) {
           iconDrawable = MediaUtil.getBitmapDrawable(menu.$form(), iconPath);
-        }
-        else if(sidebarMenu!=null) {
+        } else if (sidebarMenu!=null) {
           iconDrawable = MediaUtil.getBitmapDrawable(sidebarMenu.$form(), iconPath);
         }
       } catch (IOException ioe) {
@@ -326,7 +325,7 @@ public final class MenuItem implements Component {
 
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
-    if(menu!=null) {
+    if (menu != null) {
       return menu.$form();
     }
     else if(contextMenu!=null) {

@@ -420,7 +420,7 @@ abstract class MockHVLayoutBase extends MockLayout {
         continue;
       }
 
-      if(child instanceof MockSidebar) {
+      if (child instanceof MockSidebar) {
         // always position mock sidebar at top-left corner
         container.setChildSizeAndPosition(child, childLayoutInfo,
                 0,
@@ -429,7 +429,7 @@ abstract class MockHVLayoutBase extends MockLayout {
         continue;
       }
 
-      if(child instanceof MockFloatingActionButton) {
+      if (child instanceof MockFloatingActionButton) {
         // always position mock floating action button at bottom-right corner
         container.setChildSizeAndPosition(child, childLayoutInfo,
                 containerLayoutInfo.width - childWidthWithBorder,

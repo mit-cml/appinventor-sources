@@ -63,7 +63,6 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
   public void onCreateOptionsMenu(android.view.Menu menu) {
     this.menu = menu;
     for (MenuItem item : items) {
-      Log.d(LOG_TAG, "Adding menu item");
       item.addToMenu(menu);
     }
   }
@@ -72,7 +71,6 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
   public void onPrepareOptionsMenu(android.view.Menu menu) {
     this.menu = menu;
     for (MenuItem item : items) {
-      Log.d(LOG_TAG, "Adding menu item");
       item.addToMenu(menu);
     }
   }
@@ -97,7 +95,6 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     aboutItem.Visible(showAboutItem);
     aboutItem.setOnClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(android.view.MenuItem item) {
-        Log.d(LOG_TAG, "about menu item clicked");
         form.showAboutApplicationNotification();
         return true;
       }
@@ -111,7 +108,6 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     stopItem.Visible(showStopItem);
     stopItem.setOnClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(android.view.MenuItem item) {
-        Log.d(LOG_TAG, "exit menu item clicked");
         form.showExitApplicationNotification();
         return true;
       }
@@ -183,7 +179,6 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
     if (itemIndex > 0 && itemIndex <= items.size()) {
       ItemSelected(itemIndex, items.get(itemIndex - 1));
     }
-    Log.d(LOG_TAG, "ItemSelected = " + itemIndex);
     return true;
   }
 

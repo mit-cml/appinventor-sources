@@ -177,6 +177,9 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/magneticSensor.png", images.magneticSensor());
     bundledImages.put("images/sidebarHeader.png", images.sidebarHeader());
     bundledImages.put("images/fab.png", images.fab());
+    bundledImages.put("images/menu.png", images.menu());
+    bundledImages.put("images/menuitem.png", images.menuitem());
+
 
     imagesInitialized = true;
   }
