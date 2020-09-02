@@ -688,12 +688,22 @@ Blockly.Msg.en.switch_language_to_english = {
         + 'where index 1 denotes the beginning of the text. Returns 0 if the\n'
         + 'piece is not in the text.';
 
-    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL = '/reference/blocks/text.html#contains';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'contains';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = 'text';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = 'piece';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = 'contains  text %1 piece %2';
-    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = 'Tests whether the piece is contained in the text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST = 'piece list';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '%1 text %2 %3 %4';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS = 'contains';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY = 'contains any';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL = 'contains all';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS = 'Tests whether the piece is contained in the '
+        + 'text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS = '/reference/blocks/text.html#contains';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY = 'Tests whether the any of the pieces are '
+        + 'contained in the text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ANY = '/reference/blocks/text.html#containsany';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL = 'Tests whether the all of the pieces are '
+        + 'contained in the text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL = '/reference/blocks/text.html#containsall';
 
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL = '';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = 'text';
