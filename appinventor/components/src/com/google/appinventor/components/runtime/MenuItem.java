@@ -5,7 +5,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.annotation.TargetApi;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
@@ -20,15 +19,16 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+
 import java.io.IOException;
 
 @DesignerComponent(version = YaVersion.MENUITEM_COMPONENT_VERSION,
     description = "A Menu Item can only be placed inside Menu components. " +
-    "It displays a piece of text specified by the <code>Text</code> property if " +
-    "shown in options menu, or an icon specified by the <code>Icon</code> property " +
-    "if shown on action bar. Additional properties include visibility and enabled/" +
-    "disabled, all of which can be set in the Designer or Blocks Editor. " +
-    "Click event is triggered on user selection.",
+        "It displays a piece of text specified by the <code>Text</code> property if " +
+        "shown in options menu, or an icon specified by the <code>Icon</code> property " +
+        "if shown on action bar. Additional properties include visibility and enabled/" +
+        "disabled, all of which can be set in the Designer or Blocks Editor. " +
+        "Click event is triggered on user selection.",
     category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public final class MenuItem implements Component {
@@ -69,79 +69,46 @@ public final class MenuItem implements Component {
   }
 
   public void addToMenu(android.view.Menu menu) {
-    item = menu.add(android.view.Menu.NONE, android.view.Menu.NONE, menu.size() + 1, text)
-    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-      @Override
-      public boolean onMenuItemClick(android.view.MenuItem arg0) {
-        Click();
-        // return false for event to propagate to Menu
-        return false;
-      }
-    });
+    item = menu.add(android.view.Menu.NONE, android.view.Menu.NONE, menu.size() + 1, text);
+    itemClickListener();
     item.setIcon(iconDrawable);
-    item.setEnabled(enabled);
-    item.setVisible(visible);
-    if (listener != null) {
-      item.setOnMenuItemClickListener(listener);
-    }
     ShowOnActionBar(showOnActionBar);
   }
 
   public void addToPopupMenu(android.widget.PopupMenu menu) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      item = menu.getMenu().add(android.view.Menu.NONE, android.view.Menu.NONE, android.view.Menu.NONE, text)
-              .setOnMenuItemClickListener(new android.view.MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(android.view.MenuItem item) {
-                  Click();
-                  return false;
-                }
-              });
-    }
-    item.setVisible(enabled);
-    item.setEnabled(enabled);
-    if (listener != null) {
-      item.setOnMenuItemClickListener(listener);
+      item = menu.getMenu().add(android.view.Menu.NONE, android.view.Menu.NONE, android.view.Menu.NONE, text);
+      itemClickListener();
     }
   }
 
   public void addToContextMenu(android.view.ContextMenu menu) {
-    item = menu.add(android.view.Menu.NONE, android.view.Menu.NONE, android.view.Menu.NONE, text)
-            .setOnMenuItemClickListener(new android.view.MenuItem.OnMenuItemClickListener() {
-              @Override
-              public boolean onMenuItemClick(android.view.MenuItem item) {
-                Click();
-                return false;
-              }
-            });
-    item.setEnabled(enabled);
-    item.setVisible(visible);
-    if (listener != null) {
-      item.setOnMenuItemClickListener(listener);
-    }
+    item = menu.add(android.view.Menu.NONE, android.view.Menu.NONE, android.view.Menu.NONE, text);
+    itemClickListener();
   }
 
   public void addToSidebarMenu(android.view.Menu menu) {
-    item = menu.add(android.view.Menu.NONE, android.view.Menu.NONE, menu.size()+1, text)
-            .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-              @Override
-              public boolean onMenuItemClick(android.view.MenuItem item) {
-                Click();
-                return false;
-              }
-            });
+    item = menu.add(android.view.Menu.NONE, android.view.Menu.NONE, menu.size() + 1, text);
+    itemClickListener();
     item.setIcon(iconDrawable);
+  }
+
+  public void itemClickListener() {
+    item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      @Override
+      public boolean onMenuItemClick(android.view.MenuItem item) {
+        Click();
+        return false;
+      }
+    });
     item.setEnabled(enabled);
     item.setVisible(visible);
-    if (listener != null) {
-      item.setOnMenuItemClickListener(listener);
-    }
   }
 
   /**
    * Returns the text displayed by the menu item.
    *
-   * @return  menu item text
+   * @return menu item text
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public String Text() {
@@ -151,7 +118,7 @@ public final class MenuItem implements Component {
   /**
    * Specifies the text displayed by the menu item.
    *
-   * @param text  new text for menu item
+   * @param text new text for menu item
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty
@@ -165,7 +132,7 @@ public final class MenuItem implements Component {
   /**
    * Returns the path of the menu item's icon.
    *
-   * @return  the path of the menu item's icon
+   * @return the path of the menu item's icon
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
@@ -177,7 +144,7 @@ public final class MenuItem implements Component {
   /**
    * Specifies the path of the menu item's icon.
    *
-   * @param path  the path of the menu item's icon
+   * @param path the path of the menu item's icon
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
   @SimpleProperty(description = "Specifies the path of the menu item's icon.")
@@ -193,9 +160,9 @@ public final class MenuItem implements Component {
     // Load image from file.
     if (iconPath.length() > 0) {
       try {
-        if (menu!=null) {
+        if (menu != null) {
           iconDrawable = MediaUtil.getBitmapDrawable(menu.$form(), iconPath);
-        } else if (sidebarMenu!=null) {
+        } else if (sidebarMenu != null) {
           iconDrawable = MediaUtil.getBitmapDrawable(sidebarMenu.$form(), iconPath);
         }
       } catch (IOException ioe) {
@@ -217,7 +184,7 @@ public final class MenuItem implements Component {
   /**
    * Set a custom on-click listener for this item; Click event will no longer be called.
    *
-   * @param listener  the on-click listener to replace the default Click event
+   * @param listener the on-click listener to replace the default Click event
    */
   public void setOnClickListener(OnMenuItemClickListener listener) {
     Log.d(LOG_TAG, "setOnClickListener item = " + item);
@@ -230,7 +197,7 @@ public final class MenuItem implements Component {
   /**
    * Returns true if the menu item is active and clickable.
    *
-   * @return  {@code true} indicates enabled, {@code false} disabled
+   * @return {@code true} indicates enabled, {@code false} disabled
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
@@ -242,7 +209,7 @@ public final class MenuItem implements Component {
   /**
    * Specifies whether the menu item should be active and clickable.
    *
-   * @param enabled  {@code true} for enabled, {@code false} disabled
+   * @param enabled {@code true} for enabled, {@code false} disabled
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
@@ -257,7 +224,7 @@ public final class MenuItem implements Component {
   /**
    * Returns true if the menu item is visible, false otherwise.
    *
-   * @return  {@code true} iff the menu item is visible.
+   * @return {@code true} iff the menu item is visible.
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
@@ -268,7 +235,7 @@ public final class MenuItem implements Component {
   /**
    * Specifies whether the menu item should be visible or hidden from menu.
    *
-   * @param  visible  {@code true} iff the menu item should be visible.
+   * @param visible {@code true} iff the menu item should be visible.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY,
       defaultValue = "True")
@@ -283,7 +250,7 @@ public final class MenuItem implements Component {
   /**
    * Returns true if the menu item is shown on action bar, false otherwise.
    *
-   * @return  {@code true} iff the menu item is shown on action bar.
+   * @return {@code true} iff the menu item is shown on action bar.
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
@@ -297,7 +264,7 @@ public final class MenuItem implements Component {
    * (given that there is enough space);
    * If {@code false}, then item will always appear as text in the overflow menu.
    *
-   * @param  showOnActionBar  {@code true} iff the item should appear on action bar.
+   * @param showOnActionBar {@code true} iff the item should appear on action bar.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
@@ -308,8 +275,8 @@ public final class MenuItem implements Component {
     this.showOnActionBar = showOnActionBar;
     if (item != null) {
       item.setShowAsAction(
-        showOnActionBar? android.view.MenuItem.SHOW_AS_ACTION_IF_ROOM
-                       : android.view.MenuItem.SHOW_AS_ACTION_NEVER
+          showOnActionBar ? android.view.MenuItem.SHOW_AS_ACTION_IF_ROOM
+              : android.view.MenuItem.SHOW_AS_ACTION_NEVER
       );
       menu.$form().invalidateOptionsMenu();
     }
@@ -327,14 +294,11 @@ public final class MenuItem implements Component {
   public HandlesEventDispatching getDispatchDelegate() {
     if (menu != null) {
       return menu.$form();
-    }
-    else if(contextMenu!=null) {
+    } else if (contextMenu != null) {
       return contextMenu.$form();
-    }
-    else if(popupMenu!=null) {
+    } else if (popupMenu != null) {
       return popupMenu.$form();
-    }
-    else {
+    } else {
       return sidebarMenu.$form();
     }
   }
