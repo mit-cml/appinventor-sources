@@ -12,12 +12,16 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 /**
- * Container to contain components for Sidebar Header.
+ * Container for SidebarHeader placed inside Sidebar. This area of sidebar
+ * is a flexible space that can be used for brand expression, an account
+ * switcher, and more.
  *
  * @author singhalsara48@gmail.com (Sara Singhal)
  */
 @DesignerComponent(version = YaVersion.SIDEBAR_HEADER_COMPONENT_VERSION,
-    description = "Container to contain components for Sidebar Header",
+    description = "Container for SidebarHeader placed inside Sidebar. This area of sidebar " +
+        "is a flexible space that can be used for brand expression, an account " +
+        "switcher, and more.",
     category = ComponentCategory.LAYOUT,
     showOnPalette = false)
 @SimpleObject

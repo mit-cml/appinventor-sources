@@ -21,7 +21,9 @@ Table of Contents:
 
 ## ContextMenu  {#ContextMenu}
 
-Container for ContextMenuItems
+Component for context menu used to hold MenuItems. Context menu
+ is a floating menu that appears on long press of the registered view.
+ Context Menu offers actions that affects the selected content.
 
 
 
@@ -198,7 +200,8 @@ None
 
 ## Menu  {#Menu}
 
-Component for Menu
+Component for options menu (one per Screen) used to hold MenuItems.
+ Menu is located on the action bar and is not accessible in classic theme.
 
 
 
@@ -236,7 +239,11 @@ None
 
 ## PopupMenu  {#PopupMenu}
 
-Container for MenuItems
+Component for Popup Menu used to hold MenuItems. Popup menu
+ is anchored to a view. Component is used to provide an overflow-
+ style menu for actions that relate to specific content. This is
+ different from context menu which is generally for actions that
+ affect selected content.
 
 
 
@@ -261,7 +268,8 @@ None
 
 ## Sidebar  {#Sidebar}
 
-Container for sidebarItems.
+Component for sidebar used to hold MenuItems. Sidebar appears on touching
+ the drawer icon on the ActionBar or by swiping from left edge of the screen.
 
 
 
@@ -304,7 +312,9 @@ None
 
 ## SidebarHeader  {#SidebarHeader}
 
-Container to contain components for Sidebar Header.
+Container for SidebarHeader placed inside Sidebar. This area of sidebar
+ is a flexible space that can be used for brand expression, an account
+ switcher, and more.
 
 
 

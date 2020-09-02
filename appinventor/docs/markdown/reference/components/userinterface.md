@@ -362,7 +362,9 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 
 ## FloatingActionButton  {#FloatingActionButton}
 
-Component for FloatingActionButton
+Component for Floating Action Button. This is a circular
+ button that triggers the primary action in the app. The default icon is
+ a white plus which can be changed using [`Icon`](#FloatingActionButton.Icon) property.
 
 
 
@@ -798,7 +800,12 @@ None
 
 ## MenuItem  {#MenuItem}
 
-Component for MenuItem
+A Menu Item can only be placed inside Menus components and Sidebar.
+ It displays a piece of text specified by the [`Text`](#MenuItem.Text) property
+ or an icon specified by the [`Icon`](#MenuItem.Icon) property on action bar
+ or Sidebar. Additional properties include visibility and enabled/
+ disabled, all of which can be set in the Designer or Blocks Editor.
+ Click event is triggered on user selection.
 
 
 

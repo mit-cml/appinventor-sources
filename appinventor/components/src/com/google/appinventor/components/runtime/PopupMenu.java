@@ -20,13 +20,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Container for MenuItems
+ * Component for Popup Menu used to hold MenuItems. Popup menu
+ * is anchored to a view. Component is used to provide an overflow-
+ * style menu for actions that relate to specific content. This is
+ * different from context menu which is generally for actions that
+ * affect selected content.
  *
  * @author singhalsara48@gmail.com (Sara Singhal)
  */
 @DesignerComponent(version = YaVersion.POPUP_MENU_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
-    description = "Component for Popup menu to hold MenuItems.")
+    description = "Component for Popup Menu used to hold MenuItems. Popup menu " +
+        "is anchored to a view. Component is used to provide an overflow-" +
+        "style menu for actions that relate to specific content. This is " +
+        "different from context menu which is generally for actions that " +
+        "affect selected content.")
 @SimpleObject
 public class PopupMenu implements Component, ComponentContainer {
 

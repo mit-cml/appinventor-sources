@@ -22,6 +22,12 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Component for options menu (one per Screen) used to hold MenuItems.
+ * Menu is located on the action bar and is not accessible in classic theme.
+ *
+ */
+
 @DesignerComponent(version = YaVersion.MENU_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
     description = "Component for options menu (one per Screen) used to hold MenuItems. "

@@ -18,12 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Container for sidebarItems.
+ * Component for sidebar used to hold MenuItems. Sidebar appears on touching
+ * the drawer icon on the ActionBar or by swiping from left edge of the screen.
  *
  * @author singhalsara48@gmail.com (Sara Singhal)
  */
 @DesignerComponent(version = YaVersion.SIDEBAR_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
+    description = "Component for sidebar used to hold MenuItems. Sidebar appears on touching " +
+        "the drawer icon on the ActionBar or by swiping from left edge of the screen.",
     showOnPalette = false)
 @SimpleObject
 public class Sidebar extends AndroidViewComponent implements Component, ComponentContainer {

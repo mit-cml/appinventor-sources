@@ -16,14 +16,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Container for ContextMenuItems
+ * Component for context menu used to hold MenuItems. Context menu
+ * is a floating menu that appears on long press of the registered view.
+ * Context Menu offers actions that affects the selected content.
  *
  * @author singhalsara48@gmail.com (Sara Singhal)
  *
  */
 @DesignerComponent(version = YaVersion.CONTEXT_MENU_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
-    description = "Component for context menu to hold ContextMenuItems.")
+    description = "Component for context menu used to hold MenuItems. Context menu " +
+        "is a floating menu that appears on long press of the registered view." +
+        "Context Menu offers actions that affects the selected content.")
 @SimpleObject
 public class ContextMenu implements Component, ComponentContainer, View.OnCreateContextMenuListener {
 

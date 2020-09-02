@@ -22,11 +22,22 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 
 import java.io.IOException;
 
+/**
+ * A Menu Item can only be placed inside Menus components and Sidebar.
+ * It displays a piece of text specified by the {@link #Text(String)} property
+ * or an icon specified by the {@link #Icon(String)} property on action bar
+ * or Sidebar. Additional properties include visibility and enabled/
+ * disabled, all of which can be set in the Designer or Blocks Editor.
+ * Click event is triggered on user selection.
+ *
+ * @author singhalsara48@gmail.com (Sara Singhal)
+ */
+
 @DesignerComponent(version = YaVersion.MENUITEM_COMPONENT_VERSION,
-    description = "A Menu Item can only be placed inside Menu components. " +
-        "It displays a piece of text specified by the <code>Text</code> property if " +
-        "shown in options menu, or an icon specified by the <code>Icon</code> property " +
-        "if shown on action bar. Additional properties include visibility and enabled/" +
+    description = "A Menu Item can only be placed inside Menus components and Sidebar. " +
+        "It displays a piece of text specified by the <code>Text</code> property " +
+        "or an icon specified by the <code>Icon</code> property if shown " +
+        "on action bar or Sidebar. Additional properties include visibility and enabled/ " +
         "disabled, all of which can be set in the Designer or Blocks Editor. " +
         "Click event is triggered on user selection.",
     category = ComponentCategory.USERINTERFACE)

@@ -27,9 +27,19 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 
 import java.io.IOException;
 
+/**
+ * Component for Floating Action Button. This is a circular
+ * button that triggers the primary action in the app. The default icon is
+ * a white plus which can be changed using {@link #Icon(String)} property.
+ *
+ * @author singhalsara48@gmail.com (Sara Singhal)
+ */
+
 @DesignerComponent(version = YaVersion.FLOATING_ACTION_BUTTON_COMPONENT_VERSION,
     category = ComponentCategory.USERINTERFACE,
-    description = " ")
+description = "Component for Floating Action Button. This is a circular " +
+    "button that triggers the primary action in the app. The default icon is " +
+    "a white plus which can be changed using {@link #Icon(String)} property.")
 @SimpleObject
 public class FloatingActionButton extends AndroidViewComponent {
   private com.google.android.material.floatingactionbutton.FloatingActionButton floatingActionButton;
