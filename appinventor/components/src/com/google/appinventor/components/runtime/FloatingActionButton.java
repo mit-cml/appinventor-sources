@@ -6,10 +6,13 @@
 package com.google.appinventor.components.runtime;
 
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import androidx.core.widget.ImageViewCompat;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -40,7 +43,13 @@ public class FloatingActionButton extends AndroidViewComponent {
    */
   public FloatingActionButton(ComponentContainer container) {
     super(container);
-    floatingActionButton = container.$form().floatingActionButton;
+    floatingActionButton = new com.google.android.material.floatingactionbutton.FloatingActionButton(container.$form());
+    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+    int px = (int) (24 * (Resources.getSystem().getDisplayMetrics().density));
+    layoutParams.setMargins(0, 0, px, px);
+    container.$form().frameWithFloatingActionButton.addView(floatingActionButton, layoutParams);
     floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(android.graphics.Color.rgb(255, 64, 129)));
     if (icon == null) {
       floatingActionButton.setImageResource(android.R.drawable.ic_input_add);
