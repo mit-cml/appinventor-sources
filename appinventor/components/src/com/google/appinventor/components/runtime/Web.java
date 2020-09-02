@@ -566,7 +566,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Performs an HTTP POST request using the Url property and data from the specified file.
+   * Performs an HTTP PATCH request using the Url property and data from the specified file.
    *
    *   If the SaveResponse property is true, the response will be saved in a file
    * and the GotFile event will be triggered. The ResponseFileName property can be
@@ -574,7 +574,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    *
    *   If the SaveResponse property is false, the GotText event will be triggered.
    *
-   * @param path the path of the file for the POST request
+   * @param path the path of the file for the PATCH request
    */
   @SimpleFunction(description = "Performs an HTTP PATCH request using the Url property and " +
       "data from the specified file.<br>" +
@@ -713,7 +713,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /*
-   * Performs an HTTP GET, POST, PUT or DELETE request using the Url property and the specified
+   * Performs an HTTP GET, POST, PATCH, PUT or DELETE request using the Url property and the specified
    * text, and retrieves the response asynchronously.<br>
    * The characters of the text are encoded using the given encoding.<br>
    * If the SaveResponse property is true, the response will be saved in a file
@@ -722,11 +722,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * If the SaveResponse property is false, the GotText event will be
    * triggered.
    *
-   * @param text the text data for the POST or PUT request
+   * @param text the text data for the POST, PATCH, or PUT request
    * @param encoding the character encoding to use when sending the text. If
    *                 encoding is empty or null, UTF-8 encoding will be used.
    * @param functionName the name of the function, used when dispatching errors
-   * @param httpVerb the HTTP operation to be performed: GET, POST, PUT or DELETE
+   * @param httpVerb the HTTP operation to be performed: GET, POST, PATCH, PUT or DELETE
    */
   private void requestTextImpl(final String text, final String encoding,
       final String functionName, final String httpVerb) {

@@ -548,7 +548,7 @@ Non-visible component that provides functions for HTTP GET, POST, PUT, and DELET
  denoted as \{a: b\} decodes to a dictionary with the key a and value b.
 
 {:id="Web.PatchFile" class="method"} <i/> PatchFile(*path*{:.text})
-: Performs an HTTP POST request using the Url property and data from the specified file.
+: Performs an HTTP PATCH request using the Url property and data from the specified file.
 
    If the SaveResponse property is true, the response will be saved in a file
  and the GotFile event will be triggered. The ResponseFileName property can be
