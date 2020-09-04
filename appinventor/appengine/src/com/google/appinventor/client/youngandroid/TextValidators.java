@@ -35,6 +35,8 @@ public final class TextValidators {
           "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
           "float", "native", "super", "while");
 
+  protected static final List<String> SCHEME_NAMES = Arrays.asList("begin", "quote");
+
   // This class should never be instantiated.
   private TextValidators() {}
 
@@ -139,7 +141,7 @@ public final class TextValidators {
    *         otherwise
    */
   public static boolean isReservedName(String text) {
-    return (YAIL_NAMES.contains(text) || JAVA_NAMES.contains(text));
+    return (YAIL_NAMES.contains(text) || JAVA_NAMES.contains(text) || SCHEME_NAMES.contains(text));
   }
 
   /**
