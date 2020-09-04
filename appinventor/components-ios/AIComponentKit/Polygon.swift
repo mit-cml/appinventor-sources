@@ -35,10 +35,14 @@ import GEOSwift
     }
     set(points) {
       do {
-        if let json = try getObjectFromJson(points) as? [Any] {
-          try updateHolePoints(points: json)
+        if points == "\"\"" {
+          try updateHolePoints(points: [])
         } else {
-          parseError("HolePointsFromString")
+          if let json = try getObjectFromJson(points) as? [Any] {
+            try updateHolePoints(points: json)
+          } else {
+            parseError("HolePointsFromString")
+          }
         }
       } catch {
         parseError("HolePointsFromString")
