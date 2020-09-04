@@ -1,17 +1,10 @@
-// -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
-// Released under the Apache License, Version 2.0
-// http://www.apache.org/licenses/LICENSE-2.0
-
 package com.google.appinventor.components.runtime;
 
 import android.Manifest;
 import android.app.Activity;
-import android.os.Environment;
-import java.io.*;
-import android.os.Handler;
 import android.content.Context;
+import android.os.Environment;
+import android.os.Handler;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -22,12 +15,21 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.QUtil;
 import com.google.appinventor.components.runtime.AndroidNonvisibleComponent;
 import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.EventDispatcher;
 import com.google.appinventor.components.runtime.PermissionResultHandler;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Non-visible component for storing and retrieving files. Use this component to write or read files
@@ -37,15 +39,15 @@ import com.google.appinventor.components.runtime.PermissionResultHandler;
  * For example, writing a file to `/myFile.txt` will write the file in `/sdcard/myFile.txt`.
  */
 @DesignerComponent(version = YaVersion.FILE_COMPONENT_VERSION,
-    description = "Non-visible component for storing and retrieving files. Use this component to " +
-    "write or read files on your device. The default behaviour is to write files to the " +
-    "private data directory associated with your App. The Companion is special cased to write " +
-    "files to /sdcard/AppInventor/data to facilitate debugging. " +
-    "If the file path starts with a slash (/), then the file is created relative to /sdcard. " +
-    "For example writing a file to /myFile.txt will write the file in /sdcard/myFile.txt.",
-    category = ComponentCategory.STORAGE,
-    nonVisible = true,
-    iconName = "images/file.png")
+        description = "Non-visible component for storing and retrieving files. Use this component to " +
+                "write or read files on your device. The default behaviour is to write files to the " +
+                "private data directory associated with your App. The Companion is special cased to write " +
+                "files to /sdcard/AppInventor/data to facilitate debugging. " +
+                "If the file path starts with a slash (/), then the file is created relative to /sdcard. " +
+                "For example writing a file to /myFile.txt will write the file in /sdcard/myFile.txt.",
+        category = ComponentCategory.STORAGE,
+        nonVisible = true,
+        iconName = "images/file.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public class File extends AndroidNonvisibleComponent implements Component {
@@ -91,13 +93,13 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * @param fileName the file to which the text will be stored
    */
   @SimpleFunction(description = "Saves text to a file. If the filename " +
-      "begins with a slash (/) the file is written to the sdcard. For example writing to " +
-      "/myFile.txt will write the file to /sdcard/myFile.txt. If the filename does not start " +
-      "with a slash, it will be written in the programs private data directory where it will " +
-      "not be accessible to other programs on the phone. There is a special exception for the " +
-      "AI Companion where these files are written to /sdcard/AppInventor/data to facilitate " +
-      "debugging. Note that this block will overwrite a file if it already exists." +
-      "\n\nIf you want to add content to a file use the append block.")
+          "begins with a slash (/) the file is written to the sdcard. For example writing to " +
+          "/myFile.txt will write the file to /sdcard/myFile.txt. If the filename does not start " +
+          "with a slash, it will be written in the programs private data directory where it will " +
+          "not be accessible to other programs on the phone. There is a special exception for the " +
+          "AI Companion where these files are written to /sdcard/AppInventor/data to facilitate " +
+          "debugging. Note that this block will overwrite a file if it already exists." +
+          "\n\nIf you want to add content to a file use the append block.")
   public void SaveFile(String text, String fileName){
     Write(fileName,text,false);
   }
@@ -114,7 +116,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * @param fileName the file to which the text will be stored
    */
   @SimpleFunction(description = "Appends text to the end of a file storage, creating the file if it does not exist. " +
-      "See the help text under SaveFile for information about where files are written.")
+          "See the help text under SaveFile for information about where files are written.")
   public void AppendToFile(String text, String fileName) {
     Write(fileName, text, true);
   }
@@ -130,73 +132,73 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * @param fileName the file from which the text is read
    */
   @SimpleFunction(description = "Reads text from a file in storage. " +
-      "Prefix the filename with / to read from a specific file on the SD card. " +
-      "for instance /myFile.txt will read the file /sdcard/myFile.txt. To read " +
-      "assets packaged with an application (also works for the Companion) start " +
-      "the filename with // (two slashes). If a filename does not start with a " +
-      "slash, it will be read from the applications private storage (for packaged " +
-      "apps) and from /sdcard/AppInventor/data for the Companion.")
+          "Prefix the filename with / to read from a specific file on the SD card. " +
+          "for instance /myFile.txt will read the file /sdcard/myFile.txt. To read " +
+          "assets packaged with an application (also works for the Companion) start " +
+          "the filename with // (two slashes). If a filename does not start with a " +
+          "slash, it will be read from the applications private storage (for packaged " +
+          "apps) and from /sdcard/AppInventor/data for the Companion.")
   public void ReadFrom(final String fileName){
     try{
       InputStream inputStream;
       if(fileName.startsWith("//")){
         inputStream = form.openAsset(fileName.substring(2));
-		        final InputStream asyncInputStream = inputStream;
-		AsynchUtil.runAsynchronously(new Runnable() {
-              @Override
-              public void run() {
-                AsyncRead(asyncInputStream,fileName);
-              }
-            });
-			return;
+        final InputStream asyncInputStream = inputStream;
+        AsynchUtil.runAsynchronously(new Runnable() {
+          @Override
+          public void run() {
+            AsyncRead(asyncInputStream,fileName);
+          }
+        });
+        return;
       }else if(fileName.startsWith("/")){
         if (fileName.contains(context.getApplicationContext().getPackageName())) {
           final String filename = completeFileName(fileName);
-      inputStream = new FileInputStream(filename);
-        final InputStream asyncInputStream = inputStream;
-            AsynchUtil.runAsynchronously(new Runnable() {
-              @Override
-              public void run() {
-                AsyncRead(asyncInputStream,filename);
-              }
-            });
+          inputStream = new FileInputStream(filename);
+          final InputStream asyncInputStream = inputStream;
+          AsynchUtil.runAsynchronously(new Runnable() {
+            @Override
+            public void run() {
+              AsyncRead(asyncInputStream,filename);
+            }
+          });
         }else{
           if (!hasReadAccess) {
-          new Handler().post(new Runnable() {
+            new Handler().post(new Runnable() {
               @Override
               public void run() {
-              form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
-                  new PermissionResultHandler() {
-                      @Override
-                      public void HandlePermissionResponse(String permission, boolean granted) {
-                          hasReadAccess = granted;
-                      }
-                  });
+                form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
+                        new PermissionResultHandler() {
+                          @Override
+                          public void HandlePermissionResponse(String permission, boolean granted) {
+                            hasReadAccess = granted;
+                          }
+                        });
               }
-          });
-        }
-        if (hasReadAccess) {
-          inputStream = FileUtil.openFile(completeFileName(fileName));
-          final InputStream asyncInputStream = inputStream;
-              AsynchUtil.runAsynchronously(new Runnable() {
-                @Override
-                public void run() {
-                  AsyncRead(asyncInputStream, fileName);
-                }
-              });
-        }
-      }
-    }else{
-        final String filename = context.getExternalFilesDir(null).getPath() + "/" + fileName;
-		  inputStream = new FileInputStream(filename);
-        final InputStream asyncInputStream = inputStream;
+            });
+          }
+          if (hasReadAccess) {
+            inputStream = FileUtil.openFile(completeFileName(fileName));
+            final InputStream asyncInputStream = inputStream;
             AsynchUtil.runAsynchronously(new Runnable() {
               @Override
               public void run() {
-                AsyncRead(asyncInputStream,filename);
+                AsyncRead(asyncInputStream, fileName);
               }
             });
+          }
         }
+      }else{
+        final String filename = context.getExternalFilesDir(null).getPath() + "/" + fileName;
+        inputStream = new FileInputStream(filename);
+        final InputStream asyncInputStream = inputStream;
+        AsynchUtil.runAsynchronously(new Runnable() {
+          @Override
+          public void run() {
+            AsyncRead(asyncInputStream,filename);
+          }
+        });
+      }
     }catch(Exception e){
       e.printStackTrace();
     }
@@ -212,60 +214,60 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * @param fileName the file to be deleted
    */
   @SimpleFunction(description = "Deletes a file from storage. " +
-      "Prefix the filename with / to delete a specific file in the SD card, for instance /myFile.txt. " +
-      "will delete the file /sdcard/myFile.txt. If the file does not begin with a /, then the file " +
-      "located in the programs private storage will be deleted. Starting the file with // is an error " +
-      "because assets files cannot be deleted.")
+          "Prefix the filename with / to delete a specific file in the SD card, for instance /myFile.txt. " +
+          "will delete the file /sdcard/myFile.txt. If the file does not begin with a /, then the file " +
+          "located in the programs private storage will be deleted. Starting the file with // is an error " +
+          "because assets files cannot be deleted.")
   public void Delete(final String fileName) {
-    if(filename.startsWith("/")) {
-    if (filename.contains(context.getApplicationContext().getPackageName())) {
-      final String file = completeFileName(filename);
-      AsynchUtil.runAsynchronously(new Runnable() {
+    if(fileName.startsWith("/")) {
+      if (fileName.contains(context.getApplicationContext().getPackageName())) {
+        final String file = completeFileName(fileName);
+        AsynchUtil.runAsynchronously(new Runnable() {
+          public void run() {
+            delete(file);
+          }
+        });
+      }else{
+        if(!hasWriteAccess){
+          new Handler().post(new Runnable() {
+            @Override
             public void run() {
-              delete(file);
-            }
-          });
-    }else{
-      if(!hasWriteAccess){
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                form.askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    new PermissionResultHandler() {
+              form.askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                      new PermissionResultHandler() {
                         @Override
                         public void HandlePermissionResponse(String permission, boolean granted) {
-                            hasWriteAccess = granted;
+                          hasWriteAccess = granted;
                         }
-                    });
-                }
-            });
-          }
-          if (hasWriteAccess) {
-            AsynchUtil.runAsynchronously(new Runnable() {
-                  public void run() {
-                    delete(completeFileName(fileName));
-                  }
-                });
-          }
-     }
-   }else{
-	  final String file = context.getExternalFilesDir(null).getPath() + "/" + filename;
-      AsynchUtil.runAsynchronously(new Runnable() {
-            public void run() {
-              delete(file);
+                      });
             }
           });
-	 }
-  }
-    public void delete(){
-        final boolean success = new File().delete();
-              activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    AfterFileDeleted(success);
-                }
-       });
+        }
+        if (hasWriteAccess) {
+          AsynchUtil.runAsynchronously(new Runnable() {
+            public void run() {
+              delete(completeFileName(fileName));
+            }
+          });
+        }
+      }
+    }else{
+      final String file = context.getExternalFilesDir(null).getPath() + "/" + fileName;
+      AsynchUtil.runAsynchronously(new Runnable() {
+        public void run() {
+          delete(file);
+        }
+      });
     }
+  }
+  public void delete(String fileName){
+    final boolean success = new java.io.File(fileName).delete();
+    activity.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        AfterFileDeleted(success);
+      }
+    });
+  }
 
   /**
    * Writes to the specified file.
@@ -276,50 +278,50 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   public void Write(final String filename, final String text, final boolean append){
     if(!context.getExternalFilesDir(null).exists()){
-        context.getExternalFilesDir(null).mkdirs();
+      context.getExternalFilesDir(null).mkdirs();
     }
-   if(filename.startsWith("/")) {
-    if (filename.contains(context.getApplicationContext().getPackageName())) {
-      final String file = completeFileName(filename);
-      AsynchUtil.runAsynchronously(new Runnable() {
+    if(filename.startsWith("/")) {
+      if (filename.contains(context.getApplicationContext().getPackageName())) {
+        final String file = completeFileName(filename);
+        AsynchUtil.runAsynchronously(new Runnable() {
+          public void run() {
+            save(file,text,append);
+          }
+        });
+      }else{
+        if(!hasWriteAccess){
+          new Handler().post(new Runnable() {
+            @Override
             public void run() {
-              save(file,text,append);
-            }
-          });
-    }else{
-      if(!hasWriteAccess){
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                form.askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    new PermissionResultHandler() {
+              form.askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                      new PermissionResultHandler() {
                         @Override
                         public void HandlePermissionResponse(String permission, boolean granted) {
-                            hasWriteAccess = granted;
+                          hasWriteAccess = granted;
                         }
-                    });
-                }
-            });
-          }
-          if (hasWriteAccess) {
-            AsynchUtil.runAsynchronously(new Runnable() {
-                  public void run() {
-                    save(completeFileName(filename),text,append);
-                  }
-                });
-          }
-     }
-   }else{
-	  final String file = context.getExternalFilesDir(null).getPath() + "/" + filename;
-      AsynchUtil.runAsynchronously(new Runnable() {
-            public void run() {
-              save(file,text,append);
+                      });
             }
           });
-	 }
+        }
+        if (hasWriteAccess) {
+          AsynchUtil.runAsynchronously(new Runnable() {
+            public void run() {
+              save(completeFileName(filename),text,append);
+            }
+          });
+        }
+      }
+    }else{
+      final String file = context.getExternalFilesDir(null).getPath() + "/" + filename;
+      AsynchUtil.runAsynchronously(new Runnable() {
+        public void run() {
+          save(file,text,append);
+        }
+      });
+    }
   }
-    public void save(final String filename,final String text,final boolean append){
-    final File file = new File(filename);
+  public void save(final String filename,final String text,final boolean append){
+    final java.io.File file = new java.io.File(filename);
     if(!file.exists()){
       try{
         file.createNewFile();
@@ -327,21 +329,21 @@ public class File extends AndroidNonvisibleComponent implements Component {
         e.printStackTrace();
       }
     }
-      try {
- FileOutputStream fileWriter = new FileOutputStream(file,append);
- OutputStreamWriter out = new OutputStreamWriter(fileWriter);
- out.write(text);
- out.flush();
- out.close();
- fileWriter.close();
- activity.runOnUiThread(new Runnable() {
-   @Override
-   public void run() {
-     AfterFileSaved(filename);
-   }
- });
-} catch (Exception e) {
- e.printStackTrace();
+    try {
+      FileOutputStream fileWriter = new FileOutputStream(file,append);
+      OutputStreamWriter out = new OutputStreamWriter(fileWriter);
+      out.write(text);
+      out.flush();
+      out.close();
+      fileWriter.close();
+      activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          AfterFileSaved(filename);
+        }
+      });
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
@@ -386,8 +388,6 @@ public class File extends AndroidNonvisibleComponent implements Component {
           GotText(text);
         }
       });
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     } finally {
@@ -448,29 +448,31 @@ public class File extends AndroidNonvisibleComponent implements Component {
       return dirPath.getPath() + "/" + filename;
     }
   }
-    public String completeFileName(String fileName) {
-      if(fileName.isEmpty()){
-          return fileName;
-      }else{
-          String builder = "/AppInventor";
-          File sd = Environment.getExternalStorageDirectory();
-          String completeFileName = fileName;
-          if (fileName.startsWith("file:///")) {
-              completeFileName = fileName.substring(7);
-          } else if (fileName.startsWith("//")) {
-              fileName = fileName.substring(2);
-              if (isRepl) {
-                  completeFileName = sd.getPath() + builder + "/assets/" + fileName;
-              }
-          } else if (fileName.startsWith("/")) {
-              if (!fileName.startsWith(sd.toString())){
-                  completeFileName = sd.getPath() + fileName;
-              }
-          } else {
-              completeFileName = sd.getPath() + File.separator + fileName;
-          }
-          return completeFileName;
+  public String completeFileName(String fileName) {
+    if(fileName.isEmpty()){
+      return fileName;
+    }else{
+      java.io.File sd = new java.io.File(QUtil.getExternalStoragePath(form));
+      String completeFileName = fileName;
+      if (fileName.startsWith("file:///")) {
+        completeFileName = fileName.substring(7);
+      } else if (fileName.startsWith("//")) {
+        fileName = fileName.substring(2);
+        if (isRepl) {
+          completeFileName = new java.io.File(QUtil.getReplDataPath(form, false)) + fileName;
+        }
+      } else if (fileName.startsWith("/")) {
+        if (!fileName.startsWith(sd.toString())){
+          completeFileName = sd.getPath() + fileName;
+        }
+      } else {
+        completeFileName = sd.getPath() + java.io.File.separator + fileName;
       }
+      if (!sd.exists()){
+        sd.mkdirs();
+      }
+      return completeFileName;
+    }
   }
 
 }
