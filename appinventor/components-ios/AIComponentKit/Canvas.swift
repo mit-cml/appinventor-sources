@@ -36,15 +36,13 @@ private class CanvasGestureRecognizer: UIGestureRecognizer {
 
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
     draggedSprites.removeAll()
-    if let width = self.canvas?.Width,
-      let height = self.canvas?.Height,
-      let loc = touches.first?.location(in: self.canvas?._view) {
+    if let loc = touches.first?.location(in: self.canvas?._view) {
       let x = max(CGFloat(0), loc.x)
       let y = max(CGFloat(0), loc.y)
       let rect = CGRect(x: max(0, x - HALF_FINGER_WIDTH),
                         y: max(0, y - HALF_FINGER_HEIGHT),
-                        width: max(CGFloat(width - 1), x + HALF_FINGER_WIDTH),
-                        height: max(CGFloat(height - 1), y + HALF_FINGER_HEIGHT))
+                        width: FINGER_WIDTH,
+                        height: FINGER_HEIGHT)
       startX = x
       startY = y
       lastX = x
@@ -63,15 +61,13 @@ private class CanvasGestureRecognizer: UIGestureRecognizer {
   }
 
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
-    if let width = self.canvas?.Width,
-      let height = self.canvas?.Height,
-      let loc = touches.first?.location(in: self.canvas?._view) {
+    if let loc = touches.first?.location(in: self.canvas?._view) {
       let x = max(CGFloat(0), loc.x)
       let y = max(CGFloat(0), loc.y)
       let rect = CGRect(x: max(0, x - HALF_FINGER_WIDTH),
                         y: max(0, y - HALF_FINGER_HEIGHT),
-                        width: max(CGFloat(width - 1), x + HALF_FINGER_WIDTH),
-                        height: max(CGFloat(height - 1), y + HALF_FINGER_HEIGHT))
+                        width: FINGER_WIDTH,
+                        height: FINGER_HEIGHT)
       if !isDrag && inThreshold(x: x, y: startX) && inThreshold(x: y, y: startY) {
         return
       }

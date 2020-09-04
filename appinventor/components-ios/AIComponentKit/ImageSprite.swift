@@ -117,12 +117,12 @@ open class ImageSprite: Sprite {
   
   override func updateDisplayLayer() {
     let d = DisplayLayer
-    let centerX = CGFloat(Double(Width) / 2 + X)
-    let centerY = CGFloat(Double(Height) / 2 + Y)
+    let xCenter = CGFloat(XCenter)
+    let yCenter = CGFloat(YCenter)
     CATransaction.begin()
     CATransaction.setAnimationDuration(0.0)
-    d.position = CGPoint(x: centerX, y: centerY)
-    d.bounds = CGRect(x: centerX, y: centerY, width: CGFloat(Width), height: CGFloat(Height))
+    d.position = CGPoint(x: xCenter, y: yCenter)
+    d.bounds = CGRect(x: xCenter, y: yCenter, width: CGFloat(Width), height: CGFloat(Height))
     CATransaction.commit()
   }
 }
