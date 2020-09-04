@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -10,28 +10,12 @@ import Foundation
 open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
   private let _TAG: String = "SoundRecorder"
   private var _savedRecordingPath: String = ""
-  private var _recordingSession: AVAudioSession!
   private var _recorder: AVAudioRecorder? = nil
   private var _fileURL: URL?
   private let DEFAULT_SOUND_EXTENSION: String = "m4a"
   
   public override init(_ container: ComponentContainer) {
     super.init(container)
-    
-    _recordingSession = AVAudioSession.sharedInstance()
-    do {
-      setCategory(.playAndRecord, for: _recordingSession)
-      try _recordingSession.setActive(true)
-      _recordingSession.requestRecordPermission() { [unowned self] allowed in
-        DispatchQueue.main.async {
-          if !allowed {
-            self._form.dispatchErrorOccurredEvent(self, "init", ErrorMessage.ERROR_SOUND_RECORDER_PERMISSION_DENIED.code, ErrorMessage.ERROR_SOUND_RECORDER_PERMISSION_DENIED.message)
-          }
-        }
-      }
-    } catch {
-      _form.dispatchErrorOccurredEvent(self, "init", ErrorMessage.ERROR_SOUND_RECORDER.code, ErrorMessage.ERROR_SOUND_RECORDER.message)
-    }
   }
   
   // MARK: Properties
@@ -46,24 +30,39 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
   
   // MARK: Events
   @objc open func Start() {
-    if let _recorder = _recorder {
-      NSLog("Start() called, but already recording to " + _recorder.url.absoluteString)
+    guard PermissionHandler.HasPermission(for: .microphone) ?? false else {
+      PermissionHandler.RequestPermission(for: .microphone) { (allowed, changed) in
+        if allowed {
+          self.Start()
+        } else {
+          self._form.dispatchPermissionDeniedEvent(self, "Start", "RECORD_AUDIO")
+        }
+      }
       return
     }
+
+    guard _recorder == nil else {
+      NSLog("Start() called, but already recording to " + (_recorder?.url.absoluteString ?? ""))
+      return
+    }
+
     let audioSession = AVAudioSession.sharedInstance()
+    setCategory(.playAndRecord, for: audioSession)
     
     do {
+      try audioSession.setActive(true)
       let filePath = _savedRecordingPath.isEmpty ? try FileUtil.getRecordingFile(DEFAULT_SOUND_EXTENSION) : try FileUtil.getRecordingFileFromAndroidPath(_savedRecordingPath)
       _fileURL = URL(fileURLWithPath: filePath)
       guard let _fileURL = _fileURL else {
         _form.dispatchErrorOccurredEvent(self, "Start", ErrorMessage.ERROR_CANNOT_WRITE_TO_FILE.code, ErrorMessage.ERROR_CANNOT_WRITE_TO_FILE.message, filePath as NSString)
         return
       }
-      _recorder = try AVAudioRecorder(url: _fileURL, settings: getSettingsForFileType(fileExtension: _fileURL.pathExtension))
-      _recorder?.delegate = self
-      _recorder?.prepareToRecord()
+      let recorder = try AVAudioRecorder(url: _fileURL, settings: getSettingsForFileType(fileExtension: _fileURL.pathExtension))
+      recorder.delegate = self
+      recorder.prepareToRecord()
       try audioSession.setActive(true)
-      _recorder?.record()
+      recorder.record()
+      _recorder = recorder
       StartedRecording()
     } catch (let error as FileError) {
       finishedRecording(success: false)
@@ -75,11 +74,12 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
   }
   
   @objc open func Stop() {
-    if _recorder == nil {
+    guard let recorder = _recorder else {
       NSLog("Stop() called, but already stopped")
       return
     }
-    _recorder?.stop()
+    _recorder = nil
+    recorder.stop()
     do {
       let audioSession = AVAudioSession.sharedInstance()
       try audioSession.setActive(false)

@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import Speech
@@ -145,13 +145,14 @@ open class PermissionHandler: NSObject, CLLocationManagerDelegate {
   }
 
   /**
-   * Requests audio, camera, location, or speech recognition permissions for a component
-   * @param permission the specific permission (camera, microphone, speech) being requested
-   * @param completionHandler code from the component to be executed after the request finishes
-   * @param allowed whether the requested permission was granted
-   * @param changed whether the status changed for the requested permission
+   * Requests audio, camera, location, or speech recognition permissions for a component.
+   *
+   * - Parameter permission: The specific permission (camera, microphone, speech) being requested.
+   * - Parameter completionHandler: Callback block executed when the request finishes and is given
+   *     whether the request is `allowed` and whether the flag has `changed` since the last call.
    */
-  public static func RequestPermission(for permission: Permission, with completionHandler: ResultBlock? = nil){
+  public static func RequestPermission(for permission: Permission,
+                                       with completionHandler: ResultBlock? = nil) {
     switch permission {
     case .camera:
       RequestCameraPermission(with: completionHandler)
