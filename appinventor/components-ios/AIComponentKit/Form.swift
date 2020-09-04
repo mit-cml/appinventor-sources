@@ -43,7 +43,8 @@ import Toast_Swift
   private var _orientation = "unspecified"
   private var _titleVisible = true
   private var _constraints = [NSLayoutConstraint]()
-
+  private var _keyboardVisible = false
+  
   open func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
@@ -880,6 +881,11 @@ import Toast_Swift
   // MARK: Keyboard handling
 
   @objc public func keyboardWillShow(_ notification: NSNotification) {
+    guard !_keyboardVisible else {
+      return
+    }
+    
+    _keyboardVisible = true
     if let userInfo = notification.userInfo,
         let frame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
       let height = frame.height
@@ -889,6 +895,7 @@ import Toast_Swift
   }
 
   @objc public func keyboardWillHide(_ notification: NSNotification) {
+    _keyboardVisible = false
     if let userInfo = notification.userInfo,
         let frame = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
       let height = frame.height
