@@ -283,7 +283,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL = '/reference/blocks/control.html#getplainstarttext';
     Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE = 'gauti grynąjį pradžios tekstą';
     Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_COLLAPSED_TEXT = 'gauti grynąjį pradžios tekstą';
-    Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP = 'Grąžina grynąjį tekstą, kuris buvo perduotas šiam ekranui, kai jį pradėjo kita programa. '
+    Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP = 'Grąžina grynąjį tekstą, kuris buvo perduotas šiam ekranui, kai jį pradėjo kita programa.'
         + 'Jei reikšmė nebuvo perduota, grąžinamas tuščias tekstas.'
         + 'Jei norite naudoti kelių ekranų programas, naudokite pradžios reikšmės gavimą, o ne grynojo pradžios teksto gavimą.';
 
@@ -291,7 +291,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE = 'uždaryti ekraną su grynuoju tekstu';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT = 'tekstas';
     Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_COLLAPSED_TEXT = 'uždaryti ekraną su grynuoju tekstu';
-    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP = 'Uždaromas dabartinis ekranas ir grąžinamas tekstas programai, kuri jį atidarė. '
+    Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP = 'Uždaromas dabartinis ekranas ir grąžinamas tekstas programai, kuri jį atidarė.'
         + 'Ši komanda skirta grąžinti tekstą ne „App Inventor“ veiklai, o ne „App Inventor“ ekranams.';
 
     Blockly.Msg.LANG_CONTROLS_BREAK_HELPURL = '/reference/blocks/control.html#break';
@@ -737,9 +737,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
 
     Blockly.Msg.LANG_LISTS_IS_IN_HELPURL = '/reference/blocks/lists.html#inlist';
     Blockly.Msg.LANG_LISTS_IS_IN_TITLE_IS_IN = 'yra sąraše?';
-    Blockly.Msg.LANG_LISTS_IS_IN_INPUT_THING = 'dalykas';
-    Blockly.Msg.LANG_LISTS_IS_IN_INPUT_LIST = 'sąrašas';
-    Blockly.Msg.LANG_LISTS_IS_IN_INPUT = 'yra sąraše? dalykas %1 sąrašas %2';
+    Blockly.Msg.LANG_LISTS_IS_IN_INPUT_THING = 'Dalykas';
+    Blockly.Msg.LANG_LISTS_IS_IN_INPUT_LIST = 'Sąrašas';
+    Blockly.Msg.LANG_LISTS_IS_IN_INPUT = 'yra sąraše? Dalykas %1 sąrašas %2';
     Blockly.Msg.LANG_LISTS_IS_IN_TOOLTIP = 'Grąžina „Tiesa“, jei dalykas yra sąrašo elementas, priešingu atveju grąžina „Netiesa“.';
 
     Blockly.Msg.LANG_LISTS_POSITION_IN_HELPURL = '/reference/blocks/lists.html#indexinlist';
@@ -1516,7 +1516,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.REPL_STARTING_COMPANION_ON_PHONE = "Paleiskite „AI2 Companion“ programą prijungtame telefone.";
     Blockly.Msg.REPL_STARTING_COMPANION_IN_EMULATOR = "Paleiskite programą „AI2 Companion“ emuliatoriuje.";
     Blockly.Msg.REPL_COMPANION_STARTED_WAITING = "„AI2 Companion“ paleistas, laukite ";
-    Blockly.Msg.REPL_VERIFYING_COMPANION = "Patikrinti, ar „AI2 Companion“ pradėjo veikti....";
+    Blockly.Msg.REPL_VERIFYING_COMPANION = "Patikrinti, ar „AI2 Companion“ pradėjo veikti...";
     Blockly.Msg.REPL_CONNECT_TO_COMPANION = "Prisijungti prie „AI2 Companion“";
     Blockly.Msg.REPL_TRY_AGAIN1 = "Nepavyko prisijungti prie „AI2 Companion“, bandykite dar kartą.";
     Blockly.Msg.REPL_YOUR_CODE_IS = "Jūsų kodas yra ";
