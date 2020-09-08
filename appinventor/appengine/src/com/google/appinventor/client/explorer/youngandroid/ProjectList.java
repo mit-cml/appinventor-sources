@@ -6,14 +6,16 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -35,6 +37,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * The project list shows all projects in a table.
@@ -60,7 +64,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private static final String PUBLISHED = "Yes";
   private static final String PUBLISHBUTTONTITLE = "Open a dialog to publish your app to the Gallery";
   private static final String UPDATEBUTTONTITLE = "Open a dialog to publish your newest version in the Gallery";
-
 
   private final List<Project> projects;
   private final List<Project> selectedProjects;
@@ -91,7 +94,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     sortOrder = SortOrder.DESCENDING;
 
     // Initialize UI
-    table = new Grid(1, 5); // The table initially contains just the header row.
+    table = new Grid(3, 5); // The table initially contains just the header row.
     table.addStyleName("ode-ProjectTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
@@ -234,7 +237,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
           boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-          int row = 1 + projects.indexOf(project);
+          int row = Integer.valueOf(checkBox.getName());
           if (isChecked) {
             table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
             selectedProjects.add(project);
@@ -251,8 +254,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         @Override
         public void onClick(ClickEvent event) {
           Ode ode = Ode.getInstance();
-          if (ode.screensLocked()) {
-            return;             // i/o in progress, ignore request
+          // If the screens are locked, don't take this action. Also
+          // do not open the project if it is in the trash!
+          if (ode.screensLocked() || project.isInTrash()) {
+            return;
           }
           ode.openYoungAndroidProjectInDesigner(project);
         }
@@ -279,6 +284,14 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   // ProjectManagerEventListener interface that this is the
   // implementation of.
   public void refreshTable(boolean needToSort) {
+    if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN) {
+      refreshTable(needToSort, true);
+    } else {
+      refreshTable(needToSort, false);
+    }
+  }
+
+  public void refreshTable(boolean needToSort, boolean isInTrash) {
     if (needToSort) {
       // Sort the projects.
       Comparator<Project> comparator;
@@ -311,43 +324,49 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     refreshSortIndicators();
 
     // Refill the table.
-    table.resize(1 + projects.size(), 5);
-    int row = 1;
+    int previous_rowmax = table.getRowCount() - 1;
+    table.resizeRows(Integer.max(3, previous_rowmax + 1));
+    int row = 0;
     for (Project project : projects) {
-      ProjectWidgets pw = projectWidgets.get(project);
-      if (selectedProjects.contains(project)) {
-        table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-        pw.checkBox.setValue(true);
-      } else {
-        table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-        pw.checkBox.setValue(false);
-      }
-      table.setWidget(row, 0, pw.checkBox);
-      table.setWidget(row, 1, pw.nameLabel);
-      table.setWidget(row, 2, pw.dateCreatedLabel);
-      table.setWidget(row, 3, pw.dateModifiedLabel);
-      table.setWidget(row, 4, pw.publishedLabel);
-      if(Ode.getGallerySettings().galleryEnabled()){
-        if (project.isPublished()) {
-          pw.publishedLabel.setText(PUBLISHED);
+      if (project.isInTrash() == isInTrash) {
+        row++;
+        ProjectWidgets pw = projectWidgets.get(project);
+        if (selectedProjects.contains(project)) {
+          table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
+          pw.checkBox.setValue(true);
         } else {
-          pw.publishedLabel.setText(NOT_PUBLISHED);
+          table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
+          pw.checkBox.setValue(false);
+          table.getRowFormatter().getElement(row).setAttribute("data-exporturl",
+              "application/octet-stream:" + project.getProjectName() + ".aia:"
+                  + GWT.getModuleBaseURL() + ServerLayout.DOWNLOAD_SERVLET_BASE
+                  + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+          configureDraggable(table.getRowFormatter().getElement(row));
+        }
+        pw.checkBox.setName(String.valueOf(row));
+        if (row >= previous_rowmax) {
+          table.insertRow(row + 1);
+        }
+        table.setWidget(row, 0, pw.checkBox);
+        table.setWidget(row, 1, pw.nameLabel);
+        table.setWidget(row, 2, pw.dateCreatedLabel);
+        table.setWidget(row, 3, pw.dateModifiedLabel);
+        table.setWidget(row, 4, pw.publishedLabel);
+        if (Ode.getGallerySettings().galleryEnabled()) {
+          if (project.isPublished()) {
+            pw.publishedLabel.setText(PUBLISHED);
+          } else {
+            pw.publishedLabel.setText(NOT_PUBLISHED);
+          }
         }
       }
-
-      row++;
     }
+    table.resizeRows( row + 1);
 
+    if (isInTrash && table.getRowCount() == 1) {
+      Ode.getInstance().createEmptyTrashDialog(true);
+    }
     Ode.getInstance().getProjectToolbar().updateButtons();
-  }
-
-  /**
-   * Gets the number of projects
-   *
-   * @return the number of projects
-   */
-  public int getNumProjects() {
-    return projects.size();
   }
 
   /**
@@ -355,8 +374,18 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    *
    * @return the number of selected projects
    */
-  public int getNumSelectedProjects() {
+  public int getSelectedProjectsCount() {
     return selectedProjects.size();
+  }
+
+  public int getMyProjectsCount() {
+    int count = 0;
+    for (Project project : projects) {
+      if (!project.isInTrash()) {
+        ++ count;
+      };
+    }
+    return count;
   }
 
   /**
@@ -380,27 +409,33 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   @Override
-  public void onDeletedProjectAdded(Project project) {}
-
-  @Override
-  public void onProjectRemoved(Project project) {
-    projects.remove(project);
-    projectWidgets.remove(project);
-
-    refreshTable(false);
-
+  public void onTrashProjectRestored(Project project) {
     selectedProjects.remove(project);
+    refreshTable(false);
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
 
   @Override
-  public void onDeletedProjectRemoved(Project project) { }
+  public void onProjectTrashed(Project project) {
+    selectedProjects.remove(project);
+    refreshTable(false);
+    Ode.getInstance().getProjectToolbar().updateButtons();
+  }
+
+  @Override
+  public void onProjectDeleted(Project project) {
+    projects.remove(project);
+    projectWidgets.remove(project);
+    refreshTable(false);
+    Ode.getInstance().getProjectToolbar().updateButtons();
+  }
 
   @Override
   public void onProjectsLoaded() {
     projectListLoading = false;
     refreshTable(true);
   }
+
   public void onProjectPublishedOrUnpublished() {
     refreshTable(false);
   }
@@ -408,4 +443,13 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   public void setPublishedHeaderVisible(boolean visible){
     table.getWidget(0, 4).setVisible(visible);
   }
+
+  private static native void configureDraggable(Element el)/*-{
+    if (el.getAttribute('draggable') != 'true') {
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('DownloadURL', this.dataset.exporturl);
+      });
+    }
+  }-*/;
 }

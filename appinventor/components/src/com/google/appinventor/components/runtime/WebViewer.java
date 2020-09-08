@@ -1,14 +1,20 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.Manifest;
-import android.content.Context;
+import android.graphics.Bitmap;
+import android.view.MotionEvent;
+import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -23,13 +29,11 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
+import com.google.appinventor.components.runtime.util.FroyoWebViewClient;
+import com.google.appinventor.components.runtime.util.HoneycombWebViewClient;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
-import android.view.MotionEvent;
-import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 /**
  * Component for viewing Web pages.
@@ -44,7 +48,7 @@ import android.webkit.WebViewClient;
  *
  * You can use the {@link #WebViewString(String)} property to communicate between your app and
  * Javascript code running in the `WebViewer` page. In the app, you get and set
- * {@link #WebViewString(String). In the `WebViewer`, you include Javascript that references the
+ * {@link #WebViewString(String)}. In the `WebViewer`, you include Javascript that references the
  * `window.AppInventor` object, using the methods `getWebViewString()` and `setWebViewString(text)`.
  *
  * For example, if the `WebViewer` opens to a page that contains the Javascript command
@@ -65,6 +69,14 @@ import android.webkit.WebViewClient;
  * ```
  * Calling `setWebViewString` from JavaScript will also run the {@link #WebViewStringChange(String)}
  * event so that the blocks can handle when the {@link #WebViewString(String)} property changes.
+ *
+ * Beginning with release nb184a, you can specify a HomeUrl beginning with `http://localhost/`
+ * to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ * `file:///android_asset/` in compiled apps and `/sdcard/AppInventor/assets/` in the Companion.
+ * Both of these options will continue to work but the `http://localhost/` approach will work in
+ * both scenarios. You may also use "file:///appinventor_asset/" which provides more security by
+ * preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ * web.
  *
  * @internaldoc
  * Component for displaying web pages
@@ -212,8 +224,22 @@ public final class WebViewer extends AndroidViewComponent {
     }
 
     @Override
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+      BeforePageLoad(url);
+    }
+
+    @Override
     public void onPageFinished(WebView view, String url) {
       PageLoaded(url);
+    }
+
+    @Override
+    public void onReceivedError(WebView view, final int errorCode, final String description, final String failingUrl) {
+      container.$form().runOnUiThread(new Runnable() {
+        public void run() {
+          ErrorOccurred(errorCode, description, failingUrl);
+        }
+      });
     }
   }
 
@@ -422,6 +448,24 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
+   * Stop loading a page.
+   */
+  @SimpleFunction(
+      description = "Stop loading a page.")
+  public void StopLoading() {
+    webview.stopLoading();
+  }
+
+  /**
+   * Reload the current page.
+   */
+  @SimpleFunction(
+      description = "Reload the current page.")
+  public void Reload() {
+    webview.reload();
+  }
+
+  /**
    * Specifies whether or not this `WebViewer` can access the JavaScript
    * geolocation API.
    *
@@ -481,8 +525,12 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   private void resetWebViewClient() {
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
-      webview.setWebViewClient(FroyoUtil.getWebViewClient(ignoreSslErrors, followLinks, container.$form(), this));
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+      webview.setWebViewClient(new HoneycombWebViewClient(followLinks, ignoreSslErrors,
+          container.$form(), this));
+    } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
+      webview.setWebViewClient(new FroyoWebViewClient<>(followLinks, ignoreSslErrors,
+          container.$form(), this));
     } else {
       webview.setWebViewClient(new WebViewerClient());
     }
@@ -498,6 +546,30 @@ public final class WebViewer extends AndroidViewComponent {
     webview.clearCache(true);
   }
 
+   /**
+   * Clear the webview's cookies. This is useful if you want to
+   * sign the user out of a website that uses them to store logins.
+   */
+  @SimpleFunction(description = "Clear WebView cookies.")
+  public void ClearCookies() {
+    CookieManager cookieManager = CookieManager.getInstance();
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP) {
+      cookieManager.removeAllCookies(null);
+    } else {
+      cookieManager.removeAllCookie();
+    }
+  }
+
+   /**
+   * Run JavaScript in the current page.
+   */
+  @SimpleFunction(description = "Run JavaScript in the current page.")
+  public void RunJavaScript(String js) {
+    // evaluateJavascript() was added in API 19
+    // and is therefore not used here for compatibility purposes.
+    webview.loadUrl("javascript:(function(){" + js + "})()");
+  }
+
   /**
    * Event that runs when the `AppInventor.setWebViewString` method is called from JavaScript.
    * The new {@link #WebViewString()} is given by the `value`{:.variable.block} parameter.
@@ -508,13 +580,23 @@ public final class WebViewer extends AndroidViewComponent {
     EventDispatcher.dispatchEvent(this, "WebViewStringChange", value);
   }
 
+  @SimpleEvent(description = "When a page is about to load this event is run.")
+  public void BeforePageLoad(String url) {
+    EventDispatcher.dispatchEvent(this, "BeforePageLoad", url);
+  }
+
   @SimpleEvent(description = "When a page is finished loading this event is run.")
   public void PageLoaded(String url) {
     EventDispatcher.dispatchEvent(this, "PageLoaded", url);
   }
 
+  @SimpleEvent(description = "When an error occurs this event is run.")
+  public void ErrorOccurred(int errorCode, String description, String failingUrl) {
+    EventDispatcher.dispatchEvent(this, "ErrorOccurred", errorCode, description, failingUrl);
+  }
+
   private void loadUrl(final String caller, final String url) {
-    if (!havePermission && MediaUtil.isExternalFileUrl(url)) {
+    if (!havePermission && MediaUtil.isExternalFileUrl(container.$form(), url)) {
       container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
           new PermissionResultHandler() {
             @Override

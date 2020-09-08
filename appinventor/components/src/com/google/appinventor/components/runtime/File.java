@@ -1,31 +1,38 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.Manifest;
+import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-
-import android.Manifest;
-import android.util.Log;
+import com.google.appinventor.components.runtime.util.QUtil;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 /**
@@ -48,6 +55,7 @@ import java.io.OutputStreamWriter;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public class File extends FileBase {
+
   /**
    * Creates a new File component.
    * @param container the Form that this component is contained in.
@@ -147,6 +155,7 @@ public class File extends FileBase {
       "located in the programs private storage will be deleted. Starting the file with // is an error " +
       "because assets files cannot be deleted.")
   public void Delete(final String fileName) {
+    final boolean legacy = this.legacy;
     form.askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionResultHandler() {
       @Override
       public void HandlePermissionResponse(String permission, boolean granted) {
@@ -156,8 +165,8 @@ public class File extends FileBase {
                 ErrorMessages.ERROR_CANNOT_DELETE_ASSET, fileName);
             return;
           }
-          String filepath = AbsoluteFileName(fileName);
-          if (MediaUtil.isExternalFile(fileName)) {
+          String filepath = AbsoluteFileName(fileName, legacy);
+          if (MediaUtil.isExternalFile(form, fileName)) {
             if (form.isDeniedPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
               form.dispatchPermissionDeniedEvent(File.this, "Delete",
                   new PermissionException(Manifest.permission.WRITE_EXTERNAL_STORAGE));
@@ -190,11 +199,12 @@ public class File extends FileBase {
       }
       return;
     }
+    final boolean legacy = this.legacy;
     final Runnable operation = new Runnable() {
       @Override
       public void run() {
-        final String filepath = AbsoluteFileName(filename);
-        if (MediaUtil.isExternalFile(filepath)) {
+        final String filepath = AbsoluteFileName(filename, legacy);
+        if (MediaUtil.isExternalFile(form, filepath)) {
           form.assertPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
         final java.io.File file = new java.io.File(filepath);
@@ -221,7 +231,7 @@ public class File extends FileBase {
           out.close();
           fileWriter.close();
 
-          activity.runOnUiThread(new Runnable() {
+          form.runOnUiThread(new Runnable() {
             @Override
             public void run() {
               AfterFileSaved(filename);
@@ -253,8 +263,13 @@ public class File extends FileBase {
 
 
   /**
-   * Asynchronously reads from the given file. Calls the main event thread
-   * when the function has completed reading from the file.
+   * Asynchronously reads from the given file. Calls the main event
+   * thread when the function has completed reading from the
+   * file. This method takes ownership of {@code fileInput} and will
+   * close the stream at the end of the operation. The caller must not
+   * close the stream since this method will return immediately and
+   * reading will occur on a separate thread.
+   * 
    * @param fileInput the stream to read from
    * @param fileName the file to read
    * @throws FileNotFoundException

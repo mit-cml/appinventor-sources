@@ -2002,6 +2002,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     final boolean includeScreenShots,
     final boolean forGallery,
     final boolean fatalError) throws IOException {
+    final boolean forBuildserver = includeAndroidKeystore && includeYail;
     validateGCS();
     final Result<Integer> fileCount = new Result<Integer>();
     fileCount.t = 0;
@@ -2057,7 +2058,8 @@ public class ObjectifyStorageIo implements  StorageIo {
               // the Firebase Component they may contain secrets which we would
               // rather not have leak into an export .aia file or into the Gallery
               it.remove();
-            } else if (fileName.startsWith("src/") && (fileName.endsWith(".scm") || fileName.endsWith(".bky") || (fileName.endsWith(".yail") && includeYail))) {
+            } else if (forBuildserver && fileName.startsWith("src/") &&
+                (fileName.endsWith(".scm") || fileName.endsWith(".bky") || fileName.endsWith(".yail"))) {
               String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
               if ((Integer)screens.get(fileNameNoExt) < 3) {
                 LOG.log(Level.INFO, "Not adding file to build ", fileName);

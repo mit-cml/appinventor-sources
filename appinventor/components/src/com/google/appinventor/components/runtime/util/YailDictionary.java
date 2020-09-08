@@ -1,12 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019 MIT, All rights reserved
+// Copyright 2019-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.errors.DispatchableError;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
@@ -226,25 +226,9 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
   @SuppressWarnings({"unused", "WeakerAccess"})  // Called from runtime.scm
   public static YailList dictToAlist(YailDictionary dict) {
     List<Object> list = new ArrayList<>();
-
     for (Map.Entry<Object, Object> entry : dict.entrySet()) {
-      Object currentKey = entry.getKey();
-      Object currentValue = entry.getValue();
-
-      List<Object> currentPair = new ArrayList<>();
-      currentPair.add(currentKey);
-
-      if (currentValue instanceof YailDictionary) {
-        currentPair.add(dictToAlist((YailDictionary) currentValue));
-      } else if (currentValue instanceof YailList) {
-        currentPair.add(checkListForDicts((YailList) currentValue));
-      } else {
-        currentPair.add(currentValue);
-      }
-
-      list.add(YailList.makeList(currentPair));
+      list.add(YailList.makeList(new Object[] {entry.getKey(), entry.getValue()}));
     }
-
     return YailList.makeList(list);
   }
 

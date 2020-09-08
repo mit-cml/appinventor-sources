@@ -1,10 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2017-2018 MIT, All rights reserved
+// Copyright 2017-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.Manifest;
 import android.app.Activity;
 
 import android.database.Cursor;
@@ -33,6 +34,7 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.CloudDBJedisListener;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
@@ -104,8 +106,9 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
     nonVisible = true,
     iconName = "images/cloudDB.png")
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
-  "android.permission.ACCESS_NETWORK_STATE")
-
+  "android.permission.ACCESS_NETWORK_STATE," +
+  "android.permission.READ_EXTERNAL_STORAGE," +
+  "android.permission.WRITE_EXTERNAL_STORAGE")
 @UsesLibraries(libraries = "jedis.jar")
 public final class CloudDB extends AndroidNonvisibleComponent implements Component,
   OnClearListener, OnDestroyListener, ObservableDataSource<String, Future<List>> {
@@ -246,6 +249,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private final List<storedValue> storeQueue = Collections.synchronizedList(new ArrayList());
 
   private ConnectivityManager cm;
+
+  // Do we have storage permission yet
+  private boolean havePermission = false;
 
   // Set of observers
   private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
@@ -581,7 +587,18 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   @SimpleFunction(description = "Store a value at a tag.")
   public void StoreValue(final String tag, final Object valueToStore) {
     checkProjectIDNotBlank();
-
+    if (!havePermission) {
+      final CloudDB me = this;
+      form.askPermission(new BulkPermissionRequest(this, "CloudDB",
+          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+          @Override
+          public void onGranted() {
+            me.havePermission = true;
+            StoreValue(tag, valueToStore);
+          }
+        });
+      return;
+    }
     final String value;
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
     boolean isConnected = networkInfo != null && networkInfo.isConnected();
@@ -738,9 +755,21 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     "value but will cause a GotValue event to fire when the " +
     "value is looked up.")
   public void GetValue(final String tag, final Object valueIfTagNotThere) {
-    checkProjectIDNotBlank();
     if (DEBUG) {
       Log.d(LOG_TAG, "getting value ... for tag: " + tag);
+    }
+    checkProjectIDNotBlank();
+    if (!havePermission) {
+      final CloudDB me = this;
+      form.askPermission(new BulkPermissionRequest(this, "CloudDB",
+          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+          @Override
+          public void onGranted() {
+            me.havePermission = true;
+            GetValue(tag, valueIfTagNotThere);
+          }
+        });
+      return;
     }
     Cursor cursor = null;
     SQLiteDatabase db = null;
@@ -1164,6 +1193,10 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     }
   }
 
+  public Form getForm() {
+    return form;
+  }
+
   public Jedis getJedis(boolean createNew) {
     Jedis jedis;
     if (dead) {                 // If we are dead, we are dead!
@@ -1281,7 +1314,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         throw new YailRuntimeError("Invalid fileName, was " + originalFileName, "ReadFrom");
       }
       String extension = getFileExtension(fileName);
-      byte [] content = FileUtil.readFile(fileName);
+      byte [] content = FileUtil.readFile(form, fileName);
       String encodedContent = Base64.encodeToString(content, Base64.DEFAULT);
       Object [] results = new Object[2];
       results[0] = "." + extension;

@@ -496,10 +496,10 @@ Blockly.Msg.es.switch_language_to_spanish_es = {
         + 'donde la posición 1 indica el inicio del texto. Devuelve 0 si\n'
         + 'no se ha encontrado la cadena dentro del texto.';
 
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'contiene';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = 'texto';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = 'cadena';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = 'contiene  texto %1 cadena %2';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '%1 texto %2 %3 %4';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS = 'contiene';
     Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = 'Comprueba si la cadena de caracteres está contenida dentro del texto.';
 
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = 'texto';

@@ -11,7 +11,9 @@ import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.output.MessagesOutput;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.http.client.Response;
@@ -94,6 +96,15 @@ public class BuildCommand extends ChainableCommand {
               // We use ErrorReporter.reportInfo so that the message has yellow background instead
               // of red background.
               ErrorReporter.reportInfo(MESSAGES.buildServerDifferentVersion());
+              break;
+            case Response.SC_REQUEST_ENTITY_TOO_LARGE:
+              // SC_REQUEST_ENTITY_TOO_LARGE (response code 413) means that the project file was
+              // too large to be sent to the build server.
+              ClientJsonParser parser = new ClientJsonParser();
+              JSONObject info = parser.parse(result.getError()).asObject();
+              int maxSize = info.get("maxSize").asNumber().getInt();
+              double appSize = info.get("aiaSize").asNumber().getDouble();
+              ErrorReporter.reportError(MESSAGES.buildProjectTooLargeError(maxSize, appSize));
               break;
             default:
               String errorMsg = result.getError();
