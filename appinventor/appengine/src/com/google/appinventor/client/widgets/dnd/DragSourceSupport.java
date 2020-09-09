@@ -410,13 +410,13 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
   }
 
   @Override
-  public void onTouchEnd(TouchEndEvent event) {
+  public void onTouchEnd(final TouchEndEvent event) {
     final Widget src = (Widget) event.getSource();
     if (src instanceof MockComponent) {  // We only select on CLICK, which isn't generated on mobile
       DeferredCommand.addCommand(new Command() {
         @Override
         public void execute() {
-          ((MockComponent) src).select();
+          ((MockComponent) src).select(event.getNativeEvent());
         }
       });
     }

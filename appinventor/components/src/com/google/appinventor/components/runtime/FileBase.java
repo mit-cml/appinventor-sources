@@ -10,11 +10,17 @@ import android.Manifest;
 import android.app.Activity;
 import android.os.Environment;
 import android.util.Log;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.IOUtils;
+import com.google.appinventor.components.runtime.util.QUtil;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,6 +45,7 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
 
   protected final Activity activity;
   protected boolean isRepl = false;
+  protected boolean legacy = false;
 
   /**
    * Creates a new FileBase component.
@@ -51,6 +58,30 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
       isRepl = true;
     }
     activity = (Activity) container.$context();
+    LegacyMode(false);
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void LegacyMode(boolean legacy) {
+    this.legacy = legacy;
+  }
+
+  /**
+   * Allows app to access files from the root of the external storage directory (legacy mode).
+   * Starting with Android 11, this will no longer be allowed and the behavior is strongly
+   * discouraged on Android 10. Starting with Android 10, App Inventor by default will attempt to
+   * store files relative to the app-specific private directory on external storage in accordance
+   * with this security change.
+   *
+   *   **Note:** Apps that enable this property will likely stop working after upgrading to
+   * Android 11, which strongly enforces that apps only write to app-private directories.
+   */
+  @SimpleProperty(description = "Allows app to access files from the root of the external storage "
+      + "directory (legacy mode).")
+  public boolean LegacyMode() {
+    return legacy;
   }
 
   /**
@@ -66,21 +97,20 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
    * @param fileName name of the file to read from
    */
   protected void readFromFile(final String fileName) {
+    final boolean legacy = this.legacy;
     form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
       @Override
       public void HandlePermissionResponse(String permission, boolean granted) {
         if (granted) {
+          InputStream inputStream;
           try {
-            InputStream inputStream;
             if (fileName.startsWith("//")) {
               inputStream = form.openAsset(fileName.substring(2));
             } else {
-              String filepath = AbsoluteFileName(fileName);
+              String filepath = AbsoluteFileName(fileName, legacy);
               Log.d(LOG_TAG, "filepath = " + filepath);
               inputStream = FileUtil.openFile(filepath);
             }
-
-            final InputStream asyncInputStream = inputStream;
 
             // Read file contents asynchronously
             AsyncRead(inputStream, fileName);
@@ -107,17 +137,18 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
    *
    * @param filename the file used to construct the file path
    */
-  protected String AbsoluteFileName(String filename) {
+  protected String AbsoluteFileName(String filename, boolean legacy) {
     if (filename.startsWith("/")) {
-      return Environment.getExternalStorageDirectory().getPath() + filename;
+      return QUtil.getExternalStoragePath(form, false, legacy) + filename;
     } else {
-      java.io.File dirPath = activity.getFilesDir();
-      if (isRepl) {
-        String path = Environment.getExternalStorageDirectory().getPath() + "/AppInventor/data/";
-        dirPath = new java.io.File(path);
-        if (!dirPath.exists()) {
-          dirPath.mkdirs();           // Make sure it exists
-        }
+      java.io.File dirPath;
+      if (form.isRepl()) {
+        dirPath = new java.io.File(QUtil.getReplDataPath(form, false));
+      } else {
+        dirPath = form.getFilesDir();
+      }
+      if (!dirPath.exists()) {
+        dirPath.mkdirs();           // Make sure it exists
       }
       return dirPath.getPath() + "/" + filename;
     }
@@ -146,30 +177,27 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
    * @throws IOException when the system cannot read the file
    */
   public String readFromInputStream(InputStream fileInput) throws IOException {
-    InputStreamReader input = new InputStreamReader(fileInput);
-    StringWriter output = new StringWriter();
-    char[] buffer = new char[BUFFER_LENGTH];
-    int offset = 0;
-    int length = 0;
-    while ((length = input.read(buffer, offset, BUFFER_LENGTH)) > 0) {
-      output.write(buffer, 0, length);
-    }
-
-    // Now that we have the file as a String,
-    // normalize any line separators to avoid compatibility between Windows and Mac
-    // text files. Users can expect \n to mean a line separator regardless of how
-    // file was created. Currently only doing this for files opened locally - not files we pull
-    // from other places like URLs.
-
-    final String text = normalizeNewLines(output.toString());
-
+    InputStreamReader input = null;
     try {
-      input.close();
-    } catch (IOException e) {
-      // do nothing...
-    }
+      input = new InputStreamReader(fileInput);
+      StringWriter output = new StringWriter();
+      char[] buffer = new char[BUFFER_LENGTH];
+      int offset = 0;
+      int length = 0;
+      while ((length = input.read(buffer, offset, BUFFER_LENGTH)) > 0) {
+        output.write(buffer, 0, length);
+      }
 
-    return text;
+      // Now that we have the file as a String,
+      // normalize any line separators to avoid compatibility between Windows and Mac
+      // text files. Users can expect \n to mean a line separator regardless of how
+      // file was created. Currently only doing this for files opened locally - not files we pull
+      // from other places like URLs.
+
+      return normalizeNewLines(output.toString());
+    } finally {
+      IOUtils.closeQuietly(LOG_TAG, fileInput);
+    }
   }
 
   /**

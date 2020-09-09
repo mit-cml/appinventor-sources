@@ -445,7 +445,11 @@
   <dd>Returns the last text produced by the recognizer.</dd>
   <dt id="SpeechRecognizer.UseLegacy" class="boolean"><em>UseLegacy</em></dt>
   <dd>If true, a separate dialog is used to recognize speech (the default). If false, speech is
- recognized in the background and partial results are also provided. See
+ recognized in the background and updates are received as it recognizes words.
+ <a href="#SpeechRecognizer.AfterGettingText"><code class="highlighter-rouge">AfterGettingText</code></a> may get several calls with <code class="highlighter-rouge">partial</code> set to <code class="logic block highlighter-rouge">true</code>.
+ Once sufficient time has elapsed since the last utterance, or <code class="highlighter-rouge">StopListening</code> is called,
+ the last string will be returned with <code class="highlighter-rouge">partial</code> set to <code class="logic block highlighter-rouge">false</code> to indicate that it is the
+ final recognized string and no more data will be provided until recognition is again started. See
  <a href="#SpeechRecognizer.AfterGettingText"><code class="highlighter-rouge">AfterGettingText</code></a> for more details on partial speech recognition.</dd>
 </dl>
 
@@ -638,7 +642,13 @@
 
 <h3 id="YandexTranslate-Properties">Properties</h3>
 
-<p class="properties">None</p>
+<dl class="properties">
+  <dt id="YandexTranslate.ApiKey" class="text wo"><em>ApiKey</em></dt>
+  <dd>The Yandex API Key to use. If set to DEFAULT the platform default key (if any)
+ will be used. Otherwise should be set to a valid API key which can be obtained
+ from https://tech.yandex.com/translate/. If the platform doesn’t have a default
+ key and one isn’t provided here, an error will be raised.</dd>
+</dl>
 
 <h3 id="YandexTranslate-Events">Events</h3>
 

@@ -1251,7 +1251,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The BluetoothClient.PollingRate property was added.
     // No blocks need to be modified to upgrade to version 6.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // The BluetoothClient.DisconnectOnError property was added.
+    // No blocks need to be modified to upgrade to version 7.
+    7: "noUpgrade"
 
   }, // End BluetoothClient upgraders
 
@@ -1390,7 +1394,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // ExtendMovesOutsideCanvas was added
     // No blocks need to be modified to upgrade to version 12.
-    12: "noUpgrade"
+    12: "noUpgrade",
+
+    //  BackgroundImageinBase64 was added
+    // No blocks need to be modified to upgrade to version 13.
+    13: "noUpgrade"
 
   }, // End Canvas upgraders
 
@@ -1521,7 +1529,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The AfterFileSaved event was added.
     // No blocks need to be modified to upgrade to version 2.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: The LegacyMode property was added.
+    // No blocks need to be modified to upgrade to version 3.
+    3: "noUpgrade"
 
   }, // End File upgraders
 
@@ -1825,7 +1837,19 @@ Blockly.Versioning.AllUpgradeMaps =
     28: "noUpgrade",
 
     // AI2: Added "for each in dictionary" block.
-    29: "noUpgrade"
+    29: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 30, The Reverse Text block was added
+    30: "noUpgrade",
+
+    // AI2: Added "replace all mappings" block
+    31: "noUpgrade",
+
+    // AI2: Added mutators for and/or blocks
+    32: "noUpgrade",
+
+    // AI2: Added "contains any" and "contains all" options to the text contains block.
+    33:"noUpgrade"
 
   }, // End Language upgraders
 
@@ -2342,7 +2366,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERISON 26:
     // - ShowListsAsJson default value changed from False to True
-    26: "noUpgrade"
+    26: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 27:
+    // - Platform and PlatformVersion read-only blocks were added
+    27: "noUpgrade"
 
 
   }, // End Screen
@@ -2681,14 +2709,23 @@ Blockly.Versioning.AllUpgradeMaps =
     7: "noUpgrade",
 
     //AI2: Added PageLoaded
-    8: "noUpgrade"
+    8: "noUpgrade",
+
+    // AI2: Added BeforePageLoad event and Stop, Reload, and ClearCookies methods
+    9: "noUpgrade",
+
+    // AI2: Added ErrorOccurred event and RunJavaScript method
+    10: "noUpgrade"
 
   }, // End WebViewer upgraders
 
   "YandexTranslate": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: ApiKey property added
+    2: "noUpgrade"
 
   } // End YandexTranslate upgraders
 

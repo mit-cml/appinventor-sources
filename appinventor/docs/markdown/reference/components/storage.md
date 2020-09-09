@@ -120,6 +120,16 @@ Component for DataFile
 {:id="DataFile.Columns" .list .ro .bo} *Columns*
 : Retrieve a List of columns of the currently loaded Source file.
 
+{:id="DataFile.LegacyMode" .boolean} *LegacyMode*
+: Allows app to access files from the root of the external storage directory (legacy mode).
+ Starting with Android 11, this will no longer be allowed and the behavior is strongly
+ discouraged on Android 10. Starting with Android 10, App Inventor by default will attempt to
+ store files relative to the app-specific private directory on external storage in accordance
+ with this security change.
+
+   **Note:** Apps that enable this property will likely stop working after upgrading to
+ Android 11, which strongly enforces that apps only write to app-private directories.
+
 {:id="DataFile.Rows" .list .ro .bo} *Rows*
 : Retrieve a List of rows of the currently loaded Source file.
 
@@ -155,8 +165,16 @@ Non-visible component for storing and retrieving files. Use this component to wr
 ### Properties  {#File-Properties}
 
 {:.properties}
-None
 
+{:id="File.LegacyMode" .boolean} *LegacyMode*
+: Allows app to access files from the root of the external storage directory (legacy mode).
+ Starting with Android 11, this will no longer be allowed and the behavior is strongly
+ discouraged on Android 10. Starting with Android 10, App Inventor by default will attempt to
+ store files relative to the app-specific private directory on external storage in accordance
+ with this security change.
+
+   **Note:** Apps that enable this property will likely stop working after upgrading to
+ Android 11, which strongly enforces that apps only write to app-private directories.
 
 ### Events  {#File-Events}
 

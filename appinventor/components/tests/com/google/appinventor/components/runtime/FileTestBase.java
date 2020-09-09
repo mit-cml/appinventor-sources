@@ -18,7 +18,7 @@ import java.nio.charset.Charset;
 
 @Config(shadows = {ShadowActivityCompat.class})
 public class FileTestBase extends RobolectricTestBase {  /// Helper functions
-  private static final String TAG = FileTest.class.getSimpleName();
+  protected static final String TAG = FileTest.class.getSimpleName();
 
   /**
    * Helper function to grant read/write permissions to the app.

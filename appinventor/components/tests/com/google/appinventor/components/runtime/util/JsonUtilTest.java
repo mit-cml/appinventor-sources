@@ -6,17 +6,9 @@
 
 package com.google.appinventor.components.runtime.util;
 
-<<<<<<< HEAD
-import junit.framework.TestCase;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-=======
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
->>>>>>> ucr
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -149,7 +141,7 @@ public class JsonUtilTest {
    * from an element that is not a List returns an empty List.
    */
   @Test
-  public void testGetColumnsFromJSONNotList() {
+  public void testGetColumnsFromJSONNotList() throws JSONException {
     String json = "1";
 
     YailList result = JsonUtil.getColumnsFromJSON(json);
@@ -164,7 +156,7 @@ public class JsonUtilTest {
    * returns a List containing the appropriate column.
    */
   @Test
-  public void testGetColumnsFromJSONArrayMultipleEntries() {
+  public void testGetColumnsFromJSONArrayMultipleEntries() throws JSONException {
     String json = "{" +
         "\"array\": " +
         "[1,2,3]" +
@@ -183,7 +175,7 @@ public class JsonUtilTest {
    * returns a List containing the appropriate column.
    */
   @Test
-  public void testGetColumnsFromJSONArraySingleEntry() {
+  public void testGetColumnsFromJSONArraySingleEntry() throws JSONException {
     String json = "{" +
         "\"array\": " +
         "[7]" +
@@ -202,7 +194,7 @@ public class JsonUtilTest {
    * the appropriate column.
    */
   @Test
-  public void testGetColumnsFromJSONElement() {
+  public void testGetColumnsFromJSONElement() throws JSONException {
     String json = "{" +
         "\"value\": " +
         "\"test-value\"" +
@@ -221,7 +213,7 @@ public class JsonUtilTest {
    * returns a List of the appropriate columns.
    */
   @Test
-  public void testGetColumnsFromJSONMixedEntries() {
+  public void testGetColumnsFromJSONMixedEntries() throws JSONException {
     String json = "{" +
         "\"array\": [1,2,3]," +
         "\"values\": [4,7,2,1]," +

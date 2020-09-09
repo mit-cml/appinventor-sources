@@ -443,10 +443,10 @@ Blockly.Msg.ru.switch_language_to_russian = {
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL = 'Проверяет, являются ли текстовые цепочки идентичными, т.е. содержит ли одинаковые символы в нужном порядке. Это отличается от обычного =n в случае, если текстовые цепочки являются номерами: 123 и 0123 =n, но не text =.';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT = 'Сообщает, является ли text1 большей цепочкой, чем text2. Более короткая цепочка считается меньшей. Символы в верхнем регистре размещаются раньше символов в нижнем регистре.';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = 'Проверяет, меньше ли текст1, чем текст2. Если один текст является началом другого, то более короткий текст считается меньшим. Заглавные буквы предшествуют строчным.';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = 'содержит текстовый %1 фрагмент %2';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'содержит';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '%1 текстовый %2 %3 %4';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = 'фрагмент';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = 'text';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS = 'содержит';
     Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = 'Проверяет, содержится ли подстрока в тексте.';
     Blockly.Msg.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY = 'является пустым';
     Blockly.Msg.LANG_TEXT_ISEMPTY_TOOLTIP = 'возвращает истина, если длина текста равна 0, и ложь в противном случае. ';

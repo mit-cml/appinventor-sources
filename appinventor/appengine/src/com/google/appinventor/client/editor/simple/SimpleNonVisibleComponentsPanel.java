@@ -126,7 +126,7 @@ public final class SimpleNonVisibleComponentsPanel extends Composite implements 
 
     // Add component to this panel
     addComponent(sourceComponent);
-    sourceComponent.select();
+    sourceComponent.select(null);
   }
 
   @Override

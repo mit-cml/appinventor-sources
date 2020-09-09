@@ -269,13 +269,23 @@ public final class ErrorMessages {
   public static final int ERROR_SERVER = 3808;
   public static final int ERROR_SPEECH_TIMEOUT = 3809;
 
-  //ChartData Errors
-  public static final int ERROR_INVALID_CHART_ENTRY_VALUES = 3901;
-  public static final int ERROR_NULL_CHART_ENTRY_VALUES = 3902;
-  public static final int ERROR_INSUFFICIENT_CHART_ENTRY_VALUES = 3903;
-  public static final int ERROR_INVALID_CHART_DATA_COLOR = 3904;
+  // Serial errors
+  public static final int ERROR_SERIAL_NOT_INITIALIZED = 3901;
+  public static final int ERROR_SERIAL_WRITING = 3902;
 
-  // Start the next group of errors at 4000
+  // Navigation Errors
+  public static final int ERROR_INVALID_API_KEY = 4001;
+  public static final int ERROR_UNABLE_TO_REQUEST_DIRECTIONS = 4002;
+  public static final int ERROR_ROUTING_SERVICE_ERROR = 4003;
+  public static final int ERROR_NO_ROUTE_FOUND = 4004;
+
+  //ChartData Errors
+  public static final int ERROR_INVALID_CHART_ENTRY_VALUES = 4101;
+  public static final int ERROR_NULL_CHART_ENTRY_VALUES = 4102;
+  public static final int ERROR_INSUFFICIENT_CHART_ENTRY_VALUES = 4103;
+  public static final int ERROR_INVALID_CHART_DATA_COLOR = 4104;
+
+  // Start the next group of errors at 4200
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -675,6 +685,17 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_RECOGNIZER_BUSY, "RecognitionService Busy");
     errorMessages.put(ERROR_SERVER, "Error From Server");
     errorMessages.put(ERROR_SPEECH_TIMEOUT, "No Speech Input");
+
+    // Serial
+    errorMessages.put(ERROR_SERIAL_NOT_INITIALIZED, "Serial was not initialized");
+    errorMessages.put(ERROR_SERIAL_WRITING, "Error writing data to serial");
+
+    // Navigation Errors
+    errorMessages.put(ERROR_INVALID_API_KEY, "No api key provided");
+    errorMessages.put(ERROR_UNABLE_TO_REQUEST_DIRECTIONS,
+        "Unable to request directions. Reason: %s");
+    errorMessages.put(ERROR_ROUTING_SERVICE_ERROR, "Routing service failed with status %d %s");
+    errorMessages.put(ERROR_NO_ROUTE_FOUND, "No route returned by the routing service.");
 
     //ChartData Errors
     errorMessages.put(ERROR_INVALID_CHART_ENTRY_VALUES, "Invalid Chart Entry Value(s): %1$s, %2$s");

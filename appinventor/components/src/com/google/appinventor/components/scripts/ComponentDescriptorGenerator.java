@@ -213,7 +213,9 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
    */
   private void outputConditionalAnnotations(ComponentInfo component, StringBuilder sb) {
     if (component.conditionalPermissions.size() +
-        component.conditionalBroadcastReceivers.size() == 0) {
+        component.conditionalBroadcastReceivers.size() + 
+        component.conditionalServices.size() + 
+        component.conditionalContentProviders.size() == 0) {
       return;
     }
     sb.append(",\n  \"conditionals\":{\n    ");
@@ -227,6 +229,18 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       if (!first) sb.append(",\n    ");
       sb.append("\"broadcastReceivers\": ");
       outputMultimap(sb, "    ", component.conditionalBroadcastReceivers);
+      first = false;
+    }
+    if (component.conditionalServices.size() > 0) {
+      if (!first) sb.append(",\n    ");
+      sb.append("\"services\": ");
+      outputMultimap(sb, "    ", component.conditionalServices);
+      first = false;
+    }
+    if (component.conditionalContentProviders.size() > 0) {
+      if (!first) sb.append(",\n    ");
+      sb.append("\"contentProviders\": ");
+      outputMultimap(sb, "    ", component.conditionalContentProviders);
       first = false;
     }
     // Add other annotations here as needed
