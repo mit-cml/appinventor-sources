@@ -216,6 +216,7 @@
         <batchtest todir="${reports.dir}/raw/" unless="test_name">
           <fileset dir="${tests.dir}">
             <include name="@{aij-dir}/**/*Test.java" />
+            <exclude name="@{aij-dir}/**/Abstract*Test.java" />
           </fileset>
         </batchtest>
       </junit>
