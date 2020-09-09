@@ -14,6 +14,7 @@
 'use strict';
 
 goog.provide('Blockly.Blocks.Utilities');
+goog.require('AI.Blockly.Msg');
 
 // Create a unique object to represent the type InstantInTime,
 // used in the Clock component

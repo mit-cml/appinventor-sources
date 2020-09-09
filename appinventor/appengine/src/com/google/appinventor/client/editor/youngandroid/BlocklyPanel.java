@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.ConnectProgressBar;
 import com.google.appinventor.client.DesignToolbar;
@@ -14,7 +16,6 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.output.OdeLog;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -26,21 +27,17 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.LocaleInfo;
-
 import com.google.gwt.query.client.builders.JsniBundle;
-
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Blocks editor panel.
@@ -53,30 +50,31 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public class BlocklyPanel extends HTMLPanel {
 
-  public static interface BlocklySource extends JsniBundle {
-    @LibrarySource(value="blockly.js",
-                   prepend="(function(window, document, console){\nthis.goog = goog = top.goog;\n",
-                   postpend="\n}.apply(window, [$wnd, $doc, $wnd.console]));\n" +
-                   "for(var ns in window.goog.implicitNamespaces_) {\n" +
-                   "  if(ns.indexOf('.') !== false) ns = ns.split('.')[0];\n" +
-                   "  top[ns] = window.goog.global[ns];\n" +
-                   "}\nwindow['Blockly'] = top['Blockly'];\nwindow['AI'] = top['AI'];")
-    public void initBlockly();
+  public interface BlocklySource extends JsniBundle {
+    @LibrarySource(value = "blockly.js",
+                   prepend = "(function(window, document, console, _translations){\n"
+                       + "this.goog = goog = top.goog;\n",
+                   postpend = "\n}.apply(window, [$wnd, $doc, $wnd.console, ai2translations]));\n"
+                       + "for(var ns in window.goog.implicitNamespaces_) {\n"
+                       + "  if(ns.indexOf('.') !== false) ns = ns.split('.')[0];\n"
+                       + "  top[ns] = window.goog.global[ns];\n"
+                       + "}\nwindow['Blockly'] = top['Blockly'];\nwindow['AI'] = top['AI'];")
+    void initBlockly(JavaScriptObject ai2translations);
   }
 
-  private static final String EDITOR_HTML = "<div id=\"FORM_NAME\" class=\"svg\" tabindex=\"-1\"></div>";
   private static final NativeTranslationMap SIMPLE_COMPONENT_TRANSLATIONS;
 
   static {
-    ((BlocklySource) GWT.create(BlocklySource.class)).initBlockly();
-    BlocklyMsg.Loader.ensureTranslationsLoaded();
+    ((BlocklySource) GWT.create(BlocklySource.class))
+        .initBlockly(BlocklyMsg.Loader.getTranslations());
     exportMethodsToJavascript();
     // Tell the blockly world about companion versions.
     setLanguageVersion(YaVersion.YOUNG_ANDROID_VERSION, YaVersion.BLOCKS_LANGUAGE_VERSION);
-    setPreferredCompanion(MESSAGES.useCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.PREFERRED_COMPANION + "u"),
-      YaVersion.COMPANION_UPDATE_URL,
-      YaVersion.COMPANION_UPDATE_URL1,
-      YaVersion.COMPANION_UPDATE_EMULATOR_URL);
+    setPreferredCompanion(
+        MESSAGES.useCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.PREFERRED_COMPANION + "u"),
+        YaVersion.COMPANION_UPDATE_URL,
+        YaVersion.COMPANION_UPDATE_URL1,
+        YaVersion.COMPANION_UPDATE_EMULATOR_URL);
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }

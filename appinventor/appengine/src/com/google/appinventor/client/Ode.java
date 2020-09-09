@@ -28,6 +28,7 @@ import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
@@ -781,12 +782,17 @@ public class Ode implements EntryPoint {
         // load the user's backpack if we are not using a shared
         // backpack
 
-        String backPackId = user.getBackpackId();
+        final String backPackId = user.getBackpackId();
         if (backPackId == null || backPackId.isEmpty()) {
           loadBackpack();
           OdeLog.log("backpack: No shared backpack");
         } else {
-          BlocklyPanel.setSharedBackpackId(backPackId);
+          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
+            @Override
+            public void call() {
+              BlocklyPanel.setSharedBackpackId(backPackId);
+            }
+          });
           OdeLog.log("Have a shared backpack backPackId = " + backPackId);
         }
 
@@ -1642,6 +1648,7 @@ public class Ode implements EntryPoint {
         userSettings.saveSettings(null);
       }
     }
+    BlocklyMsg.Loader.ensureTranslationsLoaded();
     return true;
   }
 
@@ -2643,8 +2650,13 @@ public class Ode implements EntryPoint {
   private void loadBackpack() {
     userInfoService.getUserBackpack(new AsyncCallback<String>() {
         @Override
-        public void onSuccess(String backpack) {
-          BlocklyPanel.setInitialBackpack(backpack);
+        public void onSuccess(final String backpack) {
+          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
+            @Override
+            public void call() {
+              BlocklyPanel.setInitialBackpack(backpack);
+            }
+          });
         }
         @Override
         public void onFailure(Throwable caught) {
