@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertEquals;
  * Tests the integration with the MPAndroidChart library
  * classes by actually operating on the Data Series objects.
  */
-public abstract class ChartDataModelBaseTest<M extends ChartDataModel,
+public abstract class AbstractChartDataModelBaseTest<M extends ChartDataModel,
     D extends ChartData> extends RobolectricTestBase {
   protected M model;
   protected D data;

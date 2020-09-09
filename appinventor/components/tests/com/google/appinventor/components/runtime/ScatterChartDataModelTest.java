@@ -6,7 +6,6 @@
 package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.charts.ScatterChart;
-import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.renderer.scatter.IShapeRenderer;
@@ -17,7 +16,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class ScatterChartDataModelTest
-    extends PointChartDataModelTest<ScatterChartDataModel, ScatterData> {
+    extends AbstractPointChartDataModelTest<ScatterChartDataModel, ScatterData> {
   @Before
   @Override
   public void setup() {

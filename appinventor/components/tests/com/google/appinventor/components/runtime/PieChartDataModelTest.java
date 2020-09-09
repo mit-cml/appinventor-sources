@@ -24,9 +24,9 @@ import java.util.List;
  * Test class for the Pie Chart Data Model.
  * Tests various data operations on Pie data.
  *
- * @see com.google.appinventor.components.runtime.ChartDataModel2DTest
+ * @see AbstractChartDataModel2DTest
  */
-public class PieChartDataModelTest extends ChartDataModel2DTest<PieChartDataModel, PieData> {
+public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChartDataModel, PieData> {
   private PieChartView chartView;
   private List<LegendEntry> legendEntries;
 

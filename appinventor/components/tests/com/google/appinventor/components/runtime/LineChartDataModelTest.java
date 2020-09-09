@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
  * Unit tests for the LineChartModel class.
  */
 public class LineChartDataModelTest
-    extends PointChartDataModelTest<LineChartDataModel, LineData> {
+    extends AbstractPointChartDataModelTest<LineChartDataModel, LineData> {
   @Before
   @Override
   public void setup() {

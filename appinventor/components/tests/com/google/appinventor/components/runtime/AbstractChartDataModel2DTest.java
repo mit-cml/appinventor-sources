@@ -20,9 +20,9 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 
-public abstract class ChartDataModel2DTest<M extends Chart2DDataModel,
+public abstract class AbstractChartDataModel2DTest<M extends Chart2DDataModel,
     D extends ChartData>
-    extends ChartDataModelBaseTest<M, D> {
+    extends AbstractChartDataModelBaseTest<M, D> {
   /**
    * Tests to ensure that Data Series entries are not changed
    * when passing in invalid input via setEelements.

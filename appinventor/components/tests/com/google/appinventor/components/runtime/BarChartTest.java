@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 
-public class BarChartTest extends AxisChartTest<BarChartView, BarChart> {
+public class BarChartTest extends AbstractAxisChartTest<BarChartView, BarChart> {
   @Before
   public void setUp() {
     super.setUp();

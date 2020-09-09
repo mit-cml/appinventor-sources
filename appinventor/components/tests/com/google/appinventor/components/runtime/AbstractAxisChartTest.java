@@ -22,7 +22,7 @@ import java.util.List;
  * Contains test cases related to functionality specific for
  * Axis based Charts.
  */
-public abstract class AxisChartTest<V extends AxisChartView,
+public abstract class AbstractAxisChartTest<V extends AxisChartView,
     C extends BarLineChartBase> extends AbstractChartTest<V, C> {
   protected ValueFormatter xAxisValueFormatter;
 

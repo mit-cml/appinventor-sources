@@ -20,7 +20,7 @@ import org.junit.Before;
  * between the View component and the Chart component, as well as
  * integration with the MPAndroidChart library classes.
  */
-public class LineChartTest extends AxisChartTest<LineChartView, LineChart> {
+public class LineChartTest extends AbstractAxisChartTest<LineChartView, LineChart> {
   @Before
   public void setUp() {
     super.setUp();

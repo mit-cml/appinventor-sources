@@ -21,9 +21,9 @@ import java.util.List;
 /**
  * Test class for the Bar Chart Data Model.
  * Tests various data operations on Bar data.
- * @see com.google.appinventor.components.runtime.ChartDataModel2DTest
+ * @see AbstractChartDataModel2DTest
  */
-public class BarChartDataModelTest extends ChartDataModel2DTest<BarChartDataModel, BarData> {
+public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChartDataModel, BarData> {
 
   @Override
   public void setup() {

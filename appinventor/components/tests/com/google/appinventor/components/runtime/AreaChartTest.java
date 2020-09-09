@@ -13,7 +13,7 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.google.appinventor.components.common.ComponentConstants;
 import org.junit.Before;
 
-public class AreaChartTest extends AxisChartTest<AreaChartView, LineChart> {
+public class AreaChartTest extends AbstractAxisChartTest<AreaChartView, LineChart> {
   @Before
   public void setUp() {
     super.setUp();

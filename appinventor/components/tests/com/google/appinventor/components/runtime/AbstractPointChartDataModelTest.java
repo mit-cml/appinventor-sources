@@ -20,10 +20,10 @@ import java.util.ArrayList;
  * @param <M> PointChartDataModel class type under test
  * @param <D> ChartData type under test (should be same type as the M ChartData type used)
  */
-public abstract class PointChartDataModelTest
+public abstract class AbstractPointChartDataModelTest
     <M extends PointChartDataModel,
         D extends ChartData>
-    extends ChartDataModel2DTest<M, D> {
+    extends AbstractChartDataModel2DTest<M, D> {
   /**
    * Test to ensure that importing from a tuple with
    * an invalid X value does not add any entry.
