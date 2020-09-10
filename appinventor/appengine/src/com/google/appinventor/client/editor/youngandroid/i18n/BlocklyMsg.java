@@ -1,6 +1,7 @@
 package com.google.appinventor.client.editor.youngandroid.i18n;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ExternalTextResource;
 import com.google.gwt.resources.client.ResourceCallback;
@@ -40,6 +41,7 @@ public interface BlocklyMsg extends ClientBundle {
     private static boolean translationsLoaded = false;
     private static Set<LoadCallback> pendingCallbacks = new HashSet<>();
     private static boolean loadInitiated = false;
+    private static JavaScriptObject translations = null;
 
     private Loader() {
       // Not instantiable
@@ -106,11 +108,25 @@ public interface BlocklyMsg extends ClientBundle {
       }
     }
 
+    /**
+     * Tests whether the Blockly strings have been loaded. It is preferable to use
+     * {@link #ensureTranslationsLoaded(LoadCallback)} with a callback, which will
+     * be executed when the translations are available rather than continuously polling
+     * this method.
+     *
+     * @return true if the Blockly messages are loaded, otherwise false.
+     */
+    public static boolean isTranslationLoaded() {
+      return translationsLoaded;
+    }
+
+    public static JavaScriptObject getTranslations() {
+      return translations;
+    }
+
     private static native void installTranslations(String translations)/*-{
-        var messages = JSON.parse(translations);
-        Object.keys(messages).forEach(function (key) {
-          Blockly.Msg[key] = messages[key];
-        });
+      @com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg.Loader::translations =
+        JSON.parse(translations);
     }-*/;
   }
 }
