@@ -7,6 +7,8 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 /**
  * Property editor for choosing an sensor port for a sensor on a Lego Mindstorms
  * EV3 robot.
