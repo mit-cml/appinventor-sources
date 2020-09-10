@@ -531,9 +531,14 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
 
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = '文本';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = '子串';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST = '子串链';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '检查文本%2%1%3%4';
     Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS = '是否包含';
-    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = '检查文本中是否包含该子串。';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY = '是否包含任何';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL = '是否包含所有';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS = '检查文本中是否包含该子串。';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY = '检查文本中是否包含任何子串';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL = '检查文本中是否包含所有子串';
 
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = '文本';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT = '分隔符';
