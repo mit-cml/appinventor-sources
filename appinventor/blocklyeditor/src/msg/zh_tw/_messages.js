@@ -534,6 +534,7 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
 
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = '文字';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = '字串';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST = '字串鏈';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '檢查文字%2%1%3%4';
     Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS = '是否包含';
     Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY = '是否包含任何';
