@@ -60,12 +60,12 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
   }
 
   // MARK: ListPicker Properties
-  @objc open var Elements: [String] {
+  @objc open var Elements: [AnyObject] {
     get {
-      return _items
+      return _items as [AnyObject]
     }
     set(items) {
-      setItems(items: items)
+      setItems(items: items.toStringArray())
     }
   }
 

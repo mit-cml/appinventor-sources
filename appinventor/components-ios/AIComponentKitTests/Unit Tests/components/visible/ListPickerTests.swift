@@ -15,7 +15,7 @@ class ListPickerTests: XCTestCase {
   }
 
   func testSelectionIndex() {
-    testListPicker.Elements = ["apple", "banana", "cantalope"]
+    testListPicker.Elements = ["apple", "banana", "cantalope"] as [AnyObject]
 
     // Setting the Selection to a valid item should yield the 1-based index of the selection
     testListPicker.Selection = "apple"

@@ -78,6 +78,8 @@
 		068E0EB91DC251E90086FFDA /* Texting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0EB81DC251E90086FFDA /* Texting.swift */; };
 		06925559228B01B60091057E /* NSLock+Synchronized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06925558228B01B60091057E /* NSLock+Synchronized.swift */; };
 		06A47CD323F12EF400668126 /* PermissionException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A47CD223F12EF400668126 /* PermissionException.swift */; };
+		06A623842507BC3200961743 /* Array+AIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A623832507BC3200961743 /* Array+AIHelpers.swift */; };
+		06A623862507BDA800961743 /* CoercionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A623852507BDA800961743 /* CoercionTests.swift */; };
 		06A686A02225DB95006E7F60 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A6869F2225DB95006E7F60 /* Alamofire.framework */; };
 		06AC1CC81DB4559800A59EB3 /* AIComponentKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06AC1CC71DB4559800A59EB3 /* AIComponentKitTests.m */; };
 		06AEDC581E04C12900371E72 /* FormatUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06AEDC571E04C12900371E72 /* FormatUtil.swift */; };
@@ -296,6 +298,8 @@
 		068E0EB81DC251E90086FFDA /* Texting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texting.swift; sourceTree = "<group>"; };
 		06925558228B01B60091057E /* NSLock+Synchronized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLock+Synchronized.swift"; sourceTree = "<group>"; };
 		06A47CD223F12EF400668126 /* PermissionException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionException.swift; sourceTree = "<group>"; };
+		06A623832507BC3200961743 /* Array+AIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+AIHelpers.swift"; sourceTree = "<group>"; };
+		06A623852507BDA800961743 /* CoercionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoercionTests.swift; sourceTree = "<group>"; };
 		06A6869F2225DB95006E7F60 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06AC1CC61DB4559800A59EB3 /* AIComponentKitTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AIComponentKitTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		06AC1CC71DB4559800A59EB3 /* AIComponentKitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIComponentKitTests.m; sourceTree = "<group>"; };
@@ -458,6 +462,7 @@
 		0417585120093F24007D2C31 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				06A623832507BC3200961743 /* Array+AIHelpers.swift */,
 				06925558228B01B60091057E /* NSLock+Synchronized.swift */,
 				041758522009417D007D2C31 /* String+ChopAffix.swift */,
 				06009FF1227CF5D400E4EC4A /* String+Format.swift */,
@@ -537,17 +542,18 @@
 			children = (
 				06E2D6001FDB16CC00A1D52A /* yail */,
 				CBC78695202E0B73005363A3 /* Unit Tests */,
-				0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */,
-				0618A2931D8CF4EE0013A191 /* Info.plist */,
 				06AC1CC71DB4559800A59EB3 /* AIComponentKitTests.m */,
+				0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */,
 				06AC1CC61DB4559800A59EB3 /* AIComponentKitTests-Bridging-Header.h */,
+				061F8571203F28AC00683091 /* AppInventorTestCase.swift */,
+				06E2D5FC1FDB15F100A1D52A /* BuiltinBlockTests.swift */,
+				06A623852507BDA800961743 /* CoercionTests.swift */,
+				06BA52A2203E845A00879F00 /* CsvUtilTests.swift */,
+				0602B26F203481F900ED60A8 /* FormTests.swift */,
+				06009FF3227CF8D100E4EC4A /* FormatTests.swift */,
+				0618A2931D8CF4EE0013A191 /* Info.plist */,
 				0653CBD71F9719920052065A /* RuntimeTests.swift */,
 				0653CBD91F971BA70052065A /* TestFailure.swift */,
-				061F8571203F28AC00683091 /* AppInventorTestCase.swift */,
-				0602B26F203481F900ED60A8 /* FormTests.swift */,
-				06E2D5FC1FDB15F100A1D52A /* BuiltinBlockTests.swift */,
-				06BA52A2203E845A00879F00 /* CsvUtilTests.swift */,
-				06009FF3227CF8D100E4EC4A /* FormatTests.swift */,
 			);
 			path = AIComponentKitTests;
 			sourceTree = "<group>";
@@ -1281,6 +1287,7 @@
 				DEA5C6E020E17FDA0083A49B /* Polygon.swift in Sources */,
 				CBC78688202A23F6005363A3 /* MapFeatureContainerBase.swift in Sources */,
 				CB96609C1F95489F009746C3 /* LocationSensor.swift in Sources */,
+				06A623842507BC3200961743 /* Array+AIHelpers.swift in Sources */,
 				06DA9F4F1D8CFB4B00389B04 /* VisibleComponent.swift in Sources */,
 				06925559228B01B60091057E /* NSLock+Synchronized.swift in Sources */,
 			);
@@ -1295,6 +1302,7 @@
 				06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */,
 				06FB67DB247B8EDA00ABEAD6 /* LinearViewTests.swift in Sources */,
 				06E2D5FD1FDB15F100A1D52A /* BuiltinBlockTests.swift in Sources */,
+				06A623862507BDA800961743 /* CoercionTests.swift in Sources */,
 				0602B270203481F900ED60A8 /* FormTests.swift in Sources */,
 				06009FF62280723F00E4EC4A /* ImageTests.swift in Sources */,
 				DE68A88D20B4971400233AF9 /* XMLTests.swift in Sources */,

@@ -15,7 +15,7 @@ class ListViewTests: XCTestCase {
   }
 
   func testSelectionIndex() {
-    testList.Elements = ["apple", "banana", "cherry"]
+    testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
     testList.Selection = "apple"
     XCTAssertEqual(1, testList.SelectionIndex)
     XCTAssertEqual("apple", testList.Selection)

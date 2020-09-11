@@ -34,6 +34,7 @@ class TestForm : ReplForm {
 
   let _interpreter: SCMInterpreter
   var checkerMap = [EventDescription: [CheckFunc]]()
+  var testComponents = [String: Component]()
 
   public init(_ interpreter: SCMInterpreter) {
     _interpreter = interpreter
@@ -140,6 +141,23 @@ class AppInventorTestCase: XCTestCase {
    */
   open func verify(timeout: TimeInterval = 0.5) {
     wait(for: expectations, timeout: timeout)
+  }
+
+  /**
+   * Adds the given `component` to the `form` used for testing.
+   *
+   * - Parameter component: The component instance to register. It should have `form` in its
+   *                        ancestor hierarchy.
+   * - Parameter name: The name of the component.
+   */
+  open func addComponent(_ component: Component, named name: String) -> Bool {
+    interpreter.setValue(component, forSymbol: name)
+    interpreter.evalForm("(add-to-current-form-environment \"\(name)\" \(name))")
+    if interpreter.exception == nil {
+      form.testComponents[name] = component
+      return true
+    }
+    return false
   }
 
   open override func tearDown() {

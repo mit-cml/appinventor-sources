@@ -71,16 +71,16 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       return ""
     }
     set(elements) {
-      Elements = elements.split(",")
+      Elements = elements.split(",") as [AnyObject]
     }
   }
 
-  @objc open var Elements: [String] {
+  @objc open var Elements: [AnyObject] {
     get {
-      return _elements
+      return _elements as [AnyObject]
     }
     set(elements) {
-      _elements = elements
+      _elements = elements.toStringArray()
       _automaticHeightConstraint.constant = _elements.isEmpty ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(_elements.count)
       if let searchBar = _view.tableHeaderView as? UISearchBar {
         self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
