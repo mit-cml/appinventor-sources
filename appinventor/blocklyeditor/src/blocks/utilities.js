@@ -25,7 +25,6 @@ goog.provide('Blockly.Blocks.Utilities');
 Blockly.Blocks.Utilities.InstantInTime = function (myConn, otherConn) {
   if (!myConn.sourceBlock_.rendered ||
       !otherConn.sourceBlock_.rendered) {
-    console.log(otherConn.check_);
     if (otherConn.check_ && !otherConn.check_.includes('InstantInTime')) {
       otherConn.sourceBlock_.badBlock();
     }
@@ -43,44 +42,44 @@ Blockly.Blocks.Utilities.InstantInTime = function (myConn, otherConn) {
 // Blockly's convention
 Blockly.Blocks.Utilities.YailTypeToBlocklyTypeMap = {
   'number': {
-    input: ['Number'],
-    output: ['Number', 'String', 'Key']
+    'input': ['Number'],
+    'output': ['Number', 'String', 'Key']
   },
   'text': {
-    input: ['String'],
-    output: ['Number', 'String', 'Key']
+    'input': ['String'],
+    'output': ['Number', 'String', 'Key']
   },
   'boolean': {
-    input: ['Boolean'],
-    output: ['Boolean', 'String']
+    'input': ['Boolean'],
+    'output': ['Boolean', 'String']
   },
   'list': {
-    input: ['Array'],
-    output: ['Array', 'String']
+    'input': ['Array'],
+    'output': ['Array', 'String']
   },
   'component': {
-    input: ['COMPONENT'],
-    output: ['COMPONENT', 'Key']
+    'input': ['COMPONENT'],
+    'output': ['COMPONENT', 'Key']
   },
   'InstantInTime': {
-    input: ['InstantInTime', Blockly.Blocks.Utilities.InstantInTime],
-    output: ['InstantInTime', Blockly.Blocks.Utilities.InstantInTime],
+    'input': ['InstantInTime', Blockly.Blocks.Utilities.InstantInTime],
+    'output': ['InstantInTime', Blockly.Blocks.Utilities.InstantInTime],
   },
   'any': {
-    input: null,
-    output: null
+    'input': null,
+    'output': null
   },
   'dictionary': {
-    input: ['Dictionary'],
-    output: ['Dictionary', 'String', 'Array']
+    'input': ['Dictionary'],
+    'output': ['Dictionary', 'String', 'Array']
   },
   'pair': {
-    input: ['Pair'],
-    output: ['Pair', 'String', 'Array']
+    'input': ['Pair'],
+    'output': ['Pair', 'String', 'Array']
   },
   'key': {
-    input: ['Key'],
-    output: ['String', 'Key']
+    'input': ['Key'],
+    'output': ['String', 'Key']
   }
 };
 
@@ -93,19 +92,14 @@ Blockly.Blocks.Utilities.INPUT = 'input';
  * @param {!string} inputOrOutput Either Utilities.OUTPUT or Utilities.INPUT.
  * @param {Array<string>=} opt_currentType A type array to append, or null.
  */
-Blockly.Blocks.Utilities.YailTypeToBlocklyType =
-  function(yail, inputOrOutput, opt_currentType) {
-    var type = Blockly.Blocks.Utilities
-        .YailTypeToBlocklyTypeMap[yail][inputOrOutput];
-    if (type === undefined) {
-      throw new Error("Unknown Yail type: " + yail + " -- YailTypeToBlocklyType");
-    }
-    if (!opt_currentType || !type) {
-      return type;
-    }
-    Array.prototype.push.apply(type, opt_currentType);
-    return type;
-  };
+Blockly.Blocks.Utilities.YailTypeToBlocklyType = function(yail, inputOrOutput) {
+  var type = Blockly.Blocks.Utilities
+      .YailTypeToBlocklyTypeMap[yail][inputOrOutput];
+  if (type === undefined) {
+    throw new Error("Unknown Yail type: " + yail + " -- YailTypeToBlocklyType");
+  }
+  return type;
+};
 
 
 // Blockly doesn't wrap tooltips, so these can get too wide.  We'll create our own tooltip setter
