@@ -998,9 +998,9 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT = 'inicijuoti globalų';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_NAME = 'pavadinimas';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TO = 'į';
-    Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT = 'globalus';
+    Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT = 'globalūs';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP = 'Sukuria globalų kintamąjį ir suteikia jam pridedamų blokų reikšmę.';
-    Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX = 'globalus';
+    Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX = 'globalūs';
 
     Blockly.Msg.LANG_VARIABLES_GET_HELPURL = '/reference/blocks/variables.html#get';
     Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET = 'gauti';
