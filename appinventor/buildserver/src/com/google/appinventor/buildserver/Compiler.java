@@ -1230,7 +1230,10 @@ public final class Compiler {
                 subelement.contains("android.provider.Telephony.SMS_RECEIVED")) {
               continue;
             }
-            out.write(subelement);
+            out.write(
+              subelement
+                .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+            );
           }
         }
       }
