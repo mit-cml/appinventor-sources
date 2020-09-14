@@ -243,7 +243,7 @@
     "Blockly.Msg.LANG_LISTS_LENGTH_INPUT_LENGTH": "lengte van de lijst",
     "Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_ARG_TITLE_NAME": "naam",
     "Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_TITLE": "maak op als decimaal",
-    "Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_WHILE": "Zolang een waarde waar is, do dan enkele regels code.",
+    "Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_WHILE": "Zolang een waarde waar is, doe dan enkele regels code.",
     "Blockly.Msg.LANG_LISTS_CREATE_EMPTY_TITLE": "maak lege lijst",
     "Blockly.Msg.LANG_MATH_ARITHMETIC_POWER": "^",
     "Blockly.Msg.LANG_LISTS_IS_IN_INPUT_LIST": "lijst",
