@@ -733,7 +733,7 @@ Blockly.Msg.lt.switch_language_to_lithuanian = {
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT_LIST = 'sąrašas';
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT_INDEX = 'indeksas';
     Blockly.Msg.LANG_LISTS_SELECT_ITEM_INPUT = 'pasirinkti sąrašo elementą: sąrašas %1 indeksas %2';
-    Blockly.Msg.LANG_LISTS_SELECT_ITEM_TOOLTIP = 'Grąžina elementą, kuris yra sąraše, tam tikroje pozicijoje, kurią nurodo indeksas .';
+    Blockly.Msg.LANG_LISTS_SELECT_ITEM_TOOLTIP = 'Grąžina elementą, kuris yra sąraše, tam tikroje pozicijoje, kurią nurodo indeksas.';
 
     Blockly.Msg.LANG_LISTS_IS_IN_HELPURL = '/reference/blocks/lists.html#inlist';
     Blockly.Msg.LANG_LISTS_IS_IN_TITLE_IS_IN = 'yra sąraše?';
