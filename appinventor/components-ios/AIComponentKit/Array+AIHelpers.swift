@@ -12,8 +12,11 @@ extension Array {
    */
   public func toStringArray() -> [String] {
     var copy = [String]()
+    var first = true
     for el in self {
-      if let x = el as? String {
+      if first && el is SCMSymbol {  // skip *list* header
+        first = false
+      } else if let x = el as? String {
         copy.append(x)
       } else {
         copy.append(String(describing: el))

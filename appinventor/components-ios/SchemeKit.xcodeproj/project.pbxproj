@@ -13,8 +13,14 @@
 		0616090D1D9604BB00D145C4 /* SCMNameResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 0616090B1D9604BB00D145C4 /* SCMNameResolver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0616090E1D9604BB00D145C4 /* SCMNameResolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0616090C1D9604BB00D145C4 /* SCMNameResolver.m */; };
 		061609111D96112D00D145C4 /* MockComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061609101D96112D00D145C4 /* MockComponent.swift */; };
-		0624F4BC1DB33B0D003B2527 /* YailList.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624F4BA1DB33B0D003B2527 /* YailList.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		0624F4BD1DB33B0D003B2527 /* YailList.m in Sources */ = {isa = PBXBuildFile; fileRef = 0624F4BB1DB33B0D003B2527 /* YailList.m */; };
+		0624073424534413005E5BFC /* SCMObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624073224534413005E5BFC /* SCMObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0624073E24534956005E5BFC /* YailList.m in Sources */ = {isa = PBXBuildFile; fileRef = 0624073C24534956005E5BFC /* YailList.m */; };
+		06240745245355FB005E5BFC /* SCMValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 06240744245355FB005E5BFC /* SCMValue.m */; };
+		0644E91C246064EC00ECD2BD /* YailListTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0644E91B246064EC00ECD2BD /* YailListTests.m */; };
+		0644E9202460650A00ECD2BD /* SCMValueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0644E91F2460650A00ECD2BD /* SCMValueTests.m */; };
+		06483712245BD77300825364 /* yail.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624F4B91DB08148003B2527 /* yail.h */; };
+		06483713245BD77300825364 /* SCMValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624073F245352D5005E5BFC /* SCMValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		06483714245BD77300825364 /* SCMTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 06483711245B7B5500825364 /* SCMTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0650B1E91DAACDB100A7846C /* yail.m in Sources */ = {isa = PBXBuildFile; fileRef = 0650B1E81DAACDB100A7846C /* yail.m */; };
 		0650B1EC1DAAED3A00A7846C /* SCMMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = 0650B1EA1DAAED3A00A7846C /* SCMMethod.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0650B1ED1DAAED3A00A7846C /* SCMMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = 0650B1EB1DAAED3A00A7846C /* SCMMethod.m */; };
@@ -83,8 +89,13 @@
 		06BEC17A1D961AE100B62630 /* emyg_atod.h in Headers */ = {isa = PBXBuildFile; fileRef = 06BEC1761D961AE100B62630 /* emyg_atod.h */; };
 		06BEC17B1D961AE100B62630 /* emyg_dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 06BEC1771D961AE100B62630 /* emyg_dtoa.c */; };
 		06BEC17C1D961AE100B62630 /* emyg_dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 06BEC1781D961AE100B62630 /* emyg_dtoa.h */; };
+		06D0C45A2461D8B400CDFD2C /* SCMObjectWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 06D0C4582461D8B400CDFD2C /* SCMObjectWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		06D0C45B2461D8B400CDFD2C /* SCMObjectWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D0C4592461D8B400CDFD2C /* SCMObjectWrapper.m */; };
+		06D0C45E2462EA1B00CDFD2C /* SCMString.h in Headers */ = {isa = PBXBuildFile; fileRef = 06D0C45C2462EA1B00CDFD2C /* SCMString.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		06D0C45F2462EA1B00CDFD2C /* SCMString.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D0C45D2462EA1B00CDFD2C /* SCMString.m */; };
 		06D1518D1DC456C600FC981E /* SCMSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = 06D1518B1DC456C600FC981E /* SCMSymbol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		06D1518E1DC456C600FC981E /* SCMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D1518C1DC456C600FC981E /* SCMSymbol.m */; };
+		06FB67E1247D5F8600ABEAD6 /* YailList.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624073B24534956005E5BFC /* YailList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		06FCDEEA1D94383000199DD4 /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06FCDEE01D94383000199DD4 /* SchemeKit.framework */; };
 		06FCDEEF1D94383000199DD4 /* SchemeKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCDEEE1D94383000199DD4 /* SchemeKitTests.m */; };
 		06FCDEF11D94383000199DD4 /* SchemeKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 06FCDEE31D94383000199DD4 /* SchemeKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -110,9 +121,19 @@
 		0616090C1D9604BB00D145C4 /* SCMNameResolver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCMNameResolver.m; sourceTree = "<group>"; };
 		0616090F1D96112D00D145C4 /* SchemeKitTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SchemeKitTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		061609101D96112D00D145C4 /* MockComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockComponent.swift; sourceTree = "<group>"; };
+		0624073224534413005E5BFC /* SCMObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMObject.h; sourceTree = "<group>"; };
+		0624073A245348C2005E5BFC /* SCMInterpreter-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SCMInterpreter-Private.h"; sourceTree = "<group>"; };
+		0624073B24534956005E5BFC /* YailList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YailList.h; sourceTree = "<group>"; };
+		0624073C24534956005E5BFC /* YailList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YailList.m; sourceTree = "<group>"; };
+		0624073F245352D5005E5BFC /* SCMValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMValue.h; sourceTree = "<group>"; };
+		06240744245355FB005E5BFC /* SCMValue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMValue.m; sourceTree = "<group>"; };
 		0624F4B91DB08148003B2527 /* yail.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yail.h; sourceTree = "<group>"; };
 		0624F4BA1DB33B0D003B2527 /* YailList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YailList.h; path = SchemeKit/YailList.h; sourceTree = "<group>"; };
 		0624F4BB1DB33B0D003B2527 /* YailList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YailList.m; path = SchemeKit/YailList.m; sourceTree = "<group>"; };
+		0644E91B246064EC00ECD2BD /* YailListTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YailListTests.m; sourceTree = "<group>"; };
+		0644E91F2460650A00ECD2BD /* SCMValueTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMValueTests.m; sourceTree = "<group>"; };
+		0644E9212460726100ECD2BD /* SCMValue-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SCMValue-Private.h"; sourceTree = "<group>"; };
+		06483711245B7B5500825364 /* SCMTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMTypes.h; sourceTree = "<group>"; };
 		0650B1E81DAACDB100A7846C /* yail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = yail.m; sourceTree = "<group>"; };
 		0650B1EA1DAAED3A00A7846C /* SCMMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCMMethod.h; sourceTree = "<group>"; };
 		0650B1EB1DAAED3A00A7846C /* SCMMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCMMethod.m; sourceTree = "<group>"; };
@@ -184,6 +205,11 @@
 		06BEC1761D961AE100B62630 /* emyg_atod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = emyg_atod.h; path = picrin/contrib/10.roundtrip/emyg_atod.h; sourceTree = "<group>"; };
 		06BEC1771D961AE100B62630 /* emyg_dtoa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = emyg_dtoa.c; path = picrin/contrib/10.roundtrip/emyg_dtoa.c; sourceTree = "<group>"; };
 		06BEC1781D961AE100B62630 /* emyg_dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = emyg_dtoa.h; path = picrin/contrib/10.roundtrip/emyg_dtoa.h; sourceTree = "<group>"; };
+		06D0C4582461D8B400CDFD2C /* SCMObjectWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMObjectWrapper.h; sourceTree = "<group>"; };
+		06D0C4592461D8B400CDFD2C /* SCMObjectWrapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMObjectWrapper.m; sourceTree = "<group>"; };
+		06D0C45C2462EA1B00CDFD2C /* SCMString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMString.h; sourceTree = "<group>"; };
+		06D0C45D2462EA1B00CDFD2C /* SCMString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMString.m; sourceTree = "<group>"; };
+		06D0C4602462EB1300CDFD2C /* SCMString-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SCMString-Private.h"; sourceTree = "<group>"; };
 		06D1518B1DC456C600FC981E /* SCMSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCMSymbol.h; path = SchemeKit/SCMSymbol.h; sourceTree = "<group>"; };
 		06D1518C1DC456C600FC981E /* SCMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCMSymbol.m; path = SchemeKit/SCMSymbol.m; sourceTree = "<group>"; };
 		06FCDEE01D94383000199DD4 /* SchemeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SchemeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -358,22 +384,35 @@
 				0650B1FB1DABC28000A7846C /* load_piclib.c */,
 				065ECF471D949DDD00C749A1 /* picrin */,
 				06D1518A1DC4569D00FC981E /* picrin-objc */,
-				06FCDEE31D94383000199DD4 /* SchemeKit.h */,
 				0650B1F21DAB410B00A7846C /* ASTRecursiveVisitor.h */,
 				0650B1F31DAB410B00A7846C /* ASTRecursiveVisitor.m */,
-				06FCDEE41D94383000199DD4 /* Info.plist */,
-				065ECF411D9447A500C749A1 /* scheme.l */,
-				065ECF431D9459B600C749A1 /* scheme.y */,
 				0650B1F61DABBE6A00A7846C /* SCMASTPrinter.h */,
 				0650B1F71DABBE6A00A7846C /* SCMASTPrinter.m */,
 				06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */,
+				0624073A245348C2005E5BFC /* SCMInterpreter-Private.h */,
 				06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */,
 				0650B1EA1DAAED3A00A7846C /* SCMMethod.h */,
 				0650B1EB1DAAED3A00A7846C /* SCMMethod.m */,
 				0616090B1D9604BB00D145C4 /* SCMNameResolver.h */,
 				0616090C1D9604BB00D145C4 /* SCMNameResolver.m */,
+				0624073224534413005E5BFC /* SCMObject.h */,
+				06D0C4582461D8B400CDFD2C /* SCMObjectWrapper.h */,
+				06D0C4592461D8B400CDFD2C /* SCMObjectWrapper.m */,
+				06D0C45C2462EA1B00CDFD2C /* SCMString.h */,
+				06D0C4602462EB1300CDFD2C /* SCMString-Private.h */,
+				06D0C45D2462EA1B00CDFD2C /* SCMString.m */,
+				06483711245B7B5500825364 /* SCMTypes.h */,
+				0624073F245352D5005E5BFC /* SCMValue.h */,
+				0644E9212460726100ECD2BD /* SCMValue-Private.h */,
+				06240744245355FB005E5BFC /* SCMValue.m */,
+				06FCDEE31D94383000199DD4 /* SchemeKit.h */,
+				0624073B24534956005E5BFC /* YailList.h */,
+				0624073C24534956005E5BFC /* YailList.m */,
 				0650B21E1DABCC9700A7846C /* env.h */,
 				0650B21C1DABCC6400A7846C /* env.c */,
+				06FCDEE41D94383000199DD4 /* Info.plist */,
+				065ECF411D9447A500C749A1 /* scheme.l */,
+				065ECF431D9459B600C749A1 /* scheme.y */,
 				0624F4B91DB08148003B2527 /* yail.h */,
 			);
 			path = SchemeKit;
@@ -390,6 +429,8 @@
 				061609101D96112D00D145C4 /* MockComponent.swift */,
 				0616090F1D96112D00D145C4 /* SchemeKitTests-Bridging-Header.h */,
 				0650B1F01DAB0AD600A7846C /* YailRuntimeError.swift */,
+				0644E91B246064EC00ECD2BD /* YailListTests.m */,
+				0644E91F2460650A00ECD2BD /* SCMValueTests.m */,
 			);
 			path = SchemeKitTests;
 			sourceTree = "<group>";
@@ -432,16 +473,22 @@
 				065ECF8A1D94A02000C749A1 /* state.h in Headers */,
 				065ECF891D94A02000C749A1 /* object.h in Headers */,
 				0650B1F81DABBE6A00A7846C /* SCMASTPrinter.h in Headers */,
+				0624073424534413005E5BFC /* SCMObject.h in Headers */,
+				06483713245BD77300825364 /* SCMValue.h in Headers */,
+				0650B1F41DAB410B00A7846C /* ASTRecursiveVisitor.h in Headers */,
+				06FB67E1247D5F8600ABEAD6 /* YailList.h in Headers */,
+				06483714245BD77300825364 /* SCMTypes.h in Headers */,
+				06D0C45E2462EA1B00CDFD2C /* SCMString.h in Headers */,
+				06D0C45A2461D8B400CDFD2C /* SCMObjectWrapper.h in Headers */,
 				06D1518D1DC456C600FC981E /* SCMSymbol.h in Headers */,
 				065ECF871D94A02000C749A1 /* gc.h in Headers */,
+				06483712245BD77300825364 /* yail.h in Headers */,
 				065ECF861D94A02000C749A1 /* file.h in Headers */,
 				061609051D9601ED00D145C4 /* picconf.h in Headers */,
 				065ECF8B1D94A02000C749A1 /* vm.h in Headers */,
 				06FCDEF11D94383000199DD4 /* SchemeKit.h in Headers */,
 				0650B21F1DABCC9700A7846C /* env.h in Headers */,
-				0650B1F41DAB410B00A7846C /* ASTRecursiveVisitor.h in Headers */,
 				065ECF7F1D949EAA00C749A1 /* picrin.h in Headers */,
-				0624F4BC1DB33B0D003B2527 /* YailList.h in Headers */,
 				0616090D1D9604BB00D145C4 /* SCMNameResolver.h in Headers */,
 				0616090A1D96036000D145C4 /* setup.h in Headers */,
 				061609071D96020700D145C4 /* extra.h in Headers */,
@@ -501,6 +548,7 @@
 				TargetAttributes = {
 					06FCDEDF1D94383000199DD4 = {
 						CreatedOnToolsVersion = 8.0;
+						LastSwiftMigration = 1140;
 						ProvisioningStyle = Automatic;
 					};
 					06FCDEE81D94383000199DD4 = {
@@ -606,12 +654,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0624F4BD1DB33B0D003B2527 /* YailList.m in Sources */,
+				0624073E24534956005E5BFC /* YailList.m in Sources */,
 				065ECF791D949E2400C749A1 /* value.c in Sources */,
 				065ECF641D949E1200C749A1 /* char.c in Sources */,
 				065ECF761D949E2400C749A1 /* state.c in Sources */,
 				0650B2011DABC45A00A7846C /* math.c in Sources */,
 				065ECF611D949E1200C749A1 /* blob.c in Sources */,
+				06D0C45B2461D8B400CDFD2C /* SCMObjectWrapper.m in Sources */,
 				065ECF4F1D949E0100C749A1 /* lib.c in Sources */,
 				0650B1FC1DABC28000A7846C /* init_contrib.c in Sources */,
 				0650B1F91DABBE6A00A7846C /* SCMASTPrinter.m in Sources */,
@@ -639,8 +688,10 @@
 				06AC1CC51DB3CF2000A59EB3 /* SCMInterpreter.m in Sources */,
 				065ECF7B1D949E2400C749A1 /* vector.c in Sources */,
 				065ECF7A1D949E2400C749A1 /* var.c in Sources */,
+				06D0C45F2462EA1B00CDFD2C /* SCMString.m in Sources */,
 				0616090E1D9604BB00D145C4 /* SCMNameResolver.m in Sources */,
 				0650B1F51DAB410B00A7846C /* ASTRecursiveVisitor.m in Sources */,
+				06240745245355FB005E5BFC /* SCMValue.m in Sources */,
 				06BEC17B1D961AE100B62630 /* emyg_dtoa.c in Sources */,
 				0650B20E1DABC48F00A7846C /* mt19937ar.c in Sources */,
 				0650B2071DABC47500A7846C /* file.c in Sources */,
@@ -666,9 +717,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0644E91C246064EC00ECD2BD /* YailListTests.m in Sources */,
 				06FCDEEF1D94383000199DD4 /* SchemeKitTests.m in Sources */,
 				061609111D96112D00D145C4 /* MockComponent.swift in Sources */,
 				0650B1F11DAB0AD600A7846C /* YailRuntimeError.swift in Sources */,
+				0644E9202460650A00ECD2BD /* SCMValueTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -810,6 +863,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1F7002198AD9977BF7233BED /* Pods-SchemeKit.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -831,6 +885,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.SchemeKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -838,6 +894,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 811D9C3705A774DF269EC1B7 /* Pods-SchemeKit.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -855,6 +912,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.SchemeKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

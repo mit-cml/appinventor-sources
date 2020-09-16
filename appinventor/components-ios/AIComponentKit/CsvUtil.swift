@@ -94,46 +94,47 @@ class CsvParser {
 }
 
 @objc class CsvUtil: NSObject {
-  @objc public class func toCsvRow(_ csvRow: [Any]) -> String {
+  @objc public class func toCsvRow(_ csvRow: YailList<NSString>) -> String {
     var row = ""
-    if csvRow.count == 0 {
+    if csvRow.length == 0 {
       return row
     } else {
-      row = "\"" + String(describing: csvRow[0]).replacingOccurrences(of: "\"", with: "\"\"")
       var it = csvRow.makeIterator()
-      _ = it.next()
+      var sep = "\""
       while let o = it.next() {
-        row.append("\",\"")
+        row.append(sep)
         row.append(String(describing: o).replacingOccurrences(of: "\"", with: "\"\""))
+        sep = "\",\""
       }
       return row + "\""
     }
   }
 
-  @objc public class func toCsvTable(_ csvList: [[Any]]) -> String {
+  @objc public class func toCsvTable(_ csvList: YailList<YailList<NSString>>) -> String {
     var table = ""
     for row in csvList {
-      table.append(toCsvRow(row))
+      table.append(toCsvRow(row as! YailList<NSString>))
       table.append("\r\n")
     }
     return table
   }
 
-  @objc public class func fromCsvRow(_ csvString: String) throws -> [String] {
+  @objc public class func fromCsvRow(_ csvString: String) throws -> YailList<NSString> {
     let parser = CsvParser(input: csvString)
     if parser.hasNext() {
-      return try parser.next()
+      let row = try parser.next()
+      return YailList<NSString>(array: row as [NSString], in: SCMInterpreter.default()!)
     } else {
-      return [String]()
+      return YailList<NSString>()
     }
   }
 
-  @objc public class func fromCsvTable(_ csvString: String) throws -> [[String]] {
+  @objc public class func fromCsvTable(_ csvString: String) throws -> YailList<YailList<NSString>> {
     let parser = CsvParser(input: csvString)
-    var result = [[String]]()
+    var result = [YailList<NSString>]()
     while parser.hasNext() {
-      result.append(try parser.next())
+      result.append(YailList<NSString>(array: (try parser.next()) as [NSString], in: SCMInterpreter.default()!))
     }
-    return result
+    return YailList<YailList<NSString>>(array: result, in: SCMInterpreter.default()!)
   }
 }

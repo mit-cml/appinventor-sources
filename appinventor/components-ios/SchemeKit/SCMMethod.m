@@ -12,6 +12,7 @@
  @private
   Class _class;
   SEL _selector;
+  NSString *_fullName;
   NSString *_yailName;
   NSMethodSignature *_signature;
   BOOL _static;
@@ -30,6 +31,7 @@
     // Get Yail method name
     NSString *name = [NSString stringWithUTF8String:sel_getName(_selector)];
     NSArray<NSString *> *parts = [name componentsSeparatedByString:@":"];
+    _fullName = name;
     _yailName = parts[0];
     if ([_yailName isEqualToString:@"init"]) {
       if (parts.count == 1) {
@@ -84,5 +86,6 @@
 }
 
 @synthesize yailName = _yailName;
+@synthesize fullName = _fullName;
 
 @end

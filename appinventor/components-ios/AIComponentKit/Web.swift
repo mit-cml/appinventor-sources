@@ -5,7 +5,7 @@ import Foundation
 
 open class Web: NonvisibleComponent {
   fileprivate var _url = ""
-  fileprivate var _requestHeaders = YailList()
+  fileprivate var _requestHeaders = YailList<YailList<NSString>>()
   fileprivate var _allowCookies = false
   fileprivate var _saveResponse = false
   fileprivate var _responseFileName = ""
@@ -36,7 +36,7 @@ open class Web: NonvisibleComponent {
     }
   }
   
-  @objc open var RequestHeaders: YailList {
+  @objc open var RequestHeaders: YailList<YailList<NSString>> {
     get {
       return _requestHeaders
     }
@@ -89,7 +89,7 @@ open class Web: NonvisibleComponent {
     _cookieStorage = HTTPCookieStorage.init()
   }
 
-  fileprivate func validateRequestHeaders(_ list: YailList) -> Bool {
+  fileprivate func validateRequestHeaders(_ list: YailList<YailList<NSString>>) -> Bool {
     do {
       _ = try processRequestHeaders(list)
       return true
@@ -252,7 +252,7 @@ open class Web: NonvisibleComponent {
     return text.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
   }
 
-  fileprivate func processRequestHeaders(_ list: YailList) throws -> [String: [String]] {
+  fileprivate func processRequestHeaders(_ list: YailList<YailList<NSString>>) throws -> [String: [String]] {
     var requestHeadersDic = [String: [String]]()
 
     for (index, item) in list.enumerated() {
@@ -263,8 +263,8 @@ open class Web: NonvisibleComponent {
 
           var values = [String]()
 
-          if fieldValues is YailList {
-            let multipleFieldValues = fieldValues as! YailList
+          if fieldValues is YailList<NSString> {
+            let multipleFieldValues = fieldValues as! YailList<NSString>
             for value in multipleFieldValues {
               values.append(String(describing: value))
             }
@@ -335,7 +335,7 @@ open class Web: NonvisibleComponent {
       return JsonTextDecode(xml)
     } catch let error {
       _form.dispatchErrorOccurredEvent(self, "XMLTextDecode", ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED.code, error.localizedDescription)
-      return YailList()
+      return YailList<AnyObject>()
     }
   }
 

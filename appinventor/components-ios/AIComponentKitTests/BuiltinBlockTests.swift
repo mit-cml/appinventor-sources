@@ -51,11 +51,20 @@ var coverageData = [String: [String: Bool]]()
 
 class BuiltinBlockTests: XCTestCase {
 
-  func runTestsFromYail(path: String) throws {
+  func runTestsFromYail(path: String, tests: [String] = []) throws {
     var passing: Int32 = 0, failing: Int32 = 0
     let interpreter = try getInterpreterForTesting()
-    let testNames = try loadTestYail(path: path, into: interpreter)
+    let Screen1 = Form()
+    interpreter.setValue(Screen1, forSymbol: "*this-form*")
+    interpreter.evalForm("(reset-current-form-environment)")
+    var testNames = try loadTestYail(path: path, into: interpreter)
+    if tests.count > 0 {
+      testNames = testNames.filter({ (x) -> Bool in
+        return tests.contains(x)
+      })
+    }
     for test in testNames {
+      print("Running \(test)")
       let result = interpreter.evalForm("((get-var \(test)))")
       let success = result == "#t" && interpreter.exception == nil
       if success {
@@ -101,6 +110,9 @@ class BuiltinBlockTests: XCTestCase {
         }
       } else {
         XCTAssertTrue(success, "\(test) failed." + optionallyPrint(interpreter.exception))
+        if (success) {
+          print("\(test) succeeded.")
+        }
       }
       interpreter.clearException()
     }

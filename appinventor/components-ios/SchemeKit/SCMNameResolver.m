@@ -51,6 +51,7 @@ static NSMutableDictionary<NSString *, Protocol *> *preregisteredProtocols = nil
     for (unsigned int i = 0; i < count; ++i) {
       @try {
         SCMMethod *method = [[SCMMethod alloc] initWithMethod:methods[i] forClass:clazz isStatic:YES];
+        result[method.fullName] = method;
         result[method.yailName] = method;
         ++registeredMethods;
       } @catch (NSException *e) {
@@ -66,6 +67,7 @@ static NSMutableDictionary<NSString *, Protocol *> *preregisteredProtocols = nil
     for (unsigned int i = 0; i < count; ++i) {
       @try {
         SCMMethod *method = [[SCMMethod alloc] initWithMethod:methods[i] forClass:clazz isStatic:NO];
+        result[method.fullName] = method;
         result[method.yailName] = method;
         ++registeredMethods;
       } @catch (NSException *e) {

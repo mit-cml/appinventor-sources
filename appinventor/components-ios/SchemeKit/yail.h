@@ -1,10 +1,5 @@
-//
-//  yail.h
-//  SchemeKit
-//
-//  Created by Evan Patton on 10/13/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: objc; c-basic-offset: 2; -*-
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 #ifndef yail_h
 #define yail_h
@@ -31,5 +26,50 @@ int yail_resolve_native_symbol(pic_state *pic, pic_value uid);
  * @param tz The time zone to be used for NSDate rendering.
  */
 void yail_set_time_zone(NSTimeZone *tz);
+
+
+@class YailList;
+@class SCMValue;
+@class SCMMethod;
+
+/**
+ * Returns the Objective-C class object pointed to by the given pic_value.
+ *
+ * @param pic The picrin state used for reporting errors
+ * @param o The opaque Scheme value representing an Objective-C class
+ */
+Class *yail_native_class_objc(pic_state *pic, pic_value o);
+
+/**
+ * Returns the SCMMethod object pointed to by the given pic_value.
+ *
+ * @param pic The picrin state used for reporting errors
+ * @param o The opaque Scheme value representing a SCMMethod instance
+ */
+SCMMethod *yail_native_method_objc(pic_state *pic, pic_value o);
+
+/**
+ * Unwraps an Objective-C object from an opaque Scheme value.
+ *
+ * @param pic The picrin state used for reporting errors
+ * @param o The opaque Scheme value representing an Objective-C object
+ */
+id yail_native_instance_objc(pic_state *pic, pic_value o);
+
+/**
+ * Returns the SCMValue object pointed to by the given pic_value.
+ *
+ * @param pic The picrin state used for reporting errors
+ * @param o The opaque Scheme value representing a SCMValue instance
+ */
+SCMValue *yail_scmvalue_objc(pic_state *pic, pic_value o);
+
+/**
+ * Returns the YailList object pointed to by the given pic_value.
+ *
+ * @param pic The picrin state used for reporting errors
+ * @param o The opaque Scheme value representing a YailList instance
+ */
+YailList *yail_list_objc(pic_state *pic, pic_value o);
 
 #endif /* yail_h */

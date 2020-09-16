@@ -51,6 +51,12 @@
    (apply string-append
           (map symbol->string symbols))))
 
+(define-syntax (instance? obj type)
+  #`(yail:isa #,obj #,type))
+
+(define (component? arg)
+  (instance? arg AIComponentKit.Component))
+
 (define (add-to-current-form-environment name object)
   (set! *current-form-environment* (cons (list name object) *current-form-environment*)))
 
@@ -179,7 +185,7 @@
 
 (define (sanitize-input arg)
   (if (and (list? arg) (not (yail-list? arg)))
-      (cons '*list* arg)
+      (YailList:makeList arg)
       arg))
 
 (define (dispatchEvent component registeredComponentName eventName args)
@@ -1096,7 +1102,7 @@ list, use the make-yail-list constructor with no arguments.
 
 
 (define (insert-yail-list-header x)
-  (cons '*list* x))
+  (YailList:makeList x))
 
 ;; these transformers between yail-lists and kawa-lists transform
 ;; the entire tree, not just the top-level list
@@ -1160,7 +1166,7 @@ list, use the make-yail-list constructor with no arguments.
 (define (yail-list-to-csv-row yl)
   (if (not (yail-list? yl))
     (signal-runtime-error "Argument value to \"list to csv row\" must be a list" "Expecting list")
-  (yail:invoke AIComponentKit.CsvUtil 'toCsvRow (yail-list-contents yl))))
+  (yail:invoke AIComponentKit.CsvUtil 'toCsvRow (convert-to-strings-for-csv yl))))
 
 ;; convert each element of YailList yl to a string and return the resulting YailList
 (define (convert-to-strings-for-csv yl)
@@ -1740,7 +1746,7 @@ list, use the make-yail-list constructor with no arguments.
                                (lambda () value)))))))
 
 (define (make-yail-list . args)
-  (cons *yail-list* args))
+  (YailList:makeList args))
 
 (define (add-global-var-to-current-form-environment name object)
   (begin

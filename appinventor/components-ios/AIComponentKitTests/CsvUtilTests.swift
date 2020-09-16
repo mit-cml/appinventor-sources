@@ -64,23 +64,25 @@ class CsvUtilTests: XCTestCase {
   }
 
   func testToCsvRow() {
-    let result = CsvUtil.toCsvRow(["Entry", 5, true, ["Sample List"]])
+    let result = CsvUtil.toCsvRow(["Entry", "5", "true", "[\"Sample List\"]"])
     XCTAssertEqual("\"Entry\",\"5\",\"true\",\"[\"\"Sample List\"\"]\"", result)
   }
 
   func testToCsvTable() {
     let result = CsvUtil.toCsvTable([
       ["Header1", "Header2", "Header3", "Header4"],
-      ["Entry", 5, true, ["Sample List"]]
+      ["Entry", "5", "true", "[\"Sample List\"]"]
       ])
     XCTAssertEqual("\"Header1\",\"Header2\",\"Header3\",\"Header4\"\r\n" +
       "\"Entry\",\"5\",\"true\",\"[\"\"Sample List\"\"]\"\r\n", result)
   }
 
-  func assertTablesEqual(_ expected: [[String]], _ actual: [[String]]) {
-    XCTAssertEqual(expected.count, actual.count)
+  func assertTablesEqual(_ expected: [[String]], _ actual: YailList<YailList<NSString>>) {
+    XCTAssertEqual(expected.count, actual.length)
     for i in 0..<expected.count {
-      XCTAssertEqual(expected[i], actual[i])
+      let expectedRow = YailList<NSString>(array: expected[i])
+      let actualRow = actual[i + 1] as! YailList<NSString>
+      XCTAssertEqual(expectedRow, actualRow)
     }
   }
 }

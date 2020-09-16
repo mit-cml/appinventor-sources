@@ -1,18 +1,26 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 #import <Foundation/Foundation.h>
+#include "picrin.h"
+
+@protocol SCMValue;
+@class SCMSymbol;
 
 @interface SCMInterpreter : NSObject
 
-- (NSString * _Nonnull)evalForm:(NSString * _Nonnull)form;
-- (id _Nullable)invokeMethod:(NSString * _Nonnull)name, ... NS_REQUIRES_NIL_TERMINATION;
-- (id _Nullable)invokeMethod:(NSString * _Nonnull)name withArgs:(va_list)args;
-- (id _Nullable)invokeMethod:(NSString * _Nonnull)name withArgArray:(NSArray * _Nonnull)args;
++ (void)setDefault:(nonnull SCMInterpreter *)defaultInterpreter;
++ (nullable instancetype)default;
+- (nonnull NSString *)evalForm:(nonnull NSString *)form;
+- (nullable id)invokeMethod:(nonnull NSString *)name, ... NS_REQUIRES_NIL_TERMINATION;
+- (nullable id)invokeMethod:(nonnull NSString *)name withArgs:(va_list)args;
+- (nullable id)invokeMethod:(nonnull NSString *)name withArgArray:(nonnull NSArray *)args;
 - (void)clearException;
-- (void)setCurrentForm:(id _Nonnull)form;
-- (void)setValue:(id _Nullable)value forSymbol:(NSString * _Nonnull)symname;
-- (void)setTimeZone:(NSTimeZone * _Nonnull)tz;
+- (void)setCurrentForm:(nonnull id)form;
+- (void)setValue:(nullable id)value forSymbol:(nonnull NSString *)symname;
+- (void)setTimeZone:(nonnull NSTimeZone *)tz;
+- (nonnull SCMSymbol *)makeSymbol:(nonnull NSString *)name;
+- (nonnull id<SCMValue>)valueForObject:(nullable id)object;
 
 @property (readonly) NSException * _Nullable exception;
 

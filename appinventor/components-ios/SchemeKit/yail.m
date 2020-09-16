@@ -1,12 +1,11 @@
-// -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+// -*- mode: objc; c-basic-offset: 2; -*-
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 #import "SCMNameResolver.h"
 #import "SCMMethod.h"
-#import "SCMSymbol.h"
-#import "YailList.h"
+#import "SCMTypes.h"
 #include "picrin.h"
 #include "picrin/extra.h"
 #include "picrin/private/object.h"
@@ -91,8 +90,10 @@ static NSMutableDictionary<NSString *, ProtocolWrapper *> *protocols = nil;
   }
   if (object == self->ref) {
     return YES;
-  } else {
+  } else if (![[object class] conformsToProtocol:@protocol(SCMObject)]) {
     return [object isEqual:self->ref];
+  } else {
+    return NO;
   }
 }
 
@@ -116,6 +117,16 @@ struct native_method {
 struct native_instance {
   OBJECT_HEADER
   __weak id object_;
+};
+
+struct native_scmvalue {
+  OBJECT_HEADER
+  __weak SCMValue *object_;
+};
+
+struct native_yaillist {
+  OBJECT_HEADER
+  __weak YailList *object_;
 };
 
 static pic_value
@@ -164,11 +175,6 @@ pic_yail_make_runtime_error(pic_state *pic) {
 }
 
 static pic_value
-pic_yail_make_yail_list(pic_state *pic) {
-  return 0;
-}
-
-static pic_value
 pic_yail_call_instance_method(pic_state *pic) {
   return 0;
 }
@@ -181,6 +187,33 @@ pic_yail_call_static_method(pic_state *pic) {
 int
 yail_print_ast(pic_state *pic, pic_value form) {
   return 0;
+}
+
+bool
+pic_pair_p(pic_state *pic, pic_value v) {
+  return (pic_type(pic, v) == PIC_TYPE_PAIR) || yail_list_p(pic, v);
+}
+
+pic_value
+yail_list_value(pic_state *pic, pic_value v) {
+  if (!yail_list_p(pic, v)) {
+    return pic_nil_value(pic);
+  }
+  id object = yail_native_instance_ptr(pic, v)->object_;
+  if (object == nil || ![object isKindOfClass:[YailList class]]) {
+    return pic_nil_value(pic);
+  }
+  return ((YailList *) object).value;
+}
+
+struct pair *
+pic_pair_ptr(pic_state *pic, pic_value v) {
+  assert(pic_pair_p(pic, v));
+  if (yail_list_p(pic, v)) {
+    return pic_pair_ptr(pic, yail_list_value(pic, v));
+  } else {
+    return (struct pair *)pic_obj_ptr(v);
+  }
 }
 
 pic_value
@@ -271,13 +304,14 @@ yail_native_method_dtor(pic_state *pic, struct native_method *method) {
 
 #pragma mark Native Instance values
 
-pic_value
-yail_make_native_instance(pic_state *pic, id object) {
+static pic_value
+yail_make_native_instance_internal(pic_state *pic, id object, int type) {
   NSNumber *wrappedValue = nil;
   if ((wrappedValue = [objects objectForKey:object])) {
     return (pic_value) wrappedValue.unsignedLongLongValue;
   }
-  native_instance *native = (native_instance *)pic_obj_alloc(pic, offsetof(native_instance, object_), YAIL_TYPE_INSTANCE);
+  native_instance *native = (native_instance *)pic_obj_alloc(pic,
+      offsetof(native_instance, object_), type);
   native->object_ = object;
   pic_value value = pic_obj_value(native);
   CopyableReference *ref = [CopyableReference referenceWithObject:object];
@@ -285,6 +319,33 @@ yail_make_native_instance(pic_state *pic, id object) {
     objects[ref] = [NSNumber numberWithUnsignedLongLong:value];
   }
   return value;
+}
+
+pic_value
+yail_make_native_instance(pic_state *state, id object) {
+  int type = YAIL_TYPE_INSTANCE;
+  if ([object isKindOfClass:[YailList class]]) {
+    type = YAIL_TYPE_LIST;
+  } else if ([object isKindOfClass:[YailDictionary class]]) {
+    type = YAIL_TYPE_DICT;
+  }
+  return yail_make_native_instance_internal(state, object, type);
+}
+
+pic_value
+yail_make_native_yaillist(pic_state *state, YailList *list) {
+  return yail_make_native_instance_internal(state, list, YAIL_TYPE_LIST);
+}
+
+static pic_value
+pic_yail_make_yail_list(pic_state *state) {
+  pic_value head;
+
+  pic_get_args(state, "o", &head);
+
+  head = pic_cons(state, pic_intern_cstr(state, "*list*"), head);
+
+  return yail_make_native_yaillist(state, [YailList wrapList:head fromInterpreter:[SCMInterpreter default]]);
 }
 
 const char *
@@ -295,12 +356,32 @@ yail_native_instance_typename(pic_state *PIC_UNUSED(pic), struct native_instance
   return [className UTF8String];
 }
 
+id
+yail_native_instance_objc(pic_state *PIC_UNUSED(pic), pic_value value) {
+  assert(pic_type(pic, value) == YAIL_TYPE_INSTANCE);
+  return ((struct native_instance *)pic_obj_ptr(value))->object_;
+}
+
 void
 yail_native_instance_dtor(pic_state *pic, struct native_instance *instance) {
   CopyableReference *ref = [CopyableReference referenceWithObject:instance->object_];
   if (ref) {
     [objects removeObjectForKey:ref];
   }
+}
+
+/// MARK: Other YAIL Types
+
+SCMValue *
+yail_scmvalue_objc(pic_state *PIC_UNUSED(pic), pic_value value) {
+  assert(pic_type(pic, value) == YAIL_TYPE_VALUE);
+  return ((struct native_scmvalue *) pic_obj_ptr(value))->object_;
+}
+
+YailList *
+yail_list_objc(pic_state *PIC_UNUSED(pic), pic_value value) {
+  assert(pic_type(pic, value) == YAIL_TYPE_LIST);
+  return ((struct native_yaillist *) pic_obj_ptr(value))->object_;
 }
 
 int
@@ -474,32 +555,11 @@ object_to_yail(pic_state *pic, id object) {
 static id
 yail_to_objc(pic_state *pic, pic_value value, NSMutableDictionary *history) {
   if (pic_pair_p(pic, value)) {
-    NSMutableArray *result = [NSMutableArray array];
-    if (pic_nil_p(pic, value)) {
-      return result;
-    } else if (pic_sym_p(pic, pic_car(pic, value))) {
-      // skip *list*
-      value = pic_cdr(pic, value);
+    // Check if the first element is *list* and add it if missing before making the YailList
+    if (!pic_sym_p(pic, pic_car(pic, value))) {
+      value = pic_cons(pic, pic_intern_cstr(pic, "*list*"), value);
     }
-    while (!pic_nil_p(pic, value)) {
-      pic_value car = pic_car(pic, value);
-      NSNumber *addr = [NSNumber numberWithUnsignedLongLong:car];
-      if (history[addr] == nil) {
-        id converted = yail_to_objc(pic, car, history);
-        history[addr] = converted ? converted : [NSNull null];
-      }
-      [result addObject:history[addr]];
-      value = pic_cdr(pic, value);
-      if (!pic_pair_p(pic, value) && !pic_nil_p(pic, value)) {
-        addr = [NSNumber numberWithUnsignedLongLong:value];
-        if (history[addr] == nil) {
-          id converted = yail_to_objc(pic, value, history);
-          history[addr] = converted ? converted : [NSNull null];
-        }
-        [result addObject:history[addr]];
-      }
-    }
-    return result;
+    return [YailList wrapList:value fromInterpreter:[SCMInterpreter default]];
   } else if (pic_str_p(pic, value)) {
     return [NSString stringWithCString:pic_str(pic, value) encoding:NSUTF8StringEncoding];
   } else if (pic_int_p(pic, value)) {
@@ -718,7 +778,8 @@ yail_invoke(pic_state *pic) {
     } else {
       NSLog(@"incompatible yail type received %s in call to %@ at index %d",
             pic_typename(pic, pic_type(pic, args[i])), method.yailName, i);
-      pic_error(pic, "incompatible yail type received", 1, pic_cstr_value(pic, pic_typename(pic, pic_type(pic, args[i]))));
+      pic_error(pic, "incompatible yail type received", 1,
+                pic_cstr_value(pic, pic_typename(pic, pic_type(pic, args[i]))));
     }
   }
   
@@ -768,14 +829,14 @@ yail_invoke(pic_state *pic) {
       [invocation getReturnValue:&unretainedValue];
       id value = unretainedValue;
       if (!value) {
-        return pic_undef_value(pic);
+        return yail_null_value(pic);
+      } else if ([[value class] conformsToProtocol:@protocol(SCMValue)]) {
+        return [(id<SCMValue>)value value];
       } else if ([value isKindOfClass:[NSString class]]) {
         const char *str = [(NSString *)value UTF8String];
         return pic_str_value(pic, str, (int)strlen(str));
-      } else if ([value isKindOfClass:[YailList class]]) {
-        return [(YailList *)value picrinList];
       } else if ([value isKindOfClass:[NSArray class]]) {
-        return nsarray_to_yail(pic, (NSArray *)value);
+        return [[[YailList alloc] initWithArray:value inInterpreter:[SCMInterpreter default]] value];
       } else {
         return yail_make_native_instance(pic, value);
       }
@@ -833,12 +894,9 @@ yail_isa(pic_state *pic) {
     }
   } else if (pic_sym_p(pic, native_class)) {
     // We have a symbol representing a FQCN
-    SCMSymbol *symbol = [SCMSymbol symbol:native_class forState:pic];
-    NSString *name = nil;
-    if ([symbol.name hasPrefix:@"com.google.appinventor.components.runtime."]) {
-      name = [symbol.name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime." withString:@"AIComponentKit."];
-    } else {
-      name = symbol.name;
+    NSString *name = [NSString stringWithUTF8String:pic_str(pic, pic_sym_name(pic, native_class))];
+    if ([name hasPrefix:@"com.google.appinventor.components.runtime."]) {
+      name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime." withString:@"AIComponentKit."];
     }
     Class clazz = [SCMNameResolver classFromQualifiedName:name.UTF8String];
     if (clazz == nil) {
@@ -1130,7 +1188,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:make-component", pic_yail_make_component);
   pic_defun(pic, "yail:make-random", pic_yail_make_random);
   pic_defun(pic, "yail:make-runtime-error", pic_yail_make_runtime_error);
-  pic_defun(pic, "yail:make-yail-list", pic_yail_make_yail_list);
+  pic_defun(pic, "YailList:makeList", pic_yail_make_yail_list);
   pic_defun(pic, "yail:call-instance-method", pic_yail_call_instance_method);
   pic_defun(pic, "yail:call-static-method", pic_yail_call_static_method);
   pic_defun(pic, "yail:make-instance", yail_make_instance);

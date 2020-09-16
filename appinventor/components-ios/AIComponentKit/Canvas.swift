@@ -605,7 +605,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     addShapeWithFill(for: point.cgPath, with: true)
   }
 
-  @objc open func DrawShape(_ pointList: YailList, _ fill: Bool) {
+  @objc open func DrawShape(_ pointList: YailList<YailList<NSNumber>>, _ fill: Bool) {
     do {
       let pathPoints = try parsePointList(pointList)
       let shape = UIBezierPath()
@@ -622,7 +622,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     }
   }
 
-  private func parsePointList(_ pointList: YailList) throws -> [CGPoint] {
+  private func parsePointList(_ pointList: YailList<YailList<NSNumber>>) throws -> [CGPoint] {
     guard pointList.count > 0 else {
       throw YailRuntimeError("Invalid pointList", "IllegalArgument")
     }
