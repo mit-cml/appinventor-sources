@@ -129,6 +129,11 @@ struct native_yaillist {
   __weak YailList *object_;
 };
 
+struct native_yaildict {
+  OBJECT_HEADER
+  __weak YailDictionary *object_;
+};
+
 static pic_value
 pic_call_native_method(pic_state *pic) {
   //TODO: implementation
@@ -337,6 +342,11 @@ yail_make_native_yaillist(pic_state *state, YailList *list) {
   return yail_make_native_instance_internal(state, list, YAIL_TYPE_LIST);
 }
 
+pic_value
+yail_make_native_yaildictionary(pic_state *state, YailDictionary *dict) {
+  return yail_make_native_instance_internal(state, dict, YAIL_TYPE_DICT);
+}
+
 static pic_value
 pic_yail_make_yail_list(pic_state *state) {
   pic_value head;
@@ -382,6 +392,12 @@ YailList *
 yail_list_objc(pic_state *PIC_UNUSED(pic), pic_value value) {
   assert(pic_type(pic, value) == YAIL_TYPE_LIST);
   return ((struct native_yaillist *) pic_obj_ptr(value))->object_;
+}
+
+YailDictionary *
+yail_dict_objc(pic_state *PIC_UNUSED(pic), pic_value value) {
+  assert(pic_type(pic, value) == YAIL_TYPE_DICT);
+  return ((struct native_yaildict *) pic_obj_ptr(value))->object_;
 }
 
 int
@@ -837,6 +853,8 @@ yail_invoke(pic_state *pic) {
         return pic_str_value(pic, str, (int)strlen(str));
       } else if ([value isKindOfClass:[NSArray class]]) {
         return [[[YailList alloc] initWithArray:value inInterpreter:[SCMInterpreter default]] value];
+      } else if ([value isKindOfClass:[NSDictionary class]]) {
+        return [[[YailDictionary alloc] initWithDictionary:value] value];
       } else {
         return yail_make_native_instance(pic, value);
       }
@@ -1176,6 +1194,29 @@ pic_value yail_get_simple_name(pic_state *pic) {
   }
 }
 
+pic_value
+yail_make_dictionary(pic_state *pic) {
+  pic_value pairs;
+
+  pic_get_args(pic, "o", &pairs);
+
+  return yail_make_native_yaildictionary(pic, [YailDictionary dictionaryFromPairs:pairs]);
+}
+
+pic_value
+yail_dictionary_alist_to_dict(pic_state *pic) {
+  pic_value entries;
+
+  pic_get_args(pic, "o", &entries);
+
+  if (!yail_list_p(pic, entries)) {
+    pic_error(pic, "YailDictionary:alistToDict: YailList required", 1, entries);
+  }
+  YailList *listOfEntries = yail_list_objc(pic, entries);
+  YailDictionary *dict = [YailDictionary dictionaryFromPairs:pic_cdr(pic, listOfEntries.value)];
+  return yail_make_native_yaildictionary(pic, dict);
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
@@ -1214,6 +1255,8 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "bitwise-xor", yail_bitwise_xor);
   pic_defun(pic, "format-places", yail_format_places);
   pic_defun(pic, "yail:format-date", yail_format_date);
+  pic_defun(pic, "YailDictionary:makeDictionary", yail_make_dictionary);
+  pic_defun(pic, "YailDictionary:alistToDict", yail_dictionary_alist_to_dict);
   objects = [NSMutableDictionary dictionary];
   protocols = [NSMutableDictionary dictionary];
   timeZone = [NSTimeZone localTimeZone];

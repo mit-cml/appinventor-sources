@@ -29,6 +29,7 @@ void yail_set_time_zone(NSTimeZone *tz);
 
 
 @class YailList;
+@class YailDictionary;
 @class SCMValue;
 @class SCMMethod;
 
@@ -71,5 +72,13 @@ SCMValue *yail_scmvalue_objc(pic_state *pic, pic_value o);
  * @param o The opaque Scheme value representing a YailList instance
  */
 YailList *yail_list_objc(pic_state *pic, pic_value o);
+
+/**
+ * Returns the YailDictionary object pointed to by the given pic_value.
+ *
+ * @param pic The picrin state used for reporting errors
+ * @param o The opaque Scheme value representing a YailDictionary instance
+ */
+YailDictionary *yail_dict_objc(pic_state *pic, pic_value o);
 
 #endif /* yail_h */

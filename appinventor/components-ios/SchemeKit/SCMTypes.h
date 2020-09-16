@@ -5,3 +5,4 @@
 #import "SCMString.h"
 #import "SCMSymbol.h"
 #import "YailList.h"
+#import "YailDictionary.h"

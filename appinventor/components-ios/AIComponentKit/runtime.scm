@@ -57,6 +57,9 @@
 (define (component? arg)
   (instance? arg AIComponentKit.Component))
 
+(define-syntax (static-field class field-name)
+  #`(invoke YailDictionary 'ALL))
+
 (define (add-to-current-form-environment name object)
   (set! *current-form-environment* (cons (list name object) *current-form-environment*)))
 
@@ -313,6 +316,9 @@
      ((equal? type 'list) (coerce-to-yail-list arg))
      ((equal? type 'InstantInTime) (coerce-to-instant arg))
      ((equal? type 'component) (coerce-to-component arg))
+     ((equal? type 'pair) (coerce-to-pair arg))
+     ((equal? type 'key) (coerce-to-key arg))
+     ((equal? type 'dictionary) (coerce-to-dictionary arg))
      ((equal? type 'any) arg)
      (else (coerce-to-component-of-type arg type)))))
 
@@ -363,6 +369,13 @@
    ((number? arg) arg)
    ((string? arg)
     (or (padded-string->number arg) *non-coercible-value*))
+   (else *non-coercible-value*)))
+
+(define (coerce-to-key arg)
+  (cond
+   ((number? arg) arg)
+   ((string? arg) arg)
+   ((component? arg) arg)
    (else *non-coercible-value*)))
 
 (define-syntax use-json-format
@@ -457,7 +470,21 @@
 (define (coerce-to-yail-list arg)
   (cond
    ((yail-list? arg) arg)
+   ((yail-dictionary arg) (yail-dictionary-dict-to-alist arg))
    (else *non-coercible-value*)))
+
+(define (coerce-to-pair arg)
+  (coerce-to-yail-list arg))
+
+(define (coerce-to-dictionary arg)
+  (cond
+   ((yail-dictionary? arg) arg)
+   ((yail-list? arg) (yail-dictionary-alist-to-dict arg))
+   (else
+    (let ((result (invoke arg 'toYailDictionary)))
+      (if result
+          result
+          *non-coercible-value*)))))
 
 (define (coerce-to-boolean arg)
   (cond
@@ -562,6 +589,13 @@
    ;; we need to check for strings first because gnu.lists.FString is a
    ;; subtype of JavaCollection
    ((string? data) data)
+   ;; WARNING: Component writers can construct Yail dictionaries directly, and
+   ;; these pass through sanitization unchallenged.  So any component writer
+   ;; who constructs a Yail dictionary must ensure that list elements are themselves
+   ;; legitimate Yail data types that do not require sanitization.
+   ((yail-dictionary? data) data)
+   ;TODO(ewpatton): Confirm that all maps are translated into Yail Dictionaries
+   ;((instance? data JavaMap) (java-map->yail-dictionary data))
    ;; WARNING: Component writers can construct Yail lists directly, and
    ;; these pass through sanitization unchallenged.  So any component writer
    ;; who constructs a Yail list must ensure that list elements are themselves
@@ -724,6 +758,7 @@
 (define (yail-equal? x1 x2)
   (cond ((and (null? x1) (null? x2)) #t)
         ((or (null? x1) (null? x2)) #f)
+        ((and (instance? x1 YailDictionary) (instance? x2 YailDictionary)) (invoke x1 'isDictionaryEqual: x2))
         ((and (not (pair? x1)) (not (pair? x2)))
          (yail-atomic-equal? x1 x2))
         ((or (not (pair? x1)) (not (pair? x2)))
@@ -1497,6 +1532,106 @@ list, use the make-yail-list constructor with no arguments.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of List implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#|
+Dictionary implementation.
+
+- make dictionary           (make-yail-dictionary . pairs)
+- make pair                 (make-dictionary-pair key value)
+- set pair                  (yail-dictionary-set-pair yail-dictionary pair)
+- delete pair               (yail-dictionary-delete-pair yail-dictionary key)
+- dictionary lookup         (yail-dictionary-lookup key yail-dictionary default)
+- dict recursive lookup     (yail-dictionary-recursive-lookup keys yail-dictionary default)
+- dict recursive set        (yail-dictionary-recursive-set keys yail-dictionary value)
+- get keys                  (yail-dictionary-get-keys yail-dictionary)
+- get values                (yail-dictionary-get-values yail-dictionary)
+- is key in dict            (yail-dictionary-is-key-in key yail-dictionary)
+- get length of dict        (yail-dictionary-length yail-dictionary)
+- get copy of dict          (yail-dictionary-copy yail-dictionary)
+- combine two dicts         (yail-dictionary-combine-dicts first-dictionary second-dictionary)
+- turn alist to dict        (yail-dictionary-alist-to-dict alist)
+- turn dict to alist        (yail-dictionary-dict-to-alist dict)
+
+- is YailDictionary?        (yail-dictionary? x)
+
+|#
+
+(define (make-yail-dictionary . pairs)
+  (YailDictionary:makeDictionary pairs))
+
+(define (make-dictionary-pair key value)
+  (make-yail-list key value))
+
+(define (yail-dictionary-set-pair key yail-dictionary value)
+  (yail:invoke yail-dictionary 'setObject:forKey: value key))
+
+(define (yail-dictionary-delete-pair yail-dictionary key)
+  (yail:invoke yail-dictionary 'removeObjectForKey: key))
+
+(define (yail-dictionary-lookup key yail-dictionary default)
+  (let ((result
+    (cond ((instance? yail-dictionary YailList)
+           (yail-alist-lookup key yail-dictionary default))
+          ((instance? yail-dictionary YailDictionary)
+            (yail:invoke yail-dictionary 'objectForKey: key))
+          (#t default))))
+    (if (eq? result #!null)
+      default
+      result)))
+
+(define (yail-dictionary-recursive-lookup keys yail-dictionary default)
+  (let ((result (yail:invoke yail-dictionary 'getObjectAtKeyPath:error: keys #!null)))
+    (if (eq? result #!null)
+      default
+      result)))
+
+(define (yail-dictionary-walk path dict)
+  (invoke dict 'walkKeyPath:error: (yail-list-contents path) #!null))
+
+(define (yail-dictionary-recursive-set keys yail-dictionary value)
+  (invoke yail-dictionary 'setObject:forKeyPath:error: value keys #!null))
+
+(define (yail-dictionary-get-keys yail-dictionary)
+  (invoke yail-dictionary 'allKeys))
+
+(define (yail-dictionary-get-values yail-dictionary)
+  (invoke yail-dictionary 'allValues))
+
+(define (yail-dictionary-is-key-in key yail-dictionary)
+  (invoke yail-dictionary 'containsKey: key))
+
+(define (yail-dictionary-length yail-dictionary)
+  (invoke yail-dictionary 'count))
+
+(define (yail-dictionary-alist-to-dict alist)
+  (let loop ((pairs-to-check (yail-list-contents alist)))
+    (cond ((null? pairs-to-check) "The list of pairs has a null pair")
+          ((not (pair-ok? (car pairs-to-check)))
+           (signal-runtime-error
+            "List of pairs to dict: the list is not a well-formed list of pairs"
+            "Invalid list of pairs"))
+          (else (loop (cdr pairs-to-check)))))
+  (YailDictionary:alistToDict alist))
+
+(define (yail-dictionary-dict-to-alist dict)
+  (invoke dict 'dictToAlist))
+
+(define (yail-dictionary-copy yail-dictionary)
+  (invoke yail-dictionary 'mutableCopy))
+
+(define (yail-dictionary-combine-dicts first-dictionary second-dictionary)
+  (invoke first-dictionary 'putAll: second-dictionary))
+
+(define (yail-dictionary? x)
+  (instance? x YailDictionary))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Dictionary implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;Text implementation

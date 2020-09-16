@@ -40,6 +40,7 @@
 		062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062300A71DCE409D0035E4A4 /* BluetoothClient.swift */; };
 		062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062300A91DCE40D40035E4A4 /* BluetoothConnectionBase.swift */; };
 		0623BBF02476291D00FEB2B6 /* TinyDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0623BBEF2476291D00FEB2B6 /* TinyDBTests.swift */; };
+		0624072F245340E1005E5BFC /* dictionaries.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0624072E245340E1005E5BFC /* dictionaries.yail */; };
 		062832981DBE95A7009605D5 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062832971DBE95A7009605D5 /* Layout.swift */; };
 		0644F6C01F37CAD800642E4D /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6BF1F37CAD800642E4D /* Player.swift */; };
 		0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6C11F37D20700642E4D /* LifecycleDelegate.swift */; };
@@ -262,6 +263,7 @@
 		062300A71DCE409D0035E4A4 /* BluetoothClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothClient.swift; sourceTree = "<group>"; };
 		062300A91DCE40D40035E4A4 /* BluetoothConnectionBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionBase.swift; sourceTree = "<group>"; };
 		0623BBEF2476291D00FEB2B6 /* TinyDBTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TinyDBTests.swift; sourceTree = "<group>"; };
+		0624072E245340E1005E5BFC /* dictionaries.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dictionaries.yail; sourceTree = "<group>"; };
 		062832971DBE95A7009605D5 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		0644F6BF1F37CAD800642E4D /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		0644F6C11F37D20700642E4D /* LifecycleDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LifecycleDelegate.swift; sourceTree = "<group>"; };
@@ -709,6 +711,7 @@
 				0658E9BF201399F9009D6A15 /* math.yail */,
 				0658E9C0201399FA009D6A15 /* text.yail */,
 				06E2D5FE1FDB16C500A1D52A /* lists.yail */,
+				0624072E245340E1005E5BFC /* dictionaries.yail */,
 				0658E9C32013D19A009D6A15 /* colors.yail */,
 				067D2BCE2040FB4B00D1EB16 /* variables.yail */,
 				067D2BD02040FE0500D1EB16 /* procedures.yail */,
@@ -1059,6 +1062,7 @@
 				0658E9C1201399FA009D6A15 /* math.yail in Resources */,
 				0658E9BD20126FFA009D6A15 /* control.yail in Resources */,
 				06E2D5FF1FDB16C500A1D52A /* lists.yail in Resources */,
+				0624072F245340E1005E5BFC /* dictionaries.yail in Resources */,
 				067D2BCF2040FB4B00D1EB16 /* variables.yail in Resources */,
 				0658E9BE20126FFA009D6A15 /* logic.yail in Resources */,
 				0658E9C2201399FA009D6A15 /* text.yail in Resources */,

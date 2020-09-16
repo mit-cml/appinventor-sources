@@ -17,6 +17,10 @@ pic_value yail_make_native_instance(pic_state *, id);
 id yail_to_native(pic_state *, pic_value);
 void yail_set_time_zone(NSTimeZone *tz);
 
+NSString *SCMErrorDomain = @"SchemeKit";
+NSString *kSCMBadIndex = @"index";
+NSString *kSCMBadValue = @"value";
+
 extern char *picrin_native_stack_start;
 
 void
@@ -329,6 +333,8 @@ static SCMInterpreter *_defaultInterpreter = nil;
     return (SCMValue *)object;
   } else if ([object isKindOfClass:[YailList class]]) {
     return (YailList *)object;
+  } else if ([object isKindOfClass:[YailDictionary class]]) {
+    return (YailDictionary *)object;
   } else if ([object isKindOfClass:[NSNumber class]]) {
     char type = [((NSNumber *) object) objCType][0];
     if (type == 'd' || type == 'f') {
@@ -340,6 +346,8 @@ static SCMInterpreter *_defaultInterpreter = nil;
     return [SCMString stringWithString:object inInterpreter:self];
   } else if ([object isKindOfClass:[NSArray class]]) {
     return [((NSArray *) object) yailListUsingInterpreter:self];
+  } else if ([object isKindOfClass:[NSDictionary class]]) {
+    return [((NSDictionary *) object) yailDictionaryUsingInterpreter:self];
   } else {
     return [SCMObjectWrapper object:yail_make_native_instance(_pic, object) inInterpreter:self];
   }
@@ -354,6 +362,8 @@ static SCMInterpreter *_defaultInterpreter = nil;
     } else {
       return yail_to_native(_pic, value);
     }
+  } else if (yail_dictionary_p(_pic, value)) {
+    return yail_dict_objc(_pic, value);
   } else if (yail_scmvalue_p(_pic, value)) {
     return yail_scmvalue_objc(_pic, value);
   } else if (yail_native_instance_p(_pic, value)) {

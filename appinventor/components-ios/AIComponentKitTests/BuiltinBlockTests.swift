@@ -211,4 +211,8 @@ class BuiltinBlockTests: XCTestCase {
   func testProcedureBlocks() throws {
     try runTestsFromYail(path: "procedures.yail")
   }
+
+  func testDictionaryBlocks() throws {
+    try runTestsFromYail(path: "dictionaries.yail")
+  }
 }

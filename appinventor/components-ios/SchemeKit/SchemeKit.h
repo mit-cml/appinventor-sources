@@ -13,6 +13,7 @@ FOUNDATION_EXPORT const unsigned char SchemeKitVersionString[];
 #import <SchemeKit/picrin.h>
 #import <SchemeKit/extra.h>
 #import <SchemeKit/env.h>
+#import <SchemeKit/SCMErrors.h>
 #import <SchemeKit/SCMMethod.h>
 #import <SchemeKit/SCMNameResolver.h>
 #import <SchemeKit/SCMInterpreter.h>

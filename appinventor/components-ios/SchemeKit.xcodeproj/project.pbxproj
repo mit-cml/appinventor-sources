@@ -14,9 +14,12 @@
 		0616090E1D9604BB00D145C4 /* SCMNameResolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0616090C1D9604BB00D145C4 /* SCMNameResolver.m */; };
 		061609111D96112D00D145C4 /* MockComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061609101D96112D00D145C4 /* MockComponent.swift */; };
 		0624073424534413005E5BFC /* SCMObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624073224534413005E5BFC /* SCMObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		062407382453465B005E5BFC /* YailDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 062407362453465B005E5BFC /* YailDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		062407392453465B005E5BFC /* YailDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 062407372453465B005E5BFC /* YailDictionary.m */; };
 		0624073E24534956005E5BFC /* YailList.m in Sources */ = {isa = PBXBuildFile; fileRef = 0624073C24534956005E5BFC /* YailList.m */; };
 		06240745245355FB005E5BFC /* SCMValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 06240744245355FB005E5BFC /* SCMValue.m */; };
 		0644E91C246064EC00ECD2BD /* YailListTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0644E91B246064EC00ECD2BD /* YailListTests.m */; };
+		0644E91E246064F900ECD2BD /* YailDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0644E91D246064F900ECD2BD /* YailDictionaryTests.m */; };
 		0644E9202460650A00ECD2BD /* SCMValueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0644E91F2460650A00ECD2BD /* SCMValueTests.m */; };
 		06483712245BD77300825364 /* yail.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624F4B91DB08148003B2527 /* yail.h */; };
 		06483713245BD77300825364 /* SCMValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624073F245352D5005E5BFC /* SCMValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -95,6 +98,7 @@
 		06D0C45F2462EA1B00CDFD2C /* SCMString.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D0C45D2462EA1B00CDFD2C /* SCMString.m */; };
 		06D1518D1DC456C600FC981E /* SCMSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = 06D1518B1DC456C600FC981E /* SCMSymbol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		06D1518E1DC456C600FC981E /* SCMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D1518C1DC456C600FC981E /* SCMSymbol.m */; };
+		06FB67E0247D5F2700ABEAD6 /* SCMErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 06B9A1372472BCB1002284A9 /* SCMErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		06FB67E1247D5F8600ABEAD6 /* YailList.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624073B24534956005E5BFC /* YailList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		06FCDEEA1D94383000199DD4 /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06FCDEE01D94383000199DD4 /* SchemeKit.framework */; };
 		06FCDEEF1D94383000199DD4 /* SchemeKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCDEEE1D94383000199DD4 /* SchemeKitTests.m */; };
@@ -122,6 +126,8 @@
 		0616090F1D96112D00D145C4 /* SchemeKitTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SchemeKitTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		061609101D96112D00D145C4 /* MockComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockComponent.swift; sourceTree = "<group>"; };
 		0624073224534413005E5BFC /* SCMObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMObject.h; sourceTree = "<group>"; };
+		062407362453465B005E5BFC /* YailDictionary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YailDictionary.h; sourceTree = "<group>"; };
+		062407372453465B005E5BFC /* YailDictionary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YailDictionary.m; sourceTree = "<group>"; };
 		0624073A245348C2005E5BFC /* SCMInterpreter-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SCMInterpreter-Private.h"; sourceTree = "<group>"; };
 		0624073B24534956005E5BFC /* YailList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YailList.h; sourceTree = "<group>"; };
 		0624073C24534956005E5BFC /* YailList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YailList.m; sourceTree = "<group>"; };
@@ -131,6 +137,7 @@
 		0624F4BA1DB33B0D003B2527 /* YailList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YailList.h; path = SchemeKit/YailList.h; sourceTree = "<group>"; };
 		0624F4BB1DB33B0D003B2527 /* YailList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YailList.m; path = SchemeKit/YailList.m; sourceTree = "<group>"; };
 		0644E91B246064EC00ECD2BD /* YailListTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YailListTests.m; sourceTree = "<group>"; };
+		0644E91D246064F900ECD2BD /* YailDictionaryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YailDictionaryTests.m; sourceTree = "<group>"; };
 		0644E91F2460650A00ECD2BD /* SCMValueTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMValueTests.m; sourceTree = "<group>"; };
 		0644E9212460726100ECD2BD /* SCMValue-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SCMValue-Private.h"; sourceTree = "<group>"; };
 		06483711245B7B5500825364 /* SCMTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMTypes.h; sourceTree = "<group>"; };
@@ -201,6 +208,7 @@
 		068B4F1F207562880050A8BE /* Screen1.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Screen1.yail; path = ../../aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail; sourceTree = "<group>"; };
 		06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCMInterpreter.h; sourceTree = "<group>"; };
 		06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCMInterpreter.m; sourceTree = "<group>"; };
+		06B9A1372472BCB1002284A9 /* SCMErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMErrors.h; sourceTree = "<group>"; };
 		06BEC1751D961AE100B62630 /* emyg_atod.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = emyg_atod.c; path = picrin/contrib/10.roundtrip/emyg_atod.c; sourceTree = "<group>"; };
 		06BEC1761D961AE100B62630 /* emyg_atod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = emyg_atod.h; path = picrin/contrib/10.roundtrip/emyg_atod.h; sourceTree = "<group>"; };
 		06BEC1771D961AE100B62630 /* emyg_dtoa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = emyg_dtoa.c; path = picrin/contrib/10.roundtrip/emyg_dtoa.c; sourceTree = "<group>"; };
@@ -388,6 +396,7 @@
 				0650B1F31DAB410B00A7846C /* ASTRecursiveVisitor.m */,
 				0650B1F61DABBE6A00A7846C /* SCMASTPrinter.h */,
 				0650B1F71DABBE6A00A7846C /* SCMASTPrinter.m */,
+				06B9A1372472BCB1002284A9 /* SCMErrors.h */,
 				06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */,
 				0624073A245348C2005E5BFC /* SCMInterpreter-Private.h */,
 				06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */,
@@ -406,6 +415,8 @@
 				0644E9212460726100ECD2BD /* SCMValue-Private.h */,
 				06240744245355FB005E5BFC /* SCMValue.m */,
 				06FCDEE31D94383000199DD4 /* SchemeKit.h */,
+				062407362453465B005E5BFC /* YailDictionary.h */,
+				062407372453465B005E5BFC /* YailDictionary.m */,
 				0624073B24534956005E5BFC /* YailList.h */,
 				0624073C24534956005E5BFC /* YailList.m */,
 				0650B21E1DABCC9700A7846C /* env.h */,
@@ -430,6 +441,7 @@
 				0616090F1D96112D00D145C4 /* SchemeKitTests-Bridging-Header.h */,
 				0650B1F01DAB0AD600A7846C /* YailRuntimeError.swift */,
 				0644E91B246064EC00ECD2BD /* YailListTests.m */,
+				0644E91D246064F900ECD2BD /* YailDictionaryTests.m */,
 				0644E91F2460650A00ECD2BD /* SCMValueTests.m */,
 			);
 			path = SchemeKitTests;
@@ -473,6 +485,7 @@
 				065ECF8A1D94A02000C749A1 /* state.h in Headers */,
 				065ECF891D94A02000C749A1 /* object.h in Headers */,
 				0650B1F81DABBE6A00A7846C /* SCMASTPrinter.h in Headers */,
+				062407382453465B005E5BFC /* YailDictionary.h in Headers */,
 				0624073424534413005E5BFC /* SCMObject.h in Headers */,
 				06483713245BD77300825364 /* SCMValue.h in Headers */,
 				0650B1F41DAB410B00A7846C /* ASTRecursiveVisitor.h in Headers */,
@@ -480,6 +493,7 @@
 				06483714245BD77300825364 /* SCMTypes.h in Headers */,
 				06D0C45E2462EA1B00CDFD2C /* SCMString.h in Headers */,
 				06D0C45A2461D8B400CDFD2C /* SCMObjectWrapper.h in Headers */,
+				06FB67E0247D5F2700ABEAD6 /* SCMErrors.h in Headers */,
 				06D1518D1DC456C600FC981E /* SCMSymbol.h in Headers */,
 				065ECF871D94A02000C749A1 /* gc.h in Headers */,
 				06483712245BD77300825364 /* yail.h in Headers */,
@@ -683,6 +697,7 @@
 				065ECF541D949E0100C749A1 /* proc.m in Sources */,
 				0650B1FF1DABC44C00A7846C /* callcc.c in Sources */,
 				065ECF551D949E0100C749A1 /* read.c in Sources */,
+				062407392453465B005E5BFC /* YailDictionary.m in Sources */,
 				065ECF6A1D949E1200C749A1 /* eval.c in Sources */,
 				065ECF631D949E1200C749A1 /* boot.c in Sources */,
 				06AC1CC51DB3CF2000A59EB3 /* SCMInterpreter.m in Sources */,
@@ -718,6 +733,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0644E91C246064EC00ECD2BD /* YailListTests.m in Sources */,
+				0644E91E246064F900ECD2BD /* YailDictionaryTests.m in Sources */,
 				06FCDEEF1D94383000199DD4 /* SchemeKitTests.m in Sources */,
 				061609111D96112D00D145C4 /* MockComponent.swift in Sources */,
 				0650B1F11DAB0AD600A7846C /* YailRuntimeError.swift in Sources */,
