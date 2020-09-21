@@ -118,10 +118,8 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     super.setDelegate(self)
     if _isPhone {
       _viewController = SpinnerPhoneController(self, screen: parent.form)
-      _viewController?.menuView.setValue(preferredTextColor(parent.form), forKeyPath: "textColor")
     } else {
       _viewController = SpinnerPadController(self)
-      _viewController?.menuView.setValue(preferredTextColor(parent.form), forKeyPath: "textColor")
     }
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     Prompt = ""
@@ -139,6 +137,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
         popover.delegate = self
         popover.sourceView = _view
         popover.sourceRect = _view.frame
+        popover.canOverlapSourceViewRect = true
       }
     }
     _currSelection = _selection
@@ -277,6 +276,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     view.text = _prompt == "add items..." ? "Plese select an item": _prompt
     view.isEditable = false
     view.font = view.font?.withSize(30)
+    view.textContainerInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
     return view
   }
 }
