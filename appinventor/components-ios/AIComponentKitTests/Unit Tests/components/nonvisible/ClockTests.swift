@@ -67,7 +67,7 @@ class ClockTests: AppInventorTestCase {
   //MakeInstantFromMillis -- issue: returns the date a day before when millis = 0
   func testMakeInstanstFromMillis() {
     let zeroDate = 0
-    let computedZeroInstant = clock.MakeInstantFromMillis(0)
+    let computedZeroInstant = Clock.MakeInstantFromMillis(0)
     let computedZeroComponents = calendar.dateComponents([.month, .day, .year], from: computedZeroInstant)
 //    XCTAssertTrue(computedZeroComponents.month! == 1)
 //    XCTAssertTrue(computedZeroComponents.day! == 1)

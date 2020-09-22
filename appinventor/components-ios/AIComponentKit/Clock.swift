@@ -70,7 +70,7 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
     return _calendar.date(from: components)!
   }
   
-  @objc open func MakeInstantFromMillis(_ millis: Int64) -> Date {
+  @objc public static func MakeInstantFromMillis(_ millis: Int64) -> Date {
     return Date(timeIntervalSince1970: TimeInterval(Double(millis) / 1000.0))
   }
 

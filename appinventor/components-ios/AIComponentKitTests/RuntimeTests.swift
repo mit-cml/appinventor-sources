@@ -102,7 +102,7 @@ class RuntimeTests: XCTestCase {
     let interpreter = try getInterpreterForTesting()
     interpreter.evalForm("(define *test-instant* (yail:make-instance NSDate))")
     XCTAssertEqual("#t", interpreter.evalForm("(yail:isa *test-instant* NSDate)"))
-    XCTAssertEqual("#t", interpreter.evalForm("(eq? *non-coercible-value* (coerce-to-instant 0))"))
+    XCTAssertEqual("#t", interpreter.evalForm("(eq? *non-coercible-value* (coerce-to-instant #f))"))
     XCTAssertEqual("#t", interpreter.evalForm("(eq? *test-instant* (coerce-to-instant *test-instant*))"))
   }
 

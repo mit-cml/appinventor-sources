@@ -318,7 +318,11 @@
 (define (coerce-to-instant arg)
   (cond
    ((yail:isa arg NSDate) arg)
-   (else *non-coercible-value*)))
+   (else
+     (let ((as-millis (coerce-to-number arg)))
+       (if (number? as-millis)
+           (yail:invoke AIComponentKit.Clock 'MakeInstantFromMillis as-millis)
+         *non-coercible-value*)))))
 
 (define (coerce-to-component arg)
   (cond
