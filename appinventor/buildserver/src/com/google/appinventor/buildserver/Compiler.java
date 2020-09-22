@@ -1196,7 +1196,10 @@ public final class Compiler {
           for (Map.Entry<String, Set<String>> metadataElementSetPair : metadataElements) {
             Set<String> metadataElementSet = metadataElementSetPair.getValue();
             for (String metadataElement : metadataElementSet) {
-              out.write(metadataElement);
+              out.write(
+                metadataElement
+                  .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+              );
             }
           }
         }
