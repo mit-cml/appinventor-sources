@@ -1075,7 +1075,10 @@ public final class Compiler {
       }
 
       for (String permission : permissions) {
-        out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
+        out.write("  <uses-permission android:name=\"" +
+                  permission
+                    .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+                  + "\" />\n");
       }
 
       if (isForCompanion) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
