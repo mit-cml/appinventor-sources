@@ -207,4 +207,18 @@ class RuntimeTests: XCTestCase {
     let interpreter = try getInterpreterForTesting()
     XCTAssertEqual("2", interpreter.evalForm("(yail-list-index \"touch\\u00e9\" (make-yail-list \"en garde\" \"touch\\u00e9\"))"))
   }
+
+  func testSplit() throws {
+    let interpreter = try getInterpreterForTesting()
+    let form = Form()
+    interpreter.setCurrentForm(form)
+    XCTAssertEqual("[\"\", \"1\", \"0\", \"0\", \"1\", \"0\"]",
+        interpreter.evalForm("(get-display-representation (string-split \"10010\" \"\"))"))
+    XCTAssertEqual("[\"apple\", \"banana\", \"cantalope\"]",
+        interpreter.evalForm("(get-display-representation (string-split \"apple,banana,cantalope\" \",\"))"))
+    XCTAssertEqual("[\"\", \"test\"]",
+        interpreter.evalForm("(get-display-representation (string-split \"strteststr\" \"str\"))"))
+    XCTAssertEqual("[\"many\", \"commas\"]",
+        interpreter.evalForm("(get-display-representation (string-split \"many,commas,,,,,\" \",\"))"))
+  }
 }

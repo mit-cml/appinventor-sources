@@ -1671,14 +1671,19 @@ Dictionary implementation.
             (else (check i (cdr ats) (cdr lens)))))
     (define (chunk s i count)
       (cond ((>= s text-len) '())
-            ((= count 0) (list (substring text s)))
-            ((>= i text-len) (list (substring text s)))
+            ((= count 0) (list (substring text (max s 0))))
+            ((>= i text-len) (list (substring text (max s 0))))
             (else
               (let ((adv (check i ats at-lens)))
                 (if adv
-                    (cons (substring text s i) (chunk (+ i adv) (+ i adv) (- count 1)))
+                    (let ((adv2 (max adv 1)))
+                      (cons (substring text (max s 0) i) (chunk (+ i adv) (+ i adv2) (- count 1))))
                   (chunk s (+ i 1) count))))))
-    (cons *yail-list* (chunk 0 0 (- count 1)))))
+    (define (trim-empties l)
+      (cond ((null? l) l)
+            ((equal? "" (car l)) (trim-empties (cdr l)))
+            (else l)))
+    (apply make-yail-list (reverse (trim-empties (reverse (chunk -1 0 (- count 1))))))))
 
 (define (string-split-at-first text at)
   (string-split-helper text (list at) 2))
