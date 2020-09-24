@@ -626,10 +626,10 @@ Blockly.Msg.de.switch_language_to_german = {
         + 'das Stück nicht im Text ist.';
 
     Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#contains';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'enthält';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = 'Text';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = 'Stück';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = 'enthält  Text %1 Stück %2';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '%1 Text %2 %3 %4';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS = 'enthält';
     Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = 'Testet, ob das Stück im Text enthalten ist.';
 
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL = '';

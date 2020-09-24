@@ -529,10 +529,10 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     + '其中1表示文本的起始处，\n '
     + '而如子串不在文本中则返回0。';
 
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = '文本是否包含子串';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = '文本';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = '子串';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '检查文本%1中是否包含子串%2';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '检查文本%2%1%3%4';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS = '是否包含';
     Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = '检查文本中是否包含该子串。';
 
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = '文本';
