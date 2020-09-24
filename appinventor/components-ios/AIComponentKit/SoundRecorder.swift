@@ -80,12 +80,6 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
     }
     _recorder = nil
     recorder.stop()
-    do {
-      let audioSession = AVAudioSession.sharedInstance()
-      try audioSession.setActive(false)
-    } catch {
-      _form.dispatchErrorOccurredEvent(self, "Stop", ErrorMessage.ERROR_SOUND_RECORDER.code, ErrorMessage.ERROR_SOUND_RECORDER.message)
-    }
   }
   
   @objc open func AfterSoundRecorded(_ sound: String) {
