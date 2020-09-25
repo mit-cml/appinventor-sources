@@ -7,11 +7,22 @@ open class File: NonvisibleComponent {
   @objc let NO_ASSETS = "No_Assets"
   private var _isRepl: Bool = false
   private let LOG_TAG: String = "FileComponent"
-  
+
   public override init(_ container: ComponentContainer) {
     super.init(container)
     _isRepl = _form is ReplForm
   }
+
+  /// MARK: File Properties
+
+  /**
+   * Whether the app has enabled LegacyMode logic for the File component. Note that on iOS all
+   * apps are sandboxed, so every app works as if LegacyMode == false. Apps can change this but it
+   * won't affect the behavior of the app.
+   */
+  @objc open var LegacyMode = false
+
+  /// MARK: File Methods
   
   @objc open func SaveFile(_ text: String, _ fileName: String) {
     write(fileName, text, false)
