@@ -256,11 +256,11 @@ import Foundation
     case .ERROR_LINESTRING_TOO_FEW_POINTS:
       return "Need at least 2 points for a LineString. Got only %d."
     case .ERROR_LINESTRING_PARSE_ERROR:
-      return "Parse error attempting to create LineString: %1$s."
+      return "Parse error attempting to create LineString: %s."
     case .ERROR_POLYGON_PARSE_ERROR:
-      return "Parse error attempting to create Polygon: %1$s."
+      return "Parse error attempting to create Polygon: %s."
     case .ERROR_EXCEPTION_DURING_MAP_SAVE:
-      return "Unable to save Map due to an internal exception: %1$s."
+      return "Unable to save Map due to an internal exception: %s."
     case .ERROR_INVALID_LATITUDE:
       return "Latitude %f was not in the expected range [-90, 90]."
     case .ERROR_INVALID_LONGITUDE:
