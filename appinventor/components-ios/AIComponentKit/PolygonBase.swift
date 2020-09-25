@@ -37,7 +37,6 @@ open class PolygonMarker: Marker {
   init(container: MapFeatureContainer) {
     _marker = PolygonMarker(container)
     super.init(container: container, view: MKAnnotationView())
-    overlay = _overlay
   }
 
   @objc open func Initialize() {
@@ -140,29 +139,25 @@ open class PolygonMarker: Marker {
 
   /**
    * This is what is added to the map.
-   * Execution is on a DispatchQueue to prevent a race condition with the MKMapView
    */
   open var overlay: MapOverlayShape? {
     get {
       return _overlay
     }
     set(newOverlay) {
-      let addNeeded = !initialized
-      DispatchQueue.main.async {
-        let oldOverlay = self._overlay
-        self._overlay = newOverlay
-        self._overlay?.fillColor = self._fillColor
-        self._overlay?.fillOpacity = self._fillOpacity
-        self._overlay?.strokeColor = self._strokeColor
-        self._overlay?.strokeOpacity = self._strokeOpacity
-        self._overlay?.strokeWidth = self._strokeWidth
-        self._overlay?.visible = self._visible
-        self._overlay?.feature = self
-        if addNeeded {
-          self._map?.addFeature(self)
-        } else if let old = oldOverlay, let new = self._overlay {
-          self._map?.replaceFeature(from: old, to: new)
-        }
+      let oldOverlay = _overlay
+      if let newOverlay = newOverlay {
+        newOverlay.fillColor = _fillColor
+        newOverlay.fillOpacity = _fillOpacity
+        newOverlay.strokeColor = _strokeColor
+        newOverlay.strokeOpacity = _strokeOpacity
+        newOverlay.strokeWidth = _strokeWidth
+        newOverlay.visible = _visible
+        newOverlay.feature = self
+        _overlay = newOverlay
+      }
+      if let old = oldOverlay, let new = self._overlay {
+        self._map?.replaceFeature(from: old, to: new)
       }
     }
   }

@@ -911,7 +911,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
       mapView.addAnnotation(feature)
     }
     if !(feature is PolygonMarker) {
-      _features.insert(feature, at: Int(feature.index))
+      _features.append(feature)
     }
   }
 
