@@ -40,12 +40,14 @@ pic_init_picrin(pic_state *pic)
 
 static NSException *
 exception_from_pic_error(pic_state *pic, pic_value e) {
-  const char *msg = pic_str(pic, pic_obj_value(pic_error_ptr(pic, e)->msg));
+  const char *msg, *buffer;
+  char *msgcopy = NULL, *bufcopy = NULL;
   pic_value e2, port, irrs = pic_error_ptr(pic, e)->irrs;
-  const char *buffer;
-  char *bufcopy;
-  int buflen = 64;
+  int buflen = 1024;
   pic_try {
+    msg = pic_str(pic, pic_obj_value(pic_error_ptr(pic, e)->msg));
+    msgcopy = (char *)malloc(strlen(msg) + 1);
+    strcpy(msgcopy, msg);
     port = pic_fmemopen(pic, NULL, buflen, "w");
     pic_fprintf(pic, port, "~a\0", irrs);
     pic_fgetbuf(pic, port, &buffer, &buflen);
@@ -55,7 +57,8 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
   } pic_catch(e2) {
     NSLog(@"WTF");
   }
-  NSException *result = [NSException exceptionWithName:@"RuntimeError" reason:[NSString stringWithFormat:@"%s. Irritants: %s", msg, bufcopy] userInfo:nil];
+  NSException *result = [NSException exceptionWithName:@"RuntimeError" reason:[NSString stringWithFormat:@"%s. Irritants: %s", msgcopy, bufcopy] userInfo:nil];
+  free(msgcopy);
   free(bufcopy);
   return result;
 }
