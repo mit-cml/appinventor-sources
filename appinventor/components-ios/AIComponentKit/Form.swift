@@ -37,6 +37,7 @@ import Toast_Swift
   fileprivate var _statusBarHidden: Bool = true
   fileprivate var _linearView = LinearView()
   fileprivate var _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+  fileprivate let _isPhone = UIDevice.current.userInterfaceIdiom == .phone
   // For screen switching
   var lastFormName = ""
   var formResult: AnyObject?
@@ -491,6 +492,12 @@ import Toast_Swift
       if _orientation == "portrait" {
         UIDevice.current.setValue(UIDeviceOrientation.portrait.rawValue, forKey: "orientation")
       } else if _orientation == "landscape" {
+        if !_isPhone {
+          let alert = UIAlertController(title: "Screen Orientation", message: "", preferredStyle: .alert)
+          alert.message = "This app works best in landscape mode. Please rotate your device."
+          alert.addAction(UIAlertAction(title: "OK", style: .default))
+          present(alert, animated: true, completion: nil)
+        }
         UIDevice.current.setValue(UIDeviceOrientation.landscapeLeft.rawValue, forKey: "orientation")
       } else {
         UIDevice.current.setValue(UIDeviceOrientation.unknown.rawValue, forKey: "orientation")
