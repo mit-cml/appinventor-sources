@@ -333,12 +333,16 @@ open class Notifier: NonvisibleComponent {
   }
 
   @objc open func ShowMessageDialog(_ message: String, _ title: String, _ buttonText: String) {
-    if _activeAlert == nil {
-      _activeAlert = CustomAlertView(title: title, message: message)
-      let button = makeButton(buttonText, with: "" as NSString, action: #selector(DismissProgressDialog))
-      makeBorder(for: button, vertical: false)
-      _activeAlert?.stack.addArrangedSubview(button)
-      _activeAlert?.show(animated: true)
+    let alert = CustomAlertView(title: title, message: message)
+    let button = makeButton(buttonText, with: alert, action: #selector(dismissAlertView(_:)))
+    makeBorder(for: button, vertical: false)
+    alert.stack.addArrangedSubview(button)
+    alert.show(animated: true)
+  }
+
+  @objc fileprivate func dismissAlertView(_ sender: CustomButton) {
+    if let alert = sender.value as? CustomAlertView {
+      alert.dismiss(animated: true)
     }
   }
 

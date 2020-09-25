@@ -5,13 +5,13 @@ import Foundation
 import Alamofire
 import GEOSwift
 
-class FeatureCollection: MapFeatureContainerBase, MapFeatureCollection {
+@objc class FeatureCollection: MapFeatureContainerBase, MapFeatureCollection {
   fileprivate var _features = [MapFeature]()
   fileprivate var _source: String = ""
   fileprivate weak var _map: Map?
   fileprivate weak var _form: Form?
 
-  override init(_ parent: ComponentContainer) {
+  @objc override init(_ parent: ComponentContainer) {
     if let mapContainer = parent as? MapFeatureContainer {
       _map = mapContainer.getMap()
     }
@@ -20,7 +20,7 @@ class FeatureCollection: MapFeatureContainerBase, MapFeatureCollection {
   }
 
   // MARK: properties
-  open var Features: [MapFeature] {
+  @objc open var Features: [MapFeature] {
     get {
       return _features
     }
@@ -34,7 +34,7 @@ class FeatureCollection: MapFeatureContainerBase, MapFeatureCollection {
     }
   }
 
-  open var Source: String {
+  @objc open var Source: String {
     get {
       return _source
     }
@@ -44,7 +44,7 @@ class FeatureCollection: MapFeatureContainerBase, MapFeatureCollection {
   }
 
   // MARK: method
-  open func FeatureFromDescription(_ description: [Any]) -> Any  {
+  @objc open func FeatureFromDescription(_ description: [Any]) -> Any  {
     do {
       return try GeoJSONUtil.processGeoJSONFeature(container: self, description: description)
     } catch let err {
@@ -56,7 +56,7 @@ class FeatureCollection: MapFeatureContainerBase, MapFeatureCollection {
     }
   }
 
-  open func LoadFromURL(_ url: String) {
+  @objc open func LoadFromURL(_ url: String) {
     Alamofire.request(url).validate(statusCode: 200...200).responseJSON { response in
       switch response.result {
       case .success(let data):
