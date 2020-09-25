@@ -86,14 +86,16 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   open func isVisible() -> Bool {
     var visible = true
     var parent = _container
+    var child: ViewComponent = self
     while (type(of: parent) != ReplForm.self) {
-      visible = parent.isVisible(component: self)
+      visible = parent.isVisible(component: child) && parent.isVisible()
       if visible == false {
         return visible
       }
-      parent = container.container
+      child = parent as! ViewComponent
+      parent = parent.container
     }
-    return parent.isVisible(component: self)
+    return parent.isVisible(component: child)
   }
   
   open func isVisible(component: ViewComponent) -> Bool {
