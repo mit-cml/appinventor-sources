@@ -67,6 +67,7 @@ import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.MapView.OnTapListener;
+import org.osmdroid.views.overlay.CopyrightOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Marker.OnMarkerClickListener;
 import org.osmdroid.views.overlay.Marker.OnMarkerDragListener;
@@ -296,6 +297,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     defaultInfoWindow = new OverlayInfoWindow(view);
     view.setTilesScaledToDpi(true);
     view.setMapListener(this);
+    view.getOverlayManager().add(new CopyrightOverlay(form));
     view.getOverlayManager().add(touch);
     view.addOnTapListener(new OnTapListener() {
       @Override
