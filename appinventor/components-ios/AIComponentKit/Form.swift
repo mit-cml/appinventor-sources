@@ -116,6 +116,13 @@ import Toast_Swift
     }
   }
 
+  /**
+   * Returns whether the Form is the REPL (companion) or not.
+   */
+  open var isRepl: Bool {
+    return false
+  }
+
   open override func viewDidLoad() {
     super.viewDidLoad()
     view.accessibilityIdentifier = String(describing: type(of: self))

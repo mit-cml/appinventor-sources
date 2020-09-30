@@ -1,20 +1,15 @@
-//
-//  RetValManager.h
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/27/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: objc; c-basic-offset: 2; -*-
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 #import <Foundation/Foundation.h>
 
 @interface RetValManager : NSObject
 
-+ (instancetype)sharedManager;
-- (void)appendReturnValue:(NSString *)item forBlock:(NSString *)blockId withStatus:(NSString *)status;
-- (void)sendError:(NSString *)error;
-- (void)pushScreen:(NSString *)screenName withValue:(NSObject *)value;
-- (void)popScreen:(NSString *)value;
-- (NSString *)fetch:(BOOL)block;
++ (nonnull instancetype)sharedManager NS_SWIFT_NAME(shared());
+- (void)appendReturnValue:(nonnull NSString *)item forBlock:(nonnull NSString *)blockId withStatus:(nonnull NSString *)status;
+- (void)sendError:(nonnull NSString *)error;
+- (void)pushScreen:(nonnull NSString *)screenName withValue:(nonnull NSObject *)value;
+- (void)popScreen:(nonnull NSString *)value;
+- (nonnull NSString *)fetch:(BOOL)block;
 
 @end

@@ -71,6 +71,13 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
     _form.present(messageVC, animated: true, completion: nil)
   }
 
+  @objc open func SendMessageDirect() {
+    SendMessage()
+    if _form.isRepl {
+      RetValManager.shared().sendError("SendMessageDirect is not supported. Use SendMessage instead.")
+    }
+  }
+
   // MARK: Texting Events
   @objc open func MessageReceived(_ number: String, _ messageText: String) {
     EventDispatcher.dispatchEvent(of: self, called: "MessageReceived", arguments: number as NSString, messageText as NSString)

@@ -87,7 +87,7 @@ open class ReplForm: Form {
     super.viewWillDisappear(animated)
     if self.isMovingFromParent {
       if _isScreenClosed == false {
-        RetValManager.shared()?.popScreen("")
+        RetValManager.shared().popScreen("")
       }
     }
   }
@@ -143,5 +143,9 @@ open class ReplForm: Form {
 
   override open func doCloseApplication() {
     view.makeToast("Closing the application is not allowed in live development mode.")
+  }
+
+  override open var isRepl: Bool {
+    return true
   }
 }

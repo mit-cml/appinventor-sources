@@ -84,6 +84,13 @@ open class PhoneCall: NonvisibleComponent {
     }
   }
 
+  @objc open func MakePhoneCallDirect() {
+    MakePhoneCall()
+    if _form.isRepl {
+      RetValManager.shared().sendError("MakePhoneCallDirect is not supported. Use MakePhoneCall instead.")
+    }
+  }
+
   // MARK: PhoneCall Events
   @objc open func IncomingCallAnswered(_ phoneNumber: String) {
     EventDispatcher.dispatchEvent(of: self, called: "IncomingCallAnswered", arguments: phoneNumber as NSString)
