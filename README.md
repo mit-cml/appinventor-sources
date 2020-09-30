@@ -1,6 +1,6 @@
 # Welcome to MIT App Inventor
 
-## Introduction
+## INTRODUCTION
 
 Learn more about [MIT App Inventor](http://appinventor.mit.edu).
 
@@ -14,16 +14,16 @@ to operate their own App Inventor instance and/or contribute to the project.
 
 This code is tested and known to work with Java 8.
 
-## Contributors
+## CONTRIBUTORS
 The best way to go about integrating changes in App Inventor is to start a conversation in the [Open Source forum](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev) about whatever you intend to change or add.
 
-We use ***very brief and informal*** design documents with descriptions of the proposed changes and screenshots of how the functionality would look like and behave, in order to gather as much feedback from the community, as early as possible. We generally use shared Google docs for this (with permissions to add comments), but any format that is accessible from a web browser (and allows comments) would do.
+We use ***very brief and informal*** design documents with descriptions of the proposed changes and screenshots of how the functionality would look like and behave, in order to gather as much feedback from the community, as early as possible. We generally use shared Google documentfor this (with permissions to add comments), but any format that is accessible from a web browser (and allows comments) would do.
 
 If you have skipped this step and have gone ahead and made your changes already, feel free to open a pull request, but don't be too surprised if we ask you to go back and document it in a design document. Remember that the main goal of doing this is ***to gather as much feedback, as early as possible***. We will also possibly ask you to put an instance with your changes on [appspot](http://appspot.com), and provide a modified Companion app (if that applies) so that reviewers can play with the changes before looking at the source.
 
 Check out our open source [site](http://appinventor.mit.edu/appinventor-sources/) to find a lot more information about the project and how to contribute to it.
 
-## Setup instructions (Vagrant)
+## Setup Instructions (Vagrant)
 
 The easiest way to get a development environment up and running is to use the provided Vagrantfile. Install [Vagrant](https://vagrantup.com) and open a terminal in the root directory of this repository. Run the following commands
 
@@ -58,7 +58,7 @@ Note 2: If it seems like none of the dependencies are installed in the VM, run `
 
 For better performance, consider using the manual instructions.
 
-## Setup instructions (manual)
+## Setup Instructions (manual)
 
 This is a quick guide to get started with the sources. More detailed instructions can be found [here](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc), a slide show can be seen [here](http://josmas.github.io/contributingToAppInventor2/#/), and all the [documentation](http://appinventor.mit.edu/appinventor-sources/#documentation) for the project is available in our [site](http://appinventor.mit.edu/appinventor-sources/).
 
@@ -100,7 +100,7 @@ Finally, you will also have to make sure that you are ignoring files that need i
 
     $ cp sample-.gitignore .gitignore
 
-### Checkout dependencies
+### Checkout Dependencies
 App Inventor uses Blockly, the web-based visual programming editor from Google, as a core part of its editor. Blockly core is made available to App Inventor as a git submodule. The first time after forking or cloning the repository, you will need to perform the following commands:
 
     $ git submodule update --init
@@ -150,7 +150,7 @@ You should now be up and running; you can test this by pointing your browser to:
 
 Before entering or scanning the QR code in the Companion, check the box labeled "Use Legacy Connection".
 
-### Running tests
+### Running Tests
 The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you install it and add it to your path. After that, you can run all tests by typing the following in a terminal window:
 
     $ ant tests
