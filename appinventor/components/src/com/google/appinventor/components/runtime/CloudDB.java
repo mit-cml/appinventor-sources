@@ -52,10 +52,13 @@ import java.security.cert.X509Certificate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.net.ssl.SSLContext;
@@ -108,7 +111,7 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
   "android.permission.WRITE_EXTERNAL_STORAGE")
 @UsesLibraries(libraries = "jedis.jar")
 public final class CloudDB extends AndroidNonvisibleComponent implements Component,
-  OnClearListener, OnDestroyListener {
+  OnClearListener, OnDestroyListener, ObservableDataSource<String, Future<List>> {
   private static final boolean DEBUG = false;
   private static final String LOG_TAG = "CloudDB";
   private boolean importProject = false;
@@ -249,6 +252,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
 
   // Do we have storage permission yet
   private boolean havePermission = false;
+
+  // Set of observers
+  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   private static class storedValue {
     private String tag;
@@ -765,7 +771,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         });
       return;
     }
-    final AtomicReference<Object> value = new AtomicReference<Object>();
     Cursor cursor = null;
     SQLiteDatabase db = null;
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
@@ -776,42 +781,10 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       // or the JSON representation of valueIfTagNotThere
       background.submit(new Runnable() {
           public void run() {
-            Jedis jedis = getJedis();
-            try {
-              if (DEBUG) {
-                Log.d(LOG_TAG,"about to call jedis.get()");
-              }
-              String returnValue = jedis.get(projectID + ":" + tag);
-              if (DEBUG) {
-                Log.d(LOG_TAG, "finished call jedis.get()");
-              }
-              if (returnValue != null) {
-                String val = JsonUtil.getJsonRepresentationIfValueFileName(form, returnValue);
-                if(val != null) value.set(val);
-                else value.set(returnValue);
-              }
-              else {
-                if (DEBUG) {
-                  Log.d(CloudDB.LOG_TAG,"Value retrieved is null");
-                }
-                value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
-              }
-            } catch (JSONException e) {
-              CloudDBError("JSON conversion error for " + tag);
-              return;
-            } catch (NullPointerException e) {
-              CloudDBError("System Error getting tag " + tag);
-              flushJedis(true);
-              return;
-            } catch (JedisException e) {
-              Log.e(LOG_TAG, "Exception in GetValue", e);
-              CloudDBError(e.getMessage());
-              flushJedis(true);
-              return;
-            } catch (Exception e) {
-              Log.e(LOG_TAG, "Exception in GetValue", e);
-              CloudDBError(e.getMessage());
-              flushJedis(true);
+            final AtomicReference<Object> value = getValueByTag(tag, valueIfTagNotThere);
+
+            // Value stored is null; Return
+            if (value.get() == null) {
               return;
             }
 
@@ -833,6 +806,57 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     }
   }
 
+  /**
+   * Gets the specified value from the underlying Redis database, or
+   * returns the specified value if the tag is not present.
+   *
+   * The value is returned as an AtomicReference, and will contain
+   * a null value in case of exceptions.
+   *
+   * @param tag  tag of the value to get
+   * @param valueIfTagNotThere  value to set to the reference if tag is not present
+   * @return  AtomicReference containing the indicated value
+   */
+  private AtomicReference<Object> getValueByTag(final String tag, final Object valueIfTagNotThere) {
+    AtomicReference<Object> value = new AtomicReference<Object>();
+
+    Jedis jedis = getJedis();
+    try {
+      if (DEBUG) {
+        Log.d(LOG_TAG,"about to call jedis.get()");
+      }
+      String returnValue = jedis.get(projectID + ":" + tag);
+      if (DEBUG) {
+        Log.d(LOG_TAG, "finished call jedis.get()");
+      }
+      if (returnValue != null) {
+        String val = JsonUtil.getJsonRepresentationIfValueFileName(returnValue);
+        if(val != null) value.set(val);
+        else value.set(returnValue);
+      }
+      else {
+        if (DEBUG) {
+          Log.d(CloudDB.LOG_TAG,"Value retrieved is null");
+        }
+        value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
+      }
+    } catch (JSONException e) {
+      CloudDBError("JSON conversion error for " + tag);
+      value.set(null);
+    } catch (NullPointerException e) {
+      CloudDBError("System Error getting tag " + tag);
+      flushJedis(true);
+      value.set(null);
+    } catch (JedisException e) {
+      Log.e(LOG_TAG, "Exception in GetValue", e);
+      CloudDBError(e.getMessage());
+      flushJedis(true);
+      value.set(null);
+    }
+
+    return value;
+  }
+ 
   /**
    * Returns `true`{:.logic.block} if we are on the network and will likely be able to connect to
    * the `CloudDB` server.
@@ -1040,6 +1064,8 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           try {
             Jedis jedis = getJedis();
             jedis.del(projectID + ":" + tag);
+            // Notify all the Data Source observers of the change
+            notifyDataObservers(tag, null);
           } catch (Exception e) {
             CloudDBError(e.getMessage());
             flushJedis(true);
@@ -1122,6 +1148,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
     }
     final Object finalTagValue = tagValue;
+
+    // Notify all the Data Source observers of the change
+    notifyDataObservers(tag, finalTagValue);
 
     androidUIHandler.post(new Runnable() {
       public void run() {
@@ -1396,6 +1425,61 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     } catch (Exception e) {
       Log.e(LOG_TAG, "Getting System Certificates", e);
       return new X509Certificate[0];
+    }
+  }
+
+  /**
+   * Returns the specified List object identified by the key as a Future object.
+   * If the value is not a List object, or it does not exist, an empty List
+   * is returned.
+   *
+   * The return type being a Future object ensures that the data is
+   * retrieved from the database asynchronously.
+   *
+   * @param key  Key of the value to retrieve
+   * @return  Future object holding the value as a List object, or empty List if not applicable
+   */
+  @Override
+  public Future<List> getDataValue(final String key) {
+    return background.submit(new Callable<List>() {
+      @Override
+      public List call() {
+        // Get the value identified by the tag (key) or an empty
+        // YailList if not present
+        AtomicReference<Object> valueReference = getValueByTag(key, new YailList());
+
+        // Get the value as a String
+        String valueString = (String) valueReference.get();
+
+        // Parse the value from JSON
+        Object value = JsonUtil.getObjectFromJson(valueString);
+
+        // Value is a List object; Convert and return it
+        if (value instanceof List) {
+          return (List)value;
+        }
+
+        // Return empty list otherwise
+        return new ArrayList();
+      }
+    });
+  }
+
+  @Override
+  public void addDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object newValue) {
+    // Notify each Chart Data observer component of the Data value change
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onDataSourceValueChange(this, key, newValue);
     }
   }
 }

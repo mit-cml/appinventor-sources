@@ -8,9 +8,11 @@ package com.google.appinventor.components.runtime.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -132,5 +134,102 @@ public class JsonUtilTest {
   public void testConvertEmpty() throws JSONException {
     Object shouldBeEmpty = JsonUtil.getObjectFromJson("");
     assertEquals("", JsonUtil.getObjectFromJson(""));
+  }
+
+  /**
+   * Test case to ensure that retrieving columns from JSON
+   * from an element that is not a List returns an empty List.
+   */
+  @Test
+  public void testGetColumnsFromJSONNotList() throws JSONException {
+    String json = "1";
+
+    YailList result = JsonUtil.getColumnsFromJSON(json);
+    YailList expected = new YailList();
+
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to ensure that retrieving columns from JSON
+   * containing one Array entry with multiple elements
+   * returns a List containing the appropriate column.
+   */
+  @Test
+  public void testGetColumnsFromJSONArrayMultipleEntries() throws JSONException {
+    String json = "{" +
+        "\"array\": " +
+        "[1,2,3]" +
+        "}";
+
+    YailList expectedColumn = YailList.makeList(Arrays.asList("array", "1", "2", "3"));
+    YailList expected = YailList.makeList(Collections.singletonList(expectedColumn));
+
+    YailList result = JsonUtil.getColumnsFromJSON(json);
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to ensure that retrieving columns from JSON
+   * containing one Array entry with a single element
+   * returns a List containing the appropriate column.
+   */
+  @Test
+  public void testGetColumnsFromJSONArraySingleEntry() throws JSONException {
+    String json = "{" +
+        "\"array\": " +
+        "[7]" +
+        "}";
+
+    YailList expectedColumn = YailList.makeList(Arrays.asList("array", "7"));
+    YailList expected = YailList.makeList(Collections.singletonList(expectedColumn));
+
+    YailList result = JsonUtil.getColumnsFromJSON(json);
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to ensure that retrieving columns from JSON
+   * containing one non-Array entry returns a List containing
+   * the appropriate column.
+   */
+  @Test
+  public void testGetColumnsFromJSONElement() throws JSONException {
+    String json = "{" +
+        "\"value\": " +
+        "\"test-value\"" +
+        "}";
+
+    YailList expectedColumn = YailList.makeList(Arrays.asList("value", "test-value"));
+    YailList expected = YailList.makeList(Collections.singletonList(expectedColumn));
+
+    YailList result = JsonUtil.getColumnsFromJSON(json);
+    assertEquals(expected, result);
+  }
+
+  /**
+   * Test case to ensure that retrieving columns from JSON
+   * containing mixed entries (both Array and non-array)
+   * returns a List of the appropriate columns.
+   */
+  @Test
+  public void testGetColumnsFromJSONMixedEntries() throws JSONException {
+    String json = "{" +
+        "\"array\": [1,2,3]," +
+        "\"values\": [4,7,2,1]," +
+        "\"test-value\": \"element\"" +
+        "}";
+
+    YailList expected1 = YailList.makeList(Arrays.asList("array", "1", "2", "3"));
+    YailList expected2 = YailList.makeList(Arrays.asList("values", "4", "7", "2", "1"));
+    YailList expected3 = YailList.makeList(Arrays.asList("test-value", "element"));
+
+    YailList result = JsonUtil.getColumnsFromJSON(json);
+
+    // Since JSON stores it's properties in Sets, order cannot be guaranteed here, hence
+    // contains is checked instaed.
+    assertTrue(result.contains(expected1));
+    assertTrue(result.contains(expected2));
+    assertTrue(result.contains(expected3));
   }
 }

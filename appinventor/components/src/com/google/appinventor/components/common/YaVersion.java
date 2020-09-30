@@ -515,7 +515,9 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 208:
   // - FILE_COMPONENT_VERSION was incremented to 3
   // - BLOCKS_LANGUAGE_VERSION was incremented to 33
-  public static final int YOUNG_ANDROID_VERSION = 208;
+  // For YOUNG_ANDROID_VERSION 209:
+  // - BLUETOOTH_CLIENT_COMPONENT_VERSION was incremented to 7
+  public static final int YOUNG_ANDROID_VERSION = 209;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -695,7 +697,9 @@ public class YaVersion {
   // - The BluetoothClient.Secure property was added.
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 6:
   // - The BluetoothClient.DisconnectOnError property was added.
-  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 6;
+  // For BLUETOOTH_CLIENT_COMPONENT_VERSION 7:
+  // - The BluuetoothClient.PollingRate property was added.
+  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 7;
 
   // For BLUETOOTHSERVER_COMPONENT_VERSION 2:
   // - The BluetoothServer.Enabled property was added.
@@ -760,6 +764,10 @@ public class YaVersion {
   // - BackgroundImageinBase64 was added
   public static final int CANVAS_COMPONENT_VERSION = 13;
 
+  public static final int CHART_COMPONENT_VERSION = 1;
+
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
+
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
   public static final int CHECKBOX_COMPONENT_VERSION = 2;
@@ -791,6 +799,8 @@ public class YaVersion {
   // For CONTACTPICKER_COMPONENT_VERSION 6:
   // - The ContactUri property was added
   public static final int CONTACTPICKER_COMPONENT_VERSION = 6;
+
+  public static final int DATA_FILE_COMPONENT_VERSION = 1;
 
   // For DATEPICKER_COMPONENT_VERSION 2:
   // The datepicker dialog was updated to show the current date

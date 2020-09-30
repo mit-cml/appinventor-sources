@@ -31,9 +31,11 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * Non-visible component that can detect shaking and measure acceleration approximately in three
@@ -89,7 +91,8 @@ import java.util.Queue;
     iconName = "images/accelerometersensor.png")
 @SimpleObject
 public class AccelerometerSensor extends AndroidNonvisibleComponent
-    implements OnPauseListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
+    implements OnPauseListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable,
+    RealTimeDataSource<String, Float> {
 
   // Logging and Debugging
   private final static String LOG_TAG = "AccelerometerSensor";
@@ -136,6 +139,9 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
   // Used to launch Runnables on the UI Thread after a delay
   private final Handler androidUIHandler;
+
+  // Set of observers
+  private final Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /**
    * Creates a new AccelerometerSensor component.
@@ -237,6 +243,11 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     addToSensorCache(X_CACHE, xAccel);
     addToSensorCache(Y_CACHE, yAccel);
     addToSensorCache(Z_CACHE, zAccel);
+
+    // Notify the Data Source observers with the updated values
+    notifyDataObservers("X", xAccel);
+    notifyDataObservers("Y", yAccel);
+    notifyDataObservers("Z", zAccel);
 
     long currentTime = System.currentTimeMillis();
 
@@ -500,6 +511,50 @@ public int getDeviceDefaultOrientation() {
   public void onDelete() {
     if (enabled) {
       stopListening();
+    }
+  }
+
+  @Override
+  public void addDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  /**
+   * Returns a data value corresponding to the provided key:
+   * X - x direction acceleration
+   * Y - y direction acceleration
+   * Z - z direction acceleration
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
+  @Override
+  public Float getDataValue(String key) {
+    switch (key) {
+      case "X":
+        return xAccel;
+
+      case "Y":
+        return yAccel;
+
+      case "Z":
+        return zAccel;
+
+      default:
+        return 0f;
     }
   }
 }

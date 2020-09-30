@@ -431,6 +431,74 @@ public class JsonUtil {
   }
 
   /**
+   * Parses the specified JSON and returns a List of columns.
+   * A column consists of the key and all the entries
+   * of the value itself. Each column is a YailList.
+   *
+   * E.g. "x: 5" would be a List (x 5), while
+   * "y: [1,2,3]" would be a List (y 1 2 3)
+   *
+   * @param json  JSON string to parse
+   * @return  YailList of columns, where each entry is a YailList
+   */
+  public static YailList getColumnsFromJSON(String json) throws JSONException {
+    // Parse object from JSON object
+    Object jsonObject = getObjectFromJson(json);
+
+    // Generate columns from parsed JSON object.
+    // Only proceed with column generation logic if the parsed
+    // object is a List. Otherwise, return empty columns
+    List<YailList> resultColumns = new ArrayList<YailList>();
+
+    // JSON object is expected to be of type ArrayList.
+    // If that is not the case, parsing is not done.
+    if (jsonObject instanceof List) {
+      // Cast parsed object to List, which represents
+      // all the JSON entries
+      List jsonList = (List) jsonObject;
+
+      for (Object entry : jsonList) {
+        List<String> columnElements = new ArrayList<String>();
+
+        // Expected type of the entry is a List (key, value pair)
+        // If this is not the case, add nothing to the column elements.
+        if (entry instanceof List) {
+          List listEntry = (List) entry;
+
+          // Add first value as a String to the column elements
+          // List. The first entry should always be a String,
+          // since it is the key.
+          columnElements.add(listEntry.get(0).toString());
+
+          // Get the value of the key-value pair
+          Object jsonValue = listEntry.get(1);
+
+          // List types require different handling
+          if (jsonValue instanceof List) {
+            // If the value is a List, then add all
+            // entries to the column
+            List jsonValueList = (List)jsonValue;
+
+            for (Object jsonValueListEntry : jsonValueList) {
+              columnElements.add(jsonValueListEntry.toString());
+            }
+          } else {
+            // If the value is not a List, then convert the value to a String and add it.
+            columnElements.add(jsonValue.toString());
+          }
+        }
+
+        // Convert parsed column elements to YailList, and add
+        // the column to the resulting columns list
+        resultColumns.add(YailList.makeList(columnElements));
+      }
+    }
+
+    // Construct and return a YailList from the resulting columns
+    return YailList.makeList(resultColumns);
+  }
+
+  /**
    * Accepts a base64 encoded string and a file extension (which must be three characters).
    * Decodes the string into a binary and saves it to a file on external storage and returns
    * the filename assigned.

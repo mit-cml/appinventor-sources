@@ -1377,6 +1377,10 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL = "/reference/components/maps.html#Polygon";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL = "/reference/components/maps.html#Rectangle";
 
+// Chart components
+    Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL = "/reference/components/charts.html#Chart";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL = "/reference/components/charts.html#ChartData2D";
+
 //Sensor components
     Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "/reference/components/sensors.html#AccelerometerSensor";
     Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#AccelerometerSensor';

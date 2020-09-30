@@ -683,4 +683,22 @@ public interface Images extends Resources {
   */
   @Source("com/google/appinventor/images/YRLogo.png")
   ImageResource YRLogo();
+
+  /**
+   * Designer palette item: Chart
+   */
+  @Source("com/google/appinventor/images/chart.png")
+  ImageResource chart();
+
+  /**
+   * Designer palette item: ChartData2D
+   */
+  @Source("com/google/appinventor/images/chartData.png")
+  ImageResource chartData2D();
+
+  /**
+   * Designer palette item: DataFile
+   */
+  @Source("com/google/appinventor/images/dataFile.png")
+  ImageResource dataFile();
 }

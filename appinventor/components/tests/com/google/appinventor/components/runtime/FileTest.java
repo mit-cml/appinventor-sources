@@ -26,9 +26,7 @@ import java.nio.charset.Charset;
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
 @Config(shadows = {ShadowActivityCompat.class})
-public class FileTest extends RobolectricTestBase {
-
-  private static final String TAG = FileTest.class.getSimpleName();
+public class FileTest extends FileTestBase {
   private static final String DATA = "test data";
   protected static final String TARGET_FILE = "test.txt";
   protected File file;

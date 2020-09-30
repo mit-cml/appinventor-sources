@@ -22,6 +22,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Component providing data from the device's gyroscope sensor.
  */
@@ -36,7 +39,8 @@ import android.hardware.SensorManager;
 
 @SimpleObject
 public class GyroscopeSensor extends AndroidNonvisibleComponent
-    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener {
+    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener,
+    RealTimeDataSource<String, Float> {
 
   // Properties
   private boolean enabled;
@@ -48,6 +52,9 @@ public class GyroscopeSensor extends AndroidNonvisibleComponent
   private final SensorManager sensorManager;
   private final Sensor gyroSensor;
   private boolean listening;
+
+  // Set of observers
+  private Set<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
 
   /**
    * Creates a new GyroscopeSensor component.
@@ -207,6 +214,11 @@ public class GyroscopeSensor extends AndroidNonvisibleComponent
       yAngularVelocity = (float) Math.toDegrees(sensorEvent.values[1]);
       zAngularVelocity = (float) Math.toDegrees(sensorEvent.values[2]);
 
+      // Notify the Data Source observers with the updated values
+      notifyDataObservers("X", xAngularVelocity);
+      notifyDataObservers("Y", yAngularVelocity);
+      notifyDataObservers("Z", zAngularVelocity);
+
       // Raise event.
       GyroscopeChanged(xAngularVelocity, yAngularVelocity, zAngularVelocity,
           sensorEvent.timestamp);
@@ -235,6 +247,50 @@ public class GyroscopeSensor extends AndroidNonvisibleComponent
   public void onResume() {
     if (enabled) {
       startListening();
+    }
+  }
+
+  @Override
+  public void addDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(ChartDataBase dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (ChartDataBase dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  /**
+   * Returns a data value corresponding to the provided key:
+   * X - x direction angular velocity
+   * Y - y direction angular velocity
+   * Z - z direction angular velocity
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
+  @Override
+  public Float getDataValue(String key) {
+    switch (key) {
+      case "X":
+        return xAngularVelocity;
+
+      case "Y":
+        return yAngularVelocity;
+
+      case "Z":
+        return zAngularVelocity;
+
+      default:
+        return 0f;
     }
   }
 }

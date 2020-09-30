@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 
 /**
  * Non-visible component for storing and retrieving files. Use this component to write or read files
@@ -55,10 +54,7 @@ import java.io.StringWriter;
     iconName = "images/file.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
-public class File extends AndroidNonvisibleComponent implements Component {
-  private static final int BUFFER_LENGTH = 4096;
-  private static final String LOG_TAG = "FileComponent";
-  private boolean legacy = false;
+public class File extends FileBase {
 
   /**
    * Creates a new File component.
@@ -66,30 +62,6 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   public File(ComponentContainer container) {
     super(container.$form());
-    LegacyMode(false);
-  }
-
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public void LegacyMode(boolean legacy) {
-    this.legacy = legacy;
-  }
-
-  /**
-   * Allows app to access files from the root of the external storage directory (legacy mode).
-   * Starting with Android 11, this will no longer be allowed and the behavior is strongly
-   * discouraged on Android 10. Starting with Android 10, App Inventor by default will attempt to
-   * store files relative to the app-specific private directory on external storage in accordance
-   * with this security change.
-   *
-   *   **Note:** Apps that enable this property will likely stop working after upgrading to
-   * Android 11, which strongly enforces that apps only write to app-private directories.
-   */
-  @SimpleProperty(description = "Allows app to access files from the root of the external storage "
-      + "directory (legacy mode).")
-  public boolean LegacyMode() {
-    return legacy;
   }
 
   /**
@@ -164,44 +136,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
       "slash, it will be read from the applications private storage (for packaged " +
       "apps) and from /sdcard/AppInventor/data for the Companion.")
   public void ReadFrom(final String fileName) {
-    final boolean legacy = this.legacy;
-    form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
-      @Override
-      public void HandlePermissionResponse(String permission, boolean granted) {
-        if (granted) {
-          try {
-            InputStream inputStream;
-            if (fileName.startsWith("//")) {
-              inputStream = form.openAsset(fileName.substring(2));
-            } else {
-              String filepath = AbsoluteFileName(fileName, legacy);
-              Log.d(LOG_TAG, "filepath = " + filepath);
-              inputStream = FileUtil.openFile(form, filepath);
-            }
-
-            final InputStream asyncInputStream = inputStream;
-            AsynchUtil.runAsynchronously(new Runnable() {
-              @Override
-              public void run() {
-                AsyncRead(asyncInputStream, fileName);
-              }
-            });
-          } catch (PermissionException e) {
-            form.dispatchPermissionDeniedEvent(File.this, "ReadFrom", e);
-          } catch (FileNotFoundException e) {
-            Log.e(LOG_TAG, "FileNotFoundException", e);
-            form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-                ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
-          } catch (IOException e) {
-            Log.e(LOG_TAG, "IOException", e);
-            form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-                ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
-          }
-        } else {
-          form.dispatchPermissionDeniedEvent(File.this, "ReadFrom", permission);
-        }
-      }
-    });
+    readFromFile(fileName);
   }
 
 
@@ -326,72 +261,46 @@ public class File extends AndroidNonvisibleComponent implements Component {
     });
   }
 
-  /**
-   * Replace Windows-style CRLF with Unix LF as String. This allows
-   * end-user to treat Windows text files same as Unix or Mac. In
-   * future, allowing user to choose to normalize new lines might also
-   * be nice - in case someone really wants to detect Windows-style
-   * line separators, or save a file which was read (and expect no
-   * changes in size or checksum).
-   * @param s to convert
-   */
-
-  private String normalizeNewLines(String s) {
-    return s.replaceAll("\r\n", "\n");
-  }
-
 
   /**
-   * Asynchronously reads from the given file. Calls the main event thread
-   * when the function has completed reading from the file.
+   * Asynchronously reads from the given file. Calls the main event
+   * thread when the function has completed reading from the
+   * file. This method takes ownership of {@code fileInput} and will
+   * close the stream at the end of the operation. The caller must not
+   * close the stream since this method will return immediately and
+   * reading will occur on a separate thread.
+   * 
    * @param fileInput the stream to read from
    * @param fileName the file to read
    * @throws FileNotFoundException
    * @throws IOException when the system cannot read the file
    */
-  private void AsyncRead(InputStream fileInput, final String fileName) {
-    InputStreamReader input = null;
-    try {
-      input = new InputStreamReader(fileInput);
-      StringWriter output = new StringWriter();
-      char [] buffer = new char[BUFFER_LENGTH];
-      int offset = 0;
-      int length = 0;
-      while ((length = input.read(buffer, offset, BUFFER_LENGTH)) > 0) {
-        output.write(buffer, 0, length);
-      }
-
-      // Now that we have the file as a String,
-      // normalize any line separators to avoid compatibility between Windows and Mac
-      // text files. Users can expect \n to mean a line separator regardless of how
-      // file was created. Currently only doing this for files opened locally - not files we pull
-      // from other places like URLs.
-
-      final String text = normalizeNewLines(output.toString());
-
-      form.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          GotText(text);
-        }
-      });
-    } catch (FileNotFoundException e) {
-      Log.e(LOG_TAG, "FileNotFoundException", e);
-      form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-          ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
-    } catch (IOException e) {
-      Log.e(LOG_TAG, "IOException", e);
-      form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-          ErrorMessages.ERROR_CANNOT_READ_FILE, fileName);
-    } finally {
-      if (input != null) {
+  @Override
+  protected void AsyncRead(final InputStream fileInput, final String fileName) {
+    // Start a thread to read file asynchronously
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
         try {
-          input.close();
+          final String text = readFromInputStream(fileInput);
+
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              GotText(text);
+            }
+          });
+        } catch (FileNotFoundException e) {
+          Log.e(LOG_TAG, "FileNotFoundException", e);
+          form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+              ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
         } catch (IOException e) {
-          // do nothing...
+          Log.e(LOG_TAG, "IOException", e);
+          form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+              ErrorMessages.ERROR_CANNOT_READ_FILE, fileName);
         }
       }
-    }
+    });
   }
 
   /**
@@ -415,27 +324,4 @@ public class File extends AndroidNonvisibleComponent implements Component {
     // invoke the application's "AfterFileSaved" event handler.
     EventDispatcher.dispatchEvent(this, "AfterFileSaved", fileName);
   }
-
-  /**
-   * Returns absolute file path.
-   *
-   * @param filename the file used to construct the file path
-   */
-  private String AbsoluteFileName(String filename, boolean legacy) {
-    if (filename.startsWith("/")) {
-      return QUtil.getExternalStoragePath(form, false, legacy) + filename;
-    } else {
-      java.io.File dirPath;
-      if (form.isRepl()) {
-        dirPath = new java.io.File(QUtil.getReplDataPath(form, false));
-      } else {
-        dirPath = form.getFilesDir();
-      }
-      if (!dirPath.exists()) {
-        dirPath.mkdirs();           // Make sure it exists
-      }
-      return dirPath.getPath() + "/" + filename;
-    }
-  }
-
 }

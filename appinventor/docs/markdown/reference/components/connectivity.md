@@ -154,6 +154,9 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
 {:id="BluetoothClient.IsConnected" .boolean .ro .bo} *IsConnected*
 : Returns `frue`{:.logic.block} if a connection to a Bluetooth device has been made.
 
+{:id="BluetoothClient.PollingRate" .number} *PollingRate*
+: Returns the configured polling rate value of the Bluetooth Client.
+
 {:id="BluetoothClient.Secure" .boolean} *Secure*
 : Specifies whether a secure connection should be used.
 

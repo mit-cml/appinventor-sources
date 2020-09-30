@@ -112,6 +112,11 @@ public interface ProjectServiceAsync {
   void load(long projectId, String fileId, AsyncCallback<String> callback);
 
   /**
+   * @see ProjectService#loadDataFile(long, String)
+   */
+  void loadDataFile(long projectId, String fileId, AsyncCallback<List<List<String>>> callback);
+
+  /**
    * @see ProjectService#load2(long, String)
    */
   void load2(long projectId, String fileId, AsyncCallback<ChecksumedLoadFile> callback);
