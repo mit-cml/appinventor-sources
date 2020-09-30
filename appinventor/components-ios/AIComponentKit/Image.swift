@@ -3,22 +3,32 @@
 
 import Foundation
 
-open class Image: ViewComponent, AbstractMethodsForViewComponent {
+public protocol AbstractMethodsForImage: AbstractMethodsForViewComponent {
+  func click()
+}
+
+open class Image: ViewComponent, AbstractMethodsForImage {
+  @objc public func click() {
+    Click()
+  }
+  
   fileprivate let _view = UIImageView()
   fileprivate var _image: UIImage? = nil
   fileprivate var _picturePath = ""
   fileprivate var _rotationAngle = 0.0
   fileprivate var _scaleToFit = true
   fileprivate var _stoppedPosition: CGFloat? = nil
-
+  fileprivate var _clickable: Bool = false
+  
   public override init(_ parent: ComponentContainer) {
-    _view.isUserInteractionEnabled = true
     _view.translatesAutoresizingMaskIntoConstraints = false
     super.init(parent)
     setDelegate(self)
     parent.add(self)
     ScalePictureToFit = false
-  }
+    let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(click))
+    _view.isUserInteractionEnabled = true
+    _view.addGestureRecognizer(tapGestureRecognizer)  }
 
   open override var view: UIView {
     get {
@@ -138,7 +148,26 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       }
     }
   }
-
+  
+  /**
+   * Whether the image is clickable.
+   */
+  @objc open var Clickable: Bool {
+    get {
+      return _clickable
+    }
+    set(clickable) {
+      if _clickable != clickable {
+        _clickable = clickable
+      }
+    }
+  }
+  
+  @objc public func Click() {
+    if _clickable {
+      EventDispatcher.dispatchEvent(of: self, called: "Click")
+    }
+  }
   // Deprecated
   @objc open var Scaling: Int32 = 0
 
