@@ -62,6 +62,9 @@ private class CanvasGestureRecognizer: UIGestureRecognizer {
 
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
     if let loc = touches.first?.location(in: self.canvas?._view) {
+      if ((loc.x < 0 || loc.x > CGFloat(self.canvas!.Width) || loc.y < 0 || loc.y > CGFloat(self.canvas!.Height)) && !(self.canvas!.ExtendMovesOutsideCanvas)) {
+        return
+      }
       let x = max(CGFloat(0), loc.x)
       let y = max(CGFloat(0), loc.y)
       let rect = CGRect(x: max(0, x - HALF_FINGER_WIDTH),
@@ -132,6 +135,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   fileprivate var _backgroundColor: Int32 = 0
   fileprivate var _backgroundColorInitialized = false
   fileprivate var _backgroundImage = ""
+  fileprivate var _extendMovesOutsideCanvas = false
+
   fileprivate var _paintColor = Int32(bitPattern: kCanvasDefaultPaintColor)
   fileprivate var _lineWidth = kCanvasDefaultLineWidth
   fileprivate var _fontSize = kCanvasDefaultFontSize
@@ -265,6 +270,31 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     }
   }
 
+  @objc open func BackgroundImageinBase64(imageUrl: String) {
+    if imageUrl.isEmpty {
+      _imageSize = nil
+      _backgroundImage = ""
+      _backgroundImageView.image = nil
+    } else {
+      let dataDecoded:NSData = NSData(base64Encoded: imageUrl, options: NSData.Base64DecodingOptions(rawValue: 0))!
+      let decodedImage:UIImage = UIImage(data: dataDecoded as Data)!
+      _backgroundImage = imageUrl
+      _imageSize = decodedImage.size
+      _backgroundImageView.image = decodedImage
+    }
+  }
+  
+  @objc open var ExtendMovesOutsideCanvas: Bool {
+    get {
+      return _extendMovesOutsideCanvas
+    }
+    set(extendMovesOutsideCanvas) {
+      if _extendMovesOutsideCanvas != extendMovesOutsideCanvas {
+        _extendMovesOutsideCanvas = extendMovesOutsideCanvas
+      }
+    }
+  }
+  
   override open var Width: Int32 {
     get {
       return (super.Width < 0 && _view.Drawn) ? Int32(_view.bounds.width) : super.Width
