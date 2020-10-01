@@ -133,6 +133,8 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "AndroidRuntime.jar";
   private static final String APKSIGNER_JAR =
       RUNTIME_FILES_DIR + "apksigner.jar";
+  private static final String KOTLIN_STDLIB =
+      RUNTIME_FILES_DIR + "kotlin-stdlib.jar";
 
   /*
    * Note for future updates: This list can be obtained from an Android Studio project running the
@@ -1770,6 +1772,8 @@ public final class Compiler {
         classpath.append(COLON);
       }
 
+      classpath.append(getResource(KOTLIN_STDLIB));
+      classpath.append(COLON);
       classpath.append(getResource(ANDROID_RUNTIME));
 
       System.out.println("Libraries Classpath = " + classpath);
@@ -2144,6 +2148,7 @@ public final class Compiler {
       inputList.add(recordForMainDex(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)),
           mainDexClasses));
       inputList.add(recordForMainDex(new File(getResource(KAWA_RUNTIME)), mainDexClasses));
+      inputList.add(recordForMainDex(new File(getResource(KOTLIN_STDLIB)), mainDexClasses));
       for (String jar : CRITICAL_JARS) {
         inputList.add(recordForMainDex(new File(getResource(jar)), mainDexClasses));
       }

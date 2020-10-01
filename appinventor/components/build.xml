@@ -169,6 +169,8 @@
     <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${public.deps.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
     <copy toFile="${public.deps.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
+    <!--Kotlin Standard library -->
+    <copy toFile="${public.deps.dir}/kotlin-stdlib.jar" file="${lib.dir}/kotlin/kotlin-stdlib.jar" />
 
     <!-- Add extension libraries here -->
     <!-- Example: <copy toFile="${public.deps.dir}/my-dependency.jar" file="${lib.dir}/my-dependency/my-dependency-1.0.0.jar" /> -->
@@ -187,6 +189,7 @@
   <target name="AndroidRuntime.uptodate">
     <uptodate property="AndroidRuntime.uptodate" targetfile="${public.build.dir}/AndroidRuntime.jar">
       <srcfiles dir="${src.dir}" includes="**/*.java" />
+      <srcfiles dir="${src.dir}" includes="**/*.kt" />
       <srcfiles dir="${public.deps.dir}" includes="*" />
     </uptodate>
   </target>
@@ -214,6 +217,7 @@
 
     <ai.javac destdir="${AndroidRuntime-class.dir}">
       <include name="**/*.java" /> <!-- include all java files -->
+      <include name="**/*.kt" /> <!-- include all Kotlin files -->
       <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
       <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
       <exclude name="${components.pkg}/common/**/*.java" /> <!-- exclude components/common package -->
@@ -221,8 +225,12 @@
         <path refid="AndroidRuntime.path" />
         <pathelement location="${local.build.dir}/AnnotationProcessors.jar" />
         <pathelement location="${public.deps.dir}/android.jar" />
+        <pathelement location="${public.deps.dir}/kotlin-stdlib.jar" />
       </classpath>
     </ai.javac>
+
+    <!-- Invoke Kapt -->
+    <antcall target="Kapt" />
 
     <jar basedir="${AndroidRuntime-class.dir}"
          destfile="${public.build.dir}/AndroidRuntime.jar">
@@ -278,9 +286,10 @@
     <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
     <pathelement location="${lib.dir}/android/support/testing-support-R-classes.jar" />
+    <pathelement location="${lib.dir}/robolectric/robolectric-3.3.2-all-deps.jar" />
+    <pathelement location="${lib.dir}/kotlin/kotlin-stdlib.jar" />
     <!-- android.jar must go last on the classpath list
          so that its junit (or other) stubs don't override the real ones -->
-    <pathelement location="${lib.dir}/robolectric/robolectric-3.3.2-all-deps.jar" />
     <pathelement location="${android.lib}" />
   </path>
 
@@ -299,6 +308,34 @@
         <include name="org/robolectric/**/*.java" />
       </aij-supplemental-includes>
     </ai.dojunit>
+  </target>
+
+  <condition property="hasKtFiles">
+    <resourcecount when="greater" count="0" >
+      <fileset dir="src" includes="**/*.kt" />
+    </resourcecount>
+  </condition>
+
+  <!-- =====================================================================
+      Kapt: Kotlin annotation processing tool. Can process annotations in Java sources as well, but
+        only when there's at least one Kotlin file somewhere in the src directory. Therefore, we run
+        it only if there exists at least one .kt file.
+      ===================================================================== -->
+  <target name="Kapt" if="hasKtFiles">
+    <property name="Kapt.dir" location="${local.build.dir}/kapt" />
+    <kotlinc src="${src.dir}" output="${AndroidRuntime-class.dir}" failonerror="true" includeruntime="false" nostdlib="true" noreflect="true" >
+      <classpath>
+        <path refid="AndroidRuntime.path" />
+        <pathelement location="${public.deps.dir}/kotlin-stdlib.jar" />
+        <pathelement location="${public.deps.dir}/android.jar" />
+      </classpath>
+      <compilerarg value="-Xplugin=${lib.dir}/kotlin/kotlin-annotation-processing.jar"/>
+      <compilerarg line="-P plugin:org.jetbrains.kotlin.kapt3:sources=${AndroidRuntime-class.dir}" />
+      <compilerarg line="-P plugin:org.jetbrains.kotlin.kapt3:classes=${Kapt.dir}" />
+      <compilerarg line="-P plugin:org.jetbrains.kotlin.kapt3:stubs=${Kapt.dir}/stubs" />
+      <compilerarg line="-P plugin:org.jetbrains.kotlin.kapt3:apclasspath=${local.build.dir}/AnnotationProcessors.jar" />
+      <compilerarg line="-P plugin:org.jetbrains.kotlin.kapt3:aptMode=stubsAndApt" />
+    </kotlinc>
   </target>
 
   <!-- =====================================================================
@@ -596,6 +633,8 @@
       <libraryjar file="${public.deps.dir}/core.jar" />
       <!-- Android Runtime -->
       <libraryjar file="${public.build.dir}/AndroidRuntime.jar" />
+      <!--Kotlin Standard library -->
+      <libraryjar file="${public.deps.dir}/kotlin-stdlib.jar" />
 
       <dontnote filter="proguard.configuration.ConfigurationLogger" />
       <adaptresourcefilecontents filter="proguard/ant/task.properties" />
