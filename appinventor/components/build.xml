@@ -592,7 +592,8 @@
       <libraryjar file="${public.deps.dir}/google-oauth-client-beta.jar" />
       <libraryjar file="${public.deps.dir}/jedis.jar" />
       <libraryjar file="${public.deps.dir}/commons-pool.jar" />
-      <libraryjar file="${public.deps.dir}/guava-14.0.1.jar" />   
+      <libraryjar file="${public.deps.dir}/guava-14.0.1.jar" />
+      <libraryjar file="${public.deps.dir}/core.jar" />
       <!-- Android Runtime -->
       <libraryjar file="${public.build.dir}/AndroidRuntime.jar" />
 
