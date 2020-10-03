@@ -253,6 +253,15 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
+  public String getLicenseName(String componentName) {
+    ComponentDefinition component = components.get(componentName);
+    if (component == null) {
+      throw new ComponentNotFoundException(componentName);
+    }
+    return component.getLicenseName();
+  }
+
+  @Override
   public List<PropertyDefinition> getPropertyDefinitions(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
@@ -338,7 +347,9 @@ class ComponentDatabase implements ComponentDatabaseInterface {
         properties.containsKey("helpUrl") ? properties.get("helpUrl").asString().getString() : "",
         Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
         Boolean.valueOf(properties.get("nonVisible").asString().getString()),
-        properties.get("iconName").asString().getString(), componentNode.toJson());
+        properties.get("iconName").asString().getString(),
+        properties.containsKey("licenseName") ? properties.get("licenseName").asString().getString() : "",
+        componentNode.toJson());
     findComponentProperties(component, properties.get("properties").asArray());
     findComponentBlockProperties(component, properties.get("blockProperties").asArray());
     findComponentEvents(component, properties.get("events").asArray());
