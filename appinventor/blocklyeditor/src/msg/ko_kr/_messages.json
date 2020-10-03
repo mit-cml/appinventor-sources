@@ -531,7 +531,7 @@
     "Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP": "이 블록은 정의되지 않았습니다. 이 블록을 삭제하십시오!",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN": "언제 ",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO": "실행",
-    "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE": "언제든지 ",
+    "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE": "무엇이든 ",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL": "호출 ",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL": "호출 ",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT": "컴포넌트",
