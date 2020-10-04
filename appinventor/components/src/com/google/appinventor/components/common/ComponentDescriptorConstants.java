@@ -30,6 +30,7 @@ public final class ComponentDescriptorConstants {
   public static final String CONTENT_PROVIDERS_TARGET = "contentProviders";
   public static final String ANDROIDMINSDK_TARGET = "androidMinSdk";
   public static final String CONDITIONALS_TARGET = "conditionals";
+  public static final String USES_KOTLIN = "usesKotlin";
 
   // TODO(Will): Remove the following target once the deprecated
   //             @SimpleBroadcastReceiver annotation is removed. It should

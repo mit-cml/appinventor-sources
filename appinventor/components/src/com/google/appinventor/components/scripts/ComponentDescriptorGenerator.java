@@ -109,6 +109,8 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append(component.getNonVisible());
     sb.append("\",\n  \"iconName\": \"");
     sb.append(component.getIconName());
+    sb.append("\",\n  \"usesKotlin\": \"");
+    sb.append(component.getUsesKotlin());
     sb.append("\",\n  \"androidMinSdk\": ");
     sb.append(component.getAndroidMinSdk());
     outputConditionalAnnotations(component, sb);

@@ -780,6 +780,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private int androidMinSdk;
     private String versionName;
     private String dateBuilt;
+    private boolean usesKotlin;
 
     protected ComponentInfo(Element element) {
       super(element.getSimpleName().toString(),  // Short name
@@ -809,6 +810,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       events = Maps.newTreeMap();
       abstractClass = element.getModifiers().contains(Modifier.ABSTRACT);
       external = false;
+      usesKotlin = false;
       versionName = null;
       dateBuilt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date());
       for (AnnotationMirror am : element.getAnnotationMirrors()) {
@@ -818,6 +820,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           simpleObject = true;
           SimpleObject simpleObjectAnnotation = element.getAnnotation(SimpleObject.class);
           external = simpleObjectAnnotation.external();
+          usesKotlin = simpleObjectAnnotation.usesKotlin();
         }
         if (annotationName.equals(DesignerComponent.class.getName())) {
           designerComponent = true;
@@ -962,6 +965,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
 
     /**
+     * Returns whether this component uses Kotlin language or not.
+     *
+     * @return  true if the component uses Kotlin else false.
+     */
+    protected boolean getUsesKotlin() {
+      return usesKotlin;
+    }
+
+    /**
      * Returns the name of the icon file used on the Designer palette, as specified in
      * {@link DesignerComponent#iconName()}.
      *
@@ -1058,7 +1070,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       } else if (te.getSimpleName().toString().equals("SimpleObject")) {
         for (Element element : roundEnv.getElementsAnnotatedWith(te)) {
           SimpleObject annotation = element.getAnnotation(SimpleObject.class);
-          if (!annotation.external()) {
+          if (!annotation.external() || !annotation.usesKotlin()) {
             elements.add(element);
           } else {
             excludedElements.add(element);

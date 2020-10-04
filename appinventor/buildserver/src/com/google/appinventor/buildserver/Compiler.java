@@ -336,6 +336,7 @@ public final class Compiler {
   private Set<String> simpleCompTypes;  // types needed by the project
   private Set<String> extCompTypes; // types needed by the project
 
+  private boolean usesKotlin = false;
   /**
    * A list of the dex files created by {@link #runMultidex}.
    */
@@ -723,6 +724,25 @@ public final class Compiler {
       // This is fatal.
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "AndroidMinSDK"));
+    }
+  }
+
+  private void checkUsesKotlin() {
+    try {
+      JSONArray buildInfo = new JSONArray(
+          "[" + simpleCompsBuildInfo.join(",") + "," + extCompsBuildInfo.join(",") + "]"
+      );
+      for (int i = 0; i < buildInfo.length(); ++i) {
+        JSONObject comp = buildInfo.getJSONObject(i);
+        JSONArray usesKotlinArray = comp.getJSONArray("usesKotlin");
+        if (usesKotlinArray.getString(0).equals("true")) {
+          usesKotlin = true;
+          break;
+        }
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "CheckUsesKotlin"));
     }
   }
 
@@ -1345,6 +1365,7 @@ public final class Compiler {
     compiler.generateNativeLibNames();
     compiler.generatePermissions();
     compiler.generateMinSdks();
+    compiler.checkUsesKotlin();
 
     // TODO(Will): Remove the following call once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
@@ -1772,8 +1793,11 @@ public final class Compiler {
         classpath.append(COLON);
       }
 
-      classpath.append(getResource(KOTLIN_STDLIB));
-      classpath.append(COLON);
+      if (usesKotlin) {
+        classpath.append(getResource(KOTLIN_STDLIB));
+        classpath.append(COLON);
+      }
+
       classpath.append(getResource(ANDROID_RUNTIME));
 
       System.out.println("Libraries Classpath = " + classpath);
@@ -2148,7 +2172,9 @@ public final class Compiler {
       inputList.add(recordForMainDex(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)),
           mainDexClasses));
       inputList.add(recordForMainDex(new File(getResource(KAWA_RUNTIME)), mainDexClasses));
-      inputList.add(recordForMainDex(new File(getResource(KOTLIN_STDLIB)), mainDexClasses));
+      if (usesKotlin) {
+        inputList.add(recordForMainDex(new File(getResource(KOTLIN_STDLIB)), mainDexClasses));
+      }
       for (String jar : CRITICAL_JARS) {
         inputList.add(recordForMainDex(new File(getResource(jar)), mainDexClasses));
       }
