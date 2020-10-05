@@ -2772,7 +2772,7 @@ div.dropdiv.good {
 }
 
 div.dropdiv div {
-  position: relative;
+  position: absolute;
   top: 50%;
   width: 100%;
   text-align: center;
@@ -2782,7 +2782,9 @@ div.dropdiv div {
 div.dropdiv p {
   text-align: center;
   top: -15pt;
-  font-size: 24pt;
+  font-size: 18pt;
   line-height: 30pt;
   color: darkgreen;
+  margin: 0;
+  position: relative;
 }

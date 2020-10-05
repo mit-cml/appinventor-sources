@@ -1412,6 +1412,7 @@
   (cond
    ((number? arg) (coerce-to-number arg))
    ((string? arg) (coerce-to-string arg))
+   ((instance? arg com.google.appinventor.components.runtime.Component) arg)
    (else *non-coercible-value*)))
 
 (define-syntax use-json-format
@@ -2612,6 +2613,22 @@ Dictionary implementation.
   (if (= (string-starts-at text piece) 0)
       #f
       #t))
+
+(define (string-contains-any text piece-list)
+  (define (string-contains-any-rec piece-list)
+    (if (null? piece-list)
+        #f
+        (or (string-contains text (car piece-list))
+          (string-contains-any-rec (cdr piece-list)))))
+  (string-contains-any-rec (yail-list-contents piece-list)))
+
+(define (string-contains-all text piece-list)
+  (define (string-contains-all-rec piece-list)
+    (if (null? piece-list)
+        #t
+        (and (string-contains text (car piece-list))
+            (string-contains-all-rec (cdr piece-list)))))
+  (string-contains-all-rec (yail-list-contents piece-list)))
 
 (define (string-split-at-first text at)
   (array->list

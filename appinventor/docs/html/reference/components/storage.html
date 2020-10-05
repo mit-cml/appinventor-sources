@@ -219,7 +219,18 @@
 
 <h3 id="File-Properties">Properties</h3>
 
-<p class="properties">None</p>
+<dl class="properties">
+  <dt id="File.LegacyMode" class="boolean"><em>LegacyMode</em></dt>
+  <dd>Allows app to access files from the root of the external storage directory (legacy mode).
+ Starting with Android 11, this will no longer be allowed and the behavior is strongly
+ discouraged on Android 10. Starting with Android 10, App Inventor by default will attempt to
+ store files relative to the app-specific private directory on external storage in accordance
+ with this security change.
+
+    <p><strong>Note:</strong> Apps that enable this property will likely stop working after upgrading to
+ Android 11, which strongly enforces that apps only write to app-private directories.</p>
+  </dd>
+</dl>
 
 <h3 id="File-Events">Events</h3>
 

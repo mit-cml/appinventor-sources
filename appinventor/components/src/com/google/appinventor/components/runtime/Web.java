@@ -1,15 +1,20 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.Manifest;
 import android.app.Activity;
-import android.support.annotation.VisibleForTesting;
+
 import android.text.TextUtils;
+
 import android.util.Log;
+
+import androidx.annotation.VisibleForTesting;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -19,17 +24,23 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.HtmlEntities;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
+
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.RequestTimeoutException;
+
 import com.google.appinventor.components.runtime.repackaged.org.json.XML;
+
 import com.google.appinventor.components.runtime.util.AsynchUtil;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.GingerbreadUtil;
@@ -39,12 +50,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.XmlParser;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
-import com.google.appinventor.components.runtime.util.YailObject;
-import org.json.JSONException;
-import org.xml.sax.InputSource;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -54,6 +60,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+
 import java.net.CookieHandler;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -63,8 +70,16 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.json.JSONException;
+
+import org.xml.sax.InputSource;
 
 /**
  * Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.
@@ -197,6 +212,12 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   private boolean saveResponse;
   private String responseFileName = "";
   private int timeout = 0;
+
+  // wether or not we have permission to manipulate external storage
+
+  private boolean havePermission = false;
+
+
 
   /**
    * Creates a new Web component.
@@ -405,21 +426,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        try {
-          performRequest(webProps, null, null, "GET");
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              e.getErrorMessageNumber());
-        } catch (RequestTimeoutException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-        } catch (Exception e) {
-          Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_GET, webProps.urlString);
-        }
+        performRequest(webProps, null, null, "GET", METHOD);
       }
     });
   }
@@ -503,20 +510,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        try {
-          performRequest(webProps, null, path, "POST");
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              e.getErrorMessageNumber());
-        } catch (RequestTimeoutException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-        } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
-        }
+        performRequest(webProps, null, path, "POST", METHOD);
       }
     });
   }
@@ -600,20 +594,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        try {
-          performRequest(webProps, null, path, "PUT");
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              e.getErrorMessageNumber());
-        } catch (RequestTimeoutException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-        } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
-        }
+        performRequest(webProps, null, path, "PUT", METHOD);
       }
     });
   }
@@ -642,20 +623,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        try {
-          performRequest(webProps, null, null, "DELETE");
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, METHOD, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              e.getErrorMessageNumber());
-        } catch (RequestTimeoutException e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-        } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, METHOD,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
-        }
+        performRequest(webProps, null, null, "DELETE", METHOD);
       }
     });
   }
@@ -702,20 +670,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
           return;
         }
 
-        try {
-          performRequest(webProps, requestData, null, httpVerb);
-        } catch (PermissionException e) {
-          form.dispatchPermissionDeniedEvent(Web.this, functionName, e);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, functionName,
-              e.getErrorMessageNumber());
-        } catch (RequestTimeoutException e) {
-          form.dispatchErrorOccurredEvent(Web.this, functionName,
-              ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
-        } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, functionName,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT, text, webProps.urlString);
-        }
+        performRequest(webProps, requestData, null, httpVerb, functionName);
       }
     });
   }
@@ -1096,59 +1051,118 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    *
    * @throws IOException
    */
-  private void performRequest(final CapturedProperties webProps, byte[] postData, String postFile, String httpVerb)
-      throws RequestTimeoutException, IOException {
+  private void performRequest(final CapturedProperties webProps, final byte[] postData,
+    final String postFile, final String httpVerb, final String method) {
 
-    // Open the connection.
-    HttpURLConnection connection = openConnection(webProps, httpVerb);
-    if (connection != null) {
-      try {
-        if (postData != null) {
-          writeRequestData(connection, postData);
-        } else if (postFile != null) {
-          writeRequestFile(connection, postFile);
-        }
-
-        // Get the response.
-        final int responseCode = connection.getResponseCode();
-        final String responseType = getResponseType(connection);
-        processResponseCookies(connection);
-
-        if (saveResponse) {
-          final String path = saveResponseContent(connection, webProps.responseFileName,
-              responseType);
-
-          // Dispatch the event.
-          activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              GotFile(webProps.urlString, responseCode, responseType, path);
-            }
-          });
-        } else {
-          final String responseContent = getResponseContent(connection);
-
-          // Dispatch the event.
-          activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              GotText(webProps.urlString, responseCode, responseType, responseContent);
-            }
-          });
-        }
-
-      } catch (SocketTimeoutException e) {
-        // Dispatch timeout event.
-        activity.runOnUiThread(new Runnable() {
+    // Make sure we have permissions we may need
+    if (saveResponse & !havePermission) {
+      final Web me = this;
+      form.askPermission(new BulkPermissionRequest(this, "Web",
+          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
           @Override
-          public void run() {
-            TimedOut(webProps.urlString);
+          public void onGranted() {
+            me.havePermission = true;
+            // onGranted is running on the UI thread, and we are about to do network i/o, so
+            // we have to run this asynchronously to get off the UI thread!
+            AsynchUtil.runAsynchronously(new Runnable() {
+                @Override
+                public void run() {
+                  me.performRequest(webProps, postData, postFile, httpVerb, method);
+                }
+              });
           }
         });
-        throw new RequestTimeoutException();
-      } finally {
-        connection.disconnect();
+      return;
+    }
+
+    try {
+      // Open the connection.
+      HttpURLConnection connection = openConnection(webProps, httpVerb);
+      if (connection != null) {
+        try {
+          if (postData != null) {
+            writeRequestData(connection, postData);
+          } else if (postFile != null) {
+            writeRequestFile(connection, postFile);
+          }
+
+          // Get the response.
+          final int responseCode = connection.getResponseCode();
+          final String responseType = getResponseType(connection);
+          processResponseCookies(connection);
+
+          if (saveResponse) {
+            final String path = saveResponseContent(connection, webProps.responseFileName,
+              responseType);
+
+            // Dispatch the event.
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                  GotFile(webProps.urlString, responseCode, responseType, path);
+                }
+              });
+          } else {
+            final String responseContent = getResponseContent(connection);
+
+            // Dispatch the event.
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                  GotText(webProps.urlString, responseCode, responseType, responseContent);
+                }
+              });
+          }
+
+        } catch (SocketTimeoutException e) {
+          // Dispatch timeout event.
+          activity.runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                TimedOut(webProps.urlString);
+              }
+            });
+          throw new RequestTimeoutException();
+        } finally {
+          connection.disconnect();
+        }
       }
+    } catch (PermissionException e) {
+      form.dispatchPermissionDeniedEvent(Web.this, method, e);
+    } catch (FileUtil.FileException e) {
+      form.dispatchErrorOccurredEvent(Web.this, method,
+          e.getErrorMessageNumber());
+    } catch (RequestTimeoutException e) {
+      form.dispatchErrorOccurredEvent(Web.this, method,
+          ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
+    } catch (Exception e) {
+      int message;
+      String[] args;
+      //noinspection IfCanBeSwitch
+      if (method.equals("Get")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_GET;
+        args = new String[] { webProps.urlString };
+      } else if (method.equals("Delete")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE;
+        args = new String[] { webProps.urlString };
+      } else if (method.equals("PostFile") || method.equals("PutFile")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
+        args = new String[] { postFile, webProps.urlString };
+      } else {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT;
+        String content = "";
+        try {
+          if (postData != null) {
+            //noinspection CharsetObjectCanBeUsed
+            content = new String(postData, "UTF-8");
+          }
+        } catch (UnsupportedEncodingException e1) {
+          Log.e(LOG_TAG, "UTF-8 is the default charset for Android but not available???");
+        }
+        args = new String[] { content, webProps.urlString };
+      }
+      form.dispatchErrorOccurredEvent(Web.this, method,
+          message, (Object[]) args);
     }
   }
 
@@ -1286,7 +1300,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
-  private static String saveResponseContent(HttpURLConnection connection,
+  private String saveResponseContent(HttpURLConnection connection,
       String responseFileName, String responseType) throws IOException {
     File file = createFile(responseFileName, responseType);
 
@@ -1327,11 +1341,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
-  private static File createFile(String fileName, String responseType)
+  private File createFile(String fileName, String responseType)
       throws IOException, FileUtil.FileException {
     // If a fileName was specified, use it.
     if (!TextUtils.isEmpty(fileName)) {
-      return FileUtil.getExternalFile(fileName);
+      return FileUtil.getExternalFile(form, fileName);
     }
 
     // Otherwise, try to determine an appropriate file extension from the responseType.
@@ -1345,7 +1359,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     if (extension == null) {
       extension = "tmp";
     }
-    return FileUtil.getDownloadFile(extension);
+    return FileUtil.getDownloadFile(form, extension);
   }
 
   /*

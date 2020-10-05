@@ -609,9 +609,9 @@ public @interface ActivityElement {
    *
    * This attribute was added in API level 24.
    *
-   * @return  the activity supportPictureInPicture attribute
+   * @return  the activity supportsPictureInPicture attribute
    */
-  String supportPictureInPicture() default "";
+  String supportsPictureInPicture() default "";
 
   /**
    * The task that the activity has an affinity for. Activities with the same
