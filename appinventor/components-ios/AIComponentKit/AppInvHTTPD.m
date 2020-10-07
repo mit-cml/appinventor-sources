@@ -228,14 +228,7 @@ static NSString *kMimeJson = @"application/json";
     _wwwroot = [wwwroot copy];
     _secure = secure;
     _form = form;
-    _interpreter = [[SCMInterpreter alloc] init];
-    NSURL *url = [[NSBundle bundleForClass:[AppInvHTTPD class]] URLForResource:@"runtime" withExtension:@"scm"];
-    assert(url);
-    NSString *runtime = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
-    [_interpreter evalForm:runtime];
-    if (_interpreter.exception) {
-      NSLog(@"Scheme exception: %@ (%@)", _interpreter.exception.name, _interpreter.exception);
-    }
+    _interpreter = SCMInterpreter.shared;
     if (_form) {
       [_interpreter setCurrentForm:_form];
     }

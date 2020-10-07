@@ -54,7 +54,8 @@ class BuiltinBlockTests: XCTestCase {
   func runTestsFromYail(path: String, tests: [String] = []) throws {
     var passing: Int32 = 0, failing: Int32 = 0
     let interpreter = try getInterpreterForTesting()
-    let Screen1 = Form()
+    let Screen1 = ReplForm()
+    Screen1.formName = "Screen1"
     interpreter.setValue(Screen1, forSymbol: "*this-form*")
     interpreter.evalForm("(reset-current-form-environment)")
     var testNames = try loadTestYail(path: path, into: interpreter)

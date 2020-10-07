@@ -83,6 +83,9 @@
 		065ECF891D94A02000C749A1 /* object.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF831D94A02000C749A1 /* object.h */; };
 		065ECF8A1D94A02000C749A1 /* state.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF841D94A02000C749A1 /* state.h */; };
 		065ECF8B1D94A02000C749A1 /* vm.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF851D94A02000C749A1 /* vm.h */; };
+
+		0682D1382555881C00015CF1 /* SCMProcedure.h in Headers */ = {isa = PBXBuildFile; fileRef = 0682D1362555881C00015CF1 /* SCMProcedure.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0682D1392555881C00015CF1 /* SCMProcedure.m in Sources */ = {isa = PBXBuildFile; fileRef = 0682D1372555881C00015CF1 /* SCMProcedure.m */; };
 		0682D18C255AF67400015CF1 /* SCMWeakReference.h in Headers */ = {isa = PBXBuildFile; fileRef = 0682D18A255AF67400015CF1 /* SCMWeakReference.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0682D18D255AF67400015CF1 /* SCMWeakReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 0682D18B255AF67400015CF1 /* SCMWeakReference.m */; };
 		068B4F18207553060050A8BE /* runtime.scm in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F17207553060050A8BE /* runtime.scm */; };
@@ -205,6 +208,8 @@
 		065ECF831D94A02000C749A1 /* object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = object.h; path = picrin/extlib/benz/include/picrin/private/object.h; sourceTree = "<group>"; };
 		065ECF841D94A02000C749A1 /* state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = state.h; path = picrin/extlib/benz/include/picrin/private/state.h; sourceTree = "<group>"; };
 		065ECF851D94A02000C749A1 /* vm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vm.h; path = picrin/extlib/benz/include/picrin/private/vm.h; sourceTree = "<group>"; };
+		0682D1362555881C00015CF1 /* SCMProcedure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMProcedure.h; sourceTree = "<group>"; };
+		0682D1372555881C00015CF1 /* SCMProcedure.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMProcedure.m; sourceTree = "<group>"; };
 		0682D18A255AF67400015CF1 /* SCMWeakReference.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMWeakReference.h; sourceTree = "<group>"; };
 		0682D18B255AF67400015CF1 /* SCMWeakReference.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMWeakReference.m; sourceTree = "<group>"; };
 		068B4F17207553060050A8BE /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = AIComponentKit/runtime.scm; sourceTree = SOURCE_ROOT; };
@@ -411,6 +416,8 @@
 				0624073224534413005E5BFC /* SCMObject.h */,
 				06D0C4582461D8B400CDFD2C /* SCMObjectWrapper.h */,
 				06D0C4592461D8B400CDFD2C /* SCMObjectWrapper.m */,
+				0682D1362555881C00015CF1 /* SCMProcedure.h */,
+				0682D1372555881C00015CF1 /* SCMProcedure.m */,
 				06D0C45C2462EA1B00CDFD2C /* SCMString.h */,
 				06D0C4602462EB1300CDFD2C /* SCMString-Private.h */,
 				06D0C45D2462EA1B00CDFD2C /* SCMString.m */,
@@ -497,6 +504,7 @@
 				06483713245BD77300825364 /* SCMValue.h in Headers */,
 				0650B1F41DAB410B00A7846C /* ASTRecursiveVisitor.h in Headers */,
 				06FB67E1247D5F8600ABEAD6 /* YailList.h in Headers */,
+				0682D1382555881C00015CF1 /* SCMProcedure.h in Headers */,
 				06483714245BD77300825364 /* SCMTypes.h in Headers */,
 				06D0C45E2462EA1B00CDFD2C /* SCMString.h in Headers */,
 				06D0C45A2461D8B400CDFD2C /* SCMObjectWrapper.h in Headers */,
@@ -723,6 +731,7 @@
 				065ECF691D949E1200C749A1 /* error.c in Sources */,
 				065ECF531D949E0100C749A1 /* port.c in Sources */,
 				0650B1FD1DABC28000A7846C /* load_piclib.c in Sources */,
+				0682D1392555881C00015CF1 /* SCMProcedure.m in Sources */,
 				06D1518E1DC456C600FC981E /* SCMSymbol.m in Sources */,
 				0650B1E91DAACDB100A7846C /* yail.m in Sources */,
 				065ECF501D949E0100C749A1 /* load.c in Sources */,

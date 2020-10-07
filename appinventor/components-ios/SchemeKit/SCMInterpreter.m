@@ -283,7 +283,7 @@ static SCMInterpreter *_defaultInterpreter = nil;
   size_t ai = pic_enter(pic);
   pic_try {
     yail_set_current_form(pic, yail_make_native_instance(pic, form));
-    pic_eval(pic, pic_read_cstr(pic, "(add-to-current-form-environment 'Screen1 *this-form*)"), "yail");
+    pic_eval(pic, pic_read_cstr(pic, "(add-to-current-form-environment (string->symbol (yail:invoke *this-form* 'formName)) *this-form*)"), "yail");
   } pic_catch(e) {
     exception_ = exception_from_pic_error(pic, e);
   }

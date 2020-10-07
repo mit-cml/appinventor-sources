@@ -931,6 +931,9 @@ yail_invoke_internal(pic_state *pic, NSInvocation *invocation, int argc, pic_val
     } else if (pic_nil_p(pic, args[i])) {
       NSArray *value = [NSArray array];
       [invocation setArgument:&value atIndex:j];
+    } else if (pic_proc_p(pic, args[i])) {
+      id value = [[SCMProcedure alloc] initWithProcedure:args[i] interpreter:SCMInterpreter.shared];
+      [invocation setArgument:&value atIndex:j];
     } else {
       NSString *methodName = NSStringFromSelector(invocation.selector);
       NSLog(@"incompatible yail type received %s in call to %@ at index %d",

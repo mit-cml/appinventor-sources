@@ -27,6 +27,7 @@ target 'SchemeKit' do
     pod 'SwiftSVG', '~> 2.0'
     pod 'GEOSwift', '~> 3.1.0'
     pod 'PSSRedisClient', :git => 'git@github.com:mit-cml/PSSRedisClient.git', :commit => '344302b'
+    pod 'Zip', '~> 2.1'
 
     target 'AIComponentKitTests' do
     end
@@ -45,6 +46,7 @@ target 'SchemeKit' do
       pod 'SwiftSVG', '~> 2.0'
       pod 'GEOSwift', '~> 3.1.0'
       pod 'PSSRedisClient', :git => 'git@github.com:mit-cml/PSSRedisClient.git', :commit => '344302b'
+      pod 'Zip', '~> 2.1'
 
       target 'AICompanionAppTests' do
         inherit! :search_paths

@@ -5,7 +5,7 @@ import Foundation
 import UIKit
 import Toast_Swift
 
-@objc open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching, LifecycleDelegate {
+@objc open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching, LifecycleDelegate, NeedsWeakReference {
   fileprivate static var _showListsAsJson = false
   fileprivate let TAG = "Form"
   fileprivate let RESULT_NAME = "APP_INVENTOR_RESULT"
@@ -45,7 +45,25 @@ import Toast_Swift
   private var _titleVisible = true
   private var _constraints = [NSLayoutConstraint]()
   private var _keyboardVisible = false
-  
+  private var _environment = YailDictionary()
+  private var _initThunks = YailDictionary()
+
+  public init(application: Application) {
+    super.init(nibName: nil, bundle: nil)
+    self.application = application
+    defaultPropertyValues()
+  }
+
+  public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    application = Application()
+  }
+
+  public required init?(coder: NSCoder) {
+    super.init(coder: coder)
+    application = Application()
+  }
+
   open func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
@@ -54,6 +72,14 @@ import Toast_Swift
     get {
       return _components
     }
+  }
+
+  @objc open var environment: YailDictionary {
+    return _environment
+  }
+
+  @objc open var initThunks: YailDictionary {
+    return _initThunks
   }
 
   open override func viewWillAppear(_ animated: Bool) {
@@ -120,6 +146,10 @@ import Toast_Swift
    */
   open var isRepl: Bool {
     return false
+  }
+
+  @objc(isInitialized) var initialized: Bool {
+    return _screenInitialized
   }
 
   open override func viewDidLoad() {
@@ -812,6 +842,7 @@ import Toast_Swift
       parentForm.lastFormName = self.formName
       parentForm.formResult = value ?? "" as AnyObject
     }
+    EventDispatcher.removeDispatchDelegate(self)
   }
 
   @objc func doCloseScreen(withPlainText text: String) {
@@ -822,6 +853,7 @@ import Toast_Swift
       parentForm.lastFormName = self.formName
       parentForm.formResult = text as AnyObject
     }
+    EventDispatcher.removeDispatchDelegate(self)
   }
 
   @objc open class func closeApplication() {
@@ -980,6 +1012,8 @@ import Toast_Swift
   #if DEBUG
     NSLog("Form.mark")
   #endif
+    environment.mark()
+    initThunks.mark()
   }
 
 #if DEBUG

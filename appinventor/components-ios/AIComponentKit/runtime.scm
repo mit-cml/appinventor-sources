@@ -10,17 +10,13 @@
         (picrin base)
         (yail))
 
-(define *current-form-environment* '())
-(define *init-thunk-environment* '())
 (define *this-is-the-repl* #t)
 (define *the-null-value* #!null)
 (define *the-null-value-printed-rep* "*nothing*")
 (define *the-empty-string-printed-rep* "*empty-string*")
 (define *non-coercible-value* '(non-coercible))
 (define *exception-message* "An internal system error occurred: ")
-(define *ui-handler* #!null)
 (define *this-form* #!null)
-(define Screen1-global-vars '())
 (define *test-environment* '())
 (define *test-global-var-environment* '())
 (define *testing* #f)
@@ -36,16 +32,13 @@
         (get-output-string p))))))
 
 (define (add-init-thunk component-name thunk)
-  (set! *init-thunk-environment* (cons (list component-name thunk) *init-thunk-environment*)))
+  (yail-dictionary-set-pair component-name (yail:invoke *this-form* 'initThunks) thunk))
 
 (define (get-init-thunk component-name)
-  (let ((chunk (assq component-name *init-thunk-environment*)))
-    (if chunk
-        (cadr chunk)
-        #f)))
+  (yail-dictionary-lookup component-name (yail:invoke *this-form* 'initThunks) #f))
 
 (define (clear-init-thunks)
-  (set! *init-thunk-environment* '()))
+  (yail:invoke (yail:invoke *this-form* 'initThunks) 'removeAllObjects))
 
 (define (symbol-append . symbols)
   (string->symbol
@@ -62,23 +55,20 @@
   #`(invoke YailDictionary 'ALL))
 
 (define (add-to-current-form-environment name object)
-  (set! *current-form-environment* (cons (list name object) *current-form-environment*)))
+  (yail-dictionary-set-pair name (yail:invoke *this-form* 'environment) object))
 
 (define (is-bound-in-form-environment name)
-  (not (not (assq name *current-form-environment*))))
+  (yail-dictionary-is-key-in name (yail:invoke *this-form* 'environment)))
 
 (define (lookup-in-current-form-environment name)
-  (let ((p (assq name *current-form-environment*)))
-    (if p
-        (cadr p)
-        #f)))
+  (yail-dictionary-lookup name (yail:invoke *this-form* 'environment) #f))
 
 (define (rename-in-current-form-environment old-name new-name)
-  (when (not (eqv? old-name new-name))
-    (let ((p (assq old-name *current-form-environment*)))
-      (if p
-          (set-car! p new-name)
-        #f))))
+  (if (is-bound-in-form-environment old-name)
+      (begin
+        (add-to-current-form-environment new-name
+                                         (lookup-in-current-form-environment old-name))
+        (yail-dictionary-delete-pair (yail:invoke *this-form* 'environment) old-name))))
 
 (define (lookup-in-form-environment name)
   (lookup-in-current-form-environment name))
@@ -505,6 +495,8 @@
 (define-syntax define-form
   (syntax-rules ()
     ((_ class-name form-name)
+     ())
+    ((_ class-name form-name repl)
      ; TODO(ewpatton): Implementation
      ())))
 
@@ -654,13 +646,12 @@
 
 (define (reset-current-form-environment)
   (if (not (eq? *this-form* #!null))
-      (let ((form-name 'Screen1))
-        ;; Create a new environment
-        (set! *current-form-environment* '())
+      (let ((form-name (string->symbol (yail:invoke *this-form* 'formName)))
+            (form-environment (yail:invoke *this-form* 'environment)))
+        ;; Remove the existing bindings in the environment
+        (yail:invoke form-environment 'removeAllObjects)
         ;; Add a binding from the form name to the form object
-        (add-to-current-form-environment form-name *this-form*)
-        ;; Create a new global variable environment
-        (set! Screen1-global-vars '()))
+        (add-to-current-form-environment form-name *this-form*))
       (begin
         ;; The following is just for testing. In normal situations *this-form* should be non-null
         (set! *test-environment* '())
@@ -728,8 +719,10 @@
               *the-null-value*)))))))
 
 (define (init-runtime)
-  ; no-op
-  #f)
+  (let ((component-names (filter string? (map (lambda (name)
+                                (if (component? (lookup-in-current-form-environment name)) name #f))
+                              (yail-dictionary-get-keys (yail:invoke *this-form* 'environment))))))
+    (apply call-Initialize-of-components (map string->symbol component-names))))
 
 (define (set-this-form)
   ; no-op
@@ -1892,20 +1885,21 @@ Dictionary implementation.
 (define (add-global-var-to-current-form-environment name object)
   (begin
     (if (not (eq? *this-form* #!null))
-	(set! *current-form-environment* (cons (list name object) *current-form-environment*))
+        (add-to-current-form-environment name object)
         ;; The following is really for testing.  In normal situations *this-form* should be non-null
 	(set! *test-global-var-environment* (cons (list name object) *test-global-var-environment*)))
     ;; return *the-null-value* rather than #!void, which would show as a blank in the repl balloon
     *the-null-value*))
 
 (define (lookup-global-var-in-current-form-environment name default)
-  (let* ((env (if (not (eq? *this-form* #!null))
-                  *current-form-environment*
-                  *test-global-var-environment*))
-         (value (assoc name env)))
-    (if value
-        (cadr value)
-        default)))
+  (if (not (eq? *this-form* #!null))
+      (if (is-bound-in-form-environment name)
+          (lookup-in-current-form-environment name)
+          default)
+      (let ((value (assoc name *test-global-var-environment*)))
+        (if value
+            (cadr value)
+            default))))
 
 (define (padded-string->number s)
   (string->number (string-trim (write-to-string s))))

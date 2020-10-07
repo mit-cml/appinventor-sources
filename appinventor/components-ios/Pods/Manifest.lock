@@ -15,6 +15,7 @@ PODS:
   - SQLite.swift/standard (0.11.5)
   - SwiftSVG (2.2.0)
   - Toast-Swift (4.0.1)
+  - Zip (2.1.1)
   - ZXingObjC (3.6.2):
     - ZXingObjC/All (= 3.6.2)
   - ZXingObjC/All (3.6.2)
@@ -28,10 +29,11 @@ DEPENDENCIES:
   - SQLite.swift (~> 0.11.5)
   - SwiftSVG (~> 2.0)
   - Toast-Swift (~> 4.0.0)
+  - Zip (~> 2.1)
   - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC.git`, commit `47704a8`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Alamofire
     - CocoaAsyncSocket
     - GCDWebServer
@@ -40,6 +42,8 @@ SPEC REPOS:
     - SQLite.swift
     - SwiftSVG
     - Toast-Swift
+  trunk:
+    - Zip
 
 EXTERNAL SOURCES:
   KTVJSONWebToken:
@@ -74,8 +78,9 @@ SPEC CHECKSUMS:
   SQLite.swift: 6e5356850bb1791459f8c16d6ee9195b28714a2e
   SwiftSVG: 19bc4e434dcf236ece45ddf75f5ee1d3ef8061e6
   Toast-Swift: e42a638589a2f95036b4bb7626cfbdde7daf0393
+  Zip: 414f59909701fda9a84ab774ebe0f5449b1082cc
   ZXingObjC: ec0306e7c8dac717f653e165f1c4fd0e69fde99f
 
-PODFILE CHECKSUM: b44b6f798a9caf10547c53bf52839b5ad295bf7a
+PODFILE CHECKSUM: 06662a368ed548d819658e1a485e0b7ce40c9e1e
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.10.0

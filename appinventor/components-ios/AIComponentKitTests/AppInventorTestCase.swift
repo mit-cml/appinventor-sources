@@ -48,7 +48,7 @@ class TestForm : ReplForm {
     _interpreter.setCurrentForm(self)
   }
 
-  open override var interpreter: SCMInterpreter? {
+  open override var interpreter: SCMInterpreter {
     get {
       return _interpreter
     }

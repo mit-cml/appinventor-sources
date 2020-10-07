@@ -102,8 +102,9 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
       _capture.delegate = nil
     }
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-    self.dismiss(animated: true, completion: {})
-    _barcodeDelegate.receivedResult(result.text)
+    self.dismiss(animated: true) {
+      self._barcodeDelegate.receivedResult(result.text)
+    }
   }
 
   @objc func cancel() {
@@ -111,8 +112,9 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
       _capture.stop()
       _capture.delegate = nil
     }
-    self.dismiss(animated: true, completion: {})
-    _barcodeDelegate.canceled()
+    self.dismiss(animated: true) {
+      self._barcodeDelegate.canceled()
+    }
   }
   
   open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

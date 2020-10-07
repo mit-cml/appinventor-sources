@@ -58,6 +58,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc var barcodeScanner: BarcodeScanner?
   @objc var phoneStatus: PhoneStatus!
 
+  private static var _interpreterInitialized = false
+
   public override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
@@ -94,7 +96,25 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   open override var shouldAutorotate: Bool {
     return true
   }
-  
+
+  private func initializeInterpreter() -> SCMInterpreter {
+    guard !ViewController._interpreterInitialized else {
+      return SCMInterpreter.shared
+    }
+    let interpreter = SCMInterpreter.shared
+    do {
+      if let url = Bundle(for: ReplForm.self).path(forResource: "runtime", ofType: "scm") {
+        let runtime = try! String(contentsOfFile: url)
+        interpreter.evalForm(runtime)
+        if interpreter.exception != nil {
+          fatalError("Unable to initialize runtime: \(interpreter.exception!)")
+        }
+        ViewController._interpreterInitialized = true
+      }
+    }
+    return interpreter
+  }
+
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
@@ -102,28 +122,24 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       menuButton.target = self
     }
     if (form == nil) {
-      form = self.viewControllers[self.viewControllers.count - 1] as! ReplForm
+      let interpreter = initializeInterpreter()
+      form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
       form.makeTopForm()
-      form.Initialize()
+      interpreter.setCurrentForm(form!)
       form.AccentColor = Int32(bitPattern: 0xFF128BA8)
+      if let mooning = UIImage(named: "Mooning") {
+        form.view.backgroundColor = UIColor(patternImage: mooning)
+      }
       form.PrimaryColor = Int32(bitPattern: 0xFFA5CF47)
       form.PrimaryColorDark = Int32(bitPattern: 0xFF516623)
       form.title = "MIT App Inventor 2"
-      let repl = form as! ReplForm
-      repl.startHTTPD(false)
-      repl.interpreter?.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
-      phoneStatus = PhoneStatus(repl)
-      if let exception = repl.interpreter?.exception {
+      interpreter.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
+      interpreter.evalForm("(define-event BarcodeScanner1 AfterScan(result) (yail:invoke AICompanionApp.ViewController 'gotText result))")
+      if let exception = interpreter.exception {
         NSLog("Exception: \(exception.name) (\(exception))")
       }
-      repl.interpreter?.evalForm("(define-event BarcodeScanner1 AfterScan(result) (yail:invoke AICompanionApp.ViewController 'gotText result))")
-      if let exception = repl.interpreter?.exception {
-        NSLog("Exception: \(exception.name) (\(exception))")
-      }
-      if let mooning = UIImage(named: "mooning.png") {
-        form.view.backgroundColor = UIColor(patternImage: mooning)
-      }
-      form.view.backgroundColor = UIColor(patternImage: UIImage(named: "Mooning")!)
+      interpreter.evalForm("(add-component Screen1 AIComponentKit.PhoneStatus PhoneStatus1)")
+      phoneStatus = form.environment["PhoneStatus1"] as? PhoneStatus
       ipAddrLabel = form.view.viewWithTag(1) as! UILabel?
       versionNumber = form.view.viewWithTag(2) as! UILabel?
       connectCode = form.view.viewWithTag(3) as! UITextField?
@@ -140,12 +156,14 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
       navigationBar.isTranslucent = false
       form.updateNavbar()
+      form.Initialize()
     }
   }
 
   public override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
+    SCMInterpreter.shared.runGC()
   }
 
   @objc func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
@@ -161,6 +179,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   }
   
   @objc func connect(_ sender: UIButton?) {
+    form.startHTTPD(false)
+    form.application?.makeCurrent()
     let code = phoneStatus.setHmacSeedReturnCode((connectCode?.text)!)
     NSLog("Seed = \((connectCode?.text)!)")
     NSLog("Code = \(code)")
@@ -174,16 +194,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   }
   
   @objc func showBarcodeScanner(_ sender: UIButton?) {
-    let repl = (form! as! ReplForm)
-    repl.interpreter?.evalForm("(yail:invoke (lookup-in-form-environment 'BarcodeScanner1) 'DoScan)")
-    if let exception = repl.interpreter?.exception {
+    form.interpreter.evalForm("(call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*) '())")
+    if let exception = form.interpreter.exception {
       NSLog("Exception: \(exception.name) (\(exception))")
     }
   }
   
   @objc public class func gotText(_ text: String) {
     ViewController.controller?.connectCode?.text = text
-    if (text != "") {
+    if !text.isEmpty {
       ViewController.controller?.connect(nil)
     }
   }
@@ -225,10 +244,17 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   }
 
   fileprivate func reset() {
-    (self.form as! ReplForm).stopHTTPD()
+    form.stopHTTPD()
+    form.clear()
+    form.environment.removeAllObjects()
+    form.initThunks.removeAllObjects()
+    EventDispatcher.removeDispatchDelegate(form)
+    form = nil
+    self.viewControllers = []
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let newRoot = storyboard.instantiateInitialViewController()
-    UIApplication.shared.delegate?.window??.rootViewController = newRoot
+    if let newRoot = storyboard.instantiateInitialViewController() {
+      UIApplication.shared.delegate?.window??.rootViewController = newRoot
+    }
   }
 }
 

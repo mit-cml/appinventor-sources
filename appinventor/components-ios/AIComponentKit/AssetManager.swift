@@ -97,7 +97,11 @@ open class AssetManager: NSObject {
     if FileManager.default.fileExists(atPath: filename) {
       return filename
     }
-    var path = pathForPrivateAsset(filename)
+    var path = pathForAssetInApp(filename) ?? ""
+    if !path.isEmpty && FileManager.default.fileExists(atPath: path) {
+      return path
+    }
+    path = pathForPrivateAsset(filename)
     if FileManager.default.fileExists(atPath: path) {
       return path
     }
@@ -110,6 +114,17 @@ open class AssetManager: NSObject {
       return path
     }
     return ""
+  }
+
+  @objc public func pathForAssetInApp(_ filename: String) -> String? {
+    guard let path = Application.current?.assetPath else {
+      return nil
+    }
+    let assetPath = "\(path)/\(filename)"
+    if FileManager.default.fileExists(atPath: assetPath) {
+      return assetPath
+    }
+    return nil
   }
 
   @objc public func pathForAssetInBundle(filename: String) -> String {

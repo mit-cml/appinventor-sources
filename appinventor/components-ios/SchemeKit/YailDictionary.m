@@ -495,6 +495,11 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
   [_backend removeObjectForKey:aKey];
 }
 
+- (void)removeAllObjects {
+  [_keys removeAllObjects];
+  [_backend removeAllObjects];
+}
+
 /// MARK: SCMValue implementation
 
 - (BOOL)isBool {

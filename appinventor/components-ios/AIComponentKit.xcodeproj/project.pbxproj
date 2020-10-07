@@ -129,6 +129,7 @@
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		06F15C0F24059B0100C783E3 /* TextBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F15C0E24059B0100C783E3 /* TextBoxTests.swift */; };
+		06F91464252CE50B00AF8F88 /* BundledApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F91463252CE50B00AF8F88 /* BundledApp.swift */; };
 		06FB67DB247B8EDA00ABEAD6 /* LinearViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */; };
 		06FB67DD247D4AB200ABEAD6 /* ListViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DC247D4AB200ABEAD6 /* ListViewTests.swift */; };
 		06FB67DF247D4CEC00ABEAD6 /* ListPickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DE247D4CEC00ABEAD6 /* ListPickerTests.swift */; };
@@ -346,6 +347,7 @@
 		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
 		06F15C0E24059B0100C783E3 /* TextBoxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextBoxTests.swift; sourceTree = "<group>"; };
+		06F91463252CE50B00AF8F88 /* BundledApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundledApp.swift; sourceTree = "<group>"; };
 		06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearViewTests.swift; sourceTree = "<group>"; };
 		06FB67DC247D4AB200ABEAD6 /* ListViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewTests.swift; sourceTree = "<group>"; };
 		06FB67DE247D4CEC00ABEAD6 /* ListPickerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListPickerTests.swift; sourceTree = "<group>"; };
@@ -669,6 +671,7 @@
 				068AA8181DE61D8E0011CC74 /* Application.swift */,
 				068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */,
 				06B5872B1DC02B190092C9DD /* AssetManager.swift */,
+				06F91463252CE50B00AF8F88 /* BundledApp.swift */,
 				CBC7868520113A3C005363A3 /* CircularBuffer.swift */,
 				06B216071DB954A5000B3366 /* ColorUtil.swift */,
 				06604B722034EFE70066C459 /* CsvUtil.swift */,
@@ -1113,8 +1116,6 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
@@ -1127,11 +1128,10 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftSVG/SwiftSVG.framework",
 				"${BUILT_PRODUCTS_DIR}/Toast-Swift/Toast_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
+				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
 				"${BUILT_PRODUCTS_DIR}/geos/geos.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaAsyncSocket.framework",
@@ -1143,6 +1143,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSVG.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toast_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/geos.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1207,6 +1208,7 @@
 				06E59EA41D92C68900C42804 /* PhoneStatus.swift in Sources */,
 				CBC7868C202B9743005363A3 /* MapFeatureBase.swift in Sources */,
 				DE24349620D935DE003B5CD0 /* PolygonBase.swift in Sources */,
+				06F91464252CE50B00AF8F88 /* BundledApp.swift in Sources */,
 				06B215FC1DB95109000B3366 /* VerticalArrangement.swift in Sources */,
 				CB4CF6BC20ACC130002AF423 /* String+Matches+isNumber.swift in Sources */,
 				DE97528D2034808A008CEBB9 /* FusiontablesControl.swift in Sources */,
@@ -1418,7 +1420,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "AIComponentKitTests/AIComponentKitTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1434,7 +1436,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "AIComponentKitTests/AIComponentKitTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

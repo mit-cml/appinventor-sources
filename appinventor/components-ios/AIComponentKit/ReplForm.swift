@@ -13,45 +13,47 @@ open class ReplForm: Form {
   public override init(nibName nibNameOrNil: String?, bundle bundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: bundleOrNil)
     if ReplForm.topform == nil {
-      ReplForm.topform = self
+      makeTopForm()
     }
-    super.application = Application()
-    NSLog("nib loader")
   }
   
   public required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
     if ReplForm.topform == nil {
-      ReplForm.topform = self
+      makeTopForm()
     }
-    super.application = Application()
-    NSLog("coder init")
+  }
+
+  public override init(application: Application) {
+    super.init(application: application)
+    if ReplForm.topform == nil {
+      makeTopForm()
+    }
   }
 
   open func makeTopForm() {
     ReplForm.topform = self
+    formName = "Screen1"
   }
 
   open override func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
-    _componentWithActiveEvent = component
-    if let interpreter = ReplForm._httpdServer?.interpreter {
-      let result = interpreter.invokeMethod("dispatchEvent", withArgArray: [component, componentName, eventName, args])
-      if (interpreter.exception != nil) {
-        NSLog("Exception occurred in YAIL: \((interpreter.exception?.name.rawValue)!) (irritants: \((interpreter.exception)!))");
-        return false
-      }
-      if (result is Bool) {
-        return result as! Bool
-      } else if (result is NSNumber) {
-        return (result as! NSNumber).boolValue
-      } else {
-        return false
-      }
-    } else {
-      NSLog("No HTTPD server running?")
+    defer {
+      _componentWithActiveEvent = nil
     }
-    _componentWithActiveEvent = nil
-    return false
+    _componentWithActiveEvent = component
+    let interpreter = SCMInterpreter.shared
+    let result = interpreter.invokeMethod("dispatchEvent", withArgArray: [component, componentName, eventName, args])
+    if (interpreter.exception != nil) {
+      NSLog("Exception occurred in YAIL: \((interpreter.exception?.name.rawValue)!) (irritants: \((interpreter.exception)!))");
+      return false
+    }
+    if (result is Bool) {
+      return result as! Bool
+    } else if (result is NSNumber) {
+      return (result as! NSNumber).boolValue
+    } else {
+      return false
+    }
   }
 
   open override func dispatchGenericEvent(of component: Component, eventName: String, unhandled: Bool, arguments: [AnyObject]) {
@@ -78,35 +80,28 @@ open class ReplForm: Form {
     }
   }
   
-  @objc open var interpreter: SCMInterpreter? {
+  @objc open var interpreter: SCMInterpreter {
     get {
-      return ReplForm._httpdServer?.interpreter
+      return SCMInterpreter.shared
     }
   }
 
   open override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    interpreter?.setCurrentForm(self)
+    interpreter.setCurrentForm(self)
   }
 
   open override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
     if self.isMovingFromParent {
       if _isScreenClosed == false {
-        RetValManager.shared().popScreen("")
+        Application.current?.popScreen(with: "")
       }
     }
   }
 
   open override func doSwitchForm(to formName: String, startValue: AnyObject?) {
-    let newForm = ReplForm(nibName: nil, bundle: nil)
-    newForm.formName = formName
-    if let startValue = startValue {
-      newForm.startValue = startValue
-    }
-    interpreter?.setCurrentForm(newForm)
-    self.navigationController?.pushViewController(newForm, animated: true)
-    RetValManager.shared().pushScreen(formName, withValue: newForm.startText as NSString)
+    Application.current?.pushScreen(named: formName, with: startValue as? NSObject)
   }
 
   @objc open var activeForm: ReplForm? {
@@ -135,16 +130,16 @@ open class ReplForm: Form {
     super.doCloseScreen(withValue: value)
     _isScreenClosed = true
     do {
-      RetValManager.shared().popScreen(try getJsonRepresentation(value))
+      Application.current?.popScreen(with: try getJsonRepresentation(value))
     } catch {
-      RetValManager.shared().popScreen("")
+      Application.current?.popScreen(with: "")
     }
   }
 
   override func doCloseScreen(withPlainText text: String) {
     super.doCloseScreen(withPlainText: text)
     _isScreenClosed = true
-    RetValManager.shared().popScreen(text)
+    Application.current?.popScreen(with: text)
   }
 
   override open func doCloseApplication() {

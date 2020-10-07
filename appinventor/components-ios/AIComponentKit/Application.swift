@@ -1,10 +1,5 @@
-//
-//  Application.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 11/23/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import UIKit
@@ -12,6 +7,7 @@ import UIKit
 @objc open class Application: UIResponder, UIApplicationDelegate {
   fileprivate var assetManager_: AssetManager?
   @objc let name: String
+  static var current: Application? = nil
 
   /**
    * Create an Application using the currently running application bundle.
@@ -44,12 +40,20 @@ import UIKit
     super.init()
   }
 
+  @objc public init(named name: String) {
+    self.name = name
+  }
+
   @objc convenience init(from url: URL, isRepl: Bool) {
     if isRepl {
       self.init()
     } else {
       self.init(from: url)
     }
+  }
+
+  @objc open func makeCurrent() {
+    Application.current = self
   }
 
   @objc open var assetManager: AssetManager {
@@ -59,5 +63,29 @@ import UIKit
       }
       return assetManager_!
     }
+  }
+
+  @objc open var assetPath: String? {
+    let resourcePath = Bundle.main.resourcePath ?? ""
+    let path = "\(resourcePath)/samples/\(name)/assets"
+    if FileManager.default.fileExists(atPath: path) {
+      return path
+    }
+    return nil
+  }
+
+  @objc open func pushScreen(named name: String, with startValue: NSObject? = nil) {
+    let newForm = ReplForm(nibName: nil, bundle: nil)
+    newForm.formName = name
+    if let startValue = startValue {
+      newForm.startValue = startValue
+    }
+    SCMInterpreter.shared.setCurrentForm(newForm)
+    ReplForm.activeForm?.navigationController?.pushViewController(newForm, animated: true)
+    RetValManager.shared().pushScreen(name, withValue: startValue ?? "" as NSObject)
+  }
+
+  @objc open func popScreen(with closeValue: String) {
+    RetValManager.shared().popScreen(closeValue)
   }
 }
