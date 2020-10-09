@@ -762,7 +762,7 @@ yail_invoke(pic_state *pic) {
       [invocation setArgument:&native_str atIndex:j];
     } else if (pic_true_p(pic, args[i])) {
       if ([invocation.methodSignature getArgumentTypeAtIndex:j][0] == '@') {
-        NSString *value = @"#t";
+        NSNumber *value = [NSNumber numberWithBool:YES];
         [invocation setArgument:&value atIndex:j];
       } else {
         BOOL value = YES;
@@ -770,7 +770,7 @@ yail_invoke(pic_state *pic) {
       }
     } else if (pic_false_p(pic, args[i])) {
       if ([invocation.methodSignature getArgumentTypeAtIndex:j][0] == '@') {
-        NSString *value = @"#f";
+        NSNumber *value = [NSNumber numberWithBool:NO];
         [invocation setArgument:&value atIndex:j];
       } else {
         BOOL value = NO;
@@ -855,6 +855,15 @@ yail_invoke(pic_state *pic) {
         return [[[YailList alloc] initWithArray:value inInterpreter:[SCMInterpreter default]] value];
       } else if ([value isKindOfClass:[NSDictionary class]]) {
         return [[[YailDictionary alloc] initWithDictionary:value] value];
+      } else if ([value isKindOfClass:[NSNumber class]]) {
+        NSNumber *num = (NSNumber *)value;
+        if (0==strcmp(num.objCType, @encode(BOOL)) || 0==strcmp(num.objCType, "c")) {
+          return num.boolValue ? pic_true_value(pic) : pic_false_value(pic);
+        } else if (0==strcmp(num.objCType, @encode(double)) || 0==strcmp(num.objCType, @encode(float))) {
+          return pic_float_value(pic, num.doubleValue);
+        } else {
+          return pic_int_value(pic, num.intValue);
+        }
       } else {
         return yail_make_native_instance(pic, value);
       }
