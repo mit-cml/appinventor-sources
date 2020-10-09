@@ -302,6 +302,7 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
   @objc fileprivate func changeSwitch(gesture: UITapGestureRecognizer) {
     if _view.Enabled {
       Checked = !Checked
+      Changed()
     }
   }
 
