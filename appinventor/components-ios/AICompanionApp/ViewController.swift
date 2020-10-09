@@ -6,6 +6,29 @@ import AIComponentKit
 import AVKit
 
 /**
+ * Menu for the iPad REPL.
+ */
+class MenuViewController: UITableViewController {
+
+  weak var delegate: ViewController?
+
+  public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return 1
+  }
+
+  public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = UITableViewCell()
+    cell.textLabel?.text = "Close Project"
+    cell.textLabel?.textColor = UIColor.red
+    return cell
+  }
+
+  public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    delegate?.reset()
+  }
+}
+
+/**
  * Root view controller for the MIT AI Companion for iOS. Eventually this will go away
  * once we have the capability to build apps from YAIL files, in which case we will be
  * able to build the app from the aiplayapp sources.
@@ -64,10 +87,10 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-//    if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
-//      menuButton.action = #selector(openMenu(caller:))
-//      menuButton.target = self
-//    }
+    if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
+      menuButton.action = #selector(openMenu(caller:))
+      menuButton.target = self
+    }
     if (form == nil) {
       form = self.viewControllers[self.viewControllers.count - 1] as! ReplForm
       form.Initialize()
@@ -160,11 +183,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc func openMenu(caller: UIBarButtonItem) {
     if UIDevice.current.userInterfaceIdiom == .phone {
       let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-      controller.addAction(UIAlertAction(title: "Close Project", style: .default) { (UIAlertAction) in
-        (self.form as! ReplForm).stopHTTPD()
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let newRoot = storyboard.instantiateInitialViewController()
-        UIApplication.shared.delegate?.window??.rootViewController = newRoot
+      controller.addAction(UIAlertAction(title: "Close Project", style: .destructive) { (UIAlertAction) in
+        self.reset()
         controller.dismiss(animated: false)
       })
       controller.addAction(UIAlertAction(title: "Cancel", style: .cancel) { (UIAlertAction) in
@@ -172,6 +192,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       })
       present(controller, animated: true)
     } else {
+      let menu = MenuViewController()
+      menu.modalPresentationStyle = .popover
+      menu.delegate = self
+      menu.preferredContentSize = UITableViewCell().frame.size
+      menu.popoverPresentationController?.barButtonItem = caller
+      self.present(menu, animated: true)
     }
   }
 
@@ -184,5 +210,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       return false
     }
     return true
+  }
+
+  fileprivate func reset() {
+    (self.form as! ReplForm).stopHTTPD()
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let newRoot = storyboard.instantiateInitialViewController()
+    UIApplication.shared.delegate?.window??.rootViewController = newRoot
   }
 }
