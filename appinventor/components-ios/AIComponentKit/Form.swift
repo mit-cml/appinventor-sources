@@ -400,6 +400,14 @@ import Toast_Swift
     }
   }
 
+  @objc open var BlocksToolkit: String {
+    get {
+      return ""
+    }
+    set {
+    }
+  }
+
   @objc open var CloseScreenAnimation: String {
     get {
       return "slide"
@@ -644,6 +652,45 @@ import Toast_Swift
   }
 
   // MARK: Form Methods
+
+  @objc open func AskForPermission(_ permissionName: String) {
+    var permission = permissionName
+    if permissionName.contains(".") {
+      let parts = permissionName.split(separator: ".")
+      permission = String(parts[parts.count-1])
+    }
+    switch permission {
+    case "RECORD_AUDIO", "MODIFY_AUDIO_SETTINGS":
+      askForPermission(.microphone, codeNamed: permissionName)
+      break
+    case "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION":
+      askForPermission(.location, codeNamed: permissionName)
+      break
+    case "CAMERA":
+      askForPermission(.camera, codeNamed: permissionName)
+      break
+    case "SPEECH_RECOGNIZER":
+      askForPermission(.speech, codeNamed: permissionName)
+      break
+    default:
+      PermissionGranted(permissionName)
+    }
+  }
+
+  private func askForPermission(_ permission: Permission, codeNamed permissionName: String) {
+    if let result = PermissionHandler.HasPermission(for: permission), result {
+      PermissionGranted(permissionName)
+    } else {
+      PermissionHandler.RequestPermission(for: permission) { allowed, changed in
+        if allowed {
+          self.PermissionGranted(permissionName)
+        } else {
+          self.PermissionDenied(self, "AskForPermission", permissionName)
+        }
+      }
+    }
+  }
+
   @objc open func HideKeyboard() {
     self.view.endEditing(true)
   }

@@ -4,7 +4,7 @@
 import Foundation
 import Speech
 
-fileprivate let kAudioPerm = "android.permission.RECORD_AUDIO"
+fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
 
 @objc open class SpeechRecognizer : NonvisibleComponent, SFSpeechRecognitionTaskDelegate {
   private var _result: String = ""
@@ -47,9 +47,9 @@ fileprivate let kAudioPerm = "android.permission.RECORD_AUDIO"
         DispatchQueue.main.async {
           if changed {
             if allowed {
-              self._form.PermissionGranted(kAudioPerm)
+              self._form.PermissionGranted(kSpeechRecognizerPermission)
             } else {
-              self._form.dispatchPermissionDeniedEvent(self, "GetText", kAudioPerm)
+              self._form.dispatchPermissionDeniedEvent(self, "GetText", kSpeechRecognizerPermission)
             }
           }
           if allowed {
