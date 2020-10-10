@@ -67,6 +67,7 @@ class CheckBoxView: UIView {
   fileprivate var _text = UILabel()
   fileprivate var _checked: CAShapeLayer!
   fileprivate var _unchecked: CAShapeLayer!
+  fileprivate var _layersLoaded = false
 
   public init() {
     super.init(frame: .zero)
@@ -78,6 +79,7 @@ class CheckBoxView: UIView {
       self._unchecked.position = CGPoint(x: 9.5, y: 10.5)
       self._button.layer.addSublayer(self.Checked ? self._checked : self._unchecked)
       self.updateColor()
+      self._layersLoaded = true
     }
 
     clipsToBounds = true
@@ -114,6 +116,9 @@ class CheckBoxView: UIView {
 
   public var Checked: Bool = false {
     didSet {
+      guard _layersLoaded else {
+        return
+      }
       if oldValue != Checked {
         if oldValue {
           _button.layer.addSublayer(_unchecked)
