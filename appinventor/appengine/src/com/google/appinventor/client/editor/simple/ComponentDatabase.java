@@ -50,6 +50,9 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     components = new HashMap<String, ComponentDefinition>();
     List<String> newComponents = new ArrayList<String>();
     for (JSONValue component : array.getElements()) {
+      if (component.asObject().get("external").asString().getString().equals("true")) {
+        continue;
+      }
       if (initComponent(component.asObject())) {
         newComponents.add(component.asObject().get("name").asString().getString());
       }
