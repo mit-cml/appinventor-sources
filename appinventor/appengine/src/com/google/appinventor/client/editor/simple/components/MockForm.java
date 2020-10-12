@@ -133,6 +133,7 @@ public final class MockForm extends MockContainer {
     // UI elements
     private DockPanel bar;
     private Image phoneBarImage;
+    private boolean visible;
 
     /*
      * Creates a new phone status bar.
@@ -148,6 +149,14 @@ public final class MockForm extends MockContainer {
 
       setStylePrimaryName("ode-SimpleMockFormPhoneBar");
       setSize("100%", HEIGHT + "px");
+    }
+
+    void getVisibility(boolean visible) {
+      this.visible = visible;
+    }
+
+    int getHeight() {
+      return visible ? PhoneBar.HEIGHT : 0;
     }
   }
 
@@ -358,10 +367,10 @@ public final class MockForm extends MockContainer {
     screenHeight = newHeight;
     if (landscape) {
       usableScreenWidth = screenWidth - navigationBar.getHeight();
-      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight();
+      usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();
     } else {
       usableScreenWidth = screenWidth;
-      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - navigationBar.getHeight();
+      usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
     }
 
     rootPanel.setPixelSize(usableScreenWidth, usableScreenHeight);
@@ -553,10 +562,10 @@ public final class MockForm extends MockContainer {
       setPhoneStyle();
       if (landscape) {
         usableScreenWidth = screenWidth - navigationBar.getHeight();
-        usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight();
+        usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();
       } else {
         usableScreenWidth = screenWidth;
-        usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - navigationBar.getHeight();
+        usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
       }
       resizePanel(screenWidth, screenHeight);
 
@@ -634,6 +643,8 @@ public final class MockForm extends MockContainer {
   private void setShowStatusBarProperty(String text) {
     boolean visible = Boolean.parseBoolean(text);
     phoneBar.setVisible(visible);
+    phoneBar.getVisibility(visible);
+    resizePanel(screenWidth,screenHeight); // update the MockForm size
   }
 
   private void setTutorialURLProperty(String asJson) {
