@@ -1,7 +1,5 @@
 /* -*- mode: swift; swift-mode:basic-offset: 2; -*- */
-/**
- * @copyright Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
- */
+/* Copyright © 2017-2020 Massachusetts Institute of Technology, All rights reserved. */
 /**
  * @file Player.swift Implementation of the MIT App Inventor Player
  * component for iOS.
@@ -23,6 +21,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
   fileprivate var _audioPlayer: AVAudioPlayer?
   fileprivate var _loop: Bool = false
   fileprivate var _playOnlyInForeground: Bool = false
+  fileprivate var _wasPlaying = false
   
   public override init(_ container: ComponentContainer) {
     super.init(container)
@@ -111,6 +110,8 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
 
   @objc open func Start() {
     _audioPlayer?.numberOfLoops = _loop ? -1 : 0
+    _audioPlayer?.delegate = self
+    _wasPlaying = true
     _audioPlayer?.play()
   }
   
@@ -139,6 +140,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
   }
 
   public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    _wasPlaying = false
     Completed()
   }
 
@@ -147,9 +149,15 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
   }
 
   @objc open func onResume() {
+    if _wasPlaying && _playOnlyInForeground {
+      _audioPlayer?.play()
+    }
   }
 
   @objc open func onPause() {
+    if _playOnlyInForeground {
+      _audioPlayer?.pause()
+    }
   }
 
   @objc open func onDestroy() {
