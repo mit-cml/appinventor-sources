@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -11,6 +11,19 @@ open class YandexTranslate: NonvisibleComponent {
     yandexKey = ""
     super.init(container)
   }
+
+  // MARK: Properties
+
+  @objc open var ApiKey: String {
+    get {
+      return yandexKey
+    }
+    set {
+      yandexKey = newValue
+    }
+  }
+
+  // MARK: Methods
 
   @objc open func RequestTranslation(_ languageToTranslateTo: String, _ textToTranslate: String){
     if (yandexKey == ""){
@@ -52,6 +65,8 @@ open class YandexTranslate: NonvisibleComponent {
     }
     task.resume()
   }
+
+  // MARK: Events
 
   @objc open func GotTranslation(_ responseCode: NSNumber, _ translation: NSString) {
     EventDispatcher.dispatchEvent(of: self, called: "GotTranslation", arguments: responseCode, translation)
