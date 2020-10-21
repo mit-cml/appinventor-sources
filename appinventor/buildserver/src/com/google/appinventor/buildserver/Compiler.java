@@ -1075,7 +1075,10 @@ public final class Compiler {
       }
 
       for (String permission : permissions) {
-        out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
+        out.write("  <uses-permission android:name=\"" +
+                  permission
+                    .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+                  + "\" />\n");
       }
 
       if (isForCompanion) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
@@ -1193,7 +1196,10 @@ public final class Compiler {
           for (Map.Entry<String, Set<String>> metadataElementSetPair : metadataElements) {
             Set<String> metadataElementSet = metadataElementSetPair.getValue();
             for (String metadataElement : metadataElementSet) {
-              out.write(metadataElement);
+              out.write(
+                metadataElement
+                  .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+              );
             }
           }
         }
@@ -1230,7 +1236,10 @@ public final class Compiler {
                 subelement.contains("android.provider.Telephony.SMS_RECEIVED")) {
               continue;
             }
-            out.write(subelement);
+            out.write(
+              subelement
+                .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+            );
           }
         }
       }
