@@ -644,7 +644,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    */
   public static void openProjectFromTemplate(String url, final NewProjectCommand onSuccessCommand) {
     if(!url.startsWith("http")) {
-      url = "http://" + url;
+      url = Window.Location.getProtocol() + "//" + url;
     }
     if (url.endsWith(".asc")) {
       openTemplateProject(url, onSuccessCommand);

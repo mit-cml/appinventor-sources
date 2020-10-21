@@ -180,23 +180,6 @@ public class TopPanel extends Composite {
       links.add(feedbackLink);
     }
 
-  /*
-  // Code on master branch
-    // Gallery Link
-    if (Ode.getInstance().getUser().getIsAdmin()) {
-      TextButton gallery = new TextButton(MESSAGES.galleryTabName());
-      gallery.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent clickEvent) {
-          Window.open("http://gallery.appinventor.mit.edu", "_blank", "scrollbars=1");
-        }
-      });
-
-      gallery.setStyleName("ode-TopPanelButton");
-      links.add(gallery);
-    }
-    */
-
     moderation = new TextButton(MESSAGES.tabNameModeration());
     moderation.setStyleName("ode-TopPanelButton");
     moderation.addClickHandler(new ClickHandler() {
