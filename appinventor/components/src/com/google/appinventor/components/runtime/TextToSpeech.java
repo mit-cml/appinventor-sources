@@ -47,7 +47,7 @@ import com.google.appinventor.components.runtime.util.YailList;
  * Not every country code will affect every language.
  *
  * The languages and countries available depend on the particular device, and can be listed with
- * the {@link #AvailableLanguages()} and {@link #AvailableCountries()} properties.
+ * the {@link #AvailableLanguages()} and {@link #AvailableCountriesAndRegions()} properties.
  *
  * @author markf@google.com (Mark Friedman)
  */
@@ -63,7 +63,7 @@ description = "The TestToSpeech component speaks a given text aloud.  You can se
     "pronunciation.  For example, British English (GBR) will sound different from US English " +
     "(USA).  Not every country code will affect every language.</p> " +
     "<p>The languages and countries available depend on the particular device, and can be listed " +
-    "with the AvailableLanguages and AvailableCountries properties.</p>",
+    "with the AvailableLanguages and AvailableCountriesAndRegions properties.</p>",
     category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/textToSpeech.png")
@@ -373,7 +373,7 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   @SimpleProperty(description = "List of the country codes available on this device " +
       "for use with TextToSpeech.  Check the Android developer documentation under supported " +
       "languages to find the meanings of these abbreviations.")
-  public YailList AvailableCountries() {
+  public YailList AvailableCountriesAndRegions() {
     prepareLanguageAndCountryProperties();
     return allCountries;
   }

@@ -1206,7 +1206,7 @@ public class YaVersion {
   // - added speech pitch and rate
   // For TEXTTOSPEECH_COMPONENT_VERSION 3:
   // - the AvailableLanguages property was added
-  // - the AvailableCountries property was added
+  // - the AvailableCountriesAndRegions property was added
   // For TEXTTOSPEECH_COMPONENT_VERSION 4:
   // - the Country designer property was changed to use a ChoicePropertyEditor
   // - the Language designer property was changed to use a ChoicePropertyEditor

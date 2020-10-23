@@ -2479,7 +2479,7 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // the AvailableLanguages property was added
-    // the AvailableCountries property was added
+    // the AvailableCountriesAndRegions property was added
     3: "noUpgrade",
 
     // the Country designer property was changed to use a ChoicePropertyEditor
