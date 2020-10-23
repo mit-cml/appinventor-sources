@@ -26,7 +26,7 @@ public final class TextValidators {
 
   protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
           "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
-          "SimpleForm", "String", "Pattern", "YailList", "YailNumberToString", "YailRuntimeError");
+          "SimpleForm", "String", "Pattern", "YailDictionary", "YailList", "YailNumberToString", "YailRuntimeError");
 
   protected static final List<String> JAVA_NAMES = Arrays.asList("abstract", "continue", "for", "new", "switch",
           "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this",
@@ -35,7 +35,7 @@ public final class TextValidators {
           "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
           "float", "native", "super", "while");
 
-  protected static final List<String> SCHEME_NAMES = Arrays.asList("begin", "quote");
+  protected static final List<String> SCHEME_NAMES = Arrays.asList("begin", "def", "foreach", "forrange", "JavaStringUtils", "quote");
 
   // This class should never be instantiated.
   private TextValidators() {}
