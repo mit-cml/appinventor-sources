@@ -433,7 +433,7 @@ The `TextToSpeech` component speaks a given text aloud. You can set the pitch
  Not every country code will affect every language.
 
  The languages and countries available depend on the particular device, and can be listed with
- the [`AvailableLanguages`](#TextToSpeech.AvailableLanguages) and [`AvailableCountries`](#TextToSpeech.AvailableCountries) properties.
+ the [`AvailableLanguages`](#TextToSpeech.AvailableLanguages) and [`AvailableCountriesAndRegions`](#TextToSpeech.AvailableCountriesAndRegions) properties.
 
 
 
@@ -441,7 +441,7 @@ The `TextToSpeech` component speaks a given text aloud. You can set the pitch
 
 {:.properties}
 
-{:id="TextToSpeech.AvailableCountries" .list .ro .bo} *AvailableCountries*
+{:id="TextToSpeech.AvailableCountriesAndRegions" .list .ro .bo} *AvailableCountriesAndRegions*
 : List of the country codes available on this device for use with TextToSpeech.  Check the Android developer documentation under supported languages to find the meanings of these abbreviations.
 
 {:id="TextToSpeech.AvailableLanguages" .list .ro .bo} *AvailableLanguages*

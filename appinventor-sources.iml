@@ -1,0 +1,2819 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="EclipseModuleManager">
+    <libelement value="jar://$MODULE_DIR$/appinventor/aimerger/AI2MergerApp.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/aiplayapp/assets/external_comps/edu.mit.appinventor.companionextras/classes.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/aiplayapp/assets/external_comps/edu.mit.appinventor.companionextras/files/AndroidRuntime.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/activation-1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/asm-3.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/FastInfoset-1.2.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/grizzly-servlet-webserver-1.9.18-i.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/http-20070405.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/jackson-core-asl-1.9.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/jaxb-api-2.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/jaxb-impl-2.1.10.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/jaxb-xjc.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/jdom-1.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/jersey-bundle-1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/jersey-multipart-1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/jettison-1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/jsr311-api-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/localizer.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/mail-1.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/rome-0.9.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/stax-api-1.0-2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/wadl-cmdline.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/wadl-core.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/buildserver/lib/wadl2java.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/acra/acra-4.4.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/android-29/android.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/legacy/org.apache.http.legacy.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/annotation-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/appcompat-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/asynclayoutinflater-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/collection-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/constraintlayout-1.1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/constraintlayout-solver-1.1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/coordinatorlayout-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/core-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/core-common-2.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/core-runtime-2.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/cursoradapter-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/customview-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/documentfile-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/drawerlayout-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/fragment-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/interpolator-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/legacy-support-core-ui-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/legacy-support-core-utils-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/lifecycle-common-2.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/lifecycle-livedata-2.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/lifecycle-livedata-core-2.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/lifecycle-runtime-2.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/lifecycle-viewmodel-2.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/loader-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/localbroadcastmanager-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/print-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/slidingpanelayout-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/swiperefreshlayout-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/testing-support-R-classes.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/vectordrawable-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/vectordrawable-animated-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/versionedparcelable-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/support/viewpager-1.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/tools/apksigner.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/tools/builder-1.3.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/tools/builder-model-1.3.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/tools/common-24.3.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/tools/ddmlib_2.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/tools/ddmlib.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/tools/dx.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/tools/layoutlib-api-24.3.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/tools/sdk-common-24.3.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/android/tools/sdklib.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/androidsvg/androidsvg-d4ec6d8.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/animal_sniffer/animal-sniffer-ant-tasks-1.7.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/ant-contrib/ant-contrib-1.0b3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/apache-http/httpcore-4.3.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/apache-http/httpmime-4.3.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/agent/appengine-agent.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/agent/appengine-agentimpl.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/appengine-remote-api.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/appengine-tools-api.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/agent/appengine-agentruntime.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-labs.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-stubs.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-local-runtime.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/google_sql.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/appengine-api.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/appengine-vm-runtime.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/gson.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-annotations-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-client-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-continuation-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-deploy-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-http-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-io-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-jndi-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-plus-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-quickstart-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-security-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-server-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-servlet-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-servlets-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-util-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-webapp-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-xml-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-5.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-all-5.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-analysis-5.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-commons-5.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-debug-all-5.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-tree-5.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-util-5.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-xml-5.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-el-8.0.9.M3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-jsp-8.0.9.M3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-jsp-9.2.10.v20150310.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/ecj-4.2.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/serializer.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-impl-1.2.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-jstlel-1.2.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-spec-1.2.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-annotations-api-8.0.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-el-api-8.0.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-jsp-api-8.0.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/xalan.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/tomcat-servlet-api-8.0.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/quickstartgenerator.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/start.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/appengine-local-endpoints/v1/appengine-local-endpoints.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/asm-5.0.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/datanucleus-core-1.1.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/datanucleus-enhancer-1.1.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/datanucleus-jpa-1.1.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/geronimo-jpa_3.0_spec-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/jdo2-api-2.3-eb.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/asm-5.0.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-api-jdo-3.1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-api-jpa-3.1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-core-3.1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-enhancer-3.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/geronimo-jpa_2.0_spec-1.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/jdo-api-3.0.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/jta-1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/appengine-api-labs/v1/appengine-api-labs.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/appengine-endpoints/v1/appengine-endpoints-deps.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/appengine-endpoints/v1/appengine-endpoints.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-appengine-1.0.10.final.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-core-1.1.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-jpa-1.1.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/geronimo-jpa_3.0_spec-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/jdo2-api-2.3-eb.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/asm-5.0.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-api-jdo-3.1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-api-jpa-3.1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-appengine-2.1.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-core-3.1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/geronimo-jpa_2.0_spec-1.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/jdo-api-3.0.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/jta-1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/jsr107/v1/appengine-jsr107cache-1.9.46.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/jsr107/v1/jsr107cache-1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/override/appengine-dev-jdk-overrides.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/appengine-local-runtime-shared.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/el-api.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp-api.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-ant-1.7.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-ant-launcher-1.7.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-jasper-6.0.29.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-jasper-el-6.0.29.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-tomcat-juli-6.0.29.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/servlet-api.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/testing/appengine-testing.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/jsp/repackaged-appengine-eclipse-jdt-ecj.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/jsp/repackaged-appengine-jakarta-jstl-1.1.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/jsp/repackaged-appengine-jakarta-standard-1.1.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/asm-5.0.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-core-1.1.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-enhancer-1.1.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-jpa-1.1.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/geronimo-jpa_3.0_spec-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/jdo2-api-2.3-eb.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/appengine-api-1.0-sdk-1.9.46.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/appengine-api-labs-1.9.46.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/appengine-jsr107cache-1.9.46.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/jsr107cache-1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/libservice.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-appengine-1.0.10.final.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-core-1.1.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-jpa-1.1.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/jdo2-api-2.3-eb.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/args4j/args4j-2.0.18.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/bouncycastle/bcpkix-jdk15on-149.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/bouncycastle/bcprov-jdk15on-149.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/checkstyle/appinventor-checks.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/checkstyle/checkstyle.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/commons-codec/commons-codec-1.7.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/commons-fileupload/commons-fileupload-1.2.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/commons-io/commons-io-2.0.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/commons-lang3/commons-lang3-3.10.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/commons-pool/commons-pool2-2.0-javadoc.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/commons-pool/commons-pool2-2.0-sources.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/commons-pool/commons-pool2-2.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/ecj/ecj-4.5.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/findbugs/jsr305.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/firebase/firebase-client-android-2.5.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/firebase/firebase-token-generator-2.0.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/fusiontables/fusiontables.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/appengine-gcs-client-0.6.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/google-api-client-1.22.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/google-api-client-appengine-1.22.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/google-api-services-storage-v1-rev91-1.22.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/google-http-client-1.22.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/google-http-client-appengine-1.22.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/google-http-client-jackson-1.22.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/google-http-client-jackson2-1.22.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/httpclient-4.0.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/jackson-core-2.1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gcs/joda-time-2.6.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gson/gson-2.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/guava/error_prone_annotations-2.0.12.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/guava/guava-14.0.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/guava/guava-20.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/guava/guava-gwt-14.0.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/guava/guava-gwt-20.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/guava/j2objc-annotations-1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt_dragdrop/gwt-dnd-3.2.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt_incubator/gwt-incubator-20101117-r1766.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt_query/gwtquery-1.5-beta1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt_svg/lib-gwt-svg-0.5.9.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-codeserver.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-dev.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-servlet-deps.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-servlet.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-user.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/validation-api-1.0.0.GA-sources.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/validation-api-1.0.0.GA.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/json/json-android.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/json/json.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/jts/jts-core-1.15.0-20170823.040415-301.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/junit-addons/junit-addons-1.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/junit/junit-4.8.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/junit4/tl4j-junit4-1.1.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/kawa/kawa-1.11-modified.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/keyczar/keyczar-0.66-080111-java-1.6.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/keyczar/KeyczarTool.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/log4j/log4j-1.2.16.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/oauth/google-api-client-1.10.3-beta.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/oauth/google-api-client-android2-1.10.3-beta.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/oauth/google-http-client-1.10.3-beta.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/oauth/google-http-client-android2-1.10.3-beta.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/oauth/google-http-client-android3-1.10.3-beta.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/oauth/google-oauth-client-1.10.1-beta.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/objectify-3.1/objectify-3.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/osmdroid/osmdroid-5.6.6.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/owasp/owasp-java-html-sanitizer-20160628.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/physicaloid/physicaloid-library.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/plovr/plovr-eba786b34df9.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/plovr/plovr.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/powermock/cglib-nodep-2.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/powermock/easymock-3.0.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/powermock/javassist-3.18.0-GA.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/powermock/objenesis-1.2.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/powermock/powermock-easymock-1.4.10-full.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/proguard/proguard.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/protobuf/protobuf-2.6.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/QRGenerator/core.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/QRGenerator/javase.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/responder-iq/responderiq-test.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/robolectric/robolectric-3.3.2-all-deps.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/twitter/twitter4j-core-3.0.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/twitter/twitter4j-media-support-3.0.5.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/appinventor/lib/webrtc/webrtc.jar!/" />
+    <src_description expected_position="1">
+      <src_folder value="file://$MODULE_DIR$/appinventor/aimerger_for_appinv_classic/src" expected_position="1" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/aimerger/src" expected_position="2" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/appengine/src" expected_position="3" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/appengine/tests" expected_position="4" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/blocklyeditor/tests" expected_position="5" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/buildserver/src" expected_position="6" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/buildserver/tests" expected_position="7" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/common/src" expected_position="8" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/common/tests" expected_position="9" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/components/src" expected_position="10" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/components/tests" expected_position="11" />
+      <src_folder value="file://$MODULE_DIR$/appinventor/misc/companionextras-extension" expected_position="12" />
+    </src_description>
+  </component>
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/bin" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/aimerger_for_appinv_classic/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/aimerger/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/appengine/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/appengine/tests" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/blocklyeditor/tests" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/buildserver/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/buildserver/tests" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/common/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/common/tests" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/components/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/components/tests" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/appinventor/misc/companionextras-extension" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="AI2MergerApp.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/aimerger/AI2MergerApp.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="classes.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/aiplayapp/assets/external_comps/edu.mit.appinventor.companionextras/classes.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="AndroidRuntime.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/aiplayapp/assets/external_comps/edu.mit.appinventor.companionextras/files/AndroidRuntime.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="activation-1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/activation-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asm-3.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/asm-3.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="FastInfoset-1.2.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/FastInfoset-1.2.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="grizzly-servlet-webserver-1.9.18-i.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/grizzly-servlet-webserver-1.9.18-i.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="http-20070405.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/http-20070405.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jackson-core-asl-1.9.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/jackson-core-asl-1.9.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jaxb-api-2.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/jaxb-api-2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jaxb-impl-2.1.10.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/jaxb-impl-2.1.10.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jaxb-xjc.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/jaxb-xjc.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jdom-1.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/jdom-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jersey-bundle-1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/jersey-bundle-1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jersey-multipart-1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/jersey-multipart-1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jettison-1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/jettison-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jsr311-api-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/jsr311-api-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="localizer.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/localizer.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="mail-1.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/mail-1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="rome-0.9.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/rome-0.9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="stax-api-1.0-2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/stax-api-1.0-2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="wadl-cmdline.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/wadl-cmdline.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="wadl-core.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/wadl-core.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="wadl2java.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/buildserver/lib/wadl2java.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="acra-4.4.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/acra/acra-4.4.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="android.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/android-29/android.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.http.legacy.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/legacy/org.apache.http.legacy.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="annotation-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/annotation-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appcompat-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/appcompat-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asynclayoutinflater-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/asynclayoutinflater-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="collection-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/collection-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="constraintlayout-1.1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/constraintlayout-1.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="constraintlayout-solver-1.1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/constraintlayout-solver-1.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="coordinatorlayout-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/coordinatorlayout-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="core-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/core-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="core-common-2.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/core-common-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="core-runtime-2.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/core-runtime-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="cursoradapter-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/cursoradapter-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="customview-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/customview-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="documentfile-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/documentfile-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="drawerlayout-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/drawerlayout-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="fragment-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/fragment-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="interpolator-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/interpolator-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="legacy-support-core-ui-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/legacy-support-core-ui-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="legacy-support-core-utils-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/legacy-support-core-utils-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="lifecycle-common-2.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/lifecycle-common-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="lifecycle-livedata-2.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/lifecycle-livedata-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="lifecycle-livedata-core-2.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/lifecycle-livedata-core-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="lifecycle-runtime-2.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/lifecycle-runtime-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="lifecycle-viewmodel-2.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/lifecycle-viewmodel-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="loader-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/loader-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="localbroadcastmanager-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/localbroadcastmanager-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="print-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/print-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="slidingpanelayout-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/slidingpanelayout-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="swiperefreshlayout-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/swiperefreshlayout-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="testing-support-R-classes.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/testing-support-R-classes.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="vectordrawable-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/vectordrawable-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="vectordrawable-animated-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/vectordrawable-animated-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="versionedparcelable-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/versionedparcelable-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="viewpager-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/support/viewpager-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="apksigner.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/tools/apksigner.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="builder-1.3.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/tools/builder-1.3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="builder-model-1.3.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/tools/builder-model-1.3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="common-24.3.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/tools/common-24.3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="ddmlib_2.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/tools/ddmlib_2.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="ddmlib.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/tools/ddmlib.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="dx.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/tools/dx.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="layoutlib-api-24.3.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/tools/layoutlib-api-24.3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="sdk-common-24.3.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/tools/sdk-common-24.3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="sdklib.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/android/tools/sdklib.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="androidsvg-d4ec6d8.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/androidsvg/androidsvg-d4ec6d8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="animal-sniffer-ant-tasks-1.7.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/animal_sniffer/animal-sniffer-ant-tasks-1.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="ant-contrib-1.0b3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/ant-contrib/ant-contrib-1.0b3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="httpcore-4.3.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/apache-http/httpcore-4.3.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="httpmime-4.3.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/apache-http/httpmime-4.3.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-agent.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/agent/appengine-agent.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-agentimpl.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/agent/appengine-agentimpl.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-remote-api.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/appengine-remote-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-tools-api.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/appengine-tools-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-agentruntime.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/agent/appengine-agentruntime.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-api-labs.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-labs.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-api-stubs.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-stubs.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-api.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-local-runtime.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-local-runtime.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google_sql.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/google_sql.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/appengine-api.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/appengine-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-vm-runtime.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/appengine-vm-runtime.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="gson.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/gson.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-annotations-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-annotations-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-client-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-client-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-continuation-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-continuation-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-deploy-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-deploy-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-http-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-http-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-io-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-io-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-jndi-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-jndi-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-plus-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-plus-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-quickstart-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-quickstart-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-security-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-security-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-server-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-server-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-servlet-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-servlet-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-servlets-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-servlets-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-util-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-util-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-webapp-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-webapp-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetty-xml-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-xml-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asm-5.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asm-all-5.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-all-5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asm-analysis-5.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-analysis-5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asm-commons-5.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-commons-5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asm-debug-all-5.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-debug-all-5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asm-tree-5.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-tree-5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asm-util-5.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-util-5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asm-xml-5.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jndi/asm-xml-5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="apache-el-8.0.9.M3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-el-8.0.9.M3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="apache-jsp-8.0.9.M3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-jsp-8.0.9.M3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="apache-jsp-9.2.10.v20150310.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-jsp-9.2.10.v20150310.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="ecj-4.2.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/ecj-4.2.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="serializer.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/serializer.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="taglibs-standard-impl-1.2.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-impl-1.2.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="taglibs-standard-jstlel-1.2.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-jstlel-1.2.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="taglibs-standard-spec-1.2.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-spec-1.2.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="tomcat-annotations-api-8.0.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-annotations-api-8.0.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="tomcat-el-api-8.0.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-el-api-8.0.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="tomcat-jsp-api-8.0.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-jsp-api-8.0.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="xalan.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/xalan.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="tomcat-servlet-api-8.0.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/tomcat-servlet-api-8.0.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="quickstartgenerator.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/quickstartgenerator.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="start.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/start.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-local-endpoints.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/appengine-local-endpoints/v1/appengine-local-endpoints.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="asm-5.0.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/asm-5.0.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="datanucleus-core-1.1.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/datanucleus-core-1.1.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="datanucleus-enhancer-1.1.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/datanucleus-enhancer-1.1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="datanucleus-jpa-1.1.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/datanucleus-jpa-1.1.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="geronimo-jpa_3.0_spec-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/geronimo-jpa_3.0_spec-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="geronimo-jta_1.1_spec-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jdo2-api-2.3-eb.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/jdo2-api-2.3-eb.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/asm-5.0.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/asm-5.0.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="datanucleus-api-jdo-3.1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-api-jdo-3.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="datanucleus-api-jpa-3.1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-api-jpa-3.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="datanucleus-core-3.1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-core-3.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="datanucleus-enhancer-3.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-enhancer-3.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="geronimo-jpa_2.0_spec-1.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/geronimo-jpa_2.0_spec-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jdo-api-3.0.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/jdo-api-3.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jta-1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/jta-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/appengine-api-labs/v1/appengine-api-labs.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/appengine-api-labs/v1/appengine-api-labs.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-endpoints-deps.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/appengine-endpoints/v1/appengine-endpoints-deps.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-endpoints.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/appengine-endpoints/v1/appengine-endpoints.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="datanucleus-appengine-1.0.10.final.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-appengine-1.0.10.final.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-core-1.1.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-core-1.1.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-jpa-1.1.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-jpa-1.1.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/geronimo-jpa_3.0_spec-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/geronimo-jpa_3.0_spec-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/geronimo-jta_1.1_spec-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/jdo2-api-2.3-eb.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/jdo2-api-2.3-eb.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/asm-5.0.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/asm-5.0.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-api-jdo-3.1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-api-jdo-3.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-api-jpa-3.1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-api-jpa-3.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="datanucleus-appengine-2.1.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-appengine-2.1.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-core-3.1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-core-3.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/geronimo-jpa_2.0_spec-1.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/geronimo-jpa_2.0_spec-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/jdo-api-3.0.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/jdo-api-3.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/jta-1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/jta-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-jsr107cache-1.9.46.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/jsr107/v1/appengine-jsr107cache-1.9.46.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jsr107cache-1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/jsr107/v1/jsr107cache-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-dev-jdk-overrides.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/override/appengine-dev-jdk-overrides.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-local-runtime-shared.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/appengine-local-runtime-shared.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="el-api.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/el-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jsp-api.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="repackaged-appengine-ant-1.7.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-ant-1.7.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="repackaged-appengine-ant-launcher-1.7.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-ant-launcher-1.7.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="repackaged-appengine-jasper-6.0.29.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-jasper-6.0.29.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="repackaged-appengine-jasper-el-6.0.29.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-jasper-el-6.0.29.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="repackaged-appengine-tomcat-juli-6.0.29.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp/repackaged-appengine-tomcat-juli-6.0.29.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="servlet-api.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/servlet-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-testing.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/testing/appengine-testing.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="repackaged-appengine-eclipse-jdt-ecj.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/jsp/repackaged-appengine-eclipse-jdt-ecj.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="repackaged-appengine-jakarta-jstl-1.1.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/jsp/repackaged-appengine-jakarta-jstl-1.1.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="repackaged-appengine-jakarta-standard-1.1.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/jsp/repackaged-appengine-jakarta-standard-1.1.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/asm-5.0.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/asm-5.0.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-core-1.1.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-core-1.1.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-enhancer-1.1.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-enhancer-1.1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-jpa-1.1.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-jpa-1.1.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/geronimo-jpa_3.0_spec-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/geronimo-jpa_3.0_spec-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/geronimo-jta_1.1_spec-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/jdo2-api-2.3-eb.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/jdo2-api-2.3-eb.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-api-1.0-sdk-1.9.46.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/appengine-api-1.0-sdk-1.9.46.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-api-labs-1.9.46.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/appengine-api-labs-1.9.46.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/appengine-jsr107cache-1.9.46.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/appengine-jsr107cache-1.9.46.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/jsr107cache-1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/jsr107cache-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="libservice.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/libservice.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-appengine-1.0.10.final.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-appengine-1.0.10.final.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-core-1.1.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-core-1.1.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-jpa-1.1.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-jpa-1.1.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jta_1.1_spec-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/jdo2-api-2.3-eb.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/jdo2-api-2.3-eb.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="args4j-2.0.18.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/args4j/args4j-2.0.18.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="bcpkix-jdk15on-149.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/bouncycastle/bcpkix-jdk15on-149.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="bcprov-jdk15on-149.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/bouncycastle/bcprov-jdk15on-149.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appinventor-checks.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/checkstyle/appinventor-checks.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="checkstyle.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/checkstyle/checkstyle.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-codec-1.7.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/commons-codec/commons-codec-1.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-fileupload-1.2.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/commons-fileupload/commons-fileupload-1.2.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-io-2.0.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/commons-io/commons-io-2.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-lang3-3.10.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/commons-lang3/commons-lang3-3.10.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-pool2-2.0-javadoc.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/commons-pool/commons-pool2-2.0-javadoc.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-pool2-2.0-sources.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/commons-pool/commons-pool2-2.0-sources.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-pool2-2.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/commons-pool/commons-pool2-2.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="ecj-4.5.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/ecj/ecj-4.5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jsr305.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/findbugs/jsr305.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="firebase-client-android-2.5.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/firebase/firebase-client-android-2.5.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="firebase-token-generator-2.0.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/firebase/firebase-token-generator-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="fusiontables.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/fusiontables/fusiontables.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="appengine-gcs-client-0.6.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/appengine-gcs-client-0.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-api-client-1.22.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/google-api-client-1.22.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-api-client-appengine-1.22.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/google-api-client-appengine-1.22.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-api-services-storage-v1-rev91-1.22.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/google-api-services-storage-v1-rev91-1.22.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-http-client-1.22.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/google-http-client-1.22.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-http-client-appengine-1.22.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/google-http-client-appengine-1.22.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-http-client-jackson-1.22.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/google-http-client-jackson-1.22.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-http-client-jackson2-1.22.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/google-http-client-jackson2-1.22.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="httpclient-4.0.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/httpclient-4.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jackson-core-2.1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/jackson-core-2.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="joda-time-2.6.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gcs/joda-time-2.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="gson-2.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gson/gson-2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="error_prone_annotations-2.0.12.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/guava/error_prone_annotations-2.0.12.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="guava-14.0.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/guava/guava-14.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="guava-20.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/guava/guava-20.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="guava-gwt-14.0.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/guava/guava-gwt-14.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="guava-gwt-20.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/guava/guava-gwt-20.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="j2objc-annotations-1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/guava/j2objc-annotations-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="gwt-dnd-3.2.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt_dragdrop/gwt-dnd-3.2.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="gwt-incubator-20101117-r1766.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt_incubator/gwt-incubator-20101117-r1766.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="gwtquery-1.5-beta1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt_query/gwtquery-1.5-beta1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="lib-gwt-svg-0.5.9.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt_svg/lib-gwt-svg-0.5.9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="gwt-codeserver.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-codeserver.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="gwt-dev.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-dev.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="gwt-servlet-deps.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-servlet-deps.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="gwt-servlet.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-servlet.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="gwt-user.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-user.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="validation-api-1.0.0.GA-sources.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/validation-api-1.0.0.GA-sources.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="validation-api-1.0.0.GA.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/gwt/2.8.1-patched/validation-api-1.0.0.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="json-android.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/json/json-android.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="json.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/json/json.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jts-core-1.15.0-20170823.040415-301.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/jts/jts-core-1.15.0-20170823.040415-301.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="junit-addons-1.4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/junit-addons/junit-addons-1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="junit-4.8.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/junit/junit-4.8.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="tl4j-junit4-1.1.3.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/junit4/tl4j-junit4-1.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="kawa-1.11-modified.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/kawa/kawa-1.11-modified.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="keyczar-0.66-080111-java-1.6.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/keyczar/keyczar-0.66-080111-java-1.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="KeyczarTool.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/keyczar/KeyczarTool.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="log4j-1.2.16.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/log4j/log4j-1.2.16.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-api-client-1.10.3-beta.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/oauth/google-api-client-1.10.3-beta.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-api-client-android2-1.10.3-beta.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/oauth/google-api-client-android2-1.10.3-beta.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-http-client-1.10.3-beta.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/oauth/google-http-client-1.10.3-beta.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-http-client-android2-1.10.3-beta.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/oauth/google-http-client-android2-1.10.3-beta.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-http-client-android3-1.10.3-beta.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/oauth/google-http-client-android3-1.10.3-beta.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google-oauth-client-1.10.1-beta.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/oauth/google-oauth-client-1.10.1-beta.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="objectify-3.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/objectify-3.1/objectify-3.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="osmdroid-5.6.6.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/osmdroid/osmdroid-5.6.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="owasp-java-html-sanitizer-20160628.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/owasp/owasp-java-html-sanitizer-20160628.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="physicaloid-library.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/physicaloid/physicaloid-library.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="plovr-eba786b34df9.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/plovr/plovr-eba786b34df9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="plovr.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/plovr/plovr.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="cglib-nodep-2.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/powermock/cglib-nodep-2.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="easymock-3.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/powermock/easymock-3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="javassist-3.18.0-GA.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/powermock/javassist-3.18.0-GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="objenesis-1.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/powermock/objenesis-1.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="powermock-easymock-1.4.10-full.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/powermock/powermock-easymock-1.4.10-full.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="proguard.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/proguard/proguard.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="protobuf-2.6.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/protobuf/protobuf-2.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="core.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/QRGenerator/core.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="javase.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/QRGenerator/javase.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="responderiq-test.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/responder-iq/responderiq-test.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="robolectric-3.3.2-all-deps.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/robolectric/robolectric-3.3.2-all-deps.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="TableLayout-jdk1.5-2007-04-21.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="twitter4j-core-3.0.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/twitter/twitter4j-core-3.0.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="twitter4j-media-support-3.0.5.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/twitter/twitter4j-media-support-3.0.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="webrtc.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/appinventor/lib/webrtc/webrtc.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>
