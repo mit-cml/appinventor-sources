@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -122,7 +123,7 @@ public class File extends FileBase implements Component {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
   @UsesPermissions(READ_EXTERNAL_STORAGE)
   public void ReadPermission(boolean required) {
     // not used programmatically
@@ -151,7 +152,7 @@ public class File extends FileBase implements Component {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
   @UsesPermissions(WRITE_EXTERNAL_STORAGE)
   public void WritePermission(boolean required) {
     // not used programmatically

@@ -197,7 +197,8 @@ public class Polygon extends PolygonBase implements MapPolygon {
    */
   @SuppressWarnings("squid:S00100")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
-  @SimpleProperty(description = "Constructs a polygon from the given list of coordinates.")
+  @SimpleProperty(description = "Constructs a polygon from the given list of coordinates.",
+      category = PropertyCategory.APPEARANCE)
   public void PointsFromString(String pointString) {
     if (TextUtils.isEmpty(pointString)) {
       points = new ArrayList<List<GeoPoint>>();  // create a new list in case the user has saved a reference
@@ -285,7 +286,8 @@ public class Polygon extends PolygonBase implements MapPolygon {
    */
   @SuppressWarnings("squid:S00100")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
-  @SimpleProperty(description = "Constructs holes in a polygon from a given list of coordinates per hole.")
+  @SimpleProperty(description = "Constructs holes in a polygon from a given list of coordinates per hole.",
+      category = PropertyCategory.APPEARANCE)
   public void HolePointsFromString(String pointString) {
     if (TextUtils.isEmpty(pointString)) {
       holePoints = new ArrayList<List<List<GeoPoint>>>();  // create a new list in case the user has saved a reference
