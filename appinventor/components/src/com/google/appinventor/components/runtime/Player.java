@@ -299,7 +299,8 @@ public final class Player extends AndroidNonvisibleComponent
       editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = "50")
   @SimpleProperty(
-      description = "Sets the volume to a number between 0 and 100")
+      description = "Sets the volume to a number between 0 and 100",
+      category = PropertyCategory.BEHAVIOR)
   public void Volume(int vol) {
     if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
       if (vol > 100 || vol < 0) {

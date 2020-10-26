@@ -288,7 +288,8 @@ public final class VideoPlayer extends AndroidViewComponent implements
   @SimpleProperty(
       description = "Sets the volume to a number between 0 and 100. " +
       "Values less than 0 will be treated as 0, and values greater than 100 " +
-      "will be treated as 100.")
+      "will be treated as 100.",
+      category = PropertyCategory.BEHAVIOR)
   public void Volume(int vol) {
     // clip volume to range [0, 100]
     vol = Math.max(vol, 0);

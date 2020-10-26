@@ -130,7 +130,8 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
    * @param key the API key to use for authentication requests
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
-  @SimpleProperty(description = "API Key for Open Route Service.")
+  @SimpleProperty(description = "API Key for Open Route Service.",
+      category = PropertyCategory.BEHAVIOR)
   public void ApiKey(String key) {
     apiKey = key;
   }
@@ -285,7 +286,8 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
    *
    * @param language the language to use for generating directions
    */
-  @SimpleProperty(description = "The language to use for textual directions.")
+  @SimpleProperty(description = "The language to use for textual directions.",
+      category = PropertyCategory.BEHAVIOR)
   @DesignerProperty(defaultValue = "en")
   public void Language(String language) {
     this.language = language;
