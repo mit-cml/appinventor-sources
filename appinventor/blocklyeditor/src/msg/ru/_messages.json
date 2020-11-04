@@ -629,8 +629,8 @@
     "Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP": "Это блок не определён. Удалите этот блок!",
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_INPUT": "Получить значение для ключа %1 в словаре %2, и если ключ не найден, то получить значение равное %3",
     "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TOOLTIP": "Удалить в словаре пару, в которой присутствует заданный ключ.",
-    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TITLE": "удалить ключ из словаря",
-    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_INPUT": "удалить ключ %2 из словаря %1",
+    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TITLE": "удалить в словаре пару, в которой присутствует заданный ключ",
+    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_INPUT": "удалить в словаре %1 пару, в которой присутствует ключ %2",
     "Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TOOLTIP": "Создать пару в словаре.",
     "Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TITLE": "создать пару в словаре",
     "Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_INPUT": "установить значение %3 для ключа %1 в словаре %2",
@@ -643,5 +643,15 @@
     "Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TOOLTIP": "Создать словарь.",
     "Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TITLE": "создать словарь",
     "Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE": "создать пустой словарь",
-    "Blockly.Msg.LANG_CATEGORY_DICTIONARIES": "Словари"
+    "Blockly.Msg.LANG_CATEGORY_DICTIONARIES": "Словари",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TOOLTIP": "Используется в блоке «Список значений, извлечённых из набора путей», работает по следующей логике: собирает путь из блоков, располагающихся выше, получает значение для собранного пути, получает список объектов внутри найденного значения (список ключей или элементов), берёт первый объект, добавляет его в конец сформированного пути (который состоит из блоков, располагающихся выше), тем самым создаёт новый путь, далее берёт второй объект и выполняет аналогичные действия, тем самым создаёт второй новый путь (эти два новых пути различаются только конечными узлами), далее выполняет аналогичные действия для остальных объектов и в конечном итоге собирает набор из новых путей (если ниже данного блока располагается ещё один блок, то нижний блок добавляется в конец каждого пути из собранного набора новых путей).",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE": "список всех подходящих значений, доступных по пути %1 в словаре/списке %2",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE": "установить значение для ключа/элемента, доступного по заданному пути в словаре",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP": "Устанавливает значение для ключа, доступного по данному пути в данном словаре.",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_INPUT": "установить значение %3 для ключа/элемента, доступного по пути %1 в словаре %2",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE": "рекурсивный поиск в словаре",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TOOLTIP": "Возвращает значение во вложенном словаре.",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_INPUT": "получить значение для ключа/элемента, доступного по пути %1 в словаре %2, и если этот ключ/элемент не найден в словаре, то получить значение равное %3",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TITLE": "искать в словаре",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TOOLTIP": "Возвращает значение для ключа в словаре."
 }
