@@ -252,7 +252,6 @@ open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
   }
 
   @objc open func AfterScan(_ result: String) {
-    _navController?.dismiss(animated: true, completion: nil)
     EventDispatcher.dispatchEvent(of: self, called: "AfterScan", arguments: result as AnyObject)
   }
 
