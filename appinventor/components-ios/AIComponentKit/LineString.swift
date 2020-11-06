@@ -17,6 +17,9 @@ import GEOSwift
   internal override func makeShape() {
     var geoString = ""
     if let points = points.array as? [[Double]] {
+      guard points.count >= 2 else {
+        return  // Need at least two points to make a line
+      }
       geoString += "LINESTRING(" + parse(points: points) + ")"
       if let shape = Geometry.create(geoString), let mapShape = shape.mapShape() as? MKPolyline {
         _shape = shape
