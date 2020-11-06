@@ -62,7 +62,8 @@ private class CanvasGestureRecognizer: UIGestureRecognizer {
 
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
     if let loc = touches.first?.location(in: self.canvas?._view) {
-      if ((loc.x < 0 || loc.x > CGFloat(self.canvas!.Width) || loc.y < 0 || loc.y > CGFloat(self.canvas!.Height)) && !(self.canvas!.ExtendMovesOutsideCanvas)) {
+      if ((loc.x < 0 || loc.x > CGFloat(self.canvas!.Width) || loc.y < 0 || loc.y > CGFloat(self.canvas!.Height))
+          && !(self.canvas!.ExtendMovesOutsideCanvas)) {
         return
       }
       let x = max(CGFloat(0), loc.x)
@@ -276,8 +277,13 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       _backgroundImage = ""
       _backgroundImageView.image = nil
     } else {
-      let dataDecoded:NSData = NSData(base64Encoded: imageUrl, options: NSData.Base64DecodingOptions(rawValue: 0))!
-      let decodedImage:UIImage = UIImage(data: dataDecoded as Data)!
+      let dataDecoded: NSData = NSData(base64Encoded: imageUrl, options: NSData.Base64DecodingOptions(rawValue: 0))!
+      guard let decodedImage: UIImage = UIImage(data: dataDecoded as Data) else {
+        _imageSize = nil
+        _backgroundImage = ""
+        _backgroundImageView.image = nil
+        return
+      }
       _backgroundImage = imageUrl
       _imageSize = decodedImage.size
       _backgroundImageView.image = decodedImage
