@@ -3,15 +3,7 @@
 
 import Foundation
 
-public protocol AbstractMethodsForImage: AbstractMethodsForViewComponent {
-  func click()
-}
-
-open class Image: ViewComponent, AbstractMethodsForImage {
-  @objc public func click() {
-    Click()
-  }
-  
+open class Image: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate let _view = UIImageView()
   fileprivate var _image: UIImage? = nil
   fileprivate var _picturePath = ""
@@ -28,7 +20,8 @@ open class Image: ViewComponent, AbstractMethodsForImage {
     ScalePictureToFit = false
     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(click))
     _view.isUserInteractionEnabled = true
-    _view.addGestureRecognizer(tapGestureRecognizer)  }
+    _view.addGestureRecognizer(tapGestureRecognizer)
+  }
 
   open override var view: UIView {
     get {
@@ -97,6 +90,10 @@ open class Image: ViewComponent, AbstractMethodsForImage {
     _view.transform = CGAffineTransform.identity.rotated(by: angle)
   }
   
+  @objc public func click() {
+    Click()
+  }
+
   @objc open var Picture: String {
     get {
       return _picturePath
@@ -157,9 +154,7 @@ open class Image: ViewComponent, AbstractMethodsForImage {
       return _clickable
     }
     set(clickable) {
-      if _clickable != clickable {
-        _clickable = clickable
-      }
+      _clickable = clickable
     }
   }
   
