@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -28,7 +27,7 @@
                             </imageView>
                             <textField opaque="NO" clipsSubviews="YES" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Six Character Code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gxM-wq-OQv">
                                 <rect key="frame" x="32" y="97.5" width="311" height="34"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                             </textField>
@@ -85,6 +84,43 @@
             </objects>
             <point key="canvasLocation" x="544.79999999999995" y="689.5052473763119"/>
         </scene>
+        <!--Onboard View Controller-->
+        <scene sceneID="0zS-WV-goK">
+            <objects>
+                <viewController storyboardIdentifier="onboard" id="9tG-hD-G9T" customClass="OnboardViewController" customModule="AICompanionApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="VSY-Og-pec"/>
+                        <viewControllerLayoutGuide type="bottom" id="noy-0w-xOS"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="M2u-bV-4lc">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SUa-Xt-mgm">
+                                <rect key="frame" x="16" y="8" width="343" height="651"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="SUa-Xt-mgm" secondAttribute="trailing" id="42B-V4-uzT"/>
+                            <constraint firstItem="SUa-Xt-mgm" firstAttribute="top" secondItem="VSY-Og-pec" secondAttribute="bottom" constant="8" symbolic="YES" id="MIG-jG-6sw"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="SUa-Xt-mgm" secondAttribute="trailing" id="Of4-FD-3cH"/>
+                            <constraint firstItem="SUa-Xt-mgm" firstAttribute="leading" secondItem="M2u-bV-4lc" secondAttribute="leadingMargin" id="XY1-yS-OaA"/>
+                            <constraint firstItem="noy-0w-xOS" firstAttribute="top" secondItem="SUa-Xt-mgm" secondAttribute="bottom" constant="8" symbolic="YES" id="ZjA-dE-Sj8"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="SUa-Xt-mgm" secondAttribute="trailing" id="a90-dh-9HY"/>
+                            <constraint firstItem="noy-0w-xOS" firstAttribute="top" secondItem="SUa-Xt-mgm" secondAttribute="bottom" constant="8" symbolic="YES" id="jhT-sv-4E5"/>
+                            <constraint firstItem="SUa-Xt-mgm" firstAttribute="top" secondItem="VSY-Og-pec" secondAttribute="bottom" constant="8" symbolic="YES" id="nw3-Ox-cs7"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="holderView" destination="SUa-Xt-mgm" id="3Af-xg-CUr"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4MB-bk-1pI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1209" y="697"/>
+        </scene>
         <!--View Controller-->
         <scene sceneID="bCJ-It-hIT">
             <objects>
@@ -106,8 +142,5 @@
         <image name="Instructions.png" width="800" height="200"/>
         <image name="connectwCode.png" width="300" height="49"/>
         <image name="connectwQR.png" width="300" height="49"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
     </resources>
 </document>

@@ -65,6 +65,16 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     //pushViewController(form, animated: false);
     ViewController.controller = self
   }
+  
+  public override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    if SystemVariables.shared.isNewUser() {
+      // Show onboarding
+      let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
+      vc.modalPresentationStyle = .fullScreen
+      present(vc, animated: true)
+    }
+  }
 
   // We override this function to handle the Form's ScreenOrientation setting.
   open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -217,5 +227,19 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let newRoot = storyboard.instantiateInitialViewController()
     UIApplication.shared.delegate?.window??.rootViewController = newRoot
+  }
+}
+
+class SystemVariables {
+  static let shared = SystemVariables()
+  
+  func isNewUser() -> Bool {
+    /// Standard boolean defaults to false
+    return !UserDefaults.standard.bool(forKey: "isNewUser")
+  }
+  
+  /// Run after Onboarding to ensure that it never runs again for the same user
+  func setIsNotNewUser() {
+    UserDefaults.standard.set(true, forKey: "isNewUser")
   }
 }

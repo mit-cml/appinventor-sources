@@ -31,6 +31,7 @@
 		18E5FC598EC2641EE2906982 /* Pods_AICompanionAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C01449183537A983DD2DFCD9 /* Pods_AICompanionAppTests.framework */; };
 		38829AF53FE13FED53595325 /* Pods_AICompanionApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D09BF116318FEDD37A5C99E /* Pods_AICompanionApp.framework */; };
 		7F7E5B7A8803069CB632C0AD /* Pods_AICompanionApp_AICompanionAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6451CBF0DDB708F46262A9A8 /* Pods_AICompanionApp_AICompanionAppUITests.framework */; };
+		C498B0CF25476E84002FCAC8 /* OnboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C498B0CE25476E84002FCAC8 /* OnboardViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +110,7 @@
 		B38B7B1653C63EEF4FC1429B /* Pods_AICompanionApp_AICompanionAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionApp_AICompanionAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA22D71D260E9C27E2D63CBE /* Pods_AICompanionAppUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C01449183537A983DD2DFCD9 /* Pods_AICompanionAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C498B0CE25476E84002FCAC8 /* OnboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardViewController.swift; sourceTree = "<group>"; };
 		FE5CAE0EE58EBC32C4E5ADFC /* Pods-AICompanionApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp/Pods-AICompanionApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -176,15 +178,16 @@
 			isa = PBXGroup;
 			children = (
 				06B2161D1DBC7B4C000B3366 /* resources */,
-				06463EFB1D95956800B23DCD /* AppDelegate.swift */,
-				06463EFD1D95956800B23DCD /* ViewController.swift */,
-				06463EFF1D95956800B23DCD /* Main.storyboard */,
-				06463F021D95956800B23DCD /* Assets.xcassets */,
-				06463F041D95956800B23DCD /* LaunchScreen.storyboard */,
-				06463F071D95956800B23DCD /* Info.plist */,
 				06E353341D95A7040099BE0F /* AICompanionApp-Bridging-Header.h */,
+				06463EFB1D95956800B23DCD /* AppDelegate.swift */,
+				06463F021D95956800B23DCD /* Assets.xcassets */,
+				06463F071D95956800B23DCD /* Info.plist */,
+				06463F041D95956800B23DCD /* LaunchScreen.storyboard */,
+				06463EFF1D95956800B23DCD /* Main.storyboard */,
 				06984C3C1DBFE39500FD4FA7 /* NSString_SHA1.h */,
 				06984C3D1DBFE3D100FD4FA7 /* NSString_SHA1.m */,
+				C498B0CE25476E84002FCAC8 /* OnboardViewController.swift */,
+				06463EFD1D95956800B23DCD /* ViewController.swift */,
 			);
 			path = AICompanionApp;
 			sourceTree = "<group>";
@@ -541,6 +544,7 @@
 			files = (
 				06463EFE1D95956800B23DCD /* ViewController.swift in Sources */,
 				06984C3E1DBFE3D100FD4FA7 /* NSString_SHA1.m in Sources */,
+				C498B0CF25476E84002FCAC8 /* OnboardViewController.swift in Sources */,
 				06463EFC1D95956800B23DCD /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
