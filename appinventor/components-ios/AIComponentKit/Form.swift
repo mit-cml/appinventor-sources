@@ -80,11 +80,10 @@ import Toast_Swift
 
   open func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
     let canDispatch = _screenInitialized || (self.isEqual(component) && eventName == "Initialize")
-    if (!_screenInitialized) {
-      NSLog("Attempted to dispatch event \(eventName) to \(component) but screen is not initialized");
-    }
     if (canDispatch) {
       Form.activeForm = self
+    } else {
+      NSLog("Attempted to dispatch event \(eventName) to \(component) but screen is not initialized");
     }
     return canDispatch
   }
