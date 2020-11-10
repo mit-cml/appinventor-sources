@@ -26,17 +26,17 @@ public final class GeneralSettings extends Settings {
     super(SettingsConstants.USER_GENERAL_SETTINGS);
 
     addProperty(new EditableProperty(this, SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
-        "0", EditableProperty.TYPE_INVISIBLE));
+        "0", null, EditableProperty.TYPE_INVISIBLE, null, null));
     addProperty(new EditableProperty(this, SettingsConstants.USER_TEMPLATE_URLS,"",
-        EditableProperty.TYPE_INVISIBLE));
+        null, EditableProperty.TYPE_INVISIBLE, null, null));
     addProperty(new EditableProperty(this, SettingsConstants.DISABLED_USER_URL, "",
-        EditableProperty.TYPE_INVISIBLE));
+        null, EditableProperty.TYPE_INVISIBLE, null, null));
     addProperty(new EditableProperty(this, SettingsConstants.USER_LAST_LOCALE, "en",
-        EditableProperty.TYPE_INVISIBLE));
+        null, EditableProperty.TYPE_INVISIBLE, null, null));
     addProperty(new EditableProperty(this, SettingsConstants.USER_DYSLEXIC_FONT, "false",
-        EditableProperty.TYPE_INVISIBLE));
+        null, EditableProperty.TYPE_INVISIBLE, null, null));
     addProperty(new EditableProperty(this, SettingsConstants.USER_AUTOLOAD_PROJECT, "true",
-        EditableProperty.TYPE_INVISIBLE));
+        null, EditableProperty.TYPE_INVISIBLE, null, null));
   }
 
   @Override
