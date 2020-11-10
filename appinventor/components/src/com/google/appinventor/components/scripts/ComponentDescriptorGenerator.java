@@ -213,9 +213,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
    */
   private void outputConditionalAnnotations(ComponentInfo component, StringBuilder sb) {
     if (component.conditionalPermissions.size() +
-        component.conditionalBroadcastReceivers.size() + 
-        component.conditionalServices.size() + 
-        component.conditionalContentProviders.size() == 0) {
+        component.conditionalBroadcastReceivers.size() == 0) {
       return;
     }
     sb.append(",\n  \"conditionals\":{\n    ");
@@ -229,18 +227,6 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       if (!first) sb.append(",\n    ");
       sb.append("\"broadcastReceivers\": ");
       outputMultimap(sb, "    ", component.conditionalBroadcastReceivers);
-      first = false;
-    }
-    if (component.conditionalServices.size() > 0) {
-      if (!first) sb.append(",\n    ");
-      sb.append("\"services\": ");
-      outputMultimap(sb, "    ", component.conditionalServices);
-      first = false;
-    }
-    if (component.conditionalContentProviders.size() > 0) {
-      if (!first) sb.append(",\n    ");
-      sb.append("\"contentProviders\": ");
-      outputMultimap(sb, "    ", component.conditionalContentProviders);
       first = false;
     }
     // Add other annotations here as needed
@@ -299,6 +285,8 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append(javaTypeToYailType(prop.getType()));
     sb.append("\", \"rw\": \"");
     sb.append(prop.isUserVisible() ? prop.getRwString() : "invisible");
+    sb.append("\", \"category\": \"");
+    sb.append(prop.getCategory().getName());
     // [lyn, 2015/12/20] Added deprecated field to JSON.
     // If we want to save space in simple-components.json,
     // we could include this field only when it is "true"
