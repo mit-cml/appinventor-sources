@@ -171,17 +171,33 @@ public interface ComponentDatabaseInterface {
     private final String defaultValue;
     private final String caption;
     private final String editorType;
+    private final String category;
+    private final String description;
     private final String[] editorArgs;
 
-    public PropertyDefinition(String name, String defaultValue, String editorType, String[] editorArgs) {
-      this(name, defaultValue, name, editorType, editorArgs);
+    public PropertyDefinition(String name, String defaultValue, String editorType) {
+      this(name, defaultValue, name, null, null, editorType, null);
     }
 
-    public PropertyDefinition(String name, String defaultValue, String caption, String editorType, String[] editorArgs) {
+    public PropertyDefinition(String name, String defaultValue, String caption, String editorType) {
+      this(name, defaultValue, caption, null, null, editorType, null);
+    }
+
+    public PropertyDefinition(String name, String defaultValue, String caption, String category, String description, String editorType) {
+      this(name, defaultValue, caption, category, description, editorType, null);
+    }
+
+    public PropertyDefinition(String name, String defaultValue, String editorType, String[] editorArgs) {
+      this(name, defaultValue, name, null, null, editorType, editorArgs);
+    }
+
+    public PropertyDefinition(String name, String defaultValue, String caption, String category, String description, String editorType, String[] editorArgs) {
       this.name = name;
       this.defaultValue = defaultValue;
       this.caption = caption;
       this.editorType = editorType;
+      this.category = category;
+      this.description = description;
       this.editorArgs = editorArgs;
     }
 
@@ -199,6 +215,14 @@ public interface ComponentDatabaseInterface {
 
     public String getEditorType() {
       return editorType;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public String getCategory() {
+      return category;
     }
 
     public String[] getEditorArgs() {
