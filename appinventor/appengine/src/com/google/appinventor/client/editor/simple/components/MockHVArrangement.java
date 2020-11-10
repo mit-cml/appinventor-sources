@@ -70,8 +70,8 @@ public class MockHVArrangement extends MockContainer {
  /**
    * Creates a new MockHVArrangement component.
    */
-  MockHVArrangement(SimpleEditor editor, String type, ImageResource icon, int orientation,
-    boolean scrollable) {
+ public MockHVArrangement(SimpleEditor editor, String type, ImageResource icon, int orientation,
+                          boolean scrollable) {
     // Note(Hal): This helper thing is a kludge because I really want to write:
     // myLayout = new MockHVLayout(orientation);
     // super(editor, type, icon, myLayout);

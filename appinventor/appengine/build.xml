@@ -581,7 +581,7 @@
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg line="-war"/>
       <arg value="${build.war.dir}"/>
-      <arg line="-logLevel INFO -extra ${build.extra.dir} -style pretty"/>
+      <arg line="-logLevel INFO -extra ${build.extra.dir} -style pretty -generateJsInteropExports"/>
       <arg value="com.google.appinventor.YaClient"/>
     </java>
   </target>

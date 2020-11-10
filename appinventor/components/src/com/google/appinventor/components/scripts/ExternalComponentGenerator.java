@@ -107,6 +107,7 @@ public class ExternalComponentGenerator {
       for (ExternalComponentInfo info : entry.getValue()) {
         copyIcon(name, info.descriptor);
         copyAssets(name, info.descriptor);
+        copyMockFile(name, info.type);
       }
       generateExternalComponentBuildFiles(name, entry.getValue());
       generateExternalComponentOtherFiles(name);
@@ -260,6 +261,22 @@ public class ExternalComponentGenerator {
           throw new IllegalStateException("Unable to copy asset to destination.");
         }
       }
+    }
+  }
+
+  private static void copyMockFile(String packageName, String type) throws IOException {
+    String packagePath = packageName.replace('.', File.separatorChar);
+    String simpleName = type.substring(type.lastIndexOf('.') + 1);
+    String mockFileName = "Mock" + simpleName + ".js";
+    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src" + File.separator + packagePath);
+    File mockFile = new File(sourceDir, "aiwebres/" + mockFileName);
+    if (mockFile.exists()) {
+      File destFile = new File(externalComponentsDirPath + File.separator + packageName + File.separator + mockFileName);
+      ensureDirectory(destFile.getParent(), "Unable to create directory " + destFile.getParent());
+      System.out.println("Extensions : " + "Copying Mock file " + mockFile.getAbsolutePath());
+      copyFile(mockFile.getAbsolutePath(), destFile.getAbsolutePath());
+    } else {
+      System.out.println("Extensions : Skipping missing Mock file " + mockFileName);
     }
   }
 

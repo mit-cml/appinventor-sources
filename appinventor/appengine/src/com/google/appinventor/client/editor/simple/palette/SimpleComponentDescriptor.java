@@ -8,13 +8,14 @@ package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.MockComponentFactory;
+import com.google.appinventor.client.editor.simple.MockComponentRegistry;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
-import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockCircle;
 import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
@@ -24,6 +25,7 @@ import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
+import com.google.appinventor.client.editor.simple.components.MockHVArrangement;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
@@ -44,19 +46,18 @@ import com.google.appinventor.client.editor.simple.components.MockScrollHorizont
 import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockSlider;
 import com.google.appinventor.client.editor.simple.components.MockSpinner;
+import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
 import com.google.appinventor.client.editor.simple.components.MockTextBox;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
+import com.google.appinventor.client.editor.simple.components.MockVisibleExtension;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
-
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
-
 import com.google.common.collect.Maps;
-
 import com.google.gwt.resources.client.ImageResource;
-
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -391,7 +392,7 @@ public final class SimpleComponentDescriptor {
         String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
         return new MockNonVisibleComponent(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            pkgName, editor.getProjectId()));
+                  pkgName, editor.getProjectId()));
       }
     } else if (name.equals(MockButton.TYPE)) {
       return new MockButton(editor);
@@ -464,8 +465,36 @@ public final class SimpleComponentDescriptor {
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
     } else {
-      // TODO(user): add 3rd party mock component proxy here
-      throw new UnsupportedOperationException("unknown component: " + name);
+
+      // check if Mock has been registered against this component
+      if (SimpleComponentDatabase.getInstance(editor.getProjectId()).hasCustomMock(name) &&
+              MockComponentRegistry.isPresent(name)) {
+
+        // get the factory
+        MockComponentFactory mcf = MockComponentRegistry.getMockComponentFactory(name);
+
+        // create MockComponent from the factory
+        // and return the MockComponent
+        return mcf.create(editor);
+
+      } else {
+
+        // TODO(pavi2410)
+
+        // The following code provides a default Mock implementation as a fallback for components which do not have one.
+
+        if (SimpleComponentDatabase.getInstance(editor.getProjectId()).isContainer(name)) {
+          return new MockHVArrangement(editor, name, images.vertical(),
+                  ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
+                  ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
+        } else {
+          String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
+          Image imageFromPath = getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                  pkgName,
+                  editor.getProjectId());
+          return new MockVisibleExtension(editor, name);
+        }
+      }
     }
   }
 }

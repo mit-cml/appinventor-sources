@@ -17,6 +17,7 @@ import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.ProjectEditorFactory;
+import com.google.appinventor.client.editor.simple.MockScriptsManager;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
@@ -567,6 +568,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           COMPONENT_DATABASE.addComponents(componentList);
           for (JSONValue component : componentList.getElements()) {
             String name = component.asObject().get("type").asString().getString();
+
             // group new extensions by package name
             String packageName = name.substring(0, name.lastIndexOf('.'));
             if (!externalCollections.containsKey(packageName)) {
@@ -583,9 +585,11 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
             name = packageName;
             if (!externalComponents.contains(name)) {
               externalComponents.add(name);
+//              MockScriptsManager.load(component.asObject().get("type").asString().getString());
             } else {
               // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
               saveProject();
+//              MockScriptsManager.upgrade(component.asObject().get("type").asString().getString());
             }
           }
         } else {
@@ -594,9 +598,16 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           // In case of upgrade, we do not need to add entry
           if (!externalComponents.contains(componentJSONObject.get("type").toString())) {
             externalComponents.add(componentJSONObject.get("type").toString());
+
+            // fixme: should add a callback here? because COMPONENT_DATABASE.addComponent is called above,
+            //  but can't say whether an extension is already added or has been upgraded
+//            MockScriptsManager.load(componentJSONObject.get("type").toString());
           } else {
             // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
             saveProject();
+
+            // fixme: same as above
+//            MockScriptsManager.upgrade(componentJSONObject.get("type").toString());
           }
         }
         numExternalComponentsLoaded++;
