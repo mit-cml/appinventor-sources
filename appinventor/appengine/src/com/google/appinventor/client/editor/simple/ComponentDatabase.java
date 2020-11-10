@@ -339,8 +339,9 @@ class ComponentDatabase implements ComponentDatabaseInterface {
         Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
         Boolean.valueOf(properties.get("nonVisible").asString().getString()),
         properties.get("iconName").asString().getString(), componentNode.toJson());
-    findComponentProperties(component, properties.get("properties").asArray());
-    findComponentBlockProperties(component, properties.get("blockProperties").asArray());
+    JSONArray blockProperties = properties.get("blockProperties").asArray();
+    findComponentProperties(component, properties.get("properties").asArray(), blockProperties);
+    findComponentBlockProperties(component, blockProperties);
     findComponentEvents(component, properties.get("events").asArray());
     findComponentMethods(component, properties.get("methods").asArray());
     components.put(component.getName(), component);
@@ -364,7 +365,16 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   /*
    * Enters property information into the component descriptor.
    */
-  private void findComponentProperties(ComponentDefinition component, JSONArray propertiesArray) {
+  private void findComponentProperties(ComponentDefinition component, JSONArray propertiesArray,
+      JSONArray blockPropertiesArray) {
+    Map<String, String> descriptions = new HashMap<>();
+    Map<String, String> categoryMap = new HashMap<>();
+    for (JSONValue block : blockPropertiesArray.getElements()) {
+      Map<String, JSONValue> properties = block.asObject().getProperties();
+      String name = properties.get("name").asString().getString();
+      categoryMap.put(name, properties.get("category").asString().getString());
+      descriptions.put(name, properties.get("description").asString().getString());
+    }
     for (JSONValue propertyValue : propertiesArray.getElements()) {
       Map<String, JSONValue> properties = propertyValue.asObject().getProperties();
 
@@ -377,8 +387,15 @@ class ComponentDatabase implements ComponentDatabaseInterface {
           editorArgsList.add(val.asString().getString());
       }
 
-      component.add(new PropertyDefinition(properties.get("name").asString().getString(),
+      String name = properties.get("name").asString().getString();
+      String category = categoryMap.get(name);
+      if (category == null) {
+        category = "Unspecified";
+      }
+
+      component.add(new PropertyDefinition(name,
           properties.get("defaultValue").asString().getString(),
+          name, category, descriptions.get(name),
           properties.get("editorType").asString().getString(),
           editorArgsList.toArray(new String[0])));
     }
