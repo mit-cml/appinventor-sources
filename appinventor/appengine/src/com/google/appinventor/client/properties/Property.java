@@ -25,6 +25,9 @@ public class Property {
   // Current value of the property (initially the same as its default value)
   private String value;
 
+  // Category of the property
+  private final String category;
+
   /**
    * Creates a new property.
    *
@@ -32,10 +35,11 @@ public class Property {
    * @param defaultValue  property's default value (will also be its initial
    *                      current value)
    */
-  public Property(String name, String defaultValue) {
+  public Property(String name, String defaultValue, String category) {
     this.name = name;
     value = defaultValue;
     this.defaultValue = defaultValue;
+    this.category = category;
   }
 
   /**
@@ -72,6 +76,15 @@ public class Property {
    */
   public final String getDefaultValue() {
     return defaultValue;
+  }
+
+  /**
+   * Returns the property's category.
+   *
+   * @return
+   */
+  public final String getCategory() {
+    return category;
   }
 
   /**
