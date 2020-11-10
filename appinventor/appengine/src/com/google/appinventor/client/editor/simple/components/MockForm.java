@@ -238,7 +238,6 @@ public final class MockForm extends MockContainer {
   private TitleBar titleBar;
   private NavigationBar navigationBar;
   private List<MockComponent> selectedComponents = new ArrayList<MockComponent>(Collections.singleton(this));
-  private MockContainer pasteTarget = this;
 
   int screenWidth;              // TEMP: Make package visible so we can use it MockHVLayoutBase
   private int screenHeight;
@@ -456,9 +455,11 @@ public final class MockForm extends MockContainer {
   @Override
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + PORTRAIT_WIDTH, null,
+        "Appearance", "Specifies the width of the component on the screen.",
         PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, null,
+        "Appearance", "Specifies the height of the component on the screen.",
         PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
@@ -948,11 +949,6 @@ public final class MockForm extends MockContainer {
       newSelectedComponent.onSelectedChange(false);
       return;
     }
-    if (newSelectedComponent instanceof MockContainer) {
-      pasteTarget = (MockContainer) newSelectedComponent;
-    } else {
-      pasteTarget = newSelectedComponent.getContainer();
-    }
 
     if (!shouldSelectMultipleComponents) {
       for (MockComponent component : selectedComponents) {
@@ -972,14 +968,6 @@ public final class MockForm extends MockContainer {
 
   public final MockComponent getLastSelectedComponent() {
     return selectedComponents.get(selectedComponents.size() - 1);
-  }
-
-  public final MockContainer getPasteTarget() {
-    return pasteTarget;
-  }
-
-  public final void setPasteTarget(MockContainer target) {
-    this.pasteTarget = target;
   }
 
   /**
