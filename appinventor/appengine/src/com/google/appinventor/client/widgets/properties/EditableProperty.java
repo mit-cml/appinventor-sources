@@ -57,6 +57,9 @@ public final class EditableProperty extends Property {
   // Property caption for use in properties panel
   private final String caption;
 
+  // Property description for use in properties panel help dialogs
+  private final String description;
+
   // Editor type of the property (for creating new editors)
   private final String editorType;
 
@@ -76,13 +79,15 @@ public final class EditableProperty extends Property {
    * @param type  type of property; see {@code TYPE_*} constants
    */
   public EditableProperty(EditableProperties properties, String name, String defaultValue,
-      String caption, PropertyEditor editor, int type, String editorType, String[] editorArgs) {
-    super(name, defaultValue);
+      String caption, String category, String description, PropertyEditor editor, int type,
+      String editorType, String[] editorArgs) {
+    super(name, defaultValue, category);
 
     this.properties = properties;
     this.type = type;
     this.editor = editor;
     this.caption = caption;
+    this.description = description;
     this.editorType = editorType;
     this.editorArgs = editorArgs;
 
@@ -91,7 +96,7 @@ public final class EditableProperty extends Property {
 
   public EditableProperty(EditableProperties properties, String name, String defaultValue,
       int type) {
-    this(properties, name, defaultValue, name, new TextPropertyEditor(), type, "", null);
+    this(properties, name, defaultValue, name, "", "", new TextPropertyEditor(), type, "", null);
   }
 
   /**
@@ -105,8 +110,9 @@ public final class EditableProperty extends Property {
    * @param type  type of property; see {@code TYPE_*} constants
    */
   public EditableProperty(EditableProperties properties, String name, String defaultValue,
-      int type, String editorType, String[] editorArgs) {
-    this(properties, name, defaultValue, name, new TextPropertyEditor(), type, editorType, editorArgs);
+      String category, int type, String editorType, String[] editorArgs) {
+    this(properties, name, defaultValue, name, category, null, new TextPropertyEditor(), type,
+        editorType, editorArgs);
   }
 
   /**
@@ -188,6 +194,10 @@ public final class EditableProperty extends Property {
    */
   final void orphan() {
     editor.orphan();
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   public int getType() {
