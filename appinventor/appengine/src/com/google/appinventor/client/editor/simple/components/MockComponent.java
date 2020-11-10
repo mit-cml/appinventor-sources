@@ -408,7 +408,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // Add the special name property and set the tooltip
     String name = componentName();
     setTitle(name);
-    addProperty(PROPERTY_NAME_NAME, name, null, new TextPropertyEditor());
+    addProperty(PROPERTY_NAME_NAME, name, null, null, (String) null, new TextPropertyEditor());
 
     // TODO(user): Ensure this value is unique within the project using a list of
     // already used UUIDs
@@ -416,7 +416,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // The default value here can be anything except 0, because YoungAndroidProjectServce
     // creates forms with an initial Uuid of 0, and Properties.java doesn't encode
     // default values when it generates JSON for a component.
-    addProperty(PROPERTY_NAME_UUID, "-1", null, new TextPropertyEditor());
+    addProperty(PROPERTY_NAME_UUID, "-1", null, null, (String) null, new TextPropertyEditor());
     changeProperty(PROPERTY_NAME_UUID, "" + Random.nextInt());
 
     editor.getComponentPalettePanel().configureComponent(this);
@@ -509,19 +509,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * @param editor  property editor
    */
   public final void addProperty(String name, String defaultValue, String caption,
-      PropertyEditor editor) {
-
-    int type = EditableProperty.TYPE_NORMAL;
-    if (!isPropertyPersisted(name)) {
-      type |= EditableProperty.TYPE_NONPERSISTED;
-    }
-    if (!isPropertyVisible(name)) {
-      type |= EditableProperty.TYPE_INVISIBLE;
-    }
-    if (isPropertyforYail(name)) {
-      type |= EditableProperty.TYPE_DOYAIL;
-    }
-    properties.addProperty(name, defaultValue, caption, editor, type, "", null);
+      String category, String description, PropertyEditor editor) {
+    addProperty(name, defaultValue, caption, category, description, null, null, editor);
   }
 
   /**
@@ -536,7 +525,11 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public final void addProperty(String name, String defaultValue, String caption,
       String editorType, String[] editorArgs, PropertyEditor editor) {
+    addProperty(name, defaultValue, caption, null, null, editorType, editorArgs, editor);
+  }
 
+  public final void addProperty(String name, String defaultValue, String caption, String category,
+      String description, String editorType, String[] editorArgs, PropertyEditor editor) {
     int type = EditableProperty.TYPE_NORMAL;
     if (!isPropertyPersisted(name)) {
       type |= EditableProperty.TYPE_NONPERSISTED;
@@ -547,7 +540,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     if (isPropertyforYail(name)) {
       type |= EditableProperty.TYPE_DOYAIL;
     }
-    properties.addProperty(name, defaultValue, caption, editor, type, editorType, editorArgs);
+    properties.addProperty(name, defaultValue, caption, category, description, editor, type,
+        editorType, editorArgs);
   }
 
   /**
@@ -589,16 +583,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public void changeProperty(String name, String value) {
     properties.changePropertyValue(name, value);
-  }
-
-  /**
-   * Renames the component to {@code newName}.
-   * @param newName The new name for the component.
-   */
-  public void rename(String newName) {
-    String oldName = getPropertyValue(PROPERTY_NAME_NAME);
-    properties.changePropertyValue(PROPERTY_NAME_NAME, newName);
-    getForm().fireComponentRenamed(this, oldName);
   }
 
   /**
@@ -772,7 +756,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    *
    * @return  owning component container for this component
    */
-  public final MockContainer getContainer() {
+  protected final MockContainer getContainer() {
     return container;
   }
 
@@ -1217,7 +1201,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     for (PropertyDefinition property : newProperties) {
       if (toBeAdded.contains(property.getName())) {
         PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), (YaFormEditor) editor, property.getEditorArgs());
-        addProperty(property.getName(), property.getDefaultValue(), property.getCaption(), property.getEditorType(), property.getEditorArgs(), propertyEditor);
+        addProperty(property.getName(), property.getDefaultValue(), property.getCaption(), property.getCategory(), property.getDescription(), property.getEditorType(), property.getEditorArgs(), propertyEditor);
       }
     }
 
