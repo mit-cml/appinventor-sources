@@ -53,6 +53,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class DesignToolbar extends Toolbar {
 
   private boolean isReadOnly;   // If the UI is in read only mode
+  private volatile boolean lockPublishButton = false; // Used to prevent double-clicking the
+                                                     // SendToGallery button
 
   /*
    * A Screen groups together the form editor and blocks editor for an
@@ -383,18 +385,28 @@ public class DesignToolbar extends Toolbar {
             + "Ignoring SendToGalleryAction.execute().");
         return;
       }
-      Ode.getInstance().getProjectService().sendToGallery(currentProject.getProjectId(),
-        new OdeAsyncCallback<RpcResult>(
-          MESSAGES.GallerySendingError()) {
-          @Override
-          public void onSuccess(RpcResult result) {
-            if (result.getResult() == RpcResult.SUCCESS) {
-              Window.open(result.getOutput(), "_blank", "");
-            } else {
-              ErrorReporter.reportError(result.getError());
+      // Only do something if we aren't already doing it!
+      if (!lockPublishButton) {
+        lockPublishButton = true;
+        Ode.getInstance().getProjectService().sendToGallery(currentProject.getProjectId(),
+          new OdeAsyncCallback<RpcResult>(
+            MESSAGES.GallerySendingError()) {
+            @Override
+            public void onSuccess(RpcResult result) {
+              lockPublishButton = false;
+              if (result.getResult() == RpcResult.SUCCESS) {
+                Window.open(result.getOutput(), "_blank", "");
+              } else {
+                ErrorReporter.reportError(result.getError());
+              }
             }
-          }
-        });
+            @Override
+            public void onFailure(Throwable t) {
+              lockPublishButton = false;
+              super.onFailure(t);
+            }
+          });
+      }
     }
   }
 
