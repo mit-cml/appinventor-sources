@@ -235,7 +235,7 @@ public class TopToolbar extends Composite {
       fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
           new DeleteAction()));
       fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_TRASH, MESSAGES.deleteFromTrashButton(),
-          new DeleteForeverProjectAction()));     
+          new DeleteForeverProjectAction()));
       fileItems.add(null);
       fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
           new SaveAction()));
@@ -1188,7 +1188,7 @@ public class TopToolbar extends Composite {
     }
   }
   
-  private static class DeleteForeverProjectAction implements Command {
+  public static class DeleteForeverProjectAction implements Command {
     @Override
     public void execute() {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
