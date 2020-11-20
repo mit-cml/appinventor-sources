@@ -18,8 +18,8 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 
 /**
- * Tool to generate a list of the simple component types, permissions, libraries, activities
- * and Broadcast Receivers  (build info) required for each component.
+ * Tool to generate a list of the simple component types, permissions, libraries, activities,
+ * Broadcast Receivers, Services and Content Providers  (build info) required for each component.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -81,8 +81,12 @@ public final class ComponentListGenerator extends ComponentProcessor {
     appendComponentInfo(sb, ComponentDescriptorConstants.NATIVE_TARGET, component.nativeLibraries);
     appendComponentInfo(sb, ComponentDescriptorConstants.ASSETS_TARGET, component.assets);
     appendComponentInfo(sb, ComponentDescriptorConstants.ACTIVITIES_TARGET, component.activities);
+    appendComponentInfo(sb, ComponentDescriptorConstants.METADATA_TARGET, component.metadata);
+    appendComponentInfo(sb, ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET, component.activityMetadata);
     appendComponentInfo(sb, ComponentDescriptorConstants.ANDROIDMINSDK_TARGET, Collections.singleton(Integer.toString(component.getAndroidMinSdk())));
     appendComponentInfo(sb, ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET, component.broadcastReceivers);
+    appendComponentInfo(sb, ComponentDescriptorConstants.SERVICES_TARGET, component.services);
+    appendComponentInfo(sb, ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET, component.contentProviders);
     appendConditionalComponentInfo(component, sb);
     // TODO(Will): Remove the following call once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
@@ -101,7 +105,9 @@ public final class ComponentListGenerator extends ComponentProcessor {
    */
   private static void appendConditionalComponentInfo(ComponentInfo component, StringBuilder sb) {
     if (component.conditionalPermissions.size() +
-        component.conditionalBroadcastReceivers.size() == 0) {
+        component.conditionalBroadcastReceivers.size() + 
+        component.conditionalServices.size() + 
+        component.conditionalContentProviders.size() == 0) {
       return;
     }
     sb.append(", \"" + ComponentDescriptorConstants.CONDITIONALS_TARGET + "\": { ");
@@ -109,6 +115,10 @@ public final class ComponentListGenerator extends ComponentProcessor {
     appendMap(sb, component.conditionalPermissions);
     sb.append(", \"" + ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET + "\": ");
     appendMap(sb, component.conditionalBroadcastReceivers);
+    sb.append(", \"" + ComponentDescriptorConstants.SERVICES_TARGET + "\": ");
+    appendMap(sb, component.conditionalServices);
+    sb.append(", \"" + ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET + "\": ");
+    appendMap(sb, component.conditionalContentProviders);
     sb.append("}");
   }
 

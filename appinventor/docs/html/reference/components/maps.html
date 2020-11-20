@@ -369,8 +369,7 @@
   <dd>The list of points, as pairs of latitudes and longitudes, in the <code class="highlighter-rouge">LineString</code>.</dd>
   <dt id="LineString.PointsFromString" class="text wo"><em>PointsFromString</em></dt>
   <dd>Set the points of the LineString from a specially-coded character string of the form:
- [[longitude1, latitude1], [longitude2, latitude2], …]
- Note the reversal of latitude and longitude versus how they are typically represented.</dd>
+ [[latitude1, longitude1], [latitude2, longitude2], …]</dd>
   <dt id="LineString.StrokeColor" class="color"><em>StrokeColor</em></dt>
   <dd>Sets or gets the color used to outline the <code class="highlighter-rouge">LineString</code>.</dd>
   <dt id="LineString.StrokeOpacity" class="number"><em>StrokeOpacity</em></dt>
@@ -466,7 +465,9 @@
   <dt id="Map.EnableZoom" class="boolean"><em>EnableZoom</em></dt>
   <dd>Enables or disables the two-finger pinch gesture to zoom the Map.</dd>
   <dt id="Map.Features" class="list bo"><em>Features</em></dt>
-  <dd>Property for Features</dd>
+  <dd>Gets the list of features attached to the <code class="highlighter-rouge">Map</code> (without regard to the value of the
+ feature’s <code class="getter block highlighter-rouge">Visible</code> property). This list also includes any features created on
+ the <code class="highlighter-rouge">Map</code> by calls to <a href="#Map.FeatureFromDescription"><code class="highlighter-rouge">FeatureFromDescription</code></a>.</dd>
   <dt id="Map.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">Map</code>’s vertical height, measured in pixels.</dd>
   <dt id="Map.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
@@ -497,7 +498,8 @@
   <dt id="Map.Rotation" class="number"><em>Rotation</em></dt>
   <dd>Specifies the rotation of the map in decimal degrees, if any.</dd>
   <dt id="Map.ScaleUnits" class="number"><em>ScaleUnits</em></dt>
-  <dd>Property for ScaleUnits</dd>
+  <dd>Specifies the units used for the scale overlay. 1 (the default) will give metric units
+ (km, m) whereas 2 will give imperial units (mi, ft).</dd>
   <dt id="Map.ShowCompass" class="boolean"><em>ShowCompass</em></dt>
   <dd>Specifies whether to a compass overlay on the Map. The compass will be rotated based on the
  device’s orientation if a digital compass is present in hardware.</dd>
@@ -771,7 +773,7 @@
   <dt id="Navigation.EndLongitude" class="number"><em>EndLongitude</em></dt>
   <dd>The longitude of the end location.</dd>
   <dt id="Navigation.Language" class="text"><em>Language</em></dt>
-  <dd>Property for Language</dd>
+  <dd>The language to use for textual directions. Default is “en” for English.</dd>
   <dt id="Navigation.ResponseContent" class="dictionary ro bo"><em>ResponseContent</em></dt>
   <dd>The raw response from the server. This can be used to access more details beyond what the
  <a href="#Navigation.GotDirections"><code class="highlighter-rouge">GotDirections</code></a> event provides.</dd>
