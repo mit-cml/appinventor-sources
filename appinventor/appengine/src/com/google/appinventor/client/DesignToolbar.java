@@ -192,7 +192,7 @@ public class DesignToolbar extends Toolbar {
       addButton(new ToolbarItem(WIDGET_NAME_REMOVEFORM, MESSAGES.removeFormButton(),
           new RemoveFormAction()));
     }
-    if (galleryEnabled) {
+    if (galleryEnabled && !Ode.getInstance().getGalleryReadOnly()) {
       addButton(new ToolbarItem(WIDGET_NAME_SENDTOGALLERY,
           MESSAGES.publishToGalleryButton(), new SendToGalleryAction()));
     }

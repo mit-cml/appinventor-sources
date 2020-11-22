@@ -2469,6 +2469,10 @@ public class Ode implements EntryPoint {
     }
   }
 
+  public boolean getGalleryReadOnly() {
+    return config.getGalleryReadOnly();
+  }
+
   /**
    * setRendezvousServer
    *

@@ -65,8 +65,10 @@ public class ProjectToolbar extends Toolbar {
     if (galleryEnabled) {
       addButton(new ToolbarItem(WIDGET_NAME_LOGINTOGALLERY, MESSAGES.loginToGallery(),
           new LoginToGalleryAction()));
-      addButton(new ToolbarItem(WIDGET_NAME_SENDTONG, MESSAGES.publishToGalleryButton(),
-          new SendToGalleryAction()));
+      if (!Ode.getInstance().getGalleryReadOnly()) {
+        addButton(new ToolbarItem(WIDGET_NAME_SENDTONG, MESSAGES.publishToGalleryButton(),
+            new SendToGalleryAction()));
+      }
     }
 
     setTrashTabButtonsVisible(false);
