@@ -183,17 +183,17 @@ public class TopToolbar extends Composite {
 
     initWidget(toolbar);
   }
-  
+
   public void updateMoveToTrash(String menu_item){
     if(menu_item.equals("Move To Trash")){
       fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
-      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);  
+      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
     }
     else{
       fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);
       fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);
     }
-  } 
+  }
 
   public void updateMenuState(int numSelectedProjects, int numProjects) {
     boolean allowDelete = !isReadOnly && numSelectedProjects > 0;
@@ -1205,7 +1205,7 @@ public class TopToolbar extends Composite {
       Ode.getInstance().switchToUserAdminPanel();
     }
   }
-  
+
   public static class DeleteForeverProjectAction implements Command {
     @Override
     public void execute() {
