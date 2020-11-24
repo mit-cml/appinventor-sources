@@ -390,7 +390,8 @@ Blockly.Yail.getPropertySettersLines = function(componentJson, componentName, co
   var code = [];
   var type = componentDb.getType(componentJson['$Type']);
   function shouldSendProperty(prop, info) {
-    return (prop.charAt(0) !== '$' && prop !== 'Uuid' && prop !== 'TutorialURL') ||
+    return (prop.charAt(0) !== '$' && prop !== 'Uuid' &&
+      prop !== 'TutorialURL' && prop !== 'BlocksToolkit') ||
       (info && info['alwaysSend']);
   }
   // Gather all of the properties together

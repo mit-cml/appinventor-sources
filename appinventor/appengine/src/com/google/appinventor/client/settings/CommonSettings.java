@@ -72,7 +72,7 @@ public abstract class CommonSettings implements PropertyChangeListener {
    * @param encodedSettings  JSON encoded settings (may be empty)
    */
   protected final void decodeSettings(String encodedSettings) {
-    if (!encodedSettings.isEmpty()) {
+    if (!encodedSettings.isEmpty() && !encodedSettings.equals("{}")) {
       JSONObject settingsObject = new ClientJsonParser().parse(encodedSettings).asObject();
       Map<String, JSONValue> properties = settingsObject.getProperties();
       for (String category : properties.keySet()) {

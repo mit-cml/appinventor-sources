@@ -191,11 +191,7 @@ body {
 /*
  * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
  */
-.ode-ProjectGalleryLink {
-  cursor: pointer;
-  color: #b3c833;
-  text-align: center;
-}
+
 .ode-ProjectNameLabel {
   font-weight: bold;
   font-size: small;
@@ -293,6 +289,7 @@ body {
 /*
  * TopPanel
  */
+
 
 .ode-TopPanel {
   min-height: 40px;
@@ -432,80 +429,7 @@ body {
   padding: 0px 6px;
 }
 
-/*
- * Message inbox
- */
 
-.ode-InboxContainer {
-  display: block;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);   -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);   -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);   -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  width: 600px;
-  padding: 30px;
-}
-.ode-Inbox {
-  font-weight: 300;
-  font-size: 14px;
-  line-height: 1.75;
-  color: #666;
-}
-.ode-Inbox .CloseButton {
-  float: right;
-  display: inline;
-  border: none;
-  padding: 10px;
-  background: none;
-  box-shadow: none;
-  color: #999;
-}
-.ode-Inbox .CloseButton:hover {
-  background: lightyellow;
-}
-.InboxTitle {
-  display: inline;
-}
-.MsgListWrapper {
-  height: 300px; /* ScrollPanel */
-  margin: 15px 0 0;
-  display: block;
-}
-.MsgList {
-}
-.MsgNoPrompt {
-}
-.MsgEntry {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #ddd;
-}
-.MsgEntry-highlighted {
-  background-color: lightyellow;
-  padding: 20px 0;
-  border-bottom: 1px solid #ddd;
-}
-.MsgBody {
-  line-height: 1.5;
-  margin-bottom: 10px;
-  color: #333;
-}
-.MsgMeta .primary-link {
-  display: inline;
-  margin-right: 20px;
-  float: left;
-}
-.MsgMeta .ActionButton {
-  display: inline;
-  margin-right: 20px;
-  background: #b3c833;
-}
-.MsgMeta .MsgSender {
-  display: inline;
-  float: right;
-  margin-right: 5px;
-  font-size: 13px;
-  font-style: italic;
-  vertical-align: bottom;
-}
 
 /*
  * Deck Panel
@@ -746,6 +670,12 @@ body {
   background: #FF6666;
   color: white;
   text-shadow: none;
+}
+
+.destructive-action[disabled],
+.destructive-action[disabled]:hover {
+  background: #faa;
+  color: #888;
 }
 
 .ya-Toolbar .ode-TextButton {
@@ -2745,4 +2675,40 @@ div.vector-marker>svg, div.leaflet-marker-icon>img {
   height: 100%;
   box-sizing: border-box;
   padding: 2px;
+}
+
+div.dropdiv {
+  position: fixed;
+  z-index: 1000000;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  top: 0;
+  left: 0;
+  display: none;
+  pointer-events: none;
+}
+
+div.dropdiv.good {
+  background-color: rgba(128, 255, 128, 0.3);
+  border: 8px dashed darkgreen;
+  display: block;
+}
+
+div.dropdiv div {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+
+div.dropdiv p {
+  text-align: center;
+  top: -15pt;
+  font-size: 18pt;
+  line-height: 30pt;
+  color: darkgreen;
+  margin: 0;
+  position: relative;
 }

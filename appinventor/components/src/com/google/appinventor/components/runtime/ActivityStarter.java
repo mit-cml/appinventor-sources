@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -541,16 +541,25 @@ public class ActivityStarter extends AndroidNonvisibleComponent
       intent.putExtra(extraKey, extraValue);
     }
 
+    // If the extra value is a string, put it to the intent. If the extra value is a list
+    // of strings, convert it to a java list and put that to the intent.
     for (Object extra : extras.toArray()) {
       YailList castExtra = (YailList) extra;
       String key = castExtra.getString(0);
-      String value = castExtra.getString(1);
-      if (key.length() != 0 && value.length() != 0) {
-        Log.i(LOG_TAG, "Adding extra (pairs), key = " + key + " value = " + value);
-        intent.putExtra(key, value);
-      }
-    }
-
+      Object value = castExtra.getObject(1);
+      Log.i(LOG_TAG, "Adding extra, key = " + key + " value = " + value);
+      if ((key.length() != 0)) {
+        if (value instanceof YailList) {
+          Log.i(LOG_TAG, "Adding extra list, key = " + key + " value = " + value);
+          intent.putExtra(key, ((YailList) value).toStringArray());
+        }
+        else {
+          String stringValue = castExtra.getString(1);
+          Log.i(LOG_TAG, "Adding extra string, key = " + key + " value = " + stringValue);
+          intent.putExtra(key, stringValue);
+        }
+      };
+    };
     return intent;
   }
 

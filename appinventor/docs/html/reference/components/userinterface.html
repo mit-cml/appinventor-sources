@@ -414,6 +414,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are <code class="highlighter-rouge">ScrollRightSlow</code>, <code class="highlighter-rouge">ScrollRight</code>, <code class="highlighter-rouge">ScrollRightFast</code>,
  <code class="highlighter-rouge">ScrollLeftSlow</code>, <code class="highlighter-rouge">ScrollLeft</code>, <code class="highlighter-rouge">ScrollLeftFast</code>, and <code class="highlighter-rouge">Stop</code>.</dd>
+  <dt id="Image.Clickable" class="boolean"><em>Clickable</em></dt>
+  <dd>Specifies whether the image should be clickable or not.</dd>
   <dt id="Image.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">Image</code>’s vertical height, measured in pixels.</dd>
   <dt id="Image.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
@@ -439,7 +441,10 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <h3 id="Image-Events">Events</h3>
 
-<p class="events">None</p>
+<dl class="events">
+  <dt id="Image.Click">Click()</dt>
+  <dd>An event that occurs when an image is clicked.</dd>
+</dl>
 
 <h3 id="Image-Methods">Methods</h3>
 
@@ -896,6 +901,13 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="Screen.OpenScreenAnimation" class="text"><em>OpenScreenAnimation</em></dt>
   <dd>The animation for switching to another screen. Valid options are <code class="highlighter-rouge">default</code>, <code class="highlighter-rouge">fade</code>, <code class="highlighter-rouge">zoom</code>,
  <code class="highlighter-rouge">slidehorizontal</code>, <code class="highlighter-rouge">slidevertical</code>, and <code class="highlighter-rouge">none</code>.</dd>
+  <dt id="Screen.Platform" class="text ro bo"><em>Platform</em></dt>
+  <dd>Gets the name of the underlying platform running the app. Currently, this is the text
+ “Android”. Other platforms may be supported in the future.</dd>
+  <dt id="Screen.PlatformVersion" class="text ro bo"><em>PlatformVersion</em></dt>
+  <dd>Gets the version number of the platform running the app. This is typically a dotted version
+ number, such as 10.0. Any value can be returned, however, so you should take care to handle
+ unexpected data. If the platform version is unavailable, the empty text will be returned.</dd>
   <dt id="Screen.PrimaryColor" class="color do"><em>PrimaryColor</em></dt>
   <dd>This is the primary color used as part of the Android theme, including coloring the <code class="highlighter-rouge">Screen</code>’s
  title bar.</dd>
@@ -1425,7 +1437,13 @@ having dark grey components.</li>
 
 <p>You can use the <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> property to communicate between your app and
  Javascript code running in the <code class="highlighter-rouge">WebViewer</code> page. In the app, you get and set
- <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> to “hello”, then the web page will show</p>
+ <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a>. In the <code class="highlighter-rouge">WebViewer</code>, you include Javascript that references the
+ <code class="highlighter-rouge">window.AppInventor</code> object, using the methods <code class="highlighter-rouge">getWebViewString()</code> and <code class="highlighter-rouge">setWebViewString(text)</code>.</p>
+
+<p>For example, if the <code class="highlighter-rouge">WebViewer</code> opens to a page that contains the Javascript command</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">"The answer is"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">AppInventor</span><span class="p">.</span><span class="nx">getWebViewString</span><span class="p">());</span>
+</code></pre></div></div>
+<p>and if you set <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> to “hello”, then the web page will show</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> The answer is hello.
 </code></pre></div></div>
 <p>And if the Web page contains Javascript that executes the command</p>
@@ -1436,6 +1454,14 @@ having dark grey components.</li>
 </code></pre></div></div>
 <p>Calling <code class="highlighter-rouge">setWebViewString</code> from JavaScript will also run the <a href="#WebViewer.WebViewStringChange"><code class="highlighter-rouge">WebViewStringChange</code></a>
  event so that the blocks can handle when the <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> property changes.</p>
+
+<p>Beginning with release nb184a, you can specify a HomeUrl beginning with <code class="highlighter-rouge">http://localhost/</code>
+ to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ <code class="highlighter-rouge">file:///android_asset/</code> in compiled apps and <code class="highlighter-rouge">/sdcard/AppInventor/assets/</code> in the Companion.
+ Both of these options will continue to work but the <code class="highlighter-rouge">http://localhost/</code> approach will work in
+ both scenarios. You may also use “file:///appinventor_asset/” which provides more security by
+ preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ web.</p>
 
 <h3 id="WebViewer-Properties">Properties</h3>
 
@@ -1483,6 +1509,10 @@ having dark grey components.</li>
 <h3 id="WebViewer-Events">Events</h3>
 
 <dl class="events">
+  <dt id="WebViewer.BeforePageLoad">BeforePageLoad(<em class="text">url</em>)</dt>
+  <dd>When a page is about to load this event is run.</dd>
+  <dt id="WebViewer.ErrorOccurred">ErrorOccurred(<em class="number">errorCode</em>,<em class="text">description</em>,<em class="text">failingUrl</em>)</dt>
+  <dd>When an error occurs this event is run.</dd>
   <dt id="WebViewer.PageLoaded">PageLoaded(<em class="text">url</em>)</dt>
   <dd>When a page is finished loading this event is run.</dd>
   <dt id="WebViewer.WebViewStringChange">WebViewStringChange(<em class="text">value</em>)</dt>
@@ -1501,6 +1531,9 @@ having dark grey components.</li>
   <dd>Clear the internal webview cache, both ram and disk. This is useful
  when using the <code class="highlighter-rouge">WebViewer</code> to poll a page that may not be sending
  appropriate cache control headers.</dd>
+  <dt id="WebViewer.ClearCookies" class="method"><i></i> ClearCookies()</dt>
+  <dd>Clear the webview’s cookies. This is useful if you want to
+ sign the user out of a website that uses them to store logins.</dd>
   <dt id="WebViewer.ClearLocations" class="method"><i></i> ClearLocations()</dt>
   <dd>Clear Stored Location permissions. When the geolocation API is used in
  the <code class="highlighter-rouge">WebViewer</code>, the end user is prompted on a per URL basis for whether
@@ -1519,6 +1552,12 @@ Eclair, this function is a no-op on older phones.</p>
  home URL is changed.</dd>
   <dt id="WebViewer.GoToUrl" class="method"><i></i> GoToUrl(<em class="text">url</em>)</dt>
   <dd>Load the page at the given URL.</dd>
+  <dt id="WebViewer.Reload" class="method"><i></i> Reload()</dt>
+  <dd>Reload the current page.</dd>
+  <dt id="WebViewer.RunJavaScript" class="method"><i></i> RunJavaScript(<em class="text">js</em>)</dt>
+  <dd>Run JavaScript in the current page.</dd>
+  <dt id="WebViewer.StopLoading" class="method"><i></i> StopLoading()</dt>
+  <dd>Stop loading a page.</dd>
 </dl>
 
 </article>

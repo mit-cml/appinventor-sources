@@ -151,31 +151,6 @@ public final class ProjectManager {
   }
 
   /**
-   * Handles situation when a project has been published
-   *
-   * @param projectId project ID
-   * @param galleryId gallery ID
-   */
-  public void publishProject (long projectId, long galleryId){
-    Project project = getProject(projectId);
-    project.setGalleryId(galleryId);
-    projectsMap.put(projectId, project);
-    fireProjectPublishedOrUnpublished();
-  }
-  /**
-   * Handles situation when a project has been published
-   *
-   * @param projectId project ID
-   * @param galleryId gallery ID
-   */
-  public void UnpublishProject (long projectId) {
-    Project project = getProject(projectId);
-    project.setGalleryId(UserProject.NOTPUBLISHED);
-    projectsMap.put(projectId, project);
-    fireProjectPublishedOrUnpublished();
-  }
-
-  /**
    * Adds a {@link ProjectManagerEventListener} to the listener list.
    *
    * @param listener  the {@code ProjectManagerEventListener} to be added
@@ -238,12 +213,6 @@ public final class ProjectManager {
     projectsLoaded = true;
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onProjectsLoaded();
-    }
-  }
-
-  private void fireProjectPublishedOrUnpublished() {
-    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
-      listener.onProjectPublishedOrUnpublished();
     }
   }
 }

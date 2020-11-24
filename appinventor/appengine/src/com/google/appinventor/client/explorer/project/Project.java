@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client.explorer.project;
 
-import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -93,15 +92,6 @@ public final class Project {
   }
 
   /**
-   * Returns the id of this project's attribution.
-   *
-   * @return  attribution id
-   */
-  public long getAttributionId() {
-    return projectInfo.getAttributionId();
-  }
-
-  /**
    * Returns the name of this project.
    *
    * @return  project name
@@ -143,23 +133,6 @@ public final class Project {
    */
   public void setDateModified(long date) {
     projectInfo.setDateModified(date);
-  }
-
-  public boolean isPublished() {
-    if (projectInfo.getGalleryId() <= UserProject.NOTPUBLISHED) {
-      /* The current unpublished project has galleryId == 0, but some old
-       * unpublished projects in database may still have -1 as unpublished value.
-       * Therefore, we use <= 0 to make sure this check.*/
-      return false;
-    }
-    return true;
-  }
-  public long getGalleryId() {
-    return projectInfo.getGalleryId();
-  }
-
-  public void setGalleryId(long id) {
-    projectInfo.setGalleryId(id);
   }
 
   /**
@@ -262,30 +235,14 @@ public final class Project {
 
   public void deleteFromTrash() {
     Tracking.trackEvent(Tracking.PROJECT_EVENT,
-            Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, getProjectName());
-    if (isPublished()) {
-      Ode.getInstance().getGalleryService().deleteApp(projectInfo.getGalleryId(),
-              new OdeAsyncCallback<Void>(
-                      // failure message
-                      MESSAGES.galleryDeleteError()) {
-                @Override
-                public void onSuccess(Void result) {
-                  // need to update gallery list
-                  GalleryClient gallery = GalleryClient.getInstance();
-                  gallery.appWasChanged();
-                }
-              });
-    } else {
-      Ode.getInstance().getProjectService().deleteProject(getProjectId(),
-              new OdeAsyncCallback<Void>(
-                      // failure message
-                      MESSAGES.deleteProjectError()) {
-                @Override
-                public void onSuccess(Void result) {
-                  Ode.getInstance().getProjectManager().removeDeletedProject(getProjectId());
-                }
-              });
-    }
+        Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, getProjectName());
+    final OdeAsyncCallback<Void> deleteCallback = new OdeAsyncCallback<Void>() {
+      @Override
+      public void onSuccess(Void result) {
+        Ode.getInstance().getProjectManager().removeDeletedProject(getProjectId());
+      }
+    };
+    Ode.getInstance().getProjectService().deleteProject(getProjectId(), deleteCallback);
   }
 
   public boolean isInTrash() {

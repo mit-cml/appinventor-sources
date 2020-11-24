@@ -317,7 +317,7 @@ Blockly.Blocks.component_event = {
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
   // Also must create flydown params and DO input if they don't exist.
 
-  // To-DO: consider using top.BlocklyPanel... instead of window.parent.BlocklyPanel
+  // TODO: consider using top.BlocklyPanel... instead of window.parent.BlocklyPanel
 
   setParameterOrientation: function(isHorizontal) {
     var params = this.getParameters();
@@ -343,15 +343,16 @@ Blockly.Blocks.component_event = {
           this.removeInput('DO');
         }
 
-        // .. and insert new ones:
+        // ... and insert new ones:
         if (params.length > 0) {
           var paramInput = this.appendDummyInput('PARAMETERS')
                                .appendField(" ")
                                .setAlign(Blockly.ALIGN_LEFT);
           for (i = 0; param = params[i]; i++) {
-            paramInput.appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false, null, null, param.name), // false means not editable
-                                   'VAR' + i)
-                      .appendField(" ");
+            var field = new Blockly.FieldEventFlydown(
+                param, componentDb, Blockly.FieldFlydown.DISPLAY_BELOW);
+            paramInput.appendField(field, 'VAR' + i)
+                .appendField(" ");
           }
         }
 
@@ -369,13 +370,13 @@ Blockly.Blocks.component_event = {
           this.removeInput('DO');
         }
 
-        // .. and insert new ones:
+        // ... and insert new ones:
 
         // Vertically aligned parameters
         for (i = 0; param = params[i]; i++) {
+          var field = new Blockly.FieldEventFlydown(param, componentDb);
           this.appendDummyInput('VAR' + i)
-              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false),
-                           'VAR' + i)
+              .appendField(field, 'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
         newDoInput = this.appendStatementInput("DO")
@@ -408,7 +409,6 @@ Blockly.Blocks.component_event = {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
       this.componentDropDown.setValue(this.instanceName);
-      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
       return true;
     }
     return false;
@@ -530,6 +530,7 @@ Blockly.Blocks.component_event = {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
     Blockly.ComponentBlock.addGenericOption(this, options);
     Blockly.BlocklyEditor.addPngExportOption(this, options);
+    Blockly.BlocklyEditor.addGenerateYailOption(this, options);
   },
 
   // check if the block corresponds to an event inside componentTypes[typeName].eventDictionary
@@ -792,7 +793,6 @@ Blockly.Blocks.component_method = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
-      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
       return true;
     }
     return false;
@@ -1198,7 +1198,6 @@ Blockly.Blocks.component_set_get = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
-      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
       return true;
     }
     return false;
@@ -1350,7 +1349,6 @@ Blockly.Blocks.component_component_block = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
-      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
       return true;
     }
     return false;
@@ -1443,6 +1441,7 @@ Blockly.ComponentBlock.HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL,
@@ -1490,6 +1489,7 @@ Blockly.ComponentBlock.HELPURLS = {
   "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_HELPURL,
   "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_HELPURL,
   "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_HELPURL,
+  "Serial": Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_HELPURL,
   "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_HELPURL,
   "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_HELPURL,
   "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_HELPURL,
@@ -1533,6 +1533,7 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_PROPERTIES_HELPURL,
@@ -1580,6 +1581,7 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_PROPERTIES_HELPURL,
   "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_PROPERTIES_HELPURL,
   "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_PROPERTIES_HELPURL,
+  "Serial": Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_PROPERTIES_HELPURL,
   "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL,
   "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_PROPERTIES_HELPURL,
   "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_PROPERTIES_HELPURL,
@@ -1623,6 +1625,7 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_EVENTS_HELPURL,
@@ -1663,6 +1666,7 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_EVENTS_HELPURL,
   "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL,
   "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_EVENTS_HELPURL,
+  "Serial": Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_EVENTS_HELPURL,
   "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL,
   "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_EVENTS_HELPURL,
   "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL,
@@ -1703,6 +1707,7 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_METHODS_HELPURL,
@@ -1745,6 +1750,7 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
   "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_METHODS_HELPURL,
   "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL,
   "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL,
+  "Serial": Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_METHODS_HELPURL,
   "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL,
   "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_METHODS_HELPURL,
   "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL,

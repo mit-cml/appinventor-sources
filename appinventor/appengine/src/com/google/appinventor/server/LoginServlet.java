@@ -99,6 +99,8 @@ public class LoginServlet extends HttpServlet {
     String repo = params.get("repo");
     String galleryId = params.get("galleryId");
     String redirect = params.get("redirect");
+    String autoload = params.get("autoload");
+    String newGalleryId = params.get("ng");
 
     if (DEBUG) {
       LOG.info("locale = " + locale + " bundle: " + new Locale(locale));
@@ -151,6 +153,8 @@ public class LoginServlet extends HttpServlet {
       uri = new UriBuilder(uri)
         .add("locale", locale)
         .add("repo", repo)
+        .add("autoload", autoload)
+        .add("ng", newGalleryId)
         .add("galleryId", galleryId).build();
       resp.sendRedirect(uri);
       return;
@@ -168,6 +172,7 @@ public class LoginServlet extends HttpServlet {
         String uri = new UriBuilder("/login/google")
           .add("locale", "en".equals(locale) ? null : locale)
           .add("repo", repo)
+          .add("ng", newGalleryId)
           .add("galleryId", galleryId)
           .add("redirect", redirect).build();
         resp.sendRedirect(uri);
@@ -245,8 +250,10 @@ public class LoginServlet extends HttpServlet {
     req.setAttribute("localeLabel", locale);
     req.setAttribute("pleaselogin", bundle.getString("pleaselogin"));
     req.setAttribute("login", bundle.getString("login"));
+    req.setAttribute("autoload", autoload);
     req.setAttribute("repo", repo);
     req.setAttribute("locale", locale);
+    req.setAttribute("ng", newGalleryId);
     req.setAttribute("galleryId", galleryId);
     try {
       req.getRequestDispatcher("/login.jsp").forward(req, resp);
@@ -278,7 +285,9 @@ public class LoginServlet extends HttpServlet {
     String locale = params.get("locale");
     String repo = params.get("repo");
     String galleryId = params.get("galleryId");
+    String newGalleryId = params.get("ng");
     String redirect = params.get("redirect");
+    String autoload = params.get("autoload");
 
     if (locale == null) {
       locale = "en";
@@ -332,6 +341,8 @@ public class LoginServlet extends HttpServlet {
       String uri = new UriBuilder("/")
         .add("locale", locale)
         .add("repo", repo)
+        .add("autoload", autoload)
+        .add("ng", newGalleryId)
         .add("galleryId", galleryId).build();
       resp.sendRedirect(uri);   // Logged in, go to service
       return;
@@ -380,7 +391,9 @@ public class LoginServlet extends HttpServlet {
     }
     uri = new UriBuilder(uri)
       .add("locale", locale)
+      .add("autoload", autoload)
       .add("repo", repo)
+      .add("ng", newGalleryId)
       .add("galleryId", galleryId).build();
     resp.sendRedirect(uri);
   }
