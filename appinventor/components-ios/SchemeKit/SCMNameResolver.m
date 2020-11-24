@@ -25,6 +25,10 @@ static NSMutableDictionary<NSString *, Protocol *> *preregisteredProtocols = nil
  *  @return A dictionary mapping method names to {@link SCMMethod} instances.
  */
 + (NSDictionary<NSString *, SCMMethod *> *)lookupMethodsForClass:(Class)clazz {
+  if (clazz == nil) {
+    // Prevent infinite recursion because the class of nil is nil
+    return [NSDictionary dictionary];
+  }
   if (!methodLookupDict) {
     methodLookupDict = [[NSMutableDictionary alloc] init];
   }
