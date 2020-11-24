@@ -88,4 +88,8 @@
 @synthesize yailName = _yailName;
 @synthesize fullName = _fullName;
 
+- (NSString *)debugDescription {
+  return [NSString stringWithFormat:@"SCMMethod %@.%@", NSStringFromClass(_class), _yailName];
+}
+
 @end
