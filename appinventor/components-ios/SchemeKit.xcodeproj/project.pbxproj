@@ -83,6 +83,8 @@
 		065ECF891D94A02000C749A1 /* object.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF831D94A02000C749A1 /* object.h */; };
 		065ECF8A1D94A02000C749A1 /* state.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF841D94A02000C749A1 /* state.h */; };
 		065ECF8B1D94A02000C749A1 /* vm.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF851D94A02000C749A1 /* vm.h */; };
+		0682D18C255AF67400015CF1 /* SCMWeakReference.h in Headers */ = {isa = PBXBuildFile; fileRef = 0682D18A255AF67400015CF1 /* SCMWeakReference.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0682D18D255AF67400015CF1 /* SCMWeakReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 0682D18B255AF67400015CF1 /* SCMWeakReference.m */; };
 		068B4F18207553060050A8BE /* runtime.scm in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F17207553060050A8BE /* runtime.scm */; };
 		068B4F1A207553DF0050A8BE /* HelloPurr.yail in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F19207553DF0050A8BE /* HelloPurr.yail */; };
 		068B4F20207562880050A8BE /* Screen1.yail in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F1F207562880050A8BE /* Screen1.yail */; };
@@ -203,6 +205,8 @@
 		065ECF831D94A02000C749A1 /* object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = object.h; path = picrin/extlib/benz/include/picrin/private/object.h; sourceTree = "<group>"; };
 		065ECF841D94A02000C749A1 /* state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = state.h; path = picrin/extlib/benz/include/picrin/private/state.h; sourceTree = "<group>"; };
 		065ECF851D94A02000C749A1 /* vm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vm.h; path = picrin/extlib/benz/include/picrin/private/vm.h; sourceTree = "<group>"; };
+		0682D18A255AF67400015CF1 /* SCMWeakReference.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMWeakReference.h; sourceTree = "<group>"; };
+		0682D18B255AF67400015CF1 /* SCMWeakReference.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMWeakReference.m; sourceTree = "<group>"; };
 		068B4F17207553060050A8BE /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = AIComponentKit/runtime.scm; sourceTree = SOURCE_ROOT; };
 		068B4F19207553DF0050A8BE /* HelloPurr.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HelloPurr.yail; sourceTree = "<group>"; };
 		068B4F1F207562880050A8BE /* Screen1.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Screen1.yail; path = ../../aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail; sourceTree = "<group>"; };
@@ -414,6 +418,8 @@
 				0624073F245352D5005E5BFC /* SCMValue.h */,
 				0644E9212460726100ECD2BD /* SCMValue-Private.h */,
 				06240744245355FB005E5BFC /* SCMValue.m */,
+				0682D18A255AF67400015CF1 /* SCMWeakReference.h */,
+				0682D18B255AF67400015CF1 /* SCMWeakReference.m */,
 				06FCDEE31D94383000199DD4 /* SchemeKit.h */,
 				062407362453465B005E5BFC /* YailDictionary.h */,
 				062407372453465B005E5BFC /* YailDictionary.m */,
@@ -485,6 +491,7 @@
 				065ECF8A1D94A02000C749A1 /* state.h in Headers */,
 				065ECF891D94A02000C749A1 /* object.h in Headers */,
 				0650B1F81DABBE6A00A7846C /* SCMASTPrinter.h in Headers */,
+				0682D18C255AF67400015CF1 /* SCMWeakReference.h in Headers */,
 				062407382453465B005E5BFC /* YailDictionary.h in Headers */,
 				0624073424534413005E5BFC /* SCMObject.h in Headers */,
 				06483713245BD77300825364 /* SCMValue.h in Headers */,
@@ -708,6 +715,7 @@
 				0650B1F51DAB410B00A7846C /* ASTRecursiveVisitor.m in Sources */,
 				06240745245355FB005E5BFC /* SCMValue.m in Sources */,
 				06BEC17B1D961AE100B62630 /* emyg_dtoa.c in Sources */,
+				0682D18D255AF67400015CF1 /* SCMWeakReference.m in Sources */,
 				0650B20E1DABC48F00A7846C /* mt19937ar.c in Sources */,
 				0650B2071DABC47500A7846C /* file.c in Sources */,
 				06BEC1791D961AE100B62630 /* emyg_atod.c in Sources */,

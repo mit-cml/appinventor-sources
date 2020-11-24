@@ -2,6 +2,7 @@
 // Copyright © 2020 Massachusetts Institute of Technology, All rights reserved.
 
 #import "SCMObjectWrapper.h"
+#import "SCMInterpreter-Private.h"
 
 @implementation SCMObjectWrapper
 
@@ -57,6 +58,16 @@
 
 - (BOOL)isPicEqual:(pic_value)other {
   return value_ == other;
+}
+
+- (void)mark {
+  [interpreter_ mark:value_];
+}
+
+// MARK: NSCopying implementation
+
+- (id)copyWithZone:(NSZone *)zone {
+  return self;
 }
 
 @end

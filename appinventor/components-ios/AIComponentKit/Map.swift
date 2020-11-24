@@ -1024,6 +1024,12 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   public func isVisible() -> Bool {
     return _container.isVisible(component: self)
   }
+
+#if DEBUG
+  deinit {
+    NSLog("Deinitializing \(self)")
+  }
+#endif
 }
 
 

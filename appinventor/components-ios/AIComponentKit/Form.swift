@@ -203,6 +203,7 @@ import Toast_Swift
     _linearView.removeAllItems()
     clearComponents()
     defaultPropertyValues()
+    SCMInterpreter.default()?.runGC()
   }
 
   private func recomputeLayout() {
@@ -963,6 +964,33 @@ import Toast_Swift
                           width: view.frame.size.width, height: view.frame.size.height + height)
     }
   }
+
+  @objc(isVisible) open var visible: Bool {
+    return true
+  }
+
+  // MARK: Memory management
+
+  private var marked = false
+
+  @objc open func mark() {
+    guard !marked else {
+      return
+    }
+    defer {
+      marked = false
+    }
+    marked = true
+  #if DEBUG
+    NSLog("Form.mark")
+  #endif
+  }
+
+#if DEBUG
+  deinit {
+    NSLog("Deallocating \(self)")
+  }
+#endif
 }
 
 // Helper function inserted by Swift 4.2 migrator.

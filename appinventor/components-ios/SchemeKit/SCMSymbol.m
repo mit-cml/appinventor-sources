@@ -98,6 +98,10 @@ static NSString *kNameKey = @"name";
   return NO;
 }
 
+- (void)mark {
+  [_interpreter mark:_symbol];
+}
+
 /// MARK: - SCMObject Implementation
 
 @synthesize interpreter = _interpreter;

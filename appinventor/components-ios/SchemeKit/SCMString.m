@@ -97,6 +97,11 @@
   return NO;
 }
 
+- (void)mark {
+  [interpreter_ mark:value_];
+}
+
+
 /// MARK: SCMObject Implementation
 
 @synthesize interpreter = interpreter_;

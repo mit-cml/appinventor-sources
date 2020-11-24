@@ -7,6 +7,7 @@
 #import "SCMSymbol.h"
 #import "YailList.h"
 #import "SCMInterpreter-Private.h"
+#import "SCMWeakReference.h"
 
 
 static NSString *kSizeKey = @"size";
@@ -453,11 +454,18 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 
 - (id)objectForKey:(id)aKey {
   id result = [_backend objectForKey:aKey];
+  if (result != nil && [result isKindOfClass:[SCMWeakReference class]]) {
+    return ((SCMWeakReference *) result).object;
+  }
   return result;
 }
 
 - (id)objectForKeyedSubscript:(id)aKey {
-  return [_backend objectForKeyedSubscript:aKey];
+  id result = [_backend objectForKeyedSubscript:aKey];
+  if (result != nil && [result isKindOfClass:[SCMWeakReference class]]) {
+    return ((SCMWeakReference *) result).object;
+  }
+  return result;
 }
 
 - (NSEnumerator<id> *)keyEnumerator {
@@ -473,6 +481,9 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 /// MARK: NSMutableDictionary required methods
 
 - (void)setObject:(id)anObject forKey:(id<NSCopying>)aKey {
+  if ([[anObject class] conformsToProtocol:@protocol(NeedsWeakReference)]) {
+    anObject = [SCMWeakReference referenceForObject:anObject inInterpreter:_interpreter];
+  }
   if (![_backend objectForKey:aKey]) {
     [_keys addObject:aKey];
   }
@@ -534,6 +545,21 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
   return NO;
 }
 
+- (void)mark {
+  NSLog(@"YailDictionary.mark");
+  [_interpreter mark:_value];
+  for (id key in _keys) {
+    if ([key respondsToSelector:@selector(mark)]) {
+      [key mark];
+    }
+    id value = _backend[key];
+    if ([value respondsToSelector:@selector(mark)]) {
+      [value mark];
+    }
+  }
+}
+
+
 /// MARK: NSCopying implementation
 
 - (nonnull id)copyWithZone:(nullable NSZone *)zone {
@@ -574,7 +600,11 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
   NSUInteger i = 0;
   while (i < len && (start + i) < _keys.count) {
     id key = _keys[i];
-    YailList *list = [YailList listInInterpreter:_interpreter ofValues:key, _backend[key], nil];
+    id value = _backend[key];
+    if (value != nil && [value isKindOfClass:[SCMWeakReference class]]) {
+      value = ((SCMWeakReference *) value).object;
+    }
+    YailList *list = [YailList listInInterpreter:_interpreter ofValues:key, value, nil];
     [_retainArray addObject:list];
     buffer[i++] = list;
   }

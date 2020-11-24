@@ -348,6 +348,10 @@ static pic_value cons_at(pic_state *pic, pic_value start, NSUInteger index) {
   return NO;
 }
 
+- (void)mark {
+  gc_mark(_interpreter.state, _head);
+}
+
 /// MARK: NSCoding Implementation
 
 - (void)encodeWithCoder:(nonnull NSCoder *)coder {

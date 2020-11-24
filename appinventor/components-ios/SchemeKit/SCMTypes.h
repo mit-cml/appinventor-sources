@@ -4,5 +4,7 @@
 #import "SCMValue.h"
 #import "SCMString.h"
 #import "SCMSymbol.h"
+#import "SCMObjectWrapper.h"
+#import "SCMWeakReference.h"
 #import "YailList.h"
 #import "YailDictionary.h"

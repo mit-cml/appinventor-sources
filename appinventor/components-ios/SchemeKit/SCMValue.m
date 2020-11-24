@@ -136,6 +136,10 @@ static NSString *kValueKey = @"value";
 
 /// MARK: SCMValue Protocol Implementation
 
+- (void)mark {
+  // nothing to do for built-in types
+}
+
 - (BOOL)isBool {
   return pic_true_p(nil, self->_value) ||
       pic_false_p(nil, self->_value);

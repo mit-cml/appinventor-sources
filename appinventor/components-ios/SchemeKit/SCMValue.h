@@ -8,6 +8,7 @@
 @protocol SCMValue<NSObject, NSCopying>
 
 - (BOOL)isPicEqual:(pic_value)other;
+- (void)mark;
 
 // Built-in YAIL types
 @property (readonly) BOOL isBool;

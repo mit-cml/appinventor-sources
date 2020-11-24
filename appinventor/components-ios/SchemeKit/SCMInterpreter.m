@@ -280,12 +280,14 @@ static SCMInterpreter *_defaultInterpreter = nil;
   pic_state *pic = _pic;
   pic_value e;
   _defaultInterpreter = self;
+  size_t ai = pic_enter(pic);
   pic_try {
     yail_set_current_form(pic, yail_make_native_instance(pic, form));
     pic_eval(pic, pic_read_cstr(pic, "(add-to-current-form-environment 'Screen1 *this-form*)"), "yail");
   } pic_catch(e) {
     exception_ = exception_from_pic_error(pic, e);
   }
+  pic_leave(pic, ai);
 }
 
 - (void)setValue:(id)value forSymbol:(NSString *)symname {
@@ -397,6 +399,32 @@ static SCMInterpreter *_defaultInterpreter = nil;
     return yail_to_native(_pic, value);
   }
 }
+
+- (void)mark:(pic_value)value {
+  gc_mark(_pic, value);
+}
+
+- (void)runGC {
+  pic_gc(_pic);
+}
+
+#ifdef DEBUG
+
+- (void)printGCRoots:(id)object {
+  NSLog(@"Looking for strong references to %@", object);
+  pic_value e;
+  pic_state *pic = _pic;
+  _defaultInterpreter = self;
+  size_t ai = pic_enter(pic);
+  pic_try {
+    yail_print_strong_refs(pic, yail_make_native_instance(pic, object));
+  } pic_catch(e) {
+    exception_ = exception_from_pic_error(pic, e);
+  }
+  pic_leave(pic, ai);
+}
+
+#endif
 
 @synthesize state = _pic;
 

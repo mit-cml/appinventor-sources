@@ -22,6 +22,22 @@
 - (nonnull SCMSymbol *)makeSymbol:(nonnull NSString *)name;
 - (nonnull id<SCMValue>)valueForObject:(nullable id)object;
 
+/**
+ * Run a garbage collection cycle of the Scheme memory.
+ */
+- (void)runGC;
+
+#ifdef DEBUG
+
+/**
+ * Run the garbage collector and idenitfy at least one strong path from the GC roots to the object.
+ *
+ * @param object the object of interest
+ */
+- (void)printGCRoots:(nonnull id)object;
+
+#endif
+
 @property (readonly) NSException * _Nullable exception;
 
 @end

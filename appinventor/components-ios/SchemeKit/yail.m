@@ -15,18 +15,62 @@
 static pic_value
 yail_invoke_internal(pic_state *pic, NSInvocation *method, int argc, pic_value args[]);
 
-static size_t BUFSIZE = 4096;
 static NSTimeZone *timeZone = nil;
 static NSMutableDictionary<NSString *, id> *aliasMap = nil;
 
 @class ProtocolWrapper;
+@class ValueHolder;
 
 /** Used to maintain references to objects GCed by Picrin */
-static NSMutableDictionary<id, NSNumber *> *objects = nil;
+static NSMutableDictionary<id, ValueHolder *> *objects = nil;
 static NSMutableDictionary<NSString *, ProtocolWrapper *> *protocols = nil;
+
+@interface ClassWrapper: NSObject<NSCopying> {
+  Class class_;
+  NSString *name_;
+}
+- (instancetype)initWithClass:(Class)aClass;
+@property (readonly) Class class;
+@end
+
+@implementation ClassWrapper
+
+- (instancetype)initWithClass:(Class)aClass {
+  if (self = [super init]) {
+    self->class_ = aClass;
+    self->name_ = NSStringFromClass(aClass);
+  }
+  return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+  return self;
+}
+
+- (NSUInteger)hash {
+  return [name_ hash];
+}
+
+- (BOOL)isEqual:(id)object {
+  if (object == nil) {
+
+  } else if ([object isKindOfClass:[self class]]) {
+    return class_ == ((ClassWrapper *) object)->class_;
+  }
+  return NO;
+}
+
+- (NSString *)description {
+  return name_;
+}
+
+@synthesize class = class_;
+
+@end
 
 @interface ProtocolWrapper: NSObject<NSCopying> {
   Protocol *protocol_;
+  NSString *name_;
 }
 - (instancetype)initWithProtocol:(Protocol *)protocol;
 @property (readonly) Protocol *protocol;
@@ -37,12 +81,26 @@ static NSMutableDictionary<NSString *, ProtocolWrapper *> *protocols = nil;
 - (instancetype)initWithProtocol:(Protocol *)protocol {
   if (self = [super init]) {
     self->protocol_ = protocol;
+    self->name_ = NSStringFromProtocol(protocol);
   }
   return self;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
   return self;
+}
+
+- (NSUInteger)hash {
+  return [name_ hash];
+}
+
+- (BOOL)isEqual:(id)object {
+  if (object == nil) {
+    return NO;
+  } else if ([object isKindOfClass:[ProtocolWrapper class]]) {
+    return protocol_ == ((ProtocolWrapper *) object)->protocol_;
+  }
+  return NO;
 }
 
 @synthesize protocol = protocol_;
@@ -103,6 +161,43 @@ static NSMutableDictionary<NSString *, ProtocolWrapper *> *protocols = nil;
 
 @end
 
+/**
+ * @c ValueHolder wraps an Objective-C/Swift object in the form of a Picrin value and manages
+ * whether it is garbage collected using a reference counter.
+ */
+@interface ValueHolder : NSObject {
+@private
+  pic_value value_;
+}
+
+/**
+ * Allocate a new reference counter for the given value.
+ *
+ * @param value the opaque scheme value wrapping the reference-counted Objective-C object
+ */
++ (instancetype)holderForValue:(pic_value)value;
+
+@property (readonly) pic_value value;
+
+@end
+
+@implementation ValueHolder
+
++ (instancetype)holderForValue:(pic_value)value {
+  return [[ValueHolder alloc] initWithValue:value];
+}
+
+- (instancetype)initWithValue:(pic_value)value {
+  if (self = [super init]) {
+    value_ = value;
+  }
+  return self;
+}
+
+@synthesize value = value_;
+
+@end
+
 struct native_class {
   OBJECT_HEADER
   Class class_;
@@ -137,16 +232,6 @@ struct native_yaildict {
   OBJECT_HEADER
   __weak YailDictionary *object_;
 };
-
-static pic_value
-pic_call_native_method(pic_state *pic) {
-  //TODO: implementation
-  // rough sketch:
-  // 1. get target native object from pic
-  // 2. get target native selector from pic
-  // 3. get list of
-  return pic_invalid_value(pic);
-}
 
 static pic_value
 pic_yail_is_type(pic_state *pic) {
@@ -232,14 +317,15 @@ yail_make_instance(pic_state *pic);
 
 pic_value
 yail_make_native_class(pic_state *pic, Class clazz) {
-  NSNumber *wrappedValue = nil;
-  if ((wrappedValue = [objects objectForKey:clazz])) {
-    return (pic_value) wrappedValue.unsignedLongLongValue;
+  ValueHolder *wrappedValue = nil;
+  ClassWrapper *wrapper = [[ClassWrapper alloc] initWithClass:clazz];
+  if ((wrappedValue = [objects objectForKey:wrapper])) {
+    return wrappedValue.value;
   }
-  native_class *native = (native_class *)pic_obj_alloc(pic, offsetof(native_class, class_), YAIL_TYPE_CLASS);
+  native_class *native = (native_class *)pic_obj_alloc(pic, sizeof(native_class), YAIL_TYPE_CLASS);
   native->class_ = clazz;
   pic_value value = pic_obj_value(native);
-  objects[clazz] = [NSNumber numberWithUnsignedLongLong:value];
+  objects[wrapper] = [ValueHolder holderForValue:value];
   return value;
 }
 
@@ -250,27 +336,38 @@ yail_native_class_name(pic_state *PIC_UNUSED(pic), struct native_class *data) {
 
 void
 yail_native_class_dtor(pic_state *pic, struct native_class *data) {
-  [objects removeObjectForKey:data->class_];
+  ClassWrapper *wrapper = [[ClassWrapper alloc] initWithClass:data->class_];
+  ValueHolder *holder = objects[wrapper];
+  if (holder) {
+#ifdef DEBUG
+    NSLog(@"Deallocating class %@", [wrapper description]);
+#endif
+    [objects removeObjectForKey:wrapper];
+  }
 }
 
 #pragma mark Native Protocol values
 
 pic_value
 yail_make_native_protocol(pic_state *pic, Protocol *protocol) {
-  NSNumber *wrappedValue = nil;
+  ValueHolder *wrappedValue = nil;
   ProtocolWrapper *wrapper = [protocols objectForKey:NSStringFromProtocol(protocol)];
+  if (!wrapper) {
+    wrapper = [[ProtocolWrapper alloc] initWithProtocol:protocol];
+  }
   if (wrapper) {
     if ((wrappedValue = [objects objectForKey:wrapper])) {
-      return (pic_value) wrappedValue.unsignedLongLongValue;
+      return wrappedValue.value;
     }
+    [protocols setObject:wrapper forKey:NSStringFromProtocol(protocol)];
+    native_protocol *native = (native_protocol *)pic_obj_alloc(pic, sizeof(native_protocol), YAIL_TYPE_PROTOCOL);
+    native->protocol_ = protocol;
+    pic_value value = pic_obj_value(native);
+    objects[wrapper] = [ValueHolder holderForValue:value];
+    return value;
+  } else {
+    return pic_undef_value(pic);
   }
-  wrapper = [[ProtocolWrapper alloc] initWithProtocol:protocol];
-  [protocols setObject:wrapper forKey:NSStringFromProtocol(protocol)];
-  native_protocol *native = (native_protocol *)pic_obj_alloc(pic, offsetof(native_protocol, protocol_), YAIL_TYPE_PROTOCOL);
-  native->protocol_ = protocol;
-  pic_value value = pic_obj_value(native);
-  objects[wrapper] = [NSNumber numberWithUnsignedLongLong:value];
-  return value;
 }
 
 const char *
@@ -290,15 +387,15 @@ yail_native_protocol_dtor(pic_state *pic, struct native_protocol *data) {
 
 pic_value
 yail_make_native_method(pic_state *pic, SCMMethod *method) {
-  NSNumber *wrappedValue = nil;
+  ValueHolder *wrappedValue = nil;
   if ((wrappedValue = [objects objectForKey:method])) {
-    return (pic_value) wrappedValue.unsignedLongLongValue;
+    return wrappedValue.value;
   }
-  native_method *native = (native_method *)pic_obj_alloc(pic, offsetof(native_method, method_), YAIL_TYPE_METHOD);
+  native_method *native = (native_method *)pic_obj_alloc(pic, sizeof(native_method), YAIL_TYPE_METHOD);
   native->method_ = method;
   pic_value value = pic_obj_value(native);
-  objects[method] = [NSNumber numberWithUnsignedLongLong:value];
-  return pic_obj_value(native);
+  objects[method] = [ValueHolder holderForValue:value];
+  return value;
 }
 
 const char *
@@ -315,18 +412,24 @@ yail_native_method_dtor(pic_state *pic, struct native_method *method) {
 
 static pic_value
 yail_make_native_instance_internal(pic_state *pic, id object, int type) {
-  NSNumber *wrappedValue = nil;
-  if ((wrappedValue = [objects objectForKey:object])) {
-    return (pic_value) wrappedValue.unsignedLongLongValue;
+  ValueHolder *wrappedValue = nil;
+  CopyableReference *ref = [CopyableReference referenceWithObject:object];
+  if ((wrappedValue = [objects objectForKey:ref])) {
+#ifdef DEBUG
+    NSLog(@"Returning existing reference for %@", [object debugDescription]);
+#endif
+    return wrappedValue.value;
   }
+#ifdef DEBUG
+  NSLog(@"Allocating picrin object for %@", [object debugDescription]);
+#endif
+  size_t ai = pic_enter(pic);  // prevent this from turning into a strong reference
   native_instance *native = (native_instance *)pic_obj_alloc(pic,
-      offsetof(native_instance, object_), type);
+      sizeof(native_instance), type);
+  pic_leave(pic, ai);
   native->object_ = object;
   pic_value value = pic_obj_value(native);
-  CopyableReference *ref = [CopyableReference referenceWithObject:object];
-  if (ref) {
-    objects[ref] = [NSNumber numberWithUnsignedLongLong:value];
-  }
+  objects[ref] = [ValueHolder holderForValue:value];
   return value;
 }
 
@@ -379,8 +482,18 @@ yail_native_instance_objc(pic_state *PIC_UNUSED(pic), pic_value value) {
 void
 yail_native_instance_dtor(pic_state *pic, struct native_instance *instance) {
   CopyableReference *ref = [CopyableReference referenceWithObject:instance->object_];
-  if (ref) {
+  ValueHolder *value = objects[ref];
+  if (value) {
+#ifdef DEBUG
+    NSLog(@"Deallocating picrin object for %@", [instance->object_ debugDescription]);
+#endif
     [objects removeObjectForKey:ref];
+    instance->object_ = nil;
+  } else {
+#ifdef DEBUG
+    NSLog(@"No reference counter for deallocated object.");
+#endif
+    instance->object_ = nil;
   }
 }
 
@@ -1160,7 +1273,7 @@ yail_string_to_uppercase(pic_state *pic) {
   NSString *upper = [[NSString stringWithUTF8String:str] uppercaseString];
   const char *str2 = [upper cStringUsingEncoding:NSUTF8StringEncoding];
 
-  return pic_str_value(pic, str2, strlen(str2));
+  return pic_cstr_value(pic, str2);
 }
 
 pic_value
@@ -1171,7 +1284,7 @@ yail_string_to_lowercase(pic_state *pic) {
   NSString *lower = [[NSString stringWithUTF8String:str] lowercaseString];
   const char *str2 = [lower cStringUsingEncoding:NSUTF8StringEncoding];
 
-  return pic_str_value(pic, str2, strlen(str2));
+  return pic_cstr_value(pic, str2);
 }
 
 pic_value
@@ -1272,6 +1385,54 @@ yail_define_alias(pic_state *pic) {
 
   return pic_undef_value(pic);
 }
+
+/// MARK: Memory Management
+
+void
+yail_gc_mark(pic_state *pic, pic_value v) {
+  id value = yail_native_instance_ptr(pic, v)->object_;
+#ifdef DEBUG
+  if (looking_for_gcroots) {
+    NSString *str = NSStringFromClass([value class]);
+    NSLog(@"Type %@", str);
+    if ([str containsString:@"Form"]) {
+      NSLog(@"Encountered form in GC");
+    }
+  }
+#endif
+  if ([value respondsToSelector:@selector(mark)]) {
+    [value mark];
+  }
+}
+
+/**
+ * Mark all of the objects strongly referenced by the YAIL boundary to prevent garbage collection.
+ *
+ * @param pic the picrin state
+ */
+static void
+yail_mark_shared(pic_state *pic) {
+  for (id item in objects) {
+    if ([item isKindOfClass:[CopyableReference class]]) {
+      id ref = ((CopyableReference *) item)->ref;
+      if ([ref respondsToSelector:@selector(mark)]) {
+        [ref mark];
+      }
+    }
+  }
+}
+
+pic_value
+yail_get_native_instance(pic_state *pic, id object) {
+  CopyableReference *ref = [CopyableReference referenceWithObject:object];
+  ValueHolder *holder = objects[ref];
+  if (holder) {
+    return holder.value;
+  }
+  return pic_nil_value(pic);
+}
+
+/// MARK: Initialization
 
 void
 pic_init_yail(pic_state *pic)

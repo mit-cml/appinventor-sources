@@ -28,6 +28,10 @@ open class ReplForm: Form {
     NSLog("coder init")
   }
 
+  open func makeTopForm() {
+    ReplForm.topform = self
+  }
+
   open override func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
     _componentWithActiveEvent = component
     if let interpreter = ReplForm._httpdServer?.interpreter {
@@ -46,6 +50,7 @@ open class ReplForm: Form {
     } else {
       NSLog("No HTTPD server running?")
     }
+    _componentWithActiveEvent = nil
     return false
   }
 
@@ -57,6 +62,7 @@ open class ReplForm: Form {
         NSLog("Exception occurred in YAIL: \((interpreter.exception?.name.rawValue)!) (irritants: \((interpreter.exception)!))");
       }
     }
+    _componentWithActiveEvent = nil
   }
 
   @objc open func startHTTPD(_ secure: Bool) {
