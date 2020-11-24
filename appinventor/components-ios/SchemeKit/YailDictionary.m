@@ -592,12 +592,22 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 - (NSString *)debugDescription {
   NSMutableString *result = [NSMutableString stringWithString:@"{"];
   NSString *sep = @"\n";
+  BOOL needsNL = NO;
   for (id key in _keys) {
     [result appendFormat:@"%@    %@ = %@", sep, [key debugDescription], [_backend[key] debugDescription]];
     sep = @",\n";
+    needsNL = YES;
   }
-  [result appendString:@"\n}\n"];
+  [result appendString:(needsNL ? @"\n}" : @"}")];
   return [result copy];
+}
+
+- (NSString *)description {
+  return [self debugDescription];
+}
+
+- (void)dealloc {
+  NSLog(@"Deallocating YailDictionary");
 }
 
 @end

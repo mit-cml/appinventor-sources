@@ -186,11 +186,11 @@
 
   // Test empty dictionary
   dict = [YailDictionary emptyDictionaryIn:interpreter];
-  XCTAssertEqualObjects(@"{\n}\n", [dict debugDescription]);
+  XCTAssertEqualObjects(@"{}", [dict debugDescription]);
 
   // Test dictionary with content
   dict = [@{@"first": @"test", @"second": @5} yailDictionaryUsingInterpreter: interpreter];
-  XCTAssertEqualObjects(@"{\n    first = test,\n    second = 5\n}\n", [dict debugDescription]);
+  XCTAssertEqualObjects(@"{\n    first = test,\n    second = 5\n}", [dict debugDescription]);
 }
 
 /// MARK: - Tests for YailList+YailDictionary category
