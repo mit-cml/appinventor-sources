@@ -201,7 +201,7 @@ static NSString *kValueKey = @"value";
   } else if (pic_nil_p(nil, _value)) {
     return valueNil ? valueNil : (valueNil = self);
   } else if (pic_int_p(nil, _value)) {
-    int ival = pic_int_value(nil, _value);
+    int ival = pic_int(nil, _value);
     if (ival >= 0 && ival <= 255) {
       return valueInts[ival] ? valueInts[ival] : (valueInts[ival] = self);
     } else if (ival == -1) {
