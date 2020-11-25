@@ -162,6 +162,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   private static final String ARM64_V8A_SUFFIX = "-v8a";
   // Must match buildserver.compiler.X86_64_SUFFIX
   private static final String X86_64_SUFFIX = "-x8a";
+  // Must match buildserver.compiler.X86_SUFFIX
+  private static final String X86_SUFFIX = "-x8";
 
   private static final String TYPE_PLACEHOLDER = "%type%";
 
@@ -1202,15 +1204,29 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         updateWithNonEmptyValue(componentInfo.nativeLibraries, nativeLibrary);
       }
       for (String v7aLibrary : usesNativeLibraries.v7aLibraries().split(",")) {
-        updateWithNonEmptyValue(componentInfo.nativeLibraries, v7aLibrary.trim() + ARMEABI_V7A_SUFFIX);
+        String trimmedValue = v7aLibrary.trim();
+        if (!trimmedValue.isEmpty()) {
+          updateWithNonEmptyValue(componentInfo.nativeLibraries, trimmedValue + ARMEABI_V7A_SUFFIX);
+        }
       }
       for (String v8aLibrary : usesNativeLibraries.v8aLibraries().split(",")) {
-        updateWithNonEmptyValue(componentInfo.nativeLibraries, v8aLibrary.trim() + ARM64_V8A_SUFFIX);
+        String trimmedValue = v8aLibrary.trim();
+        if (!trimmedValue.isEmpty()) {
+          updateWithNonEmptyValue(componentInfo.nativeLibraries, trimmedValue + ARM64_V8A_SUFFIX);
+        }
       }
       for (String x8664Library : usesNativeLibraries.x86_64Libraries().split(",")) {
-        updateWithNonEmptyValue(componentInfo.nativeLibraries, x8664Library.trim() + X86_64_SUFFIX);
+        String trimmedValue = x8664Library.trim();
+        if (!trimmedValue.isEmpty()) {
+          updateWithNonEmptyValue(componentInfo.nativeLibraries, trimmedValue + X86_64_SUFFIX);
+        }
       }
-
+      for (String x86Library : usesNativeLibraries.x86_Libraries().split(",")) {
+        String trimmedValue = x86Library.trim();
+        if (!trimmedValue.isEmpty()) {
+          updateWithNonEmptyValue(componentInfo.nativeLibraries, trimmedValue + X86_SUFFIX);
+        }
+      }
     }
 
     // Gather required files.

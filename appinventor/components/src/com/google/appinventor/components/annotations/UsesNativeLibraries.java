@@ -29,4 +29,5 @@ public @interface UsesNativeLibraries {
   String v7aLibraries() default "";
   String v8aLibraries() default "";
   String x86_64Libraries() default "";
+  String x86_Libraries() default "";
 }

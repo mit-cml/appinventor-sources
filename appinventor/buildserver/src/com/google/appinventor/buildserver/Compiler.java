@@ -102,8 +102,10 @@ public final class Compiler {
   private static final String ARMEABI_V7A_DIR_NAME = "armeabi-v7a";
   private static final String ARM64_V8A_DIR_NAME = "arm64-v8a";
   private static final String X86_64_DIR_NAME = "x86_64";
+  private static final String X86_DIR_NAME = "x86";
 
   private static final String ASSET_DIR_NAME = "assets";
+  private static final String NATIVE_DIR_NAME = "jni";
   private static final String EXT_COMPS_DIR_NAME = "external_comps";
 
   private static final String DEFAULT_APP_NAME = "";
@@ -2315,6 +2317,7 @@ public final class Compiler {
     File armeabiV7aDir = createDir(libsDir, ARMEABI_V7A_DIR_NAME);
     File arm64V8aDir = createDir(libsDir, ARM64_V8A_DIR_NAME);
     File x8664Dir = createDir(libsDir, X86_64_DIR_NAME);
+    File x86Dir = createDir(libsDir, X86_DIR_NAME);
 
     try {
       for (String type : nativeLibsNeeded.keySet()) {
@@ -2322,6 +2325,7 @@ public final class Compiler {
           boolean isV7a = lib.endsWith(ComponentDescriptorConstants.ARMEABI_V7A_SUFFIX);
           boolean isV8a = lib.endsWith(ComponentDescriptorConstants.ARM64_V8A_SUFFIX);
           boolean isx8664 = lib.endsWith(ComponentDescriptorConstants.X86_64_SUFFIX);
+          boolean isx86 = lib.endsWith(ComponentDescriptorConstants.X86_SUFFIX);
 
           String sourceDirName;
           File targetDir;
@@ -2337,20 +2341,22 @@ public final class Compiler {
             sourceDirName = X86_64_DIR_NAME;
             targetDir = x8664Dir;
             lib = lib.substring(0, lib.length() - ComponentDescriptorConstants.X86_64_SUFFIX.length());
+          } else if (isx86) {
+            sourceDirName = X86_DIR_NAME;
+            targetDir = x86Dir;
+            lib = lib.substring(0, lib.length() - ComponentDescriptorConstants.X86_SUFFIX.length());
           } else {
             sourceDirName = ARMEABI_DIR_NAME;
             targetDir = armeabiDir;
           }
 
           String sourcePath = "";
-          String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + ZIPSLASH + lib;
-
           if (simpleCompTypes.contains(type)) {
+            final String pathSuffix = RUNTIME_FILES_DIR + sourceDirName + ZIPSLASH + lib;
             sourcePath = getResource(pathSuffix);
           } else if (extCompTypes.contains(type)) {
+            final String pathSuffix = ZIPSLASH + NATIVE_DIR_NAME + ZIPSLASH + sourceDirName + ZIPSLASH + lib;
             sourcePath = getExtCompDirPath(type) + pathSuffix;
-            targetDir = createDir(targetDir, EXT_COMPS_DIR_NAME);
-            targetDir = createDir(targetDir, type);
           } else {
             userErrors.print(String.format(ERROR_IN_STAGE, "Native Code"));
             return false;

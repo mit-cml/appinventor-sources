@@ -17,6 +17,7 @@ public final class ComponentDescriptorConstants {
   public static final String ARMEABI_V7A_SUFFIX = "-v7a";
   public static final String ARM64_V8A_SUFFIX = "-v8a";
   public static final String X86_64_SUFFIX = "-x8a";
+  public static final String X86_SUFFIX = "-x8";
   public static final String ASSET_DIRECTORY = "component";
   public static final String ASSETS_TARGET = "assets";
   public static final String ACTIVITIES_TARGET = "activities";

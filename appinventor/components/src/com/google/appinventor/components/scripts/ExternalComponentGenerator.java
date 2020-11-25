@@ -19,13 +19,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
-* Tool to generate component.json for extension.
-*
-* @author mouha.oumar@gmail.com (Mouhamadou O. Sall)
-*/
+ * Tool to generate component.json for extension.
+ *
+ * @author mouha.oumar@gmail.com (Mouhamadou O. Sall)
+ */
 
 public class ExternalComponentGenerator {
-
 
   private static String externalComponentsDirPath;
   private static String androidRuntimeClassDirPath;
@@ -37,7 +36,6 @@ public class ExternalComponentGenerator {
       new TreeMap<>();
 
   /**
-  * The definitions of the arguments used by this script
   *
   * args[0]: the path to simple_component.json
   * args[1]: the path to simple_component_build_info.json
@@ -59,8 +57,9 @@ public class ExternalComponentGenerator {
     Map<String, JSONObject> buildInfos = buildInfoAsMap(simpleComponentBuildInfos);
     for (int i = 0; i < simpleComponentDescriptors.length(); i++) {
       JSONObject componentDescriptor = (JSONObject) simpleComponentDescriptors.get(i);
-      if(componentDescriptor.get("external").toString().equals("true")) {
-        ExternalComponentInfo info = new ExternalComponentInfo(componentDescriptor, buildInfos.get(componentDescriptor.getString("type")));
+      if (componentDescriptor.get("external").toString().equals("true")) {
+        ExternalComponentInfo info = new ExternalComponentInfo(componentDescriptor,
+            buildInfos.get(componentDescriptor.getString("type")));
         if (!externalComponentsByPackage.containsKey(info.packageName)) {
           externalComponentsByPackage.put(info.packageName, new ArrayList<ExternalComponentInfo>());
         }
@@ -101,7 +100,7 @@ public class ExternalComponentGenerator {
     System.out.println("\nExtensions : Generating extensions");
     for (Map.Entry<String, List<ExternalComponentInfo>> entry : externalComponentsByPackage.entrySet()) {
       String name = useFQCN && entry.getValue().size() == 1 ? entry.getValue().get(0).type : entry.getKey();
-      String logComponentType =  "[" + name + "]";
+      String logComponentType = "[" + name + "]";
       System.out.println("\nExtensions : Generating files " + logComponentType);
       generateExternalComponentDescriptors(name, entry.getValue());
       for (ExternalComponentInfo info : entry.getValue()) {
@@ -133,7 +132,7 @@ public class ExternalComponentGenerator {
     try {
       jsonWriter = new FileWriter(extensionDirPath + File.separator + "components.json");
       jsonWriter.write(components);
-    } catch(IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
     } finally {
       if (jsonWriter != null) {
@@ -144,7 +143,7 @@ public class ExternalComponentGenerator {
     try {
       jsonWriter = new FileWriter(extensionDirPath + File.separator + "component.json");
       jsonWriter.write(infos.get(0).descriptor.toString(1));
-    } catch(IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
     } finally {
       if (jsonWriter != null) {
@@ -153,30 +152,30 @@ public class ExternalComponentGenerator {
     }
   }
 
-
-  private static void generateExternalComponentBuildFiles(String packageName, List<ExternalComponentInfo> extensions) throws IOException {
+  private static void generateExternalComponentBuildFiles(String packageName, List<ExternalComponentInfo> extensions)
+      throws IOException {
     String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
     String extensionTempDirPath = externalComponentsTempDirPath + File.separator + packageName;
-    String  extensionFileDirPath = extensionDirPath + File.separator + "files";
+    String extensionFileDirPath = extensionDirPath + File.separator + "files";
     copyRelatedExternalClasses(androidRuntimeClassDirPath, packageName, extensionTempDirPath);
 
     JSONArray buildInfos = new JSONArray();
     for (ExternalComponentInfo info : extensions) {
       JSONObject componentBuildInfo = info.buildInfo;
+      copyNatives(packageName, info.buildInfo);
+
       try {
         JSONArray librariesNeeded = componentBuildInfo.getJSONArray("libraries");
         for (int j = 0; j < librariesNeeded.length(); ++j) {
           // Copy Library files for Unjar and Jaring
           String library = librariesNeeded.getString(j);
-          copyFile(buildServerClassDirPath + File.separator + library,
-              extensionTempDirPath + File.separator + library);
+          copyFile(buildServerClassDirPath + File.separator + library, extensionTempDirPath + File.separator + library);
         }
-        //empty the libraries meta-data to avoid redundancy
+        // empty the libraries meta-data to avoid redundancy
         componentBuildInfo.put("libraries", new JSONArray());
-      } catch(JSONException e) {
+      } catch (JSONException e) {
         // bad
-        throw new IllegalStateException("Unexpected JSON exception parsing simple_components.json",
-            e);
+        throw new IllegalStateException("Unexpected JSON exception parsing simple_components.json", e);
       }
       buildInfos.put(componentBuildInfo);
     }
@@ -201,7 +200,7 @@ public class ExternalComponentGenerator {
     try {
       extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_info.json");
       extensionBuildInfoFile.write(buildInfos.get(0).toString());
-    } catch (IOException|JSONException e) {
+    } catch (IOException | JSONException e) {
       e.printStackTrace();
     } finally {
       if (extensionBuildInfoFile != null) {
@@ -210,15 +209,87 @@ public class ExternalComponentGenerator {
     }
   }
 
-  private static void copyIcon(String packageName, JSONObject componentDescriptor)
+  private static void copyNatives(String packageName, JSONObject componentDescriptor)
       throws IOException, JSONException {
+    JSONArray assets = componentDescriptor.optJSONArray("native");
+    System.out.println(assets);
+    if (assets == null) {
+      return;
+    }
+
+    // Get natives source directory
+    File sourceDir = new File(buildServerClassDirPath + File.separator);
+    if (!sourceDir.exists()) {
+      return;
+    }
+
+    // Get natives dest directory
+    File destDir = new File(externalComponentsDirPath + File.separator + packageName + File.separator);
+    File assetDestDir =  new File(destDir, "jni");
+    ensureFreshDirectory(assetDestDir.getPath(), "Unable to delete the assets directory for the extension.");
+
+    // Copy natives
+    for (int i = 0; i < assets.length(); i++) {
+      String lib = assets.getString(i);
+
+      String ARMEABI_V7A_SUFFIX = "-v7a";
+      String ARM64_V8A_SUFFIX = "-v8a";
+      String X86_64_SUFFIX = "-x8a";
+      String X86_SUFFIX = "-x8";
+
+      String ARMEABI_DIR_NAME = "armeabi";
+      String ARMEABI_V7A_DIR_NAME = "armeabi-v7a";
+      String ARM64_V8A_DIR_NAME = "arm64-v8a";
+      String X86_64_DIR_NAME = "x86_64";
+      String X86_DIR_NAME = "x86";
+
+      boolean isV7a = lib.endsWith(ARMEABI_V7A_SUFFIX);
+      boolean isV8a = lib.endsWith(ARM64_V8A_SUFFIX);
+      boolean isx8664 = lib.endsWith(X86_64_SUFFIX);
+      boolean isx86 = lib.endsWith(X86_SUFFIX);
+
+      String sourceDirName;
+      if (isV7a) {
+        sourceDirName = ARMEABI_V7A_DIR_NAME;
+        lib = lib.substring(0, lib.length() - ARMEABI_V7A_SUFFIX.length());
+      } else if (isV8a) {
+        sourceDirName = ARM64_V8A_DIR_NAME;
+        lib = lib.substring(0, lib.length() - ARM64_V8A_SUFFIX.length());
+      } else if (isx8664) {
+        sourceDirName = X86_64_DIR_NAME;
+        lib = lib.substring(0, lib.length() - X86_64_SUFFIX.length());
+      } else if (isx86) {
+        sourceDirName = X86_DIR_NAME;
+        lib = lib.substring(0, lib.length() - X86_SUFFIX.length());
+      } else {
+        sourceDirName = ARMEABI_DIR_NAME;
+      }
+
+      if (!lib.isEmpty()) {
+        File nativeAssets = new File(sourceDir, sourceDirName);
+        File srcNative = new File(nativeAssets, lib);
+        if (srcNative.exists()) {
+          File nativeAssetsDest = new File(assetDestDir, sourceDirName);
+          File srcNativeDest = new File(nativeAssetsDest, lib);
+          ensureDirectory(srcNativeDest.getParent(), "Unable to create directory " + srcNativeDest.getParent());
+          System.out.println("Extensions : " + "Copying file native " + nativeAssets.getAbsolutePath());
+          copyFile(srcNative.getAbsolutePath(), srcNativeDest.getAbsolutePath());
+        } else {
+          System.out.println("Extensions : Skipping missing native " + lib);
+        }
+      }
+    }
+  }
+
+  private static void copyIcon(String packageName, JSONObject componentDescriptor) throws IOException, JSONException {
     String icon = componentDescriptor.getString("iconName");
     if (icon.equals("") || icon.startsWith("http:") || icon.startsWith("https:")) {
       // Icon will be loaded from the web
       return;
     }
     String packagePath = packageName.replace('.', File.separatorChar);
-    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src" + File.separator + packagePath);
+    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator
+        + "src" + File.separator + packagePath);
     File image = new File(sourceDir, icon);
     if (image.exists()) {
       File dstIcon = new File(externalComponentsDirPath + File.separator + packageName + File.separator + icon);
@@ -230,8 +301,7 @@ public class ExternalComponentGenerator {
     }
   }
 
-  private static void copyAssets(String packageName, JSONObject componentDescriptor)
-      throws IOException, JSONException {
+  private static void copyAssets(String packageName, JSONObject componentDescriptor) throws IOException, JSONException {
     JSONArray assets = componentDescriptor.optJSONArray("assets");
     if (assets == null) {
       return;
@@ -239,7 +309,8 @@ public class ExternalComponentGenerator {
 
     // Get asset source directory
     String packagePath = packageName.replace('.', File.separatorChar);
-    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src" + File.separator + packagePath);
+    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator
+        + "src" + File.separator + packagePath);
     File assetSrcDir = new File(sourceDir, "assets");
     if (!assetSrcDir.exists() || !assetSrcDir.isDirectory()) {
       return;
@@ -248,8 +319,7 @@ public class ExternalComponentGenerator {
     // Get asset dest directory
     File destDir = new File(externalComponentsDirPath + File.separator + packageName + File.separator);
     File assetDestDir = new File(destDir, "assets");
-    ensureFreshDirectory(assetDestDir.getPath(),
-        "Unable to delete the assets directory for the extension.");
+    ensureFreshDirectory(assetDestDir.getPath(), "Unable to delete the assets directory for the extension.");
 
     // Copy assets
     for (int i = 0; i < assets.length(); i++) {
@@ -282,12 +352,12 @@ public class ExternalComponentGenerator {
   }
 
   /**
-  * Read a file and returns its content
-  *
-  * @param path the path of the file to be read
-  * @param encoding the encoding system
-  */
-  private static String readFile(String path, Charset encoding) throws IOException{
+   * Read a file and returns its content
+   *
+   * @param path     the path of the file to be read
+   * @param encoding the encoding system
+   */
+  private static String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
   }
@@ -297,7 +367,7 @@ public class ExternalComponentGenerator {
    *
    * @param srcPath absolute path to source file
    * @param dstPath absolute path to destination file
-   * @return  {@code true} if the copy succeeds, {@code false} otherwise
+   * @return {@code true} if the copy succeeds, {@code false} otherwise
    */
   private static Boolean copyFile(String srcPath, String dstPath) {
     try {
@@ -305,13 +375,12 @@ public class ExternalComponentGenerator {
       FileOutputStream out = new FileOutputStream(dstPath);
       byte[] buf = new byte[1024];
       int len;
-      while ((len = in.read(buf)) > 0 ) {
+      while ((len = in.read(buf)) > 0) {
         out.write(buf, 0, len);
       }
       in.close();
       out.close();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
       return false;
     }
@@ -321,27 +390,27 @@ public class ExternalComponentGenerator {
   /**
    * Copy a compiled classes related to a given extension in his package folder
    *
-   * @param srcPath the folder in which to check compiled classes
+   * @param srcPath          the folder in which to check compiled classes
    * @param extensionPackage the classpath of the extension
-   * @param destPath where the compiled classes will be copied
+   * @param destPath         where the compiled classes will be copied
    */
-  private static void copyRelatedExternalClasses(final String srcPath, String extensionPackage,
-                                                 final String destPath) throws IOException {
+  private static void copyRelatedExternalClasses(final String srcPath, String extensionPackage, final String destPath)
+      throws IOException {
     File srcFolder = new File(srcPath);
     File[] files = srcFolder.listFiles();
     if (files == null) {
       return;
     }
-    for (File fileEntry : files){
+    for (File fileEntry : files) {
       if (fileEntry.isFile()) {
         if (isRelatedExternalClass(fileEntry.getAbsolutePath(), extensionPackage)) {
-          System.out.println("Extensions : " + "Copying file " +
-              getClassPackage(fileEntry.getAbsolutePath()).replace(".", File.separator)
-              + File.separator + fileEntry.getName());
+          System.out.println("Extensions : " + "Copying file "
+              + getClassPackage(fileEntry.getAbsolutePath()).replace(".", File.separator) + File.separator
+              + fileEntry.getName());
           copyFile(fileEntry.getAbsolutePath(), destPath + File.separator + fileEntry.getName());
         }
       } else if (fileEntry.isDirectory()) {
-        String newDestPath=destPath + fileEntry.getAbsolutePath().substring(srcFolder.getAbsolutePath().length());
+        String newDestPath = destPath + fileEntry.getAbsolutePath().substring(srcFolder.getAbsolutePath().length());
         ensureDirectory(newDestPath, "Unable to create temporary path for extension build");
         copyRelatedExternalClasses(fileEntry.getAbsolutePath(), extensionPackage, newDestPath);
       }
@@ -349,16 +418,18 @@ public class ExternalComponentGenerator {
   }
 
   /**
-   * Returns true if a class is related to an external component
-   * Current implementation returns true for all files in the same package as that of the external component
-   * A better implementation is possible but might be more complex
+   * Returns true if a class is related to an external component Current
+   * implementation returns true for all files in the same package as that of the
+   * external component A better implementation is possible but might be more
+   * complex
+   * 
    * @param testClassAbsolutePath absolute path of the class file
-   * @param extensionPackage package of the external component
-   * @return {@code true} if the Java class file at {@code testClassAbsolutePath} is a member of
-   * {@code extensionPackage}, {@code false} otherwise
+   * @param extensionPackage      package of the external component
+   * @return {@code true} if the Java class file at {@code testClassAbsolutePath}
+   *         is a member of {@code extensionPackage}, {@code false} otherwise
    */
-  private static boolean isRelatedExternalClass(final String testClassAbsolutePath, final String extensionPackage ) {
-    if (!testClassAbsolutePath.endsWith(".class")) {  // Ignore things that aren't class files...
+  private static boolean isRelatedExternalClass(final String testClassAbsolutePath, final String extensionPackage) {
+    if (!testClassAbsolutePath.endsWith(".class")) { // Ignore things that aren't class files...
       return false;
     }
     String componentPackagePath = extensionPackage.replace(".", File.separator);
@@ -377,7 +448,7 @@ public class ExternalComponentGenerator {
     String componentPackage = classAbsolutePath.substring(classAbsolutePath.indexOf(parentPath) + parentPath.length());
     componentPackage = componentPackage.substring(0, componentPackage.lastIndexOf(File.separator));
     componentPackage = componentPackage.replace(File.separator, ".");
-    return  componentPackage;
+    return componentPackage;
   }
 
   private static boolean deleteRecursively(File dirOrFile) {

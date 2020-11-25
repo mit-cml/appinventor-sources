@@ -71,6 +71,7 @@
       <!-- Component/extension assets (for testing) -->
       <fileset dir="${appinventor.dir}/components/src" includes="**/assets/*"/>
     </copy>
+
     <!-- Component library dependencies -->
     <copy todir="${classes.files.dir}">
       <fileset dir="${build.dir}/components/deps" />
