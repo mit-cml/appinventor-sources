@@ -67,6 +67,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/phonebar.png")
   ImageResource phonebar();
+  
+  @Source("com/google/appinventor/images/phonebar2.png")
+  ImageResource phonebar2();
+
+  @Source("com/google/appinventor/images/phonebarmid.png")
+  ImageResource phonebarmid();
 
   /**
    * Spinning/wait graphic to indicate long-running operations.

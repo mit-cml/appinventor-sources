@@ -133,16 +133,22 @@ public final class MockForm extends MockContainer {
     // UI elements
     private DockPanel bar;
     private Image phoneBarImage;
+    private Image phoneBarImage2;
+    private Image phoneBarImagemid;
 
     /*
      * Creates a new phone status bar.
      */
     PhoneBar() {
       phoneBarImage = new Image(images.phonebar());
+      phoneBarImage2 = new Image(images.phonebar2());
+      phoneBarImagemid = new Image(images.phonebarmid());
 
       bar = new DockPanel();
       bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
       bar.add(phoneBarImage, DockPanel.EAST);
+      bar.add(phoneBarImagemid, DockPanel.EAST);
+      bar.add(phoneBarImage2, DockPanel.WEST);
 
       initWidget(bar);
 
