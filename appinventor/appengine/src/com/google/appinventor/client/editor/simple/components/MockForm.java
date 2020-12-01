@@ -156,7 +156,8 @@ public final class MockForm extends MockContainer {
     }
 
     int getHeight() {
-      return visible ? PhoneBar.HEIGHT : 0;
+      // Adjust for CSS borders, which are not included in the height value
+      return visible ? PhoneBar.HEIGHT + 3 : 0;
     }
   }
 
