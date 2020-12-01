@@ -319,6 +319,18 @@ public final class SimpleComponentDescriptor {
   }
 
   /**
+   * Returns the path to the license file used by the component.
+   *
+   * @return path to license file of component
+   */
+  public String getLicense() {
+    String type = COMPONENT_DATABASE.getComponentType(name);
+    return getLicenseURLFromPath(COMPONENT_DATABASE.getLicenseName(name),
+        type.substring(0, type.lastIndexOf('.')),
+        editor.getProjectId());
+  }
+
+  /**
    * Returns a draggable image for the component. Used when dragging a
    * component from the palette onto the form.
    *
@@ -367,6 +379,20 @@ public final class SimpleComponentDescriptor {
       return new Image(bundledImages.get(iconPath));
     } else {
       return new Image(iconPath);
+    }
+  }
+
+  public static String getLicenseURLFromPath(String licensePath, String packageName, long projectId) {
+    if (licensePath.startsWith("aiwebres/") && packageName != null) {
+      // License file is inside aiwebres
+      return StorageUtil.getFileUrl(projectId,
+          "assets/external_comps/" + packageName + "/" + licensePath) + "&inline";
+    } else if(licensePath.startsWith("http:") || licensePath.startsWith("https:")) {
+      // The license is an external URL
+      return licensePath;
+    } else {
+      // No license file specified
+      return "";
     }
   }
 
