@@ -291,7 +291,7 @@ Blockly.Blocks['dictionaries_recursive_set'] = {
     this.setTooltip(Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP);
     this.setInputsInline(false);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE }]
 };
 
 Blockly.Blocks['dictionaries_getters'] = {
