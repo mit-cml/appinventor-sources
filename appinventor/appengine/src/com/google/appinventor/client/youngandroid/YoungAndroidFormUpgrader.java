@@ -1618,6 +1618,11 @@ public final class YoungAndroidFormUpgrader {
       // of XML using dictionaries.
       srcCompVersion = 7;
     }
+    if (srcCompVersion < 8)  {
+    	// The methods PatchText, PatchTextWithEncoding, and PatchFile were added.
+        // No properties need to be modified to upgrade to version 8.
+        srcCompVersion = 8;
+    }
     return srcCompVersion;
   }
 
