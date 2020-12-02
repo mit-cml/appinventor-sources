@@ -327,7 +327,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
 				LastUpgradeCheck = 1100;
-				ORGANIZATIONNAME = "MIT Center for Mobile Learning";
+				ORGANIZATIONNAME = "Massachusetts Institute of Technology";
 				TargetAttributes = {
 					06463EF71D95956800B23DCD = {
 						CreatedOnToolsVersion = 8.0;

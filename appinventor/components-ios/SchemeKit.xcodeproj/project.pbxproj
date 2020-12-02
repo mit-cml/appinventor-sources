@@ -558,7 +558,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 1100;
-				ORGANIZATIONNAME = "MIT Center for Mobile Learning";
+				ORGANIZATIONNAME = "Massachusetts Institute of Technology";
 				TargetAttributes = {
 					06FCDEDF1D94383000199DD4 = {
 						CreatedOnToolsVersion = 8.0;
