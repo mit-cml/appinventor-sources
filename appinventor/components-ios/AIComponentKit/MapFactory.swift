@@ -8,7 +8,7 @@ import GEOSwift
 
 //MapEventListener
 
-@objc public protocol MapFeature: Component, MKAnnotation {
+@objc public protocol MapFeature: Component, NSObjectProtocol {
   var `Type`: String { get }
   var Visible: Bool { get set }
   var Draggable: Bool { get set }
@@ -18,6 +18,7 @@ import GEOSwift
   var Centroid: CLLocationCoordinate2D { get }
   var geometry: Geometry? { get }
   var index: Int32 { get }
+  var annotation: MapFeatureAnnotation { get }
 
   func ShowInfobox()
   func HideInfobox()
@@ -26,7 +27,6 @@ import GEOSwift
   func StartDrag()
   func Drag()
   func StopDrag()
-  func setMap(container: MapFeatureContainer)
   func removeFromMap()
   func copy(container: MapFeatureContainer)
 }

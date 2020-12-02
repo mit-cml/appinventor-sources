@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018-2019 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 import UIKit
@@ -7,35 +7,75 @@ import CoreLocation
 import MapKit
 import GEOSwift
 
-@objc open class MapFeatureBase: NSObject, MKAnnotation, MapFeature, HasStroke, LifecycleDelegate {
+/**
+ * The `MapFeatureAnnotation` class encapsulates any annotation created by a MapFeature.
+ */
+@objc open class MapFeatureAnnotation: NSObject, MKAnnotation {
+  /**
+   * The location of the feature on the map. The annotation view will be positioned at this point.
+   */
+  public var coordinate = CLLocationCoordinate2D()
+
+  /**
+   * The title shown in the annotation's detail view.
+   */
+  public var title: String?
+
+  /**
+   * The subtitle shown in the annotation's detail view.
+   */
+  public var subtitle: String?
+
+  /**
+   * The view associated with the annotation.
+   *
+   * **Note**: This must be a weak reference to prevent a retain cycle as the view strongly holds
+   * a reference to the annotation.
+   */
+  public weak var view: MKAnnotationView?
+
+  /**
+   * The label shown on the popup that appears when the user interacts with the annotation's view.
+   */
+  public var callout = UILabel()
+
+  /**
+   * Construct a new annotation.
+   *
+   * - Parameter aView: The view associated with this annotation.
+   */
+  public init(view aView: MKAnnotationView) {
+    view = aView
+    super.init()
+    callout.widthAnchor.constraint(lessThanOrEqualToConstant: 300).isActive = true
+    callout.heightAnchor.constraint(greaterThanOrEqualToConstant: 1).isActive = true
+    callout.numberOfLines = 0
+    callout.lineBreakMode = .byWordWrapping
+    aView.detailCalloutAccessoryView = callout
+  }
+}
+
+@objc open class MapFeatureBase: NSObject, MapFeature, HasStroke, LifecycleDelegate {
 
   weak var _container: MapFeatureContainer?
   var _draggable = false
-  var _description = ""
-  weak var _map: Map? = nil
-  var _title: String? = nil
-  public var _view: MKAnnotationView
 
   // used to manually trigger drag events
   var _dragTimer: Timer?
-  public var callout = UILabel()
 
   // This object is used to calculate distance between features
   var _shape: Geometry? = nil
 
   public var index: Int32
 
-  public var coordinate: CLLocationCoordinate2D
+  private var _annotation: MapFeatureAnnotation
 
   init(container: MapFeatureContainer, view: MKAnnotationView) {
     _container = container
-    _view = view
-    _map = container.getMap()
-    coordinate = CLLocationCoordinate2DMake(0, 0)
     Type = ""
     index = container.getMap().featureCount
     container.getMap().featureCount += 1
-    self.dispatchDelegate = container.form
+    _annotation = MapFeatureAnnotation(view: view)
     super.init()
     Description = ""
     Visible = true
@@ -44,14 +84,7 @@ import GEOSwift
     StrokeWidth = 1
     Draggable = false
     Title = ""
-    callout.widthAnchor.constraint(lessThanOrEqualToConstant: 300).isActive = true
-    callout.heightAnchor.constraint(greaterThanOrEqualToConstant: 1).isActive = true
-    callout.numberOfLines = 0
-    callout.lineBreakMode = .byWordWrapping
-    _view.annotation = self
-    DispatchQueue.main.async {
-      container.addFeature(self)
-    }
+    container.addFeature(self)
   }
 
   @objc public func onPause() {
@@ -69,8 +102,12 @@ import GEOSwift
     stopDrag()
   }
 
-  open func setMap(container: MapFeatureContainer) {
-    _map = container.getMap()
+  public var annotation: MapFeatureAnnotation {
+    return _annotation
+  }
+
+  public var map: Map? {
+    return _container?.getMap()
   }
 
   open var geometry: Geometry? {
@@ -82,29 +119,17 @@ import GEOSwift
   // MARK: properties
   open var Centroid: CLLocationCoordinate2D {
     get {
-      return coordinate
+      return annotation.coordinate
     }
   }
 
   open var Description: String {
     get {
-      return _description
+      return annotation.subtitle ?? ""
     }
     set(description) {
-      _description = description
+      annotation.subtitle = description
       setText()
-    }
-  }
-
-  open var title: String? {
-    get {
-      return _title
-    }
-  }
-
-  open var subtitle: String? {
-    get {
-      return _description
     }
   }
 
@@ -126,44 +151,44 @@ import GEOSwift
 
   @objc open var StrokeColor: Int32 {
     get {
-      guard let borderColor = _view.layer.borderColor else {
+      guard let borderColor = annotation.view?.layer.borderColor else {
         return 0
       }
       return colorToArgb(UIColor(cgColor: borderColor))
     } set(color) {
-      guard let opacity = _view.layer.borderColor?.alpha else {
+      guard let opacity = annotation.view?.layer.borderColor?.alpha else {
         return
       }
-      _view.layer.borderColor = argbToColor(color).withAlphaComponent(opacity).cgColor
+      annotation.view?.layer.borderColor = argbToColor(color).withAlphaComponent(opacity).cgColor
     }
   }
   
   @objc open var StrokeOpacity: Float {
     get {
-      guard let borderColor = _view.layer.borderColor else {
+      guard let borderColor = annotation.view?.layer.borderColor else {
         return 0
       }
       return Float(borderColor.alpha)
     } set(opacity) {
-      _view.layer.borderColor = _view.layer.borderColor?.copy(alpha: CGFloat(opacity))
+      annotation.view?.layer.borderColor = annotation.view?.layer.borderColor?.copy(alpha: CGFloat(opacity))
     }
   }
 
   @objc open var StrokeWidth: Int32 {
     get {
-      return Int32(_view.layer.borderWidth)
+      return Int32(annotation.view?.layer.borderWidth ?? 0)
     }
     set(width) {
-      _view.layer.borderWidth = CGFloat(width)
+      annotation.view?.layer.borderWidth = CGFloat(width)
     }
   }
 
   open var Title: String? {
     get {
-      return _title
+      return annotation.title
     }
     set(title) {
-      _title = title!
+      annotation.title = title
       setText()
     }
   }
@@ -173,18 +198,24 @@ import GEOSwift
 
   open var Visible: Bool {
     get {
-      return !_view.isHidden
+      return !(annotation.view?.isHidden ?? true)
     }
     set(visible) {
-      _view.isHidden = !visible
+      annotation.view?.isHidden = !visible
     }
   }
 
   // This method is used to represent the callout text
   private func setText() {
-    let text = NSMutableAttributedString(string: _title ?? "", attributes: [NSAttributedString.Key.font:UIFont.preferredFont(forTextStyle: .title3)])
-    text.append(NSAttributedString(string: "\(_title == "" ? "": "\n")\(_description)", attributes: [NSAttributedString.Key.font:UIFont.preferredFont(forTextStyle: .body)]))
-    callout.attributedText = text
+    let title = annotation.title ?? ""
+    let text = NSMutableAttributedString(string: title,
+        attributes: [NSAttributedString.Key.font:UIFont.preferredFont(forTextStyle: .title3)])
+    if title != "" {
+      text.append(NSAttributedString(string: "\n"))
+    }
+    text.append(NSAttributedString(string: annotation.subtitle ?? "",
+        attributes: [NSAttributedString.Key.font:UIFont.preferredFont(forTextStyle: .body)]))
+    annotation.callout.attributedText = text
   }
 
   // MARK: events

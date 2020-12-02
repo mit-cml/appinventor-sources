@@ -29,7 +29,7 @@ let kNumCircleEdges = 60
             ErrorMessage.ERROR_INVALID_LATITUDE.code,
             ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       } else {
-        coordinate.latitude = latitude
+        annotation.coordinate.latitude = latitude
         if initialized {
           makeShape()
         }
@@ -47,7 +47,7 @@ let kNumCircleEdges = 60
             ErrorMessage.ERROR_INVALID_LONGITUDE.code,
             ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
       } else {
-        coordinate.longitude = longitude
+        annotation.coordinate.longitude = longitude
         if initialized {
           makeShape()
         }
@@ -93,7 +93,7 @@ let kNumCircleEdges = 60
           ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
       return
     }
-    coordinate = CLLocationCoordinate2DMake(latitude, longitude)
+    annotation.coordinate = CLLocationCoordinate2DMake(latitude, longitude)
     makeShape()
   }
 
@@ -114,13 +114,13 @@ let kNumCircleEdges = 60
     geoString += coordinate(0) // for rounding errors
     if let shape = Geometry.create(geoString.chopSuffix() + "))") {
       _shape = shape
-      overlay = MapCircleOverlay(center: coordinate, radius: _radius)
+      overlay = MapCircleOverlay(center: annotation.coordinate, radius: _radius)
     }
   }
 
   fileprivate func coordinate(_ bearing: Double) -> String {
-    let iLat = degToRad(coordinate.latitude)
-    let iLon = degToRad(coordinate.longitude)
+    let iLat = degToRad(annotation.coordinate.latitude)
+    let iLon = degToRad(annotation.coordinate.longitude)
     let radiusChange = _radius / kEarthRadius
     let fLat = asin(sin(iLat) * cos(radiusChange) + cos(iLat) * sin(radiusChange) * cos(bearing))
     let fLon = iLon + atan2(sin(bearing) * sin(radiusChange) * cos(iLat), cos(radiusChange) - sin(iLat) * sin(fLat))

@@ -61,7 +61,7 @@ open class PolygonMarker: Marker {
 
   @objc open override var Description: String {
     didSet {
-      _marker.Description = _description
+      _marker.Description = annotation.description
     }
   }
 
@@ -126,7 +126,7 @@ open class PolygonMarker: Marker {
 
   @objc open override var Title: String? {
     didSet {
-      _marker.Title = _title
+      _marker.Title = annotation.subtitle
     }
   }
 
@@ -157,7 +157,7 @@ open class PolygonMarker: Marker {
         _overlay = newOverlay
       }
       if let old = oldOverlay, let new = self._overlay {
-        self._map?.replaceFeature(from: old, to: new)
+        map?.replaceFeature(from: old, to: new)
       }
     }
   }
@@ -182,8 +182,8 @@ open class PolygonMarker: Marker {
   
   @objc open override func ShowInfobox() {
     _marker.SetLocation(Centroid.latitude, Centroid.longitude)
-    _map?.removeFeature(_marker)
-    _map?.addFeature(_marker)
+    map?.removeFeature(_marker)
+    map?.addFeature(_marker)
     DispatchQueue.main.async {
       self._marker.ShowInfobox()
     }

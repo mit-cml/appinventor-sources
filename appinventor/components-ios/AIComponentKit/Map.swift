@@ -491,12 +491,11 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
     if annotation is MKUserLocation {
       return nil
-    } else if let feature = annotation as? MapFeatureBase {
-      feature._view.detailCalloutAccessoryView = feature.callout
+    } else if let feature = annotation as? MapFeatureAnnotation {
       DispatchQueue.main.async {
         self.mapView.layoutSubviews()
       }
-      return feature._view
+      return feature.view
     } else {
       return nil
     }
@@ -612,11 +611,13 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
       }
       overlay.feature!.marker.SetLocation(coordinate.latitude, coordinate.longitude)
       _activeMarker = overlay.feature!.marker
-      mapView.removeAnnotation(_activeMarker!)
-      mapView.addAnnotation(_activeMarker!)
-      overlay.feature!.Click()
-      DispatchQueue.main.async {
-        self._activeMarker?.ShowInfobox()
+      if let marker = _activeMarker {
+        mapView.removeAnnotation(marker.annotation)
+        mapView.addAnnotation(marker.annotation)
+        overlay.feature!.Click()
+        DispatchQueue.main.async {
+          self._activeMarker?.ShowInfobox()
+        }
       }
     } else {
       getOverlayAtPoint(coordinate) { _ in
@@ -911,7 +912,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
         mapView.addOverlay(overlay, level: .aboveLabels)
       }
     } else {
-      mapView.addAnnotation(feature)
+      mapView.addAnnotation(feature.annotation)
     }
     if !(feature is PolygonMarker) {
       _features.append(feature)
@@ -928,10 +929,10 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
         mapView.removeOverlay(overlay)
       }
     } else {
-      mapView.removeAnnotation(feature)
+      mapView.removeAnnotation(feature.annotation)
     }
     _features = _features.filter { item in
-      return !item.isEqual(feature)
+      return !item.isEqual(feature.annotation)
     }
   }
 

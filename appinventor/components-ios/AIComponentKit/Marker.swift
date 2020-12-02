@@ -72,16 +72,16 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
   }
 
   private func intializeConstraints() {
-    _pinView.annotation = self
+    _pinView.annotation = annotation
     _pinView.translatesAutoresizingMaskIntoConstraints = false
     _pinView.leftAnchor.constraint(equalTo: _imageView.leftAnchor).isActive = true
     _pinView.rightAnchor.constraint(equalTo: _imageView.rightAnchor).isActive = true
     _pinView.topAnchor.constraint(equalTo: _imageView.topAnchor).isActive = true
     _pinView.bottomAnchor.constraint(equalTo: _imageView.bottomAnchor).isActive = true
-    _view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
+    _imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
     let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
     gesture.delegate = Marker._lchelper
-    _view.addGestureRecognizer(gesture)
+    _imageView.addGestureRecognizer(gesture)
   }
 
   // used for resizing the Marker when the parent Map size changes
@@ -149,7 +149,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
 
   @objc open override var EnableInfobox: Bool {
     get {
-      return _view.canShowCallout
+      return _imageView.canShowCallout
     }
     set(enabled) {
       _imageView.canShowCallout = enabled
@@ -226,7 +226,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
 
   @objc open var Latitude: Double {
     get {
-      return coordinate.latitude
+      return annotation.coordinate.latitude
     }
     set(latitude) {
       if !(-90.0...90 ~= latitude) {
@@ -234,15 +234,16 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
             ErrorMessage.ERROR_INVALID_LATITUDE.code,
             ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       } else {
-        coordinate.latitude = latitude
-        _shape = Waypoint(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        annotation.coordinate.latitude = latitude
+        _shape = Waypoint(latitude: annotation.coordinate.latitude,
+            longitude: annotation.coordinate.longitude)
       }
     }
   }
 
   @objc open var Longitude: Double {
     get {
-      return coordinate.longitude
+      return annotation.coordinate.longitude
     }
     set(longitude) {
       if !(-180.0...180 ~= longitude) {
@@ -250,8 +251,9 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
             ErrorMessage.ERROR_INVALID_LONGITUDE.code,
             ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
       } else {
-        coordinate.longitude = longitude
-        _shape = Waypoint(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        annotation.coordinate.longitude = longitude
+        _shape = Waypoint(latitude: annotation.coordinate.latitude,
+            longitude: annotation.coordinate.longitude)
       }
     }
   }
@@ -300,8 +302,8 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
     if height >= 0 {
       _preferredHeight = CGFloat(height)
     } else if height == kLengthPreferred {
-      _preferredHeight = _imagePath == "" ? kDefaultMarkerHeight: _view.frame.height
-    } else if let parentHeight = _map?.mapView.frame.height {
+      _preferredHeight = _imagePath == "" ? kDefaultMarkerHeight: _imageView.frame.height
+    } else if let parentHeight = map?.mapView.frame.height {
       if height == kLengthFillParent {
         _preferredHeight = parentHeight
       } else if height <= kLengthPercentTag {
@@ -315,8 +317,8 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
     if width >= 0 {
       _preferredWidth = CGFloat(width)
     } else if width == kLengthPreferred {
-      _preferredHeight = _imagePath == "" ? kDefaultMarkerWidth: _view.frame.width
-    } else if let parentWidth = _map?.mapView.frame.width {
+      _preferredHeight = _imagePath == "" ? kDefaultMarkerWidth: _imageView.frame.width
+    } else if let parentWidth = map?.mapView.frame.width {
       if width == kLengthFillParent {
         _preferredWidth = parentWidth
       } else if width <= kLengthPercentTag {
@@ -330,21 +332,23 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
   // MARK: methods
   @objc open func BearingToFeature(_ feature: MapFeatureBase, _ centroids: Bool) -> Double {
     if centroids {
-      return bearing(from: coordinate, to: feature.Centroid)
+      return bearing(from: annotation.coordinate, to: feature.Centroid)
     } else if let thisShape = _shape, let otherShape = feature.geometry {
       let closestPoint = otherShape.nearestPoint(thisShape)
-      return bearing(from: coordinate, to: CLLocationCoordinate2DMake(closestPoint.y, closestPoint.x))
+      return bearing(from: annotation.coordinate,
+          to: CLLocationCoordinate2DMake(closestPoint.y, closestPoint.x))
     } else {
       return 0
     }
   }
 
   @objc open func BearingToPoint(_ latitude: Double, _ longitude: Double) -> Double {
-    return bearing(from: coordinate, to: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
+    return bearing(from: annotation.coordinate,
+        to: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
   }
 
   @objc open override func HideInfobox() {
-    _map?.mapView.deselectAnnotation(self, animated: true)
+    map?.mapView.deselectAnnotation(annotation, animated: true)
   }
 
   @objc public func SetLocation(_ latitude: Double, _ longitude: Double) {
@@ -360,19 +364,20 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
           ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
       return
     }
-    coordinate = CLLocationCoordinate2DMake(latitude, longitude)
-    _shape = Waypoint(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    annotation.coordinate = CLLocationCoordinate2DMake(latitude, longitude)
+    _shape = Waypoint(latitude: annotation.coordinate.latitude,
+        longitude: annotation.coordinate.longitude)
   }
 
   @objc open override func ShowInfobox() {
     var changed = false
-    if !_view.canShowCallout {
+    if !_imageView.canShowCallout {
       changed = true
-      _view.canShowCallout = true
+      _imageView.canShowCallout = true
     }
-    _map?.mapView.selectAnnotation(self, animated: true)
+    map?.mapView.selectAnnotation(annotation, animated: true)
     if changed {
-      _view.canShowCallout = false
+      _imageView.canShowCallout = false
     }
   }
 
