@@ -20,6 +20,7 @@
 		06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 06463F041D95956800B23DCD /* LaunchScreen.storyboard */; };
 		06463F111D95956800B23DCD /* AICompanionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463F101D95956800B23DCD /* AICompanionTests.swift */; };
 		06463F1C1D95956800B23DCD /* AICompanionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463F1B1D95956800B23DCD /* AICompanionUITests.swift */; };
+		0693A7BF2575527700256540 /* mooning-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 0693A7BE2575527600256540 /* mooning-dark.png */; };
 		06984C3E1DBFE3D100FD4FA7 /* NSString_SHA1.m in Sources */ = {isa = PBXBuildFile; fileRef = 06984C3D1DBFE3D100FD4FA7 /* NSString_SHA1.m */; };
 		06A686982225D4B3006E7F60 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A686962225D3FA006E7F60 /* Foundation.framework */; };
 		06A6869E2225D886006E7F60 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A6869D2225D886006E7F60 /* Alamofire.framework */; };
@@ -86,6 +87,7 @@
 		06463F171D95956800B23DCD /* AICompanionAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AICompanionAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463F1B1D95956800B23DCD /* AICompanionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICompanionUITests.swift; sourceTree = "<group>"; };
 		06463F1D1D95956800B23DCD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0693A7BE2575527600256540 /* mooning-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "mooning-dark.png"; path = "../../aiplayapp/assets/mooning-dark.png"; sourceTree = "<group>"; };
 		06984C3C1DBFE39500FD4FA7 /* NSString_SHA1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSString_SHA1.h; sourceTree = "<group>"; };
 		06984C3D1DBFE3D100FD4FA7 /* NSString_SHA1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSString_SHA1.m; sourceTree = "<group>"; };
 		06A686962225D3FA006E7F60 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -213,6 +215,7 @@
 		06B2161D1DBC7B4C000B3366 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				0693A7BE2575527600256540 /* mooning-dark.png */,
 				06B216111DBC5F1B000B3366 /* connectwCode.png */,
 				06B216121DBC5F1B000B3366 /* connectwQR.png */,
 				06B216131DBC5F1B000B3366 /* Instructions.png */,
@@ -381,6 +384,7 @@
 				06B216191DBC5F1B000B3366 /* mooning.png in Resources */,
 				06463F031D95956800B23DCD /* Assets.xcassets in Resources */,
 				06463F011D95956800B23DCD /* Main.storyboard in Resources */,
+				0693A7BF2575527700256540 /* mooning-dark.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

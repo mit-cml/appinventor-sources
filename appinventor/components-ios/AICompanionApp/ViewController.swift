@@ -122,6 +122,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       if let mooning = UIImage(named: "mooning.png") {
         form.view.backgroundColor = UIColor(patternImage: mooning)
       }
+      form.view.backgroundColor = UIColor(patternImage: UIImage(named: "Mooning")!)
       ipAddrLabel = form.view.viewWithTag(1) as! UILabel?
       versionNumber = form.view.viewWithTag(2) as! UILabel?
       connectCode = form.view.viewWithTag(3) as! UITextField?
