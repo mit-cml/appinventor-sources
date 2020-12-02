@@ -24,6 +24,7 @@
 (define *test-environment* '())
 (define *test-global-var-environment* '())
 (define *testing* #f)
+(define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
 
 (define-syntax call-with-output-string
   (syntax-rules ()
@@ -199,7 +200,7 @@
               (apply handler (map sanitize-input args))
               #t)
             (begin
-              (yail:invoke AIComponentKit.EventDispatcher 'unregisterForEventDelegation *this-form* registeredComponentName eventName)
+              (yail:invoke AIComponentKit.EventDispatcher 'unregisterEventForDelegation *this-form* registeredComponentName eventName)
               #f))
         #f)))
 

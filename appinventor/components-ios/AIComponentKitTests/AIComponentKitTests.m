@@ -32,6 +32,7 @@
   NSLog(@"Button class name: %s", class_getName([Button class]));
   Form *form = [[Form alloc] init];
   SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  [interpreter evalForm:@"(define *this-form* #!null)"];
   [interpreter setCurrentForm:form];
   [interpreter evalForm:@"(define x (yail:make-instance AIComponentKit.Button *this-form*))"];
   XCTAssertEqual(1, form.components.count);

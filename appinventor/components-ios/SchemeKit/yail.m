@@ -12,8 +12,12 @@
 #include "picrin/private/state.h"
 #include <stdlib.h>
 
+static pic_value
+yail_invoke_internal(pic_state *pic, NSInvocation *method, int argc, pic_value args[]);
+
 static size_t BUFSIZE = 4096;
 static NSTimeZone *timeZone = nil;
+static NSMutableDictionary<NSString *, id> *aliasMap = nil;
 
 @class ProtocolWrapper;
 
@@ -400,6 +404,17 @@ yail_dict_objc(pic_state *PIC_UNUSED(pic), pic_value value) {
   return ((struct native_yaildict *) pic_obj_ptr(value))->object_;
 }
 
+static pic_value
+yail_invoke_native(pic_state *pic) {
+  pic_value method;
+  pic_value *args;
+  int n;
+  method = pic_closure_ref(pic, 0);
+  pic_get_args(pic, "*", &n, &args);
+  SCMMethod *scmMethod = yail_native_method_ptr(pic, method)->method_;
+  return yail_invoke_internal(pic, [scmMethod staticInvocation], n, args);
+}
+
 int
 yail_resolve_native_symbol(pic_state *pic, pic_value uid) {
   //TODO: implementation
@@ -413,10 +428,17 @@ yail_resolve_native_symbol(pic_state *pic, pic_value uid) {
     NSString *methodName = [localSymbol substringFromIndex:range.location+1];
     // find variable value in locals
     // find class name
-    Class clazz = [SCMNameResolver classFromQualifiedName:[targetName UTF8String]];
+    Class clazz = aliasMap[targetName];
     if (clazz == nil) {
-    } else {
+      clazz = [SCMNameResolver classFromQualifiedName:[targetName UTF8String]];
+    }
+    if (clazz != nil) {
       SCMMethod *method = [SCMNameResolver methodForClass:clazz withName:[methodName UTF8String] argumentTypeList:@[]];
+      if (method != nil) {
+        pic_value val = pic_lambda(pic, yail_invoke_native, 1, yail_make_native_method(pic, method));
+        pic_weak_set(pic, pic->globals, uid, val);
+        return 0;
+      }
     }
   } else {
     // class / instance
@@ -634,6 +656,11 @@ yail_invoke(pic_state *pic) {
   } else {
     invocation = [method invocationForInstance:yail_native_instance_ptr(pic, native_object)->object_];
   }
+  return yail_invoke_internal(pic, invocation, argc, args);
+}
+
+static pic_value
+yail_invoke_internal(pic_state *pic, NSInvocation *invocation, int argc, pic_value args[]) {
   [invocation retainArguments];
   // first 2 args in Obj-C are reserved for target and selector
   for (int i = 0, j = 2; i < argc; ++i, ++j) {
@@ -792,8 +819,9 @@ yail_invoke(pic_state *pic) {
       NSArray *value = [NSArray array];
       [invocation setArgument:&value atIndex:j];
     } else {
+      NSString *methodName = NSStringFromSelector(invocation.selector);
       NSLog(@"incompatible yail type received %s in call to %@ at index %d",
-            pic_typename(pic, pic_type(pic, args[i])), method.yailName, i);
+            pic_typename(pic, pic_type(pic, args[i])), methodName, i);
       pic_error(pic, "incompatible yail type received", 1,
                 pic_cstr_value(pic, pic_typename(pic, pic_type(pic, args[i]))));
     }
@@ -868,7 +896,7 @@ yail_invoke(pic_state *pic) {
         return yail_make_native_instance(pic, value);
       }
     } else if (0 != strcmp(retType, @encode(void))) {
-      pic_error(pic, "yail error: unknown return type for method", 1, native_method);
+      pic_error(pic, "yail error: unknown return type for method", 0);
     }
   } @catch(NSException *e) {
     pic_error(pic, [e description].UTF8String, 0);
@@ -1226,11 +1254,33 @@ yail_dictionary_alist_to_dict(pic_state *pic) {
   return yail_make_native_yaildictionary(pic, dict);
 }
 
+static pic_value
+yail_define_alias(pic_state *pic) {
+  pic_value name, symbol;
+
+  pic_get_args(pic, "oo", &name, &symbol);
+  NSString *objcName = [NSString stringWithCString:pic_str(pic, pic_sym_name(pic, name)) encoding:NSUTF8StringEncoding];
+  NSString *objcSymbol = [NSString stringWithCString:pic_str(pic, pic_sym_name(pic, symbol)) encoding:NSUTF8StringEncoding];
+  objcSymbol = [objcSymbol substringWithRange:NSMakeRange(1, objcSymbol.length - 2)];
+
+  Class clazz = [SCMNameResolver classFromQualifiedName:[objcSymbol UTF8String]];
+  if (clazz != nil) {
+    aliasMap[objcName] = clazz;
+  } else {
+    pic_error(pic, "Unrecognized symbol", 1, symbol);
+  }
+
+  return pic_undef_value(pic);
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
+  pic_value e;
   pic_deflibrary(pic, "yail");
-  pic_define(pic, "yail", "*this-form*", pic_nil_value(pic));
+  pic_import(pic, "scheme.base");
+  pic_import(pic, "scheme.write");
+  pic_import(pic, "picrin.base");
   pic_defun(pic, "yail:find-class", pic_yail_find_class);
   pic_defun(pic, "yail:type?", pic_yail_is_type);
   pic_defun(pic, "yail:set-property!", pic_yail_set_property);
@@ -1266,7 +1316,11 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:format-date", yail_format_date);
   pic_defun(pic, "YailDictionary:makeDictionary", yail_make_dictionary);
   pic_defun(pic, "YailDictionary:alistToDict", yail_dictionary_alist_to_dict);
+  pic_defun(pic, "yail:define-alias", yail_define_alias);
+  pic_load_cstr(pic, "(define-syntax define-alias (syntax-rules () ((_ alias name) "
+      "(yail:define-alias 'alias 'name))))");
   objects = [NSMutableDictionary dictionary];
   protocols = [NSMutableDictionary dictionary];
   timeZone = [NSTimeZone localTimeZone];
+  aliasMap = [NSMutableDictionary dictionary];
 }

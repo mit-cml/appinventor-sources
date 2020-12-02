@@ -414,6 +414,7 @@ typedef union {
 - (void)testCurrentForm {
   MockContainer *container = [[MockContainer alloc] init];
   SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  [interpreter evalForm:@"(define *this-form* #!null)"];
   [interpreter setCurrentForm:container];
   NSLog(@"*this-form* = %@", [interpreter evalForm:@"*this-form*"]);
   XCTAssertTrue([[interpreter evalForm:@"*this-form*"] containsString:@"MockContainer"]);

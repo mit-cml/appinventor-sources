@@ -32,10 +32,6 @@ pic_init_picrin(pic_state *pic)
   pic_init_contrib(pic);
   pic_load_piclib(pic);
   pic_init_yail(pic);
-  pic_in_library(pic, "yail");
-  pic_import(pic, "scheme.base");
-  pic_import(pic, "scheme.write");
-  pic_import(pic, "picrin.base");
 }
 
 static NSException *

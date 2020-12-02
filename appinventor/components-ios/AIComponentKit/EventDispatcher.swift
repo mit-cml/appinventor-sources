@@ -95,14 +95,12 @@ open class EventDispatcher: NSObject {
     er.eventClosuresMap[eventName] = eventClosures
   }
   
-  @objc open class func unregisterForEventDelegation(_ dispatchDelegate: HandlesEventDispatching, _ componentName: String, _ eventName: String) {
+  @objc open class func unregisterEventForDelegation(_ dispatchDelegate: HandlesEventDispatching, _ componentName: String, _ eventName: String) {
     let er = getEventRegistry(dispatchDelegate)
-    let eventClosures = er.eventClosuresMap[eventName]
-    if eventClosures == nil || eventClosures?.count == 0 {
+    guard let closures = er.eventClosuresMap[eventName], closures.count > 0 else {
       return
     }
-    var closures = eventClosures!
-    closures.subtract(closures.filter({ (closure) -> Bool in
+    er.eventClosuresMap[eventName] = Set(closures).subtracting(closures.filter({ (closure) -> Bool in
       return closure.componentId == componentName
     }))
   }
