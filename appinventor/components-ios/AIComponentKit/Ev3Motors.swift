@@ -284,7 +284,9 @@ extension Data {
     case LittleEndian
   }
   func scanValue<T: FixedWidthInteger>(at index: Data.Index, endianess: Endianness) -> T {
-    let number: T = self.subdata(in: index..<index + MemoryLayout<T>.size).withUnsafeBytes({ $0.pointee })
+    let number: T = self.subdata(in: index..<index + MemoryLayout<T>.size).withUnsafeBytes {
+      $0.load(as: T.self)
+    }
     switch endianess {
     case .BigEndian:
       return number.bigEndian
