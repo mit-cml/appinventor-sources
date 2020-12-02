@@ -60,7 +60,9 @@ open class EventDispatcher: NSObject {
 
   @discardableResult
   open class func dispatchEvent(of component: Component, called eventName: String, arguments: AnyObject...) -> Bool {
-    let dispatchDelegate = component.dispatchDelegate
+    guard let dispatchDelegate = component.dispatchDelegate else {
+      return false
+    }
     var dispatched = false
     if (dispatchDelegate.canDispatchEvent(of: component, called: eventName)) {
       let er = mapDispatchDelegateToEventRegistry[dispatchDelegate] as! EventRegistry?

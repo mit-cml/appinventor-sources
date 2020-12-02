@@ -178,7 +178,8 @@ open class ButtonBase: ViewComponent {
       return true
     }
     CLASSIC_DEFAULT_PIPELINE[.Highlight] = {
-      $0._view.showsTouchWhenHighlighted = ($0._container.form.Theme != "Classic" || $0._backgroundImage != nil) && $0.ShowFeedback
+      $0._view.showsTouchWhenHighlighted =
+        ($0._container?.form?.Theme != "Classic" || $0._backgroundImage != nil) && $0.ShowFeedback
       $0._view.adjustsImageWhenHighlighted = $0.ShowFeedback
       return true
     }
@@ -242,7 +243,7 @@ open class ButtonBase: ViewComponent {
   }
 
   @objc func Initialize() {
-    if _container.form.Theme != "Classic" {
+    if _container?.form?.Theme != "Classic" {
       _stylePipeline = ButtonBase.MODERN_DEFAULT_PIPELINE
     }
     applyStyle()
@@ -443,7 +444,7 @@ open class ButtonBase: ViewComponent {
     for step in _stylePipeline.sorted(by: { $0.key.rawValue < $1.key.rawValue }) {
       if !step.value(self) { break }
     }
-    _container.form.view.setNeedsLayout()
+    _container?.form?.view.setNeedsLayout()
     _view.setNeedsLayout()
   }
 }

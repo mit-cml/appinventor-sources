@@ -119,7 +119,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     _zoomInBtn = ZoomButton(zoom: .zoomIn)
     _zoomOutBtn = ZoomButton(zoom: .zoomOut)
     _zoomControls = UIStackView(arrangedSubviews: [_zoomInBtn, _zoomOutBtn])
-    _locationSensor = AIComponentKit.LocationSensor(parent.form)
+    _locationSensor = AIComponentKit.LocationSensor(parent.form!)
     super.init(parent)
     if #available(iOS 11.0, *) {
       compass = MKCompassButton(mapView: mapView)
@@ -316,7 +316,8 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     }
     set(type) {
       if !(1...3 ~= type) {
-        _container.form.dispatchErrorOccurredEvent(self, "MapType", ErrorMessage.ERROR_INVALID_MAP_TYPE.code, ErrorMessage.ERROR_INVALID_MAP_TYPE.message)
+        form?.dispatchErrorOccurredEvent(self, "MapType", ErrorMessage.ERROR_INVALID_MAP_TYPE.code,
+           ErrorMessage.ERROR_INVALID_MAP_TYPE.message)
         return
       }
 
@@ -517,7 +518,9 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     do {
       try GeoJSONUtil.writeAsGeoJSON(features: _features, to: path)
     } catch let err {
-      _container.form.dispatchErrorOccurredEvent(self, "Save", ErrorMessage.ERROR_EXCEPTION_DURING_MAP_SAVE.code, ErrorMessage.ERROR_EXCEPTION_DURING_MAP_SAVE.message, err.localizedDescription)
+      form?.dispatchErrorOccurredEvent(self, "Save",
+          ErrorMessage.ERROR_EXCEPTION_DURING_MAP_SAVE.code,
+          ErrorMessage.ERROR_EXCEPTION_DURING_MAP_SAVE.message, err.localizedDescription)
     }
   }
   
@@ -995,18 +998,12 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     EventDispatcher.dispatchEvent(of: self, called: "GotFeatures", arguments: url as NSString, features as NSArray)
   }
 
-  public var form: Form {
-    get {
-      return _container.form
-    }
-  }
-  
-  public var container: ComponentContainer {
+  public var container: ComponentContainer? {
     get {
       return _container
     }
   }
-  
+
   public func add(_ component: ViewComponent) {}
 
   public func setChildWidth(of component: ViewComponent, to width: Int32) {}
@@ -1022,7 +1019,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   }
   
   public func isVisible() -> Bool {
-    return _container.isVisible(component: self)
+    return _container?.isVisible(component: self) ?? false
   }
 
 #if DEBUG

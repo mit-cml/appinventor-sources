@@ -9,7 +9,10 @@ import Foundation
 
 @objc open class ViewComponent: NSObject, VisibleComponent {
   fileprivate weak var _delegate: AbstractMethodsForViewComponent?
-  @objc internal let _container: ComponentContainer
+  @objc public weak var _container: ComponentContainer?
+  @objc public var form: Form? {
+    return _container?.form
+  }
 
   fileprivate var _percentWidthHolder = kLengthUnknown
   fileprivate var _percentHeightHolder = kLengthUnknown
@@ -40,13 +43,16 @@ import Foundation
 
   @objc open var Visible: Bool {
     get {
-      return _container.isVisible(component: self)
+      return _container?.isVisible(component: self) ?? false
     }
     set(visibility) {
-      _container.setVisible(component: self, to: visibility)
-      if (_container.isVisible() && _container.isVisible(component: self)) {
-        _container.setChildWidth(of: self, to: _lastSetWidth)
-        _container.setChildHeight(of: self, to: _lastSetHeight)
+      guard let container = _container else {
+        return
+      }
+      container.setVisible(component: self, to: visibility)
+      if visible {
+        container.setChildWidth(of: self, to: _lastSetWidth)
+        container.setChildHeight(of: self, to: _lastSetHeight)
       }
     }
   }
@@ -57,8 +63,11 @@ import Foundation
       return Int32(view.bounds.width)
     }
     set(width) {
-      if (_container.isVisible() && _container.isVisible(component: self)) {
-        _container.setChildWidth(of: self, to: width)
+      guard let container = _container else {
+        return
+      }
+      if visible {
+        container.setChildWidth(of: self, to: width)
       }
       _lastSetWidth = width
     }
@@ -80,8 +89,11 @@ import Foundation
       return Int32(view.bounds.height)
     }
     set(height) {
-      if (_container.isVisible() && _container.isVisible(component: self)) {
-        _container.setChildHeight(of: self, to: height)
+      guard let container = _container else {
+        return
+      }
+      if visible {
+        container.setChildHeight(of: self, to: height)
       }
       _lastSetHeight = height
     }
@@ -106,7 +118,10 @@ import Foundation
   }
 
   @objc open func resetNestedViewConstraints(for nestedView: UIView, width: Int32, height: Int32, shouldAddConstraint: Bool) {
-    let constraintsToRemove = _container.form.view.constraints.filter { constraint in
+    guard let form = form else {
+      return
+    }
+    let constraintsToRemove = form.view.constraints.filter { constraint in
       if let vi = constraint.firstItem, type(of: vi) == type(of: view) {
         let tempView = vi as! UIView
         if tempView == nestedView || tempView == view {
@@ -121,14 +136,14 @@ import Foundation
       return false
     }
 
-    _container.form.view.removeConstraints(constraintsToRemove)
+    form.view.removeConstraints(constraintsToRemove)
     _lastSetHeight = height
-    if (_container.isVisible() && _container.isVisible(component: self)) {
-      _container.setChildHeight(of: self, to: height)
+    if visible {
+      _container?.setChildHeight(of: self, to: height)
     }
     _lastSetWidth = width
-    if (_container.isVisible() && _container.isVisible(component: self)) {
-      _container.setChildWidth(of: self, to: width)
+    if visible {
+      _container?.setChildWidth(of: self, to: width)
     }
     if shouldAddConstraint {
       nestedView.frame = view.bounds
@@ -158,9 +173,13 @@ import Foundation
     }
   }
 
-  open var dispatchDelegate: HandlesEventDispatching {
+  open var dispatchDelegate: HandlesEventDispatching? {
     get {
-      return _container.form.dispatchDelegate
+      return _container?.form?.dispatchDelegate
     }
+  }
+
+  @objc(isVisible) open var visible: Bool {
+    return (_container?.isVisible(component: self) ?? false) && Visible
   }
 }

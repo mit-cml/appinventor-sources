@@ -35,7 +35,7 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
         if allowed {
           self.Start()
         } else {
-          self._form.dispatchPermissionDeniedEvent(self, "Start", "RECORD_AUDIO")
+          self._form?.dispatchPermissionDeniedEvent(self, "Start", "RECORD_AUDIO")
         }
       }
       return
@@ -54,7 +54,9 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
       let filePath = _savedRecordingPath.isEmpty ? try FileUtil.getRecordingFile(DEFAULT_SOUND_EXTENSION) : try FileUtil.getRecordingFileFromAndroidPath(_savedRecordingPath)
       _fileURL = URL(fileURLWithPath: filePath)
       guard let _fileURL = _fileURL else {
-        _form.dispatchErrorOccurredEvent(self, "Start", ErrorMessage.ERROR_CANNOT_WRITE_TO_FILE.code, ErrorMessage.ERROR_CANNOT_WRITE_TO_FILE.message, filePath as NSString)
+        _form?.dispatchErrorOccurredEvent(self, "Start",
+            ErrorMessage.ERROR_CANNOT_WRITE_TO_FILE.code,
+            ErrorMessage.ERROR_CANNOT_WRITE_TO_FILE.message, filePath as NSString)
         return
       }
       let recorder = try AVAudioRecorder(url: _fileURL, settings: getSettingsForFileType(fileExtension: _fileURL.pathExtension))
@@ -66,10 +68,13 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
       StartedRecording()
     } catch (let error as FileError) {
       finishedRecording(success: false)
-      _form.dispatchErrorOccurredEvent(self, "Start", error.code, error.message, error.filePath)
+      _form?.dispatchErrorOccurredEvent(self, "Start", error.code, error.message, error.filePath)
     } catch {
       finishedRecording(success: false)
-      _form.dispatchErrorOccurredEvent(self, "Start", ErrorMessage.ERROR_SOUND_RECORDER_CANNOT_CREATE.code, ErrorMessage.ERROR_SOUND_RECORDER_CANNOT_CREATE.message, _fileURL?.absoluteString ?? "Unknown filepath")
+      _form?.dispatchErrorOccurredEvent(self, "Start",
+          ErrorMessage.ERROR_SOUND_RECORDER_CANNOT_CREATE.code,
+          ErrorMessage.ERROR_SOUND_RECORDER_CANNOT_CREATE.message,
+          _fileURL?.absoluteString ?? "Unknown filepath")
     }
   }
   
@@ -98,13 +103,15 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
   private func finishedRecording(success: Bool) {
     if success {
       guard let _fileURL = _fileURL else {
-        _form.dispatchErrorOccurredEvent(self, "finishedRecording", ErrorMessage.ERROR_SOUND_RECORDER.code, ErrorMessage.ERROR_SOUND_RECORDER.message)
+        _form?.dispatchErrorOccurredEvent(self, "finishedRecording",
+            ErrorMessage.ERROR_SOUND_RECORDER.code, ErrorMessage.ERROR_SOUND_RECORDER.message)
         return
       }
       let sound = _fileURL.path
       AfterSoundRecorded(sound)
     } else {
-      _form.dispatchErrorOccurredEvent(self, "finishedRecording", ErrorMessage.ERROR_SOUND_RECORDER.code, ErrorMessage.ERROR_SOUND_RECORDER.message)
+      _form?.dispatchErrorOccurredEvent(self, "finishedRecording",
+          ErrorMessage.ERROR_SOUND_RECORDER.code, ErrorMessage.ERROR_SOUND_RECORDER.message)
     }
     StoppedRecording()
     _recorder = nil
@@ -120,7 +127,8 @@ open class SoundRecorder: NonvisibleComponent, AVAudioRecorderDelegate {
       NSLog("ErrorOccurred with wrong recorder.  Ignoring")
       return
     }
-    _form.dispatchErrorOccurredEvent(self, "audioRecorderEncodeErrorDidOccur", ErrorMessage.ERROR_SOUND_RECORDER.code, ErrorMessage.ERROR_SOUND_RECORDER.message)
+    _form?.dispatchErrorOccurredEvent(self, "audioRecorderEncodeErrorDidOccur",
+        ErrorMessage.ERROR_SOUND_RECORDER.code, ErrorMessage.ERROR_SOUND_RECORDER.message)
     _recorder?.stop()
     _recorder = nil
     _fileURL = nil

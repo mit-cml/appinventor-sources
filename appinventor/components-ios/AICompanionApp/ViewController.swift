@@ -48,7 +48,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     
   }
 
-  @IBOutlet public var form: Form!
+  @IBOutlet public var form: ReplForm!
 
   @IBOutlet weak var ipAddrLabel: UILabel?
   @IBOutlet weak var versionNumber: UILabel?
@@ -103,6 +103,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
     if (form == nil) {
       form = self.viewControllers[self.viewControllers.count - 1] as! ReplForm
+      form.makeTopForm()
       form.Initialize()
       form.AccentColor = Int32(bitPattern: 0xFF128BA8)
       form.PrimaryColor = Int32(bitPattern: 0xFFA5CF47)
@@ -194,8 +195,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc func openMenu(caller: UIBarButtonItem) {
     if UIDevice.current.userInterfaceIdiom == .phone {
       let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-      controller.addAction(UIAlertAction(title: "Close Project", style: .destructive) { (UIAlertAction) in
-        self.reset()
+      controller.addAction(UIAlertAction(title: "Close Project", style: .destructive) { [weak self] (UIAlertAction) in
+        self?.reset()
         controller.dismiss(animated: false)
       })
       controller.addAction(UIAlertAction(title: "Cancel", style: .cancel) { (UIAlertAction) in

@@ -1,15 +1,10 @@
-//
-//  AndroidNonvisibleComponent.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/21/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
 open class NonvisibleComponent: NSObject, Component {
-  @objc final var _form: Form
+  @objc weak var _form: Form?
 
   @objc public init(_ container: ComponentContainer) {
     self._form = container.form
@@ -19,9 +14,9 @@ open class NonvisibleComponent: NSObject, Component {
     return self
   }
   
-  open var dispatchDelegate: HandlesEventDispatching {
+  open var dispatchDelegate: HandlesEventDispatching? {
     get {
-      return _form.dispatchDelegate
+      return _form?.dispatchDelegate
     }
   }
 }

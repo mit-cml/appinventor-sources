@@ -191,13 +191,16 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       UITableViewCell(style: .default, reuseIdentifier: kDefaultTableCell)
     cell.textLabel?.text = elements[indexPath.row]
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
+    guard let form = _container?.form else {
+      return cell
+    }
     if _backgroundColor == Color.default.int32 {
-      cell.backgroundColor = preferredTextColor(_container.form)
+      cell.backgroundColor = preferredTextColor(form)
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
     if _textColor == Color.default.int32 {
-      cell.textLabel?.textColor = preferredBackgroundColor(_container.form)
+      cell.textLabel?.textColor = preferredBackgroundColor(form)
     } else {
       cell.textLabel?.textColor = argbToColor(_textColor)
     }

@@ -177,7 +177,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
       tableVC.tableView.reloadData()
       _needsReload = false
     }
-    _container.form.present(_viewController!, animated: true, completion: {})
+    form?.present(_viewController!, animated: true, completion: {})
   }
 
   // MARK: UITableViewDataSource

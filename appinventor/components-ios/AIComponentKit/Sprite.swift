@@ -576,8 +576,6 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   @objc func updateHeight(){}
   
   @objc func animate() {
-    let layer = DisplayLayer
-
     let headingCos = cos(_headingRadians)
     let headingSin = sin(_headingRadians)
     let newX = CGFloat(X) + CGFloat(Speed) * headingCos

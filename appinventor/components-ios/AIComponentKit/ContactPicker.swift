@@ -87,7 +87,8 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
             try imageData.write(to: url)
             return url.absoluteString
           } catch {
-            _container.form.dispatchErrorOccurredEvent(self, "Picture", ErrorMessage.ERROR_CANNOT_WRITE_TO_FILE.code, url?.absoluteString ?? "<unknown>")
+            _container?.form?.dispatchErrorOccurredEvent(self, "Picture",
+                ErrorMessage.ERROR_CANNOT_WRITE_TO_FILE.code, url?.absoluteString ?? "<unknown>")
           }
         }
       }
@@ -116,7 +117,8 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
   }
 
   fileprivate func reportViewContactError() {
-    _container.form.dispatchErrorOccurredEvent(self, "ViewContact", ErrorMessage.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER.code)
+    _container?.form?.dispatchErrorOccurredEvent(self, "ViewContact",
+        ErrorMessage.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER.code)
   }
 
   // MARK: CNContactPickerDelegate Implementation
@@ -133,7 +135,7 @@ open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDeleg
   @objc open func open() {
     let picker = CNContactPickerViewController()
     picker.delegate = self
-    _container.form.present(picker, animated: true)
+    _container?.form?.present(picker, animated: true)
   }
 }
 

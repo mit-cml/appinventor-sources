@@ -257,14 +257,16 @@ import GEOSwift
   }
 
   func timerFired() {
-    _map?.FeatureDrag(self)
+    _container?.FeatureDrag(self)
   }
 
   open func removeFromMap() {
-    _map?.removeFeature(self)
+    _container?.getMap().removeFeature(self)
   }
 
-  public var dispatchDelegate: HandlesEventDispatching
+  public var dispatchDelegate: HandlesEventDispatching? {
+    return _container?.form?.dispatchDelegate
+  }
 
   public func copy(with zone: NSZone? = nil) -> Any {
     return self

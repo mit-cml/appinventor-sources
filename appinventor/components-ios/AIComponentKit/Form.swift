@@ -97,19 +97,19 @@ import Toast_Swift
     // Will be overriden in compiled apps
   }
 
-  open var dispatchDelegate: HandlesEventDispatching {
+  open var dispatchDelegate: HandlesEventDispatching? {
     get {
       return self
     }
   }
 
-  open var form: Form {
+  open var form: Form? {
     get {
       return self
     }
   }
 
-  public var container: ComponentContainer {
+  public var container: ComponentContainer? {
     get {
       return self
     }
@@ -166,10 +166,6 @@ import Toast_Swift
       _linearView.setHeight(of: component.view, to: Length(pixels: height))
     }
     _linearView.setNeedsLayout()
-  }
-  
-  public func isVisible() -> Bool {
-    return true
   }
 
   open func isVisible(component: ViewComponent) -> Bool {

@@ -152,7 +152,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
       updateFormattedContent()
       _view.setNeedsUpdateConstraints()
       _view.setNeedsLayout()
-      _container.form.view.setNeedsLayout()
+      _container?.form?.view.setNeedsLayout()
     }
   }
 

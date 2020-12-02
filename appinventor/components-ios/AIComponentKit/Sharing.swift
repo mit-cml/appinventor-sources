@@ -1,10 +1,5 @@
-//
-//  Sharing.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 10/27/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -12,14 +7,16 @@ open class Sharing: NonvisibleComponent {
 
   fileprivate func showActivityPicker(_ activityItems: [Any]) {
     let activityVC = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
-    var view = _form.view
+    guard var view = _form?.view else {
+      return
+    }
     
-    if let component = _form._componentWithActiveEvent, let vc = component as? ViewComponent {
+    if let component = _form?._componentWithActiveEvent, let vc = component as? ViewComponent {
       view = vc.view
     }
     DispatchQueue.main.async {
       activityVC.popoverPresentationController?.sourceView = view  // For iPad popover
-      self._form.present(activityVC, animated: true, completion: nil)
+      self._form?.present(activityVC, animated: true, completion: nil)
     }
   }
 

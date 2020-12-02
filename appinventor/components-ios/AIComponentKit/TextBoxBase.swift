@@ -182,7 +182,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     set(argb) {
       _textColor = argb
       if _textColor == Color.default.int32 {
-        _delegate?.textColor = preferredTextColor(_container.form)
+        _delegate?.textColor = preferredTextColor(_container?.form)
       } else {
         _delegate?.textColor = argbToColor(argb)
       }

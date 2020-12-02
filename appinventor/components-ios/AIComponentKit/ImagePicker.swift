@@ -25,19 +25,21 @@ open class ImagePicker: Picker, AbstractMethodsForPicker, UIImagePickerControlle
   //MARK: UIImagePickerControllerDelegate
   public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
     // Dismiss the picker if the user canceled.
-    _container.form.dismiss(animated: true, completion: nil)
+    form?.dismiss(animated: true, completion: nil)
     AfterPicking()
   }
   
   public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-// Local variable inserted by Swift 4.2 migrator.
-let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+    // Local variable inserted by Swift 4.2 migrator.
+    let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
 
     // The asset manager encodes the image URL's original path name to a new URL. The image data is then written to the new URL.
     let url = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.referenceURL)] as! NSURL
     let urlPath = url.path
-    let assetmgr = _container.form.application?.assetManager
-    _selectedImage = assetmgr?.pathForPrivateAsset(urlPath!) ?? ""
+    guard let assetmgr = form?.application?.assetManager else {
+      return
+    }
+    _selectedImage = assetmgr.pathForPrivateAsset(urlPath!)
     _selectedImage = "file://" + _selectedImage.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlPathAllowed)!
     let selectedImageURL = URL(string: _selectedImage)
     let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as! UIImage
@@ -51,10 +53,12 @@ let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
     do {
       try data?.write(to: selectedImageURL!)
     } catch {
-      _container.form.dispatchErrorOccurredEvent(self, "ImagePicker", ErrorMessage.ERROR_CANNOT_COPY_MEDIA.code, ErrorMessage.ERROR_CANNOT_COPY_MEDIA.message)
+      form?.dispatchErrorOccurredEvent(self, "ImagePicker",
+          ErrorMessage.ERROR_CANNOT_COPY_MEDIA.code,
+          ErrorMessage.ERROR_CANNOT_COPY_MEDIA.message)
       _selectedImage = ""
     }
-    _container.form.dismiss(animated: true, completion: nil)
+    form?.dismiss(animated: true, completion: nil)
     AfterPicking()
   }
     
@@ -66,14 +70,14 @@ let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
       picker.mediaTypes = [kUTTypeImage as String]
       picker.delegate = self as UIImagePickerControllerDelegate & UINavigationControllerDelegate
       if !_isPad {
-      _container.form.present(picker, animated: true, completion: nil)
+      form?.present(picker, animated: true, completion: nil)
       } else {
         picker.modalPresentationStyle = UIModalPresentationStyle.popover
         let popover = picker.popoverPresentationController
         popover?.delegate = self
         popover?.sourceView = _view
         popover?.sourceRect = _view.frame
-        _container.form.present(picker, animated: true, completion: nil)
+        form?.present(picker, animated: true, completion: nil)
       }
     }
   }

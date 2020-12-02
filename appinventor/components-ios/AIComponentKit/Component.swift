@@ -114,5 +114,5 @@ public let kDefaultValueTextToSpeechCountry = ""
 public let kDefaultValueTextToSpeechLanguage = ""
 
 @objc public protocol Component: NSCopying, NeedsWeakReference {
-  var dispatchDelegate: HandlesEventDispatching { get }
+  var dispatchDelegate: HandlesEventDispatching? { get }
 }

@@ -181,7 +181,6 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
 }
 
 open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
-  fileprivate let _container: ComponentContainer
   fileprivate var _result = ""
   fileprivate var _viewController: BarcodeScannerViewController?
   fileprivate var _navController: UINavigationController?
@@ -189,7 +188,6 @@ open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
   fileprivate static let UILock = DispatchSemaphore(value: 1) //in the event that multiple BarcodeScanner items exist, to prevent multiple alerts
 
   public override init(_ container: ComponentContainer) {
-    self._container = container
     super.init(container)
   }
 

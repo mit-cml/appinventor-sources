@@ -27,7 +27,9 @@ open class YandexTranslate: NonvisibleComponent {
 
   @objc open func RequestTranslation(_ languageToTranslateTo: String, _ textToTranslate: String){
     if (yandexKey == ""){
-      _form.dispatchErrorOccurredEvent(self, "RequestTranslation", ErrorMessage.ERROR_TRANSLATE_NO_KEY_FOUND.code, ErrorMessage.ERROR_TRANSLATE_NO_KEY_FOUND.message)
+      _form?.dispatchErrorOccurredEvent(self, "RequestTranslation",
+          ErrorMessage.ERROR_TRANSLATE_NO_KEY_FOUND.code,
+          ErrorMessage.ERROR_TRANSLATE_NO_KEY_FOUND.message)
       return;
     }
 
@@ -40,7 +42,9 @@ open class YandexTranslate: NonvisibleComponent {
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
       DispatchQueue.main.async {
         guard let data = data, error == nil else {
-          self._form.dispatchErrorOccurredEvent(self, "RequestTranslation", ErrorMessage.ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE.code, ErrorMessage.ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE.message)
+          self._form?.dispatchErrorOccurredEvent(self, "RequestTranslation",
+              ErrorMessage.ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE.code,
+              ErrorMessage.ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE.message)
           return
         }
 
@@ -57,7 +61,9 @@ open class YandexTranslate: NonvisibleComponent {
             translation = swiftArray[0]
           }
         } catch {
-          self._form.dispatchErrorOccurredEvent(self, "RequestTranslation", ErrorMessage.ERROR_TRANSLATE_JSON_RESPONSE.code, ErrorMessage.ERROR_TRANSLATE_JSON_RESPONSE.message)
+          self._form?.dispatchErrorOccurredEvent(self, "RequestTranslation",
+              ErrorMessage.ERROR_TRANSLATE_JSON_RESPONSE.code,
+              ErrorMessage.ERROR_TRANSLATE_JSON_RESPONSE.message)
           return
         }
         self.GotTranslation(responseCode as NSNumber, translation as NSString)

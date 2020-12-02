@@ -40,18 +40,15 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   }
 
   // MARK: ComponentContainer protocol implementation
-  open var form: Form {
-    get {
-      return _container.form
-    }
-  }
-
   open func add(_ component: ViewComponent) {
     _components.append(component)
     _view.addItem(LinearViewItem(component.view))
   }
 
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
+    guard let form = form else {
+      return
+    }
     if width <= kLengthPercentTag {
       _view.setWidth(of: component.view, to: Length(percent: width, of: form.scaleFrameLayout))
     } else if width == kLengthPreferred {
@@ -65,6 +62,9 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   }
 
   open func setChildHeight(of component: ViewComponent, to height: Int32) {
+    guard let form = form else {
+      return
+    }
     if height <= kLengthPercentTag {
       _view.setHeight(of: component.view, to: Length(percent: height, of: form.scaleFrameLayout))
     } else if height == kLengthPreferred {
@@ -77,27 +77,12 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     _view.setNeedsLayout()
   }
   
-  open var container:  ComponentContainer {
+  open var container: ComponentContainer? {
     get {
       return _container
     }
   }
- 
-  open func isVisible() -> Bool {
-    var visible = true
-    var parent = _container
-    var child: ViewComponent = self
-    while (type(of: parent) != ReplForm.self) {
-      visible = parent.isVisible(component: child) && parent.isVisible()
-      if visible == false {
-        return visible
-      }
-      child = parent as! ViewComponent
-      parent = parent.container
-    }
-    return parent.isVisible(component: child)
-  }
-  
+
   open func isVisible(component: ViewComponent) -> Bool {
     return _view.contains(component.view)
   }

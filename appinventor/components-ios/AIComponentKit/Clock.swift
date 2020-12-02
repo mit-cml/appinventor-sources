@@ -63,7 +63,9 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
   
   @objc open func MakeInstant(_ from: String) throws -> Date {
     guard let components = dateParser(from) else {
-      _form.dispatchErrorOccurredEvent(self, "MakeInstant", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
+      _form?.dispatchErrorOccurredEvent(self, "MakeInstant",
+          ErrorMessage.ERROR_ILLEGAL_DATE.code,
+          ErrorMessage.ERROR_ILLEGAL_DATE.message)
       throw YailRuntimeError("Argument to MakeInstant should have form MM/DD/YYYY hh:mm:ss, or MM/DD/YYYY or hh:mm", "Sorry to be so picky.")
     }
     
@@ -81,7 +83,9 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
     dateComponents.day = Int(day)
 
     guard let instant = _calendar.date(from: dateComponents) else {
-      _form.dispatchErrorOccurredEvent(self, "MakeDate", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
+      _form?.dispatchErrorOccurredEvent(self, "MakeDate",
+          ErrorMessage.ERROR_ILLEGAL_DATE.code,
+          ErrorMessage.ERROR_ILLEGAL_DATE.message)
       throw YailRuntimeError("Argument to MakeDate should have month from 1-12 and 1-31 for day field.", "Sorry to be so picky.")
     }
 
@@ -97,7 +101,9 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
     dateComponents.second = Int(second)
 
     guard let instant = _calendar.date(from: dateComponents) else {
-      _form.dispatchErrorOccurredEvent(self, "MakeTime", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
+      _form?.dispatchErrorOccurredEvent(self, "MakeTime",
+          ErrorMessage.ERROR_ILLEGAL_DATE.code,
+          ErrorMessage.ERROR_ILLEGAL_DATE.message)
       throw YailRuntimeError("Argument to MakeTime was not valid.", "Sorry to be so picky.")
     }
 
@@ -114,7 +120,9 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
     dateComponents.second = Int(second)
 
     guard let instant = _calendar.date(from: dateComponents) else {
-      _form.dispatchErrorOccurredEvent(self, "MakeInstantFromParts", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
+      _form?.dispatchErrorOccurredEvent(self, "MakeInstantFromParts",
+          ErrorMessage.ERROR_ILLEGAL_DATE.code,
+          ErrorMessage.ERROR_ILLEGAL_DATE.message)
       throw YailRuntimeError("Argument to MakeDate should have month from 1-12 and 1-31 for day field.", "Sorry to be so picky.")
     }
 

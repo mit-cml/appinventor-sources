@@ -162,7 +162,9 @@ open class FusiontablesControl: NonvisibleComponent {
             self.GotResult(self.toCSV(value))
           } else {
             print("query error 2: \(query)")
-            self._form.dispatchErrorOccurredEvent(self, "SendQuery", ErrorMessage.FUSION_TABLES_QUERY_ERROR.code, ErrorMessage.FUSION_TABLES_QUERY_ERROR.message, query, value)
+            self._form?.dispatchErrorOccurredEvent(self, "SendQuery",
+                ErrorMessage.FUSION_TABLES_QUERY_ERROR.code,
+                ErrorMessage.FUSION_TABLES_QUERY_ERROR.message, query, value)
           }
         } else {
           print("query error: \(query)")
@@ -249,10 +251,14 @@ open class FusiontablesControl: NonvisibleComponent {
   }
 
   fileprivate func sendAuthError(_ message: String) {
-    _form.dispatchErrorOccurredEvent(self, "SendQuery", ErrorMessage.FUSION_TABLES_AUTH_ERROR.code, ErrorMessage.FUSION_TABLES_AUTH_ERROR.message, message)
+    _form?.dispatchErrorOccurredEvent(self, "SendQuery",
+        ErrorMessage.FUSION_TABLES_AUTH_ERROR.code,
+        ErrorMessage.FUSION_TABLES_AUTH_ERROR.message, message)
   }
 
   fileprivate func sendQueryError(_ query: String, _ message: String) {
-    _form.dispatchErrorOccurredEvent(self, "SendQuery", ErrorMessage.FUSION_TABLES_QUERY_ERROR.code, ErrorMessage.FUSION_TABLES_QUERY_ERROR.message, query, message)
+    _form?.dispatchErrorOccurredEvent(self, "SendQuery",
+        ErrorMessage.FUSION_TABLES_QUERY_ERROR.code,
+        ErrorMessage.FUSION_TABLES_QUERY_ERROR.message, query, message)
   }
 }

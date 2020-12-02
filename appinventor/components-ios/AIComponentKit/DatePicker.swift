@@ -26,9 +26,13 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     
     super.init(parent)
     super.setDelegate(self)
+
+    guard let form = parent.form else {
+      return
+    }
     
-    _viewController = getDateTimePickerController(self, screen: parent.form, isDatePicker: true, isPhone: _isPhone)
-    _viewController?.pickerView.setValue(preferredTextColor(parent.form), forKeyPath: "textColor")
+    _viewController = getDateTimePickerController(self, screen: form, isDatePicker: true, isPhone: _isPhone)
+    _viewController?.pickerView.setValue(preferredTextColor(form), forKeyPath: "textColor")
     _viewController?.setDateTime(calendar)
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
   }
@@ -75,12 +79,12 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     dateComponents.hour = 0
     dateComponents.minute = 0
     guard let date = Calendar.current.date(from: dateComponents) else {
-      _container.form.dispatchErrorOccurredEvent(self, "SetDateToDisplay", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
+      _container?.form?.dispatchErrorOccurredEvent(self, "SetDateToDisplay", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
       return
     }
     let computedComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
     if computedComponents != dateComponents {
-      _container.form.dispatchErrorOccurredEvent(self, "SetDateToDisplay", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
+      _container?.form?.dispatchErrorOccurredEvent(self, "SetDateToDisplay", ErrorMessage.ERROR_ILLEGAL_DATE.code, ErrorMessage.ERROR_ILLEGAL_DATE.message)
       return
     }
     _instant = date
@@ -127,6 +131,6 @@ open class DatePicker: Picker, DateTimePickerDelegate {
         popover.sourceRect = _view.frame
       }
     }
-    _container.form.present(_viewController as! UIViewController, animated: true)
+    _container?.form?.present(_viewController as! UIViewController, animated: true)
   }
 }

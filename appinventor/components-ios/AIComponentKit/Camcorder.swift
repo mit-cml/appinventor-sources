@@ -42,7 +42,7 @@ open class Camcorder: NonvisibleComponent, UIImagePickerControllerDelegate, UINa
     picker.mediaTypes = [kUTTypeMovie as String, "public.movie"]
     picker.cameraCaptureMode = .video
     if (camStatus && micStatus) {
-      _form.present(picker, animated: true, completion: nil)
+      _form?.present(picker, animated: true, completion: nil)
       recordRequest = true
     } else {
       var message = "AppInventor does not have access to the "
@@ -55,7 +55,7 @@ open class Camcorder: NonvisibleComponent, UIImagePickerControllerDelegate, UINa
       alert.message = message
       if (camStatus){
         let accept = UIAlertAction(title: "Yes", style: .default) { action in
-          self._form.present(picker, animated: true, completion: nil)
+          self._form?.present(picker, animated: true, completion: nil)
           self.recordRequest = true
         }
         let reject = UIAlertAction(title: "No", style: .cancel)
@@ -64,7 +64,7 @@ open class Camcorder: NonvisibleComponent, UIImagePickerControllerDelegate, UINa
       } else {
         alert.addAction(UIAlertAction(title: "OK", style: .default))
       }
-      _form.present(alert, animated: true, completion: nil)
+      _form?.present(alert, animated: true, completion: nil)
     }
   }
 
@@ -100,13 +100,17 @@ let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
         try FileManager.default.moveItem(at: moviePath, to: newPath!)
         AfterRecording(newPath!.lastPathComponent)
       } catch {
-        _form.dispatchErrorOccurredEvent(self, "RecordVideo", ErrorMessage.ERROR_CAMCORDER_CANNOT_SAVE_FILE.code, ErrorMessage.ERROR_CAMCORDER_CANNOT_SAVE_FILE.message)
+        _form?.dispatchErrorOccurredEvent(self, "RecordVideo",
+            ErrorMessage.ERROR_CAMCORDER_CANNOT_SAVE_FILE.code,
+            ErrorMessage.ERROR_CAMCORDER_CANNOT_SAVE_FILE.message)
       }
     } else {
-      _form.dispatchErrorOccurredEvent(self, "RecordVideo", ErrorMessage.ERROR_CAMCORDER_NO_CLIP_RETURNED.code, ErrorMessage.ERROR_CAMCORDER_NO_CLIP_RETURNED.message)
+      _form?.dispatchErrorOccurredEvent(self, "RecordVideo",
+          ErrorMessage.ERROR_CAMCORDER_NO_CLIP_RETURNED.code,
+          ErrorMessage.ERROR_CAMCORDER_NO_CLIP_RETURNED.message)
     }
     if recordRequest {
-      _form.dismiss(animated: true, completion: nil)
+      _form?.dismiss(animated: true, completion: nil)
       recordRequest = false
     }
   }

@@ -25,7 +25,9 @@ let kNumCircleEdges = 60
     }
     set(latitude) {
       if !(-90.0...90 ~= latitude) {
-        _container?.form.dispatchErrorOccurredEvent(self, "Latitude", ErrorMessage.ERROR_INVALID_LATITUDE.code, ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
+        _container?.form?.dispatchErrorOccurredEvent(self, "Latitude",
+            ErrorMessage.ERROR_INVALID_LATITUDE.code,
+            ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       } else {
         coordinate.latitude = latitude
         if initialized {
@@ -41,7 +43,9 @@ let kNumCircleEdges = 60
     }
     set(longitude) {
       if !(-180.0...180 ~= longitude) {
-        _container?.form.dispatchErrorOccurredEvent(self, "Longitude", ErrorMessage.ERROR_INVALID_LONGITUDE.code, ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
+        _container?.form?.dispatchErrorOccurredEvent(self, "Longitude",
+            ErrorMessage.ERROR_INVALID_LONGITUDE.code,
+            ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
       } else {
         coordinate.longitude = longitude
         if initialized {
@@ -78,11 +82,15 @@ let kNumCircleEdges = 60
 
   @objc public func SetLocation(_ latitude: Double, _ longitude: Double) {
     if !(-90.0...90 ~= latitude) {
-      _container?.form.dispatchErrorOccurredEvent(self, "SetLocation", ErrorMessage.ERROR_INVALID_LATITUDE.code, ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
+      _container?.form?.dispatchErrorOccurredEvent(self, "SetLocation",
+          ErrorMessage.ERROR_INVALID_LATITUDE.code,
+          ErrorMessage.ERROR_INVALID_LATITUDE.message, latitude)
       return
     }
     if !(-180.0...180 ~= longitude) {
-      _container?.form.dispatchErrorOccurredEvent(self, "SetLocation", ErrorMessage.ERROR_INVALID_LONGITUDE.code, ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
+      _container?.form?.dispatchErrorOccurredEvent(self, "SetLocation",
+          ErrorMessage.ERROR_INVALID_LONGITUDE.code,
+          ErrorMessage.ERROR_INVALID_LONGITUDE.message, longitude)
       return
     }
     coordinate = CLLocationCoordinate2DMake(latitude, longitude)

@@ -44,13 +44,13 @@ open class Camera: NonvisibleComponent, UIImagePickerControllerDelegate, UINavig
         picker.cameraDevice = .front
       }
       picker.cameraCaptureMode = .photo
-      _form.present(picker, animated: true, completion: nil)
+      _form?.present(picker, animated: true, completion: nil)
       _pictureRequest = true
     } else {
       let alert = UIAlertController(title: "Permission error", message: "", preferredStyle: .alert)
       alert.message = "AppInventor does not have access to the camera. As a result, the Camera will not display"
       alert.addAction(UIAlertAction(title: "OK", style: .default))
-      _form.present(alert, animated: true, completion: nil)
+      _form?.present(alert, animated: true, completion: nil)
     }
   }
 
@@ -79,16 +79,22 @@ let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
           try data.write(to: URL(fileURLWithPath: filename))
           AfterPicture(filename)
         } catch {
-        _form.dispatchErrorOccurredEvent(self, "TakePicture", ErrorMessage.ERROR_CAMERA_CANNOT_SAVE_FILE.code, ErrorMessage.ERROR_CAMERA_CANNOT_SAVE_FILE.message)
+        _form?.dispatchErrorOccurredEvent(self, "TakePicture",
+            ErrorMessage.ERROR_CAMERA_CANNOT_SAVE_FILE.code,
+            ErrorMessage.ERROR_CAMERA_CANNOT_SAVE_FILE.message)
         }
       } else {
-        _form.dispatchErrorOccurredEvent(self, "TakePicture", ErrorMessage.ERROR_CAMERA_CANNOT_SAVE_FILE.code, ErrorMessage.ERROR_CAMERA_CANNOT_SAVE_FILE.message)
+        _form?.dispatchErrorOccurredEvent(self, "TakePicture",
+            ErrorMessage.ERROR_CAMERA_CANNOT_SAVE_FILE.code,
+            ErrorMessage.ERROR_CAMERA_CANNOT_SAVE_FILE.message)
       }
     } else {
-      _form.dispatchErrorOccurredEvent(self, "TakePicture", ErrorMessage.ERROR_CAMERA_NO_IMAGE_RETURNED.code, ErrorMessage.ERROR_CAMERA_NO_IMAGE_RETURNED.message)
+      _form?.dispatchErrorOccurredEvent(self, "TakePicture",
+          ErrorMessage.ERROR_CAMERA_NO_IMAGE_RETURNED.code,
+          ErrorMessage.ERROR_CAMERA_NO_IMAGE_RETURNED.message)
     }
     if _pictureRequest {
-      _form.dismiss(animated: true, completion: nil)
+      _form?.dismiss(animated: true, completion: nil)
       _pictureRequest = false
     }
   }

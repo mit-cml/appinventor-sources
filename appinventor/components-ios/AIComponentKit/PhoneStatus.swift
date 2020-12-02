@@ -54,7 +54,9 @@ open class PhoneStatus : NonvisibleComponent {
 
   @objc open func installUrl(_ url: String) {
     // not implemented for iOS
-    _form.dispatchErrorOccurredEvent(self, "installUrl", ErrorMessage.ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED.code, ErrorMessage.ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED.message)
+    _form?.dispatchErrorOccurredEvent(self, "installUrl",
+        ErrorMessage.ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED.code,
+        ErrorMessage.ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED.message)
   }
 
   @objc open func shutdown() {

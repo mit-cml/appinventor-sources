@@ -110,17 +110,17 @@ open class ActivityStarter: NonvisibleComponent {
 
   @objc open func StartActivity() {
     if self._action == "" {
-      _form.dispatchErrorOccurredEvent(self, "StartActivity",
-                                       ErrorMessage.ERROR_ACTIVITY_STARTER_NO_ACTION_INFO.code,
-                                       ErrorMessage.ERROR_ACTIVITY_STARTER_NO_ACTION_INFO.message)
+      _form?.dispatchErrorOccurredEvent(self, "StartActivity",
+          ErrorMessage.ERROR_ACTIVITY_STARTER_NO_ACTION_INFO.code,
+          ErrorMessage.ERROR_ACTIVITY_STARTER_NO_ACTION_INFO.message)
     } else if self.ResolveActivity() {
       if let url = URL(string: _dataUri) {
         UIApplication.shared.openURL(url)
       }
     } else {
-      _form.dispatchErrorOccurredEvent(self, "StartActivity",
-                                       ErrorMessage.ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY.code,
-                                       ErrorMessage.ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY.message)
+      _form?.dispatchErrorOccurredEvent(self, "StartActivity",
+          ErrorMessage.ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY.code,
+          ErrorMessage.ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY.message)
     }
   }
 

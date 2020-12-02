@@ -91,7 +91,9 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
       return true
     }
     set(newVal){
-      _container.form.dispatchErrorOccurredEvent(self, "PromptForPermission", ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.code, ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.message)
+      form?.dispatchErrorOccurredEvent(self, "PromptForPermission",
+          ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.code,
+          ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.message)
     }
   }
 
@@ -101,10 +103,14 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
       switch CLLocationManager.authorizationStatus() {
       case .notDetermined, .denied, .restricted: return false
       case .authorizedAlways, .authorizedWhenInUse: return true
+      @unknown default:
+        return false
       }
     }
     set(newVal){
-      _container.form.dispatchErrorOccurredEvent(self, "UsesLocation", ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.code, ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.message)
+      form?.dispatchErrorOccurredEvent(self, "UsesLocation",
+          ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.code,
+          ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.message)
     }
   }
 
@@ -127,7 +133,9 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
         let assetURL = URL(fileURLWithPath: assetPath)
         _view.loadFileURL(assetURL, allowingReadAccessTo: assetURL.deletingLastPathComponent())
       } else {
-        _container.form.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code, ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
+        form?.dispatchErrorOccurredEvent(self, "WebViewer",
+            ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
+            ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
       }
     } else if url.starts(with: "file:///mnt/sdcard") || url.starts(with: "file:///sdcard") {
       if let fileURL = URL(string: url){
@@ -135,10 +143,14 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
           let assetURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("AppInventor/\(fileURL.lastPathComponent)")
           _view.loadFileURL(assetURL, allowingReadAccessTo: assetURL.deletingLastPathComponent())
         } catch {
-          _container.form.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code, ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
+          form?.dispatchErrorOccurredEvent(self, "WebViewer",
+              ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
+              ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
         }
       } else {
-        _container.form.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code, ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
+        form?.dispatchErrorOccurredEvent(self, "WebViewer",
+            ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
+            ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
       }
     }
     else if let newUrl = URL(string: url) {
@@ -167,7 +179,9 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
 
   //does nothing, as you cannot programmatically revoke location permissions
   @objc open func ClearLocations() {
-    _container.form.dispatchErrorOccurredEvent(self, "ClearLocations", ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.code, ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.message)
+    form?.dispatchErrorOccurredEvent(self, "ClearLocations",
+        ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.code,
+        ErrorMessage.ERROR_WEB_VIEWER_UNSUPPORTED_METHOD.message)
   }
 
   @objc open func GoBack() {
@@ -195,7 +209,8 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
   }
   
   open func webView(_ webView: WKWebView, didFail: WKNavigation!, withError: Error) {
-    _container.form.dispatchErrorOccurredEvent(self, "WebViewer", ErrorMessage.ERROR_WEB_VIEWER_UNKNOWN_ERROR.code, withError.localizedDescription)
+    form?.dispatchErrorOccurredEvent(self, "WebViewer",
+        ErrorMessage.ERROR_WEB_VIEWER_UNKNOWN_ERROR.code, withError.localizedDescription)
   }
 
   //TODO: add support for other languages (for the generic error message)

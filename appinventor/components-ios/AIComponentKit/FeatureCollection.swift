@@ -137,13 +137,7 @@ import GEOSwift
     _map?.removeFeature(feature)
   }
 
-  var form: Form {
-    get {
-      return _form!
-    }
-  }
-  
-  public var container: ComponentContainer {
+  public var container: ComponentContainer? {
     get {
       return _container
     }
@@ -164,6 +158,6 @@ import GEOSwift
   }
   
   public func isVisible() -> Bool {
-    return _container.isVisible(component: self)
+    return _container?.isVisible(component: self) ?? false
   }
 }

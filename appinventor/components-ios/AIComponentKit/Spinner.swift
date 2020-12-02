@@ -117,7 +117,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     super.init(parent)
     super.setDelegate(self)
     if _isPhone {
-      _viewController = SpinnerPhoneController(self, screen: parent.form)
+      _viewController = SpinnerPhoneController(self, screen: parent.form!)
     } else {
       _viewController = SpinnerPadController(self)
     }
@@ -142,7 +142,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     }
     _currSelection = _selection
     _currSelectionIndex = _selectionIndex
-    _container.form.present(_viewController as! UIViewController, animated: true)
+    _container?.form?.present(_viewController as! UIViewController, animated: true)
 
   }
   

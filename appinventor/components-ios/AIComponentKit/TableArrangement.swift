@@ -75,11 +75,11 @@ fileprivate enum ConstraintUpdate {
   fileprivate func updateComponentConstraints(for change: ConstraintUpdate) {
     if change == .height, let constraint = _heightConstraint {
       component?.view.removeConstraint(constraint)
-      component?._container.form.view.removeConstraint(constraint)
+      component?.form?.view.removeConstraint(constraint)
     }
     if change == .width, let constraint = _widthConstraint {
       component?.view.removeConstraint(constraint)
-      component?._container.form.view.removeConstraint(constraint)
+      component?.form?.view.removeConstraint(constraint)
     }
     if change == .height || change == .initialize {
       addWidthConstraint()
@@ -97,11 +97,11 @@ fileprivate enum ConstraintUpdate {
         _heightConstraint = child.view.heightAnchor.constraint(equalToConstant: CGFloat(child._lastSetHeight))
         child.view.addConstraint(_heightConstraint!)
       } else if child._lastSetHeight <= kLengthPercentTag {
-        let height = -(child._lastSetHeight + 1000)
-        let pHeight = CGFloat(height) / 100
-        _heightConstraint = child.view.heightAnchor.constraint(equalTo: child._container.form.view.heightAnchor, multiplier: pHeight)
-        if (child._container.isVisible()) {
-          child._container.form.view.addConstraint(_heightConstraint!)
+        if let formView = child.form?.view, child.visible {
+          let height = -(child._lastSetHeight + 1000)
+          let pHeight = CGFloat(height) / 100
+          _heightConstraint = child.view.heightAnchor.constraint(equalTo: formView.heightAnchor, multiplier: pHeight)
+          formView.addConstraint(_heightConstraint!)
         }
       }
     }
@@ -114,11 +114,11 @@ fileprivate enum ConstraintUpdate {
         _widthConstraint = child.view.widthAnchor.constraint(equalToConstant: CGFloat(child._lastSetWidth))
         child.view.addConstraint(_widthConstraint!)
       } else if child._lastSetWidth <= kLengthPercentTag {
-        let width = -(child._lastSetWidth + 1000)
-        let pWidth = CGFloat(width) / 100
-        _widthConstraint = child.view.widthAnchor.constraint(equalTo: child._container.form.view.widthAnchor, multiplier: pWidth)
-        if (child._container.isVisible()) {
-          child._container.form.view.addConstraint(_widthConstraint!)
+        if let formView = child.form?.view, child.visible {
+          let width = -(child._lastSetWidth + 1000)
+          let pWidth = CGFloat(width) / 100
+          _widthConstraint = child.view.widthAnchor.constraint(equalTo: formView.widthAnchor, multiplier: pWidth)
+          formView.addConstraint(_widthConstraint!)
         }
       }
     }
@@ -308,21 +308,6 @@ fileprivate enum ConstraintUpdate {
 }
 
 open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, ComponentContainer {
-  public func isVisible() -> Bool {
-    var visible = true
-    var parent = _container
-    var child: ViewComponent = self
-    while (type(of: parent) != ReplForm.self) {
-      visible = parent.isVisible(component: child) && parent.isVisible()
-      if visible == false {
-        return visible
-      }
-      child = parent as! ViewComponent
-      parent = parent.container
-    }
-    return parent.isVisible(component: child)
-  }
-  
   private var _view: TableCellCollection!
   private var _initialized = false
 
@@ -371,13 +356,7 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
     }
   }
 
-  @objc open var form: Form {
-    get {
-      return _container.form
-    }
-  }
-
-  open var container:  ComponentContainer {
+  open var container: ComponentContainer? {
     get {
       return _container
     }

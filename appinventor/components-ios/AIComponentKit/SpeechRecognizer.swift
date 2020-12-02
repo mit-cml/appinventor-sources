@@ -18,7 +18,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
 
   @objc public func Initialize() {
     guard #available(iOS 10.0, *) else {
-      _form.dispatchErrorOccurredEvent(self, "SpeechRecognizer",
+      _form?.dispatchErrorOccurredEvent(self, "SpeechRecognizer",
           ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED.code)
       return
     }
@@ -47,9 +47,9 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
         DispatchQueue.main.async {
           if changed {
             if allowed {
-              self._form.PermissionGranted(kSpeechRecognizerPermission)
+              self._form?.PermissionGranted(kSpeechRecognizerPermission)
             } else {
-              self._form.dispatchPermissionDeniedEvent(self, "GetText", kSpeechRecognizerPermission)
+              self._form?.dispatchPermissionDeniedEvent(self, "GetText", kSpeechRecognizerPermission)
             }
           }
           if allowed {
@@ -58,7 +58,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
         }
       }
     } else {
-      self._form.dispatchErrorOccurredEventDialog(self, "GetText",
+      self._form?.dispatchErrorOccurredEventDialog(self, "GetText",
           ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_UNSUPPORTED.code)
     }
   }
@@ -120,7 +120,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
   private func startSpeechRecognition() {
     // get speech recognizer
     guard let recognizer = SFSpeechRecognizer(), recognizer.isAvailable else {
-      self._form.dispatchErrorOccurredEvent(self, "GetText",
+      self._form?.dispatchErrorOccurredEvent(self, "GetText",
           ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE.code)
       return
     }
@@ -176,7 +176,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
 
     let start = UIAlertAction(title: "Start recording", style: .default) { item in
       do {
-        self._form.present(alert, animated: true) {
+        self._form?.present(alert, animated: true) {
           // we want to terminate before the one minute maximum
           DispatchQueue.main.asyncAfter(deadline: .now() + 59.0, execute: {
             audioEngine.stop()
@@ -194,7 +194,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
         item.isEnabled = false
         stop.isEnabled = true
       } catch {
-        self._form.dispatchErrorOccurredEvent(self, "GetText",
+        self._form?.dispatchErrorOccurredEvent(self, "GetText",
             ErrorMessage.ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR.code)
       }
     }
@@ -202,7 +202,7 @@ fileprivate let kSpeechRecognizerPermission = "ios.permission.SPEECH_RECOGNIZER"
     alert.addAction(stop)
     alert.addAction(cancel)
     stop.isEnabled = false
-    self._form.present(alert, animated: false)
+    self._form?.present(alert, animated: false)
   }
 }
 

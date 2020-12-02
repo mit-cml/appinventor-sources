@@ -48,7 +48,9 @@ open class File: NonvisibleComponent {
         }
       } catch {
         DispatchQueue.main.async {
-          self._form.dispatchErrorOccurredEvent(self, "ReadFrom", ErrorMessage.ERROR_CANNOT_READ_FILE.code, ErrorMessage.ERROR_CANNOT_READ_FILE.message, fileName)
+          self._form?.dispatchErrorOccurredEvent(self, "ReadFrom",
+              ErrorMessage.ERROR_CANNOT_READ_FILE.code,
+              ErrorMessage.ERROR_CANNOT_READ_FILE.message, fileName)
         }
       }
     }
@@ -56,14 +58,18 @@ open class File: NonvisibleComponent {
   
   @objc open func Delete(_ fileName: String) {
     if fileName.starts(with: "//") {
-      _form.dispatchErrorOccurredEvent(self, "DeleteFile", ErrorMessage.ERROR_CANNOT_DELETE_ASSET.code, ErrorMessage.ERROR_CANNOT_DELETE_ASSET.message, fileName)
+      _form?.dispatchErrorOccurredEvent(self, "DeleteFile",
+          ErrorMessage.ERROR_CANNOT_DELETE_ASSET.code,
+          ErrorMessage.ERROR_CANNOT_DELETE_ASSET.message, fileName)
       return
     }
     
     let filePath = FileUtil.absoluteFileName(fileName, _isRepl)
     let fileManager = FileManager()
     if filePath.isEmpty || !fileManager.fileExists(atPath: filePath) {
-      _form.dispatchErrorOccurredEvent(self, "DeleteFile", ErrorMessage.ERROR_CANNOT_FIND_FILE.code, ErrorMessage.ERROR_CANNOT_FIND_FILE.message, fileName)
+      _form?.dispatchErrorOccurredEvent(self, "DeleteFile",
+          ErrorMessage.ERROR_CANNOT_FIND_FILE.code,
+          ErrorMessage.ERROR_CANNOT_FIND_FILE.message, fileName)
     } else {
       do {
         try fileManager.removeItem(atPath: filePath)
@@ -75,7 +81,15 @@ open class File: NonvisibleComponent {
   
   private func write(_ fileName: String, _ text: String, _ append: Bool) {
     if fileName.starts(with: "//") {
-      append ? _form.dispatchErrorOccurredEvent(self, "AppendTo", ErrorMessage.ERROR_CANNOT_WRITE_ASSET.code, ErrorMessage.ERROR_CANNOT_WRITE_ASSET.message, fileName) : _form.dispatchErrorOccurredEvent(self, "SaveFile", ErrorMessage.ERROR_CANNOT_WRITE_ASSET.code, ErrorMessage.ERROR_CANNOT_WRITE_ASSET.message, fileName)
+      if append {
+        _form?.dispatchErrorOccurredEvent(self, "AppendTo",
+            ErrorMessage.ERROR_CANNOT_WRITE_ASSET.code,
+            ErrorMessage.ERROR_CANNOT_WRITE_ASSET.message, fileName)
+      } else {
+        _form?.dispatchErrorOccurredEvent(self, "SaveFile",
+            ErrorMessage.ERROR_CANNOT_WRITE_ASSET.code,
+            ErrorMessage.ERROR_CANNOT_WRITE_ASSET.message, fileName)
+      }
       return
     }
     DispatchQueue.global(qos: .background).async {
@@ -89,7 +103,9 @@ open class File: NonvisibleComponent {
           fileHandle.seekToEndOfFile()
           guard let textData = text.data(using: .utf8) else {
             DispatchQueue.main.async {
-              self._form.dispatchErrorOccurredEvent(self, "AppendTo", ErrorMessage.ERROR_CANNOT_ENCODE_TEXT_AS_UTF8.code, ErrorMessage.ERROR_CANNOT_ENCODE_TEXT_AS_UTF8.message, fileName)
+              self._form?.dispatchErrorOccurredEvent(self, "AppendTo",
+                  ErrorMessage.ERROR_CANNOT_ENCODE_TEXT_AS_UTF8.code,
+                  ErrorMessage.ERROR_CANNOT_ENCODE_TEXT_AS_UTF8.message, fileName)
             }
             return
           }
@@ -102,7 +118,15 @@ open class File: NonvisibleComponent {
         }
       } catch {
         DispatchQueue.main.async {
-          append ? self._form.dispatchErrorOccurredEvent(self, "AppendTo", ErrorMessage.ERROR_CANNOT_CREATE_FILE.code, ErrorMessage.ERROR_CANNOT_CREATE_FILE.message, fileName) : self._form.dispatchErrorOccurredEvent(self, "SaveFile", ErrorMessage.ERROR_CANNOT_CREATE_FILE.code, ErrorMessage.ERROR_CANNOT_CREATE_FILE.message, fileName)
+          if append {
+            self._form?.dispatchErrorOccurredEvent(self, "AppendTo",
+                ErrorMessage.ERROR_CANNOT_CREATE_FILE.code,
+                ErrorMessage.ERROR_CANNOT_CREATE_FILE.message, fileName)
+          } else {
+            self._form?.dispatchErrorOccurredEvent(self, "SaveFile",
+                ErrorMessage.ERROR_CANNOT_CREATE_FILE.code,
+                ErrorMessage.ERROR_CANNOT_CREATE_FILE.message, fileName)
+          }
         }
       }
     }
@@ -117,6 +141,7 @@ open class File: NonvisibleComponent {
   }
   
   @objc open func AfterFileSaved(_ fileName: String) {
-    EventDispatcher.dispatchEvent(of: self, called: "AfterFileSaved", arguments: fileName as NSString)
+    EventDispatcher.dispatchEvent(of: self, called: "AfterFileSaved",
+        arguments: fileName as NSString)
   }
 }
