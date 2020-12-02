@@ -22,6 +22,7 @@
   </target>
 
   <macrodef name="ai.xcbuild">
+    <attribute name="sdk" default="iphoneos" />
     <attribute name="scheme" />
     <attribute name="action" default="build" />
     <attribute name="failonerror" default="true" />
@@ -29,7 +30,7 @@
     <sequential>
       <exec executable="xcodebuild" osfamily="mac" failonerror="@{failonerror}">
         <arg value="-sdk" />
-        <arg value="iphoneos"/>
+        <arg value="@{sdk}"/>
         <arg value="-scheme" />
         <arg value="@{scheme}" />
         <arg value="-workspace" />
@@ -40,24 +41,29 @@
     </sequential>
   </macrodef>
 
-  <target name="components-ios">
-    <ai.xcbuild scheme="AIComponentKit" />
+  <target name="init">
+    <property name="sdk" value="iphoneos" />
+  </target>
+
+  <target name="components-ios" depends="init">
+    <ai.xcbuild scheme="AIComponentKit" sdk="${sdk}" />
   </target>
 
   <target name="Companion" depends="components-ios">
-    <ai.xcbuild scheme="AICompanionApp" />
+    <ai.xcbuild scheme="AICompanionApp" sdk="${sdk}" />
   </target>
 
-  <target name="tests" depends="components-ios,Companion">
-    <ai.xcbuild scheme="SchemeKit" action="test">
+  <target name="tests">
+    <property name="sdk" value="iphonesimulator" />
+    <ai.xcbuild scheme="SchemeKit" sdk="${sdk}" action="test">
       <arg value="-destination" />
       <arg value="platform=iOS Simulator,name=iPhone X" />
     </ai.xcbuild>
-    <ai.xcbuild scheme="AIComponentKit" action="test">
+    <ai.xcbuild scheme="AIComponentKit" sdk="${sdk}" action="test">
       <arg value="-destination" />
       <arg value="platform=iOS Simulator,name=iPhone X" />
     </ai.xcbuild>
-    <ai.xcbuild scheme="AICompanionApp" action="test">
+    <ai.xcbuild scheme="AICompanionApp" sdk="${sdk}" action="test">
       <arg value="-destination" />
       <arg value="platform=iOS Simulator,name=iPhone X" />
     </ai.xcbuild>
