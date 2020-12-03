@@ -163,7 +163,7 @@ static pic_value cons_at(pic_state *pic, pic_value start, NSUInteger index) {
 /// MARK: NSMutableArray initializers
 
 - (instancetype)init {
-  SCMInterpreter *interpreter = [SCMInterpreter default];
+  SCMInterpreter *interpreter = SCMInterpreter.shared;
   pic_value head = [interpreter makeConsWithCar:[interpreter makeSymbol:@"*list*"] cdr:nil];
   return [self initWithList:head fromInterpreter:interpreter];
 }

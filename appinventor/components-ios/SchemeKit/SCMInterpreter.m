@@ -98,7 +98,7 @@ static SCMInterpreter *_defaultInterpreter = nil;
   _defaultInterpreter = defaultInterpreter;
 }
 
-+ (nullable instancetype)default {
++ (instancetype)shared {
   if (!_defaultInterpreter) {
     _defaultInterpreter = [[SCMInterpreter alloc] init];
   }

@@ -123,7 +123,7 @@ class CsvParser {
     let parser = CsvParser(input: csvString)
     if parser.hasNext() {
       let row = try parser.next()
-      return YailList<NSString>(array: row as [NSString], in: SCMInterpreter.default()!)
+      return YailList<NSString>(array: row as [NSString], in: SCMInterpreter.shared)
     } else {
       return YailList<NSString>()
     }
@@ -133,8 +133,8 @@ class CsvParser {
     let parser = CsvParser(input: csvString)
     var result = [YailList<NSString>]()
     while parser.hasNext() {
-      result.append(YailList<NSString>(array: (try parser.next()) as [NSString], in: SCMInterpreter.default()!))
+      result.append(YailList<NSString>(array: (try parser.next()) as [NSString], in: SCMInterpreter.shared))
     }
-    return YailList<YailList<NSString>>(array: result, in: SCMInterpreter.default()!)
+    return YailList<YailList<NSString>>(array: result, in: SCMInterpreter.shared)
   }
 }

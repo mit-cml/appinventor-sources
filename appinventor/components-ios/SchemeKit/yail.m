@@ -462,7 +462,7 @@ pic_yail_make_yail_list(pic_state *state) {
 
   head = pic_cons(state, pic_intern_cstr(state, "*list*"), head);
 
-  return yail_make_native_yaillist(state, [YailList wrapList:head fromInterpreter:[SCMInterpreter default]]);
+  return yail_make_native_yaillist(state, [YailList wrapList:head fromInterpreter:SCMInterpreter.shared]);
 }
 
 const char *
@@ -710,7 +710,7 @@ yail_to_objc(pic_state *pic, pic_value value, NSMutableDictionary *history) {
     if (!pic_sym_p(pic, pic_car(pic, value))) {
       value = pic_cons(pic, pic_intern_cstr(pic, "*list*"), value);
     }
-    return [YailList wrapList:value fromInterpreter:[SCMInterpreter default]];
+    return [YailList wrapList:value fromInterpreter:SCMInterpreter.shared];
   } else if (pic_str_p(pic, value)) {
     return [NSString stringWithCString:pic_str(pic, value) encoding:NSUTF8StringEncoding];
   } else if (pic_int_p(pic, value)) {
@@ -997,7 +997,7 @@ yail_invoke_internal(pic_state *pic, NSInvocation *invocation, int argc, pic_val
         const char *str = [(NSString *)value UTF8String];
         return pic_str_value(pic, str, (int)strlen(str));
       } else if ([value isKindOfClass:[NSArray class]]) {
-        return [[[YailList alloc] initWithArray:value inInterpreter:[SCMInterpreter default]] value];
+        return [[[YailList alloc] initWithArray:value inInterpreter:SCMInterpreter.shared] value];
       } else if ([value isKindOfClass:[NSDictionary class]]) {
         return [[[YailDictionary alloc] initWithDictionary:value] value];
       } else if ([value isKindOfClass:[NSNumber class]]) {

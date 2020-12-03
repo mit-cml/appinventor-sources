@@ -199,7 +199,7 @@ import Toast_Swift
     _linearView.removeAllItems()
     clearComponents()
     defaultPropertyValues()
-    SCMInterpreter.default()?.runGC()
+    SCMInterpreter.shared.runGC()
   }
 
   private func recomputeLayout() {

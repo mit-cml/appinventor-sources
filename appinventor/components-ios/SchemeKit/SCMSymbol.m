@@ -126,7 +126,7 @@ static NSString *kNameKey = @"name";
 }
 
 - (id)awakeAfterUsingCoder:(NSCoder *)coder {
-  return [[SCMInterpreter default] makeSymbol:_name];
+  return [SCMInterpreter.shared makeSymbol:_name];
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {

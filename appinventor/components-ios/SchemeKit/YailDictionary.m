@@ -176,7 +176,7 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 }
 
 + (nonnull instancetype)dictionaryFromPairs:(pic_value)pairs {
-  YailDictionary *dict = [YailDictionary emptyDictionaryIn:[SCMInterpreter default]];
+  YailDictionary *dict = [YailDictionary emptyDictionaryIn:SCMInterpreter.shared];
   pic_state *pic = dict->_interpreter.state;
   while (!pic_nil_p(pic, pairs)) {
     @try {
@@ -223,7 +223,7 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder {
-  if (self = [self initWithInterpreter:[SCMInterpreter default]]) {
+  if (self = [self initWithInterpreter:SCMInterpreter.shared]) {
     NSInteger itemsToDecode = [coder decodeIntegerForKey:kSizeKey];
     for (NSInteger i = 0; i < itemsToDecode; i++) {
       id key = [coder decodeObject];
@@ -237,7 +237,7 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 
 - (nonnull instancetype)init {
   if (self = [super init]) {
-    _interpreter = [SCMInterpreter default];
+    _interpreter = SCMInterpreter.shared;
     _backend = [NSMutableDictionary dictionary];
     _keys = [NSMutableArray array];
     _mutations = 0;
@@ -442,7 +442,7 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
   if (self = [super init]) {
     _backend = [[NSMutableDictionary alloc] initWithObjects:objects forKeys:keys count:count];
     _keys = [[NSMutableArray alloc] initWithObjects:keys count:count];
-    _interpreter = [SCMInterpreter default];
+    _interpreter = SCMInterpreter.shared;
     _value = [_interpreter wrapObject:self];
   }
   return self;

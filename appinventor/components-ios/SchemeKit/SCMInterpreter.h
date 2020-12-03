@@ -10,7 +10,8 @@
 @interface SCMInterpreter : NSObject
 
 + (void)setDefault:(nonnull SCMInterpreter *)defaultInterpreter;
-+ (nullable instancetype)default;
+@property (class, readonly) SCMInterpreter * _Nonnull shared;
+
 - (nonnull NSString *)evalForm:(nonnull NSString *)form;
 - (nullable id)invokeMethod:(nonnull NSString *)name, ... NS_REQUIRES_NIL_TERMINATION;
 - (nullable id)invokeMethod:(nonnull NSString *)name withArgs:(va_list)args;
