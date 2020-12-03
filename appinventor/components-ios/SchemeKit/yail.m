@@ -987,6 +987,10 @@ yail_invoke_internal(pic_state *pic, NSInvocation *invocation, int argc, pic_val
       id value = unretainedValue;
       if (!value) {
         return yail_null_value(pic);
+      } else if ([value isKindOfClass:[YailDictionary class]]) {
+        return yail_make_native_instance(pic, value);
+      } else if ([value isKindOfClass:[YailList class]]) {
+        return yail_make_native_instance(pic, value);
       } else if ([[value class] conformsToProtocol:@protocol(SCMValue)]) {
         return [(id<SCMValue>)value value];
       } else if ([value isKindOfClass:[NSString class]]) {
