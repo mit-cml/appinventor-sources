@@ -36,7 +36,7 @@ static NSString *kNameKey = @"name";
 
 
 - (NSString *)description {
-  return _name;
+  return [NSString stringWithFormat:@"'%@", _name];
 }
 
 
@@ -96,6 +96,10 @@ static NSString *kNameKey = @"name";
     return [self isPicEqual:((SCMSymbol *) object)->_symbol];
   }
   return NO;
+}
+
+- (NSUInteger)hash {
+  return [_name hash];
 }
 
 - (void)mark {
