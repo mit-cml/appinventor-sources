@@ -199,10 +199,10 @@
             (let ((handler (lookup-handler registeredComponentName eventName)))
               (apply handler (map sanitize-input args))
               #t)
-            (begin
-              (yail:invoke AIComponentKit.EventDispatcher 'unregisterEventForDelegation *this-form* registeredComponentName eventName)
-              #f))
-        #f)))
+            #f)
+        (begin
+          (yail:invoke AIComponentKit.EventDispatcher 'unregisterEventForDelegation *this-form* registeredComponentName eventName)
+          #f))))
 
 (define (get-simple-name object)
   (*:getSimpleName (*:getClass object)))
