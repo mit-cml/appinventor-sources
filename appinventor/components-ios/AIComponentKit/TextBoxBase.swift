@@ -11,6 +11,9 @@ public protocol AbstractMethodsForTextBox: AbstractMethodsForViewComponent {
   var placeholderText: String? { get set }
   var text: String? { get set }
   var readOnly: Bool { get set }
+  func textFieldDidBeginEditing(_ textField: UITextField)
+  func textFieldDidEndEditing(_ textfield: UITextField)
+  func setTextbase(_ base: TextBoxBase)
 }
 
 // method for creating toolbar to allow users to dismiss keyboard

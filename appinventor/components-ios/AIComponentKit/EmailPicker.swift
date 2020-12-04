@@ -8,6 +8,7 @@ class EmailPickerAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelega
   fileprivate let _field = UITextField(frame: CGRect.zero)
   fileprivate let _wrapper = UIView(frame: CGRect.zero)
   private var _readOnly = false
+  private weak var _base: TextBoxBase?
 
   override init() {
     super.init()
@@ -97,10 +98,25 @@ class EmailPickerAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelega
     _wrapper.addConstraint(_field.topAnchor.constraint(equalTo: _wrapper.topAnchor))
     _wrapper.addConstraint(_field.leadingAnchor.constraint(equalTo: _wrapper.leadingAnchor))
   }
+  
+  func setTextbase(_ base: TextBoxBase) {
+    _base = base
+  }
+  
+  func textViewDidBeginEditing(_ textView: UITextView) {
+    _base?.GotFocus()
+  }
+  
+  func textFieldDidBeginEditing(_ textField: UITextField) {
+    _base?.GotFocus()
+  }
+  
+  func textFieldDidEndEditing(_ textField: UITextField) {
+    _base?.LostFocus()
+  }
 }
 
 protocol EmailPickerProtocol: UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate {
-
 }
 
 fileprivate class Node {
@@ -237,6 +253,7 @@ open class EmailPicker: TextBoxBase, EmailPickerProtocol {
 
   @objc public init(_ parent: ComponentContainer) {
     super.init(parent, _adapter)
+    _adapter.setTextbase(self)
     if EmailPicker.tree.isEmpty() {
       let store = CNContactStore()
       store.requestAccess(for: .contacts) { granted, error in
@@ -253,7 +270,6 @@ open class EmailPicker: TextBoxBase, EmailPickerProtocol {
         } catch {}
       }
     }
-    _adapter._field.delegate = self
     _adapter._field.keyboardType = .emailAddress
     _adapter._field.autocapitalizationType = .none
     _adapter._field.autocorrectionType = .no

@@ -17,7 +17,8 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   private var _multiLine = false
   private var _empty = true
   private var _readOnly = false
-
+  private weak var _base: TextBoxBase? = nil
+  
   override init() {
     super.init()
     _field.translatesAutoresizingMaskIntoConstraints = false
@@ -29,7 +30,6 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     _view.isEditable = true
     _view.delegate = self
     _field.delegate = self
-    
     setupView()
     
     // We are single line by default
@@ -198,12 +198,14 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     if textView.text.isEmpty {
       setEmpty(true)
     }
+    _base?.LostFocus()
   }
 
   func textFieldDidBeginEditing(_ textField: UITextField) {
     if _empty {
       setEmpty(false)
     }
+    _base?.GotFocus()
   }
 
   func textFieldDidEndEditing(_ textField: UITextField) {
@@ -211,6 +213,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     if textField.text?.isEmpty ?? true {
       setEmpty(true)
     }
+    _base?.LostFocus()
   }
 
   func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -244,6 +247,10 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     _view.endEditing(true)
     _field.endEditing(true)
   }
+  
+  func setTextbase(_ base: TextBoxBase) {
+    _base = base
+  }
 }
 
 open class TextBox: TextBoxBase {
@@ -255,6 +262,7 @@ open class TextBox: TextBoxBase {
   @objc public init(_ parent: ComponentContainer) {
     super.init(parent, _adapter)
     MultiLine = false
+    _adapter.setTextbase(self)
   }
 
   // MARK: TextBox Properties

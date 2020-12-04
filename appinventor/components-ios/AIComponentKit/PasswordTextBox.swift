@@ -6,6 +6,7 @@ import Foundation
 class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelegate {
   fileprivate let _field = UITextField(frame: CGRect.zero)
   private var _readOnly = false
+  private weak var _base: TextBoxBase? = nil
 
   override init() {
     _field.translatesAutoresizingMaskIntoConstraints = false
@@ -106,6 +107,18 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
     _field.text = ""
     _field.text = text
   }
+  
+  func setTextbase(_ base: TextBoxBase) {
+    _base = base
+  }
+  
+  func textFieldDidBeginEditing(_ textField: UITextField) {
+    _base?.GotFocus()
+  }
+  
+  func textFieldDidEndEditing(_ textField: UITextField) {
+    _base?.LostFocus()
+  }
 }
 
 open class PasswordTextBox: TextBoxBase {
@@ -113,6 +126,7 @@ open class PasswordTextBox: TextBoxBase {
 
   @objc public init(_ parent: ComponentContainer) {
     super.init(parent, _adapter)
+    _adapter.setTextbase(self)
   }
 
   @objc open var PasswordVisible: Bool = false {
