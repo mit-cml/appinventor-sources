@@ -61,8 +61,10 @@ public class ListViewArrayAdapterSingleText {
       protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
         filterCurrentItems = (List<YailDictionary>) filterResults.values;
         itemAdapter.clear();
-        for (int i = 0; i < filterCurrentItems.size(); ++i) {
-          itemAdapter.add(filterCurrentItems.get(i));
+        if (filterCurrentItems != null) {
+          for (int i = 0; i < filterCurrentItems.size(); ++i) {
+            itemAdapter.add(filterCurrentItems.get(i));
+          }
         }
       }
     };
