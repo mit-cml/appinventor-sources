@@ -199,7 +199,7 @@
     "Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_TRUE": "Վերադարձնում է բուլյան ճշմարիտ արժեք:",
     "Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE": "կեղծ",
     "Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE": "ճշմարիտ",
-    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_COLLAPSED_TEXT": "բացել էկրանը հետևյալ արժեքով 'Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP = 'Բացում է նոր էկրան մի քանի էկրան ունեցող հավելվածում և փոխանցում է այդ էկրանին սկզբնական արժեքը:",
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_COLLAPSED_TEXT": "բացել էկրանը հետևյալ արժեքով",
     "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP": "Մի քանի էկրան ունեցող հավելվածում նոր էկրան է բացում:",
     "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT": "բացել էկրանը",
     "Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT": "քառակուսի արմատ",
@@ -627,5 +627,6 @@
     "Blockly.Msg.LANG_LISTS_REMOVE_ITEM_TOOLTIP": "Նշված դիրքում գտնվող առարկան հեռացնում է ցուցակից:",
     "Blockly.Msg.LANG_LISTS_APPEND_LIST_INPUT": "ավելացնել ցուցակին ցուցակ1 %1 ցուցակ2 %2",
     "Blockly.Msg.LANG_LISTS_APPEND_LIST_TITLE_APPEND": "ավելացնել ցուցակին",
-    "Blockly.Msg.LANG_TEXT_JOIN_TOOLTIP": "Ավելացնում է բոլոր մուտքային տվյալները միացյալ տեքստային տող ձևավորելու\nհամար: Եթե չկան մուտքային տվյալներ, ստեղծվում է դատարկ տեքստ:"
+    "Blockly.Msg.LANG_TEXT_JOIN_TOOLTIP": "Ավելացնում է բոլոր մուտքային տվյալները միացյալ տեքստային տող ձևավորելու\nհամար: Եթե չկան մուտքային տվյալներ, ստեղծվում է դատարկ տեքստ:",
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP": "Բացում է նոր էկրան մի քանի էկրան ունեցող հավելվածում և փոխանցում է այդ էկրանին սկզբնական արժեքը:"
 }
