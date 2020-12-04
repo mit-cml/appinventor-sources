@@ -1,13 +1,16 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -16,8 +19,10 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
 import android.widget.LinearLayout;
@@ -71,7 +76,8 @@ import java.util.List;
     nonVisible = false,
     iconName = "images/listView.png")
 @SimpleObject
-public final class ListView extends AndroidViewComponent implements AdapterView.OnItemClickListener {
+public final class ListView extends AndroidViewComponent implements AdapterView.OnItemClickListener,
+    AdapterView.OnItemSelectedListener {
 
   private static final String LOG_TAG = "ListView";
 
@@ -103,6 +109,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   private int selectionColor;
   private static final int DEFAULT_SELECTION_COLOR = Component.COLOR_LTGRAY;
+  private static final Drawable UNSELECTED_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
+
+  private Drawable selectionDrawable;
+  private View lastSelected;
 
   private int textSize;
   private int detailTextSize;
@@ -137,9 +147,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     SelectionIndex(0);
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
+    view.setOnItemSelectedListener(this);
     view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
     view.setScrollingCacheEnabled(false);
     view.setTextFilterEnabled(true);
+    view.setSelector(new StateListDrawable()); // Set to empty selector to prevent issues with dynamic highlighting
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -463,6 +475,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       selectionDetailText = "";
     }
 
+    updateSelectionIndex();
   }
 
   /**
@@ -503,6 +516,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, stringItems);
       selectionDetailText = "";
     }
+
+    updateSelectionIndex();
   }
 
   /**
@@ -512,6 +527,34 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           category = PropertyCategory.BEHAVIOR)
   public String SelectionDetailText() {
     return selectionDetailText;
+  }
+
+  /**
+   * Action to take after updating selection index.
+   * Handles highlighting the newly updated item.
+   */
+  private void updateSelectionIndex() {
+    if (selectionIndex > 0) {
+      // Store last active view to refocus it later
+      View previousView = container.$form().getCurrentFocus();
+
+      // We need to request focus from the ListView in order for the
+      // drawable changes to apply to the active item view.
+      view.requestFocusFromTouch();
+
+      // Set selection to 0-based index (which will in turn call
+      // the necessary listener)
+      view.setSelection(selectionIndex - 1);
+
+      // Re-focus last view
+      if (previousView != null) {
+        previousView.requestFocus();
+      }
+    } else if (lastSelected != null) {
+      // Un-set selected drawable from the last selected item
+      lastSelected.setBackgroundDrawable(UNSELECTED_DRAWABLE);
+      lastSelected = null;
+    }
   }
 
   /**
@@ -530,7 +573,34 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       this.selection = item.toString();
       this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
     }
+
+    // Un-set drawable from previous last selected item
+    if (lastSelected != null) {
+      lastSelected.setBackgroundDrawable(UNSELECTED_DRAWABLE);
+    }
+
+    // Set selected drawable to current view
+    view.setBackgroundDrawable(selectionDrawable);
+
+    // Update last selected
+    lastSelected = view;
+
     AfterPicking();
+  }
+
+  /**
+   * Simple event to raise when the component is selected. Implementation of
+   * AdapterView.OnItemSelectedListener.
+   */
+  @Override
+  public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+    // Defer to item click
+    onItemClick(adapterView, view, i, l);
+  }
+
+  @Override
+  public void onNothingSelected(AdapterView<?> adapterView) {
+
   }
 
   /**
@@ -620,9 +690,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void SelectionColor(int argb) {
     selectionColor = argb;
-    view.setSelector(new GradientDrawable(
-            GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb}
-    ));
+    this.selectionDrawable = new GradientDrawable(
+      GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb});
   }
 
   /**

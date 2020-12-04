@@ -140,6 +140,8 @@ public final class ErrorMessages {
   public static final int ERROR_WEB_XML_TEXT_DECODE_FAILED = 1115;
   public static final int ERROR_WEB_REQUEST_TIMED_OUT = 1117; //Continuing from number after contact picker
   public static final int ERROR_WEB_JSON_TEXT_ENCODE_FAILED = 1118;
+  public static final int ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE = ERROR_WEB_UNABLE_TO_POST_OR_PUT;
+  public static final int ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE_FILE = ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
   // Contact picker (and PhoneNumberPicker) errors
   public static final int ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107;
   public static final int ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING = 1108;
@@ -269,7 +271,18 @@ public final class ErrorMessages {
   public static final int ERROR_SERVER = 3808;
   public static final int ERROR_SPEECH_TIMEOUT = 3809;
 
-  // Start the next group of errors at 3900
+  // Serial errors
+  public static final int ERROR_SERIAL_NOT_INITIALIZED = 3901;
+  public static final int ERROR_SERIAL_WRITING = 3902;
+
+  // Navigation Errors
+  public static final int ERROR_INVALID_API_KEY = 4001;
+  public static final int ERROR_UNABLE_TO_REQUEST_DIRECTIONS = 4002;
+  public static final int ERROR_ROUTING_SERVICE_ERROR = 4003;
+  public static final int ERROR_NO_ROUTE_FOUND = 4004;
+
+
+  // Start the next group of errors at 4100
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -486,9 +499,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_WEB_UNSUPPORTED_ENCODING,
         "The encoding %s is not supported.");
     errorMessages.put(ERROR_WEB_UNABLE_TO_POST_OR_PUT,
-        "Unable to post or put the text \"%s\" with the specified URL: %s");
+        "Unable to complete the given request with the text \"%s\" with the specified URL: %s");
     errorMessages.put(ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE,
-        "Unable to post or put the file \"%s\" with the specified URL %s.");
+        "Unable to complete the given request with the file \"%s\" with the specified URL %s.");
     errorMessages.put(ERROR_WEB_JSON_TEXT_DECODE_FAILED,
         "Unable to decode the JSON text: %s");
     errorMessages.put(ERROR_WEB_HTML_TEXT_DECODE_FAILED,
@@ -669,6 +682,17 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_RECOGNIZER_BUSY, "RecognitionService Busy");
     errorMessages.put(ERROR_SERVER, "Error From Server");
     errorMessages.put(ERROR_SPEECH_TIMEOUT, "No Speech Input");
+
+    // Serial
+    errorMessages.put(ERROR_SERIAL_NOT_INITIALIZED, "Serial was not initialized");
+    errorMessages.put(ERROR_SERIAL_WRITING, "Error writing data to serial");
+
+    // Navigation Errors
+    errorMessages.put(ERROR_INVALID_API_KEY, "No api key provided");
+    errorMessages.put(ERROR_UNABLE_TO_REQUEST_DIRECTIONS,
+        "Unable to request directions. Reason: %s");
+    errorMessages.put(ERROR_ROUTING_SERVICE_ERROR, "Routing service failed with status %d %s");
+    errorMessages.put(ERROR_NO_ROUTE_FOUND, "No route returned by the routing service.");
   }
 
   private ErrorMessages() {

@@ -532,11 +532,16 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
     + '其中1表示文字的起始處，\n '
     + '如找不到該字串則傳回0。';
 
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = '包含字串';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = '文字';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = '字串';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '檢查文字%1中是否包含字串%2';
-    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = '檢查文字中是否包含該字串';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST = '字串鏈';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '檢查文字%2%1%3%4';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS = '是否包含';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY = '是否包含任何';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL = '是否包含所有';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS = '檢查文字中是否包含該字串';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY = '檢查文字中是否包含任何字串';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL = '檢查文字中是否包含所有字串';
 
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = '文字';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT = '分隔符號';

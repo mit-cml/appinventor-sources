@@ -11,6 +11,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
@@ -48,8 +49,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_VISIBLE = "Visible";
   protected static final String PROPERTY_NAME_WIDTH = "Width";
   protected static final String PROPERTY_NAME_HEIGHT = "Height";
-  protected static final String PROPERTY_NAME_COLUMN = "Column";
-  protected static final String PROPERTY_NAME_ROW = "Row";
+  public static final String PROPERTY_NAME_COLUMN = "Column";
+  public static final String PROPERTY_NAME_ROW = "Row";
   protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = "ListData";
   protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = "ListViewLayout";
 
@@ -92,8 +93,10 @@ public abstract class MockVisibleComponent extends MockComponent {
 
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + LENGTH_PREFERRED, MESSAGES.widthPropertyCaption(),
+        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, MESSAGES.heightPropertyCaption(),
+        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
 

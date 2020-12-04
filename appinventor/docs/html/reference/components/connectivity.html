@@ -134,6 +134,7 @@
   <li><a href="#ActivityStarter">ActivityStarter</a></li>
   <li><a href="#BluetoothClient">BluetoothClient</a></li>
   <li><a href="#BluetoothServer">BluetoothServer</a></li>
+  <li><a href="#Serial">Serial</a></li>
   <li><a href="#Web">Web</a></li>
 </ul>
 
@@ -256,6 +257,8 @@ set the following properties:
   <dd>Returns the delimiter byte to use when passing a negative number for the
  numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
  ReceiveUnsignedBytes.</dd>
+  <dt id="BluetoothClient.DisconnectOnError" class="boolean"><em>DisconnectOnError</em></dt>
+  <dd>Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.</dd>
   <dt id="BluetoothClient.Enabled" class="boolean ro bo"><em>Enabled</em></dt>
   <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is enabled, <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
   <dt id="BluetoothClient.HighByteFirst" class="boolean"><em>HighByteFirst</em></dt>
@@ -469,6 +472,44 @@ set the following properties:
   <dd>Stop accepting an incoming connection.</dd>
 </dl>
 
+<h2 id="Serial">Serial</h2>
+
+<p>Component for Serial</p>
+
+<h3 id="Serial-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Serial.BaudRate" class="number"><em>BaudRate</em></dt>
+  <dd>Returns the current baud rate</dd>
+  <dt id="Serial.BufferSize" class="number"><em>BufferSize</em></dt>
+  <dd>Returns the buffer size in bytes</dd>
+  <dt id="Serial.IsInitialized" class="boolean ro bo"><em>IsInitialized</em></dt>
+  <dd>Returns true when the Serial has been initialized.</dd>
+  <dt id="Serial.IsOpen" class="boolean ro bo"><em>IsOpen</em></dt>
+  <dd>Returns true when the Serial connection is open.</dd>
+</dl>
+
+<h3 id="Serial-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="Serial-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Serial.CloseSerial" class="method returns boolean"><i></i> CloseSerial()</dt>
+  <dd>Closes serial connection. Returns true when closed.</dd>
+  <dt id="Serial.InitializeSerial" class="method"><i></i> InitializeSerial()</dt>
+  <dd>Initializes serial connection.</dd>
+  <dt id="Serial.OpenSerial" class="method returns boolean"><i></i> OpenSerial()</dt>
+  <dd>Opens serial connection. Returns true when opened.</dd>
+  <dt id="Serial.PrintSerial" class="method"><i></i> PrintSerial(<em class="text">data</em>)</dt>
+  <dd>Writes given data to serial, and appends a new line at the end.</dd>
+  <dt id="Serial.ReadSerial" class="method returns text"><i></i> ReadSerial()</dt>
+  <dd>Reads data from serial.</dd>
+  <dt id="Serial.WriteSerial" class="method"><i></i> WriteSerial(<em class="text">data</em>)</dt>
+  <dd>Writes given data to serial.</dd>
+</dl>
+
 <h2 id="Web">Web</h2>
 
 <p>Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.</p>
@@ -560,6 +601,37 @@ set the following properties:
   <dd>Decodes the given JSON encoded value to produce a corresponding App Inventor value.
  A JSON list [x, y, z] decodes to a list (x y z). A JSON Object with name A and value B,
  denoted as {a: b} decodes to a dictionary with the key a and value b.</dd>
+  <dt id="Web.PatchFile" class="method"><i></i> PatchFile(<em class="text">path</em>)</dt>
+  <dd>Performs an HTTP PATCH request using the Url property and data from the specified file.
+
+    <p>If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property can be
+ used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PatchText" class="method"><i></i> PatchText(<em class="text">text</em>)</dt>
+  <dd>Performs an HTTP PATCH request using the Url property and the specified text.
+
+    <p>The characters of the text are encoded using UTF-8 encoding.</p>
+
+    <p>If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The responseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PatchTextWithEncoding" class="method"><i></i> PatchTextWithEncoding(<em class="text">text</em>,<em class="text">encoding</em>)</dt>
+  <dd>Performs an HTTP PATCH request using the Url property and the specified text.
+
+    <p>The characters of the text are encoded using the given encoding.</p>
+
+    <p>If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
   <dt id="Web.PostFile" class="method"><i></i> PostFile(<em class="text">path</em>)</dt>
   <dd>Performs an HTTP POST request using the Url property and data from the specified file.
 

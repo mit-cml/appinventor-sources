@@ -500,7 +500,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
 
   private void fireResetDatabase() {
     for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
-      listener.onResetDatabase();;
+      listener.onResetDatabase();
     }
   }
 

@@ -52,7 +52,7 @@ Blockly.Yail.YAIL_CLOSE_BLOCK = ")\n";
 Blockly.Yail.YAIL_COMMENT_MAJOR = ";;; ";
 Blockly.Yail.YAIL_COMPONENT_REMOVE = "(remove-component ";
 Blockly.Yail.YAIL_COMPONENT_TYPE = "component";
-Blockly.Yail.YAIL_CONSTANT_ALL = 'com.google.appinventor.components.runtime.util.YailDictionary:ALL';
+Blockly.Yail.YAIL_CONSTANT_ALL = '(static-field com.google.appinventor.components.runtime.util.YailDictionary \'ALL)';
 Blockly.Yail.YAIL_DEFINE = "(def ";
 Blockly.Yail.YAIL_DEFINE_EVENT = "(define-event ";
 Blockly.Yail.YAIL_DEFINE_GENERIC_EVENT = '(define-generic-event ';
@@ -390,7 +390,8 @@ Blockly.Yail.getPropertySettersLines = function(componentJson, componentName, co
   var code = [];
   var type = componentDb.getType(componentJson['$Type']);
   function shouldSendProperty(prop, info) {
-    return (prop.charAt(0) !== '$' && prop !== 'Uuid' && prop !== 'TutorialURL') ||
+    return (prop.charAt(0) !== '$' && prop !== 'Uuid' &&
+      prop !== 'TutorialURL' && prop !== 'BlocksToolkit') ||
       (info && info['alwaysSend']);
   }
   // Gather all of the properties together

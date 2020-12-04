@@ -11,6 +11,7 @@ Table of Contents:
 * [ActivityStarter](#ActivityStarter)
 * [BluetoothClient](#BluetoothClient)
 * [BluetoothServer](#BluetoothServer)
+* [Serial](#Serial)
 * [Web](#Web)
 
 ## ActivityStarter  {#ActivityStarter}
@@ -139,6 +140,9 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
 : Returns the delimiter byte to use when passing a negative number for the
  numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
  ReceiveUnsignedBytes.
+
+{:id="BluetoothClient.DisconnectOnError" .boolean} *DisconnectOnError*
+: Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.
 
 {:id="BluetoothClient.Enabled" .boolean .ro .bo} *Enabled*
 : Returns `true`{:.logic.block} if Bluetooth is enabled, `false`{:.logic.block} otherwise.
@@ -388,6 +392,56 @@ Use the `BluetoothServer` component to turn your device into a server that recei
 {:id="BluetoothServer.StopAccepting" class="method"} <i/> StopAccepting()
 : Stop accepting an incoming connection.
 
+## Serial  {#Serial}
+
+Component for Serial
+
+
+
+### Properties  {#Serial-Properties}
+
+{:.properties}
+
+{:id="Serial.BaudRate" .number} *BaudRate*
+: Returns the current baud rate
+
+{:id="Serial.BufferSize" .number} *BufferSize*
+: Returns the buffer size in bytes
+
+{:id="Serial.IsInitialized" .boolean .ro .bo} *IsInitialized*
+: Returns true when the Serial has been initialized.
+
+{:id="Serial.IsOpen" .boolean .ro .bo} *IsOpen*
+: Returns true when the Serial connection is open.
+
+### Events  {#Serial-Events}
+
+{:.events}
+None
+
+
+### Methods  {#Serial-Methods}
+
+{:.methods}
+
+{:id="Serial.CloseSerial" class="method returns boolean"} <i/> CloseSerial()
+: Closes serial connection. Returns true when closed.
+
+{:id="Serial.InitializeSerial" class="method"} <i/> InitializeSerial()
+: Initializes serial connection.
+
+{:id="Serial.OpenSerial" class="method returns boolean"} <i/> OpenSerial()
+: Opens serial connection. Returns true when opened.
+
+{:id="Serial.PrintSerial" class="method"} <i/> PrintSerial(*data*{:.text})
+: Writes given data to serial, and appends a new line at the end.
+
+{:id="Serial.ReadSerial" class="method returns text"} <i/> ReadSerial()
+: Reads data from serial.
+
+{:id="Serial.WriteSerial" class="method"} <i/> WriteSerial(*data*{:.text})
+: Writes given data to serial.
+
 ## Web  {#Web}
 
 Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.
@@ -492,6 +546,37 @@ Non-visible component that provides functions for HTTP GET, POST, PUT, and DELET
 : Decodes the given JSON encoded value to produce a corresponding App Inventor value.
  A JSON list [x, y, z] decodes to a list (x y z). A JSON Object with name A and value B,
  denoted as \{a: b\} decodes to a dictionary with the key a and value b.
+
+{:id="Web.PatchFile" class="method"} <i/> PatchFile(*path*{:.text})
+: Performs an HTTP PATCH request using the Url property and data from the specified file.
+
+   If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property can be
+ used to specify the name of the file.
+
+   If the SaveResponse property is false, the GotText event will be triggered.
+
+{:id="Web.PatchText" class="method"} <i/> PatchText(*text*{:.text})
+: Performs an HTTP PATCH request using the Url property and the specified text.
+
+   The characters of the text are encoded using UTF-8 encoding.
+
+   If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The responseFileName property
+ can be used to specify the name of the file.
+
+   If the SaveResponse property is false, the GotText event will be triggered.
+
+{:id="Web.PatchTextWithEncoding" class="method"} <i/> PatchTextWithEncoding(*text*{:.text},*encoding*{:.text})
+: Performs an HTTP PATCH request using the Url property and the specified text.
+
+   The characters of the text are encoded using the given encoding.
+
+   If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.
+
+   If the SaveResponse property is false, the GotText event will be triggered.
 
 {:id="Web.PostFile" class="method"} <i/> PostFile(*path*{:.text})
 : Performs an HTTP POST request using the Url property and data from the specified file.

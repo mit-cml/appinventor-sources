@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -491,8 +491,33 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 197:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 28
   // - WEB_COMPONENT_VERSION was incremented to 7
-
-  public static final int YOUNG_ANDROID_VERSION = 197;
+  // For YOUNG_ANDROID_VERSION 198:
+  // - IMAGE_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 199:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 29
+  // For YOUNG_ANDROID_VERSION 200:
+  // - FORM_COMPONENT_VERSION was incremented to 27.
+  // For YOUNG_ANDROID_VERSION 201:
+  // - CANVAS_COMPONENT_VERSION was incremented to 13
+  // For YOUNG_ANDROID_VERSION 202:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 30
+  // For YOUNG_ANDROID_VERSION 203:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 9
+  // For YOUNG_ANDROID_VERSION 204:
+  // - NAVIGATION_COMPONENT_VERSION was initialized to 1
+  // - SERIAL_COMPONENT_VERSION was initialized to 1
+  // For YOUNG_ANDROID_VERSION 205:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 31
+  // For YOUNG_ANDROID_VERSION 206:
+  // - YANDEX_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 207:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 32
+  // For YOUNG_ANDROID_VERSION 208:
+  // - FILE_COMPONENT_VERSION was incremented to 3
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 33
+  // For YOUNG_ANDROID_VERSION 209:
+  // - WEB_COMPONENT_VERSION was incremented to 8
+  public static final int YOUNG_ANDROID_VERSION = 209;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -566,14 +591,23 @@ public class YaVersion {
   // - The text compare block was modified to include the not-equal operator
   // For BLOCKS_LANGUAGE_VERSION 28
   // - The dictionaries blocks were added.
-
-  public static final int BLOCKS_LANGUAGE_VERSION = 28;
+  // For BLOCKS_LANGUAGE_VERSION 29
+  // - The for-each-in-dictionary block was added.
+  // For BLOCKS_LANGUAGE_VERSION 30:
+  // - The Reverse Text block was added
+  // For BLOCKS_LANGUAGE_VERSION 31
+  // - The replace-all-mappings block was added.
+  // For BLOCKS_LANGUAGE_VERSION 32
+  // - The and/or blocks gained mutators.
+  // For BLOCKS_LANGUAGE_VERSION 33
+  // - Added "contains any" and "contains all" options to the text contains block.
+  public static final int BLOCKS_LANGUAGE_VERSION = 33;
 
   // ................................. Target SDK Version Number ..................................
 
-  public static final int TARGET_SDK_VERSION = 28;
+  public static final int TARGET_SDK_VERSION = 29;
 
-  public static final String TARGET_ANDROID_VERSION = "Android 9.0 Pie";
+  public static final String TARGET_ANDROID_VERSION = "Android 10.0";
 
   // ................................. Component Version Numbers ..................................
 
@@ -661,7 +695,9 @@ public class YaVersion {
   // - The BluetoothClient.DelimiterByte property was added.
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 5:
   // - The BluetoothClient.Secure property was added.
-  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 5;
+  // For BLUETOOTHCLIENT_COMPONENT_VERSION 6:
+  // - The BluetoothClient.DisconnectOnError property was added.
+  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 6;
 
   // For BLUETOOTHSERVER_COMPONENT_VERSION 2:
   // - The BluetoothServer.Enabled property was added.
@@ -722,7 +758,9 @@ public class YaVersion {
   // - DrawShape & DrawArc was added
   // For CANVAS_COMPONENT_VERSION 12
   // - ExtendMovesOutsideCanvas was added
-  public static final int CANVAS_COMPONENT_VERSION = 12;
+  // For CANVAS_COMPONENT_VERSION 13
+  // - BackgroundImageinBase64 was added
+  public static final int CANVAS_COMPONENT_VERSION = 13;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -783,7 +821,9 @@ public class YaVersion {
 
   // For FILE_COMPONENT_VERSION 2:
   // - The AfterFileSaved event was added.
-  public static final int FILE_COMPONENT_VERSION = 2;
+  // For FILE_COMPONENT_VERSION 3:
+  // - The LegacyMode property was added.
+  public static final int FILE_COMPONENT_VERSION = 3;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -844,7 +884,9 @@ public class YaVersion {
   // - Sizing default value changed from Fixed to Responsive
   // For FORM_COMPONENT_VERSION 26:
   // - Updated the default value of ShowListsAsJson from false -> true
-  public static final int FORM_COMPONENT_VERSION = 26;
+  // For FORM_COMPONENT_VERSION 27:
+  // - Added the Platform and PlatformVersion read-only blocks
+  public static final int FORM_COMPONENT_VERSION = 27;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -874,7 +916,10 @@ public class YaVersion {
   // - The RotationAngle property was added.
   // For IMAGE_COMPONENT_VERSION 3:
   // - Scaling Property added, but hidden for now
-  public static final int IMAGE_COMPONENT_VERSION = 3;
+  // For IMAGE_COMPONENT_VERSION 4:
+  // - The Click event was added.
+  // - The Clickable property was added.
+  public static final int IMAGE_COMPONENT_VERSION = 4;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -979,6 +1024,10 @@ public class YaVersion {
   // For MARKER_COMPONENT_VERSION 3:
   // - Added fill and stroke opacity properties
   public static final int MARKER_COMPONENT_VERSION = 3;
+
+  // For NAVIGATION_COMPONENT_VERSION 1:
+  // - Initial Navigation implementation
+  public static final int NAVIGATION_COMPONENT_VERSION = 1;
 
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;
@@ -1268,7 +1317,9 @@ public class YaVersion {
   // For WEB_COMPONENT_VERSION 7:
   // - The JsonTextDecodeWithDictionaries method was added
   // - The XMLTextDecodeAsDictionary method was added.
-  public static final int WEB_COMPONENT_VERSION = 7;
+  // For WEB_COMPONENT_VERSION 8:
+  // - PATCH methods added (PatchText, PatchTextWithEncoding, and PatchFile).
+  public static final int WEB_COMPONENT_VERSION = 8;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added
@@ -1284,7 +1335,13 @@ public class YaVersion {
   // - Added WebViewStringChange event
   //For WEBVIEWER_COMPONENT_VERSION 8:
   // - Added PageLoaded event
-  public static final int WEBVIEWER_COMPONENT_VERSION = 8;
+  // For WEBVIEWER_COMPONENT_VERSION 9:
+  // - Added BeforePageLoad event
+  // - Added Stop, Reload, and ClearCookies methods
+  // For WEBVIEWER_COMPONENT_VERSION 10:
+  // - Added ErrorOccurred event
+  // - Added RunJavaScript method
+  public static final int WEBVIEWER_COMPONENT_VERSION = 10;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.
@@ -1292,10 +1349,18 @@ public class YaVersion {
 
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.
-  public static final int YANDEX_COMPONENT_VERSION = 1;
+  // For YANDEX_COMPONENT_VERSION 2:
+  // - Added ApiKey property
+  public static final int YANDEX_COMPONENT_VERSION = 2;
 
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
+
+  //For SERIAL_COMPONENT_VERSION: Initial Version
+  public static final int SERIAL_COMPONENT_VERSION = 1;
+
+  //For MAGNETICFIELDSENSOR_COMPONENT_VERSION: Initial Version
+  public static final int MAGNETICFIELDSENSOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";
@@ -1341,11 +1406,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.57a";
+  public static final String PREFERRED_COMPANION = "2.60";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.57a", "2.57au" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.60", "2.60u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

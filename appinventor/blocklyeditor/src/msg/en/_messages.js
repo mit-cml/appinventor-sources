@@ -116,6 +116,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST = "Component does not exist";
     Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED = "This block is not defined. Delete this block!";
     Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP = "The break block should be used only within loops";
+    Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT = 'This text block does not contain a valid number';
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = '/reference/blocks/colors.html#basic';
@@ -211,6 +212,17 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX = ' in list';
     Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP = 'Runs the blocks in the \'do\'  section for each item in '
         + 'the list.  Use the given variable name to refer to the current list item.';
+
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL = '/reference/blocks/control.html#foreachdict';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT = 'for each %1 with %2 in dictionary %3';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO = 'do';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY = 'key';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE = 'value';
+    // Used by the typeblock system.
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE = 'for each in dictionary';
+    Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP =
+        'Runs the blocks in the \'do\' section for each key-value entry in the dictionary.'
+        + ' Use the given variable names to refer to the key/value of the current dictionary item.';
 
     Blockly.Msg.LANG_CONTROLS_GET_HELPURL = '/reference/blocks/control.html#get';
 
@@ -364,6 +376,14 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_MATH_NUMBER_TOOLTIP = 'Report the number shown.';
     Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER = 'number';
 
+    Blockly.Msg.LANG_MATH_DECIMAL_FORMAT = 'decimal';
+    Blockly.Msg.LANG_MATH_BINARY_FORMAT = 'binary';
+    Blockly.Msg.LANG_MATH_OCTAL_FORMAT = 'octal';
+    Blockly.Msg.LANG_MATH_HEXADECIMAL_FORMAT = 'hexadecimal';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_HELPURL = '/reference/blocks/math.html#number-radix';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TOOLTIP = 'Report the number shown in decimal (base-10) format.';
+    Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE = 'number radix';
+
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL = '';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_EQ = '/reference/blocks/math.html#=';
     Blockly.Msg.LANG_MATH_COMPARE_HELPURL_NEQ = '/reference/blocks/math.html#not=';
@@ -438,13 +458,14 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_MATH_SINGLE_HELPURL_EXP ='/reference/blocks/math.html#e';
     /*Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_POW10 = 'Return 10 to the power of a number.';*/
 
-    Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_ROUND = 'Round a number up or down.';
+    Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_ROUND = 'Rounds the input to the nearest integer. ' +
+        'Values with a fraction of .5 are rounded to the nearest even integer.';
     Blockly.Msg.LANG_MATH_ROUND_HELPURL_ROUND = '/reference/blocks/math.html#round';
     Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_CEILING = 'Rounds the input to the smallest\n' +
-        'number not less then the input';
+        'number not less then the input.';
     Blockly.Msg.LANG_MATH_ROUND_HELPURL_CEILING =  '/reference/blocks/math.html#ceiling';
     Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_FLOOR = 'Rounds the input to the largest\n' +
-        'number not greater then the input';
+        'number not greater then the input.';
     Blockly.Msg.LANG_MATH_ROUND_HELPURL_FLOOR =  '/reference/blocks/math.html#floor';
     Blockly.Msg.LANG_MATH_ROUND_OPERATOR_ROUND = 'round';
     Blockly.Msg.LANG_MATH_ROUND_OPERATOR_CEILING = 'ceiling';
@@ -667,12 +688,22 @@ Blockly.Msg.en.switch_language_to_english = {
         + 'where index 1 denotes the beginning of the text. Returns 0 if the\n'
         + 'piece is not in the text.';
 
-    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL = '/reference/blocks/text.html#contains';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS = 'contains';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT = 'text';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = 'piece';
-    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = 'contains  text %1 piece %2';
-    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = 'Tests whether the piece is contained in the text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST = 'piece list';
+    Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = '%1 text %2 %3 %4';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS = 'contains';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY = 'contains any';
+    Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL = 'contains all';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS = 'Tests whether the piece is contained in the '
+        + 'text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS = '/reference/blocks/text.html#contains';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY = 'Tests whether the any of the pieces are '
+        + 'contained in the text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ANY = '/reference/blocks/text.html#containsany';
+    Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL = 'Tests whether the all of the pieces are '
+        + 'contained in the text.';
+    Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL = '/reference/blocks/text.html#containsall';
 
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL = '';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = 'text';
@@ -746,6 +777,27 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE = 'is a string?';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING = 'thing';
     Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP = 'Returns true if <code>thing</code> is a string.';
+
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL = '';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT = 'in text';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX = 'preferring';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER = 'order';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST = 'longest string first';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER = 'dictionary';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE = 'replace all mappings';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_LONGEST_STRING_FIRST = '/reference/blocks/text.html#replaceallmappingslongeststring';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST = 'Returns a new text obtained by replacing all occurrences\n'
+        + 'defined by the input dictionary keys with the values of the corresponding keys.\n'
+        + 'In case of a choice between replacing one key or the other, the longest key is replaced first.';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_DICTIONARY_ORDER = '/reference/blocks/text.html#replaceallmappingsdictionary';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER = 'Returns a new text obtained by replacing all occurrences\n'
+        + 'defined by the input dictionary keys with the values of the corresponding keys.\n'
+        + 'In case of a choice between replacing one key or the other, the element that occurs first \n'
+        + 'in the dictionary is replaced first.';
+
+    Blockly.Msg.LANG_TEXT_REVERSE_HELPURL = '/reference/blocks/text.html#reverse';
+    Blockly.Msg.LANG_TEXT_REVERSE_INPUT = 'reverse';
+    Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP = 'Reverse the given text.';
 
 // Lists Blocks.
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Lists';
@@ -1321,6 +1373,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL = "/reference/components/maps.html#FeatureCollection";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL = "/reference/components/maps.html#LineString";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL = "/reference/components/maps.html#Marker";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL = "/reference/components/maps.html#Navigation";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL = "/reference/components/maps.html#Polygon";
     Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL = "/reference/components/maps.html#Rectangle";
 
@@ -1433,6 +1486,11 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL = '/reference/components/connectivity.html#BluetoothServer';
     Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL = '/reference/components/connectivity.html#BluetoothServer';
 
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_HELPURL = "/reference/components/connectivity.html#Serial";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_PROPERTIES_HELPURL = "/reference/components/connectivity.html#Serial";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_EVENTS_HELPURL = "/reference/components/connectivity.html#Serial";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_METHODS_HELPURL = "/reference/components/connectivity.html#Serial";
+
     Blockly.Msg.LANG_COMPONENT_BLOCK_WEB_HELPURL = "/reference/components/connectivity.html#Web";
     Blockly.Msg.LANG_COMPONENT_BLOCK_WEB_PROPERTIES_HELPURL = '/reference/components/connectivity.html#Web';
     Blockly.Msg.LANG_COMPONENT_BLOCK_WEB_EVENTS_HELPURL = '/reference/components/connectivity.html#Web';
@@ -1520,7 +1578,10 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.REPL_EMULATORS = "emulator's";
     Blockly.Msg.REPL_DEVICES = "device's";
     Blockly.Msg.REPL_APPROVE_UPDATE = " screen because you will be asked to approve the update.";
+    Blockly.Msg.REPL_MORE_INFORMATION = "More Information";
+    Blockly.Msg.REPL_SECURE_CONNECTION = "<b>Note:</b> You are on a secure connection, legacy mode on the Companion will not work";
     Blockly.Msg.REPL_NOT_NOW = "Not Now";
+    Blockly.Msg.REPL_NO_LEGACY = "Legacy Connection mode does not work when MIT App Inventor is loaded over https (secure).";
     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 = "The Companion you are using is out of date.<br/><br/>This Version of App Inventor should be used with Companion version";
     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE = "You are using an out-of-date Companion. You should update the MIT AI2 Companion as soon as possible. If you have auto-update setup in the store, the update will happen by itself shortly.";
     Blockly.Msg.REPL_COMPANION_WRONG_PACKAGE = "The Companion you are using was built for different instance of App Inventor. To obtain the correct companion look on the App Inventor screen under Help->Companion Information menu.";
@@ -1563,6 +1624,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Do You Really?";
     Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
     Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR = "Companion Connection Error";
+    Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED = "The Companion has disconnected";
     Blockly.Msg.REPL_EMULATOR_ONLY = 'You can only use this option to update the Emulator';
 
 // Messages from Blockly.js
@@ -1571,6 +1633,7 @@ Blockly.Msg.en.switch_language_to_english = {
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "Generate Yail";
     Blockly.Msg.DO_IT = "Do It";
+    Blockly.Msg.DO_IT_RESULT = "Do It Result:";
     Blockly.Msg.DO_IT_DISCONNECTED = 'Do It (Companion not connected)';
     Blockly.Msg.CLEAR_DO_IT_ERROR = "Clear Error";
     Blockly.Msg.CAN_NOT_DO_IT = "Cannot Do it";

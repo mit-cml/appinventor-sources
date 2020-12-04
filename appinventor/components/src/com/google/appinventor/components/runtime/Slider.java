@@ -468,9 +468,4 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     //ability to change the slider height and don't want display this in our block editor
     container.setChildHeight(this, height);
   }
-
-  @Override
-  public void HeightPercent(int pCent) {
-  }
-
 }

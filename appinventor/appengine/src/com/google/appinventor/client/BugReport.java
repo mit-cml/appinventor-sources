@@ -58,6 +58,7 @@ public final class BugReport {
     } catch (Exception e) {
       // Not sure there is much we can do here!
     }
+    additionalInformation = Urls.escapeQueryParameter(additionalInformation); // encode
     return BUG_REPORT_FORM_LINK + "?notes=" + notes + "&foundIn=" + foundIn + "&projectId=" + projectId + "&faultData=" + additionalInformation;
   }
 
