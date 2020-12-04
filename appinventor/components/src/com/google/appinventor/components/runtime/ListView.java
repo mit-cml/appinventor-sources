@@ -912,7 +912,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           JSONObject jsonItem = arr.getJSONObject(i);
           YailDictionary dictItem = new YailDictionary();
           dictItem.put("Text1", jsonItem.has("Text1") ? jsonItem.getString("Text1") : "");
-          dictItem.put("Text2", jsonItem.has("Text1") ? jsonItem.getString("Text2") : "");
+          dictItem.put("Text2", jsonItem.has("Text2") ? jsonItem.getString("Text2") : "");
           dictItem.put("Image", jsonItem.has("Image") ? jsonItem.getString("Image") : "");
           dictItems.add(dictItem);
         }
