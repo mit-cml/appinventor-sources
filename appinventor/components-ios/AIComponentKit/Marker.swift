@@ -60,6 +60,7 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
 
   @objc public init(_ container: MapFeatureContainer) {
     ShowShadow = false
+    _pinView.pinTintColor = MKPinAnnotationView.redPinColor()
     _imageView.addSubview(_pinView)
     super.init(container: container, view: _imageView)
     Type = MapFeatureType.TYPE_MARKER.rawValue
