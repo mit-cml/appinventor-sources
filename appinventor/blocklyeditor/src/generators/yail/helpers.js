@@ -23,7 +23,11 @@ Blockly.Yail['helpers_dropdown'] = function() {
   // protect-enum is a macro which checks if the companion supports OptionLists
   // and if it does it will return the abstract enum value. If the companion
   // does not support OptionLists it will continue to return the concrete value.
-  var code = '(protect-enum ' + enumValue + ' ' + concreteValue + ')';
+  if (Blockly.Yail.forRepl) {
+    var code = '(protect-enum ' + enumValue + ' ' + concreteValue + ')';
+  } else {
+    code = enumValue;
+  }
 
   return [code, Blockly.Yail.ORDER_ATOMIC];
 }

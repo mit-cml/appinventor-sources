@@ -114,6 +114,18 @@ Blockly.Yail.FLONUM_REGEXP = "^[\\s]*[-+]?([0-9]*)((\\.[0-9]+)|[0-9]\\.)[\\s]*$"
  * @returns {String} the generated code if there were no errors.
  */
 Blockly.Yail.getFormYail = function(formJson, packageName, forRepl, workspace) {
+  var oldForRepl = this.forRepl;
+  var code;
+  try {
+    this.forRepl = forRepl;
+    code = Blockly.Yail.getFormYail_(formJson, packageName, forRepl, workspace);
+  } finally {
+    this.forRepl = oldForRepl;
+  }
+  return code;
+};
+
+Blockly.Yail.getFormYail_ = function(formJson, packageName, forRepl, workspace) {
   var jsonObject = JSON.parse(formJson); 
   // TODO: check for JSON parse error
   var componentNames = [];
