@@ -68,13 +68,16 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     ViewController.controller = self
   }
   
-  public override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
+  public override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
     if SystemVariables.shared.isNewUser() {
       // Show onboarding
       let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
       vc.modalPresentationStyle = .fullScreen
-      present(vc, animated: true)
+      DispatchQueue.main.async {
+        self.present(vc, animated: true)
+      }
+
     }
   }
 

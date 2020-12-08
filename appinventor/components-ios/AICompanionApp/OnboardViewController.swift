@@ -13,45 +13,56 @@ class OnboardViewController: UIViewController {
     super.viewDidLoad()
 
     // Do any additional setup after loading the view.
-  }
-
-  override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
     configure()
   }
 
   private func configure() {
     // Set up onboarding scrollview
-    scrollView.frame = holderView.bounds
+    scrollView.translatesAutoresizingMaskIntoConstraints = false
     holderView.addSubview(scrollView)
-    
-    // Choose a font size that will not wrap the URLs
-    var labelFont = UIFont(name:"Helvetica-Bold", size: 26)
-    while ((("code.appinventor.mit.edu" as NSString).size(withAttributes: [.font: labelFont!])).width > holderView.frame.size.width-20) {
-      labelFont = labelFont!.withSize(labelFont!.pointSize - 2)
-    }
+    scrollView.topAnchor.constraint(equalTo: holderView.topAnchor).isActive = true
+    scrollView.leadingAnchor.constraint(equalTo: holderView.leadingAnchor).isActive = true
+    scrollView.heightAnchor.constraint(equalTo: holderView.heightAnchor).isActive = true
+    scrollView.widthAnchor.constraint(equalTo: holderView.widthAnchor).isActive = true
+
+    let labelFont = UIFont(name:"Helvetica-Bold", size: 26)
+    var leadingAnchor = scrollView.leadingAnchor
 
     for x in 0..<titles.count {
-      let pageView = UIView(frame:CGRect(x: CGFloat(x) * (holderView.frame.size.width), y:0, width:holderView.frame.size.width, height:holderView.frame.size.height))
+      let pageView = UIView()
+      pageView.translatesAutoresizingMaskIntoConstraints = false
       scrollView.addSubview(pageView)
+      pageView.widthAnchor.constraint(equalTo: holderView.widthAnchor).isActive = true
+      pageView.heightAnchor.constraint(equalTo: scrollView.heightAnchor).isActive = true
+      pageView.heightAnchor.constraint(equalTo: holderView.heightAnchor).isActive = true
+      pageView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+      pageView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+      leadingAnchor = pageView.trailingAnchor
 
       // Title, image, button
       let label = UILabel()
       label.textAlignment = .center
       label.numberOfLines = 0
-      label.frame.origin.x = 10
-      label.frame.origin.y = 10
-      label.frame.size.width = pageView.frame.size.width-20
-      label.preferredMaxLayoutWidth = pageView.frame.size.width-20
       label.font = labelFont
       label.text = titles[x]
-      pageView.addSubview(label)
-      label.sizeToFit()
       label.translatesAutoresizingMaskIntoConstraints = false
+      label.adjustsFontSizeToFitWidth = true
+      pageView.addSubview(label)
       // Ensure that label is always centered
+      label.topAnchor.constraint(equalTo: pageView.topAnchor, constant: 10.0).isActive = true
+      label.widthAnchor.constraint(equalTo: pageView.widthAnchor, constant: -20.0).isActive = true
       label.centerXAnchor.constraint(equalTo: pageView.centerXAnchor).isActive = true
+      label.sizeToFit()
+      label.setContentHuggingPriority(.required, for: .vertical)
+      label.setContentCompressionResistancePriority(.required, for: .vertical)
 
-      let button = UIButton(frame: CGRect(x: 10, y: pageView.frame.size.height-60, width: pageView.frame.size.width-20, height: 50))
+      let button = UIButton()
+      button.translatesAutoresizingMaskIntoConstraints = false
+      pageView.addSubview(button)
+      button.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+      button.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
+      button.leadingAnchor.constraint(equalTo: pageView.leadingAnchor, constant: 10.0).isActive = true
+      button.trailingAnchor.constraint(equalTo: pageView.trailingAnchor, constant: -10.0).isActive = true
       button.backgroundColor = UIColor(red: 142/255, green: 38/255, blue: 124/255, alpha: 1.0)  // RGB value for logo purple
       button.setTitleColor(.white, for: .normal)
       button.setTitle("Continue", for: .normal)
@@ -60,14 +71,21 @@ class OnboardViewController: UIViewController {
       }
       button.addTarget(self, action: #selector(didTapButton(_:)), for: .touchUpInside)
       button.tag = x+1
-      pageView.addSubview(button)
 
-      let imageView = UIImageView(frame: CGRect(x: 10, y: label.frame.size.height + 20, width: pageView.frame.size.width-20, height: pageView.frame.size.height - label.frame.size.height - button.frame.size.height - 60))
+      let imageView = UIImageView()
+      imageView.translatesAutoresizingMaskIntoConstraints = false
+      pageView.addSubview(imageView)
+      imageView.widthAnchor.constraint(lessThanOrEqualTo: pageView.widthAnchor, constant: -40.0).isActive = true
+      imageView.centerXAnchor.constraint(equalTo: pageView.centerXAnchor).isActive = true
+      imageView.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 10.0).isActive = true
+      imageView.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -10.0).isActive = true
       imageView.contentMode = .scaleAspectFit
       imageView.image = UIImage(named: "Onboard-\(x+1)")
-      pageView.addSubview(imageView)
+      imageView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     }
-    scrollView.contentSize = CGSize(width: (holderView.frame.size.width * CGFloat(titles.count)), height: 0)
+    scrollView.trailingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+    scrollView.contentSize = CGSize(width: (holderView.frame.size.width * CGFloat(titles.count)),
+                                    height: holderView.frame.size.height)
     scrollView.isPagingEnabled = true
   }
 
