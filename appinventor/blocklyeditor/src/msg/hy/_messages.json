@@ -628,5 +628,11 @@
     "Blockly.Msg.LANG_LISTS_APPEND_LIST_INPUT": "ավելացնել ցուցակին ցուցակ1 %1 ցուցակ2 %2",
     "Blockly.Msg.LANG_LISTS_APPEND_LIST_TITLE_APPEND": "ավելացնել ցուցակին",
     "Blockly.Msg.LANG_TEXT_JOIN_TOOLTIP": "Ավելացնում է բոլոր մուտքային տվյալները միացյալ տեքստային տող ձևավորելու\nհամար: Եթե չկան մուտքային տվյալներ, ստեղծվում է դատարկ տեքստ:",
-    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP": "Բացում է նոր էկրան մի քանի էկրան ունեցող հավելվածում և փոխանցում է այդ էկրանին սկզբնական արժեքը:"
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP": "Բացում է նոր էկրան մի քանի էկրան ունեցող հավելվածում և փոխանցում է այդ էկրանին սկզբնական արժեքը:",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER": "բառարան",
+    "Blockly.Msg.LANG_DICTIONARIES_COPY_INPUT": "բառարան",
+    "Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_INPUT": "բառարան",
+    "Blockly.Msg.LANG_DICTIONARIES_LENGTH_INPUT": "բառարան",
+    "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_INPUT": "բառարան",
+    "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT": "բառարան"
 }
