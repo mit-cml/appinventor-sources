@@ -263,12 +263,15 @@ public class AabCompiler implements Callable<Boolean> {
 
         if (f != null) {
           f.getParentFile().mkdirs();
-          FileOutputStream fos = new FileOutputStream(f);
-          int len;
-          while ((len = is.read(buffer)) > 0) {
-            fos.write(buffer, 0, len);
+          try (FileOutputStream fos = new FileOutputStream(f)) {
+            int len;
+            while ((len = is.read(buffer)) > 0) {
+              fos.write(buffer, 0, len);
+            }
+          } catch (IOException e) {
+            e.printStackTrace();
+            return false;
           }
-          fos.close();
         }
       }
 

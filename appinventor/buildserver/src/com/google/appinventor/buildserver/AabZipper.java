@@ -15,13 +15,11 @@ import java.util.zip.ZipOutputStream;
 
 public class AabZipper {
   public static boolean zipBundle(File src, File dest, String root) {
-    try {
-      FileOutputStream fos = new FileOutputStream(dest);
-      ZipOutputStream zipOut = new ZipOutputStream(fos);
-
+    try (
+        FileOutputStream fos = new FileOutputStream(dest);
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+    ) {
       zipFile(src, src.getName(), zipOut, root);
-      zipOut.close();
-      fos.close();
     } catch (IOException e) {
       e.printStackTrace();
       return false;
