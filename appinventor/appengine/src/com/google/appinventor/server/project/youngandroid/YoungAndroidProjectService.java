@@ -674,7 +674,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   @Override
   public RpcResult build(User user, long projectId, String nonce, String target,
-    boolean secondBuildserver, boolean isAab) {
+      boolean secondBuildserver, boolean isAab) {
     String userId = user.getUserId();
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + '/' + target;
@@ -822,8 +822,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     UriBuilder uriBuilder = new UriBuilder(
         "http://" +
         (secondBuildserver ? buildServerHost2.get() : buildServerHost.get()) +
-        "/buildserver/build-all-from-zip-async"
-    )
+        "/buildserver/build-all-from-zip-async")
         .add("uname", userName)
         .add("callback", "http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH +
             ServerLayout.RECEIVE_BUILD_SERVLET + "/" +
