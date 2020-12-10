@@ -554,41 +554,6 @@ public class TopToolbar extends Composite {
     }
   }
 
-  // This is no longer used, but it is left here as an example for the future if needed
-  private class DownloadAction implements Command {
-
-    private boolean secondBuildserver = false;
-    private boolean isAab;
-
-    DownloadAction(boolean secondBuildserver, boolean isAab) {
-      this.secondBuildserver = secondBuildserver;
-      this.isAab = isAab;
-    }
-
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-        ChainableCommand cmd = new SaveAllEditorsCommand(
-            new GenerateYailCommand(
-                new BuildCommand(target, secondBuildserver, isAab,
-                  new ShowProgressBarCommand(target,
-                    new WaitForBuildResultCommand(target,
-                      new DownloadProjectOutputCommand(target)), "DownloadAction"))));
-        if (!Ode.getInstance().getWarnBuild(secondBuildserver)) {
-          cmd = new WarningDialogCommand(target, secondBuildserver, cmd);
-          Ode.getInstance().setWarnBuild(secondBuildserver, true);
-        }
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
-            new Command() {
-              @Override
-              public void execute() {
-              }
-            });
-      }
-    }
-  }
   private static class ExportProjectAction implements Command {
     @Override
     public void execute() {
