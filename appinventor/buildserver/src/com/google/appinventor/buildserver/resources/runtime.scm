@@ -1,5 +1,5 @@
 ;;; Copyright 2009-2011 Google, All Rights reserved
-;;; Copyright 2011-2018 MIT, All rights reserved
+;;; Copyright 2011-2021 MIT, All rights reserved
 ;;; Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 ;;; These are the functions that define the YAIL (Young Android Intermediate Language) runtime They
