@@ -2445,20 +2445,7 @@ public final class Compiler {
   private boolean bundleTool(File buildDir, int childProcessRam, String tmpPackageName,
                              String outputFileName, File deployDir, String keystoreFilePath, String dexedClassesDir) {
     try {
-      String osName = System.getProperty("os.name");
-      String jarsignerTool;
-      if (osName.equals("Mac OS X")) {
-        jarsignerTool = System.getenv("JAVA_HOME") + "/bin/jarsigner";
-      } else if (osName.equals("Linux")) {
-        jarsignerTool = System.getenv("JAVA_HOME") + "/bin/jarsigner";
-      } else if (osName.startsWith("Windows")) {
-        jarsignerTool = System.getenv("JAVA_HOME") + "\\bin\\jarsigner.exe";
-      } else {
-        LOG.warning("YAIL compiler - cannot run Jarsigner on OS " + osName);
-        err.println("YAIL compiler - cannot run AAPT2 on OS " + osName);
-        userErrors.print(String.format(ERROR_IN_STAGE, "AabCompiler"));
-        return false;
-      }
+      String jarsignerTool = "jarsigner";
       String fileName = outputFileName;
       if (fileName == null) {
         fileName = project.getProjectName() + ".aab";
