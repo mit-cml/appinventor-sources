@@ -137,7 +137,7 @@ public class ShowBarcodeCommand extends ChainableCommand {
       if (!isAab) {
         HorizontalPanel warningPanel = new HorizontalPanel();
         warningPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
-        HTML warningLabel = new HTML(MESSAGES.barcodeWarning(
+        HTML warningLabel = new HTML(MESSAGES.barcodeWarning2(
             "<a href=\"" + "http://appinventor.mit.edu/explore/ai2/share.html" +
                 "\" target=\"_blank\">",
             "</a>"));
