@@ -48,8 +48,8 @@ public class AabCompiler implements Callable<Boolean> {
   private String keystore = null;
 
   private class AabPaths {
-    private File ROOT = null;
-    private File BASE = null;
+    private File root = null;
+    private File base = null;
     private File protoApk = null;
 
     private File assetsDir = null;
@@ -58,20 +58,20 @@ public class AabCompiler implements Callable<Boolean> {
     private File manifestDir = null;
     private File resDir = null;
 
-    public File getROOT() {
-      return ROOT;
+    public File getRoot() {
+      return root;
     }
 
-    public void setROOT(File ROOT) {
-      this.ROOT = ROOT;
+    public void setRoot(File root) {
+      this.root = root;
     }
 
-    public File getBASE() {
-      return BASE;
+    public File getBase() {
+      return base;
     }
 
-    public void setBASE(File BASE) {
-      this.BASE = BASE;
+    public void setBase(File base) {
+      this.base = base;
     }
 
     public File getProtoApk() {
@@ -181,7 +181,7 @@ public class AabCompiler implements Callable<Boolean> {
   @Override
   public Boolean call() {
     out.println("___________Creating structure");
-    aab.setROOT(createDir(buildDir, "aab"));
+    aab.setRoot(createDir(buildDir, "aab"));
     if (!createStructure()) {
       return false;
     }
@@ -205,15 +205,15 @@ public class AabCompiler implements Callable<Boolean> {
 
   private boolean createStructure() {
     // Manifest is extracted from the protobuffed APK
-    aab.setManifestDir(createDir(aab.ROOT, "manifest"));
+    aab.setManifestDir(createDir(aab.root, "manifest"));
 
     // Resources are extracted from the protobuffed APK
-    aab.setResDir(createDir(aab.ROOT, "res"));
+    aab.setResDir(createDir(aab.root, "res"));
 
     // Assets are extracted from the protobuffed APK
-    aab.setAssetsDir(createDir(aab.ROOT, "assets"));
+    aab.setAssetsDir(createDir(aab.root, "assets"));
 
-    aab.setDexDir(createDir(aab.ROOT, "dex"));
+    aab.setDexDir(createDir(aab.root, "dex"));
     File[] dexFiles = new File(originalDexDir).listFiles();
     if (dexFiles != null) {
       for (File dex : dexFiles) {
@@ -228,12 +228,12 @@ public class AabCompiler implements Callable<Boolean> {
       }
     }
 
-    aab.setLibDir(createDir(aab.ROOT, "lib"));
+    aab.setLibDir(createDir(aab.root, "lib"));
     File[] libFiles = originalLibsDir.listFiles();
     if (libFiles != null) {
       for (File lib : libFiles) {
         try {
-          Files.move(lib, new File(createDir(aab.ROOT, "lib"), lib.getName()));
+          Files.move(lib, new File(createDir(aab.root, "lib"), lib.getName()));
         } catch (IOException e) {
           e.printStackTrace();
           return false;
@@ -254,7 +254,7 @@ public class AabCompiler implements Callable<Boolean> {
         if (n.equals("AndroidManifest.xml")) {
           f = new File(aab.getManifestDir(), n);
         } else if (n.equals("resources.pb")) {
-          f = new File(aab.getROOT(), n);
+          f = new File(aab.getRoot(), n);
         } else if (n.startsWith("assets")) {
           f = new File(aab.getAssetsDir(), n.substring(("assets").length()));
         } else if (n.startsWith("res")) {
@@ -274,7 +274,7 @@ public class AabCompiler implements Callable<Boolean> {
           }
         }
       }
-      
+
       return true;
     } catch (IOException e) {
       e.printStackTrace();
@@ -283,9 +283,9 @@ public class AabCompiler implements Callable<Boolean> {
   }
 
   private boolean bundletool() {
-    aab.setBASE(new File(buildDir, "base.zip"));
+    aab.setBase(new File(buildDir, "base.zip"));
 
-    if (!AabZipper.zipBundle(aab.getROOT(), aab.getBASE(), aab.getROOT().getName() + File.separator)) {
+    if (!AabZipper.zipBundle(aab.getRoot(), aab.getBase(), aab.getRoot().getName() + File.separator)) {
       return false;
     }
 
@@ -295,7 +295,7 @@ public class AabCompiler implements Callable<Boolean> {
     bundletoolCommandLine.add("-mx" + mx + "M");
     bundletoolCommandLine.add(bundletool);
     bundletoolCommandLine.add("build-bundle");
-    bundletoolCommandLine.add("--modules=" + aab.getBASE());
+    bundletoolCommandLine.add("--modules=" + aab.getBase());
     bundletoolCommandLine.add("--output=" + deploy);
     String[] bundletoolBuildCommandLine = bundletoolCommandLine.toArray(new String[0]);
 
