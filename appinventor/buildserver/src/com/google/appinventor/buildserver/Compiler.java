@@ -2310,7 +2310,7 @@ public final class Compiler {
       aaptPackageCommandLineArgs.add("--output-text-symbols");
       aaptPackageCommandLineArgs.add(symbolOutputDir.getAbsolutePath());
       aaptPackageCommandLineArgs.add("--no-version-vectors");
-      appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", "/") + SLASH + "R.java");
+      appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", SLASH) + SLASH + "R.java");
       appRTxt = new File(symbolOutputDir, "R.txt");
     }
     String[] aaptPackageCommandLine = aaptPackageCommandLineArgs.toArray(new String[aaptPackageCommandLineArgs.size()]);
