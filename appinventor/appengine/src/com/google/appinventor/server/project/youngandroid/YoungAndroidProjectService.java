@@ -820,9 +820,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     long projectId, boolean secondBuildserver, String fileName, boolean isAab)
       throws EncryptionException {
     UriBuilder uriBuilder = new UriBuilder(
-        "http://" +
-        (secondBuildserver ? buildServerHost2.get() : buildServerHost.get()) +
-        "/buildserver/build-all-from-zip-async")
+        "http://"
+            + (secondBuildserver ? buildServerHost2.get() : buildServerHost.get())
+            + "/buildserver/build-all-from-zip-async")
         .add("uname", userName)
         .add("callback", "http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH +
             ServerLayout.RECEIVE_BUILD_SERVLET + "/" +
