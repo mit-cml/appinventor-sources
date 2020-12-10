@@ -281,7 +281,7 @@ public class TopToolbar extends Composite {
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_APK, MESSAGES.showExportAndroidApk(),
         new BarcodeAction(false, false)));
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_AAB, MESSAGES.showExportAndroidAab(),
-            new BarcodeAction(false, true)));
+        new BarcodeAction(false, true)));
 
     // Second Buildserver Menu Items
     //
@@ -302,7 +302,7 @@ public class TopToolbar extends Composite {
       buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_APK2, MESSAGES.showExportAndroidApk2(),
           new BarcodeAction(true, false)));
       buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_ANDROID_AAB2, MESSAGES.showExportAndroidAab2(),
-              new BarcodeAction(true, true)));
+          new BarcodeAction(true, true)));
     }
 
     if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
