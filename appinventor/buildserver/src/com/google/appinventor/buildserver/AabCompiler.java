@@ -274,8 +274,7 @@ public class AabCompiler implements Callable<Boolean> {
           }
         }
       }
-
-      is.close();
+      
       return true;
     } catch (IOException e) {
       e.printStackTrace();
