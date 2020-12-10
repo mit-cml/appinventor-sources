@@ -6,6 +6,7 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.util.AabZipper;
 import com.google.common.io.Files;
 
 import java.io.File;
