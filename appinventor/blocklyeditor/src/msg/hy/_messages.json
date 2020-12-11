@@ -634,5 +634,7 @@
     "Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_INPUT": "բառարան",
     "Blockly.Msg.LANG_DICTIONARIES_LENGTH_INPUT": "բառարան",
     "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_INPUT": "բառարան",
-    "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT": "բառարան"
+    "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT": "բառարան",
+    "Blockly.Msg.LANG_DICTIONARIES_GETTERS_TITLE": "ստանալ",
+    "Blockly.Msg.LANG_CATEGORY_DICTIONARIES": "Բառարաններ"
 }
