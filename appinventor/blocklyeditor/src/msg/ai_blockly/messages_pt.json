@@ -348,7 +348,6 @@
 	"Blockly.Msg.ARRANGE_S": "Organizar Blocos Diagonalmente",
 	"Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST": "Componente não existe",
 	"Blockly.Msg.LANG_MATH_COMPARE_LTE": "≤",
-	"Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "contém  texto %1 parte %2",
 	"Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN": "mín",
 	"Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN": "Retornar o menor dos argumentos..",
 	"Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT": "formatar decimal número %1 casas %2",
