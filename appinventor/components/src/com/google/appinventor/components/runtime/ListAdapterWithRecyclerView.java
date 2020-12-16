@@ -1,9 +1,9 @@
 package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.BitmapDrawable;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
-import android.support.v4.view.ViewCompat;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;

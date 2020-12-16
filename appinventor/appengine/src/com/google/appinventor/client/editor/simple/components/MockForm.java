@@ -8,6 +8,8 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,14 +24,17 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 
 import com.google.gwt.user.client.Timer;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -128,6 +133,7 @@ public final class MockForm extends MockContainer {
     // UI elements
     private DockPanel bar;
     private Image phoneBarImage;
+    private boolean visible;
 
     /*
      * Creates a new phone status bar.
@@ -143,6 +149,15 @@ public final class MockForm extends MockContainer {
 
       setStylePrimaryName("ode-SimpleMockFormPhoneBar");
       setSize("100%", HEIGHT + "px");
+    }
+
+    void getVisibility(boolean visible) {
+      this.visible = visible;
+    }
+
+    int getHeight() {
+      // Adjust for CSS borders, which are not included in the height value
+      return visible ? PhoneBar.HEIGHT + 3 : 0;
     }
   }
 
@@ -214,6 +229,7 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_ANAME = "AppName";
   private static final String PROPERTY_NAME_SIZING = "Sizing"; // Don't show except on screen1
   private static final String PROPERTY_NAME_TITLEVISIBLE = "TitleVisible";
+  private static final String PROPERTY_NAME_SHOW_STATUS_BAR = "ShowStatusBar";
   // Don't show except on screen1
   private static final String PROPERTY_NAME_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   private static final String PROPERTY_NAME_TUTORIAL_URL = "TutorialURL";
@@ -231,8 +247,10 @@ public final class MockForm extends MockContainer {
 
   ScrollPanel scrollPanel;
   private TitleBar titleBar;
+  private PhoneBar phoneBar;
   private NavigationBar navigationBar;
-  private MockComponent selectedComponent;
+  private List<MockComponent> selectedComponents = new ArrayList<MockComponent>(Collections.singleton(this));
+  private MockContainer pasteTarget = this;
 
   int screenWidth;              // TEMP: Make package visible so we can use it MockHVLayoutBase
   private int screenHeight;
@@ -280,7 +298,8 @@ public final class MockForm extends MockContainer {
     responsivePanel = new AbsolutePanel();
 
     // Initialize mock form UI by adding the phone bar and title bar.
-    responsivePanel.add(new PhoneBar());
+    phoneBar = new PhoneBar();
+    responsivePanel.add(phoneBar);
     titleBar = new TitleBar();
     responsivePanel.add(titleBar);
 
@@ -349,10 +368,10 @@ public final class MockForm extends MockContainer {
     screenHeight = newHeight;
     if (landscape) {
       usableScreenWidth = screenWidth - navigationBar.getHeight();
-      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight();
+      usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();
     } else {
       usableScreenWidth = screenWidth;
-      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - navigationBar.getHeight();
+      usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
     }
 
     rootPanel.setPixelSize(usableScreenWidth, usableScreenHeight);
@@ -450,8 +469,10 @@ public final class MockForm extends MockContainer {
   @Override
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + PORTRAIT_WIDTH, null,
+        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, null,
+        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
 
@@ -542,10 +563,10 @@ public final class MockForm extends MockContainer {
       setPhoneStyle();
       if (landscape) {
         usableScreenWidth = screenWidth - navigationBar.getHeight();
-        usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight();
+        usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();
       } else {
         usableScreenWidth = screenWidth;
-        usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - navigationBar.getHeight();
+        usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
       }
       resizePanel(screenWidth, screenHeight);
 
@@ -618,6 +639,13 @@ public final class MockForm extends MockContainer {
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON, asJson);
     }
+  }
+
+  private void setShowStatusBarProperty(String text) {
+    boolean visible = Boolean.parseBoolean(text);
+    phoneBar.setVisible(visible);
+    phoneBar.getVisibility(visible);
+    resizePanel(screenWidth,screenHeight); // update the MockForm size
   }
 
   private void setTutorialURLProperty(String asJson) {
@@ -904,48 +932,74 @@ public final class MockForm extends MockContainer {
     }
   }
 
+  private boolean shouldSelectMultipleComponents(NativeEvent e) {
+    if (e == null) {
+      return false;
+    }
+    if (Window.Navigator.getPlatform().toLowerCase().startsWith("mac")) {
+      return e.getMetaKey();
+    } else {
+      return e.getCtrlKey();
+    }
+  }
+
   /**
    * Changes the component that is currently selected in the form.
    * <p>
    * There will always be exactly one component selected in a form
    * at any given time.
    */
-  public final void setSelectedComponent(MockComponent newSelectedComponent) {
-    MockComponent oldSelectedComponent = selectedComponent;
-
+  public final void setSelectedComponent(MockComponent newSelectedComponent, NativeEvent event) {
     if (newSelectedComponent == null) {
       throw new IllegalArgumentException("at least one component must always be selected");
     }
-    YaFormEditor formEditor = (YaFormEditor) editor;
-    boolean shouldSelectMultipleComponents = formEditor.getShouldSelectMultipleComponents();
-    List<MockComponent> selectedComponents = formEditor.getSelectedComponents();
+    boolean shouldSelectMultipleComponents = shouldSelectMultipleComponents(event);
     if (selectedComponents.size() == 1 && selectedComponents.contains(newSelectedComponent)) {
       // Attempting to change the selection from old to new when they are the same breaks
       // Marker drag. See https://github.com/mit-cml/appinventor-sources/issues/1936
       return;
     }
-    if (shouldSelectMultipleComponents && selectedComponents.size() > 1 && formEditor.isSelectedComponent(newSelectedComponent)) {
-      int index = selectedComponents.indexOf(newSelectedComponent);
-      selectedComponent = selectedComponents.get((index == 0) ? 1 : index - 1);
+
+    // Remove an previously selected component from the list of selected components, but only if
+    // there would still be something selected.
+    if (shouldSelectMultipleComponents && selectedComponents.contains(newSelectedComponent)
+        && selectedComponents.size() > 1) {
+      selectedComponents.remove(newSelectedComponent);
       newSelectedComponent.onSelectedChange(false);
       return;
     }
+    if (newSelectedComponent instanceof MockContainer) {
+      pasteTarget = (MockContainer) newSelectedComponent;
+    } else {
+      pasteTarget = newSelectedComponent.getContainer();
+    }
 
-    selectedComponent = newSelectedComponent;
-    Map<String, MockComponent> componentsMap = formEditor.getComponents();
-
-    if (oldSelectedComponent != null && !shouldSelectMultipleComponents) {     // Can be null initially
-      for (MockComponent component : componentsMap.values()) {
-        if (component.getName() != selectedComponent.getName()) {
+    if (!shouldSelectMultipleComponents) {
+      for (MockComponent component : selectedComponents) {
+        if (component != newSelectedComponent) {
           component.onSelectedChange(false);
         }
       }
+      selectedComponents.clear();
     }
+    selectedComponents.add(newSelectedComponent);
     newSelectedComponent.onSelectedChange(true);
   }
 
-  public final MockComponent getSelectedComponent() {
-    return selectedComponent;
+  public final List<MockComponent> getSelectedComponents() {
+    return selectedComponents;
+  }
+
+  public final MockComponent getLastSelectedComponent() {
+    return selectedComponents.get(selectedComponents.size() - 1);
+  }
+
+  public final MockContainer getPasteTarget() {
+    return pasteTarget;
+  }
+
+  public final void setPasteTarget(MockContainer target) {
+    this.pasteTarget = target;
   }
 
   /**
@@ -994,6 +1048,8 @@ public final class MockForm extends MockContainer {
       setANameProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_AS_JSON)) {
       setShowListsAsJsonProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_SHOW_STATUS_BAR)) {
+      setShowStatusBarProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
       setTutorialURLProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_BLOCK_SUBSET)) {

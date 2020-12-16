@@ -1,14 +1,17 @@
 <%@page import="javax.servlet.http.HttpServletRequest"%>
 <%@page import="com.google.appinventor.server.util.UriBuilder"%>
+<%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <%
-   String error = request.getParameter("error");
+   String error = StringEscapeUtils.escapeHtml4(request.getParameter("error"));
    String useGoogleLabel = (String) request.getAttribute("useGoogleLabel");
-   String locale = request.getParameter("locale");
-   String redirect = request.getParameter("redirect");
-   String repo = (String) request.getAttribute("repo");
-   String galleryId = (String) request.getAttribute("galleryId");
+   String locale = StringEscapeUtils.escapeHtml4(request.getParameter("locale"));
+   String redirect = StringEscapeUtils.escapeHtml4(request.getParameter("redirect"));
+   String repo = StringEscapeUtils.escapeHtml4((String) request.getAttribute("repo"));
+   String autoload = StringEscapeUtils.escapeHtml4((String) request.getAttribute("autoload"));
+   String galleryId = StringEscapeUtils.escapeHtml4((String) request.getAttribute("galleryId"));
+   String newGalleryId = StringEscapeUtils.escapeHtml4(request.getParameter("ng"));
    if (locale == null) {
        locale = "en";
    }
@@ -24,7 +27,7 @@
   </head>
 <body>
   <center>
-    <h1>${pleaselogin}</h1></center>
+    <h1>${pleaselogin}</h1>
   </center>
 <% if (error != null) {
 out.println("<center><font color=red><b>" + error + "</b></font></center><br/>");
@@ -43,9 +46,17 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
    %>
 <input type=hidden name=repo value="<%= repo %>">
 <% }
+   if (autoload != null && !autoload.equals("")) {
+   %>
+<input type=hidden name=autoload value="<%= autoload %>">
+<% }
    if (galleryId != null && !galleryId.equals("")) {
    %>
 <input type=hidden name=galleryId value="<%= galleryId %>">
+<% }
+   if (newGalleryId != null && !newGalleryId.equals("")) {
+   %>
+<input type=hidden name=ng value="<%= newGalleryId %>">
 <% } %>
 <% if (redirect != null && !redirect.equals("")) {
    %>
@@ -59,25 +70,31 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
 <%    if (useGoogleLabel != null && useGoogleLabel.equals("true")) { %>
 <center><p><a href="<%= new UriBuilder("/login/google")
                               .add("locale", locale)
+                              .add("autoload", autoload)
                               .add("repo", repo)
                               .add("galleryId", galleryId)
+                              .add("ng", newGalleryId)
                               .add("redirect", redirect).build() %>" style="text-decoration:none;">Click Here to use your Google Account to login</a></p></center>
 <%    } %>
 <footer>
 <center><a href="<%= new UriBuilder("/login")
                            .add("locale", "zh_CN")
                            .add("repo", repo)
+                           .add("autoload", autoload)
                            .add("galleryId", galleryId)
                            .add("redirect", redirect).build() %>"  style="text-decoration:none;" >中文</a>&nbsp;
 <a href="<%= new UriBuilder("/login")
                            .add("locale", "pt")
                            .add("repo", repo)
+                           .add("autoload", autoload)
                            .add("galleryId", galleryId)
                            .add("redirect", redirect).build() %>"  style="text-decoration:none;" >Português</a>&nbsp;
 <a href="<%= new UriBuilder("/login")
                    .add("locale", "en")
                    .add("repo", repo)
+                   .add("autoload", autoload)
                    .add("galleryId", galleryId)
+                   .add("ng", newGalleryId)
                    .add("redirect", redirect).build() %>"  style="text-decoration:none;" >English</a></center>
 <p></p>
 <center>

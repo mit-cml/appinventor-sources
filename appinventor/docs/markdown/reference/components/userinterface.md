@@ -367,6 +367,9 @@ Component for displaying images and basic animations.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
  `ScrollLeftSlow`, `ScrollLeft`, `ScrollLeftFast`, and `Stop`.
 
+{:id="Image.Clickable" .boolean} *Clickable*
+: Specifies whether the image should be clickable or not.
+
 {:id="Image.Height" .number .bo} *Height*
 : Specifies the `Image`'s vertical height, measured in pixels.
 
@@ -400,8 +403,9 @@ Component for displaying images and basic animations.
 ### Events  {#Image-Events}
 
 {:.events}
-None
 
+{:id="Image.Click"} Click()
+: An event that occurs when an image is clicked.
 
 ### Methods  {#Image-Methods}
 
@@ -1023,6 +1027,15 @@ Top-level component containing all other components in the program.
 : The animation for switching to another screen. Valid options are `default`, `fade`, `zoom`,
  `slidehorizontal`, `slidevertical`, and `none`.
 
+{:id="Screen.Platform" .text .ro .bo} *Platform*
+: Gets the name of the underlying platform running the app. Currently, this is the text
+ "Android". Other platforms may be supported in the future.
+
+{:id="Screen.PlatformVersion" .text .ro .bo} *PlatformVersion*
+: Gets the version number of the platform running the app. This is typically a dotted version
+ number, such as 10.0. Any value can be returned, however, so you should take care to handle
+ unexpected data. If the platform version is unavailable, the empty text will be returned.
+
 {:id="Screen.PrimaryColor" .color .do} *PrimaryColor*
 : This is the primary color used as part of the Android theme, including coloring the `Screen`'s
  title bar.
@@ -1179,6 +1192,10 @@ This class is used to display a `Slider`.
 : Specifies the color of the slider bar to the right of the thumb as an alpha-red-green-blue
  integer, i.e., `0xAARRGGBB`.  An alpha of `00`
  indicates fully transparent and `FF` means opaque.
+
+{:id="Slider.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `Slider`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Slider.MaxValue" .number} *MaxValue*
 : Sets the maximum value of slider. If the new maximum is less than the
@@ -1344,7 +1361,7 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 : Specifies the text color of the `Switch` as an alpha-red-green-blue
  integer.
 
-{:id="Switch.ThumbColorActive" .color .do} *ThumbColorActive*
+{:id="Switch.ThumbColorActive" .color} *ThumbColorActive*
 : Specifies the `Switch`'s thumb color when switch is in the On state.
 
 {:id="Switch.ThumbColorInactive" .color} *ThumbColorInactive*
@@ -1654,7 +1671,14 @@ Component for viewing Web pages.
 
  You can use the [`WebViewString`](#WebViewer.WebViewString) property to communicate between your app and
  Javascript code running in the `WebViewer` page. In the app, you get and set
- [`WebViewString`](#WebViewer.WebViewString) to "hello", then the web page will show
+ [`WebViewString`](#WebViewer.WebViewString). In the `WebViewer`, you include Javascript that references the
+ `window.AppInventor` object, using the methods `getWebViewString()` and `setWebViewString(text)`.
+
+ For example, if the `WebViewer` opens to a page that contains the Javascript command
+ ```javascript
+ document.write("The answer is" + window.AppInventor.getWebViewString());
+ ```
+ and if you set [`WebViewString`](#WebViewer.WebViewString) to "hello", then the web page will show
  ```
  The answer is hello.
  ```
@@ -1668,6 +1692,14 @@ Component for viewing Web pages.
  ```
  Calling `setWebViewString` from JavaScript will also run the [`WebViewStringChange`](#WebViewer.WebViewStringChange)
  event so that the blocks can handle when the [`WebViewString`](#WebViewer.WebViewString) property changes.
+
+ Beginning with release nb184a, you can specify a HomeUrl beginning with `http://localhost/`
+ to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ `file:///android_asset/` in compiled apps and `/sdcard/AppInventor/assets/` in the Companion.
+ Both of these options will continue to work but the `http://localhost/` approach will work in
+ both scenarios. You may also use "file:///appinventor_asset/" which provides more security by
+ preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ web.
 
 
 
@@ -1730,6 +1762,12 @@ Component for viewing Web pages.
 
 {:.events}
 
+{:id="WebViewer.BeforePageLoad"} BeforePageLoad(*url*{:.text})
+: When a page is about to load this event is run.
+
+{:id="WebViewer.ErrorOccurred"} ErrorOccurred(*errorCode*{:.number},*description*{:.text},*failingUrl*{:.text})
+: When an error occurs this event is run.
+
 {:id="WebViewer.PageLoaded"} PageLoaded(*url*{:.text})
 : When a page is finished loading this event is run.
 
@@ -1752,6 +1790,10 @@ Component for viewing Web pages.
  when using the `WebViewer` to poll a page that may not be sending
  appropriate cache control headers.
 
+{:id="WebViewer.ClearCookies" class="method"} <i/> ClearCookies()
+: Clear the webview's cookies. This is useful if you want to
+ sign the user out of a website that uses them to store logins.
+
 {:id="WebViewer.ClearLocations" class="method"} <i/> ClearLocations()
 : Clear Stored Location permissions. When the geolocation API is used in
  the `WebViewer`, the end user is prompted on a per URL basis for whether
@@ -1773,3 +1815,12 @@ Component for viewing Web pages.
 
 {:id="WebViewer.GoToUrl" class="method"} <i/> GoToUrl(*url*{:.text})
 : Load the page at the given URL.
+
+{:id="WebViewer.Reload" class="method"} <i/> Reload()
+: Reload the current page.
+
+{:id="WebViewer.RunJavaScript" class="method"} <i/> RunJavaScript(*js*{:.text})
+: Run JavaScript in the current page.
+
+{:id="WebViewer.StopLoading" class="method"} <i/> StopLoading()
+: Stop loading a page.

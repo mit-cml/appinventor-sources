@@ -63,15 +63,6 @@
     <!-- Whether or not to use GCS for storage -->
     <property name="use.gcs" value="true" />
 
-    <!-- Name of gallery bucket in Google Cloud Store -->
-    <property name="gallery.bucket" value="" />
-    <!-- Whether or not to use the gallery -->
-    <property name="use.gallery" value="false" />
-
-    <!-- Gallery Admin Email -->
-    <property name="gallery.admin.email" value="" />
-
-
     <!-- set to true if users need to accept a Terms of Service the first time
       they access App Inventor -->
     <property name="require.tos" value="true" />
@@ -177,6 +168,10 @@
     <!-- This appears to be needed after a suspected change in how
          POSTs work with URLFetch around 09/20/2018 -->
     <property name="appengine.api.urlfetch.defaultDeadline" value="40"/>
+
+    <!-- Supported maximum size of a project, in MB -->
+    <!-- App Engine HTTP requests/responses are capped at 32 MB -->
+    <property name="project.maxsize" value="30"/>
 
     <!-- So the calls to the buildserver can re-use connections -->
     <property name="http.keepAlive" value="true" />

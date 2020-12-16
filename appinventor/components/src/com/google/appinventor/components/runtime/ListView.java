@@ -12,12 +12,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutParams;
-
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import android.widget.LinearLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.GridLayoutManager;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -66,7 +65,7 @@ import java.util.List;
     nonVisible = false,
     iconName = "images/listView.png")
 @SimpleObject
-@UsesLibraries(libraries ="RecyclerView.jar, CardView.jar, CardView.aar")
+@UsesLibraries(libraries ="recyclerview.jar, cardview.jar, cardview.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
         "android.permission.READ_EXTERNAL_STORAGE")
 public final class ListView extends AndroidViewComponent implements AdapterView.OnItemClickListener {

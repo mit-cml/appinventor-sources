@@ -7,11 +7,26 @@
 package com.google.appinventor.buildserver;
 
 import com.google.appinventor.common.testutils.TestUtils;
+import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.HandlesEventDispatching;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+import com.google.appinventor.components.runtime.util.YailDictionary;
+import com.google.appinventor.components.runtime.util.YailList;
+import gnu.kawa.functions.Arithmetic;
 import gnu.math.DFloNum;
 import gnu.math.IntNum;
+import gnu.math.Numeric;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Random;
 import junit.framework.TestCase;
 import kawa.standard.Scheme;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Tests the evaluation of various YAIL code.
@@ -23,13 +38,15 @@ import kawa.standard.Scheme;
 public class YailEvalTest extends TestCase {
   private Scheme scheme;
 
-  private static final String YAIL_SCHEME_TESTS = TestUtils.APP_INVENTOR_ROOT_DIR +
+  private static final String YAIL_SCHEME_TESTS =
+      TestUtils.windowsToUnix(TestUtils.APP_INVENTOR_ROOT_DIR) +
       "/buildserver/tests/com/google/appinventor/buildserver/YailEvalTest.scm";
 
   @Override
   public void setUp() throws Exception {
     scheme = new Scheme();
     String yailRuntimeLibrary = Compiler.getResource(Compiler.YAIL_RUNTIME);
+    yailRuntimeLibrary = TestUtils.windowsToUnix(yailRuntimeLibrary);
     try {
       scheme.eval("(load \"" + yailRuntimeLibrary + "\")");
       scheme.eval("(load \"" + YAIL_SCHEME_TESTS + "\")");
@@ -64,6 +81,12 @@ public class YailEvalTest extends TestCase {
         "))";
     assertEquals("runtime-error calling format-as-decimal",
                  scheme.eval(thunkify(schemeString)).toString());
+  }
+
+  public void testStringReverse() throws Throwable {
+    assertEquals("raboof", (scheme.eval("(string-reverse \"foobar\")")).toString());
+    assertEquals("\uD83D\uDE43\uD83D\uDE0F\uD83E\uDD29\uD83D\uDE02\uD83D\uDC4F\uD83D\uDE03\uD83D\uDC4D\uD83D\uDE18",
+        (scheme.eval("(string-reverse \"\uD83D\uDE18\uD83D\uDC4D\uD83D\uDE03\uD83D\uDC4F\uD83D\uDE02\uD83E\uDD29\uD83D\uDE0F\uD83D\uDE43\")")).toString());
   }
 
   /**
@@ -596,6 +619,48 @@ public class YailEvalTest extends TestCase {
     }
   }
 
+  public void testForEachDict() throws Throwable {
+    /* test for_each_dict block */
+    String schemeInputString = "(begin " +
+        "(def x 0) " +
+        "(foreach y " +
+        " (let " +
+        "   ( " +
+        "    ($key " +
+        "     (call-yail-primitive yail-list-get-item " +
+        "      (*list-for-runtime* (lexical-value y) 1) '(list number) \"select list item\" " +
+        "     ) " +
+        "    ) " +
+        "    ($value " +
+        "     (call-yail-primitive yail-list-get-item " +
+        "      (*list-for-runtime* (lexical-value y) 2) '(list number) \"select list item\" " +
+        "     ) " +
+        "    ) " +
+        "   ) " +
+        "   (set-var! x " +
+        "    (call-yail-primitive + " +
+        "     (*list-for-runtime* (get-var x) (lexical-value $key) (lexical-value $value) )" +
+        "     '(number number number ) \"+\"" +
+        "    ) " +
+        "   ) " +
+        "  ) " +
+        "  (call-yail-primitive make-yail-dictionary " +
+        "   (*list-for-runtime* " +
+        "    (call-yail-primitive make-dictionary-pair " +
+        "     (*list-for-runtime* 1 2 ) '(key any)  \"make a pair\" " +
+        "    ) " +
+        "    (call-yail-primitive make-dictionary-pair " +
+        "     (*list-for-runtime* 3 4 ) '(key any)  \"make a pair\" " +
+        "    ) " +
+        "   ) '(pair pair ) \"make a dictionary\"" +
+        "  ) " +
+        " ) " +
+        " (get-var x) " +
+        ") ";
+    String schemeResultString = "10";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
+  }
+
   public void testForRange() throws Throwable {
     /* test forrange */
     String schemeInputString = "(begin " +
@@ -1084,22 +1149,38 @@ public class YailEvalTest extends TestCase {
     }
   }
 
+  private void testUnaryIntegerFunction(String funName, int[] args, int[] vals)
+          throws Throwable {
+    for (int i = 0; i < args.length; i++) {
+      String expression = "(" + funName + " " + args[i] + ")";
+      Object result = scheme.eval(expression);
+      if (result instanceof IntNum) {
+        assertEquals(expression, vals[i], ((IntNum) result).intValue());
+      } else {
+        assertEquals(expression, vals[i], (int) result);
+      }
+    }
+  }
+
    public void testSine() throws Throwable {
-     double[] args = { 0, 90, 180, 270 };
-     double[] vals = { 0,  1,  0,   -1 };
-     testUnaryDoubleFunction("sin-degrees", args, vals);
+     int[] args = { -360, -270, -180, -90, 0, 90, 180, 270, 360 };
+     int[] vals = {    0,    1,    0,  -1, 0,  1,   0,  -1,   0 };
+     testUnaryIntegerFunction("sin-degrees", args, vals);
    }
 
    public void testCosine() throws Throwable {
-     double[] args = { 0, 90, 180, 270 };
-     double[] vals = { 1,  0,  -1,   0 };
-     testUnaryDoubleFunction("cos-degrees", args, vals);
+     int[] args = { -360, -270, -180, -90, 0, 90, 180, 270, 360 };
+     int[] vals = {    1,    0,   -1,   0, 1,  0,  -1,   0,   1 };
+     testUnaryIntegerFunction("cos-degrees", args, vals);
    }
 
    public void testTangent() throws Throwable {
-     double[] args = { 0, 45, 135, 180, 225, 315, 30 };
-     double[] vals = { 0,  1,  -1,   0,   1,  -1, .57735 };
-     testUnaryDoubleFunction("tan-degrees", args, vals);
+     int[] args = { -315, -225, -180, -135, -45, 0, 45, 135, 180, 225, 315 };
+     int[] vals = {    1,   -1,    0,    1,  -1, 0,  1,  -1,   0,   1,  -1 };
+     testUnaryIntegerFunction("tan-degrees", args, vals);
+     double[] arg = { 30 };
+     double[] val = { .57735 };
+     testUnaryDoubleFunction("tan-degrees", arg, val);
    }
 
    public void testAsin() throws Throwable {
@@ -1122,6 +1203,72 @@ public class YailEvalTest extends TestCase {
      double[] vals = { 0, 45, -45, 30 };
      testUnaryDoubleFunction("atan-degrees", args, vals);
    }
+
+   public void testTrigonometricIdentities() throws Throwable {
+     Random random = new Random();
+     double theta = 90 * random.nextDouble();
+
+     String sinExpression = "(" + "sin-degrees" + " " + theta + ")";
+     Object sinResult = scheme.eval(sinExpression);
+     String cosExpression = "(" + "cos-degrees" + " " + theta + ")";
+     Object cosResult = scheme.eval(cosExpression);
+     String tanExpression = "(" + "tan-degrees" + " " + theta + ")";
+     Object tanResult = scheme.eval(tanExpression);
+     String cosComplementExpression = "(" + "cos-degrees" + " " + (90 - theta) + ")";
+     Object cosComplementResult = scheme.eval(cosComplementExpression);
+
+     double sin = Double.parseDouble(String.valueOf(sinResult));
+     double cos = Double.parseDouble(String.valueOf(cosResult));
+     double tan = Double.parseDouble(String.valueOf(tanResult));
+     double cosComplement = Double.parseDouble(String.valueOf(cosComplementResult));
+
+     assertEquals(sin, cosComplement, DELTA);
+     assertEquals((Math.pow(sin,2) + Math.pow(cos,2)), 1, DELTA);
+     assertEquals(tan * cos, sin, DELTA);
+  }
+
+  public void testTrigonometricEquations() throws Throwable {
+    Random random = new Random();
+    double theta1 = 90 * random.nextDouble();
+    double theta2 = 90 * random.nextDouble();
+
+    String sinExpression1 = "(" + "sin-degrees" + " " + theta1 + ")";
+    Object sinResult1 = scheme.eval(sinExpression1);
+    String sinExpression2 = "(" + "sin-degrees" + " " + theta2 + ")";
+    Object sinResult2 = scheme.eval(sinExpression2);
+    String sinExpressionSum = "(" + "sin-degrees" + " " + (theta1 + theta2) + ")";
+    Object sinResultSum = scheme.eval(sinExpressionSum);
+    String sinExpressionDiff = "(" + "sin-degrees" + " " + (theta1 - theta2) + ")";
+    Object sinResultDiff = scheme.eval(sinExpressionDiff);
+
+    String cosExpression1 = "(" + "cos-degrees" + " " + theta1 + ")";
+    Object cosResult1 = scheme.eval(cosExpression1);
+    String cosExpression2 = "(" + "cos-degrees" + " " + theta2 + ")";
+    Object cosResult2 = scheme.eval(cosExpression2);
+    String cosExpressionSum = "(" + "cos-degrees" + " " + (theta1 + theta2) + ")";
+    Object cosResultSum = scheme.eval(cosExpressionSum);
+    String cosExpressionDiff = "(" + "cos-degrees" + " " + (theta1 - theta2) + ")";
+    Object cosResultDiff = scheme.eval(cosExpressionDiff);
+
+    double sin1 = Double.parseDouble(String.valueOf(sinResult1));
+    double sin2 = Double.parseDouble(String.valueOf(sinResult2));
+    double sinSum = Double.parseDouble(String.valueOf(sinResultSum));
+    double sinDiff = Double.parseDouble(String.valueOf(sinResultDiff));
+
+    double cos1 = Double.parseDouble(String.valueOf(cosResult1));
+    double cos2 = Double.parseDouble(String.valueOf(cosResult2));
+    double cosSum = Double.parseDouble(String.valueOf(cosResultSum));
+    double cosDiff = Double.parseDouble(String.valueOf(cosResultDiff));
+
+    assertEquals(sinSum, ((sin1*cos2) + (cos1*sin2)), DELTA);
+    assertEquals(sinDiff, ((sin1*cos2) - (cos1*sin2)), DELTA);
+    assertEquals(cosSum, ((cos1*cos2) - (sin1*sin2)), DELTA);
+    assertEquals(cosDiff, ((cos1*cos2) + (sin1*sin2)), DELTA);
+    assertEquals((2*sin1*sin2), (cosDiff - cosSum), DELTA);
+    assertEquals((2*cos1*cos2), (cosDiff + cosSum), DELTA);
+    assertEquals((2*sin1*cos2), (sinSum + sinDiff), DELTA);
+    assertEquals((2*cos1*sin2), (sinSum - sinDiff), DELTA);
+  }
 
   // These constant definitions make the below tests more readable.
   private static final double PI = Math.PI;
@@ -1239,5 +1386,93 @@ public class YailEvalTest extends TestCase {
     String schemeString = "(define zero :: java.lang.Double (java.lang.Double 0)) " +
         "(coerce-to-string (sanitize-component-data zero))";
     assertEquals("0", scheme.eval(schemeString).toString());
+  }
+
+  public void testJavaMapToYailDictionaryEmpty() throws Throwable {
+    Map<String, Object> input = new HashMap<>();
+    Object sym = scheme.eval("(gentemp)");
+    scheme.define(sym.toString(), input);
+    Object result = scheme.eval("(java-map->yail-dictionary " + sym + ")");
+    assertNotNull(result);
+    assertTrue(result instanceof YailDictionary);
+    assertEquals(0, ((YailDictionary) result).size());
+  }
+
+  public void testJavaMapToYailDictionary() throws Throwable {
+    Map<String, Object> nested = new HashMap<>();
+    nested.put("a", "b");
+    Map<String, Object> input = new HashMap<>();
+    input.put("number", 1);
+    input.put("string", "name");
+    input.put("boolean", false);
+    input.put("list", Arrays.asList(1, 2, 3));
+    input.put("dictionary", nested);
+    Object sym = scheme.eval("(gentemp)");
+    scheme.define(sym.toString(), input);
+    Object result = scheme.eval("(java-map->yail-dictionary " + sym + ")");
+    assertNotNull(result);
+    assertTrue(result instanceof YailDictionary);
+    YailDictionary asdict = (YailDictionary) result;
+    assertEquals(5, asdict.size());
+    assertEquals(1, ((Numeric) asdict.get("number")).intValue());
+    assertEquals("name", asdict.get("string"));
+    assertEquals(false, asdict.get("boolean"));
+    assertEquals(YailList.makeList(Arrays.asList(Arithmetic.asNumeric(1),
+        Arithmetic.asNumeric(2), Arithmetic.asNumeric(3))),
+        asdict.get("list"));
+    assertEquals(YailDictionary.makeDictionary("a", "b"), asdict.get("dictionary"));
+  }
+
+  public void testDictToListCoercion() throws Throwable {
+    /* Tests that coercion to a list only coerces the top-level dictionary */
+    String schemeInputString = "(call-yail-primitive yail-list-get-item " +
+    "  (*list-for-runtime* (call-yail-primitive make-yail-dictionary " +
+    "    (*list-for-runtime* (call-yail-primitive make-dictionary-pair " +
+    "      (*list-for-runtime* " +
+    "        \"key\" " +
+    "        (call-yail-primitive make-yail-dictionary " +
+    "          (*list-for-runtime* ) '() \"make a dictionary\") ) " +
+    "      '(key any)  \"make a pair\") ) " +
+    "    '(pair ) \"make a dictionary\") " +
+    "  1) '(list number) \"select list item\")";
+    String schemeResultString = "(key {})";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
+  }
+
+  /**
+   * Tests that dictionaries can accept components as keys and that lookups with component keys
+   * works.
+   */
+  public void testComponentsAsDictKeys() throws Throwable {
+    String sym = gensym();
+    Component fakeComponent = new Component() {
+      @Override
+      public HandlesEventDispatching getDispatchDelegate() {
+        return null;
+      }
+    };
+    scheme.define(sym, fakeComponent);
+    String code = readTestCode("testComponentsAsDictKeys");
+    assertTrue((Boolean) scheme.eval(String.format(code, sym)));
+  }
+
+  private static String gensym() {
+    return "gensym$" + Math.round(Math.random() * Long.MAX_VALUE);
+  }
+
+  private String readTestCode(String test) {
+    try (InputStream is = getClass().getClassLoader()
+        .getResourceAsStream("com/google/appinventor/buildserver/" + test + ".scm");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+      assertNotNull(is);
+      byte[] buffer = new byte[4096];
+      int read;
+      while ((read = is.read(buffer)) > 0) {
+        baos.write(buffer, 0, read);
+      }
+      return baos.toString("UTF-8");
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to read required test resource", e);
+    }
   }
 }

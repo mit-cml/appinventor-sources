@@ -42,22 +42,27 @@ Blockly.Yail['logic_negate'] = function() {
 
 Blockly.Yail['logic_operation'] = function() {
   // The and, or logic operations
-  // TODO: (Andrew) Make these take multiple arguments.
-  var mode = this.getFieldValue('OP');
+  var mode = this.opField.getValue();
   var tuple = Blockly.Yail.logic_operation.OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1];
-  var argument0 = Blockly.Yail.valueToCode(this, 'A', order) || Blockly.Yail.YAIL_FALSE;
-  var argument1 = Blockly.Yail.valueToCode(this, 'B', order) || Blockly.Yail.YAIL_FALSE;
+  var defaultValue = tuple[2];
+  var argument0 = Blockly.Yail.valueToCode(this, 'A', order) || defaultValue;
+  var argument1 = Blockly.Yail.valueToCode(this, 'B', order) || defaultValue;
   var code = Blockly.Yail.YAIL_OPEN_COMBINATION + operator
       + Blockly.Yail.YAIL_SPACER + argument0 + Blockly.Yail.YAIL_SPACER
-      + argument1 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+      + argument1;
+  for (var i = 2; i < this.itemCount_; i++) {
+    var arg = Blockly.Yail.valueToCode(this, this.repeatingInputName + i, order) || Blockly.Yail.YAIL_FALSE;
+    code += Blockly.Yail.YAIL_SPACER + arg;
+  }
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
 Blockly.Yail.logic_operation.OPERATORS = {
-  AND : [ 'and-delayed', Blockly.Yail.ORDER_NONE ],
-  OR : [ 'or-delayed', Blockly.Yail.ORDER_NONE ]
+  AND : [ 'and-delayed', Blockly.Yail.ORDER_NONE, Blockly.Yail.YAIL_TRUE ],
+  OR : [ 'or-delayed', Blockly.Yail.ORDER_NONE, Blockly.Yail.YAIL_FALSE ]
 };
 
 Blockly.Yail['logic_or'] = function() {

@@ -18,7 +18,7 @@
   </description>
 
   <target name="all"
-          depends="BlocklyCompile">
+          depends="BlocklyTranslationGenerator">
   </target>
 
   <target name="tests"
@@ -42,9 +42,44 @@
 
 	<property name="blockly.src.dir" location="${lib.dir}/blockly" />
 
+	<property name="gwt.sdk" location="${lib.dir}/gwt/2.8.1-patched" />
+
+
 	<!-- =====================================================================
        Targets
        ===================================================================== -->
+
+	<target name="BlocklyTranslationGenerator"
+			description="This is the script for creating combined i18n files from blockly and app inventor"
+			depends="BlocklyCompile">
+		<property name="BlocklyTranslator-class.dir" location="${class.dir}/BlocklyTranslator-classes" />
+		<mkdir dir="${BlocklyTranslator-class.dir}" />
+		<ai.javac destdir="${BlocklyTranslator-class.dir}"
+				  source="1.7" target="1.7">
+			<include name="msg/BlocklyTranslationGenerator.java" />
+			<classpath>
+				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+				<pathelement location="${lib.dir}/json/json.jar" />
+			</classpath>
+		</ai.javac>
+		<java failonerror="true" classname="msg.BlocklyTranslationGenerator">
+			<arg line="${src.dir}/msg/ai_blockly ${lib.dir}/blockly/msg/json ${src.dir}/msg" />
+			<classpath>
+				<pathelement location="${BlocklyTranslator-class.dir}"/>
+				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+				<pathelement location="${lib.dir}/json/json.jar" />
+			</classpath>
+		</java>
+
+		<!-- Copy translations to public build directory for appengine -->
+		<property name="BlocklyTranslations.dir" location="${public.build.dir}/msg" />
+		<mkdir dir="${BlocklyTranslations.dir}" />
+		<copy todir="${BlocklyTranslations.dir}">
+			<fileset dir="${src.dir}/msg">
+				<include name="*.json"/>
+			</fileset>
+		</copy>
+	</target>
 
         <target name="CheckBlocklyCompile">
           <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
@@ -57,7 +92,7 @@
         </target>
 
 	<target name="BlocklyCompile"
-		      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library" 
+		      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library"
 		      depends="init,CheckBlocklyCompile"
                       unless="BlocklyCompile.uptodate">
 		<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
@@ -75,11 +110,11 @@
   </target-->
 
 	<!-- =====================================================================
-       BlocklyeditorTests: build and run the Blocklyeditor tests and 
+       BlocklyeditorTests: build and run the Blocklyeditor tests and
        generate the output results
        ===================================================================== -->
-	
-	<target name="BlocklyTestbed" 
+
+	<target name="BlocklyTestbed"
 		      description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser"
 		      depends="components_AndroidRuntime, common_CommonTestUtils">
 		<mkdir dir="${run.lib.dir}" />
@@ -109,7 +144,26 @@
 	<target name="BlocklyeditorTests"
 		      description="Blocklyeditor: build and run the test suite"
 		      depends="BlocklyCompile, BlocklyTestbed" >
-		<ai.dojunit aij-testingtarget="BlocklyeditorTests" aij-dir="${blocklyeditor.pkg}">
-		</ai.dojunit>
+		<sequential>
+			<ai.dojunit aij-testingtarget="BlocklyeditorTests" aij-dir="${blocklyeditor.pkg}">
+			</ai.dojunit>
+			<exec executable="phantomjs" output="reports/raw/TEST-MochaTests.xml">
+				<arg value="../node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js"/>
+				<arg value="tests/com/google/appinventor/mocha/index.html"/>
+				<arg value="xunit"/>
+			</exec>
+			<!--Remove anything before the first < (start of xml)-->
+			<replaceregexp file="reports/raw/TEST-MochaTests.xml"
+				match="^[^&lt;]*"
+				replace=""/>
+			<!--Add package name to file-->
+			<replace file="reports/raw/TEST-MochaTests.xml"
+					 token="name=&quot;Mocha Tests&quot;"
+					 value="name=&quot;com.google.appinventor.blocklyeditor.MochaTests&quot;"/>
+			<junitreport todir="${reports.dir}">
+				<fileset file="reports/raw/TEST-*.xml"/>
+				<report format="frames" todir="${reports.dir}/html"/>
+			</junitreport>
+		</sequential>
 	</target>
 </project>

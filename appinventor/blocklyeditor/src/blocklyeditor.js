@@ -120,93 +120,125 @@ function unboundVariableHandler(myBlock, yailText) {
         var code = "(let (";
         for (var i in unbound_vars) {
           code += '($' + unbound_vars[i] + ' ' + Blockly.Yail.quotifyForREPL(document.querySelector('input[name="' + unbound_vars[i] + '"]').value) + ') ';
-        };
+        }
         code += ")" + yailText + ")";
         Blockly.ReplMgr.putYail(code, myBlock);
       }
       dialog.hide();
     });
-  };
+  }
 }
 
+/**
+ * Adds an option to the block's context menu to export it to a PNG.
+ * @param {!Blockly.BlockSvg} myBlock The block to export to PNG.
+ * @param {!Array<!Object>} options The option list to add to.
+ */
 Blockly.BlocklyEditor.addPngExportOption = function(myBlock, options) {
   var downloadBlockOption = {
     enabled: true,
-    text: Blockly.BlocklyEditor.makeMenuItemWithHelp(Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG,
-      '/reference/other/download-pngs.html'),
+    text: Blockly.BlocklyEditor.makeMenuItemWithHelp(
+        Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG,
+        '/reference/other/download-pngs.html'),
     callback: function() {
       Blockly.exportBlockAsPng(myBlock);
     }
   };
+  // Add it above the help option.
   options.splice(options.length - 1, 0, downloadBlockOption);
 };
 
 /**
- * Add a "Do It" option to the context menu for every block. If the user is an admin also
- * add a "Generate Yail" option to the context menu for every block. The generated yail will go in
- * the block's comment (if it has one) for now.
- * TODO: eventually create a separate kind of bubble for the generated yail, which can morph into
- * the bubble for "do it" output once we hook up to the REPL.
+ * Adds an option to the block's context menu to generate its yail.
+ * @param {!Blockly.BlockSvg} myBlock The block to generate yail for.
+ * @param {!Array<!Object>} options The option list to add to.
  */
-Blockly.Block.prototype.customContextMenu = function(options) {
-  var myBlock = this;
-  Blockly.BlocklyEditor.addPngExportOption(myBlock, options);
-  if (window.parent.BlocklyPanel_checkIsAdmin()) {
-    var yailOption = {enabled: !this.disabled};
-    yailOption.text = Blockly.Msg.GENERATE_YAIL;
-    yailOption.callback = function() {
-      var yailText;
-      //Blockly.Yail.blockToCode1 returns a string if the block is a statement
-      //and an array if the block is a value
-      var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
-      if(yailTextOrArray instanceof Array){
-        yailText = yailTextOrArray[0];
-      } else {
-        yailText = yailTextOrArray;
-      }
-      myBlock.setCommentText(yailText);
-    };
-    options.push(yailOption);
+Blockly.BlocklyEditor.addGenerateYailOption = function(myBlock, options) {
+  if (!window.parent.BlocklyPanel_checkIsAdmin()) {
+    return;
   }
-  var connectedToRepl = top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
+
+  // TODO: eventually create a separate kind of bubble for the generated yail,
+  //  which can morph into the bubble for "do it" output once we hook
+  //  up to the REPL.
+  var yailOption = {enabled: !this.disabled};
+  yailOption.text = Blockly.Msg.GENERATE_YAIL;
+  yailOption.callback = function() {
+    // Blockly.Yail.blockToCode1 returns a string if the block is a statement
+    // and an array if the block is a value
+    var yail = Blockly.Yail.blockToCode1(myBlock);
+    myBlock.setCommentText((yail instanceof Array) ? yail[0] : yail);
+  };
+
+  options.push(yailOption);
+};
+
+/**
+ * Adds an option to the block's context menu to execute the block.
+ * @param {!Blockly.BlockSvg} myBlock The block to execute.
+ * @param {!Array<!Object>} options The option list to add to.
+ */
+Blockly.BlocklyEditor.addDoItOption = function(myBlock, options) {
+  var connectedToRepl =
+      top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
+
   var doitOption = { enabled: !this.disabled && connectedToRepl};
   doitOption.text = Blockly.Msg.DO_IT;
   doitOption.callback = function() {
-    var yailText;
-    //Blockly.Yail.blockToCode1 returns a string if the block is a statement
-    //and an array if the block is a value
-    var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
-    var dialog;
     if (!connectedToRepl) {
-      dialog = new goog.ui.Dialog(null, true, new goog.dom.DomHelper(top.document));
+      var dialog = new goog.ui.Dialog(
+          null, true, new goog.dom.DomHelper(top.document));
       dialog.setTitle(Blockly.Msg.CAN_NOT_DO_IT);
       dialog.setTextContent(Blockly.Msg.CONNECT_TO_DO_IT);
-      dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
-        addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
-          false, true));
+      dialog.setButtonSet(new goog.ui.Dialog.ButtonSet()
+          .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
+              false, true));
       dialog.setVisible(true);
     } else {
-      if(yailTextOrArray instanceof Array){
-        yailText = yailTextOrArray[0];
-      } else {
-        yailText = yailTextOrArray;
-      }
-      unboundVariableHandler(myBlock, yailText);
+      // Blockly.Yail.blockToCode1 returns a string if the block is a statement
+      // and an array if the block is a value
+      var yail = Blockly.Yail.blockToCode1(myBlock);
+      unboundVariableHandler(myBlock, (yail instanceof Array) ? yail[0] : yail);
     }
   };
   options.push(doitOption);
-  //Option to clear error generated by Do It
-  if(myBlock.replError){
-    var clearDoitOption = {enabled: true};
-    clearDoitOption.text = Blockly.Msg.CLEAR_DO_IT_ERROR;
-    clearDoitOption.callback = function() {
-      myBlock.replError = null;
-      Blockly.getMainWorkspace().getWarningHandler().checkErrors(myBlock);
-    };
-    options.push(clearDoitOption);
+};
+
+/**
+ * Adds an option to the block's context menu to clear the result of a "Do It"
+ * operation, if the result exists.
+ * @param {!Blockly.BlockSvg} myBlock The block clean up.
+ * @param {!Array<!Object>} options The option list to add to.
+ */
+Blockly.BlocklyEditor.addClearDoItOption = function(myBlock, options) {
+  if (!myBlock.replError) {
+    return;
   }
-  if(myBlock.procCustomContextMenu){
-    myBlock.procCustomContextMenu(options);
+  var clearDoitOption = {enabled: true};
+  clearDoitOption.text = Blockly.Msg.CLEAR_DO_IT_ERROR;
+  clearDoitOption.callback = function() {
+    myBlock.replError = null;
+    Blockly.getMainWorkspace().getWarningHandler().checkErrors(myBlock);
+  };
+  options.push(clearDoitOption);
+};
+
+/**
+ * Adds extra context menu options to all blocks. Current options include:
+ *   - Png Export
+ *   - Generate Yail (admin only)
+ *   - Do It
+ *   - Clear Do It (only if Do It is appended)
+ * @this {!Blockly.BlockSvg}
+ */
+Blockly.Block.prototype.customContextMenu = function(options) {
+  Blockly.BlocklyEditor.addPngExportOption(this, options);
+  Blockly.BlocklyEditor.addGenerateYailOption(this, options);
+  Blockly.BlocklyEditor.addDoItOption(this, options);
+  Blockly.BlocklyEditor.addClearDoItOption(this, options);
+
+  if(this.procCustomContextMenu){
+    this.procCustomContextMenu(options);
   }
 };
 
@@ -269,6 +301,8 @@ Blockly.procedureParameterPrefix = "input"; // For names introduced by procedure
 Blockly.handlerParameterPrefix = "input"; // For names introduced by event handlers
 Blockly.localNamePrefix = "local"; // For names introduced by local variable declarations
 Blockly.loopParameterPrefix = "item"; // For names introduced by for loops
+Blockly.loopKeyParameterPrefix = 'key'; // For keys introduced by dict for loops.
+Blockly.loopValueParameterPrefix = 'value'; // For values introduced by dict for loops.
 Blockly.loopRangeParameterPrefix = "counter"; // For names introduced by for range loops
 
 Blockly.menuSeparator = " "; // Separate prefix from name with this. E.g., space in "param x"
@@ -542,3 +576,24 @@ window['Blockly'] = Blockly;
 top['Blockly'] = Blockly;
 window['AI'] = AI;
 top['AI'] = AI;
+
+/*
+ * Calls hideChaff() on the blocks editor iff we receive the mousedown event on
+ * an element that is not contained by the blocks editor.
+ */
+top.document.addEventListener('mousedown', function(e) {
+  if (!e.target) return;
+  var target = e.target;
+  while (target) {
+    var classes = target.classList;
+    // Use 'contains' in case the elements gain extra classes in the future.
+    if (classes.contains('blocklyWidgetDiv') || classes.contains('blocklySvg')) {
+      return;
+    }
+    target = target.parentElement;
+  }
+  // Make sure the workspace has been injected.
+  if (Blockly.mainWorkspace) {
+    Blockly.hideChaff();
+  }
+}, false);

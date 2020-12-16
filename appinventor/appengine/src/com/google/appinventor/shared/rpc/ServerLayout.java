@@ -50,20 +50,6 @@ public class ServerLayout {
 
   /**
    * Relative path of the
-   * {@link com.google.appinventor.shared.rpc.project.GalleryService} within
-   * the ODE GWT module.
-   */
-  public static final String GALLERY_SERVICE = "gallery";
-
-
-  /**
-   * Relative path of the {@link com.google.appinventor.server.GalleryServlet}
-   * within the ODE GWT module.
-   */
-  public static final String GALLERY_SERVLET = "gallery_servlet";
-
-  /**
-   * Relative path of the
    * {@link com.google.appinventor.shared.rpc.user.UserInfoService} within the
    * ODE GWT module.
    */
@@ -100,6 +86,12 @@ public class ServerLayout {
    * for downloading a project's sources
    */
   public static final String DOWNLOAD_PROJECT_SOURCE = "project-source";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading selected of a user's projects' sources.
+   */
+  public static final String DOWNLOAD_SELECTED_PROJECTS_SOURCE = "selected-projects-source";
 
   /**
    * Relative path within {@link com.google.appinventor.server.DownloadServlet}

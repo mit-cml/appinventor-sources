@@ -1,12 +1,18 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.ACCESS_NETWORK_STATE;
+import static android.Manifest.permission.ACCESS_WIFI_STATE;
+import static android.Manifest.permission.INTERNET;
+import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
+
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -25,11 +31,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -40,6 +42,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.appinventor.common.version.AppInventorFeatures;
 
@@ -63,18 +68,16 @@ import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.multidex.MultiDex;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
-import com.google.appinventor.components.runtime.util.PaintUtil;
-import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
-import org.json.JSONException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -93,6 +96,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.json.JSONException;
+
 
 /**
  * Top-level component containing all other components in the program.
@@ -100,29 +105,27 @@ import java.util.Set;
  * @internaldoc
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
  *
- * This is the root container of any Android activity and also the
- * superclass for Simple/Android UI applications.
+ * <p>This is the root container of any Android activity and also the
+ *     superclass for Simple/Android UI applications.</p>
  *
- * The main form is always named "Screen1".
+ * <p>The main form is always named "Screen1".</p>
  *
- * NOTE WELL: There are many places in the code where the name "Screen1" is
- * directly referenced. If we ever change App Inventor to support renaming
- * screens and Screen1 in particular, we need to make sure we find all those
- * places and make the appropriate code changes.
+ * <p>NOTE WELL: There are many places in the code where the name "Screen1" is
+ *     directly referenced. If we ever change App Inventor to support renaming
+ *     screens and Screen1 in particular, we need to make sure we find all those
+ *     places and make the appropriate code changes.</p>
  *
  */
 
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
     category = ComponentCategory.USERINTERFACE,
     description = "Top-level component containing all other components in the program",
-    androidMinSdk = 7,
     showOnPalette = false)
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE," +
-    "android.permission.ACCESS_NETWORK_STATE")
+@UsesPermissions({INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE})
 public class Form extends AppInventorCompatActivity
-  implements Component, ComponentContainer, HandlesEventDispatching,
-  OnGlobalLayoutListener {
+    implements Component, ComponentContainer, HandlesEventDispatching,
+    OnGlobalLayoutListener {
 
   private static final String LOG_TAG = "Form";
 
@@ -134,10 +137,10 @@ public class Form extends AppInventorCompatActivity
 
   public static final String ASSETS_PREFIX = "file:///android_asset/";
 
-  private static final boolean DEBUG = false;
-
-  private static final int DEFAULT_PRIMARY_COLOR_DARK = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR);
-  private static final int DEFAULT_ACCENT_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
+  private static final int DEFAULT_PRIMARY_COLOR_DARK =
+      hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR);
+  private static final int DEFAULT_ACCENT_COLOR =
+      hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
 
   // Keep track of the current form object.
   // activeForm always holds the Form that is currently handling event dispatching so runtime.scm
@@ -214,6 +217,7 @@ public class Form extends AppInventorCompatActivity
   private final Set<OnClearListener> onClearListeners = Sets.newHashSet();
   private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
   private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
+  private final Set<OnOrientationChangeListener> onOrientationChangeListeners = Sets.newHashSet();
   private final Set<OnPauseListener> onPauseListeners = Sets.newHashSet();
   private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
 
@@ -560,22 +564,14 @@ public class Form extends AppInventorCompatActivity
 
   /*
    * Here we override the hardware back button, just to make sure
-   * that the closing screen animation is applied. (In API level
-   * 5, we can simply override the onBackPressed method rather
-   * than bothering with onKeyDown)
+   * that the closing screen animation is applied.
    */
   @Override
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK) {
-      if (!BackPressed()) {
-        boolean handled = super.onKeyDown(keyCode, event);
-        AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
-        return handled;
-      } else {
-        return true;
-      }
+  public void onBackPressed() {
+    if (!BackPressed()) {
+      AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
+      super.onBackPressed();
     }
-    return super.onKeyDown(keyCode, event);
   }
 
   @SimpleEvent(description = "Device back button pressed.")
@@ -745,6 +741,10 @@ public class Form extends AppInventorCompatActivity
     onResumeListeners.add(component);
   }
 
+  public void registerForOnOrientationChange(OnOrientationChangeListener component) {
+    onOrientationChangeListeners.add(component);
+  }
+
   /**
    * An app can register to be notified when App Inventor's Initialize
    * block has fired.  They will be called in Initialize().
@@ -800,7 +800,6 @@ public class Form extends AppInventorCompatActivity
 
   @Override
   protected void onDestroy() {
-    super.onDestroy();
     // for debugging and future growth
     Log.i(LOG_TAG, "Form " + formName + " got onDestroy");
 
@@ -810,6 +809,9 @@ public class Form extends AppInventorCompatActivity
     for (OnDestroyListener onDestroyListener : onDestroyListeners) {
       onDestroyListener.onDestroy();
     }
+
+    // call super method at the end to delegate the destruction of the app to the parent
+    super.onDestroy();
   }
 
   public void registerForOnDestroy(OnDestroyListener component) {
@@ -924,6 +926,9 @@ public class Form extends AppInventorCompatActivity
 
   @SimpleEvent(description = "Screen orientation changed")
   public void ScreenOrientationChanged() {
+    for (OnOrientationChangeListener onOrientationChangeListener : onOrientationChangeListeners) {
+      onOrientationChangeListener.onOrientationChange();
+    }
     EventDispatcher.dispatchEvent(this, "ScreenOrientationChanged");
   }
 
@@ -1465,6 +1470,7 @@ public class Form extends AppInventorCompatActivity
    *
    * @param screenOrientation  the screen orientation as a string
    */
+  @SuppressLint("SourceLockedOrientationActivity")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION,
       defaultValue = "unspecified")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
@@ -1972,6 +1978,31 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
+   * Gets the name of the underlying platform running the app. Currently, this is the text
+   * "Android". Other platforms may be supported in the future.
+   *
+   * @return The platform running the app
+   */
+  @SimpleProperty(description = "The platform the app is running on, for example \"Android\" or "
+      + "\"iOS\".")
+  public String Platform() {
+    return "Android";
+  }
+
+  /**
+   * Gets the version number of the platform running the app. This is typically a dotted version
+   * number, such as 10.0. Any value can be returned, however, so you should take care to handle
+   * unexpected data. If the platform version is unavailable, the empty text will be returned.
+   *
+   * @return The version of the platform running the app
+   */
+  @SimpleProperty(description = "The dotted version number of the platform, such as 4.2.2 or 10.0. "
+      + "This is platform specific and there is no guarantee that it has a particular format.")
+  public String PlatformVersion() {
+    return Build.VERSION.RELEASE;
+  }
+
+  /**
    * Display a new form.
    *
    * @param nextFormName the name of the new form to display
@@ -2375,6 +2406,7 @@ public class Form extends AppInventorCompatActivity
     onStopListeners.clear();
     onNewIntentListeners.clear();
     onResumeListeners.clear();
+    onOrientationChangeListeners.clear();
     onPauseListeners.clear();
     onDestroyListeners.clear();
     onInitializeListeners.clear();
@@ -2401,6 +2433,9 @@ public class Form extends AppInventorCompatActivity
     }
     if (component instanceof OnResumeListener) {
       onResumeListeners.remove(component);
+    }
+    if (component instanceof OnOrientationChangeListener) {
+      onOrientationChangeListeners.remove(component);
     }
     if (component instanceof OnPauseListener) {
       onPauseListeners.remove(component);
@@ -2754,9 +2789,9 @@ public class Form extends AppInventorCompatActivity
       final AssetManager am = getAssets();
       return am.open(path.substring(ASSETS_PREFIX.length()));
     } else if (path.startsWith("file:")) {
-      return FileUtil.openFile(URI.create(path));
+      return FileUtil.openFile(this, URI.create(path));
     } else {
-      return FileUtil.openFile(path);
+      return FileUtil.openFile(this, path);
     }
   }
 }

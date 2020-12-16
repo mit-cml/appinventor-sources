@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -608,7 +608,7 @@ public class NxtDirectCommands extends LegoMindstormsNxtBase {
     try {
       File tempFile = MediaUtil.copyMediaToTempFile(form, source);
       try {
-        InputStream in = new BufferedInputStream(FileUtil.openFile(tempFile), 1024);
+        InputStream in = new BufferedInputStream(FileUtil.openFile(form, tempFile), 1024);
         try {
           long fileSize = tempFile.length();
           Integer handle = (destination.endsWith(".rxe") || destination.endsWith(".ric"))
