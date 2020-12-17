@@ -16,11 +16,19 @@ private let MAX_ZOOM_LEVEL: Int = 18
 private let MIN_ZOOM_LEVEL: Int = 1
 private let kFingerSize: CGFloat = 24.0
 
+private let ZOOM_LEVEL_0 = 80082944.031721031553788
+
+func altitude(from zoom: Double) -> CLLocationDistance {
+  return ZOOM_LEVEL_0 / pow(2.0, zoom - 1.0)
+}
+
 enum AIMapType: Int32 {
   case roads = 1
   case aerial = 2
   case terrain = 3
 }
+
+typealias CLLocationDirection = Double
 
 // a custom map that resizes components as necessary (i.e. when device orientation changes). A workaround for a lack of constraints for Marker
 class CustomMap: MKMapView {
@@ -58,6 +66,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   private var _mapType: AIMapType = .roads
   private var _scaleUnits: Int32 = 1 // swift doesn't have scale units??
   private var _zoomLevel: Int32 = 1
+  private var _rotation: Float32 = 0.0
   private var _zoomControls: UIStackView
   private var _zoomInBtn: ZoomButton
   private var _zoomOutBtn: ZoomButton
@@ -147,6 +156,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     EnableZoom = true
     EnablePan = true
     MapType = 1
+    Rotation = 0.0
     ScaleUnits = 1
     ShowZoom = false
     ShowCompass = false
@@ -307,6 +317,26 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     }
     set(enabled) {
       mapView.isZoomEnabled = enabled
+    }
+  }
+  
+  @objc open var Rotation: Float32 {
+    get {
+      return Float(mapView.camera.heading)
+    }
+    set(rotation) {
+      _rotation = rotation
+      let center = mapView.camera.centerCoordinate
+      let distance:CLLocationDistance
+      if #available(iOS 13.0, *) {
+        distance = mapView.camera.centerCoordinateDistance
+      } else {
+        distance = mapView.camera.altitude
+      }
+      let pitch = mapView.camera.pitch
+      let camera = MKMapCamera(lookingAtCenter: center, fromDistance: distance, pitch: pitch,
+          heading: CLLocationDirection(rotation))
+      mapView.setCamera(camera, animated: true)
     }
   }
   
@@ -531,7 +561,9 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     if !_mapIsReady {
       Ready()
       _mapIsReady = true
-//      _mapView.setZoom(_zoomLevel, animated: false)
+      DispatchQueue.main.async {
+        self.mapView.setZoom(self._zoomLevel, Double(self.Rotation), animated: false)
+      }
     }
   }
 
@@ -575,11 +607,11 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     switch zoomBtn.zoom {
     case .zoomIn:
       if mapView.zoomLevel < MAX_ZOOM_LEVEL {
-        mapView.setZoom(mapView.zoomLevel + 1, animated: true)
+        mapView.setZoom(mapView.zoomLevel + 1, Double(_rotation), animated: true)
       }
     case .zoomOut:
       if mapView.zoomLevel > MIN_ZOOM_LEVEL {
-        mapView.setZoom(mapView.zoomLevel - 1, animated: true)
+        mapView.setZoom(mapView.zoomLevel - 1, Double(_rotation), animated: true)
       }
     }
   }
@@ -807,10 +839,20 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
            * attempt to set with the centerUpdate and zoomLevel update first, only pulling from the
            * boundingBox if those are nil.
            */
-          self.mapView.setCenterCoordinate(centerCoordinate: self._centerUpdate ?? region.center, zoomLevel: Int(self._zoomLevelUpdate ?? Int32(zoom)), animated: true)
+
+          let distance = altitude(from: zoom)
+          let pitch = self.mapView.camera.pitch
+          let camera = MKMapCamera(lookingAtCenter: self._centerUpdate ?? region.center,
+              fromDistance: distance, pitch: pitch, heading: CLLocationDirection(self._rotation))
+          self.mapView.setCamera(camera, animated: true)
         } else {
           self._zoomDidChange = self._zoomLevelUpdate != nil
-          self.mapView.setCenterCoordinate(centerCoordinate: self._centerUpdate ?? self.mapView.centerCoordinate, zoomLevel: Int(self._zoomLevelUpdate ?? self._zoomLevel), animated: animated)
+
+          let distance = altitude(from: Double(self._zoomLevel))
+          let pitch = self.mapView.camera.pitch
+          let camera = MKMapCamera(lookingAtCenter: self._centerUpdate ?? self.mapView.centerCoordinate,
+              fromDistance: distance, pitch: pitch, heading: CLLocationDirection(self._rotation))
+          self.mapView.setCamera(camera, animated: true)
         }
         self._updatePending = false
         self._zoomLevelUpdate = nil
@@ -1055,8 +1097,15 @@ extension MKMapView {
     }
   }
 
-  open func setZoom(_ zoom: Int32, animated: Bool) {
-     self.setCenterCoordinate(centerCoordinate: self.centerCoordinate, zoomLevel: Int(zoom), animated: animated)
+  open func setZoom(_ zoom: Int32, _ rotation: Double, animated: Bool) {
+    guard zoom > 0 else {
+      return
+    }
+    let distance = altitude(from: Double(zoom))
+    let pitch = self.camera.pitch
+    let camera = MKMapCamera(lookingAtCenter: self.centerCoordinate, fromDistance: distance,
+        pitch: pitch, heading: CLLocationDirection(rotation))
+    self.setCamera(camera, animated: true)
   }
 
   @objc func setCenterCoordinate(centerCoordinate: CLLocationCoordinate2D, zoomLevel: Int, animated: Bool) {
