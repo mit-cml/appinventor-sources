@@ -636,5 +636,16 @@
     "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_INPUT": "բառարան",
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT": "բառարան",
     "Blockly.Msg.LANG_DICTIONARIES_GETTERS_TITLE": "ստանալ",
-    "Blockly.Msg.LANG_CATEGORY_DICTIONARIES": "Բառարաններ"
+    "Blockly.Msg.LANG_CATEGORY_DICTIONARIES": "Բառարաններ",
+    "Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_INPUT": "զույգեր",
+    "Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TOOLTIP": "Ստեղծում է զույգեր տրված բանալիով և արժեքով։",
+    "Blockly.Msg.LANG_DICTIONARIES_PAIR_TITLE": "զույգ",
+    "Blockly.Msg.LANG_DICTIONARIES_COPY_TITLE": "պատճենել բառարանը",
+    "Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP": "Տրված տեքստը գրել հակառակ հերթականությամբ:",
+    "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TOOLTIP": "Վերադաձնում է բառարանի բոլոր արժեքների ցուցակը։",
+    "Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE": "ստեղծել դատարկ բառարան",
+    "Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TOOLTIP": "Ստեղծել բառարան:",
+    "Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TITLE": "ստեղծել բառարան",
+    "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK": "ստանալ արժեքներ",
+    "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TITLE": "արժեքներ"
 }
