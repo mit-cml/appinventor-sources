@@ -176,6 +176,9 @@ open class Web: NonvisibleComponent {
       request.httpMethod = httpVerb
       request.httpBody = Data(base64Encoded: postFile)
     }
+    request.allHTTPHeaderFields = webProps.requestHeaders.mapValues({ (items) -> String in
+      return items.joined(separator: ", ")
+    })
 
     let task = session.dataTask(with: request, completionHandler: { (data, response, error) in
       if let response = response {
@@ -236,9 +239,7 @@ open class Web: NonvisibleComponent {
       urlSessionConfiguration.timeoutIntervalForRequest = Double(webProps.timeout) / 1000.0
     }
 
-    if (httpVerb == "PUT" || httpVerb == "DELETE") {
-      urlSessionConfiguration.httpAdditionalHeaders = webProps.requestHeaders
-    }
+    urlSessionConfiguration.httpAdditionalHeaders = webProps.requestHeaders
 
     let urlSession = URLSession.init(configuration: urlSessionConfiguration)
 
@@ -259,25 +260,23 @@ open class Web: NonvisibleComponent {
     var requestHeadersDic = [String: [String]]()
 
     for (index, item) in list.enumerated() {
-      if let sublist = item as? NSArray {
-        if sublist.count == 2 {
-          let fieldName = (sublist.firstObject as AnyObject).description ?? ""
-          let fieldValues = sublist.lastObject
-
-          var values = [String]()
-
-          if fieldValues is YailList<NSString> {
-            let multipleFieldValues = fieldValues as! YailList<NSString>
+      if let sublist = item as? YailList<NSString> {
+        if sublist.length == 2 {
+          guard let fieldName = sublist[1] as? String else {
+            continue
+          }
+          if let multipleFieldValues = sublist[2] as? YailList<NSString> {
+            var values = [String]()
             for value in multipleFieldValues {
               values.append(String(describing: value))
             }
-          } else {
+            requestHeadersDic[fieldName] = values
+          } else if let singleField = sublist[2] as? String {
             //singular non-list item
-            let singleField = fieldValues
-            values.append(String(describing: singleField))
+            requestHeadersDic[fieldName] = [singleField]
           }
 
-          requestHeadersDic[fieldName] = values
+
         } else {
           // sublist does not contain two elements
           throw InvalidHeadersError(ErrorMessage.ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS, index + 1)
