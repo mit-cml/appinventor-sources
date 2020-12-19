@@ -115,7 +115,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
   private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
   private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-  private static final String WINDOW_OPEN_LOCATION = "_ai2";
+  private static final String WINDOW_OPEN_LOCATION = "_blank";
 
   private static final boolean iamChromebook = isChromeBook();
 
