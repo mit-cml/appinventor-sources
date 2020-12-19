@@ -7,7 +7,7 @@
      App Inventor common libraries
      ====================================================================== -->
 
-<project name="AllProjects" default="all">
+<project name="AllProjects" default="all" xmlns:if="ant:if" xmlns:unless="ant:unless">
   <description>
     App Inventor
   </description>
@@ -167,5 +167,65 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
     <delete dir="build"/>
     <delete dir="reports"/>
+  </target>
+
+  <target name="doctor">
+    <script language="javascript">
+      project.setNewProperty("white", "\u001b[1;37m");
+      project.setNewProperty("red", "\u001b[31m");
+      project.setNewProperty("green", "\u001b[1;32m");
+      project.setNewProperty("reset", "\u001b[0m");
+    </script>
+    <property environment="env"/>
+    <!-- On Windows the Environment-Variable is not all uppercase -->
+    <path id="combined-PATH">
+      <pathelement path="${env.PATH}"/>
+      <pathelement path="${env.Path}"/>
+    </path>
+    <property name="PATH" refid="combined-PATH"/>
+
+    <echo message="${white}Diagnosing your system...${reset}"/>
+
+    <!--Check if java is installed-->
+    <condition property="java.present">
+      <or>
+        <available file="java" filepath="${PATH}"/>
+        <available file="java.exe" filepath="${PATH}"/>
+      </or>
+    </condition>
+    <echo if:set="java.present" message="${green}Java is installed.${reset}"/>
+    <echo unless:set="java.present" message="${red}Java is not installed.${reset}"/>
+
+    <!--Check Java version-->
+    <condition property="java.version.check">
+      <or>
+        <javaversion exactly="1.7"/> <!-- Not sure about Java 7 compatibility -->
+        <javaversion exactly="1.8"/>
+      </or>
+    </condition>
+    <echo if:set="java.version.check" message="${green}Required version of Java is installed.${reset}"/>
+    <echo unless:set="java.version.check">${red}Required version of Java is not installed.${reset}
+      ${red}Please install Java 8 and try again.${reset}
+    </echo>
+
+    <!--Check if git is installed-->
+    <condition property="git.present">
+      <or>
+        <available file="git" filepath="${PATH}"/>
+        <available file="git.exe" filepath="${PATH}"/>
+      </or>
+    </condition>
+    <echo if:set="git.present" message="${green}Git is installed.${reset}"/>
+    <echo unless:set="git.present" message="${red}Git is not installed.${reset}"/>
+
+    <!--    Check for git submodules-->
+    <exec executable="git" resultproperty="git.submodules.status" outputproperty="devnull">
+      <arg line="submodule status ${basedir}/lib/blockly ${basedir}/lib/closure-library"/>
+    </exec>
+    <condition property="git.submodules.check" else="false">
+      <isfailure code="0"/>
+    </condition>
+    <echo if:set="git.submodules.check" message="${green}Git submodules are properly set up.${reset}"/>
+    <echo unless:set="git.submodules.check" message="${red}Git submodules are not properly set up.${reset}"/>
   </target>
 </project>
