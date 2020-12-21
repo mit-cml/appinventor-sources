@@ -104,7 +104,7 @@ fileprivate class SpinnerPhoneController: PickerPhoneController, SpinnerControll
 }
 
 open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
-  fileprivate var _items: [String] = []
+  fileprivate var _items = [String]()
   fileprivate var _viewController: SpinnerController?
   fileprivate var _prompt: String = "add items..."
   fileprivate var _selectionIndex : Int32 = 0
@@ -158,20 +158,27 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     click()
   }
 
-  @objc open var Elements: [String] {
+  @objc open var Elements: YailList<SCMValueProtocol> {
     get {
-      return _items
+      return YailList<SCMValueProtocol>(array: _items as [AnyObject])
     }
     set(items) {
       var pendingSelectionIndex = SelectionIndex
-      if (items.count == 0) {
+      if (items.length == 0) {
         pendingSelectionIndex = 0
-      } else if (items.count < _items.count && SelectionIndex > items.count) {
-        pendingSelectionIndex = Int32(items.count)
-      } else if (SelectionIndex == 0 && items.count > 0) {
+      } else if (items.length < _items.count && SelectionIndex > items.length) {
+        pendingSelectionIndex = Int32(items.length)
+      } else if (SelectionIndex == 0 && items.length > 0) {
         pendingSelectionIndex = 1
       }
-      _items = items
+      _items.removeAll()
+      for item in items {
+        if let str = item as? String {
+          _items.append(str)
+        } else {
+          _items.append((item as AnyObject).debugDescription)
+        }
+      }
       _viewController!.reloadComponents()
       SelectionIndex = pendingSelectionIndex
     }
@@ -182,7 +189,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
       return ""
     }
     set(itemstring) {
-      Elements = elementsFromString(itemstring)
+      Elements = YailList<SCMValueProtocol>(array: elementsFromString(itemstring) as [AnyObject])
     }
   }
 
