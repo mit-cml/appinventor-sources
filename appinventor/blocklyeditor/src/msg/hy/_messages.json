@@ -151,7 +151,7 @@
     "Blockly.Msg.LANG_COLOUR_LIGHT_GRAY": "բաց մոխրագույն",
     "Blockly.Msg.LANG_COLOUR_MAGENTA": "մանուշակագույն",
     "Blockly.Msg.LANG_COLOUR_BLUE": "կապույտ",
-    "Blockly.Msg.LANG_COLOUR_CYAN": "երկնագույն",
+    "Blockly.Msg.LANG_COLOUR_CYAN": "ցիան",
     "Blockly.Msg.LANG_COLOUR_BLACK": "սև",
     "Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP": "Գույնը ընտրելու համար սեղմեք քառակուսու վրա:",
     "Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP": "break բլոկը պետք է օգտագործվի միայն ցիկլի ներսում",
@@ -647,5 +647,6 @@
     "Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TOOLTIP": "Ստեղծել բառարան:",
     "Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TITLE": "ստեղծել բառարան",
     "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK": "ստանալ արժեքներ",
-    "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TITLE": "արժեքներ"
+    "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TITLE": "արժեքներ",
+    "Blockly.Msg.LANG_TEXT_REVERSE_INPUT": "հակառակ հերթականությամբ"
 }
