@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
@@ -14,8 +16,6 @@ import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.AddFormCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.DeleteFileCommand;
-
-import com.google.appinventor.client.output.OdeLog;
 
 import com.google.appinventor.client.tracking.Tracking;
 
@@ -42,8 +42,7 @@ import com.google.gwt.user.client.ui.Label;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
+import java.util.logging.Logger;
 
 /**
  * The design toolbar houses command buttons in the Young Android Design
@@ -51,6 +50,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  */
 public class DesignToolbar extends Toolbar {
+  private static final Logger LOG = Logger.getLogger(DesignToolbar.class.getName());
 
   private boolean isReadOnly;   // If the UI is in read only mode
   private volatile boolean lockPublishButton = false; // Used to prevent double-clicking the
@@ -314,7 +314,7 @@ public class DesignToolbar extends Toolbar {
 
   private void doSwitchScreen1(long projectId, String screenName, View view) {
     if (!projectMap.containsKey(projectId)) {
-      OdeLog.wlog("DesignToolbar: no project with id " + projectId
+      LOG.warning("DesignToolbar: no project with id " + projectId
           + ". Ignoring SwitchScreenAction.execute().");
       return;
     }
@@ -329,7 +329,7 @@ public class DesignToolbar extends Toolbar {
     if (!currentProject.screens.containsKey(newScreenName)) {
       // Can't find the requested screen in this project. This shouldn't happen, but if it does
       // for some reason, try switching to Screen1 instead.
-      OdeLog.wlog("Trying to switch to non-existent screen " + newScreenName +
+      LOG.warning("Trying to switch to non-existent screen " + newScreenName +
           " in project " + currentProject.name + ". Trying Screen1 instead.");
       if (currentProject.screens.containsKey(YoungAndroidSourceNode.SCREEN1_FORM_NAME)) {
         newScreenName = YoungAndroidSourceNode.SCREEN1_FORM_NAME;
@@ -345,7 +345,7 @@ public class DesignToolbar extends Toolbar {
     ProjectEditor projectEditor = screen.formEditor.getProjectEditor();
     currentProject.setCurrentScreen(newScreenName);
     setDropDownButtonCaption(WIDGET_NAME_SCREENS_DROPDOWN, newScreenName);
-    OdeLog.log("Setting currentScreen to " + newScreenName);
+    LOG.info("Setting currentScreen to " + newScreenName);
     if (currentView == View.FORM) {
       projectEditor.selectFileEditor(screen.formEditor);
       toggleEditor(false);
@@ -364,7 +364,7 @@ public class DesignToolbar extends Toolbar {
     @Override
     public void execute() {
       if (currentProject == null) {
-        OdeLog.wlog("DesignToolbar.currentProject is null. "
+        LOG.warning("DesignToolbar.currentProject is null. "
             + "Ignoring SwitchToBlocksEditorAction.execute().");
         return;
       }
@@ -381,7 +381,7 @@ public class DesignToolbar extends Toolbar {
     @Override
     public void execute() {
       if (currentProject == null) {
-        OdeLog.wlog("DesignToolbar.currentProject is null. "
+        LOG.warning("DesignToolbar.currentProject is null. "
             + "Ignoring SendToGalleryAction.execute().");
         return;
       }
@@ -414,7 +414,7 @@ public class DesignToolbar extends Toolbar {
     @Override
     public void execute() {
       if (currentProject == null) {
-        OdeLog.wlog("DesignToolbar.currentProject is null. "
+        LOG.warning("DesignToolbar.currentProject is null. "
             + "Ignoring SwitchToFormEditorAction.execute().");
         return;
       }
@@ -436,9 +436,9 @@ public class DesignToolbar extends Toolbar {
   public void addProject(long projectId, String projectName) {
     if (!projectMap.containsKey(projectId)) {
       projectMap.put(projectId, new DesignProject(projectName, projectId));
-      OdeLog.log("DesignToolbar added project " + projectName + " with id " + projectId);
+      LOG.info("DesignToolbar added project " + projectName + " with id " + projectId);
     } else {
-      OdeLog.wlog("DesignToolbar ignoring addProject for existing project " + projectName
+      LOG.warning("DesignToolbar ignoring addProject for existing project " + projectName
           + " with id " + projectId);
     }
   }
@@ -450,12 +450,12 @@ public class DesignToolbar extends Toolbar {
     if (projectMap.containsKey(projectId)) {
       DesignProject project = projectMap.get(projectId);
       if (project == currentProject) {
-        OdeLog.wlog("DesignToolbar: ignoring call to switchToProject for current project");
+        LOG.warning("DesignToolbar: ignoring call to switchToProject for current project");
         return true;
       }
       pushedScreens.clear();    // Effectively switching applications clear stack of screens
       clearDropDownMenu(WIDGET_NAME_SCREENS_DROPDOWN);
-      OdeLog.log("DesignToolbar: switching to existing project " + projectName + " with id "
+      LOG.info("DesignToolbar: switching to existing project " + projectName + " with id "
           + projectId);
       currentProject = projectMap.get(projectId);
       // TODO(sharon): add screens to drop-down menu in the right order
@@ -468,7 +468,7 @@ public class DesignToolbar extends Toolbar {
     } else {
       ErrorReporter.reportError("Design toolbar doesn't know about project " + projectName +
           " with id " + projectId);
-      OdeLog.wlog("Design toolbar doesn't know about project " + projectName + " with id "
+      LOG.warning("Design toolbar doesn't know about project " + projectName + " with id "
           + projectId);
       return false;
     }
@@ -483,7 +483,7 @@ public class DesignToolbar extends Toolbar {
   public void addScreen(long projectId, String name, FileEditor formEditor,
       FileEditor blocksEditor) {
     if (!projectMap.containsKey(projectId)) {
-      OdeLog.wlog("DesignToolbar can't find project " + name + " with id " + projectId
+      LOG.warning("DesignToolbar can't find project " + name + " with id " + projectId
           + ". Ignoring addScreen().");
       return;
     }
@@ -542,11 +542,11 @@ public class DesignToolbar extends Toolbar {
    */
   public void removeScreen(long projectId, String name) {
     if (!projectMap.containsKey(projectId)) {
-      OdeLog.wlog("DesignToolbar can't find project " + name + " with id " + projectId
+      LOG.warning("DesignToolbar can't find project " + name + " with id " + projectId
           + " Ignoring removeScreen().");
       return;
     }
-    OdeLog.log("DesignToolbar: got removeScreen for project " + projectId
+    LOG.info("DesignToolbar: got removeScreen for project " + projectId
         + ", screen " + name);
     DesignProject project = projectMap.get(projectId);
     if (!project.screens.containsKey(name)) {

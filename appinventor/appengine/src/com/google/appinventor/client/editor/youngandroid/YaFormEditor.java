@@ -34,7 +34,6 @@ import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
@@ -59,10 +58,6 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -74,6 +69,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Editor for Young Android Form (.scm) files.
@@ -85,6 +82,8 @@ import java.util.Set;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class YaFormEditor extends SimpleEditor implements FormChangeListener, ComponentDatabaseChangeListener, PropertyChangeListener {
+
+  private static final Logger LOG = Logger.getLogger(YaFormEditor.class.getName());
 
   private static class FileContentHolder {
     private String content;
@@ -255,14 +254,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public void onShow() {
-    OdeLog.log("YaFormEditor: got onShow() for " + getFileId());
+    LOG.info("YaFormEditor: got onShow() for " + getFileId());
     super.onShow();
     loadDesigner();
   }
 
   @Override
   public void onHide() {
-    OdeLog.log("YaFormEditor: got onHide() for " + getFileId());
+    LOG.info("YaFormEditor: got onHide() for " + getFileId());
     // When an editor is detached, if we are the "current" editor,
     // set the current editor to null and clean up the UI.
     // Note: I'm not sure it is possible that we would not be the "current"
@@ -271,7 +270,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       super.onHide();
       unloadDesigner();
     } else {
-      OdeLog.wlog("YaFormEditor.onHide: Not doing anything since we're not the "
+      LOG.warning("YaFormEditor.onHide: Not doing anything since we're not the "
           + "current file editor!");
     }
   }
@@ -357,7 +356,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         updatePhone();          // Push changes to the phone if it is connected
       }
     } else {
-      OdeLog.elog("onComponentPropertyChanged called when loadComplete is false");
+      LOG.severe("onComponentPropertyChanged called when loadComplete is false");
     }
   }
 
@@ -368,7 +367,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         onFormStructureChange();
       }
     } else {
-      OdeLog.elog("onComponentRemoved called when loadComplete is false");
+      LOG.severe("onComponentRemoved called when loadComplete is false");
     }
   }
 
@@ -378,7 +377,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       selectedProperties = component.getProperties();
       onFormStructureChange();
     } else {
-      OdeLog.elog("onComponentAdded called when loadComplete is false");
+      LOG.severe("onComponentAdded called when loadComplete is false");
     }
   }
 
@@ -388,7 +387,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       onFormStructureChange();
       updatePropertiesPanel(form.getSelectedComponents(), true);
     } else {
-      OdeLog.elog("onComponentRenamed called when loadComplete is false");
+      LOG.severe("onComponentRenamed called when loadComplete is false");
     }
   }
 
@@ -398,7 +397,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
       updatePropertiesPanel(form.getSelectedComponents(), selected);
     } else {
-      OdeLog.elog("onComponentSelectionChange called when loadComplete is false");
+      LOG.severe("onComponentSelectionChange called when loadComplete is false");
     }
   }
 
@@ -569,7 +568,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   }
 
   public void reloadComponentPalette(String subsetjson) {
-    OdeLog.log(subsetjson);
+    LOG.info(subsetjson);
     Set<String> shownComponents = new HashSet<String>();
     if (subsetjson.length() > 0) {
       try {
@@ -578,7 +577,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
           shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
         }
       } catch (Exception e) {
-        OdeLog.log("invalid subset string");
+        LOG.log(Level.SEVERE, "invalid subset string", e);
       }
       // Toolkit does not currently support Extensions. The Extensions palette should be left alone.
       palettePanel.clearComponentsExceptExtension();

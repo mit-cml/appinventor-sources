@@ -14,7 +14,6 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
@@ -29,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 /**
  * Manager class for opened project editors.
@@ -36,6 +36,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class EditorManager {
+  private static final Logger LOG = Logger.getLogger(EditorManager.class.getName());
+
   // Map of project IDs to open project editors
   private final Map<Long, ProjectEditor> openProjectEditors;
 
@@ -192,7 +194,7 @@ public final class EditorManager {
     if (!fileEditor.isDamaged()) { // Don't save damaged files
       dirtyFileEditors.add(fileEditor);
     } else {
-      OdeLog.log("Not saving blocks for " + fileEditor.getFileId() + " because it is damaged.");
+      LOG.info("Not saving blocks for " + fileEditor.getFileId() + " because it is damaged.");
     }
     scheduleAutoSaveTimer();
   }

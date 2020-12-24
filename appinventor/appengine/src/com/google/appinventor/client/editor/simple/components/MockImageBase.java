@@ -8,7 +8,6 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.common.primitives.Ints;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ErrorEvent;
@@ -18,6 +17,7 @@ import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
+import java.util.logging.Logger;
 
 /**
  * Abstract superclass for MockImage and MockImageSprite.
@@ -25,6 +25,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @author lizlooney@google.com (Liz Looney)
  */
 abstract class MockImageBase extends MockVisibleComponent {
+  private static final Logger LOG = Logger.getLogger(MockImageBase.class.getName());
+
   // Property names
   private static final String PROPERTY_NAME_PICTURE = "Picture";
   private static final String PROPERTY_SCALE_PICTURE_TO_FIT = "ScalePictureToFit";
@@ -43,7 +45,7 @@ abstract class MockImageBase extends MockVisibleComponent {
       @Override
       public void onError(ErrorEvent event) {
         if (picturePropValue != null && !picturePropValue.isEmpty()) {
-          OdeLog.elog("Error occurred while loading image " + picturePropValue);
+          LOG.severe("Error occurred while loading image " + picturePropValue);
         }
         refreshForm(true);
       }

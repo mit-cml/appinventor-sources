@@ -9,14 +9,6 @@ package com.google.appinventor.client;
 import com.google.appinventor.client.actions.DisableAutoloadAction;
 import com.google.appinventor.client.actions.EnableAutoloadAction;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.boxes.AdminUserListBox;
-import com.google.appinventor.client.boxes.AssetListBox;
-import com.google.appinventor.client.boxes.BlockSelectorBox;
-import com.google.appinventor.client.boxes.MessagesOutputBox;
-import com.google.appinventor.client.boxes.OdeLogBox;
-import com.google.appinventor.client.boxes.PaletteBox;
-import com.google.appinventor.client.boxes.PropertiesBox;
-import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 
 import com.google.appinventor.client.editor.EditorManager;
@@ -35,8 +27,6 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter
 
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 
-import com.google.appinventor.client.output.OdeLog;
-
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 
@@ -45,9 +35,6 @@ import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.widgets.DropDownButton;
 
-import com.google.appinventor.client.widgets.boxes.Box;
-import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
-import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
@@ -92,13 +79,10 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 
@@ -136,6 +120,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -145,6 +131,8 @@ import java.util.Random;
 public class Ode implements EntryPoint {
   // I18n messages
   public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
+
+  private static final Logger LOG = Logger.getLogger(Ode.class.getName());
 
   interface OdeUiBinder extends UiBinder<FlowPanel, Ode> {}
 
@@ -459,7 +447,7 @@ public class Ode implements EntryPoint {
     if (currentFileEditor != null) {
       deckPanel.showWidget(designTabIndex);
     } else if (!editorManager.hasOpenEditor()) {  // is there a project editor pending visibility?
-      OdeLog.wlog("No current file editor to show in designer");
+      LOG.warning("No current file editor to show in designer");
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
     }
   }
@@ -510,7 +498,7 @@ public class Ode implements EntryPoint {
    */
   private void openPreviousProject() {
     if (userSettings == null) {
-      OdeLog.wlog("Ignoring openPreviousProject() since userSettings is null");
+      LOG.warning("Ignoring openPreviousProject() since userSettings is null");
       return;
     }
     final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
@@ -616,7 +604,7 @@ public class Ode implements EntryPoint {
     GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
       @Override
       public void onUncaughtException(Throwable e) {
-        OdeLog.xlog(e);
+        LOG.log(Level.SEVERE, "Unexpected exception", e);
 
         if (AppInventorFeatures.sendBugReports()) {
           if (Window.confirm(MESSAGES.internalErrorReportBug())) {
@@ -632,7 +620,7 @@ public class Ode implements EntryPoint {
     // Let's see if we were started with a repo= parameter which points to a template
     templatePath = Window.Location.getParameter("repo");
     if (templatePath != null) {
-      OdeLog.wlog("Got a template path of " + templatePath);
+      LOG.warning("Got a template path of " + templatePath);
       templateLoadingFlag = true;
     }
 
@@ -644,7 +632,7 @@ public class Ode implements EntryPoint {
     if (!templateLoadingFlag) {
       newGalleryId = Window.Location.getParameter("ng");
       if (newGalleryId != null) {
-        OdeLog.wlog("Got a new Gallery ID of " + newGalleryId);
+        LOG.warning("Got a new Gallery ID of " + newGalleryId);
         newGalleryLoadingFlag = true;
       }
     }
@@ -683,7 +671,7 @@ public class Ode implements EntryPoint {
         final String backPackId = user.getBackpackId();
         if (backPackId == null || backPackId.isEmpty()) {
           loadBackpack();
-          OdeLog.log("backpack: No shared backpack");
+          LOG.info("backpack: No shared backpack");
         } else {
           BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
             @Override
@@ -691,7 +679,7 @@ public class Ode implements EntryPoint {
               BlocklyPanel.setSharedBackpackId(backPackId);
             }
           });
-          OdeLog.log("Have a shared backpack backPackId = " + backPackId);
+          LOG.info("Have a shared backpack backPackId = " + backPackId);
         }
 
         // Setup noop timer (if enabled)
@@ -946,7 +934,7 @@ public class Ode implements EntryPoint {
     AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
       @Override
       public void onFailure(Throwable caught) {
-        OdeLog.log(MESSAGES.getMotdFailed());
+        LOG.info(MESSAGES.getMotdFailed());
       }
 
       @Override
@@ -1089,10 +1077,10 @@ public class Ode implements EntryPoint {
     currentFileEditor = fileEditor;
     if (currentFileEditor == null) {
       // nothing more we can do
-      OdeLog.log("Setting current file editor to null");
+      LOG.info("Setting current file editor to null");
       return;
     }
-    OdeLog.log("Ode: Setting current file editor to " + currentFileEditor.getFileId());
+    LOG.info("Ode: Setting current file editor to " + currentFileEditor.getFileId());
     switchToDesignView();
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
@@ -2123,9 +2111,9 @@ public class Ode implements EntryPoint {
 
   public void lockScreens(boolean value) {
     if (value) {
-      OdeLog.log("Locking Screens");
+      LOG.info("Locking Screens");
     } else {
-      OdeLog.log("Unlocking Screens");
+      LOG.info("Unlocking Screens");
     }
     screensLocked = value;
   }
@@ -2163,7 +2151,7 @@ public class Ode implements EntryPoint {
         public void onSuccess(String result) {
           int comma = result.indexOf(",");
           if (comma < 0) {
-            OdeLog.log("screenshot invalid");
+            LOG.info("screenshot invalid");
             next.run();
             return;
           }
@@ -2171,7 +2159,7 @@ public class Ode implements EntryPoint {
           String screenShotName = fileNode.getName();
           int period = screenShotName.lastIndexOf(".");
           screenShotName = "screenshots/" + screenShotName.substring(0, period) + ".png";
-          OdeLog.log("ScreenShotName = " + screenShotName);
+          LOG.info("ScreenShotName = " + screenShotName);
           projectService.screenshot(sessionId, projectId, screenShotName, result,
             new OdeAsyncCallback<RpcResult>() {
               @Override
@@ -2193,7 +2181,7 @@ public class Ode implements EntryPoint {
         }
         @Override
         public void onFailure(String error) {
-          OdeLog.log("Screenshot failed: " + error);
+          LOG.info("Screenshot failed: " + error);
           next.run();
         }
       });
@@ -2269,7 +2257,7 @@ public class Ode implements EntryPoint {
         }
         @Override
         public void onFailure(Throwable caught) {
-          OdeLog.log("Fetching backpack failed");
+          LOG.log(Level.SEVERE, "Fetching backpack failed", caught);
         }
       });
   }

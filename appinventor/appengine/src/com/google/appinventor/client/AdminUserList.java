@@ -4,15 +4,9 @@
 
 package com.google.appinventor.client;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.admin.AdminComparators;
-import com.google.appinventor.client.output.OdeLog;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -37,9 +31,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A list of User elements used in the Admin interface
@@ -47,6 +41,8 @@ import java.util.Map;
  * @author jis@mit.edu (Jeffrey I. Schiller)
  */
 public class AdminUserList extends Composite {
+  private static final Logger LOG = Logger.getLogger(AdminUserList.class.getName());
+
   private enum SortField {
     NAME,
     VISITED,
@@ -389,7 +385,7 @@ public class AdminUserList extends Composite {
                 }
                 @Override
                 public void onFailure(Throwable error) {
-                  OdeLog.xlog(error);
+                  LOG.log(Level.SEVERE, "Exception updating user", error);
                   if (error instanceof AdminInterfaceException) {
                     ErrorReporter.reportError(error.getMessage());
                   } else {

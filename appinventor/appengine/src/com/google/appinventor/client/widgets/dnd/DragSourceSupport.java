@@ -7,7 +7,6 @@
 package com.google.appinventor.client.widgets.dnd;
 
 import com.google.appinventor.client.editor.simple.components.MockComponent;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -25,6 +24,7 @@ import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchCancelEvent;
 import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.dom.client.Touch;
+import java.util.logging.Logger;
 
 /**
  * Provides support for dragging from a {@link DragSource}
@@ -32,6 +32,8 @@ import com.google.gwt.dom.client.Touch;
  *
  */
 public final class DragSourceSupport implements MouseListener, TouchStartHandler, TouchMoveHandler, TouchCancelHandler, TouchEndHandler {
+  private static final Logger LOG = Logger.getLogger(DragSourceSupport.class.getName());
+
   /**
    * Interface to functionality provided by the {@link DOM} class.
    * Used as a testing seam.
@@ -251,7 +253,7 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
   @Override
   public void onMouseDown(Widget sender, int x, int y) {
     if (mouseIsDown) {
-      OdeLog.wlog("received onMouseDown event when we thought the mouse was already down");
+      LOG.warning("received onMouseDown event when we thought the mouse was already down");
     }
     mouseIsDown = true;
 
@@ -307,7 +309,7 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
   @Override
   public void onMouseUp(Widget sender, int x, int y) {
     if (!mouseIsDown) {
-      OdeLog.wlog("received onMouseUp event when we thought the mouse was already up");
+      LOG.warning("received onMouseUp event when we thought the mouse was already up");
     }
     mouseIsDown = false;
 

@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
@@ -21,8 +20,12 @@ import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MockMarker extends MockMapFeatureBaseWithFill {
+  private static final Logger LOG = Logger.getLogger(MockMarker.class.getName());
+
   public static final String TYPE = "Marker";
   public static final String PROPERTY_NAME_IMAGE_ASSET = "ImageAsset";
   public static final String PROPERTY_NAME_ANCHORHORIZONTAL = "AnchorHorizontal";
@@ -147,8 +150,7 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
       }
       setMarkerWidth(width);
     } catch(NumberFormatException e) {
-      OdeLog.elog("Received bad value for MockMarker.setWidthProperty");
-      OdeLog.xlog(e);
+      LOG.log(Level.SEVERE, "Received bad value for MockMarker.setWidthProperty", e);
     }
   }
 
@@ -174,8 +176,7 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
       }
       setMarkerHeight(height);
     } catch(NumberFormatException e) {
-      OdeLog.elog("Received bad value for MockMarker.setHeightProperty");
-      OdeLog.xlog(e);
+      LOG.log(Level.SEVERE, "Received bad value for MockMarker.setHeightProperty", e);
     }
   }
 
@@ -183,13 +184,13 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
     try {
       int newAlignment = Integer.parseInt(text);
       if (newAlignment < 1 || newAlignment > 3) {
-        OdeLog.elog("Received invalid value of " + newAlignment + " in MockMarker.setAnchorHorizontal");
+        LOG.severe("Received invalid value of " + newAlignment +
+            " in MockMarker.setAnchorHorizontal");
         return;
       }
       setMarkerAnchorHorizontal(newAlignment);
     } catch(NumberFormatException e) {
-      OdeLog.elog("Received bad value for MockMarker.setAnchorHorizontal");
-      OdeLog.xlog(e);
+      LOG.log(Level.SEVERE, "Received bad value for MockMarker.setAnchorHorizontal", e);
     }
   }
 
@@ -197,13 +198,12 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
     try {
       int newAlignment  = Integer.parseInt(text);
       if (newAlignment < 1 || newAlignment > 3) {
-        OdeLog.elog("Received inalid value of " + newAlignment + " in MockMarker.setAnchorVertical");
+        LOG.severe("Received inalid value of " + newAlignment + " in MockMarker.setAnchorVertical");
         return;
       }
       setMarkerAnchorVertical(newAlignment);
     } catch(NumberFormatException e) {
-      OdeLog.elog("Received bad value for MockMarker.setAnchorVertical");
-      OdeLog.xlog(e);
+      LOG.log(Level.SEVERE, "Received bad value for MockMarker.setAnchorVertical", e);
     }
   }
 

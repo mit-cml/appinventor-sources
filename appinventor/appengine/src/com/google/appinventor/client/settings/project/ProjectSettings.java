@@ -6,22 +6,25 @@
 
 package com.google.appinventor.client.settings.project;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.CommonSettings;
 import com.google.appinventor.client.settings.SettingsAccessProvider;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.user.client.Command;
+import java.util.logging.Logger;
 
 /**
  * Collection of project settings.
  *
  */
 public final class ProjectSettings extends CommonSettings implements SettingsAccessProvider {
+
+  private static final Logger LOG = Logger.getLogger(ProjectSettings.class.getName());
 
   // Corresponding project
   private final Project project;
@@ -54,7 +57,7 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
             MESSAGES.settingsLoadError()) {
           @Override
           public void onSuccess(String result) {
-            OdeLog.log("Loaded project settings: " + result);
+            LOG.info("Loaded project settings: " + result);
             decodeSettings(result);
             changed = false;
           }
@@ -70,7 +73,7 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
       return;
     }
     String s = encodeSettings();
-    OdeLog.log("Saving project settings: " + s);
+    LOG.info("Saving project settings: " + s);
     Ode.getInstance().getProjectService().storeProjectSettings(
         Ode.getInstance().getSessionId(),
         project.getProjectId(), s,

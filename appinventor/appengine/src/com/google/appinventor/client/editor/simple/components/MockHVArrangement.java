@@ -12,8 +12,6 @@ import com.google.appinventor.client.editor.simple.components.utils.PropertiesUt
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 
-import com.google.appinventor.client.output.OdeLog;
-
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 
 import com.google.appinventor.components.common.ComponentConstants;
@@ -27,6 +25,7 @@ import com.google.gwt.resources.client.ImageResource;
 
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
+import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -39,7 +38,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * @author kkashi01@gmail.com (Hossein Amerkashi) (added Image and BackgroundColors)
  */
 public class MockHVArrangement extends MockContainer {
-  //!!! why was this abstract?
+  private static final Logger LOG = Logger.getLogger(MockHVArrangement.class.getName());
 
   // Form UI components
   protected final AbsolutePanel layoutWidget;
@@ -101,7 +100,7 @@ public class MockHVArrangement extends MockContainer {
         @Override
         public void onError(ErrorEvent event) {
           if (imagePropValue != null && !imagePropValue.isEmpty()) {
-            OdeLog.elog("Error occurred while loading image " + imagePropValue);
+            LOG.severe("Error occurred while loading image " + imagePropValue);
           }
           refreshForm();
         }
@@ -118,7 +117,7 @@ public class MockHVArrangement extends MockContainer {
       myHAlignmentPropertyEditor = PropertiesUtil.getHAlignmentEditor(properties);
       myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
     } catch (BadPropertyEditorException e) {
-      OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
+      LOG.info(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
     }
     adjustAlignmentDropdowns();

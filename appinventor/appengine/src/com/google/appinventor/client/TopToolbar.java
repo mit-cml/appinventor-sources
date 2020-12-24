@@ -13,7 +13,6 @@ import com.google.appinventor.client.actions.SetFontDyslexicAction;
 import com.google.appinventor.client.actions.WindowOpenAction;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.user.Config;
@@ -26,6 +25,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import java.util.logging.Logger;
 
 /**
  * TopToolbar lives in the TopPanel, to create functionality in the designer.
@@ -53,6 +53,8 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
 
   private static final boolean iamChromebook = isChromeBook();
+
+  private static final Logger LOG = Logger.getLogger(TopToolbar.class.getName());
 
   @UiField public DropDownButton fileDropDown;
   @UiField public DropDownButton connectDropDown;
@@ -239,7 +241,7 @@ public class TopToolbar extends Composite {
   public void startRepl(boolean start, boolean forChromebook, boolean forEmulator, boolean forUsb) {
     DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
-      OdeLog.wlog("DesignToolbar.currentProject is null. "
+      LOG.warning("DesignToolbar.currentProject is null. "
             + "Ignoring attempt to start the repl.");
       return;
     }
@@ -261,7 +263,7 @@ public class TopToolbar extends Composite {
   public void replHardReset() {
     DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
-      OdeLog.wlog("DesignToolbar.currentProject is null. "
+      LOG.warning("DesignToolbar.currentProject is null. "
             + "Ignoring attempt to do hard reset.");
       return;
     }
@@ -273,7 +275,7 @@ public class TopToolbar extends Composite {
   public void replUpdate() {
     DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
-      OdeLog.wlog("DesignToolbar.currentProject is null. "
+      LOG.warning("DesignToolbar.currentProject is null. "
               + "Ignoring attempt to refresh companion screen.");
       return;
     }

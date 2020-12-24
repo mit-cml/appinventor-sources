@@ -20,7 +20,6 @@ import com.google.appinventor.client.editor.simple.components.utils.PropertiesUt
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -44,6 +43,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TreeItem;
+import java.util.logging.Logger;
 
 /**
  * Mock Form component. This implementation provides two main preview sizes corresponding to
@@ -52,6 +52,7 @@ import com.google.gwt.user.client.ui.TreeItem;
  * browser too. All UI elements should be scaled to DP for buckets other than 'normal'.
  */
 public final class MockForm extends MockContainer {
+  private static final Logger LOG = Logger.getLogger(MockForm.class.getName());
 
   /*
    * Widget for the mock form title bar.
@@ -320,7 +321,7 @@ public final class MockForm extends MockContainer {
     try {
       myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
     } catch (BadPropertyEditorException e) {
-      OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
+      LOG.info(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
     }
     enableAndDisableDropdowns();

@@ -15,7 +15,6 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -38,6 +37,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Blocks editor panel.
@@ -49,6 +50,7 @@ import java.util.Set;
  * @author sharon@google.com (Sharon Perl)
  */
 public class BlocklyPanel extends HTMLPanel {
+  private static final Logger LOG = Logger.getLogger(BlocklyPanel.class.getName());
 
   public interface BlocklySource extends JsniBundle {
     @LibrarySource(value = "blockly.js",
@@ -151,7 +153,7 @@ public class BlocklyPanel extends HTMLPanel {
      * has been downloaded from the server.
      */
     initWorkspace(Long.toString(blocksEditor.getProjectId()), readOnly, LocaleInfo.getCurrentLocale().isRTL());
-    OdeLog.log("Created BlocklyPanel for " + formName);
+    LOG.info("Created BlocklyPanel for " + formName);
   }
 
   /**
@@ -236,8 +238,7 @@ public class BlocklyPanel extends HTMLPanel {
     } catch (JavaScriptException e) {
       loadError = true;
       ErrorReporter.reportError(MESSAGES.blocksLoadFailure(formName));
-      OdeLog.elog("Error loading blocks for screen " + formName + ": "
-          + e.getDescription());
+      LOG.log(Level.SEVERE, "Error loading blocks for screen " + formName, e);
       throw new LoadBlocksException(e, formName);
     } finally {
       loadComplete = true;
@@ -270,7 +271,7 @@ public class BlocklyPanel extends HTMLPanel {
 
   public void sendComponentData(String formJson, String packageName, boolean force) throws YailGenerationException {
     if (!currentForm.equals(formName)) { // Not working on the current form...
-      OdeLog.log("Not working on " + currentForm + " (while sending for " + formName + ")");
+      LOG.info("Not working on " + currentForm + " (while sending for " + formName + ")");
       return;
     }
     try {
@@ -540,7 +541,7 @@ public class BlocklyPanel extends HTMLPanel {
         }
         @Override
         public void onFailure(Throwable caught) {
-          OdeLog.log("getSharedBackpack failed.");
+          LOG.info("getSharedBackpack failed.");
         }
       });
   }
@@ -561,7 +562,7 @@ public class BlocklyPanel extends HTMLPanel {
         }
         @Override
         public void onFailure(Throwable caught) {
-          OdeLog.log("storeSharedBackpack failed.");
+          LOG.info("storeSharedBackpack failed.");
         }
       });
   }
@@ -951,7 +952,7 @@ public class BlocklyPanel extends HTMLPanel {
         }
         @Override
         public void onFailure(Throwable caught) {
-          OdeLog.elog("Failed setting the backpack");
+          LOG.severe("Failed setting the backpack");
         }
       });
   }

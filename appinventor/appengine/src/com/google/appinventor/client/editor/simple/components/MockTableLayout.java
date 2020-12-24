@@ -6,12 +6,11 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.output.OdeLog;
-
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * A layout that arranges its children in a grid (with variable sized rows and
@@ -23,6 +22,8 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 final class MockTableLayout extends MockLayout {
+  private static final Logger LOG = Logger.getLogger(MockTableLayout.class.getName());
+
   private static class Cell {
     int row;
     int col;
@@ -284,7 +285,8 @@ final class MockTableLayout extends MockLayout {
             // If childWidth is a percent tag... do it
             childWidth = (- (childWidth - MockVisibleComponent.LENGTH_PERCENT_TAG)) * form.screenWidth /100;
             childLayoutInfo.width = childWidth; // Side effect it...
-            OdeLog.log("MockTableLayout: form.screenWidth = " + form.screenWidth + " childWidth = " + childWidth);
+            LOG.info("MockTableLayout: form.screenWidth = " + form.screenWidth + " childWidth = "
+                + childWidth);
           }
 
           // int childWidth = (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)
@@ -301,7 +303,8 @@ final class MockTableLayout extends MockLayout {
               childHeight = (- (childHeight - MockVisibleComponent.LENGTH_PERCENT_TAG) * form.usableScreenHeight) / 100;
               childLayoutInfo.height = childHeight; // Side effect it...
               rowAllFillParent[row] = false;
-              OdeLog.log("MockTableLayout: form.usableScreenHeight = " + form.usableScreenHeight + " childHeight = " + childHeight);
+              LOG.info("MockTableLayout: form.usableScreenHeight = " + form.usableScreenHeight
+                  + " childHeight = " + childHeight);
               rowHeights[row] = Math.max(rowHeights[row], childHeight + BORDER_SIZE);
             }
 
@@ -392,7 +395,8 @@ final class MockTableLayout extends MockLayout {
     // Update layoutWidth and layoutHeight.
     layoutHeight = rowTops[nrows - 1] + rowHeights[nrows - 1];
     layoutWidth = colLefts[ncols - 1] + colWidths[ncols - 1];
-    OdeLog.log("MockTableLayout: setting layoutHeight = " + layoutHeight + " setting layoutWidth = " + layoutWidth);
+    LOG.info("MockTableLayout: setting layoutHeight = " + layoutHeight + " setting layoutWidth = "
+        + layoutWidth);
   }
 
   @Override

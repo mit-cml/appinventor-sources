@@ -6,11 +6,11 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.output.MessagesOutput;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -20,14 +20,17 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * Command for building a target in a project.
  *
  */
 public class BuildCommand extends ChainableCommand {
+  private static final Logger LOG = Logger.getLogger(BuildCommand.class.getName());
+
   // The build target
-  private String target;
+  private final String target;
 
   // Whether or not to use the second buildserver
   private boolean secondBuildserver = false;
@@ -62,9 +65,7 @@ public class BuildCommand extends ChainableCommand {
   @Override
   public void execute(final ProjectNode node) {
     final Ode ode = Ode.getInstance();
-    final MessagesOutput messagesOutput = MessagesOutput.getMessagesOutput();
-    messagesOutput.clear();
-    messagesOutput.addMessages(MESSAGES.buildRequestedMessage(node.getName(),
+    LOG.info(MESSAGES.buildRequestedMessage(node.getName(),
         DateTimeFormat.getMediumDateTimeFormat().format(new Date())));
 
     OdeAsyncCallback<RpcResult> callback =
@@ -73,8 +74,8 @@ public class BuildCommand extends ChainableCommand {
             MESSAGES.buildError()) {
       @Override
       public void onSuccess(RpcResult result) {
-        messagesOutput.addMessages(result.getOutput());
-        messagesOutput.addMessages(result.getError());
+        LOG.info(result.getOutput());
+        LOG.info(result.getError());
         Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_SUBACTION_BUILD_YA,
                             node.getName(), getElapsedMillis());
         if (result.succeeded()) {
