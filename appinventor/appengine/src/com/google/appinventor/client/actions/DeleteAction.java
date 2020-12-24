@@ -3,11 +3,9 @@ package com.google.appinventor.client.actions;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import java.util.ArrayList;
@@ -51,12 +49,8 @@ public class DeleteAction implements Command {
 
   private boolean deleteConfirmation(List<Project> projects) {
     String message;
-    GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
     if (projects.size() == 1) {
-      if (projects.get(0).isPublished())
-        message = MESSAGES.confirmDeleteSinglePublishedProjectWarning(projects.get(0).getProjectName());
-      else
-        message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
+      message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
     } else {
       StringBuilder sb = new StringBuilder();
       String separator = "";
@@ -65,11 +59,7 @@ public class DeleteAction implements Command {
         separator = ", ";
       }
       String projectNames = sb.toString();
-      if(!gallerySettings.galleryEnabled()){
-        message = MESSAGES.confirmMoveToTrash(projectNames);
-      } else {
-        message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
-      }
+      message = MESSAGES.confirmMoveToTrash(projectNames);
     }
     return Window.confirm(message);
   }

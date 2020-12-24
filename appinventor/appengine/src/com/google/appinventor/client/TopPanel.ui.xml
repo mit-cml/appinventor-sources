@@ -3,6 +3,7 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ai="urn:import:com.google.appinventor.client.widgets"
              xmlns:ode="urn:import:com.google.appinventor.client"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -21,19 +22,19 @@
                          ui:field="myProjects" />
           <ai:TextButton text="{messages.viewTrashTabName}" styleName="ode-TopPanelButton"
                          ui:field="viewTrash" />
-          <ai:TextButton text="{messages.tabNameGallery}" styleName="ode-TopPanelButton"
-                         ui:field="gallery" />
           <ai:TextButton text="{messages.guideTabName}" styleName="ode-TopPanelButton"
                          ui:field="guideLink" />
           <ai:TextButton text="{messages.feedbackTabName}" styleName="ode-TopPanelButton"
                          ui:field="feedbackLink" />
-          <ai:TextButton text="{messages.tabNameModeration}" styleName="ode-TopPanelButton"
-                         visible="false" ui:field="moderation" />
         </g:FlowPanel>
         <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
                            ui:field="languageDropDown" />
         <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
-                           ui:field="accountButton" />
+                           ui:field="accountButton">
+          <ai:DropDownItem name="Signout" caption="{messages.signOutLink}">
+            <actions:SignOutAction />
+          </ai:DropDownItem>
+        </ai:DropDownButton>
       </g:FlowPanel>
     </g:FlowPanel>
   </g:FlowPanel>

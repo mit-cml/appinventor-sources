@@ -102,4 +102,14 @@ public @interface DesignerComponent {
    * the component.
    */
   String dateBuilt() default "";
+
+  /**
+   * The file name of the LICENSE file that the component is attributed under.
+   * Meant primarily for use by external components which can have a license
+   * different from that of this codebase. This string can also be a URL pointing
+   * to an external LICENSE file.
+   *
+   * @return The name of the LICENSE file
+   */
+  String licenseName() default "";
 }

@@ -50,7 +50,7 @@ Blockly.Blocks.math_number.validator = function (text) {
 Blockly.Blocks['math_number_radix'] = {
   category:'Math',
 
-  helpUrl: Blockly.Msg.LANG_MATH_NUMBER_RADIX_TOOLTIP,
+  helpUrl: Blockly.Msg.LANG_MATH_NUMBER_RADIX_HELPURL,
 
   init: function() {
     this.dropdown = new Blockly.FieldDropdown([
@@ -243,14 +243,29 @@ Blockly.Blocks['math_add'] = {
     this.itemCount_ = 2;
   },
   mutationToDom: Blockly.mutationToDom,
-  domToMutation: Blockly.domToMutation,
+  domToMutation: function(container) {
+    Blockly.domToMutation.call(this, container);
+
+    // If we only have one input, put the + operator before it
+    if (this.itemCount_ === 1) {
+      this.inputList[0].appendField('0 ' + Blockly.Msg.LANG_MATH_ARITHMETIC_ADD);
+    }
+  },
   decompose: function (workspace) {
     return Blockly.decompose(workspace, 'math_mutator_item', this);
   },
-  compose: Blockly.compose,
+  compose: function(containerBlock) {
+    Blockly.compose.call(this, containerBlock);
+
+    // If we only have one input, put the + operator before it
+    if (this.itemCount_ === 1) {
+      this.inputList[0].appendField('0 ' + Blockly.Msg.LANG_MATH_ARITHMETIC_ADD);
+    }
+  },
   saveConnections: Blockly.saveConnections,
   addEmptyInput: function () {
-    var input = this.appendDummyInput(this.emptyInputName);
+    this.appendDummyInput(this.emptyInputName)
+      .appendField(Blockly.Msg.LANG_MATH_ARITHMETIC_ADD);
   },
   addInput: function (inputNum) {
     var input = this.appendValueInput(this.repeatingInputName + inputNum)
@@ -323,14 +338,25 @@ Blockly.Blocks['math_multiply'] = {
     this.itemCount_ = 2;
   },
   mutationToDom: Blockly.mutationToDom,
-  domToMutation: Blockly.domToMutation,
+  domToMutation: function(container) {
+    Blockly.domToMutation.call(this, container);
+    if (this.itemCount_ === 1) {
+      this.inputList[0].appendField('1 ' + Blockly.Blocks.Utilities.times_symbol);
+    }
+  },
   decompose: function (workspace) {
     return Blockly.decompose(workspace, 'math_mutator_item', this);
   },
-  compose: Blockly.compose,
+  compose: function(containerBlock) {
+    Blockly.compose.call(this, containerBlock);
+    if (this.itemCount_ === 1) {
+      this.inputList[0].appendField('1 ' + Blockly.Blocks.Utilities.times_symbol);
+    }
+  },
   saveConnections: Blockly.saveConnections,
   addEmptyInput: function () {
-    var input = this.appendDummyInput(this.emptyInputName);
+    this.appendDummyInput(this.emptyInputName)
+      .appendField(Blockly.Blocks.Utilities.times_symbol);
   },
   addInput: function (inputNum) {
     var input = this.appendValueInput(this.repeatingInputName + inputNum)

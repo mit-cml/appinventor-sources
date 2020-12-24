@@ -193,6 +193,14 @@
         <classpath refid="libsFor@{aij-testingtarget}.path"/>
       </ai.javactests>
 
+      <!-- Copy test resources -->
+      <copy todir="${classdir}">
+        <fileset dir="${tests.dir}">
+          <include name="@{aij-dir}/**/*" />
+          <exclude name="@{aij-dir}/**/*.java" />
+        </fileset>
+      </copy>
+
       <jar basedir="${classdir}"
            destfile="${local.build.dir}/@{aij-testingtarget}.jar" />
 
@@ -280,6 +288,15 @@
   <target name="blocklyeditor_BlocklyCompile">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blocklyeditor"
          target="BlocklyCompile"/>
+  </target>
+
+  <!-- ====================================================================
+       blocklyeditor_BlocklyCompile builds:
+       - build/blockly-all.js
+       ==================================================================== -->
+  <target name="blocklyeditor_BlocklyTranslationGenerator">
+    <ant inheritall="false" usenativebasedir="true" dir="${appinventor.dir}/blocklyeditor"
+         target="BlocklyTranslationGenerator"/>
   </target>
 
   <!-- ====================================================================

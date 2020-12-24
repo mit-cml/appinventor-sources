@@ -142,9 +142,6 @@
       <ai:DropDownItem name="DownloadUserSource" caption="{messages.downloadUserSourceMenuItem}">
         <actions:DownloadUserSourceAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="SwitchToDebugPane" caption="{messages.switchToDebugMenuItem}">
-        <actions:SwitchToDebugAction />
-      </ai:DropDownItem>
       <ai:DropDownItem name="UserAdmin" caption="{messages.userAdminMenuItem}">
         <actions:SwitchToUserAdminAction />
       </ai:DropDownItem>

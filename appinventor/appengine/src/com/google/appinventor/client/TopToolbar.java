@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.actions.EnableAutoloadAction;
 import com.google.appinventor.client.actions.SetFontDyslexicAction;
+import com.google.appinventor.client.actions.WindowOpenAction;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.output.OdeLog;
@@ -22,8 +23,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -53,8 +52,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
 
-  private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-  private static final String WINDOW_OPEN_LOCATION = "_ai2";
+  private static final boolean iamChromebook = isChromeBook();
 
   @UiField public DropDownButton fileDropDown;
   @UiField public DropDownButton connectDropDown;
@@ -81,11 +79,23 @@ public class TopToolbar extends Composite {
    */
   private volatile boolean isKeystorePresent = false;
 
+  public void updateMoveToTrash(String menu_item){
+    if (menu_item.equals("Move To Trash")) {
+      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
+      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
+    } else {
+      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);
+      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);
+    }
+  }
+
+
   public void updateMenuState(int numSelectedProjects, int numProjects) {
     boolean allowDelete = !isReadOnly && numSelectedProjects > 0;
     boolean allowExport = numSelectedProjects > 0;
     boolean allowExportAll = numProjects > 0;
     fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
+    fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), allowDelete);
     String exportProjectLabel = numSelectedProjects > 1 ?
         MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects) : MESSAGES.exportProjectMenuItem();
     fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
@@ -184,29 +194,24 @@ public class TopToolbar extends Composite {
     fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), present);
   }
 
-  private static class WindowOpenAction implements Command {
-    private final String url;
-
-    WindowOpenAction(String url) {
-      this.url = url;
-    }
-
-    @Override
-    public void execute() {
-      Window.open(url, WINDOW_OPEN_LOCATION, WINDOW_OPEN_FEATURES);
-    }
-  }
-
   private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning, boolean isUsbRunning){
     if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
       connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
-      connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
-      connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
+      if (iamChromebook) {
+        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), true);
+      } else {
+        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
+        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
+      }
       connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
     } else {
       connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
-      connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
-      connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
+      if (iamChromebook) {
+        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);
+      } else {
+        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
+        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
+      }
       connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
     }
   }
@@ -222,16 +227,16 @@ public class TopToolbar extends Composite {
 
   /**
    * startRepl -- Start/Stop the connection to the companion.
-   *
-   * @param start -- true to start the repl, false to stop it.
-   * @param forEmulator -- true if we are connecting to the emulator.
-   * @param forUsb -- true if this is a USB connection.
-   *
    * If both forEmulator and forUsb are false, then we are connecting
    * via Wireless.
+   *
+   * @param start -- true to start the repl, false to stop it.
+   * @param forChromebook -- true if we are connecting to a chromebook.
+   * @param forEmulator -- true if we are connecting to the emulator.
+   * @param forUsb -- true if this is a USB connection.
    */
 
-  public void startRepl(boolean start, boolean forEmulator, boolean forUsb) {
+  public void startRepl(boolean start, boolean forChromebook, boolean forEmulator, boolean forUsb) {
     DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
       OdeLog.wlog("DesignToolbar.currentProject is null. "
@@ -239,7 +244,7 @@ public class TopToolbar extends Composite {
       return;
     }
     DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
-    screen.blocksEditor.startRepl(!start, forEmulator, forUsb);
+    screen.blocksEditor.startRepl(!start, forChromebook, forEmulator, forUsb);
     if (start) {
       if (forEmulator) {        // We are starting the emulator...
         updateConnectToDropDownButton(true, false, false);
@@ -288,6 +293,7 @@ public class TopToolbar extends Composite {
     }
     if (view == 0) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(),
           ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
@@ -300,7 +306,7 @@ public class TopToolbar extends Composite {
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
-      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
       ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);
       fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, true);
@@ -375,4 +381,12 @@ public class TopToolbar extends Composite {
           callback);
     }
   }
+
+  private static native boolean isChromeBook() /*-{
+    if (/\bCrOS\b/.test(navigator.userAgent)) {
+      return true;
+    } else {
+      return false;
+    }
+  }-*/;
 }

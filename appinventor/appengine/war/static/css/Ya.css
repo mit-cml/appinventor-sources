@@ -219,11 +219,7 @@ div.StatusPanel {
 /*
  * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
  */
-.ode-ProjectGalleryLink {
-  cursor: pointer;
-  color: #b3c833;
-  text-align: center;
-}
+
 .ode-ProjectNameLabel {
   font-weight: bold;
   font-size: small;
@@ -321,6 +317,7 @@ div.StatusPanel {
 /*
  * TopPanel
  */
+
 
 .ode-TopPanel {
   display: flex;
@@ -481,81 +478,6 @@ div.StatusPanel {
   overflow-y: hidden;
   display: flex;
   flex-flow: row;
-}
-
-/*
- * Message inbox
- */
-
-.ode-InboxContainer {
-  display: block;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);   -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);   -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);   -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  width: 600px;
-  padding: 30px;
-}
-.ode-Inbox {
-  font-weight: 300;
-  font-size: 14px;
-  line-height: 1.75;
-  color: #666;
-}
-.ode-Inbox .CloseButton {
-  float: right;
-  display: inline;
-  border: none;
-  padding: 10px;
-  background: none;
-  box-shadow: none;
-  color: #999;
-}
-.ode-Inbox .CloseButton:hover {
-  background: lightyellow;
-}
-.InboxTitle {
-  display: inline;
-}
-.MsgListWrapper {
-  height: 300px; /* ScrollPanel */
-  margin: 15px 0 0;
-  display: block;
-}
-.MsgList {
-}
-.MsgNoPrompt {
-}
-.MsgEntry {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #ddd;
-}
-.MsgEntry-highlighted {
-  background-color: lightyellow;
-  padding: 20px 0;
-  border-bottom: 1px solid #ddd;
-}
-.MsgBody {
-  line-height: 1.5;
-  margin-bottom: 10px;
-  color: #333;
-}
-.MsgMeta .primary-link {
-  display: inline;
-  margin-right: 20px;
-  float: left;
-}
-.MsgMeta .ActionButton {
-  display: inline;
-  margin-right: 20px;
-  background: #b3c833;
-}
-.MsgMeta .MsgSender {
-  display: inline;
-  float: right;
-  margin-right: 5px;
-  font-size: 13px;
-  font-style: italic;
-  vertical-align: bottom;
 }
 
 /*
@@ -2876,7 +2798,7 @@ div.dropdiv.good {
 }
 
 div.dropdiv div {
-  position: relative;
+  position: absolute;
   top: 50%;
   width: 100%;
   text-align: center;
@@ -2886,7 +2808,9 @@ div.dropdiv div {
 div.dropdiv p {
   text-align: center;
   top: -15pt;
-  font-size: 24pt;
+  font-size: 18pt;
   line-height: 30pt;
   color: darkgreen;
+  margin: 0;
+  position: relative;
 }

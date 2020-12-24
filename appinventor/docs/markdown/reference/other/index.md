@@ -5,6 +5,7 @@ layout: documentation
 
 These documents provide additional details on some App Inventor topics.
 
+* [Editing Your App (Copy and Paste)](editing-functions.html)
 * [Using the Activity Starter](activitystarter.html)
 * [Uploading Your Apps to Google Play](appstoplay.html)
 * [Creating a Custom TinyWebDB Service](tinywebdb.html)

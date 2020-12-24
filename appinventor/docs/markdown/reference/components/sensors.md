@@ -611,7 +611,7 @@ Component for MagneticFieldSensor
 : Indicates that there is a magnetic field sensor in the device and it is available.
 
 {:id="MagneticFieldSensor.Enabled" .boolean} *Enabled*
-: Property for Enabled
+: Indicates whether or not the magnetic field sensor is enabled and working.
 
 {:id="MagneticFieldSensor.MaximumRange" .number .ro .bo} *MaximumRange*
 : Indicates the maximum range the magnetic sensor can reach.

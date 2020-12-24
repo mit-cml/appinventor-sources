@@ -1,7 +1,7 @@
-from Tkinter import Tk, BOTH, END, IntVar, StringVar, LEFT
-from ttk import Button, Checkbutton, Frame, Style, Combobox, Label, Entry
-from tkFileDialog import askopenfilename
-import tkMessageBox
+from tkinter import Tk, BOTH, END, IntVar, StringVar, LEFT
+from tkinter.ttk import Button, Checkbutton, Frame, Style, Combobox, Label, Entry
+from tkinter.filedialog import askopenfilename
+from tkinter import messagebox
 
 from helpers import *
 
@@ -111,36 +111,36 @@ class Application(Frame):
             # check if component already exists
             try:
                 open('../../components/src/com/google/appinentor/components/runtime/%s.java', 'r')
-                tkMessageBox.showerror("Duplicate Component","%s already exists" % self.component.compName)
+                messagebox.showerror("Duplicate Component","%s already exists" % self.component.compName)
             # if doesnt exist will raise error
             except IOError:
                 # check for name input
                 if not self.component.compImgName:
-                    tkMessageBox.showerror("Missing Name","Please enter component name")
+                    messagebox.showerror("Missing Name","Please enter component name")
                     return
 
                 #check for category selection
                 if not self.component.category:
-                    tkMessageBox.showerror("Missing Category","Please select a category")
+                    messagebox.showerror("Missing Category","Please select a category")
                     return
 
                 # check if selected an icon
                 if not self.component.imgFile:
-                    tkMessageBox.showerror("Missing Icon","Please select an icon image")
+                    messagebox.showerror("Missing Icon","Please select an icon image")
                     return
 
                 # copy image file to folder, can get error if user checked resize and doest have PIL installed
                 try:
                     self.component.copyImageToFolder()
-                except ImportError, e:
-                    tkMessageBox.showerror("Unable to import PIL","Please install PIL or unselect checkbox")
+                except ImportError as e:
+                    messagebox.showerror("Unable to import PIL","Please install PIL or unselect checkbox")
                     return
 
                 # add references to the image file, can get error if component already exists
                 try:
                     self.component.addImageReference()
-                except DuplicateError, e:
-                    tkMessageBox.showerror("Duplicate Component","%s already exists" % self.component.compName)
+                except DuplicateError as e:
+                    messagebox.showerror("Duplicate Component","%s already exists" % self.component.compName)
                     return
 
                 # will create mock component if is visible and add references to SimpleComponentDescriptor
@@ -149,11 +149,11 @@ class Application(Frame):
                 # will create the actual component file
                 self.component.createComponent()
 
-                tkMessageBox.showinfo('Success', 'Component created successfully')
+                messagebox.showinfo('Success', 'Component created successfully')
 
         # if could not open some file for writing
-        except Exception, e:
-            tkMessageBox.showerror("Exception",str(e))
+        except Exception as e:
+            messagebox.showerror("Exception",str(e))
 
 
 def main():
@@ -166,6 +166,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-

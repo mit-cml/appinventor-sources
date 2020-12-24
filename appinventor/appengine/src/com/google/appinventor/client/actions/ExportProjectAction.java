@@ -21,6 +21,8 @@ public class ExportProjectAction implements Command {
       //If we are in the projects view
       if (selectedProjects.size() == 1) {
         exportProject(selectedProjects.get(0));
+      } else if (selectedProjects.size() > 1) {
+        exportSelectedProjects(selectedProjects);
       } else {
         // The user needs to select only one project.
         ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
@@ -37,5 +39,20 @@ public class ExportProjectAction implements Command {
 
     Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
         ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+  }
+
+  private void exportSelectedProjects(List<Project> projects) {
+    Tracking.trackEvent(Tracking.PROJECT_EVENT,
+        Tracking.PROJECT_ACTION_DOWNLOAD_SELECTED_PROJECTS_SOURCE_YA);
+
+    String selectedProjPath = ServerLayout.DOWNLOAD_SERVLET_BASE +
+        ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE + "/";
+
+    for (Project project : projects) {
+      selectedProjPath += project.getProjectId() + "-";
+    }
+
+    Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
+        ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE + "/" + selectedProjPath);
   }
 }

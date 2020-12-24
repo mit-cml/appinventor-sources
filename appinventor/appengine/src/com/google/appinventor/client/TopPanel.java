@@ -9,22 +9,24 @@ package com.google.appinventor.client;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.appinventor.client.Ode.getSystemConfig;
 
+import com.google.appinventor.client.actions.SelectLanguage;
+
 import com.google.appinventor.client.boxes.MotdBox;
-import com.google.appinventor.client.explorer.commands.ChainableCommand;
-import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
-import com.google.appinventor.client.tracking.Tracking;
+
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.client.widgets.TextButton;
-import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+
 import com.google.appinventor.shared.rpc.user.Config;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.http.client.UrlBuilder;
+
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.resources.client.ClientBundle;
@@ -33,12 +35,12 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+
 import java.util.List;
 import java.util.MissingResourceException;
 
@@ -60,17 +62,12 @@ public class TopPanel extends Composite {
   @UiField FlowPanel rightPanel;
   @UiField TextButton myProjects;
   @UiField TextButton viewTrash;
-  @UiField TextButton gallery;
   @UiField TextButton guideLink;
   @UiField TextButton feedbackLink;
-  @UiField TextButton moderation;
   @UiField DropDownButton languageDropDown;
   @UiField DropDownButton accountButton;
   @UiField FlowPanel links;
-  private final String WIDGET_NAME_SIGN_OUT = "Signout";
   private static final String WIDGET_NAME_LANGUAGE = "Language";
-
-  private static final String SIGNOUT_URL = "/ode/_logout";
 
   private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
   private static final String WINDOW_OPEN_LOCATION = "_ai2";
@@ -135,8 +132,6 @@ public class TopPanel extends Composite {
       feedbackLink.removeFromParent();
     }
 
-    accountButton.addItem(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
-
     // Language
     List<DropDownItem> languageItems = Lists.newArrayList();
     for (String localeName : LocaleInfo.getAvailableLocaleNames()) {
@@ -161,6 +156,7 @@ public class TopPanel extends Composite {
   @SuppressWarnings("unused")
   @UiHandler("myProjects")
   public void switchToMyProjects(ClickEvent e) {
+    topToolbar.updateMoveToTrash("Move To Trash");
     ode.switchToProjectsView();
   }
 
@@ -168,18 +164,6 @@ public class TopPanel extends Composite {
   @UiHandler("viewTrash")
   public void switchToTrash(ClickEvent e) {
     ode.switchToTrash();
-  }
-
-  @SuppressWarnings("unused")
-  @UiHandler("gallery")
-  public void switchToGallery(ClickEvent e) {
-    ode.switchToGalleryView();
-  }
-
-  @SuppressWarnings("unused")
-  @UiHandler("moderation")
-  public void switchToModeration(ClickEvent e) {
-    ode.switchToModerationPageView();
   }
 
   private String getDisplayName(String localeName){
@@ -191,19 +175,6 @@ public class TopPanel extends Composite {
     }
   }
 
-  public void updateAccountMessageButton(){
-    // Since we want to insert "Messages" before "Sign Out", we need to clear first.
-    accountButton.clearAllItems();
-
-    // Gallery Items
-    // (1)Private User Profile
-    accountButton.addItem(new DropDownItem("Profile",
-        MESSAGES.privateProfileLink(), new PrivateProfileAction()));
-    // (2)Sign Out
-    accountButton.addItem(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(),
-        new SignOutAction()));
-  }
-
   /**
    * Updates the UI to show the user's email address.
    *
@@ -211,20 +182,6 @@ public class TopPanel extends Composite {
    */
   public void showUserEmail(String email) {
     accountButton.setCaption(email);
-  }
-
-  /**
-   * Updates the UI to show the moderation's link.
-   */
-  public void showModerationLink(boolean b) {
-    moderation.setVisible(b);
-  }
-
-  /**
-   * Updates the UI to show the moderation's link.
-   */
-  public void showGalleryLink(boolean b) {
-    gallery.setVisible(b);
   }
 
   /**
@@ -247,64 +204,5 @@ public class TopPanel extends Composite {
     }
   }
 
-  private static class SignOutAction implements Command {
-    @Override
-    public void execute() {
-      // Maybe take a screenshot
-      Ode.getInstance().screenShotMaybe(new Runnable() {
-          @Override
-          public void run() {
-            Window.Location.replace(SIGNOUT_URL);
-          }
-        }, true);               // Wait for i/o
-    }
-  }
-
-  private static class SelectLanguage implements Command {
-
-    private String localeName;
-
-    public SelectLanguage(String localeName) {
-      this.localeName = localeName;
-    }
-
-    @Override
-    public void execute() {
-      final String queryParam = LocaleInfo.getLocaleQueryParam();
-      Command savecmd = new SaveAction();
-      savecmd.execute();
-      if (queryParam != null) {
-        UrlBuilder builder = Window.Location.createUrlBuilder().setParameter(
-            queryParam, localeName);
-        Window.Location.replace(builder.buildString());
-      } else {
-        // If we are using only cookies, just reload
-        Window.Location.reload();
-      }
-    }
-
-    public void setLocale(String nativeName) {
-      localeName = nativeName;
-    }
-
-  }
-
-  private static class SaveAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        ChainableCommand cmd = new SaveAllEditorsCommand(null);
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, projectRootNode);
-      }
-    }
-  }
-
-  private static class PrivateProfileAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().switchToPrivateUserProfileView();
-    }
-  }
 }
 
