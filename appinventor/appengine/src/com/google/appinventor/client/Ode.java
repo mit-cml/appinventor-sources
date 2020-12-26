@@ -2431,16 +2431,23 @@ public class Ode implements EntryPoint {
   }
 
   public void setTutorialURL(String newURL) {
-    if (newURL.isEmpty() || (!newURL.startsWith("https://appinventor.mit.edu/")
-        && !newURL.startsWith("http://appinv.us/"))) {
+    boolean isUrlAllowed = !newURL.isEmpty()
+      && (newURL.startsWith("http://appinventor.mit.edu/")
+          || newURL.startsWith("https://appinventor.mit.edu/")
+          || newURL.startsWith("http://appinv.us/"));
+    
+    if (!isUrlAllowed) {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
+      String[] urlSplits = newURL.split("//"); // [protocol, rest]
+      boolean isHttps = Window.Location.getProtocol() == "https:" || urlSplits[0] == "https:";
       String locale = Window.Location.getParameter("locale");
       if (locale != null) {
         newURL += (newURL.contains("?") ? "&" : "?") + "locale=" + locale;
       }
-      tutorialPanel.setUrl(newURL);
+      String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1]; 
+      tutorialPanel.setUrl(effectiveUrl);
       designToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);
     }
