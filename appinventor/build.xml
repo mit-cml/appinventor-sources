@@ -226,6 +226,8 @@
       <isfailure code="0"/>
     </condition>
     <echo if:set="git.submodules.check" message="${green}Git submodules are properly set up.${reset}"/>
-    <echo unless:set="git.submodules.check" message="${red}Git submodules are not properly set up.${reset}"/>
+    <echo unless:set="git.submodules.check">${red}Git submodules are not properly set up.${reset}
+      ${red}Please run `git submodule update --init`${reset}
+    </echo>
   </target>
 </project>
