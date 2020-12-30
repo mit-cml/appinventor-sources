@@ -216,7 +216,7 @@
       </or>
     </condition>
     <echo if:set="git.present" message="${green}Git is installed.${reset}"/>
-    <echo unless:set="git.present" message="${red}Git is not installed.${reset}"/>
+    <echo unless:set="git.present" message="${red}Git is not installed or not found on PATH.${reset}"/>
 
     <!--    Check for git submodules-->
     <exec executable="git" resultproperty="git.submodules.status" outputproperty="devnull">
