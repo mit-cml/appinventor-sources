@@ -186,16 +186,6 @@
 
     <echo message="${white}Diagnosing your system...${reset}"/>
 
-    <!--Check if java is installed-->
-    <condition property="java.present">
-      <or>
-        <available file="java" filepath="${PATH}"/>
-        <available file="java.exe" filepath="${PATH}"/>
-      </or>
-    </condition>
-    <echo if:set="java.present" message="${green}Java is installed.${reset}"/>
-    <echo unless:set="java.present" message="${red}Java is not installed.${reset}"/>
-
     <!--Check Java version-->
     <condition property="java.version.check">
       <or>
