@@ -183,6 +183,14 @@
       <pathelement path="${env.Path}"/>
     </path>
     <property name="PATH" refid="combined-PATH"/>
+    <property name="success" value="0" />
+    <macrodef name="increment.success">
+      <sequential>
+        <script language="javascript">
+          project.setProperty("success", parseInt(project.getProperty("success")) + 1);
+        </script>
+      </sequential>
+    </macrodef>
 
     <echo message="${white}Diagnosing your system...${reset}"/>
 
@@ -193,6 +201,7 @@
         <javaversion exactly="1.8"/>
       </or>
     </condition>
+    <increment.success if:set="java.version.check" />
     <echo if:set="java.version.check" message="${green}Required version of Java is installed.${reset}"/>
     <echo unless:set="java.version.check">${red}Required version of Java is not installed.${reset}
       ${red}Please install Java 8 and try again.${reset}
@@ -205,6 +214,7 @@
         <available file="git.exe" filepath="${PATH}"/>
       </or>
     </condition>
+    <increment.success if:set="git.present"/>
     <echo if:set="git.present" message="${green}Git is installed.${reset}"/>
     <echo unless:set="git.present" message="${red}Git is not installed or not found on PATH.${reset}"/>
 
@@ -215,6 +225,7 @@
     <condition property="git.submodules.check" else="false">
       <isfailure code="0"/>
     </condition>
+    <increment.success if:set="git.submodules.check"/>
     <echo if:set="git.submodules.check" message="${green}Git submodules are properly set up.${reset}"/>
     <echo unless:set="git.submodules.check">${red}Git submodules are not properly set up.${reset}
       ${red}Please run `git submodule update --init`${reset}
@@ -227,9 +238,16 @@
         <available file="gcloud.cmd" filepath="${PATH}"/>
       </or>
     </condition>
+    <increment.success if:set="gcloud.present"/>
     <echo if:set="gcloud.present" message="${green}Google Cloud SDK is installed.${reset}"/>
     <echo unless:set="gcloud.present">${red}Google Cloud SDK is not installed or not found on PATH.${reset}
       ${red}Download gcloud from here: https://cloud.google.com/appengine/docs/standard/java/download${reset}
     </echo>
+
+    <script language="javascript">
+      var checksFailing = 4 - parseInt(project.getProperty("success"));
+      project.setProperty("failure", checksFailing);
+    </script>
+    <echo>${white}Passed ${success} checks and ${failure} failing${reset}</echo>
   </target>
 </project>
