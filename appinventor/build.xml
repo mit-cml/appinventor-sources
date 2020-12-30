@@ -74,7 +74,7 @@
   <target name="AIMergerApp">
     <ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="AIMergerApp"/>
   </target>
-  
+
   <target name="devmode" depends="noplay">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="devmode"/>
   </target>
@@ -227,8 +227,8 @@
         <available file="gcloud.cmd" filepath="${PATH}"/>
       </or>
     </condition>
-    <echo if:set="gcloud.present" message="${green}gcloud is installed.${reset}"/>
-    <echo unless:set="gcloud.present">${red}gcloud is not installed or not found on PATH.${reset}
+    <echo if:set="gcloud.present" message="${green}Google Cloud SDK is installed.${reset}"/>
+    <echo unless:set="gcloud.present">${red}Google Cloud SDK is not installed or not found on PATH.${reset}
       ${red}Download gcloud from here: https://cloud.google.com/appengine/docs/standard/java/download${reset}
     </echo>
   </target>
