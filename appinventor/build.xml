@@ -229,5 +229,17 @@
     <echo unless:set="git.submodules.check">${red}Git submodules are not properly set up.${reset}
       ${red}Please run `git submodule update --init`${reset}
     </echo>
+
+    <!--Check if gcloud is installed-->
+    <condition property="gcloud.present">
+      <or>
+        <available file="gcloud" filepath="${PATH}"/>
+        <available file="gcloud.cmd" filepath="${PATH}"/>
+      </or>
+    </condition>
+    <echo if:set="gcloud.present" message="${green}gcloud is installed.${reset}"/>
+    <echo unless:set="gcloud.present">${red}gcloud is not installed or not found on PATH.${reset}
+      ${red}Download gcloud from here: https://cloud.google.com/appengine/docs/standard/java/download${reset}
+    </echo>
   </target>
 </project>
