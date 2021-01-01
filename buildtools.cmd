@@ -193,6 +193,7 @@ if /i "%ERRORLEVEL%" equ "0" (
     echo [FAIL] Google Cloud SDK is not installed or not found on PATH.
     echo _______Download gcloud from here: https://cloud.google.com/appengine/docs/standard/java/download
 )
+echo.
 echo Passed %pass% checks and %fail% failing
 echo.
 pause
