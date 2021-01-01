@@ -3,6 +3,8 @@
 :: Run the script inside the appinventor dir
 cd appinventor
 
+if /i "%1" equ "doctor" goto doctor
+
 :menu
 title Build Tools for App Inventor
 cls
@@ -195,6 +197,8 @@ if /i "%ERRORLEVEL%" equ "0" (
 )
 echo.
 echo Passed %pass% checks and %fail% failing
+:: Exit if run using doctor command
+if /i "%1" equ "doctor" goto eof
 echo.
 pause
 goto menu

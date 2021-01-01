@@ -182,4 +182,8 @@ doctor() {
 # Run the script inside the appinventor dir
 cd appinventor
 
-menu
+if [[ $1 == "doctor" ]]; then
+  doctor
+else
+  menu
+fi
