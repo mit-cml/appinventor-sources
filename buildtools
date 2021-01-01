@@ -6,7 +6,14 @@ title() {
 
 pause() {
   echo ""
-  read -p "Press Enter to continue..."
+  read -p "Press Enter key to continue..."
+}
+
+open_url() {
+  case "$(uname -s)" in
+    Darwin) open "$1" ;;
+    Linux) xdg-open "$1" &> /dev/null || echo "Open $1 in your browser" ;;
+  esac
 }
 
 menu() {
@@ -47,7 +54,7 @@ menu() {
       8) clear ; sdm ; pause ;;
       9) clear ; buildserver ; pause ;;
       a|A) clear ; tests ; pause ;;
-      a|B) clear ; doctor ; pause ;;
+      b|B) clear ; doctor ; pause ;;
       0) clear ; exit 0 ;;
     esac
   done
@@ -121,7 +128,54 @@ doctor() {
   title Doctor
   echo Diagnosing your system...
   echo ""
-  # TODO
+  pass=0
+  fail=0
+  # Check if Java is installed
+  if command -v java &> /dev/null; then
+    ((pass++))
+    echo [PASS] Java is installed.
+    # Check Java version
+    if java -version 2>&1 | grep -q "version \"1.8" &> /dev/null; then
+      ((pass++))
+      echo [PASS] Required version of Java is installed.
+    else
+      ((fail++))
+      echo [FAIL] Required version of Java is not installed or not found on PATH.
+      echo _______Please install Java 8 and try again.
+    fi
+  else
+    ((fail++))
+    echo [FAIL] Java is not installed or not found on PATH.
+    echo _______Please install Java 8 and try again.
+  fi
+  # Check if git is installed
+  if command -v git &> /dev/null; then
+    ((pass++))
+    echo [PASS] Git is installed.
+    # Check if git submodules are present
+    if git submodule status lib/blockly lib/closure-library &> /dev/null; then
+      ((pass++))
+      echo [PASS] Git submodules are properly set up.
+    else
+      ((fail++))
+      echo [FAIL] Git submodules are not properly set up.
+      echo _______Please run `git submodule update --init`
+    fi
+  else
+    ((fail++))
+    echo [FAIL] Git is not installed or not found on PATH.
+    echo _______Please install Git and try again.
+  fi
+  # Check if gcloud is installed
+  if command -v where gcloud &> /dev/null; then
+    ((pass++))
+    echo [PASS] Google Cloud SDK is installed.
+  else
+    ((fail++))
+    echo [FAIL] Google Cloud SDK is not installed or not found on PATH.
+    echo _______Download gcloud from here: https://cloud.google.com/appengine/docs/standard/java/download
+  fi
+  echo ""
   echo Passed $pass checks and $fail failing
 }
 
