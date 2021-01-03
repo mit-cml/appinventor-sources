@@ -25,7 +25,7 @@ Check out our open source [site](http://appinventor.mit.edu/appinventor-sources/
 
 ## Setup instructions (Vagrant)
 
-The easiest way to get a development environment up and running is to use the provided Vagrantfile. Install [Vagrant](https://vagrantup.com) and open a terminal in the root directory of this repository. Run the following commands
+The easiest way to get a development environment up and running is to use the provided Vagrantfile. Install [Vagrant](https://vagrantup.com) and open a terminal in the root directory of this repository. Run the following commands:
 
 ```bash
 vagrant plugin install vagrant-vbguest  # optionally for virtualbox users, and only once
@@ -158,8 +158,8 @@ The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you 
 ### Hot-reloading GWT code with 'Super Dev Mode'
 1. Run `ant devmode`
 2. [Run the main server](#running-the-main-server).
-3. Open http://localhost:9876 (*GWT CodeServer*) and drag the two bookmarklets (*Dev Mode On & Off*) to the bookmarks bar.
-4. Open http://localhost:8888 (*App Engine server*)
+3. Open http://localhost:9876. (*GWT CodeServer*) and drag the two bookmarklets (*Dev Mode On & Off*) to the bookmarks bar.
+4. Open http://localhost:8888. (*App Engine server*)
 5. To see changes "live":
    1. Save your changes in file.
    2. Click on the *"Dev Mode On"* bookmarklet.
