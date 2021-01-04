@@ -9,11 +9,11 @@ package com.google.appinventor.client.explorer.youngandroid;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.actions.DeleteForeverProjectAction;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.Toolbar;
+import com.google.appinventor.client.widgets.ToolbarItem;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.gwt.user.client.Command;
@@ -37,9 +37,7 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_SENDTONG = "Send to Gallery";
   private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
 
-  private boolean isReadOnly;
-
-  private boolean galleryEnabled = false; // Is the new gallery enabled
+  private final boolean isReadOnly;
 
   private static volatile boolean lockPublishButton = false; // To prevent double clicking
 
@@ -49,26 +47,27 @@ public class ProjectToolbar extends Toolbar {
   public ProjectToolbar() {
     super();
     isReadOnly = Ode.getInstance().isReadOnly();
-    galleryEnabled = Ode.getInstance().getSystemConfig().getGalleryEnabled();
+    // Is the new gallery enabled
+    boolean galleryEnabled = Ode.getSystemConfig().getGalleryEnabled();
 
-    addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
+    add(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
         new NewAction(this)));
 
-    addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
+    add(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new MoveToTrashAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_TRASH,MESSAGES.trashButton(),
+    add(new ToolbarItem(WIDGET_NAME_TRASH,MESSAGES.trashButton(),
         new TrashAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_PROJECT,MESSAGES.myProjectsButton(),
+    add(new ToolbarItem(WIDGET_NAME_PROJECT,MESSAGES.myProjectsButton(),
         new BackToProjectViewAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_RESTORE,MESSAGES.restoreProjectButton(),
+    add(new ToolbarItem(WIDGET_NAME_RESTORE,MESSAGES.restoreProjectButton(),
         new RestoreProjectAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_DELETE_FROM_TRASH,MESSAGES.deleteFromTrashButton(),
+    add(new ToolbarItem(WIDGET_NAME_DELETE_FROM_TRASH,MESSAGES.deleteFromTrashButton(),
         new DeleteForeverProjectAction()));
     if (galleryEnabled) {
-      addButton(new ToolbarItem(WIDGET_NAME_LOGINTOGALLERY, MESSAGES.loginToGallery(),
+      add(new ToolbarItem(WIDGET_NAME_LOGINTOGALLERY, MESSAGES.loginToGallery(),
           new LoginToGalleryAction()));
       if (!Ode.getInstance().getGalleryReadOnly()) {
-        addButton(new ToolbarItem(WIDGET_NAME_SENDTONG, MESSAGES.publishToGalleryButton(),
+        add(new ToolbarItem(WIDGET_NAME_SENDTONG, MESSAGES.publishToGalleryButton(),
             new SendToGalleryAction()));
       }
     }

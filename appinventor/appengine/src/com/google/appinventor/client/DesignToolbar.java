@@ -13,34 +13,28 @@ import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 
-import com.google.appinventor.client.explorer.commands.AddFormCommand;
-import com.google.appinventor.client.explorer.commands.ChainableCommand;
-import com.google.appinventor.client.explorer.commands.DeleteFileCommand;
-
-import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.editor.youngandroid.actions.SendToGalleryAction;
+import com.google.appinventor.client.editor.youngandroid.actions.SwitchScreenAction;
 
 import com.google.appinventor.client.widgets.DropDownItem;
-
 import com.google.appinventor.client.widgets.Toolbar;
+import com.google.appinventor.client.widgets.ToolbarItem;
 
 import com.google.appinventor.common.version.AppInventorFeatures;
 
-import com.google.appinventor.shared.rpc.RpcResult;
-import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -52,7 +46,6 @@ import java.util.logging.Logger;
 public class DesignToolbar extends Toolbar {
   private static final Logger LOG = Logger.getLogger(DesignToolbar.class.getName());
 
-  private boolean isReadOnly;   // If the UI is in read only mode
   private volatile boolean lockPublishButton = false; // Used to prevent double-clicking the
                                                      // SendToGallery button
 
@@ -82,7 +75,7 @@ public class DesignToolbar extends Toolbar {
     public final String name;
     public final Map<String, Screen> screens; // screen name -> Screen
     public String currentScreen; // name of currently displayed screen
-    private long projectId;
+    private final long projectId;
 
     public DesignProject(String name, long projectId) {
       this.name = name;
@@ -119,21 +112,11 @@ public class DesignToolbar extends Toolbar {
   }
 
   private static final String WIDGET_NAME_TUTORIAL_TOGGLE = "TutorialToggle";
-  private static final String WIDGET_NAME_ADDFORM = "AddForm";
   private static final String WIDGET_NAME_REMOVEFORM = "RemoveForm";
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
   private static final String WIDGET_NAME_SENDTOGALLERY = "SendToGallery";
-
-  // Switch language
-  private static final String WIDGET_NAME_SWITCH_LANGUAGE = "Language";
-  private static final String WIDGET_NAME_SWITCH_LANGUAGE_ENGLISH = "English";
-  private static final String WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_CN = "Simplified Chinese";
-  private static final String WIDGET_NAME_SWITCH_LANGUAGE_SPANISH_ES = "Spanish-Spain";
-  private static final String WIDGET_NAME_SWITCH_LANGUAGE_PORTUGUESE = "Portuguese";
-  //private static final String WIDGET_NAME_SWITCH_LANGUAGE_GERMAN = "German";
-  //private static final String WIDGET_NAME_SWITCH_LANGUAGE_VIETNAMESE = "Vietnamese";
 
   // Enum for type of view showing in the design tab
   public enum View {
@@ -142,7 +125,7 @@ public class DesignToolbar extends Toolbar {
   }
   public View currentView = View.FORM;
 
-  public Label projectNameLabel;
+  @UiField public Label projectNameLabel;
 
   // Project currently displayed in designer
   private DesignProject currentProject;
@@ -160,8 +143,11 @@ public class DesignToolbar extends Toolbar {
   // on the device.
   public static LinkedList<String> pushedScreens = Lists.newLinkedList();
 
-  // Is the Gallery Enabled (new gallery)?
-  private boolean galleryEnabled = false;
+  interface DesignToolbarUiBinder extends UiBinder<Toolbar, DesignToolbar> {}
+  private static final DesignToolbarUiBinder UI_BINDER = GWT.create(DesignToolbarUiBinder.class);
+
+  @UiField ToolbarItem addFormItem;
+  @UiField ToolbarItem removeFormItem;
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -169,134 +155,27 @@ public class DesignToolbar extends Toolbar {
   public DesignToolbar() {
     super();
 
-    isReadOnly = Ode.getInstance().isReadOnly();
-    galleryEnabled = Ode.getInstance().getSystemConfig().getGalleryEnabled();
-    projectNameLabel = new Label();
-    projectNameLabel.setStyleName("ya-ProjectName");
-    HorizontalPanel toolbar = (HorizontalPanel) getWidget();
-    toolbar.insert(projectNameLabel, 0);
-
-    // width of palette minus cellspacing/border of buttons
-    toolbar.setCellWidth(projectNameLabel, "222px");
-
-    addButton(new ToolbarItem(WIDGET_NAME_TUTORIAL_TOGGLE,
-        MESSAGES.toggleTutorialButton(), new ToogleTutorialAction()));
-    setButtonVisible(WIDGET_NAME_TUTORIAL_TOGGLE, false); // Don't show unless needed
-
-    List<DropDownItem> screenItems = Lists.newArrayList();
-    addDropDownButton(WIDGET_NAME_SCREENS_DROPDOWN, MESSAGES.screensButton(), screenItems);
-
-    if (AppInventorFeatures.allowMultiScreenApplications() && !isReadOnly) {
-      addButton(new ToolbarItem(WIDGET_NAME_ADDFORM, MESSAGES.addFormButton(),
-          new AddFormAction()));
-      addButton(new ToolbarItem(WIDGET_NAME_REMOVEFORM, MESSAGES.removeFormButton(),
-          new RemoveFormAction()));
-    }
-    if (galleryEnabled && !Ode.getInstance().getGalleryReadOnly()) {
-      addButton(new ToolbarItem(WIDGET_NAME_SENDTOGALLERY,
-          MESSAGES.publishToGalleryButton(), new SendToGalleryAction()));
+    populateToolbar(UI_BINDER.createAndBindUi(this));
+    if (Ode.getInstance().isReadOnly() || !AppInventorFeatures.allowMultiScreenApplications()) {
+      removeItem(addFormItem);
+      removeItem(removeFormItem);
     }
 
-    addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_FORM_EDITOR,
-        MESSAGES.switchToFormEditorButton(), new SwitchToFormEditorAction()), true);
-    addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR,
-        MESSAGES.switchToBlocksEditorButton(), new SwitchToBlocksEditorAction()), true);
+    // Is the Gallery Enabled (new gallery)?
+    if (Ode.getSystemConfig().getGalleryEnabled() && !Ode.getInstance().getGalleryReadOnly()) {
+      add(new ToolbarItem(WIDGET_NAME_SENDTOGALLERY,
+          MESSAGES.publishToGalleryButton(), new SendToGalleryAction(() -> {
+            if (!lockPublishButton) {
+              lockPublishButton = true;
+              return true;
+            }
+            return false;
+          }, () -> lockPublishButton = false)));
+    }
 
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
     Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
-  }
-
-  private class ToogleTutorialAction implements Command {
-    @Override
-    public void execute() {
-      Ode ode = Ode.getInstance();
-      boolean visible = ode.isTutorialVisible();
-      if (visible) {
-        ode.setTutorialVisible(false);
-      } else {
-        ode.setTutorialVisible(true);
-      }
-    }
-  }
-
-  private class AddFormAction implements Command {
-    @Override
-    public void execute() {
-      Ode ode = Ode.getInstance();
-      if (ode.screensLocked()) {
-        return;                 // Don't permit this if we are locked out (saving files)
-      }
-      final ProjectRootNode projectRootNode = ode.getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        Runnable doSwitch = new Runnable() {
-            @Override
-            public void run() {
-              ChainableCommand cmd = new AddFormCommand();
-              cmd.startExecuteChain(Tracking.PROJECT_ACTION_ADDFORM_YA, projectRootNode);
-            }
-          };
-        // take a screenshot of the current blocks if we are in the blocks editor
-        if (currentView == View.BLOCKS) {
-          Ode.getInstance().screenShotMaybe(doSwitch, false);
-        } else {
-          doSwitch.run();
-        }
-      }
-    }
-  }
-
-  private class RemoveFormAction implements Command {
-    @Override
-    public void execute() {
-      Ode ode = Ode.getInstance();
-      if (ode.screensLocked()) {
-        return;                 // Don't permit this if we are locked out (saving files)
-      }
-      YoungAndroidSourceNode sourceNode = ode.getCurrentYoungAndroidSourceNode();
-      if (sourceNode != null && !sourceNode.isScreen1()) {
-        // DeleteFileCommand handles the whole operation, including displaying the confirmation
-        // message dialog, closing the form editor and the blocks editor,
-        // deleting the files in the server's storage, and deleting the
-        // corresponding client-side nodes (which will ultimately trigger the
-        // screen deletion in the DesignToolbar).
-        final String deleteConfirmationMessage = MESSAGES.reallyDeleteForm(
-            sourceNode.getFormName());
-        ChainableCommand cmd = new DeleteFileCommand() {
-          @Override
-          protected boolean deleteConfirmation() {
-            return Window.confirm(deleteConfirmationMessage);
-          }
-        };
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_REMOVEFORM_YA, sourceNode);
-      }
-    }
-  }
-
-  private class SwitchScreenAction implements Command {
-    private final long projectId;
-    private final String name;  // screen name
-
-    public SwitchScreenAction(long projectId, String screenName) {
-      this.projectId = projectId;
-      this.name = screenName;
-    }
-
-    @Override
-    public void execute() {
-      // If we are in the blocks view, we should take a screenshot
-      // of the blocks as we swtich to a different screen
-      if (currentView == View.BLOCKS) {
-        Ode.getInstance().screenShotMaybe(new Runnable() {
-            @Override
-            public void run() {
-              doSwitchScreen(projectId, name, currentView);
-            }
-          }, false);
-      } else {
-        doSwitchScreen(projectId, name, currentView);
-      }
-    }
   }
 
   private void doSwitchScreen(final long projectId, final String screenName, final View view) {
@@ -349,88 +228,14 @@ public class DesignToolbar extends Toolbar {
     if (currentView == View.FORM) {
       projectEditor.selectFileEditor(screen.formEditor);
       toggleEditor(false);
-      Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
     } else {  // must be View.BLOCKS
       projectEditor.selectFileEditor(screen.blocksEditor);
       toggleEditor(true);
-      Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
     }
+    Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
     screen.blocksEditor.makeActiveWorkspace();
-  }
-
-  private class SwitchToBlocksEditorAction implements Command {
-    @Override
-    public void execute() {
-      if (currentProject == null) {
-        LOG.warning("DesignToolbar.currentProject is null. "
-            + "Ignoring SwitchToBlocksEditorAction.execute().");
-        return;
-      }
-      if (currentView != View.BLOCKS) {
-        long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
-        switchToScreen(projectId, currentProject.currentScreen, View.BLOCKS);
-        toggleEditor(true);       // Gray out the blocks button and enable the designer button
-        Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
-      }
-    }
-  }
-
-  private class SendToGalleryAction implements Command {
-    @Override
-    public void execute() {
-      if (currentProject == null) {
-        LOG.warning("DesignToolbar.currentProject is null. "
-            + "Ignoring SendToGalleryAction.execute().");
-        return;
-      }
-      // Only do something if we aren't already doing it!
-      if (!lockPublishButton) {
-        lockPublishButton = true;
-        Ode.getInstance().getProjectService().sendToGallery(currentProject.getProjectId(),
-          new OdeAsyncCallback<RpcResult>(
-            MESSAGES.GallerySendingError()) {
-            @Override
-            public void onSuccess(RpcResult result) {
-              lockPublishButton = false;
-              if (result.getResult() == RpcResult.SUCCESS) {
-                Window.open(result.getOutput(), "_blank", "");
-              } else {
-                ErrorReporter.reportError(result.getError());
-              }
-            }
-            @Override
-            public void onFailure(Throwable t) {
-              lockPublishButton = false;
-              super.onFailure(t);
-            }
-          });
-      }
-    }
-  }
-
-  private class SwitchToFormEditorAction implements Command {
-    @Override
-    public void execute() {
-      if (currentProject == null) {
-        LOG.warning("DesignToolbar.currentProject is null. "
-            + "Ignoring SwitchToFormEditorAction.execute().");
-        return;
-      }
-      if (currentView != View.FORM) {
-        // We are leaving a blocks editor, so take a screenshot
-        Ode.getInstance().screenShotMaybe(new Runnable() {
-            @Override
-            public void run() {
-              long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
-              switchToScreen(projectId, currentProject.currentScreen, View.FORM);
-              toggleEditor(false);      // Gray out the Designer button and enable the blocks button
-              Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
-            }
-          }, false);
-      }
-    }
   }
 
   public void addProject(long projectId, String projectName) {
@@ -565,17 +370,13 @@ public class DesignToolbar extends Toolbar {
     project.removeScreen(name);
   }
 
-  private void toggleEditor(boolean blocks) {
+  public void toggleEditor(boolean blocks) {
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
 
-    if (AppInventorFeatures.allowMultiScreenApplications() && !isReadOnly) {
-      if (getCurrentProject() == null || "Screen1".equals(getCurrentProject().currentScreen)) {
-        setButtonEnabled(WIDGET_NAME_REMOVEFORM, false);
-      } else {
-        setButtonEnabled(WIDGET_NAME_REMOVEFORM, true);
-      }
-    }
+    boolean notOnScreen1 = getCurrentProject() != null
+        && !"Screen1".equals(getCurrentProject().currentScreen);
+    setButtonEnabled(WIDGET_NAME_REMOVEFORM, notOnScreen1);
   }
 
   public DesignProject getCurrentProject() {
@@ -587,11 +388,7 @@ public class DesignToolbar extends Toolbar {
   }
 
   public void setTutorialToggleVisible(boolean value) {
-    if (value) {
-      setButtonVisible(WIDGET_NAME_TUTORIAL_TOGGLE, true);
-    } else {
-      setButtonVisible(WIDGET_NAME_TUTORIAL_TOGGLE, false);
-    }
+    setButtonVisible(WIDGET_NAME_TUTORIAL_TOGGLE, value);
   }
 
 }

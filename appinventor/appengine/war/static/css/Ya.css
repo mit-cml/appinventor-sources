@@ -2814,3 +2814,16 @@ div.dropdiv p {
   margin: 0;
   position: relative;
 }
+
+.ya-Toolbar {
+  display: flex;
+}
+
+.ya-Toolbar .left {
+  flex-grow: 1;
+  display: inline;
+}
+
+.ya-ProjectName {
+  display: inline-block;
+}
