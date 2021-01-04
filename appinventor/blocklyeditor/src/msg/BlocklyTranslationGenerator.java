@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2020-2021 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package msg;
 
 import org.apache.commons.io.FileUtils;
@@ -44,11 +49,12 @@ public class BlocklyTranslationGenerator {
         // Blockly i18n filenames are of the form language_code.json, so extracting the language code is easy.
         String lang_code = FilenameUtils.getBaseName(f.getName());
         // We use different codes for Chinese variants than Blockly.
-        if (lang_code == "zh-hans") {
-          // We use
-          blockly_files.put("zh_cn", f.getPath());
-        } else if (lang_code == "zh-hant") {
-          blockly_files.put("zh_tw", f.getPath());
+        if ("zh-hans".equals(lang_code)) {
+          blockly_files.put("zh_CN", f.getPath());
+        } else if ("zh-hant".equals(lang_code)) {
+          blockly_files.put("zh_TW", f.getPath());
+        } else if ("pt-br".equals(lang_code)) {
+          blockly_files.put("pt_BR", f.getPath());
         } else {
           blockly_files.put(lang_code.replace("-", "_"), f.getPath());
         }
