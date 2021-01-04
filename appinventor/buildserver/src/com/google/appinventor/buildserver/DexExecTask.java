@@ -175,11 +175,11 @@ public class DexExecTask {
         }
     }
 
-    public boolean execute(List<File> paths) {
+    public String[] execute(List<File> paths) {
         // pre dex libraries if needed
         if (mPredex) {
             boolean successPredex = preDexLibraries(paths);
-            if (!successPredex) return false;
+            if (!successPredex) return new String[]{Boolean.toString(false),"",""};
         }
 
         System.out.println(String.format(
@@ -189,10 +189,10 @@ public class DexExecTask {
     }
 
     private boolean runDx(File input, String output, boolean showInputs) {
-        return runDx(Collections.singleton(input), output, showInputs);
+        return Boolean.parseBoolean(runDx(Collections.singleton(input), output, showInputs)[0]);
     }
 
-    private boolean runDx(Collection<File> inputs, String output, boolean showInputs) {
+    private String[] runDx(Collection<File> inputs, String output, boolean showInputs) {
         int mx = mChildProcessRamMb - 200;
 
         List<String> commandLineList = new ArrayList<String>();
@@ -232,7 +232,7 @@ public class DexExecTask {
         String[] dxCommandLine = new String[commandLineList.size()];
         commandLineList.toArray(dxCommandLine);
 
-        boolean dxSuccess = Execution.execute(null, dxCommandLine, System.out, System.err);
+        String[] dxSuccess = Execution.executeandget(null, dxCommandLine, System.out, System.err);
         return dxSuccess;
 
     }
