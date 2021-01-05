@@ -147,7 +147,7 @@ public class DatePicker extends ButtonBase {
     int month = Dates.Month(instant);
     int day = Dates.Day(instant);
     date.updateDate(year, month, day);
-    instant = Dates.DateInstant(year, month + 1, day);
+    this.instant = Dates.DateInstant(year, month + 1, day);
     customDate = true;
   }
 
