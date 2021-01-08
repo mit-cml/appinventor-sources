@@ -342,6 +342,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
         @Override
         public void onItemClick(int position, View v) {
           listAdapterWithRecyclerView.toggleSelection(position);
+          SelectionIndex(position + 1);
           AfterPicking();
         }
       });
@@ -368,6 +369,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       @Override
       public void onItemClick(int position, View v) {
         listAdapterWithRecyclerView.toggleSelection(position);
+        SelectionIndex(position + 1);
         AfterPicking();
       }
     });
@@ -393,14 +395,15 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     return selectionIndex;
   }
 
+
   /**
    * Sets the index to the passed argument for selection
    *
    * @param index the index to be selected
    * @suppressdoc
    */
-  @SimpleProperty(description = "Specifies the position of the selected item in the ListView. " +
-          "This could be used to retrieve" +
+  @SimpleProperty(description = "Specifies the one-indexed position of the selected item in the " +
+          "ListView. This could be used to retrieve" +
           "the text at the chosen position. If an attempt is made to set this to a " +
           "number less than 1 or greater than the number of stringItems in the ListView, SelectionIndex " +
           "will be set to 0, and Selection will be set to the empty text."
@@ -478,7 +481,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     YailDictionary item = (YailDictionary) parent.getAdapter().getItem(position);
     this.selection = ElementsUtil.toStringEmptyIfNull(item.get(Component.LISTVIEW_KEY_MAIN_TEXT));
     this.selectionDetailText = ElementsUtil.toStringEmptyIfNull(item.get("Text2"));
-    this.selectionIndex = position + 1;
+//    this.selectionIndex = position + 1;
+    this.selectionIndex = 1;
     AfterPicking();
   }
 

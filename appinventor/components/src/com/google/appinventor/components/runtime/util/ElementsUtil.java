@@ -54,7 +54,7 @@ public class ElementsUtil {
   }
 
   public static String setSelectionFromIndex(int index, YailList items){
-    if (index == 0) {
+    if (index == 0 || index > items.size()) {
       return "";
     }
     // YailLists are 0-based, but we want to be 1-based.
