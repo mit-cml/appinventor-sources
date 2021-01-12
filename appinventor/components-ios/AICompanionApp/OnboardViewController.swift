@@ -1,5 +1,5 @@
 // mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2020-2021 Massachusetts Institute of Technology, All rights reserved.
 
 import UIKit
 
@@ -7,7 +7,12 @@ class OnboardViewController: UIViewController {
 
   @IBOutlet var holderView: UIView!
   let scrollView = UIScrollView()
-  let titles = ["Welcome to MIT App Inventor!", "Use your computer to access ai2.appinventor.mit.edu or code.appinventor.mit.edu", "Select Connect then AI Companion to start a connection", "Scan the code to finish the connection"]
+  let titles = [
+    "Welcome to MIT App Inventor!",
+    "Use your computer to access ai2.appinventor.mit.edu or code.appinventor.mit.edu",
+    "Select Connect then AI Companion to start a connection",
+    "Scan the code to finish the connection"
+  ]
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -16,16 +21,33 @@ class OnboardViewController: UIViewController {
     configure()
   }
 
+  override func viewDidAppear(_ animated: Bool) {
+    var width = view.frame.width
+    var height = view.frame.height - UIApplication.shared.statusBarFrame.height
+    if #available(iOS 11.0, *) {
+      width -= view.safeAreaInsets.left + view.safeAreaInsets.right
+      height -= view.safeAreaInsets.bottom + view.safeAreaInsets.top
+    }
+    scrollView.contentSize = CGSize(width: width * CGFloat(titles.count), height: height)
+  }
+
   private func configure() {
     // Set up onboarding scrollview
+    let windowFrame = UIApplication.shared.keyWindow!.frame
+    var bottomAnchor = view.bottomAnchor
+    if #available(iOS 11, *) {
+      bottomAnchor = view.safeAreaLayoutGuide.bottomAnchor
+    }
+
     scrollView.translatesAutoresizingMaskIntoConstraints = false
     holderView.addSubview(scrollView)
     scrollView.topAnchor.constraint(equalTo: holderView.topAnchor).isActive = true
     scrollView.leadingAnchor.constraint(equalTo: holderView.leadingAnchor).isActive = true
-    scrollView.heightAnchor.constraint(equalTo: holderView.heightAnchor).isActive = true
+    scrollView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
     scrollView.widthAnchor.constraint(equalTo: holderView.widthAnchor).isActive = true
 
-    let labelFont = UIFont(name:"Helvetica-Bold", size: 26)
+    let labelFont = UIFont.boldSystemFont(ofSize: 26.0)
+      .fitting(string: "code.appinventor.mit.edu", width: windowFrame.width - 60.0)
     var leadingAnchor = scrollView.leadingAnchor
 
     for x in 0..<titles.count {
@@ -47,6 +69,7 @@ class OnboardViewController: UIViewController {
       label.text = titles[x]
       label.translatesAutoresizingMaskIntoConstraints = false
       label.adjustsFontSizeToFitWidth = true
+      label.lineBreakMode = .byWordWrapping
       pageView.addSubview(label)
       // Ensure that label is always centered
       label.topAnchor.constraint(equalTo: pageView.topAnchor, constant: 10.0).isActive = true
@@ -60,6 +83,7 @@ class OnboardViewController: UIViewController {
       button.translatesAutoresizingMaskIntoConstraints = false
       pageView.addSubview(button)
       button.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+      button.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20).isActive = true
       button.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
       button.leadingAnchor.constraint(equalTo: pageView.leadingAnchor, constant: 10.0).isActive = true
       button.trailingAnchor.constraint(equalTo: pageView.trailingAnchor, constant: -10.0).isActive = true
@@ -84,14 +108,14 @@ class OnboardViewController: UIViewController {
       imageView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     }
     scrollView.trailingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-    scrollView.contentSize = CGSize(width: (holderView.frame.size.width * CGFloat(titles.count)),
-                                    height: holderView.frame.size.height)
+    scrollView.contentSize = CGSize(width: (windowFrame.width * CGFloat(titles.count)),
+                                    height: windowFrame.height - UIApplication.shared.statusBarFrame.height)
     scrollView.isPagingEnabled = true
   }
 
   @objc func didTapButton(_ button: UIButton) {
     guard button.tag < titles.count else {
-      SystemVariables.shared.setIsNotNewUser()
+      SystemVariables.newUser = false
       dismiss(animated: true, completion: nil)
       return
     }

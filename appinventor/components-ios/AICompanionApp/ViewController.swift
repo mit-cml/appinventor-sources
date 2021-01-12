@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2019 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2021 Massachusetts Institute of Technology, All rights reserved.
 
 import UIKit
 import AIComponentKit
@@ -57,6 +57,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @IBOutlet weak var barcodeButton: UIButton?
   @objc var barcodeScanner: BarcodeScanner?
   @objc var phoneStatus: PhoneStatus!
+  private var onboardingScreen: OnboardViewController? = nil
 
   private static var _interpreterInitialized = false
 
@@ -66,19 +67,16 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     //barcodeScanner = BarcodeScanner(parent: self)
     //pushViewController(form, animated: false);
     ViewController.controller = self
+    NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
   }
-  
+
+  @objc func settingsChanged(_ sender: AnyObject?) {
+    maybeShowOnboardingScreen()
+  }
+
   public override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    if SystemVariables.shared.isNewUser() {
-      // Show onboarding
-      let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
-      vc.modalPresentationStyle = .fullScreen
-      DispatchQueue.main.async {
-        self.present(vc, animated: true)
-      }
-
-    }
+    maybeShowOnboardingScreen()
   }
 
   // We override this function to handle the Form's ScreenOrientation setting.
@@ -259,18 +257,34 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       UIApplication.shared.delegate?.window??.rootViewController = newRoot
     }
   }
-}
 
-class SystemVariables {
-  static let shared = SystemVariables()
-  
-  func isNewUser() -> Bool {
-    /// Standard boolean defaults to false
-    return !UserDefaults.standard.bool(forKey: "isNewUser")
-  }
-  
-  /// Run after Onboarding to ensure that it never runs again for the same user
-  func setIsNotNewUser() {
-    UserDefaults.standard.set(true, forKey: "isNewUser")
+  /**
+   * Show the onboarding screen when certain conditions are met.
+   *
+   * The following two conditions must be true.
+   *
+   * 1. The new user flag is present
+   * 2. The onboarding screen isn't already shown
+   *
+   * If the onboarding screen is already visible but the flag is false, this will hide the
+   * onboarding screen as this indicates the user toggled the Show Welcome Screen switch
+   * in the Settings app.
+   */
+  private func maybeShowOnboardingScreen() {
+    guard SystemVariables.newUser && onboardingScreen == nil else {
+      if !SystemVariables.newUser {
+        // Hide the welcome screen if visible
+        onboardingScreen?.dismiss(animated: true, completion: {
+          self.onboardingScreen = nil
+        })
+      }
+      return
+    }
+
+    // Show onboarding
+    let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
+    vc.modalPresentationStyle = .fullScreen
+    present(vc, animated: true)
+    onboardingScreen = vc
   }
 }

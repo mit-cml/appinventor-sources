@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
-    <device id="retina4_7" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
+    <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,37 +17,37 @@
                         <viewControllerLayoutGuide type="bottom" id="l9f-hn-Uz9"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8pV-NU-cQS">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Instructions.png" translatesAutoresizingMaskIntoConstraints="NO" id="fs4-4D-vvR">
-                                <rect key="frame" x="24" y="8" width="327" height="81.5"/>
+                                <rect key="frame" x="28" y="8" width="358" height="89.333333333333329"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="fs4-4D-vvR" secondAttribute="height" multiplier="800:200" constant="1" id="gH7-ya-JMI"/>
                                 </constraints>
                             </imageView>
                             <textField opaque="NO" clipsSubviews="YES" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Six Character Code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gxM-wq-OQv">
-                                <rect key="frame" x="32" y="97.5" width="311" height="34"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <rect key="frame" x="36" y="105.33333333333334" width="342" height="34"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                             </textField>
                             <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vZO-ch-Rin">
-                                <rect key="frame" x="37.5" y="135.5" width="300" height="49"/>
+                                <rect key="frame" x="57" y="143.33333333333334" width="300" height="49"/>
                                 <state key="normal" image="connectwCode.png"/>
                             </button>
                             <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QmI-n4-yhD">
-                                <rect key="frame" x="37.5" y="192.5" width="300" height="49"/>
+                                <rect key="frame" x="57" y="200.33333333333331" width="300" height="49"/>
                                 <state key="normal" image="connectwQR.png"/>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Version: Unknown" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aXu-gl-0yY">
-                                <rect key="frame" x="32" y="262" width="311" height="20.5"/>
+                                <rect key="frame" x="36" y="269.66666666666669" width="342" height="20.666666666666686"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your IP Address is: " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ste-Nv-ksy">
-                                <rect key="frame" x="32" y="241.5" width="311" height="20.5"/>
+                                <rect key="frame" x="36" y="249.33333333333334" width="342" height="20.333333333333343"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -94,15 +94,15 @@
                         <viewControllerLayoutGuide type="bottom" id="noy-0w-xOS"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="M2u-bV-4lc">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SUa-Xt-mgm">
-                                <rect key="frame" x="16" y="8" width="343" height="651"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <rect key="frame" x="20" y="52" width="374" height="802"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="SUa-Xt-mgm" secondAttribute="trailing" id="42B-V4-uzT"/>
                             <constraint firstItem="SUa-Xt-mgm" firstAttribute="top" secondItem="VSY-Og-pec" secondAttribute="bottom" constant="8" symbolic="YES" id="MIG-jG-6sw"/>
@@ -110,10 +110,9 @@
                             <constraint firstItem="SUa-Xt-mgm" firstAttribute="leading" secondItem="M2u-bV-4lc" secondAttribute="leadingMargin" id="XY1-yS-OaA"/>
                             <constraint firstItem="noy-0w-xOS" firstAttribute="top" secondItem="SUa-Xt-mgm" secondAttribute="bottom" constant="8" symbolic="YES" id="ZjA-dE-Sj8"/>
                             <constraint firstAttribute="trailingMargin" secondItem="SUa-Xt-mgm" secondAttribute="trailing" id="a90-dh-9HY"/>
-                            <constraint firstItem="noy-0w-xOS" firstAttribute="top" secondItem="SUa-Xt-mgm" secondAttribute="bottom" constant="8" symbolic="YES" id="jhT-sv-4E5"/>
-                            <constraint firstItem="SUa-Xt-mgm" firstAttribute="top" secondItem="VSY-Og-pec" secondAttribute="bottom" constant="8" symbolic="YES" id="nw3-Ox-cs7"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <connections>
                         <outlet property="holderView" destination="SUa-Xt-mgm" id="3Af-xg-CUr"/>
                     </connections>
@@ -127,7 +126,7 @@
             <objects>
                 <navigationController storyboardIdentifier="Main" id="f8E-Bx-vXj" customClass="ViewController" customModule="AICompanionApp" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="n1f-DU-woE">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -143,5 +142,8 @@
         <image name="Instructions.png" width="800" height="200"/>
         <image name="connectwCode.png" width="300" height="49"/>
         <image name="connectwQR.png" width="300" height="49"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

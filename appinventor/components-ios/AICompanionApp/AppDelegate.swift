@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2021 Massachusetts Institute of Technology, All rights reserved.
 
 import UIKit
 import AIComponentKit
@@ -12,6 +12,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
+    UserDefaults.standard.register(defaults: ["isNewUser": true])
     AppInventorRuntime.initialize()
     return true
   }
