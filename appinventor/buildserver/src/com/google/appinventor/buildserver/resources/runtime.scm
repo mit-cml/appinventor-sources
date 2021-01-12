@@ -2614,6 +2614,22 @@ Dictionary implementation.
       #f
       #t))
 
+(define (string-contains-any text piece-list)
+  (define (string-contains-any-rec piece-list)
+    (if (null? piece-list)
+        #f
+        (or (string-contains text (car piece-list))
+          (string-contains-any-rec (cdr piece-list)))))
+  (string-contains-any-rec (yail-list-contents piece-list)))
+
+(define (string-contains-all text piece-list)
+  (define (string-contains-all-rec piece-list)
+    (if (null? piece-list)
+        #t
+        (and (string-contains text (car piece-list))
+            (string-contains-all-rec (cdr piece-list)))))
+  (string-contains-all-rec (yail-list-contents piece-list)))
+
 (define (string-split-at-first text at)
   (array->list
    ((text:toString):split (Pattern:quote at) 2)))

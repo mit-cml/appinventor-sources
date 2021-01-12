@@ -56,14 +56,24 @@ public interface ProjectServiceAsync {
   void restoreProject(long projectId, AsyncCallback<UserProject> callback);
 
   /**
+   * @see ProjectService@loginToGallery()
+   */
+
+  void loginToGallery(AsyncCallback<RpcResult> callback);
+
+  /**
+   * @see ProjectService#sendToGallery(long)
+   */
+  void sendToGallery(long projectId, AsyncCallback<RpcResult> callback);
+  /**
+   * @see ProjectService#loadFromGallery(String)
+   */
+  void loadFromGallery(String galleryId, AsyncCallback<UserProject> callback);
+
+  /**
    * @see ProjectService#deleteProject(long)
    */
   void deleteProject(long projectId, AsyncCallback<Void> callback);
-
-  /**
-   * @see ProjectService#setGalleryid
-   */
-  void setGalleryId(long projectId, long galleryId, AsyncCallback<java.lang.Void> callback);
 
   /**
    * @see ProjectService#getProjects()
@@ -176,8 +186,6 @@ public interface ProjectServiceAsync {
    * @see ProjectService#importMedia(String, long, String, boolean)
    */
   void importMedia(String sessionId, long projectId, String url, boolean save, AsyncCallback<TextFile> odeAsyncCallback);
-
-  void newProjectFromGallery(String appName, String aiaPath, long attributionId, AsyncCallback<UserProject> callback);
 
   /**
    * @see ProjectService#log(String)

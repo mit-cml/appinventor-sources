@@ -133,6 +133,7 @@ public final class MockForm extends MockContainer {
     // UI elements
     private DockPanel bar;
     private Image phoneBarImage;
+    private boolean visible;
 
     /*
      * Creates a new phone status bar.
@@ -148,6 +149,15 @@ public final class MockForm extends MockContainer {
 
       setStylePrimaryName("ode-SimpleMockFormPhoneBar");
       setSize("100%", HEIGHT + "px");
+    }
+
+    void getVisibility(boolean visible) {
+      this.visible = visible;
+    }
+
+    int getHeight() {
+      // Adjust for CSS borders, which are not included in the height value
+      return visible ? PhoneBar.HEIGHT + 3 : 0;
     }
   }
 
@@ -219,6 +229,7 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_ANAME = "AppName";
   private static final String PROPERTY_NAME_SIZING = "Sizing"; // Don't show except on screen1
   private static final String PROPERTY_NAME_TITLEVISIBLE = "TitleVisible";
+  private static final String PROPERTY_NAME_SHOW_STATUS_BAR = "ShowStatusBar";
   // Don't show except on screen1
   private static final String PROPERTY_NAME_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   private static final String PROPERTY_NAME_TUTORIAL_URL = "TutorialURL";
@@ -236,6 +247,7 @@ public final class MockForm extends MockContainer {
 
   ScrollPanel scrollPanel;
   private TitleBar titleBar;
+  private PhoneBar phoneBar;
   private NavigationBar navigationBar;
   private List<MockComponent> selectedComponents = new ArrayList<MockComponent>(Collections.singleton(this));
   private MockContainer pasteTarget = this;
@@ -286,7 +298,8 @@ public final class MockForm extends MockContainer {
     responsivePanel = new AbsolutePanel();
 
     // Initialize mock form UI by adding the phone bar and title bar.
-    responsivePanel.add(new PhoneBar());
+    phoneBar = new PhoneBar();
+    responsivePanel.add(phoneBar);
     titleBar = new TitleBar();
     responsivePanel.add(titleBar);
 
@@ -355,10 +368,10 @@ public final class MockForm extends MockContainer {
     screenHeight = newHeight;
     if (landscape) {
       usableScreenWidth = screenWidth - navigationBar.getHeight();
-      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight();
+      usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();
     } else {
       usableScreenWidth = screenWidth;
-      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - navigationBar.getHeight();
+      usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
     }
 
     rootPanel.setPixelSize(usableScreenWidth, usableScreenHeight);
@@ -550,10 +563,10 @@ public final class MockForm extends MockContainer {
       setPhoneStyle();
       if (landscape) {
         usableScreenWidth = screenWidth - navigationBar.getHeight();
-        usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight();
+        usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();
       } else {
         usableScreenWidth = screenWidth;
-        usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - navigationBar.getHeight();
+        usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
       }
       resizePanel(screenWidth, screenHeight);
 
@@ -626,6 +639,13 @@ public final class MockForm extends MockContainer {
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON, asJson);
     }
+  }
+
+  private void setShowStatusBarProperty(String text) {
+    boolean visible = Boolean.parseBoolean(text);
+    phoneBar.setVisible(visible);
+    phoneBar.getVisibility(visible);
+    resizePanel(screenWidth,screenHeight); // update the MockForm size
   }
 
   private void setTutorialURLProperty(String asJson) {
@@ -1028,6 +1048,8 @@ public final class MockForm extends MockContainer {
       setANameProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_AS_JSON)) {
       setShowListsAsJsonProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_SHOW_STATUS_BAR)) {
+      setShowStatusBarProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
       setTutorialURLProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_BLOCK_SUBSET)) {

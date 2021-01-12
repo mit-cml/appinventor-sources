@@ -10,11 +10,16 @@ import android.Manifest;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
@@ -53,6 +58,7 @@ import java.io.StringWriter;
 public class File extends AndroidNonvisibleComponent implements Component {
   private static final int BUFFER_LENGTH = 4096;
   private static final String LOG_TAG = "FileComponent";
+  private boolean legacy = false;
 
   /**
    * Creates a new File component.
@@ -60,6 +66,30 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   public File(ComponentContainer container) {
     super(container.$form());
+    LegacyMode(false);
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void LegacyMode(boolean legacy) {
+    this.legacy = legacy;
+  }
+
+  /**
+   * Allows app to access files from the root of the external storage directory (legacy mode).
+   * Starting with Android 11, this will no longer be allowed and the behavior is strongly
+   * discouraged on Android 10. Starting with Android 10, App Inventor by default will attempt to
+   * store files relative to the app-specific private directory on external storage in accordance
+   * with this security change.
+   *
+   *   **Note:** Apps that enable this property will likely stop working after upgrading to
+   * Android 11, which strongly enforces that apps only write to app-private directories.
+   */
+  @SimpleProperty(description = "Allows app to access files from the root of the external storage "
+      + "directory (legacy mode).")
+  public boolean LegacyMode() {
+    return legacy;
   }
 
   /**
@@ -134,6 +164,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
       "slash, it will be read from the applications private storage (for packaged " +
       "apps) and from /sdcard/AppInventor/data for the Companion.")
   public void ReadFrom(final String fileName) {
+    final boolean legacy = this.legacy;
     form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
       @Override
       public void HandlePermissionResponse(String permission, boolean granted) {
@@ -143,7 +174,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
             if (fileName.startsWith("//")) {
               inputStream = form.openAsset(fileName.substring(2));
             } else {
-              String filepath = AbsoluteFileName(fileName);
+              String filepath = AbsoluteFileName(fileName, legacy);
               Log.d(LOG_TAG, "filepath = " + filepath);
               inputStream = FileUtil.openFile(form, filepath);
             }
@@ -189,6 +220,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
       "located in the programs private storage will be deleted. Starting the file with // is an error " +
       "because assets files cannot be deleted.")
   public void Delete(final String fileName) {
+    final boolean legacy = this.legacy;
     form.askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionResultHandler() {
       @Override
       public void HandlePermissionResponse(String permission, boolean granted) {
@@ -198,7 +230,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
                 ErrorMessages.ERROR_CANNOT_DELETE_ASSET, fileName);
             return;
           }
-          String filepath = AbsoluteFileName(fileName);
+          String filepath = AbsoluteFileName(fileName, legacy);
           if (MediaUtil.isExternalFile(form, fileName)) {
             if (form.isDeniedPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
               form.dispatchPermissionDeniedEvent(File.this, "Delete",
@@ -232,10 +264,11 @@ public class File extends AndroidNonvisibleComponent implements Component {
       }
       return;
     }
+    final boolean legacy = this.legacy;
     final Runnable operation = new Runnable() {
       @Override
       public void run() {
-        final String filepath = AbsoluteFileName(filename);
+        final String filepath = AbsoluteFileName(filename, legacy);
         if (MediaUtil.isExternalFile(form, filepath)) {
           form.assertPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
@@ -388,9 +421,9 @@ public class File extends AndroidNonvisibleComponent implements Component {
    *
    * @param filename the file used to construct the file path
    */
-  private String AbsoluteFileName(String filename) {
+  private String AbsoluteFileName(String filename, boolean legacy) {
     if (filename.startsWith("/")) {
-      return QUtil.getExternalStoragePath(form) + filename;
+      return QUtil.getExternalStoragePath(form, false, legacy) + filename;
     } else {
       java.io.File dirPath;
       if (form.isRepl()) {

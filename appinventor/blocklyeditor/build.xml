@@ -18,7 +18,7 @@
   </description>
 
   <target name="all"
-          depends="BlocklyCompile">
+          depends="BlocklyTranslationGenerator">
   </target>
 
   <target name="tests"
@@ -41,10 +41,58 @@
 	<property name="run.lib.dir" location="${run.dir}/lib" />
 
 	<property name="blockly.src.dir" location="${lib.dir}/blockly" />
+	<property name="i18n.src.dir" location="${src.dir}/msg" />
+	<property name="ai.i18n.src.dir" location="${i18n.src.dir}/ai_blockly" />
+	<property name="BlocklyTranslator-class.dir" location="${class.dir}/BlocklyTranslator-classes" />
+	<property name="BlocklyTranslations.dir" location="${public.build.dir}/msg" />
 
-	<!-- =====================================================================
+	<property name="gwt.sdk" location="${lib.dir}/gwt/2.8.1-patched" />
+
+
+  <!-- =====================================================================
        Targets
        ===================================================================== -->
+  <target name="CheckBlocklyTranslations">
+    <uptodate property="Blocklyi18n.uptodate">
+      <srcfiles dir="${ai.i18n.src.dir}">
+	<include name="*.json" />
+      </srcfiles>
+      <srcfiles dir="${blockly.src.dir}/msg/json">
+	<include name="en.json" />
+      </srcfiles>
+      <srcfiles dir="${i18n.src.dir}">
+	<include name="*.java"/>
+      </srcfiles>
+      <firstmatchmapper>
+	<globmapper from="*.java" to="${BlocklyTranslator-class.dir}/msg/*.class"/>
+	<globmapper from="en.json" to="${BlocklyTranslations.dir}/messages.json" />
+	<globmapper from="*.json" to="${BlocklyTranslations.dir}/*.json" />
+      </firstmatchmapper>
+    </uptodate>
+  </target>
+
+	<target name="BlocklyTranslationGenerator"
+			description="This is the script for creating combined i18n files from blockly and app inventor"
+			depends="CheckBlocklyTranslations,BlocklyCompile"
+			unless="Blocklyi18n.uptodate">
+		<mkdir dir="${BlocklyTranslator-class.dir}" />
+		<mkdir dir="${BlocklyTranslations.dir}" />
+		<ai.javac destdir="${BlocklyTranslator-class.dir}">
+			<include name="msg/BlocklyTranslationGenerator.java" />
+			<classpath>
+				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+				<pathelement location="${lib.dir}/json/json.jar" />
+			</classpath>
+		</ai.javac>
+		<java failonerror="true" classname="msg.BlocklyTranslationGenerator">
+			<arg line="${ai.i18n.src.dir} ${lib.dir}/blockly/msg/json ${BlocklyTranslations.dir}" />
+			<classpath>
+				<pathelement location="${BlocklyTranslator-class.dir}"/>
+				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+				<pathelement location="${lib.dir}/json/json.jar" />
+			</classpath>
+		</java>
+	</target>
 
         <target name="CheckBlocklyCompile">
           <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
