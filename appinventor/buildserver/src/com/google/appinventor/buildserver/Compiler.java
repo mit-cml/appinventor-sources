@@ -1515,9 +1515,21 @@ public final class Compiler {
     // Android SDK's Dex Ant task
     File tmpDir = createDir(buildDir, "tmp");
     String dexedClassesDir = tmpDir.getAbsolutePath();
-    if (!compiler.runMultidex(classesDir, dexedClassesDir)) {
-      return false;
+    String[] dexworkedresults = compiler.runMultidex(classesDir, dexedClassesDir,true);
+    Boolean dexWorked = Boolean.parseBoolean(dexworkedresults[0]);
+    if (dexworkedresults[0].equals("false") && (dexworkedresults[1].contains("Too many classes") || dexworkedresults[2].contains("Too many classes"))) {
+      // Dex process failed
+      // recreation of main-classes.txt excluding screens, Screens will be added in secondary dex file
+      //System.out.println("***| Dex Failed, Error : Too many classes in main-classes.txt |***\n Fixing Error and Retrying...");
+      String[] excludingClassDirinMainDex = compiler.runMultidex(classesDir, dexedClassesDir,false);
+      dexWorked = Boolean.parseBoolean(excludingClassDirinMainDex[0]);
     }
+
+    if(!dexWorked){
+      return dexWorked;
+    }
+
+
     if (reporter != null) {
       reporter.report(85);
     }
@@ -2124,11 +2136,21 @@ public final class Compiler {
    * @param classes the set of classes to include in the main dex file
    * @return the path to the file containing the main classes list
    */
-  private String writeClassList(File classesDir, Set<String> classes) {
+  private String writeClassList(File classesDir, Set<String> classes, Boolean includeuserclasses) {
     File target = new File(classesDir, "main-classes.txt");
     try (PrintStream out = new PrintStream(new FileOutputStream(target))) {
       for (String name : new TreeSet<>(classes)) {
-        out.println(name.replaceAll("\\.", "/") + ".class");
+        if(includeuserclasses) {
+            out.println(name.replaceAll("\\.", "/") + ".class");
+            // System.out.println(name.replaceAll("\\.", "/") + ".class");
+        } else {
+          if(!(name.replaceAll("\\.", "/") + ".class").contains(project.getProjectName())){
+              // Excluding project classes in main-classes.txt to include in secondary dex file
+              // due to dex error(too many classes)
+              out.println(name.replaceAll("\\.", "/") + ".class");
+              // System.out.println(name.replaceAll("\\.", "/") + ".class");
+          }
+        }
       }
       return target.getAbsolutePath();
     } catch (IOException e) {
@@ -2143,10 +2165,11 @@ public final class Compiler {
    * @param dexedClassesDir output directory for classes.dex
    * @return true if successful or false if an error occurred
    */
-  private boolean runMultidex(File classesDir, String dexedClassesDir) {
+  private String[] runMultidex(File classesDir, String dexedClassesDir, Boolean includeClassDir) {
     Set<String> mainDexClasses = new HashSet<>();
     List<File> inputList = new ArrayList<>();
-    boolean success;
+    String[] success = new String[]{"false","",""};  // first argument states if process worked(true or false in String)
+                                                     // second and third argument returns dex Out and Err streams in String
     try {
       // Set up classes for main dex file
       inputList.add(recordForMainDex(classesDir, mainDexClasses));
@@ -2187,7 +2210,7 @@ public final class Compiler {
       // Run the dx utility
       DexExecTask dexTask = new DexExecTask();
       dexTask.setExecutable(getResource(DX_JAR));
-      dexTask.setMainDexClassesFile(writeClassList(classesDir, mainDexClasses));
+      dexTask.setMainDexClassesFile(writeClassList(classesDir, mainDexClasses, includeClassDir));
       dexTask.setOutput(dexedClassesDir);
       dexTask.setChildProcessRamMb(childProcessRamMb);
       if (dexCacheDir == null) {
@@ -2198,12 +2221,20 @@ public final class Compiler {
       }
       String dxTimeMessage;
       synchronized (SYNC_KAWA_OR_DX) {
-        setProgress(50);
         long startDx = System.currentTimeMillis();
-        success = dexTask.execute(inputList);
-        dxTimeMessage = String.format(Locale.getDefault(), "DX time: %f seconds",
-            (System.currentTimeMillis() - startDx) / 1000.0);
-        setProgress(75);
+        if(includeClassDir){
+          setProgress(50);
+          success = dexTask.execute(inputList);
+          dxTimeMessage = String.format(Locale.getDefault(), "DX time: %f seconds",
+                  (System.currentTimeMillis() - startDx) / 1000.0);
+          setProgress(75);
+        }else{
+          // not setting progress here
+          // the block is for main dex replacement if in case too many classes error faced by dex process
+          success = dexTask.execute(inputList);
+          dxTimeMessage = String.format(Locale.getDefault(), "DX time: %f seconds",
+                  (System.currentTimeMillis() - startDx) / 1000.0);
+        }
       }
 
       // Aggregate all of the classes.dex files output by dx
@@ -2223,9 +2254,9 @@ public final class Compiler {
       LOG.info(dxTimeMessage);
     } catch (IOException e) {
       // Error will be reported below
-      success = false;
+      success[0] = "false";
     }
-    if (!success) {
+    if (!Boolean.parseBoolean(success[0])) {
       LOG.warning("YAIL compiler - DX execution failed.");
       err.println("YAIL compiler - DX execution failed.");
       userErrors.print(String.format(ERROR_IN_STAGE, "DX"));
