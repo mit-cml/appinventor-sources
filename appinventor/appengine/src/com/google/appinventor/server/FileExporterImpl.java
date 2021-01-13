@@ -48,7 +48,7 @@ public final class FileExporterImpl implements FileExporter {
     // There should never be more than one .apk file.
 
     for (String fileName : files) {
-      if (fileName.endsWith(".apk")) {
+      if (fileName.endsWith(".apk") || fileName.endsWith(".aab")) {
         byte[] content = storageIo.downloadRawFile(userId, projectId, fileName);
         return new RawFile(StorageUtil.basename(fileName), content);
       }

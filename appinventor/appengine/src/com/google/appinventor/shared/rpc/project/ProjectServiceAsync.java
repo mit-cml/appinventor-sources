@@ -16,7 +16,6 @@ import java.util.List;
  * Interface for the service providing project information. All declarations
  * in this interface are mirrored in {@link ProjectService}. For further
  * information see {@link ProjectService}.
- *
  */
 public interface ProjectServiceAsync {
 
@@ -134,7 +133,7 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#loadraw(long, String)
    */
-  void loadraw(long projectId, String fileId, AsyncCallback<byte []> callback);
+  void loadraw(long projectId, String fileId, AsyncCallback<byte[]> callback);
 
   /**
    * @see ProjectService#loadraw2(long, String)
@@ -171,7 +170,7 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#build(long, String, String, boolean)
    */
-  void build(long projectId, String nonce, String target, boolean secondBuildserver, AsyncCallback<RpcResult> callback);
+  void build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab, AsyncCallback<RpcResult> callback);
 
   /**
    * @see ProjectService#getBuildResult(long, String)

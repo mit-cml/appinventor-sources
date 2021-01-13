@@ -78,6 +78,7 @@
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
+      <fileset dir="${lib.dir}/android/tools" includes="*/aapt2" />
       <fileset dir="${lib.dir}/android/tools" includes="*/libwinpthread-1.dll" />
       <fileset dir="${lib.dir}/android/tools" includes="*/lib64/*" />
     </copy>
@@ -174,7 +175,8 @@
        ===================================================================== -->
   <target name="CheckPlayApp"
           depends="GenPlayAppSrcZip,BuildServer">
-    <uptodate property="PlayApp.uptodate" targetfile="${public.build.dir}/MIT AI2 Companion.apk">
+    <property name="ext" value="apk"/>
+    <uptodate property="PlayApp.uptodate" targetfile="${public.build.dir}/MIT AI2 Companion.${ext}">
       <srcfiles file="${local.build.dir}/aiplayapp.zip"/>
       <srcfiles dir="${run.lib.dir}" includes="*.jar"/>
     </uptodate>
@@ -186,6 +188,11 @@
   <target name="PlayApp"
           depends="CheckPlayApp"
           unless="PlayApp.uptodate">
+    <condition property="ext" value="apk">
+      <not>
+        <isset property="ext"/>
+      </not>
+    </condition>
     <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
       <classpath>
         <fileset dir="${run.lib.dir}" includes="*.jar" />
@@ -203,7 +210,14 @@
       <arg value="${public.build.dir}" />
       <arg value="--dexCacheDir" />
       <arg value="${public.build.dir}/dexCache" />
+      <arg value="--ext" />
+      <arg value="${ext}" />
     </java>
+  </target>
+
+  <target name="PlayAppAab">
+    <property name="ext" value="aab"/>
+    <antcall target="PlayApp"/>
   </target>
 
   <target name="CheckPlayAppExtras">

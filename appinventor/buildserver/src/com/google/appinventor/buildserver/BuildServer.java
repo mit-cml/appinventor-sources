@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.buildserver;
@@ -147,6 +147,7 @@ public class BuildServer {
     @Option(name = "--debug",
       usage = "Turn on debugging, which enables the non-async calls of the buildserver.")
     boolean debug = false;
+
     @Option(name = "--dexCacheDir",
             usage = "the directory to cache the pre-dexed libraries")
     String dexCacheDir = null;
@@ -400,7 +401,7 @@ public class BuildServer {
   @POST
   @Path("build-from-zip")
   @Produces("application/vnd.android.package-archive;charset=utf-8")
-  public Response buildFromZipFile(@QueryParam("uname") String userName, File zipFile)
+  public Response buildFromZipFile(@QueryParam("uname") String userName, @QueryParam("ext") String ext, File zipFile)
     throws IOException {
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = zipFile;
@@ -410,8 +411,10 @@ public class BuildServer {
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE)
         .entity("Entry point unavailable unless debugging.").build();
 
+    boolean isAab = Main.AAB_EXTENSION_VALUE.equals(ext);
+
     try {
-      build(userName, zipFile, null);
+      build(userName, zipFile, isAab, null);
       String attachedFilename = outputApk.getName();
       FileInputStream outputApkDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputApk);
       // Set the outputApk field to null so that it won't be deleted in cleanUp().
@@ -443,7 +446,7 @@ public class BuildServer {
   @POST
   @Path("build-all-from-zip")
   @Produces("application/zip;charset=utf-8")
-  public Response buildAllFromZipFile(@QueryParam("uname") String userName, File inputZipFile)
+  public Response buildAllFromZipFile(@QueryParam("uname") String userName, @QueryParam("ext") String ext, File inputZipFile)
     throws IOException, JSONException {
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = inputZipFile;
@@ -453,8 +456,10 @@ public class BuildServer {
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE)
         .entity("Entry point unavailable unless debugging.").build();
 
+    boolean isAab = Main.AAB_EXTENSION_VALUE.equals(ext);
+
     try {
-      buildAndCreateZip(userName, inputZipFile, null);
+      buildAndCreateZip(userName, inputZipFile, isAab, null);
       String attachedFilename = outputZip.getName();
       FileInputStream outputZipDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputZip);
       // Set the outputZip field to null so that it won't be deleted in cleanUp().
@@ -501,12 +506,15 @@ public class BuildServer {
     @QueryParam("uname") final String userName,
     @QueryParam("callback") final String callbackUrlStr,
     @QueryParam("gitBuildVersion") final String gitBuildVersion,
+    @QueryParam("ext") final String ext,
     final File inputZipFile) throws IOException {
     // Set the inputZip field so we can delete the input zip file later in
     // cleanUp.
     inputZip = inputZipFile;
     inputZip.deleteOnExit(); // In case build server is killed before cleanUp executes.
     String requesting_host = (new URL(callbackUrlStr)).getHost();
+
+    final boolean isAab = Main.AAB_EXTENSION_VALUE.equals(ext);
 
     //for the request for update part, the file should be empty
     if (inputZip.length() == 0L) {
@@ -562,7 +570,7 @@ public class BuildServer {
             try {
               LOG.info("START NEW BUILD " + count);
               checkMemory();
-              buildAndCreateZip(userName, inputZipFile, new ProgressReporter(callbackUrlStr));
+              buildAndCreateZip(userName, inputZipFile, isAab, new ProgressReporter(callbackUrlStr));
               // Send zip back to the callbackUrl
               LOG.info("CallbackURL: " + callbackUrlStr);
               URL callbackUrl = new URL(callbackUrlStr);
@@ -621,12 +629,12 @@ public class BuildServer {
     // are now handled via a callback mechanism. The "50" here is just a plug
     // number.
     return Response.ok().type(MediaType.TEXT_PLAIN_TYPE)
-      .entity("" + 50).build();
+      .entity("" + 0).build();
   }
 
-  private void buildAndCreateZip(String userName, File inputZipFile, ProgressReporter reporter)
+  private void buildAndCreateZip(String userName, File inputZipFile, boolean isAab, ProgressReporter reporter)
     throws IOException, JSONException {
-    Result buildResult = build(userName, inputZipFile, reporter);
+    Result buildResult = build(userName, inputZipFile, isAab, reporter);
     boolean buildSucceeded = buildResult.succeeded();
     outputZip = File.createTempFile(inputZipFile.getName(), ".zip");
     outputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -664,7 +672,7 @@ public class BuildServer {
     return buildOutputJsonObj.toString();
   }
 
-  private Result build(String userName, File zipFile, ProgressReporter reporter) throws IOException {
+  private Result build(String userName, File zipFile, boolean isAab, ProgressReporter reporter) throws IOException {
     outputDir = Files.createTempDir();
     // We call outputDir.deleteOnExit() here, in case build server is killed before cleanUp
     // executes. However, it is likely that the directory won't be empty and therefore, won't
@@ -673,7 +681,7 @@ public class BuildServer {
     outputDir.deleteOnExit();
     Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, null,
         false, false, false, null,
-        commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir, reporter);
+        commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir, reporter, isAab);
     String buildOutput = buildResult.getOutput();
     LOG.info("Build output: " + buildOutput);
     String buildError = buildResult.getError();
