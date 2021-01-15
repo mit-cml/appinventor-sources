@@ -662,5 +662,20 @@
     "Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TOOLTIP": "Զույգերի ցուցակը փոխարկում է բառարանի:",
     "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TITLE": "բանալին բառարանու՞մ է",
     "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TOOLTIP": "Ստուգել, արդյոք բանալին կա բառարանում:",
-    "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP": "Վերադարձնում է բառարանի բոլոր բանալիների ցուցակը:"
+    "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP": "Վերադարձնում է բառարանի բոլոր բանալիների ցուցակը:",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TOOLTIP": "Սկսվում է տրված բառարանից և հետևում դրան և նրա երեխաների բանալիներին՝ հիմնվելով տրված ուղու վրա՝ վերադարձնելով քայլի վերջում հայտնաբերված հանգույցների ցուցակը:",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST": "նախ ամենաերկար տողը",
+    "Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TITLE": "միավորել բառարանները",
+    "Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TOOLTIP": "Պատճենում է «From» բառարանի զույգերը «To» բառարանում:",
+    "Blockly.Msg.LANG_DICTIONARIES_COPY_TOOLTIP": "Վերադարձնում է բառարանի թերի պատճենը",
+    "Blockly.Msg.LANG_DICTIONARIES_LENGTH_TOOLTIP": "Վերադարձնում է բառարանում բանալի-արժեք զույգերի քանակը:",
+    "Blockly.Msg.LANG_DICTIONARIES_LENGTH_TITLE": "բառարանի չափ",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TOOLTIP": "Վերադարձնում է արժեքը ներդրված բառարանում:",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE": "ռեկուրսիվ որոնում բառարանում",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TITLE": "որոնում բառարանում",
+    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TOOLTIP": "Ջնջել բառարանում զույգը՝ հաշվի առնելով դրա բանալին:",
+    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TITLE": "հեռացնել բանալու մուտքը բառարանից",
+    "Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TOOLTIP": "Բառարանում սահմանել զույգ",
+    "Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE": "կազմել զույգ",
+    "Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TOOLTIP": "Ավելացնել, հեռացնել կամ վերադասավորել բաժինները՝ այս բառարանային բլոկը վերակազմակերպելու համար:"
 }
