@@ -359,23 +359,23 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 //        recyclerView.setLayoutManager(gridlayoutManager);
       // TODO: Grid Layout
       //     }
-
       recyclerView.setAdapter(listAdapterWithRecyclerView);
     } else {
       // Legacy Support: if the data is not available in AddData property but is available in ElementsFromString property
       listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, stringItems, textColor, fontSizeMain, fontTypeface, backgroundColor, selectionColor);
+
+      listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
+        @Override
+        public void onItemClick(int position, View v) {
+          listAdapterWithRecyclerView.toggleSelection(position);
+          SelectionIndex(position + 1);
+          AfterPicking();
+        }
+      });
+      layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
+      recyclerView.setLayoutManager(layoutManager);
+      recyclerView.setAdapter(listAdapterWithRecyclerView);
     }
-    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
-      @Override
-      public void onItemClick(int position, View v) {
-        listAdapterWithRecyclerView.toggleSelection(position);
-        SelectionIndex(position + 1);
-        AfterPicking();
-      }
-    });
-    layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
-    recyclerView.setLayoutManager(layoutManager);
-    recyclerView.setAdapter(listAdapterWithRecyclerView);
   }
 
   /**
