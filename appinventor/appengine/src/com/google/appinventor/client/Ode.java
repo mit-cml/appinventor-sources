@@ -2432,7 +2432,7 @@ public class Ode implements EntryPoint {
 
   public void setTutorialURL(String newURL) {
     boolean isUrlAllowed = !newURL.isEmpty()
-      && (newURL.startsWith("http://appinventor.mit.edu/")
+          && (newURL.startsWith("http://appinventor.mit.edu/")
           || newURL.startsWith("https://appinventor.mit.edu/")
           || newURL.startsWith("http://appinv.us/"));
     
