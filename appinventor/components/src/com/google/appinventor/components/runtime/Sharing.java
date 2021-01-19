@@ -22,6 +22,7 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.NougatUtil;
+import com.google.appinventor.components.runtime.util.QUtil;
 
 import java.io.File;
 
@@ -103,8 +104,13 @@ public class Sharing extends AndroidNonvisibleComponent {
       + "installed on the phone by displaying a list of available apps and allowing the user to " +
       " choose one from the list. The selected app will open with the file and message inserted on it.")
   public void ShareFileWithMessage(String file, String message) {
-    if (!file.startsWith("file://"))
-      file = "file://" + file;
+    if (!file.startsWith("file://")) {
+      if (!file.startsWith("/")) {
+        file = QUtil.getExternalStoragePath(form, true) + "/" +  file;
+      } else {
+        file = "file://" + file;
+      }
+    }
 
     Uri uri  = Uri.parse(file);
     File imageFile = new File(uri.getPath());
