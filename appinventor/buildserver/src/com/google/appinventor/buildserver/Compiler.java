@@ -94,6 +94,7 @@ public final class Compiler {
   private static final Object SYNC_KAWA_OR_DX = new Object();
 
   private static final String SLASH = File.separator;
+  private static final String SLASHREGEX = File.separatorChar == '\\' ? "\\\\" : "/";
   private static final String COLON = File.pathSeparator;
   private static final String ZIPSLASH = "/";
 
@@ -2319,7 +2320,7 @@ public final class Compiler {
       aaptPackageCommandLineArgs.add("--output-text-symbols");
       aaptPackageCommandLineArgs.add(symbolOutputDir.getAbsolutePath());
       aaptPackageCommandLineArgs.add("--no-version-vectors");
-      appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", SLASH) + SLASH + "R.java");
+      appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", SLASHREGEX) + SLASH + "R.java");
       appRTxt = new File(symbolOutputDir, "R.txt");
     }
     String[] aaptPackageCommandLine = aaptPackageCommandLineArgs.toArray(new String[aaptPackageCommandLineArgs.size()]);
