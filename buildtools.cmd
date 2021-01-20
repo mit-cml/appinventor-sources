@@ -83,7 +83,7 @@ call ant PlayApp
 echo.
 if /i "%ERRORLEVEL%" equ "0" (
     echo The companion is generated at:
-    echo %cd%/appinventor/build/buildserver/MITAICompanion.apk
+    echo %cd%/appinventor/build/buildserver/MIT AI2 Companion.apk
     echo.
 )
 pause
