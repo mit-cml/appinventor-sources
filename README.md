@@ -116,6 +116,12 @@ to clear out the submodules ___before switching branches___. When switching back
 ### Troubleshooting common installation issues
 Run this command to run a self-diagnosis of your environment. This command tries to figure out common installation issues and offers you a solution to fix them yourself. Make sure this passes all the checks before you proceed further.
 
+#### Linux and macOS
+```bash
+./buildtools doctor
+```
+
+#### Windows
 ```bash
 buildtools doctor
 ```
