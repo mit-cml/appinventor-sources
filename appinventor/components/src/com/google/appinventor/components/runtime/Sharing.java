@@ -36,7 +36,7 @@ import java.io.File;
  * [`Camera`](media.html#Camera) or the [`ImagePicker`](media.html#ImagePicker), but can also be
  * specified directly to read from storage. The default behaviour is to share files from the private
  * data directory associated with your app. If the file path starts with a slash (`/`), then the file
- * relative to `/sdcard` is shared.
+ * relative to `/` is shared.
  * 
  * Be aware that different devices treat storage differently, so a few things to try if, for 
  * instance, you have a file called `arrow.gif` in the folder `Appinventor/assets`, would be:
@@ -56,7 +56,7 @@ import java.io.File;
         "The file path can be taken directly from other components such as the Camera or the " +
         "ImagePicker, but can also be specified directly to read from storage. The default " +
         "behaviour is to share files from the private data directory associated with your app. " +
-        "If the file path starts with a slash (/), the the file relative to /sdcard is shared.<br>" +
+        "If the file path starts with a slash (/), the the file relative to / is shared.<br>" +
         "Be aware that different devices treat storage differently, so a few things to try if, " +
         "for instance, you have a file called arrow.gif in the folder " +
         "<code>Appinventor/assets</code>, would be: <ul>" +
@@ -111,7 +111,7 @@ public class Sharing extends AndroidNonvisibleComponent {
   public void ShareFileWithMessage(String file, String message) {
     if (!file.startsWith("file://")) {
       if (!file.startsWith("/")) {
-        file = QUtil.getExternalStoragePath(form, true) + "/" +  file;
+        file = form.getFilesDir().getPath() + "/" +  file;
       } else {
         file = "file://" + file;
       }

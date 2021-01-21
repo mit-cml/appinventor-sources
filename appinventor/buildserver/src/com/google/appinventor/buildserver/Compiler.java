@@ -953,6 +953,7 @@ public final class Compiler {
       BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(paths), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<paths xmlns:android=\"http://schemas.android.com/apk/res/android\">\n");
+      out.write("   <files-path name=\"internal_files\" path=\".\"/>\n");
       out.write("   <external-path name=\"external_files\" path=\".\"/>\n");
       out.write("</paths>\n");
       out.close();
@@ -2319,7 +2320,8 @@ public final class Compiler {
       aaptPackageCommandLineArgs.add("--output-text-symbols");
       aaptPackageCommandLineArgs.add(symbolOutputDir.getAbsolutePath());
       aaptPackageCommandLineArgs.add("--no-version-vectors");
-      appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", SLASH) + SLASH + "R.java");
+      appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", "/") + "/R.java");
+      // appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", SLASH) + SLASH + "R.java");
       appRTxt = new File(symbolOutputDir, "R.txt");
     }
     String[] aaptPackageCommandLine = aaptPackageCommandLineArgs.toArray(new String[aaptPackageCommandLineArgs.size()]);
