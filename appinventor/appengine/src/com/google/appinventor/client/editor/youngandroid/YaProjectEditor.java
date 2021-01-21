@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -44,9 +43,12 @@ import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.json.client.JSONException;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -71,6 +73,12 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     ComponentDatabaseChangeListener {
 
   private static final Logger LOG = Logger.getLogger(YaProjectEditor.class.getName());
+
+  @UiTemplate("YaProjectEditorClassic.ui.xml")
+  interface ClassicUi extends UiBinder<FlowPanel, YaProjectEditor> {}
+
+  @UiTemplate("YaProjectEditorCombined.ui.xml")
+  interface CombinedUi extends UiBinder<FlowPanel, YaProjectEditor> {}
 
   // FileEditors in a YA project come in sets. Every form in the project has 
   // a YaFormEditor for editing the UI, and a YaBlocksEditor for editing the 

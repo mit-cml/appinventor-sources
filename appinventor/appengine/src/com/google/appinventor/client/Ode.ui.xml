@@ -18,7 +18,7 @@
           <box:ProjectListBox width="100%" />
         </g:FlowPanel>
         <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
-          <ode:DesignToolbar ui:field="designToolbar" />
+          <ed:DesignToolbar ui:field="designToolbar" />
           <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
             <box:PaletteBox width="240px" />
             <box:ViewerBox />

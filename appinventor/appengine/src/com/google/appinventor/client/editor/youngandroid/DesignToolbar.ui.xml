@@ -22,13 +22,5 @@
     <ai:ToolbarItem name="RemoveForm" caption="{messages.removeFormButton}" ui:field="removeFormItem">
       <ya:RemoveFormAction />
     </ai:ToolbarItem>
-
-    <!-- Right button items -->
-    <ai:ToolbarItem name="SwitchToFormEditor" caption="{messages.switchToFormEditorButton}" align="right">
-      <ya:SwitchToFormEditorAction />
-    </ai:ToolbarItem>
-    <ai:ToolbarItem name="SwitchToBlocksEditor" caption="{messages.switchToBlocksEditorButton}" align="right">
-      <ya:SwitchToBlocksEditorAction />
-    </ai:ToolbarItem>
   </ai:Toolbar>
 </ui:UiBinder>

@@ -1,6 +1,6 @@
 package com.google.appinventor.client.editor.youngandroid.actions;
 
-import com.google.appinventor.client.DesignToolbar;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.gwt.user.client.Command;
 

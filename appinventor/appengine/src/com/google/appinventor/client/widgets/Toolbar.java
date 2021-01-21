@@ -9,7 +9,10 @@ package com.google.appinventor.client.widgets;
 import com.google.gwt.uibinder.client.ElementParserToUse;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +24,8 @@ import java.util.Map;
 @ElementParserToUse(className = "com.google.appinventor.client.widgets.ToolbarParser")
 public class Toolbar extends FlowPanel {
   private static final String DROP_DOWN_TRIANGLE = "\u25BE";
+
+  private static final Map<String, ToolbarPrototype> prototypes = new HashMap<>();
 
   // All mappings are widget name to widget.
   
@@ -45,6 +50,35 @@ public class Toolbar extends FlowPanel {
     super.add(rightButtons);
   }
 
+  public interface ToolbarBuilder {
+    void update(Toolbar toolbar);
+  }
+
+  public static class ToolbarPrototype {
+    private final List<ToolbarBuilder> builders = new ArrayList<>();
+
+    public void add(ToolbarBuilder item) {
+      builders.add(item);
+    }
+  }
+
+  public static ToolbarPrototype getPrototype(String name) {
+    if (!prototypes.containsKey(name)) {
+      prototypes.put(name, new ToolbarPrototype());
+    }
+    return prototypes.get(name);
+  }
+
+  protected final void build(String name) {
+    for (ToolbarBuilder builder : getPrototype(name).builders) {
+      builder.update(this);
+    }
+  }
+
+  public void extend(Toolbar toolbar) {
+    add(toolbar);
+  }
+
   public void add(Widget widget) {
     leftButtons.add(widget);
   }
@@ -64,6 +98,11 @@ public class Toolbar extends FlowPanel {
     }
     buttonMap.put(item.getName(), button);
     button.setVisible(item.isVisible());
+  }
+
+  public void addRight(final ToolbarItem item) {
+    item.setAlign("right");
+    add(item);
   }
 
   protected void removeItem(ToolbarItem item) {

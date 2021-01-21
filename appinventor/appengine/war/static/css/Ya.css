@@ -2824,6 +2824,10 @@ div.dropdiv p {
   display: inline;
 }
 
+.ya-Toolbar .right {
+  display: inline;
+}
+
 .ya-ProjectName {
   display: inline-block;
 }
