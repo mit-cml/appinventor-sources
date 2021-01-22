@@ -15,7 +15,7 @@ to operate their own App Inventor instance and/or contribute to the project.
 This code is tested and known to work with Java 8.
 
 ## Contributors
-The best way to go about integrating changes in App Inventor is to start a conversation in the [Open Source forum](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev) about whatever you intend to change or add.
+The best way to go about integrating changes in App Inventor is to start a conversation in the [Open Source forum](https://community.appinventor.mit.edu/c/open-source-development/10) about whatever you intend to change or add.
 
 We use ***very brief and informal*** design documents with descriptions of the proposed changes and screenshots of how the functionality would look like and behave, in order to gather as much feedback from the community, as early as possible. We generally use shared Google docs for this (with permissions to add comments), but any format that is accessible from a web browser (and allows comments) would do.
 
@@ -112,6 +112,19 @@ If you need to switch back to a branch that does contains the Blockly and Closur
     $ git submodule deinit --all
 
 to clear out the submodules ___before switching branches___. When switching back, you will need to repeat the initialization and update procedure above.
+
+### Troubleshooting common installation issues
+Run this command to run a self-diagnosis of your environment. This command tries to figure out common installation issues and offers you a solution to fix them yourself. Make sure this passes all the checks before you proceed further.
+
+#### Linux and macOS
+```bash
+./buildtools doctor
+```
+
+#### Windows
+```bash
+buildtools doctor
+```
 
 ### Compiling
 Before compiling the code, an [auth key](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc#h.yikyg2e1rfut) is needed. You can create one by running the following commands:
