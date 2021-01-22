@@ -140,6 +140,8 @@ public final class ErrorMessages {
   public static final int ERROR_WEB_XML_TEXT_DECODE_FAILED = 1115;
   public static final int ERROR_WEB_REQUEST_TIMED_OUT = 1117; //Continuing from number after contact picker
   public static final int ERROR_WEB_JSON_TEXT_ENCODE_FAILED = 1118;
+  public static final int ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE = ERROR_WEB_UNABLE_TO_POST_OR_PUT;
+  public static final int ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE_FILE = ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
   // Contact picker (and PhoneNumberPicker) errors
   public static final int ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107;
   public static final int ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING = 1108;
@@ -497,9 +499,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_WEB_UNSUPPORTED_ENCODING,
         "The encoding %s is not supported.");
     errorMessages.put(ERROR_WEB_UNABLE_TO_POST_OR_PUT,
-        "Unable to post or put the text \"%s\" with the specified URL: %s");
+        "Unable to complete the given request with the text \"%s\" with the specified URL: %s");
     errorMessages.put(ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE,
-        "Unable to post or put the file \"%s\" with the specified URL %s.");
+        "Unable to complete the given request with the file \"%s\" with the specified URL %s.");
     errorMessages.put(ERROR_WEB_JSON_TEXT_DECODE_FAILED,
         "Unable to decode the JSON text: %s");
     errorMessages.put(ERROR_WEB_HTML_TEXT_DECODE_FAILED,

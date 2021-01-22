@@ -185,7 +185,16 @@ public final class CsvUtil {
         trailingComma = delimitedCellLength > 0 && buf[pos + delimitedCellLength - 1] == ',';
         pos += delimitedCellLength;
         delimitedCellLength = cellLength = -1;
+        int oldLimit = limit;
         haveMoreData = pos < limit || indexAfterCompactionAndFilling(pos) < limit;
+        // If the CSV data ends with a trailing comma, haveMoreData will be false even though there
+        // is one (empty) cell remaining. The cell "appears" if a trailing carriage return is added
+        // to the input CSV. The following code handles this edge case by checking that we have no
+        // more data and if the last character in the buffer was a comma. If so, it appends the
+        // empty cell that would otherwise be dropped.
+        if (!haveMoreData && buf[oldLimit - 1] == ',') {
+          result.add("");
+        }
       } while (trailingComma && haveMoreData && lookingAtCell());
       return result;
     }
