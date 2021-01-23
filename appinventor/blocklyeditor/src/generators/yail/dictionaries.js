@@ -227,6 +227,33 @@ Blockly.Yail['dictionaries_walk_all'] = function() {
   return [Blockly.Yail.YAIL_CONSTANT_ALL, Blockly.Yail.ORDER_ATOMIC];
 };
 
+
+Blockly.Yail['dictionaries_from_json'] = function() {
+  // Convert JSON String to dictionary.
+  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yali-dictionary-dict-from-json" + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
+  code = code + argument0;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
+  code = code + "text" + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "dict from json" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
+Blockly.Yail['dictionaries_to_json'] = function() {
+  // Convert dictionary to JSON String.
+  var argument0 = Blockly.Yail.valueToCode(this, 'DICT', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_EMPTY_DICT;
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yali-dictionary-dict-to-json" + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
+  code = code + argument0;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
+  code = code + "dictionary" + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "dict to json" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
 Blockly.Yail['dictionaries_is_dict'] = function() {
   var argument = Blockly.Yail.valueToCode(this, 'THING', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_EMPTY_DICT;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-dictionary?" + Blockly.Yail.YAIL_SPACER;

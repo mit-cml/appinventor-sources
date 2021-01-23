@@ -966,6 +966,7 @@
 (module-static #t)
 
 (define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
+(define-alias JsonUtil <com.google.appinventor.components.runtime.util.JsonUtil>)
 (define-alias Double <java.lang.Double>)
 (define-alias Float <java.lang.Float>)
 (define-alias Integer <java.lang.Integer>)
@@ -2513,7 +2514,8 @@ Dictionary implementation.
 - combine two dicts         (yail-dictionary-combine-dicts first-dictionary second-dictionary)
 - turn alist to dict        (yail-dictionary-alist-to-dict alist)
 - turn dict to alist        (yail-dictionary-dict-to-alist dict)
-
+- dict from json            (yali-dictionary-dict-from-json text)
+- json to dict              (yali-dictionary-dict-to-json yali-dictionary)
 - is YailDictionary?        (yail-dictionary? x)
 
 |#
@@ -2587,6 +2589,20 @@ Dictionary implementation.
 
 (define (yail-dictionary? x)
   (instance? x YailDictionary))
+
+(define (yali-dictionary-dict-from-json str)
+  (try-catch
+    (JsonUtil:getObjectFromJson str #t)
+    (exception org.json.JSONException
+      (signal-runtime-error
+        (string-append 
+          "Unable to decode the JSON text: " str)
+        (exception:getMessage)))))
+
+(define (yali-dictionary-dict-to-json yali-dictionary)
+  (if (not (yail-dictionary? yali-dictionary))
+    (signal-runtime-error "Argument value to \"dictionary to JSON\" must be a dictionary" "Expecting dictionary")
+    (JsonUtil:encodeJsonObject yali-dictionary)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -1092,6 +1092,16 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TOOLTIP = 'Tests if something is a dictionary.';
     Blockly.Msg.LANG_DICTIONARIES_IS_DICT_HELPURL = '/reference/blocks/dictionaries.html#is-a-dictionary';
 
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_FROM_JSON_TITLE = 'JSON to dictionary';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_FROM_JSON_TOOLTIP = 'Converts a JSON string into a dictionary';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_FROM_JSONINPUT_TEXT = 'text';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_FROM_JSON_HELPURL = '/reference/blocks/dictionaries.html#dictionary-from-json';
+
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_TO_JSON_TITLE = 'dictionary to JSON';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_TO_JSON_TOOLTIP = 'Converts a dictionary into a JSON string';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_TO_JSONINPUT_TEXT = 'dictionary';
+    Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_TO_JSON_HELPURL = '/reference/blocks/dictionaries.html#dictionary-to-json';
+    
 // Variables Blocks.
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_HELPURL = '/reference/blocks/variables.html#global';
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT = 'initialize global';

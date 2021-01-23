@@ -517,3 +517,35 @@ Blockly.Blocks['dictionaries_is_dict'] = {
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TITLE }]
 };
+
+Blockly.Blocks['dictionaries_from_json'] = {
+  // Convert JSON String to dictionary.
+  category : 'Dictionaries',
+  helpUrl : Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_FROM_JSON_HELPURL,
+  init : function() {
+    this.setColour(Blockly.DICTIONARY_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("dictionary",Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('TEXT')
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_FROM_JSON_TITLE)
+      .appendField(Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_FROM_JSONINPUT_TEXT);
+    this.setTooltip(Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_FROM_JSON_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_FROM_JSON_TITLE }]
+};
+
+Blockly.Blocks['dictionaries_to_json'] = {
+  // Convert dictionary to JSON String.
+  category : 'Dictionaries',
+  helpUrl : Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_TO_JSON_HELPURL,
+  init : function() {
+    this.setColour(Blockly.DICTIONARY_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('DICT')
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("dictionary",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_TO_JSON_TITLE)
+      .appendField(Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_TO_JSONINPUT_TEXT);
+    this.setTooltip(Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_TO_JSON_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_TO_JSON_TITLE }]
+};
