@@ -677,5 +677,7 @@
     "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TITLE": "հեռացնել բանալու մուտքը բառարանից",
     "Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TOOLTIP": "Բառարանում սահմանել զույգ",
     "Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE": "կազմել զույգ",
-    "Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TOOLTIP": "Ավելացնել, հեռացնել կամ վերադասավորել բաժինները՝ այս բառարանային բլոկը վերակազմակերպելու համար:"
+    "Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TOOLTIP": "Ավելացնել, հեռացնել կամ վերադասավորել բաժինները՝ այս բառարանային բլոկը վերակազմակերպելու համար:",
+    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_INPUT": "հեռացնել %2 ստեղնի մուտքը %1 բառարանից",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER": "կարգ"
 }
