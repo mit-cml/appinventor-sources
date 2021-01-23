@@ -216,6 +216,9 @@ A two-dimensional touch-sensitive rectangular panel on which drawing can
  i.e., `0xAARRGGBB`.  An alpha of `00` indicates fully
  transparent and `FF` means opaque.
 
+{:id="Canvas.TapThreshold" .number .do} *TapThreshold*
+: Specifies the tapThreshold to differentiate a drag from a tap
+
 {:id="Canvas.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the canvas's text: center, normal
  (starting at the specified point in [`DrawText`](#Canvas.DrawText) or

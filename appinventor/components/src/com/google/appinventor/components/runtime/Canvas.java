@@ -146,6 +146,18 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private String backgroundImagePath = "";
   private int textAlignment;
   private boolean extendMovesOutsideCanvas = false;
+  
+  /**
+   * The number of pixels right, left, up, or down, a sequence of drags must
+   * move from the starting point to be considered a drag (instead of a
+   * touch).
+   */
+  // This used to be 15 and people complained that they could not draw small circles. So we
+  // made it a user settable property because if the threshold is too small, then touches might
+  // be misinterpreted as drags. Default value is appropriate for most cases but there may be different
+  // requirements. This might require more experimentation. We might also want to take screen resolution
+  // into account and/or try to make a more clever motion parser.
+  private int tapThreshold = 15;
 
   // Default values
   private static final int MIN_WIDTH_HEIGHT = 1;
@@ -154,6 +166,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
   private static final int DEFAULT_TEXTALIGNMENT = Component.ALIGNMENT_CENTER;
   private static final int FLING_INTERVAL = 1000;  // ms
+  private static final int DEFAULT_TAP_THRESHOLD = 15;
 
   // Keep track of enclosed sprites.  This list should always be
   // sorted by increasing sprite.Z().
@@ -195,7 +208,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * <li> If a {@link android.view.MotionEvent#ACTION_DOWN} is followed by an
    * {@link android.view.MotionEvent#ACTION_UP} event either immediately or
    * after {@link android.view.MotionEvent#ACTION_MOVE} events that take it no
-   * further than {@link #TAP_THRESHOLD} pixels horizontally or vertically from
+   * further than {@link #tapThreshold} pixels horizontally or vertically from
    * the start point, it is interpreted as a touch, and a single call to
    * {@link Sprite#Touched(float, float)} for each touched sprite is
    * generated.
@@ -212,17 +225,6 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *
    */
   class MotionEventParser {
-    /**
-     * The number of pixels right, left, up, or down, a sequence of drags must
-     * move from the starting point to be considered a drag (instead of a
-     * touch).
-     */
-    // This used to be 30 and people complained that they could not draw small circles.
-    // If the threshold is too small, then touches might be misinterpreted as drags,
-    // this might require more experimentation.  We might also want to take screen resolution
-    // into account and/or try to make a more clever motion parser.
-    public static final int TAP_THRESHOLD = 15;
-
     /**
      * The width of a finger.  This is used in determining whether a sprite is
      * touched.  Specifically, this is used to determine the horizontal extent
@@ -309,7 +311,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
           // If the new point is near the start point, it may just be a tap
           if (!isDrag &&
-              (Math.abs(x - startX) < TAP_THRESHOLD && Math.abs(y - startY) < TAP_THRESHOLD)) {
+              (Math.abs(x - startX) < tapThreshold && Math.abs(y - startY) < tapThreshold)) {
             break;
           }
           // Otherwise, it's a drag.
@@ -764,6 +766,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
     TextAlignment(DEFAULT_TEXTALIGNMENT);
     FontSize(Component.FONT_DEFAULT_SIZE);
+    TapThreshold(DEFAULT_TAP_THRESHOLD);
 
     sprites = new LinkedList<Sprite>();
     motionEventParser = new MotionEventParser();
@@ -1085,6 +1088,34 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
 
   }
+  
+  /**
+     * Returns the tapThreshold to differentiate a drag from a tap
+     *
+     * @return tapThreshold : The number of pixels right, left, up, or down, a sequence of drags must
+     *  move from the starting point to be considered a drag (instead of a touch).
+     */
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+            description = "Set the number of pixels right, left, up or down, a sequence of drags must move"
+            + "from the starting point to be considered a drag (instead of a touch).",
+            userVisible = false
+    )
+    public int TapThreshold() {
+      return tapThreshold;
+    }
+
+    /**
+     * Specifies the tapThreshold to differentiate a drag from a tap
+     *
+     * @param threshold The number of pixels right, left, up, or down, a sequence of drags must
+     *  move from the starting point to be considered a drag (instead of a touch).
+     */
+    @SimpleProperty
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+            defaultValue = "15")
+    public void TapThreshold(int threshold) {
+      this.tapThreshold = threshold;
+    }
 
   /**
    * Returns the currently specified paint color as an alpha-red-green-blue
