@@ -479,10 +479,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     YailDictionary item = (YailDictionary) parent.getAdapter().getItem(position);
-    this.selection = ElementsUtil.toStringEmptyIfNull(item.get(Component.LISTVIEW_KEY_MAIN_TEXT));
+    this.selection = ElementsUtil.toStringEmptyIfNull(item.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString());
     this.selectionDetailText = ElementsUtil.toStringEmptyIfNull(item.get("Text2"));
-//    this.selectionIndex = position + 1;
-    this.selectionIndex = 1;
+    this.selectionIndex = position + 1;
     AfterPicking();
   }
 

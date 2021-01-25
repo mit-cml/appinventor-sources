@@ -32,7 +32,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
         "android.permission.READ_EXTERNAL_STORAGE")
  public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> implements Filterable {
-  private static final String TAG = "ListAdapterWithRecyclerView";
+  private static final String LOG_TAG = "ListAdapterRecyclerView";
 
   private static ClickListener clickListener;
 
@@ -131,7 +131,10 @@ import com.google.appinventor.components.runtime.util.YailList;
     // With single select, clicked item becomes the only selected item
     Arrays.fill(selection, Boolean.FALSE);
     for (int i = 0; i < itemViews.length; i++) {
-      itemViews[i].setBackgroundColor(backgroundColor);
+      // Views are created when they are displayed, so this list may not be fully populated.
+      if (itemViews[i] != null) {
+        itemViews[i].setBackgroundColor(backgroundColor);
+      }
     }
     selection[pos] = true;
     itemViews[pos].setBackgroundColor(selectionColor);
@@ -263,7 +266,7 @@ import com.google.appinventor.components.runtime.util.YailList;
       try {
         drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
       } catch (IOException ioe) {
-        Log.e("Image", "Unable to load " + imageName + ": " + ioe.getMessage());
+        Log.e(LOG_TAG, "onBindViewHolder Unable to load image " + imageName + ": " + ioe.getMessage());
       }
       holder.textViewFirst.setText(first);
       ViewUtil.setImage(holder.imageVieww, drawable);
@@ -273,13 +276,13 @@ import com.google.appinventor.components.runtime.util.YailList;
       try {
         drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
       } catch (IOException ioe) {
-        Log.e("Image", "Unable to load " + imageName + ": " + ioe.getMessage());
+        Log.e(LOG_TAG, "onBindViewHolder Unable to load image " + imageName + ": " + ioe.getMessage());
       }
       holder.textViewFirst.setText(first);
       holder.textViewSecond.setText(second);
       ViewUtil.setImage(holder.imageVieww, drawable);
     } else {
-      Log.e("ListView Adapter", "Layout not recognized: " + layoutType);
+      Log.e(LOG_TAG, "onBindViewHolder Layout not recognized: " + layoutType);
     }
     itemViews[position] = holder.cardView;
   }
