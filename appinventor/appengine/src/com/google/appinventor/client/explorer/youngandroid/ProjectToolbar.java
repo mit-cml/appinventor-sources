@@ -191,8 +191,8 @@ public class ProjectToolbar extends Toolbar {
       if (selectedProjects.size() > 0) {
         for (Project project : selectedProjects) {
           project.restoreFromTrash();
-          Ode.getInstance().switchToTrash();
         }
+        Ode.getInstance().switchToTrash();
       } else {
         // The user can select a project to resolve the
         // error.
