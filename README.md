@@ -167,7 +167,21 @@ Before entering or scanning the QR code in the Companion, check the box labeled 
 The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you install it and add it to your path. After that, you can run all tests by typing the following in a terminal window:
 
     $ ant tests
-    
+
+### Building Release Code
+
+Release builds with optimizations turned on for the web components of the system can be done by passing `-Drelease=true` to `ant`, e.g.:
+
+```
+ant -Drelease=true noplay
+```
+
+The release configuration sets the following additional options:
+
+- Blockly Editor is compiled with SIMPLE optimizations (instead of RAW)
+- App Engine YaClient module is compiled without `<collapse-all-properties/>` to create per-language/browser builds
+- App Engine YaClient module is compiled with optimization tuned to 9 and with 8 threads
+
 ### Hot-reloading GWT code with 'Super Dev Mode'
 1. Run `ant devmode`
 2. [Run the main server](#running-the-main-server).
