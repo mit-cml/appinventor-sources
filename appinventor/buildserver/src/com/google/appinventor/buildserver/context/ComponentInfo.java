@@ -13,12 +13,16 @@ import java.util.concurrent.ConcurrentMap;
 public class ComponentInfo {
   private final ConcurrentMap<String, Set<String>> assetsNeeded;
   private final ConcurrentMap<String, Set<String>> activitiesNeeded;
+  private final ConcurrentMap<String, Set<String>> metadataNeeded;
+  private final ConcurrentMap<String, Set<String>> activitiyMetadataNeeded;
   private final ConcurrentMap<String, Set<String>> broadcastReceiversNeeded;
   private final ConcurrentMap<String, Set<String>> libsNeeded;
   private final ConcurrentMap<String, Set<String>> nativeLibsNeeded;
   private final ConcurrentMap<String, Set<String>> permissionsNeeded;
   private final ConcurrentMap<String, Set<String>> minSdksNeeded;
   private final ConcurrentMap<String, Set<String>> componentBroadcastReceiver;
+  private final ConcurrentMap<String, Set<String>> servicesNeeded;
+  private final ConcurrentMap<String, Set<String>> contentProvidersNeeded;
 
   private Set<String> uniqueLibsNeeded;
   private AARLibraries explodedAarLibs;
@@ -26,12 +30,16 @@ public class ComponentInfo {
   public ComponentInfo() {
     assetsNeeded = new ConcurrentHashMap<>();
     activitiesNeeded = new ConcurrentHashMap<>();
+    metadataNeeded = new ConcurrentHashMap<>();
+    activitiyMetadataNeeded = new ConcurrentHashMap<>();
     broadcastReceiversNeeded = new ConcurrentHashMap<>();
     libsNeeded = new ConcurrentHashMap<>();
     nativeLibsNeeded = new ConcurrentHashMap<>();
     permissionsNeeded = new ConcurrentHashMap<>();
     minSdksNeeded = new ConcurrentHashMap<>();
     componentBroadcastReceiver = new ConcurrentHashMap<>();
+    servicesNeeded = new ConcurrentHashMap<>();
+    contentProvidersNeeded = new ConcurrentHashMap<>();
 
     uniqueLibsNeeded = Sets.newHashSet();
   }
@@ -42,6 +50,14 @@ public class ComponentInfo {
 
   public ConcurrentMap<String, Set<String>> getActivitiesNeeded() {
     return activitiesNeeded;
+  }
+
+  public ConcurrentMap<String, Set<String>> getMetadataNeeded() {
+    return metadataNeeded;
+  }
+
+  public ConcurrentMap<String, Set<String>> getActivitiyMetadataNeeded() {
+    return activitiyMetadataNeeded;
   }
 
   public ConcurrentMap<String, Set<String>> getBroadcastReceiversNeeded() {
@@ -82,6 +98,14 @@ public class ComponentInfo {
 
   public ConcurrentMap<String, Set<String>> getComponentBroadcastReceiver() {
     return componentBroadcastReceiver;
+  }
+
+  public ConcurrentMap<String, Set<String>> getServicesNeeded() {
+    return servicesNeeded;
+  }
+
+  public ConcurrentMap<String, Set<String>> getContentProvidersNeeded() {
+    return contentProvidersNeeded;
   }
 
   @Override

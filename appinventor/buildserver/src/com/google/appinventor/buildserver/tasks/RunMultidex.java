@@ -25,11 +25,48 @@ public class RunMultidex implements Task {
           mainDexClasses));
       inputList.add(recordForMainDex(new File(context.getResources().getKawaRuntime()), mainDexClasses));
 
+      /*
+       * Note for future updates: This list can be obtained from an Android Studio project running the
+       * following command:
+       *
+       * ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --console=plain | \
+       *     awk 'BEGIN {FS="--- "} {print $2}' | cut -d : -f2 | sort -u
+       */
+
       final Set<String> CRITICAL_JARS = new HashSet<>(Arrays.asList(
-          context.getResources().getRuntimeFilesDir() + "appcompat-v7.jar",
-          context.getResources().getRuntimeFilesDir() + "common.jar",
+          // Minimum required for Android 4.x
+          context.getResources().getRuntimeFilesDir() + "appcompat.jar",
+          context.getResources().getRuntimeFilesDir() + "collection.jar",
+          context.getResources().getRuntimeFilesDir() + "core.jar",
+          context.getResources().getRuntimeFilesDir() + "core-common.jar",
           context.getResources().getRuntimeFilesDir() + "lifecycle-common.jar",
-          context.getResources().getRuntimeFilesDir() + "support-compat.jar"
+          context.getResources().getRuntimeFilesDir() + "vectordrawable.jar",
+          context.getResources().getRuntimeFilesDir() + "vectordrawable-animated.jar",
+
+          // Extras that may be pulled
+          context.getResources().getRuntimeFilesDir() + "annotation.jar",
+          context.getResources().getRuntimeFilesDir() + "asynclayoutinflater.jar",
+          context.getResources().getRuntimeFilesDir() + "coordinatorlayout.jar",
+          context.getResources().getRuntimeFilesDir() + "core-runtime.jar",
+          context.getResources().getRuntimeFilesDir() + "cursoradapter.jar",
+          context.getResources().getRuntimeFilesDir() + "customview.jar",
+          context.getResources().getRuntimeFilesDir() + "documentfile.jar",
+          context.getResources().getRuntimeFilesDir() + "drawerlayout.jar",
+          context.getResources().getRuntimeFilesDir() + "fragment.jar",
+          context.getResources().getRuntimeFilesDir() + "interpolator.jar",
+          context.getResources().getRuntimeFilesDir() + "legacy-support-core-ui.jar",
+          context.getResources().getRuntimeFilesDir() + "legacy-support-core-utils.jar",
+          context.getResources().getRuntimeFilesDir() + "lifecycle-livedata.jar",
+          context.getResources().getRuntimeFilesDir() + "lifecycle-livedata-core.jar",
+          context.getResources().getRuntimeFilesDir() + "lifecycle-runtime.jar",
+          context.getResources().getRuntimeFilesDir() + "lifecycle-viewmodel.jar",
+          context.getResources().getRuntimeFilesDir() + "loader.jar",
+          context.getResources().getRuntimeFilesDir() + "localbroadcastmanager.jar",
+          context.getResources().getRuntimeFilesDir() + "print.jar",
+          context.getResources().getRuntimeFilesDir() + "slidingpanelayout.jar",
+          context.getResources().getRuntimeFilesDir() + "swiperefreshlayout.jar",
+          context.getResources().getRuntimeFilesDir() + "versionedparcelable.jar",
+          context.getResources().getRuntimeFilesDir() + "viewpager.jar"
       ));
 
       for (String jar : CRITICAL_JARS) {

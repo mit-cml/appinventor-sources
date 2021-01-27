@@ -34,8 +34,16 @@ public class LoadComponentInfo implements Task {
     this.context = context;
     this.conditionals = new ConcurrentHashMap<>();
 
-    if (!this.generateAssets() || !this.generateActivities() || !this.generateBroadcastReceivers() ||
-        !this.generateLibNames() || !this.generateNativeLibNames() || !this.generatePermissions() ||
+    if (!this.generateAssets() ||
+        !this.generateActivities() ||
+        !this.generateMetadata() ||
+        !this.generateActivityMetadata() ||
+        !this.generateBroadcastReceivers() ||
+        !this.generateServices() ||
+        !this.generateContentProviders() ||
+        !this.generateLibNames() ||
+        !this.generateNativeLibNames() ||
+        !this.generatePermissions() ||
         !this.generateMinSdks()) {
       return TaskResult.generateError("Could not extract info from the app");
     }
@@ -95,6 +103,48 @@ public class LoadComponentInfo implements Task {
     return true;
   }
 
+  /**
+   * Generate a set of conditionally included metadata needed by this project.
+   */
+  private boolean generateMetadata() {
+    try {
+      loadJsonInfo(context.getComponentInfo().getMetadataNeeded(), ComponentDescriptorConstants.METADATA_TARGET);
+    } catch (IOException | JSONException e) {
+      // This is fatal.
+      context.getReporter().error("There was an error in the Metadata stage", true);
+      return false;
+    }
+
+    int n = 0;
+    for (String type : context.getComponentInfo().getMetadataNeeded().keySet()) {
+      n += context.getComponentInfo().getMetadataNeeded().get(type).size();
+    }
+
+    context.getReporter().log("Component metadata needed, n = " + n);
+    return true;
+  }
+
+  /**
+   * Generate a set of conditionally included activity metadata needed by this project.
+   */
+  private boolean generateActivityMetadata() {
+    try {
+      loadJsonInfo(context.getComponentInfo().getActivitiyMetadataNeeded(), ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET);
+    } catch (IOException | JSONException e) {
+      // This is fatal.
+      context.getReporter().error("There was an error in the Activity Metadata stage", true);
+      return false;
+    }
+
+    int n = 0;
+    for (String type : context.getComponentInfo().getActivitiyMetadataNeeded().keySet()) {
+      n += context.getComponentInfo().getActivitiyMetadataNeeded().get(type).size();
+    }
+
+    context.getReporter().log("Component activities metadata needed, n = " + n);
+    return true;
+  }
+
   /*
    * Generate a set of conditionally included broadcast receivers needed by this project.
    */
@@ -112,6 +162,48 @@ public class LoadComponentInfo implements Task {
 
     // TODO: Output the number of broadcast receivers
 
+    return true;
+  }
+
+  /**
+   * Generate a set of conditionally included activity metadata needed by this project.
+   */
+  private boolean generateServices() {
+    try {
+      loadJsonInfo(context.getComponentInfo().getServicesNeeded(), ComponentDescriptorConstants.SERVICES_TARGET);
+    } catch (IOException | JSONException e) {
+      // This is fatal.
+      context.getReporter().error("There was an error in the Services stage", true);
+      return false;
+    }
+
+    int n = 0;
+    for (String type : context.getComponentInfo().getServicesNeeded().keySet()) {
+      n += context.getComponentInfo().getServicesNeeded().get(type).size();
+    }
+
+    context.getReporter().log("Component services needed, n = " + n);
+    return true;
+  }
+
+  /**
+   * Generate a set of conditionally included activity metadata needed by this project.
+   */
+  private boolean generateContentProviders() {
+    try {
+      loadJsonInfo(context.getComponentInfo().getContentProvidersNeeded(), ComponentDescriptorConstants.SERVICES_TARGET);
+    } catch (IOException | JSONException e) {
+      // This is fatal.
+      context.getReporter().error("There was an error in the Content Providers stage", true);
+      return false;
+    }
+
+    int n = 0;
+    for (String type : context.getComponentInfo().getContentProvidersNeeded().keySet()) {
+      n += context.getComponentInfo().getContentProvidersNeeded().get(type).size();
+    }
+
+    context.getReporter().log("Component content providers needed, n = " + n);
     return true;
   }
 

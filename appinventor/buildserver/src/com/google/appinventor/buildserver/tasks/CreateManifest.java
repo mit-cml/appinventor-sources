@@ -112,7 +112,10 @@ public class CreateManifest implements Task {
 
       for (String permission : permissions) {
         context.getReporter().log("Needs permission " + permission);
-        out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
+        out.write("  <uses-permission android:name=\"" +
+            permission
+                .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+            + "\" />\n");
       }
 
       if (context.isForCompanion()) { // This is so ACRA can do a logcat on phones older then Jelly Bean
@@ -141,6 +144,10 @@ public class CreateManifest implements Task {
         out.write("android:label=\"" + aName + "\" ");
       }
       out.write("android:networkSecurityConfig=\"@xml/network_security_config\" ");
+      out.write("android:requestLegacyExternalStorage=\"true\" ");  // For SDK 29 (Android Q)
+      if (YaVersion.TARGET_SDK_VERSION >= 30) {
+        out.write("android:preserveLegacyExternalStorage=\"true\" ");  // For SDK 30 (Android R)
+      }
       out.write("android:icon=\"@mipmap/ic_launcher\" ");
       out.write("android:roundIcon=\"@mipmap/ic_launcher\" ");
       if (context.isForCompanion()) {              // This is to hook into ACRA
@@ -207,6 +214,22 @@ public class CreateManifest implements Task {
         }
         out.write("    </activity>\n");
 
+        Set<Map.Entry<String, Set<String>>> metadataElements = context.getComponentInfo().getActivitiyMetadataNeeded().entrySet();
+
+        // If any component needs to register additional activity metadata,
+        // insert them into the manifest here.
+        if (!metadataElements.isEmpty()) {
+          for (Map.Entry<String, Set<String>> metadataElementSetPair : metadataElements) {
+            Set<String> metadataElementSet = metadataElementSetPair.getValue();
+            for (String metadataElement : metadataElementSet) {
+              out.write(
+                  metadataElement
+                      .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+              );
+            }
+          }
+        }
+
         // Companion display a splash screen... define it's activity here
         if (isMain && context.isForCompanion()) {
           out.write("    <activity android:name=\"com.google.appinventor.components.runtime.SplashActivity\" android:screenOrientation=\"behind\" android:configChanges=\"keyboardHidden|orientation\">\n");
@@ -220,7 +243,10 @@ public class CreateManifest implements Task {
       // Collect any additional <application> subelements into a single set.
       Set<Map.Entry<String, Set<String>>> subelements = Sets.newHashSet();
       subelements.addAll(context.getComponentInfo().getActivitiesNeeded().entrySet());
+      subelements.addAll(context.getComponentInfo().getMetadataNeeded().entrySet());
       subelements.addAll(context.getComponentInfo().getBroadcastReceiversNeeded().entrySet());
+      subelements.addAll(context.getComponentInfo().getServicesNeeded().entrySet());
+      subelements.addAll(context.getComponentInfo().getContentProvidersNeeded().entrySet());
 
 
       // If any component needs to register additional activities or
@@ -232,7 +258,10 @@ public class CreateManifest implements Task {
             if (context.isForCompanion() && !context.isIncludeDangerousPermissions() && subelement.contains("android.provider.Telephony.SMS_RECEIVED")) {
               continue;
             }
-            out.write(subelement);
+            out.write(
+                subelement
+                    .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
+            );
           }
         }
       }
@@ -253,7 +282,9 @@ public class CreateManifest implements Task {
       // actions are optional (and as many as needed).
       for (String broadcastReceiver : simpleBroadcastReceivers) {
         String[] brNameAndActions = broadcastReceiver.split(",");
-        if (brNameAndActions.length == 0) continue;
+        if (brNameAndActions.length == 0) {
+          continue;
+        }
         // Remove the SMS_RECEIVED broadcast receiver if we aren't including dangerous permissions
         if (context.isForCompanion() && !context.isIncludeDangerousPermissions()) {
           boolean skip = false;
@@ -263,7 +294,9 @@ public class CreateManifest implements Task {
               break;
             }
           }
-          if (skip) continue;
+          if (skip) {
+            continue;
+          }
         }
         out.write(
             "<receiver android:name=\"" + brNameAndActions[0] + "\" >\n");
@@ -281,7 +314,7 @@ public class CreateManifest implements Task {
       // URLs in intents (and in other contexts)
 
       out.write("      <provider\n");
-      out.write("         android:name=\"android.support.v4.content.FileProvider\"\n");
+      out.write("         android:name=\"androidx.core.content.FileProvider\"\n");
       out.write("         android:authorities=\"" + packageName + ".provider\"\n");
       out.write("         android:exported=\"false\"\n");
       out.write("         android:grantUriPermissions=\"true\">\n");
