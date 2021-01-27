@@ -239,4 +239,15 @@ public final class Ball extends Sprite {
   public void MoveTo(double x, double y) {
     super.MoveTo(x, y);
   }
+
+  /**
+   * Sets the `x` and `y` coordinates of the `Ball`. If {@link #OriginAtCenter(boolean)} is true,
+   * the center of the `Ball` will be placed here. Otherwise, the top left edge of the `Ball` will
+   * be placed at the specified coordinates.
+   * @param coordinates a list of length 2 where the first item is the x-coordinate and the
+   * second item is the y-coordinate.
+   */
+  public void MoveToPoint(YailList coordinates) {
+    super.MoveToPoint(coordinates);
+  }
 }

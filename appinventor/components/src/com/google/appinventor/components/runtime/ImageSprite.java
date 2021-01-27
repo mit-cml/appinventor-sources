@@ -264,4 +264,14 @@ public class ImageSprite extends Sprite {
   public void MoveTo(double x, double y) {
     super.MoveTo(x, y);
   }
+
+  /**
+   * Moves the %type% so that its left top corner is at the specified x and y coordinates.
+   *
+   * @param coordinates a list of length 2 where the first item is the x-coordinate and the
+   * second item is the y-coordinate.
+   */
+  public void MoveToPoint(YailList coordinates) {
+    super.MoveToPoint(coordinates);
+  }
 }
