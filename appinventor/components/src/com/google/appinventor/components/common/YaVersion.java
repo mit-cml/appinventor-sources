@@ -517,7 +517,9 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 33
   // For YOUNG_ANDROID_VERSION 209:
   // - WEB_COMPONENT_VERSION was incremented to 8
-  public static final int YOUNG_ANDROID_VERSION = 209;
+  // For YOUNG_ANDROID-VERSION 210
+  // - CANVAS_COMPONENT_VERSION was incremented to 14
+  public static final int YOUNG_ANDROID_VERSION = 210;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -760,7 +762,11 @@ public class YaVersion {
   // - ExtendMovesOutsideCanvas was added
   // For CANVAS_COMPONENT_VERSION 13
   // - BackgroundImageinBase64 was added
-  public static final int CANVAS_COMPONENT_VERSION = 13;
+  // For CANVAS_PROPERTY_VERSION 14
+  // -TAP_THRESHOLD was changed from being constant to user settable 
+  // -TAP_THRESHOLD renamed to tapThreshold
+  // -TapThreshold was added
+  public static final int CANVAS_COMPONENT_VERSION = 14;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.

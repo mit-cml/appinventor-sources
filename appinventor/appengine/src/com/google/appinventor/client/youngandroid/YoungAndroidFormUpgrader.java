@@ -740,6 +740,12 @@ public final class YoungAndroidFormUpgrader {
       // The BackgroundImageinBase64 property was added in version 13.
       srcCompVersion = 13;
     }
+    if (srcCompVersion < 14) {
+      // The TAP_THRESHOLD value was changed to be user settable in version 14.
+      // TAP_THRESHOLD variable is now changed to tapThreshold
+      // TapThreshold was added
+      srcCompVersion = 14;
+      }
     return srcCompVersion;
   }
 
