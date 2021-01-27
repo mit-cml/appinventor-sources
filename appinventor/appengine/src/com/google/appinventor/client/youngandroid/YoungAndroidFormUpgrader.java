@@ -520,6 +520,10 @@ public final class YoungAndroidFormUpgrader {
       // The OriginAtCenter property was added.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // The MoveToPoint method was added.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
   private static int upgradeBarcodeScannerProperties(Map<String, JSONValue> componentProperties,
@@ -1154,6 +1158,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // The MoveToPoint method was added.
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }
