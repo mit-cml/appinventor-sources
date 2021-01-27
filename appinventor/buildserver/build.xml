@@ -221,7 +221,7 @@
   </target>
 
   <target name="CheckPlayAppExtras">
-    <uptodate property="PlayAppExtras.uptodate" targetfile="${public.build.dir}/MITAI2Companion-full.apk">
+    <uptodate property="PlayAppExtras.uptodate" targetfile="${public.build.dir}/MITAI2Companion-full.${ext}">
       <srcfiles file="${local.build.dir}/aiplayapp.zip"/>
       <srcfiles dir="${run.lib.dir}" includes="*.jar"/>
     </uptodate>
@@ -233,6 +233,7 @@
   <target name="PlayAppExtras"
           depends="CheckPlayAppExtras,PlayApp"
           unless="PlayAppExtras.uptodate">
+    <property name="ext" value="apk"/>
     <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
       <classpath>
         <fileset dir="${run.lib.dir}" includes="*.jar" />
@@ -252,9 +253,11 @@
       <arg value="--outputDir" />
       <arg value="${public.build.dir}" />
       <arg value="--outputFileName" />
-      <arg value="MITAI2Companion-full.apk" />
+      <arg value="MITAI2Companion-full.${ext}" />
       <arg value="--dexCacheDir" />
       <arg value="${public.build.dir}/dexCache" />
+      <arg value="--ext" />
+      <arg value="${ext}" />
     </java>
   </target>
 

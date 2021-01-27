@@ -5,6 +5,7 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.context.Resources;
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.runtime.Clock;
 import java.text.SimpleDateFormat;
@@ -29,7 +30,7 @@ public class YailAndroidTest {
   @Before
   public void setUp() throws Exception {
     scheme = new Scheme();
-    String yailRuntimeLibrary = Compiler.getResource(Compiler.YAIL_RUNTIME);
+    String yailRuntimeLibrary = new Resources().getResource(Resources.YAIL_RUNTIME);
     yailRuntimeLibrary = TestUtils.windowsToUnix(yailRuntimeLibrary);
     try {
       scheme.eval("(load \"" + yailRuntimeLibrary + "\")");
