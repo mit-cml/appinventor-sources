@@ -696,7 +696,19 @@ public abstract class Sprite extends VisibleComponent
    * second item is the y-coordinate.
    */
   public void MoveToPoint(YailList coordinates) {
-    MoveTo(coordinates.getObject(0), coordinates.getObject(1));
+    MoveTo(coerceToDouble(coordinates.getObject(0)), coerceToDouble(coordinates.getObject(1)));
+  }
+
+  public static double coerceToDouble(Object o) {
+    if (o instanceof Number) {
+      return ((Number) o).doubleValue();
+    } else  {
+      try {
+        return Double.parseDouble(o.toString());
+      } catch(NumberFormatException e) {
+        return Double.NaN;
+      }
+    }
   }
 
   /**
