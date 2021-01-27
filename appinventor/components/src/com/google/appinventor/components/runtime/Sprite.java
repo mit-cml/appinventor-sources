@@ -696,8 +696,8 @@ public abstract class Sprite extends VisibleComponent
    * second item is the y-coordinate.
    */
   @SimpleFunction(
-      description = "Moves the top left corner of %type% to the position of the cooordinates list, " +
-          "formatted as [x-coordinate, y-coordinate].")
+      description = "Moves the top left corner of %type% to the position of the cooordinates given " +
+          " by the list formatted as [x-coordinate, y-coordinate].")
   public void MoveToPoint(YailList coordinates) {
     MoveTo(coerceToDouble(coordinates.getObject(0)), coerceToDouble(coordinates.getObject(1)));
   }
