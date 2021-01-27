@@ -23,6 +23,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.YailList;
 
 /**
  * A 'sprite' that can be placed on a {@link Canvas}, where it can react to touches and drags,
