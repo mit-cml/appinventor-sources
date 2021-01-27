@@ -67,7 +67,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private SortField sortField;
   private SortOrder sortOrder;
 
-
   private boolean projectListLoading = true;
 
   // UI elements
@@ -386,7 +385,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   /**
    * Returns if the specified project is in Trash or in MyProjects
    */
-
   public int getProjectCurrentView(Project project) {
     if(project.isInTrash()) {
       return Ode.TRASHCAN;
@@ -399,7 +397,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   /**
    * Returns true if all projects under the current view have been selected, and false if not
    */
-
   public boolean isAllProjectsSelected() {
     if(Ode.getInstance().getCurrentView() == Ode.PROJECTS &&
       getSelectedProjectsCount() == getMyProjectsCount()) {
