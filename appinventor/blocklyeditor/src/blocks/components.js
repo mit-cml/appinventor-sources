@@ -205,8 +205,8 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
  *     associated with the block which is possibly deprecated.
  */
 Blockly.ComponentBlock.checkDeprecated = function(block, data) {
-  if ((!data || data.deprecated) && block.workspace == Blockly.mainWorkspace) {
-    block.badBlock();
+  if (data && data.deprecated && block.workspace == Blockly.mainWorkspace) {
+    block.setDisabled(true);
   }
 }
 
@@ -314,9 +314,10 @@ Blockly.Blocks.component_event = {
       input.init();
     }
 
+    // Set as badBlock if it doesn't exist.
+    this.verify(); 
+    // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, eventType);
-
-    this.verify(); // verify the block and mark it accordingly
 
     this.rendered = oldRendered;
   },
@@ -779,9 +780,10 @@ Blockly.Blocks.component_method = {
     this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkIsInDefinition"},
       {name:"checkComponentNotExistsError"}, {name: "checkGenericComponentSocket"}];
 
+    // Set as badBlock if it doesn't exist.
+    this.verify(); 
+    // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, this.getMethodTypeObject());
-
-    this.verify(); // verify the block and mark it accordingly
 
     this.rendered = oldRendered;
   },
@@ -1032,9 +1034,9 @@ Blockly.Blocks.component_set_get = {
       this.setColour(Blockly.ComponentBlock.COLOUR_GET);
     }
     var tooltipDescription;
-    if (this.propertyName) {
-      tooltipDescription = componentDb.getInternationalizedPropertyDescription(this.getTypeName(), this.propertyName,
-          this.propertyObject.description);
+    if (this.propertyName && this.propertyObject) {
+      tooltipDescription = componentDb.getInternationalizedPropertyDescription(
+        this.getTypeName(), this.propertyName, this.propertyObject.description);
     } else {
       tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
     }
@@ -1129,9 +1131,10 @@ Blockly.Blocks.component_set_get = {
       {name:"checkComponentNotExistsError"}, {name: 'checkGenericComponentSocket'},
       {name: 'checkEmptySetterSocket'}];
 
+    // Set as badBlock if it doesn't exist.
+    this.verify(); 
+    // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, this.propertyObject);
-
-    this.verify();
 
     for (var i = 0, input; input = this.inputList[i]; i++) {
       input.init();
