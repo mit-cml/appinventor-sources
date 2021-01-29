@@ -5,6 +5,8 @@ import Foundation
 import UIKit
 import Toast_Swift
 
+let kMinimumToastWait = 10.0
+
 @objc open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching, LifecycleDelegate, NeedsWeakReference {
   fileprivate static var _showListsAsJson = false
   fileprivate let TAG = "Form"
@@ -47,6 +49,7 @@ import Toast_Swift
   private var _keyboardVisible = false
   private var _environment = YailDictionary()
   private var _initThunks = YailDictionary()
+  private var _lastToastTime = 0.0
 
   public init(application: Application) {
     super.init(nibName: nil, bundle: nil)
@@ -306,6 +309,15 @@ import Toast_Swift
       }
     }
     Notifier.notices.clearNotices()
+  }
+
+  @objc open var toastAllowed: Bool {
+    let now = CFAbsoluteTimeGetCurrent()
+    if now > _lastToastTime + kMinimumToastWait {
+      _lastToastTime = now
+      return true
+    }
+    return false;
   }
 
   @objc open func callInitialize(_ component: Component) {

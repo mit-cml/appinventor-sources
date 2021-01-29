@@ -36,6 +36,23 @@ open class ReplForm: Form {
     formName = "Screen1"
   }
 
+  open func processException(ex: NSException) {
+    if toastAllowed {
+      var errorMessage: String! = nil
+      if let exception = interpreter.exception as? YailRuntimeError {
+        errorMessage = exception.name.rawValue
+      } else {
+        errorMessage = "\(interpreter.exception!)"
+      }
+      sendError(message: errorMessage)
+      view.makeToast(errorMessage, duration: 5.0)
+    }
+  }
+
+  open func sendError(message: String) {
+    RetValManager.shared().sendError(message)
+  }
+
   open override func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
     defer {
       _componentWithActiveEvent = nil
@@ -43,8 +60,20 @@ open class ReplForm: Form {
     _componentWithActiveEvent = component
     let interpreter = SCMInterpreter.shared
     let result = interpreter.invokeMethod("dispatchEvent", withArgArray: [component, componentName, eventName, args])
-    if (interpreter.exception != nil) {
-      NSLog("Exception occurred in YAIL: \((interpreter.exception?.name.rawValue)!) (irritants: \((interpreter.exception)!))");
+    if let exception = interpreter.exception {
+      defer {
+        interpreter.clearException()
+      }
+      NSLog("Exception occurred in YAIL: \(exception.name.rawValue) \(exception.reason ?? "")")
+      if let exception = interpreter.exception as? PermissionException {
+        if self == component as! NSObject && eventName == "PermissionDenied" {
+          processException(ex: exception)
+        } else {
+          PermissionDenied(component, eventName, exception.permissionNeeded)
+        }
+      } else {
+        processException(ex: exception)
+      }
       return false
     }
     if (result is Bool) {
@@ -57,14 +86,28 @@ open class ReplForm: Form {
   }
 
   open override func dispatchGenericEvent(of component: Component, eventName: String, unhandled: Bool, arguments: [AnyObject]) {
+    defer {
+      _componentWithActiveEvent = nil
+    }
     _componentWithActiveEvent = component
     if let interpreter = ReplForm._httpdServer?.interpreter {
       interpreter.invokeMethod("dispatchGenericEvent", withArgArray: [component, eventName, unhandled, arguments])
-      if (interpreter.exception != nil) {
-        NSLog("Exception occurred in YAIL: \((interpreter.exception?.name.rawValue)!) (irritants: \((interpreter.exception)!))");
+      if let exception = interpreter.exception {
+        defer {
+          interpreter.clearException()
+        }
+        NSLog("Exception occurred in YAIL: \(exception.name.rawValue) \(exception.reason ?? "")")
+        if let exception = interpreter.exception as? PermissionException {
+          if self == component as! NSObject && eventName == "PermissionDenied" {
+            processException(ex: exception)
+          } else {
+            PermissionDenied(component, eventName, exception.permissionNeeded)
+          }
+        } else {
+          processException(ex: exception)
+        }
       }
     }
-    _componentWithActiveEvent = nil
   }
 
   @objc open func startHTTPD(_ secure: Bool) {

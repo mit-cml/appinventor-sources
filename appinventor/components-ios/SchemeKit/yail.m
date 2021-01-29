@@ -741,6 +741,17 @@ yail_invoke(pic_state *pic) {
   int isStatic = yail_native_class_p(pic, native_object) ? 1 : 0;
   if (yail_native_method_p(pic, native_method)) {
     method = yail_native_method_ptr(pic, native_method)->method_;
+  } else if (!yail_native_class_p(pic, native_object) && !yail_native_instance_p(pic, native_object)) {
+    const char *buffer;
+    int len;
+    pic_value port = pic_fmemopen(pic, NULL, 256, "w");
+    pic_fprintf(pic, port, "invoke: unable to invoke method `~a` in object of type ~a",
+        native_method ,pic_cstr_value(pic, pic_typename(pic, pic_type(pic, native_object))));
+    pic_fgetbuf(pic, port, &buffer, &len);
+    pic_value error = pic_make_error(pic, "", buffer, pic_nil_value(pic));
+    pic_fclose(pic, port);
+    pic_raise(pic, error);
+    return pic_undef_value(pic);
   } else if (pic_sym_p(pic, native_method)) {
     const char *name = pic_str(pic, pic_sym_name(pic, native_method));
     if (isStatic) {

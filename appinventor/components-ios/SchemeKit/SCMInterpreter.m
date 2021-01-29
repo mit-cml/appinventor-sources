@@ -36,9 +36,8 @@ pic_init_picrin(pic_state *pic)
 
 static NSException *
 exception_from_pic_error(pic_state *pic, pic_value e) {
-  const char *msg, *buffer, *stack;
-  char *msgcopy = NULL, *bufcopy = NULL, *stackcopy = NULL;
-  struct string *stackstr = pic_error_ptr(pic, e)->stack;
+  const char *msg, *buffer;
+  char *msgcopy = NULL, *bufcopy = NULL;
   pic_value e2, port, irrs = pic_error_ptr(pic, e)->irrs;
   int buflen = 1024;
   pic_try {
@@ -51,18 +50,12 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
     bufcopy = (char *)malloc(buflen + 1);
     strncpy(bufcopy, buffer, buflen);  // Picrin may GC, so make a clean copy before we exit this scope
     bufcopy[buflen] = '\0';
-    stack = pic_str(pic, pic_obj_value(stackstr));
-    buflen = (int) strlen(stack);
-    stackcopy = (char *)malloc(buflen + 1);
-    strncpy(stackcopy, stack, buflen);
-    stackcopy[buflen] = '\0';
   } pic_catch(e2) {
     NSLog(@"WTF");
   }
-  NSException *result = [NSException exceptionWithName:@"RuntimeError" reason:[NSString stringWithFormat:@"%s. Irritants: %s\n%s", msgcopy, bufcopy, stackcopy] userInfo:nil];
+  NSException *result = [NSException exceptionWithName:@"RuntimeError" reason:[NSString stringWithFormat:@"%s. Irritants: %s", msgcopy, bufcopy] userInfo:nil];
   free(msgcopy);
   free(bufcopy);
-  free(stackcopy);
   return result;
 }
 
