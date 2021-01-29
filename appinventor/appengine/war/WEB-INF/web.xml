@@ -82,7 +82,18 @@
     <url-pattern>/remote_api</url-pattern>
   </servlet-mapping>
 
+  <!-- REST interface Servlet -->
+
+  <servlet>
+    <servlet-name>RestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.RestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RestServlet</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
   <!-- Nonce based APK download -->
+
   <servlet>
     <servlet-name>buildOutputServlet</servlet-name>
     <servlet-class>com.google.appinventor.server.BuildOutputServlet</servlet-class>

@@ -14,6 +14,10 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.storage.StoredData.PWData;
 
+import com.google.appinventor.server.tokens.Token;
+import com.google.appinventor.server.tokens.TokenException;
+import com.google.appinventor.server.tokens.TokenProto;
+
 import com.google.appinventor.server.util.PasswordHash;
 import com.google.appinventor.server.util.UriBuilder;
 
@@ -33,6 +37,7 @@ import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -70,6 +75,8 @@ public class LoginServlet extends HttpServlet {
   private static final Flag<String> password = Flag.createFlag("localauth.mailserver.password", "");
   private static final Flag<Boolean> useGoogle = Flag.createFlag("auth.usegoogle", true);
   private static final Flag<Boolean> useLocal = Flag.createFlag("auth.uselocal", false);
+  private static final String loginUrl = Flag.createFlag("login.url", "").get();
+
   private static final UserService userService = UserServiceFactory.getUserService();
   private final PolicyFactory sanitizer = new HtmlPolicyBuilder().allowElements("p").toFactory();
   private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
@@ -158,6 +165,18 @@ public class LoginServlet extends HttpServlet {
       resp.sendRedirect(uri);
       return;
     } else {
+      if (!loginUrl.isEmpty() && !page.equals("token")) {
+        /* If we have an external login URL specified, then redirect to it. */
+        String uri = new UriBuilder(loginUrl)
+          .add("locale", locale)
+          .add("repo", repo)
+          .add("ng", newGalleryId)
+          .add("galleryId", galleryId)
+          .add("autoload", autoload)
+          .add("redirect", redirect).build();
+        resp.sendRedirect(uri);
+        return;
+      }
       if (useLocal.get() == false) {
         if (useGoogle.get() == false) {
           out = setCookieOutput(userInfo, resp);
@@ -167,19 +186,22 @@ public class LoginServlet extends HttpServlet {
           out.println("</body>\n");
           out.println("</html>\n");
           return;
+        } else if (!page.equals("token")) {
+            String uri = new UriBuilder("/login/google")
+              .add("locale", locale)
+              .add("repo", repo)
+              .add("ng", newGalleryId)
+              .add("galleryId", galleryId)
+              .add("autoload", autoload)
+              .add("redirect", redirect).build();
+            resp.sendRedirect(uri);
+            return;
         }
-        String uri = new UriBuilder("/login/google")
-          .add("locale", "en".equals(locale) ? null : locale)
-          .add("repo", repo)
-          .add("ng", newGalleryId)
-          .add("galleryId", galleryId)
-          .add("redirect", redirect).build();
-        resp.sendRedirect(uri);
-        return;
       }
     }
 
     // If we get here, local accounts are supported
+    // or we are the "token" page
 
     if (page.equals("setpw")) {
       String uid = getParam(req);
@@ -225,9 +247,79 @@ public class LoginServlet extends HttpServlet {
       out.println("<p>" + bundle.getString("requestinstructions") + "</p>\n");
       out.println("<form method=POST action=\"" + req.getRequestURI() + "\">\n");
       out.println(bundle.getString("enteremailaddress") + ":&nbsp;<input type=text name=email value=\"\" size=\"35\"><br />\n");
+      out.println("<input type=hidden name=locale value=\"" + locale + "\">");
       out.println("<p></p>");
       out.println("<input type=submit value=\"" + bundle.getString("sendlink") + "\" style=\"font-size: 300%;\">\n");
       out.println("</form>\n");
+      return;
+    } else if (page.equals("token")) {
+      String encodedToken = params.get("token");
+      if (encodedToken == null) {
+        fail(req, resp, "No Authentication Token Provided", locale);
+        return;
+      }
+      TokenProto.token token = null;
+      try {
+        token = Token.verifyToken(encodedToken);
+      } catch (TokenException e) {
+        fail(req, resp, e.getMessage(), locale);
+        return;
+      }
+      // At this point we have a valid token, so use it to login!
+      // need to make sure it is a SSOLOGIN token
+      if (token.getCommand() != TokenProto.token.CommandType.SSOLOGIN &&
+          token.getCommand() != TokenProto.token.CommandType.SSOLOGIN2 &&
+          token.getCommand() != TokenProto.token.CommandType.SSOLOGIN3) {
+        fail(req, resp, "Token Valid, but not a SSOLOGIN token.", locale);
+        return;
+      }
+      long offset = System.currentTimeMillis() - token.getTs();
+      offset /= 1000;  // Convert to seconds
+      if (offset > 120) {       // Two minutes
+        fail(req, resp, "Token Expired. Was valid until " +
+          new Date(token.getTs()), locale);
+        return;
+      }
+      // At this point we have a valid SSOLOGIN token
+
+      userInfo = new OdeAuthFilter.UserInfo();
+      if (token.getCommand() == TokenProto.token.CommandType.SSOLOGIN) {
+        userInfo.setReadOnly(token.getReadOnly());
+        userInfo.setUserId(token.getUuid());
+      } else if (token.getCommand() == TokenProto.token.CommandType.SSOLOGIN2) { // SSOLOGIN2
+        String email = token.getName();
+        if (email == null || email.isEmpty()) {
+          fail(req, resp, "Failed to provide an Email Address for login.", locale);
+          return;
+        }
+        User user = storageIo.getUserFromEmail(email);
+        userInfo.setUserId(user.getUserId());
+      } else {                  // SSOLOGIN3
+        String uuid = token.getUuid();
+        String email = token.getName();
+        if (email == null || email.isEmpty() || uuid == null || uuid.isEmpty()) {
+          fail(req, resp, "Failed to provide email and uuid, shouldn't happen!", locale);
+          return;
+        }
+        User user = storageIo.getUser(uuid, email);
+        userInfo.setUserId(user.getUserId());
+      }
+
+      String newCookie = userInfo.buildCookie(false);
+      if (newCookie != null) {
+        Cookie cook = new Cookie("AppInventor", newCookie);
+        cook.setPath("/");
+        resp.addCookie(cook);
+      }
+
+      String uri = new UriBuilder("/")
+        .add("locale", locale)
+        .add("repo", repo)
+        .add("ng", newGalleryId)
+        .add("galleryId", galleryId)
+        .add("autoload", autoload)
+        .add("redirect", redirect).build();
+      resp.sendRedirect(uri);   // This should bring up App Inventor
       return;
     }
 
