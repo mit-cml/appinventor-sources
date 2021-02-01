@@ -690,25 +690,25 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Moves the %type% so that its left top corner is at the specified x and y coordinates.
+   * Moves the %type% so that its origin is at the specified x and y coordinates.
    *
    * @param coordinates a list of length 2 where the first item is the x-coordinate and the
-   * second item is the y-coordinate.
+   *     second item is the y-coordinate.
    */
   @SimpleFunction(
-      description = "Moves the top left corner of %type% to the position of the cooordinates given " +
-          " by the list formatted as [x-coordinate, y-coordinate].")
+      description = "Moves the origin of %type% to the position of the cooordinates given "
+          + " by the list formatted as [x-coordinate, y-coordinate].")
   public void MoveToPoint(YailList coordinates) {
     MoveTo(coerceToDouble(coordinates.getObject(0)), coerceToDouble(coordinates.getObject(1)));
   }
 
-  public static double coerceToDouble(Object o) {
+  protected static double coerceToDouble(Object o) {
     if (o instanceof Number) {
       return ((Number) o).doubleValue();
     } else  {
       try {
         return Double.parseDouble(o.toString());
-      } catch(NumberFormatException e) {
+      } catch (NumberFormatException e) {
         return Double.NaN;
       }
     }

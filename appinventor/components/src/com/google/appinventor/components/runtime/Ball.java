@@ -17,8 +17,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.PaintUtil;
-import com.google.appinventor.components.runtime.util.YailList;
-
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
