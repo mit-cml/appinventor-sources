@@ -517,7 +517,10 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 33
   // For YOUNG_ANDROID_VERSION 209:
   // - WEB_COMPONENT_VERSION was incremented to 8
-  public static final int YOUNG_ANDROID_VERSION = 209;
+  // For YOUNG_ANDROID_VERSION 210:
+  // - BALL_COMPONENT_VERSION was incremented to 7
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 7
+  public static final int YOUNG_ANDROID_VERSION = 210;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -681,7 +684,9 @@ public class YaVersion {
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
   // For BALL_COMPONENT_VERSION 6:
   // - The CenterAtOrigin property was added
-  public static final int BALL_COMPONENT_VERSION = 6;
+  // For BALL_COMPONENT_VERSION 7:
+  // - The MoveToPoint method was added (for all sprites)
+  public static final int BALL_COMPONENT_VERSION = 7;
 
   // For BARCODESCANNER_COMPONENT_VERSION 2:
   // -- UseExternalScanner property was added (default true)
@@ -944,7 +949,9 @@ public class YaVersion {
   // - The TouchUp, TouchDown, and Flung events were added. (for all sprites)
   // For IMAGESPRITE_COMPONENT_VERSION 6:
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 6;
+  // For IMAGESPRITE_COMPONENT_VERSION 7:
+  // - The MoveToPoint method was added (for all sprites)
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 7;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
