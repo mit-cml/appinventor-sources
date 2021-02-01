@@ -592,7 +592,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     let horizontalAxis = CGFloat(abs(right-left))
     let verticalAxis = CGFloat(abs(bottom-top))
     let startingAngle = CGFloat(GLKMathDegreesToRadians(startAngle))
-    let endingAngle = CGFloat(GLKMathDegreesToRadians(sweepAngle))
+    let endingAngle = CGFloat(GLKMathDegreesToRadians(sweepAngle + startAngle))
     
     // on Android, the path is closed when using center or, when not using center, when fill is set.
     let ellipticalArc = UIBezierPath(ellipseArcIn: CGRect(x: CGFloat(left), y: CGFloat(top), width:horizontalAxis, height: verticalAxis), startAngle: startingAngle, endAngle: endingAngle, useCenter: useCenter, closePath: useCenter || fill)
@@ -668,22 +668,15 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     var points = [CGPoint]()
 
     for (index, pointObject) in pointList.enumerated() {
-      // The first conversion is included that way we know it fails being converted to a list
-      guard let _ = pointObject as? [Any] else {
-        throw YailRuntimeError("item \(index) in YailList is not a YailListt", "IllegalArgument")
-      }
+      //In order to throw an error if it is not a list, we now attempt to convert it to an NSNumber
+      if let point = pointObject as? YailList<NSNumber> {
+        guard point.length == 2 else {
+          throw YailRuntimeError("length of item YailList \(index) is not 2", "IllegalArgument")
+        }
 
-      // In order to throw an error if it is not a list, we now attempt to convert it to an NSNumber
-      guard let point = pointObject as? [NSNumber] else {
-        throw YailRuntimeError("Must be a list of numbers", "IllegalArgument")
+        let x = CGFloat(truncating: point[1] as! NSNumber); let y = CGFloat(truncating: point[2] as! NSNumber)
+        points.append(CGPoint(x: x, y: y))
       }
-
-      guard point.count == 2 else {
-        throw YailRuntimeError("length of item YailList \(index) is not 2", "IllegalArgument")
-      }
-
-      let x = CGFloat(truncating: point[0]); let y = CGFloat(truncating: point[1])
-      points.append(CGPoint(x: x, y: y))
     }
 
     return points
@@ -696,8 +689,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     if fill {
       shapeLayer.fillColor = argbToColor(_paintColor).cgColor
     } else {
-      let clearColor = Int32(bitPattern: kCanvasDefaultBackgroundColor)
-      shapeLayer.fillColor = argbToColor(clearColor).cgColor
+      shapeLayer.fillColor = nil
     }
 
     shapeLayer.lineWidth = _lineWidth
