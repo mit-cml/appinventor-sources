@@ -152,6 +152,9 @@ A round 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react
  the center of the `Ball` will be placed here. Otherwise, the top left edge of the `Ball` will
  be placed at the specified coordinates.
 
+{:id="Ball.MoveToPoint" class="method"} <i/> MoveToPoint(*coordinates*{:.list})
+: Moves the Ball so that its origin is at the specified x and y coordinates.
+
 {:id="Ball.PointInDirection" class="method"} <i/> PointInDirection(*x*{:.number},*y*{:.number})
 : Turns this `Ball` to point toward the point with the coordinates `(x, y)`.
 
@@ -464,6 +467,9 @@ A 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react to to
 
 {:id="ImageSprite.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number})
 : Moves the ImageSprite so that its left top corner is at the specified `x` and `y` coordinates.
+
+{:id="ImageSprite.MoveToPoint" class="method"} <i/> MoveToPoint(*coordinates*{:.list})
+: Moves the ImageSprite so that its origin is at the specified x and y coordinates.
 
 {:id="ImageSprite.PointInDirection" class="method"} <i/> PointInDirection(*x*{:.number},*y*{:.number})
 : Turns this `ImageSprite` to point toward the point with the coordinates `(x, y)`.
