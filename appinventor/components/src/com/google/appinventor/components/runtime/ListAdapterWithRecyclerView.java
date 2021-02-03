@@ -37,6 +37,7 @@ import com.google.appinventor.components.runtime.util.YailList;
   private static ClickListener clickListener;
 
   public Boolean[] selection;
+  public Boolean[] isVisible;
   private int textMainColor;
   private float textMainSize;
   private int textDetailColor;
@@ -77,6 +78,8 @@ import com.google.appinventor.components.runtime.util.YailList;
 
     this.selection = new Boolean[items.size()];
     Arrays.fill(selection, Boolean.FALSE);
+    this.isVisible = new Boolean[items.size()];
+    Arrays.fill(isVisible, Boolean.TRUE);
   }
 
   public ListAdapterWithRecyclerView(ComponentContainer container, YailList stringItems, int textMainColor, float textMainSize, int textMainFont, int backgroundColor, int selectionColor) {
@@ -97,6 +100,8 @@ import com.google.appinventor.components.runtime.util.YailList;
     this.itemViews = new CardView[stringItems.size()];
     this.selection = new Boolean[stringItems.size()];
     Arrays.fill(selection, Boolean.FALSE);
+    this.isVisible = new Boolean[stringItems.size()];
+    Arrays.fill(isVisible, Boolean.TRUE);
 
     // Build the list of strings into a list of dictionaries
     this.items = new ArrayList<>();
@@ -284,6 +289,16 @@ import com.google.appinventor.components.runtime.util.YailList;
     } else {
       Log.e(LOG_TAG, "onBindViewHolder Layout not recognized: " + layoutType);
     }
+    if (selection[position]) {
+      holder.cardView.setBackgroundColor(selectionColor);
+    } else {
+      holder.cardView.setBackgroundColor(backgroundColor);
+    }
+    if (!isVisible[position])
+    {
+      holder.cardView.setVisibility(View.GONE);
+      holder.cardView.getLayoutParams().height = 0;
+    }
     itemViews[position] = holder.cardView;
   }
 
@@ -379,13 +394,23 @@ import com.google.appinventor.components.runtime.util.YailList;
         // Usually GUI objects take up no screen space when set to invisible, but setting a CardView object to invisible
         // was displaying an empty object. Therefore, set the height to 0 as well.
         // Setting visibility on individual entries will keep the selected index(ices) the same regardless of filter.
-        for(int i = 0; i < items.size(); ++i) {
-          if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
-            itemViews[i].setVisibility(View.VISIBLE);
-            itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-         } else {
-            itemViews[i].setVisibility(View.GONE);
-            itemViews[i].getLayoutParams().height = 0;
+        if (filterItems.size() == 0) {
+          Arrays.fill(isVisible, Boolean.TRUE);
+        } else {
+          for (int i = 0; i < items.size(); ++i) {
+            if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
+              isVisible[i] = true;
+              if (itemViews[i] != null) {
+                itemViews[i].setVisibility(View.VISIBLE);
+                itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+              }
+            } else {
+              isVisible[i] = false;
+              if (itemViews[i] != null) {
+                itemViews[i].setVisibility(View.GONE);
+                itemViews[i].getLayoutParams().height = 0;
+              }
+            }
           }
         }
       }

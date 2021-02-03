@@ -873,11 +873,13 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
         // Convert the JSON data into a list of Dictionaries
         for (int i = 0; i < arr.length(); ++i) {
           JSONObject jsonItem = arr.getJSONObject(i);
-          YailDictionary dictItem = new YailDictionary();
-          dictItem.put(Component.LISTVIEW_KEY_MAIN_TEXT, jsonItem.has("Text1") ? jsonItem.getString("Text1") : "");
-          dictItem.put(Component.LISTVIEW_KEY_DESCRIPTION, jsonItem.has("Text2") ? jsonItem.getString("Text2") : "");
-          dictItem.put(Component.LISTVIEW_KEY_IMAGE, jsonItem.has("Image") ? jsonItem.getString("Image") : "");
-          dictItems.add(dictItem);
+          YailDictionary yailItem = new YailDictionary();
+          if (jsonItem.has("Text1")) {
+            yailItem.put(Component.LISTVIEW_KEY_MAIN_TEXT, jsonItem.getString("Text1"));
+            yailItem.put(Component.LISTVIEW_KEY_DESCRIPTION, jsonItem.has("Text2") ? jsonItem.getString("Text2") : "");
+            yailItem.put(Component.LISTVIEW_KEY_IMAGE, jsonItem.has("Image") ? jsonItem.getString("Image") : "");
+            dictItems.add(yailItem);
+          }
         }
       } catch (JSONException e) {
         Log.e(LOG_TAG, "Malformed JSON in ListView.ListData", e);
