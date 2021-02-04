@@ -427,6 +427,34 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
 Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   var xmlArray = [];
   var componentInfo = this.workspace_.getComponentDatabase().getType(typeName);
+  // Collect helper keys used in events, methods, and properties so that we
+  // can add all the helper blocks used by the component near the bottom of
+  // its drawer.
+  var helperKeys = [];
+  var xmlUtils = Blockly.Util.xml;
+
+  function getHelper(feature) {
+    if (!feature.helperKey) {
+      return;
+    }
+
+    function addToHelpers(curKey) {
+      switch (curKey.type) {
+        case "OPTION_LIST":
+          return !helperKeys.some(function(altKey) {
+            return altKey.key == curKey.key && altKey.type == curKey.type;
+          });
+        default:  // Most types probably only want one instance in the drawer.
+          return !helperKeys.some(function(altKey) {
+            return altKey.type == curKey.type;
+          });
+      }
+    }
+
+    if (addToHelpers(feature.helperKey)) {
+      helperKeys.push(feature.helperKey);
+    }
+  }
 
   //create generic event blocks
   goog.object.forEach(componentInfo.eventDictionary, function(event, name){
@@ -434,15 +462,35 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
       Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
         component_type: typeName, event_name: name, is_generic: 'true'
       }));
+
+      // Determine if any parameters are associated with a helper which should
+      // be added at the bottom of the drawer.
+      event.parameters.forEach(getHelper);
     }
   }, this);
 
   //create generic method blocks
   goog.object.forEach(componentInfo.methodDictionary, function(method, name) {
     if (!method.deprecated) {
-      Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_method', {
+      var methodXml = this.blockTypeToXML('component_method', {
         component_type: typeName, method_name: name, is_generic: "true"
-      }));
+      });
+
+
+      method.parameters.forEach(function(param, index) {
+        if (!param.helperKey) {
+          return;
+        }
+        // Determine if any parameters are associated with a helper which should
+        // be added at the bottom of the drawer.
+        getHelper(param);
+        // Adds dropdown blocks to inputs which expect them.
+        var inputXml = xmlUtils.valueWithHelperXML('ARG' + index, param.helperKey);
+        // First child b/c these are wrapped in an <xml/> node.
+        methodXml.firstChild.appendChild(inputXml.firstChild);
+      }.bind(this));
+
+      Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(methodXml));
     }
   }, this);
 
@@ -456,10 +504,29 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
       }
       if ((property.mutability & Blockly.PROPERTY_WRITEABLE) == Blockly.PROPERTY_WRITEABLE) {
         params.set_or_get = 'set';
-        Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_set_get', params));
+        var setXml = this.blockTypeToXML('component_set_get', params);
+
+        if (property.helperKey) {
+          // Adds dropdown blocks to inputs which expect them.
+          var inputXml = xmlUtils.valueWithHelperXML('VALUE', property.helperKey);
+          // First child b/c these are wrapped in an <xml/> node.
+          setXml.firstChild.appendChild(inputXml.firstChild);
+        }
+
+        Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(setXml));
       }
+
+      // Collects up helper blocks for properties which use them so they can
+      // be added to the bottom of the drawer.
+      getHelper(property);
     }
   }, this);
+
+  // Create helper blocks at the bottom of the drawer.
+  helperKeys.forEach(function(helper) {
+    var xml = xmlUtils.helperKeyToXML(helper);
+    Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(xml));
+  }.bind(this));
 
   return xmlArray;
 };
