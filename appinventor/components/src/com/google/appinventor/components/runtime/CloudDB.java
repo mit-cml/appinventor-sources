@@ -67,6 +67,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisShardInfo;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.exceptions.JedisException;
@@ -1169,11 +1170,20 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   public Jedis getJedis(boolean createNew) {
-    Jedis jedis;
     if (dead) {                 // If we are dead, we are dead!
       return null;
     }
+    Jedis jedis;
     try {
+      String jToken;            // The token we actually send to CloudDB
+      // If the first character of the token is %, we toss it away
+      // it is used by MockCloudDB.java to determine if the token should
+      // be kept or fetched from the server when needed
+      if (token != null && !token.equals("") && token.substring(0, 1).equals("%")) {
+        jToken = token.substring(1);
+      } else {
+        jToken = token;
+      }
       if (DEBUG) {
         Log.d(LOG_TAG, "getJedis(true): Attempting a new connection (createNew = " +
           createNew + " redisServer = " + redisServer + " redisPort = " +
@@ -1184,20 +1194,18 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                                 // Root certificate because it isn't present in older
                                 // Android versions
         ensureSslSockFactory();
-        jedis = new Jedis(redisServer, redisPort, true, SslSockFactory, null, null);
+        JedisShardInfo jedisinfo = new JedisShardInfo(redisServer, redisPort,
+          20000 /* connection timeout */, true, SslSockFactory, null, null);
+        jedisinfo.setPassword(jToken);
+        jedis = new Jedis(jedisinfo);
       } else {
-        jedis = new Jedis(redisServer, redisPort, false);
+        JedisShardInfo jedisinfo = new JedisShardInfo(redisServer,
+          redisPort, 20000 /* connection timeout */);
+        jedisinfo.setPassword(jToken);
+        jedis = new Jedis(jedisinfo);
       }
       if (DEBUG) {
         Log.d(LOG_TAG, "getJedis(true): Have new connection.");
-      }
-      // If the first character of the token is %, we toss it away
-      // it is used by MockCloudDB.java to determine if the token should
-      // be kept or fetched from the server when needed
-      if (token.substring(0, 1).equals("%")) {
-        jedis.auth(token.substring(1));
-      } else {
-        jedis.auth(token);
       }
       if (DEBUG) {
         Log.d(LOG_TAG, "getJedis(true): Authentication complete.");
