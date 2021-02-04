@@ -273,10 +273,15 @@ Blockly.Yail['math_on_list'] = function() {
   var tuple = Blockly.Yail.math_on_list.OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1];
+  var identity = tuple[2];
   var args = "";
   var typeString = "";
   for(var i=0;i<this.itemCount_;i++) {
     args += (Blockly.Yail.valueToCode(this, 'NUM' + i, order) || 0) + Blockly.Yail.YAIL_SPACER;
+    typeString += "number" + Blockly.Yail.YAIL_SPACER;
+  }
+  if (this.itemCount_ === 0) {
+    args += identity + Blockly.Yail.YAIL_SPACER;
     typeString += "number" + Blockly.Yail.YAIL_SPACER;
   }
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator
@@ -294,8 +299,8 @@ Blockly.Yail['math_on_list'] = function() {
 };
 
 Blockly.Yail.math_on_list.OPERATORS = {
-  MIN: ['min', Blockly.Yail.ORDER_NONE],
-  MAX: ['max', Blockly.Yail.ORDER_NONE]
+  MIN: ['min', Blockly.Yail.ORDER_NONE, '+inf.0'],
+  MAX: ['max', Blockly.Yail.ORDER_NONE, '-inf.0']
 };
 
 Blockly.Yail['math_divide'] = function() {

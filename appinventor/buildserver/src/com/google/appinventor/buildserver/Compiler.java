@@ -134,12 +134,48 @@ public final class Compiler {
   private static final String APKSIGNER_JAR =
       RUNTIME_FILES_DIR + "apksigner.jar";
 
+  /*
+   * Note for future updates: This list can be obtained from an Android Studio project running the
+   * following command:
+   *
+   * ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --console=plain | \
+   *     awk 'BEGIN {FS="--- "} {print $2}' | cut -d : -f2 | sort -u
+   */
   private static final Set<String> CRITICAL_JARS =
       new HashSet<>(Arrays.asList(
-          RUNTIME_FILES_DIR + "appcompat-v7.jar",
-          RUNTIME_FILES_DIR + "common.jar",
+          // Minimum required for Android 4.x
+          RUNTIME_FILES_DIR + "appcompat.jar",
+          RUNTIME_FILES_DIR + "collection.jar",
+          RUNTIME_FILES_DIR + "core.jar",
+          RUNTIME_FILES_DIR + "core-common.jar",
           RUNTIME_FILES_DIR + "lifecycle-common.jar",
-          RUNTIME_FILES_DIR + "support-compat.jar"
+          RUNTIME_FILES_DIR + "vectordrawable.jar",
+          RUNTIME_FILES_DIR + "vectordrawable-animated.jar",
+
+          // Extras that may be pulled
+          RUNTIME_FILES_DIR + "annotation.jar",
+          RUNTIME_FILES_DIR + "asynclayoutinflater.jar",
+          RUNTIME_FILES_DIR + "coordinatorlayout.jar",
+          RUNTIME_FILES_DIR + "core-runtime.jar",
+          RUNTIME_FILES_DIR + "cursoradapter.jar",
+          RUNTIME_FILES_DIR + "customview.jar",
+          RUNTIME_FILES_DIR + "documentfile.jar",
+          RUNTIME_FILES_DIR + "drawerlayout.jar",
+          RUNTIME_FILES_DIR + "fragment.jar",
+          RUNTIME_FILES_DIR + "interpolator.jar",
+          RUNTIME_FILES_DIR + "legacy-support-core-ui.jar",
+          RUNTIME_FILES_DIR + "legacy-support-core-utils.jar",
+          RUNTIME_FILES_DIR + "lifecycle-livedata.jar",
+          RUNTIME_FILES_DIR + "lifecycle-livedata-core.jar",
+          RUNTIME_FILES_DIR + "lifecycle-runtime.jar",
+          RUNTIME_FILES_DIR + "lifecycle-viewmodel.jar",
+          RUNTIME_FILES_DIR + "loader.jar",
+          RUNTIME_FILES_DIR + "localbroadcastmanager.jar",
+          RUNTIME_FILES_DIR + "print.jar",
+          RUNTIME_FILES_DIR + "slidingpanelayout.jar",
+          RUNTIME_FILES_DIR + "swiperefreshlayout.jar",
+          RUNTIME_FILES_DIR + "versionedparcelable.jar",
+          RUNTIME_FILES_DIR + "viewpager.jar"
       ));
 
   private static final String LINUX_AAPT_TOOL =
@@ -169,6 +205,10 @@ public final class Compiler {
   private final ConcurrentMap<String, Set<String>> activityMetadataNeeded =
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> broadcastReceiversNeeded =
+      new ConcurrentHashMap<String, Set<String>>();
+  private final ConcurrentMap<String, Set<String>> servicesNeeded =
+      new ConcurrentHashMap<String, Set<String>>();
+  private final ConcurrentMap<String, Set<String>> contentProvidersNeeded =
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> libsNeeded =
       new ConcurrentHashMap<String, Set<String>>();
@@ -422,6 +462,18 @@ public final class Compiler {
 
   // Just used for testing
   @VisibleForTesting
+  Map<String, Set<String>> getServices() {
+    return servicesNeeded;
+  }
+
+  // Just used for testing
+  @VisibleForTesting
+  Map<String, Set<String>> getContentProviders() {
+    return contentProvidersNeeded;
+  }
+
+  // Just used for testing
+  @VisibleForTesting
   Map<String, Set<String>> getActivities() {
     return activitiesNeeded;
   }
@@ -598,6 +650,46 @@ public final class Compiler {
     }
 
     mergeConditionals(conditionals.get(ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET), broadcastReceiversNeeded);
+  }
+
+  /*
+   * Generate a set of conditionally included services needed by this project.
+   */
+  @VisibleForTesting
+  void generateServices() {
+    try {
+      loadJsonInfo(servicesNeeded, ComponentDescriptorConstants.SERVICES_TARGET);
+    } catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Services"));
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Services"));
+    }
+
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.SERVICES_TARGET), servicesNeeded);
+  }
+
+  /*
+   * Generate a set of conditionally included content providers needed by this project.
+   */
+  @VisibleForTesting
+  void generateContentProviders() {
+    try {
+      loadJsonInfo(contentProvidersNeeded, ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET);
+    } catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Content Providers"));
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Content Providers"));
+    }
+
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET), contentProvidersNeeded);
   }
 
   /*
@@ -1013,6 +1105,10 @@ public final class Compiler {
         out.write("android:label=\"" + aName + "\" ");
       }
       out.write("android:networkSecurityConfig=\"@xml/network_security_config\" ");
+      out.write("android:requestLegacyExternalStorage=\"true\" ");  // For SDK 29 (Android Q)
+      if (YaVersion.TARGET_SDK_VERSION >= 30) {
+        out.write("android:preserveLegacyExternalStorage=\"true\" ");  // For SDK 30 (Android R)
+      }
       out.write("android:icon=\"@mipmap/ic_launcher\" ");
       out.write("android:roundIcon=\"@mipmap/ic_launcher\" ");
       if (isForCompanion) {              // This is to hook into ACRA
@@ -1067,6 +1163,14 @@ public final class Compiler {
           out.write("        <category android:name=\"android.intent.category.LAUNCHER\" />\n");
         }
         out.write("      </intent-filter>\n");
+        if (isForCompanion) {
+          out.write("<intent-filter>\n");
+          out.write("<action android:name=\"android.intent.action.VIEW\" />\n");
+          out.write("<category android:name=\"android.intent.category.DEFAULT\" />\n");
+          out.write("<category android:name=\"android.intent.category.BROWSABLE\" />\n");
+          out.write("<data android:scheme=\"aicompanion\" android:host=\"comp\" />\n");
+          out.write("</intent-filter>\n");
+        }
 
         if (simpleCompTypes.contains("com.google.appinventor.components.runtime.NearField") &&
             !isForCompanion && isMain) {
@@ -1111,10 +1215,13 @@ public final class Compiler {
       subelements.addAll(activitiesNeeded.entrySet());
       subelements.addAll(metadataNeeded.entrySet());
       subelements.addAll(broadcastReceiversNeeded.entrySet());
+      subelements.addAll(servicesNeeded.entrySet());
+      subelements.addAll(contentProvidersNeeded.entrySet());
 
 
-      // If any component needs to register additional activities or
-      // broadcast receivers, insert them into the manifest here.
+      // If any component needs to register additional activities, 
+      // broadcast receivers, services or content providers, insert 
+      // them into the manifest here.
       if (!subelements.isEmpty()) {
         for (Map.Entry<String, Set<String>> componentSubElSetPair : subelements) {
           Set<String> subelementSet = componentSubElSetPair.getValue();
@@ -1144,7 +1251,9 @@ public final class Compiler {
       // actions are optional (and as many as needed).
       for (String broadcastReceiver : simpleBroadcastReceivers) {
         String[] brNameAndActions = broadcastReceiver.split(",");
-        if (brNameAndActions.length == 0) continue;
+        if (brNameAndActions.length == 0) {
+          continue;
+        }
         // Remove the SMS_RECEIVED broadcast receiver if we aren't including dangerous permissions
         if (isForCompanion && !includeDangerousPermissions) {
           boolean skip = false;
@@ -1154,11 +1263,13 @@ public final class Compiler {
               break;
             }
           }
-          if (skip) continue;
+          if (skip) {
+            continue;
+          }
         }
         out.write(
             "<receiver android:name=\"" + brNameAndActions[0] + "\" >\n");
-        if (brNameAndActions.length > 1){
+        if (brNameAndActions.length > 1) {
           out.write("  <intent-filter>\n");
           for (int i = 1; i < brNameAndActions.length; i++) {
             out.write("    <action android:name=\"" + brNameAndActions[i] + "\" />\n");
@@ -1172,7 +1283,7 @@ public final class Compiler {
       // URLs in intents (and in other contexts)
 
       out.write("      <provider\n");
-      out.write("         android:name=\"android.support.v4.content.FileProvider\"\n");
+      out.write("         android:name=\"androidx.core.content.FileProvider\"\n");
       out.write("         android:authorities=\"" + packageName + ".provider\"\n");
       out.write("         android:exported=\"false\"\n");
       out.write("         android:grantUriPermissions=\"true\">\n");
@@ -1226,6 +1337,8 @@ public final class Compiler {
     compiler.generateMetadata();
     compiler.generateActivityMetadata();
     compiler.generateBroadcastReceivers();
+    compiler.generateServices();
+    compiler.generateContentProviders();
     compiler.generateLibNames();
     compiler.generateNativeLibNames();
     compiler.generatePermissions();
@@ -2506,7 +2619,8 @@ public final class Compiler {
    * @param type The name of the type being processed
    * @param targetInfo Name of the annotation target being processed (e.g.,
    *                   permissions). Any of: PERMISSIONS_TARGET,
-   *                   BROADCAST_RECEIVERS_TARGET
+   *                   BROADCAST_RECEIVERS_TARGET, SERVICES_TARGET,
+   *                   CONTENT_PROVIDERS_TARGET
    */
   private void processConditionalInfo(JSONObject compJson, String type, String targetInfo) {
     // Strip off the package name since SCM and BKY use unqualified names

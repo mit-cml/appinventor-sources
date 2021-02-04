@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -512,9 +512,39 @@ public class YaVersion {
   // - YANDEX_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 207:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 32
-
-  // TODO: Bump this before merge. Include notes about all upgraded components.
-  public static final int YOUNG_ANDROID_VERSION = 207;
+  // For YOUNG_ANDROID_VERSION 208:
+  // - FILE_COMPONENT_VERSION was incremented to 3
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 33
+  // For YOUNG_ANDROID_VERSION 209:
+  // - WEB_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 210:
+  // - BALL_COMPONENT_VERSION was incremented to 7
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 211 (helper blocks):
+  // - BLOCKS_LANGUAGE_VERSION incremented to 34
+  // - ACCELEROMETERSENSOR_COMPONENT_VERSION incremented to 5
+  // - BALL_COMPONENT_VERSION incremented to 8
+  // - BUTTON_COMPONENT_VERSION incremented to 7
+  // - CANVAS_COMPONENT_VERSION incremented to 14
+  // - DATEPICKER_COMPONENT_VERSION incremented to 4
+  // - FORM_COMPONENT_VESRION incremented to 28
+  // - HORIZONTALaRRANGEMENT_COMPONENT_VERSION incremented to 4
+  // - HORIZONTALSCROLLARRANGEMENT_COMPONENTvERSION incremented to 2
+  // - IMAGESPRITE_COMPONENT_VERSION incremented to 8
+  // - MAP_COMPONENT_VERSION incremented to 6
+  // - MARKER_COMPONENT_VERSION increntmented to 4
+  // - NAVIGATION_COMPONENT_VERSION incremented to 2
+  // - NXT_DIRECT_COMMANDS_COMPONENT_VERSION incremented to 2
+  // - EV3_COLORSENSOR_COMPONENT_VERSION incremented to 2
+  // - EV3_GYROSENSOR_COMPONENT_VERSION incremented to 2
+  // - EV3_ULTRASONICSENSOR_COMPONENT_VERSION incremented to 2
+  // - SOUND_COMPONENT_VERSION incremented to 4
+  // - TEXTING_COMPONENT_VERSION incremented to 5
+  // - TIMEPICKER_COMPONENT_VERSION incremented to 4
+  // - VERTICALARRANGEMENT_COMPONENT_VERSION incremented to 4
+  // - VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION incremented to 2
+  // - VIDEOPLAYER_Component_VERSION incremented to 7
+  public static final int YOUNG_ANDROID_VERSION = 211;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -597,15 +627,17 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 32
   // - The and/or blocks gained mutators.
   // For BLOCKS_LANGUAGE_VERSION 33
+  // - Added "contains any" and "contains all" options to the text contains block.
+  // For BLOCKS_LANGUAGE_VERSION 34
   // - The helpers_screen_names block was added.
   // - Add sanitizing concrete values to OptionLists.
-  public static final int BLOCKS_LANGUAGE_VERSION = 33;
+  public static final int BLOCKS_LANGUAGE_VERSION = 34;
 
   // ................................. Target SDK Version Number ..................................
 
-  public static final int TARGET_SDK_VERSION = 28;
+  public static final int TARGET_SDK_VERSION = 29;
 
-  public static final String TARGET_ANDROID_VERSION = "Android 9.0 Pie";
+  public static final String TARGET_ANDROID_VERSION = "Android 10.0";
 
   // ................................. Component Version Numbers ..................................
 
@@ -681,9 +713,11 @@ public class YaVersion {
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
   // For BALL_COMPONENT_VERSION 6:
   // - The CenterAtOrigin property was added
-  // For Ball_COMPONENT_VERSION 7:
+  // For BALL_COMPONENT_VERSION 7:
+  // - The MoveToPoint method was added (for all sprites)
+  // For Ball_COMPONENT_VERSION 8:
   // - Adds dropdown blocks for Direction.
-  public static final int BALL_COMPONENT_VERSION = 7;
+  public static final int BALL_COMPONENT_VERSION = 8;
 
   // For BARCODESCANNER_COMPONENT_VERSION 2:
   // -- UseExternalScanner property was added (default true)
@@ -829,7 +863,9 @@ public class YaVersion {
 
   // For FILE_COMPONENT_VERSION 2:
   // - The AfterFileSaved event was added.
-  public static final int FILE_COMPONENT_VERSION = 2;
+  // For FILE_COMPONENT_VERSION 3:
+  // - The LegacyMode property was added.
+  public static final int FILE_COMPONENT_VERSION = 3;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -965,9 +1001,11 @@ public class YaVersion {
   // For IMAGESPRITE_COMPONENT_VERSION 6:
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
   // For IMAGESPRITE_COMPONENT_VERSION 7:
+  // - The MoveToPoint method was added (for all sprites)
+  // For IMAGESPRITE_COMPONENT_VERSION 8:
   // - Adds dropdown blocks for Direction.
   // - Assets helper block was added.
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 7;
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 8;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1372,7 +1410,9 @@ public class YaVersion {
   // For WEB_COMPONENT_VERSION 7:
   // - The JsonTextDecodeWithDictionaries method was added
   // - The XMLTextDecodeAsDictionary method was added.
-  public static final int WEB_COMPONENT_VERSION = 7;
+  // For WEB_COMPONENT_VERSION 8:
+  // - PATCH methods added (PatchText, PatchTextWithEncoding, and PatchFile).
+  public static final int WEB_COMPONENT_VERSION = 8;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added
@@ -1459,11 +1499,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.58a";
+  public static final String PREFERRED_COMPANION = "2.60";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.58a", "2.58au" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.60", "2.60u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

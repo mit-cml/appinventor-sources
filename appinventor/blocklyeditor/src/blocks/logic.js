@@ -169,14 +169,6 @@ Blockly.Blocks['logic_operation'] = {
      * @type {Blockly.WorkspaceSvg}
      */
     this.lastMutator = null;
-    // NOTE(ewp): Blockly doesn't trigger the validation function when the field is set during
-    // load, so we override setValue here to make sure that the additional and/or labels (if
-    // present) match the dropdown's value.
-    var oldSetValue = this.opField.setValue;
-    this.opField.setValue = function(newValue) {
-      oldSetValue.call(this, newValue);
-      thisBlock.updateFields(newValue);
-    };
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('A')
@@ -203,13 +195,35 @@ Blockly.Blocks['logic_operation'] = {
       }
     }
 
+    if (this.itemCount_ === 0) {
+      this.removeInput(this.emptyInputName, true);
+    }
+    if (this.itemCount_ > 0) {
+      this.removeInput('A', true);
+    }
+    if (this.itemCount_ > 1) {
+      this.removeInput('B', true);
+    }
     for (var x = 2; x < this.itemCount_; x++) {
-      this.removeInput(this.repeatingInputName + x);
+      this.removeInput(this.repeatingInputName + x, true);
     }
     this.itemCount_ = window.parseInt(container.getAttribute('items'), 10);
-    for (var x = 2; x < this.itemCount_; x++) {
+    for (var x = 0; x < this.itemCount_; x++) {
       this.addInput(x);
     }
+    if (this.itemCount_ === 0) {
+      this.addEmptyInput();
+    }
+    // NOTE(ewp): Blockly doesn't trigger the validation function when the field is set during
+    // load, so we override setValue here to make sure that the additional and/or labels (if
+    // present) match the dropdown's value.
+    // TODO: BeksOmega says that this can be removed once we update Blockly.
+    var oldSetValue = this.opField.setValue;
+    var thisBlock = this;
+    this.opField.setValue = function(newValue) {
+      oldSetValue.call(this, newValue);
+      thisBlock.updateFields(newValue);
+    };
   },
   decompose: function(workspace) {
     var containerBlockName = 'mutator_container';
@@ -227,30 +241,46 @@ Blockly.Blocks['logic_operation'] = {
     this.lastMutator = workspace;
     return containerBlock;
   },
+  countNumberOfInputs: function(containerBlock) {
+    var start = containerBlock.getInputTargetBlock('STACK');
+    var i = 0;
+    while (start) {
+      i++;
+      start = start.getNextBlock();
+    }
+    return i;
+  },
   compose: function(containerBlock) {
     if (this.valuesToSave != null) {
       for (var name in this.valuesToSave) {
         this.valuesToSave[name] = this.getFieldValue(name);
       }
     }
+    if (this.itemCount_ === 0) {
+      this.removeInput(this.emptyInputName, true);
+    }
     // Disconnect all input blocks and destroy all inputs.
     for (var x = this.itemCount_ - 1; x >= 0; x--) {
-      this.removeInput(x > 1 ? this.repeatingInputName + x : ['A', 'B'][x]);
+      this.removeInput(x > 1 ? this.repeatingInputName + x : ['A', 'B'][x], true);
     }
-    this.itemCount_ = 0;
     // Rebuild the block's inputs.
-    var itemBlock = containerBlock.getInputTargetBlock('STACK')
+    var itemBlock = containerBlock.getInputTargetBlock('STACK');
+    this.itemCount_ = this.countNumberOfInputs(containerBlock);
+    var i = 0;
     while (itemBlock) {
 
-      var input = this.addInput(this.itemCount_)
+      var input = this.addInput(i);
 
       // Reconnect any child blocks.
       if (itemBlock.valueConnection_) {
         input.connection.connect(itemBlock.valueConnection_);
       }
-      this.itemCount_++;
+      i++;
       itemBlock = itemBlock.nextConnection &&
         itemBlock.nextConnection.targetBlock();
+    }
+    if (this.itemCount_ === 0) {
+      this.addEmptyInput();
     }
   },
   saveConnections: function(containerBlock) {
@@ -269,28 +299,35 @@ Blockly.Blocks['logic_operation'] = {
     var input = this.appendValueInput(name)
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
     if (this.getInputsInline()) {
-      if (inputNum == 1) {
-        var op = this.opField.getValue();
-        this.opField = new Blockly.FieldDropdown(
-          Blockly.Blocks.logic_operation.OPERATORS(),
-          this.updateFields.bind(this));
-        this.opField.setValue(op);
-        input.appendField(this.opField, 'OP');
-        this.opField.init();
+      if (inputNum === 1) {
+        this.makeDropdown(input);
       } else if (inputNum > 1) {
         var field = new Blockly.FieldLabel(this.opField.getText());
         input.appendField(field);
         field.init();
+      } else if (this.itemCount_ === 1) {
+        input.appendField(Blockly.Blocks.logic_operation.IDENTITY(this.opField.getValue()),
+          'IDENTITY');
+        this.makeDropdown(input);
       }
-    } else if (inputNum == 0) {
-      var op = this.opField.getValue();
-      this.opField = new Blockly.FieldDropdown(
-        Blockly.Blocks.logic_operation.OPERATORS.OPERATORS,
-        this.updateFields.bind(this));
-      this.opField.setValue(op);
-      input.appendField(this.opField, 'OP');
-      this.opField.init();
+    } else if (inputNum === 0) {
+      this.makeDropdown(input);
     }
+    return input;
+  },
+  addEmptyInput: function() {
+    this.makeDropdown(this.appendDummyInput(this.emptyInputName));
+  },
+  makeDropdown: function(input) {
+    var op = this.opField.getValue();
+    // Dispose of the old field first (issue #2266)
+    this.opField.dispose();
+    this.opField = new Blockly.FieldDropdown(
+      Blockly.Blocks.logic_operation.OPERATORS(),
+      this.updateFields.bind(this));
+    this.opField.setValue(op);
+    input.appendField(this.opField, 'OP');
+    this.opField.init();
     return input;
   },
   helpUrl: function () {
@@ -300,10 +337,10 @@ Blockly.Blocks['logic_operation'] = {
   setInputsInline: function(inline) {
     if (inline) {
       var ainput = this.getInput('A');
-      if (ainput.fieldRow.length > 0) {
+      if (ainput && ainput.fieldRow.length > 0) {
         ainput.fieldRow.splice(0, 1);
         var binput = this.getInput('B');
-        binput.fieldRow.splice(0, 0, this.opField);
+        this.makeDropdown(binput);
       }
       for (var input, i = 2; (input = this.inputList[i]); i++) {
         var field = new Blockly.FieldLabel(this.opField.getText());
@@ -312,10 +349,10 @@ Blockly.Blocks['logic_operation'] = {
       }
     } else {
       var binput = this.getInput('B');
-      if (binput.fieldRow.length > 0) {
+      if (binput && binput.fieldRow.length > 0) {
         binput.fieldRow.splice(0, 1);
         var ainput = this.getInput('A');
-        ainput.fieldRow.splice(0, 0, this.opField);
+        this.makeDropdown(ainput);
       }
       for (var input, i = 2; (input = this.inputList[i]); i++) {
         input.fieldRow[0].dispose();
@@ -326,18 +363,25 @@ Blockly.Blocks['logic_operation'] = {
   },
   updateFields: function(op) {
     if (this.getInputsInline()) {
-      var text = op == 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
-        Blockly.Msg.LANG_LOGIC_OPERATION_OR;
+      var text = Blockly.Blocks.logic_operation.IDENTITY(op);
       for (var input, i = 2; (input = this.inputList[i]); i++) {
         input.fieldRow[0].setText(text);
       }
     }
+    if (this.itemCount_ === 1) {
+      var identity = this.getField('IDENTITY');
+      if (identity) {
+        identity.setText(Blockly.Blocks.logic_operation.IDENTITY(op));
+      }
+    }
     // Update the mutator container block if the mutator is open
     if (this.lastMutator) {
-      var mutatorBlock = this.lastMutator.getTopBlocks()[0];
-      var title = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
-        Blockly.Msg.LANG_LOGIC_OPERATION_OR;
-      mutatorBlock.setFieldValue(title, 'CONTAINER_TEXT');
+      var mutatorBlock = this.lastMutator.getTopBlocks(false)[0];
+      if (mutatorBlock) {
+        var title = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
+          Blockly.Msg.LANG_LOGIC_OPERATION_OR;
+        mutatorBlock.setFieldValue(title, 'CONTAINER_TEXT');
+      }
     }
     return op;
   },
@@ -363,6 +407,11 @@ Blockly.Blocks.logic_operation.OPERATORS = function () {
   ]
 };
 
+Blockly.Blocks.logic_operation.IDENTITY = function(op) {
+  return {'AND': Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE,
+    'OR': Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE}[op];
+}
+
 Blockly.Blocks.logic_operation.HELPURLS = function () {
   return {
     AND: Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_AND,
@@ -385,9 +434,12 @@ Blockly.Blocks['logic_or'] = {
   mutationToDom: Blockly.Blocks['logic_operation'].mutationToDom,
   domToMutation: Blockly.Blocks['logic_operation'].domToMutation,
   decompose: Blockly.Blocks['logic_operation'].decompose,
+  countNumberOfInputs: Blockly.Blocks['logic_operation'].countNumberOfInputs,
   compose: Blockly.Blocks['logic_operation'].compose,
   saveConnections: Blockly.Blocks['logic_operation'].saveConnections,
   addInput: Blockly.Blocks['logic_operation'].addInput,
+  addEmptyInput: Blockly.Blocks['logic_operation'].addEmptyInput,
+  makeDropdown: Blockly.Blocks['logic_operation'].makeDropdown,
   helpUrl: Blockly.Blocks['logic_operation'].helpUrl,
   setInputsInline: Blockly.Blocks['logic_operation'].setInputsInline,
   updateFields: Blockly.Blocks['logic_operation'].updateFields
@@ -401,17 +453,5 @@ Blockly.Blocks['logic_mutator_item'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.contextMenu = false;
-  },
-  isMovable: function() {
-    if (this.previousConnection.targetBlock()) {
-      var parent = this.previousConnection.targetBlock();
-      if (parent.type == 'mutator_container') {
-        return false;
-      } else if(parent.previousConnection.targetBlock() &&
-        parent.previousConnection.targetBlock().type == 'mutator_container') {
-        return false;
-      }
-    }
-    return true;
   }
 };

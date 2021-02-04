@@ -1519,8 +1519,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // The default value of false is correct for upgraded apps.
     6: "noUpgrade",
 
+    // The MoveToPoint method was added.
+    7: "noUpgrade",
+
     // Adds dropdown blocks for Direction.
-    7: Blockly.Versioning.makeMethodUseDropdown('Ball', 'Bounce', 0, 'Direction')
+    8: Blockly.Versioning.makeMethodUseDropdown('Ball', 'Bounce', 0, 'Direction')
   }, // End Ball upgraders
 
   "BarcodeScanner": {
@@ -1832,7 +1835,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The AfterFileSaved event was added.
     // No blocks need to be modified to upgrade to version 2.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: The LegacyMode property was added.
+    // No blocks need to be modified to upgrade to version 3.
+    3: "noUpgrade"
 
   }, // End File upgraders
 
@@ -1995,9 +2002,12 @@ Blockly.Versioning.AllUpgradeMaps =
     */
     6: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
+    // The MoveToPoint method was added.
+    7: "noUpgrade",
+
     // Adds dropdown blocks for Direction.
     // Assest helper block was added.
-    7: [Blockly.Versioning.makeMethodUseDropdown('ImageSprite', 'Bounce', 0, 'Direction'),
+    8: [Blockly.Versioning.makeMethodUseDropdown('ImageSprite', 'Bounce', 0, 'Direction'),
         Blockly.Versioning.makeSetterUseHelper('ImageSprite', 'Picture',
             Blockly.Versioning.tryReplaceBlockWithAssets)],
 
@@ -2177,8 +2187,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added mutators for and/or blocks
     32: "noUpgrade",
 
+    // AI2: Added "contains any" and "contains all" options to the text contains block.
+    33:"noUpgrade",
+
     // AI2: Add screen names dropdown block.
-    33: Blockly.Versioning.makeScreenNamesBeDropdowns,
+    34: Blockly.Versioning.makeScreenNamesBeDropdowns,
 
   }, // End Language upgraders
 
@@ -3155,7 +3168,10 @@ Blockly.Versioning.AllUpgradeMaps =
     6: "noUpgrade",
 
     // AI2: Added methods JsonTextDecodeWithDictionaries and XMLTextDecodeAsDictionary
-    7: "noUpgrade"
+    7: "noUpgrade",
+	
+	// AI2: Added methods PatchText, PatchTextWithEncoding, and PatchFile
+    8: "noUpgrade"
 
   }, // End Web upgraders
 

@@ -499,7 +499,9 @@ Blockly.ReplMgr.putYail = (function() {
                 // Ready to actually exchange data
                 webrtcrunning = true;
                 top.webrtcdata = webrtcdata; // For debugging
-                rs.dialog.hide();            // Take down QR Code dialog
+                if (rs.dialog) {
+                    rs.dialog.hide();            // Take down QR Code dialog
+                }
                 RefreshAssets(function() {
                     Blockly.ReplMgr.loadExtensions();
                 });
@@ -1363,7 +1365,7 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
     return sb.join("");
 };
 
-Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
+Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
     var rs = top.ReplState;
     var me = this;
     rs.didversioncheck = false; // Re-check
@@ -1391,20 +1393,29 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
         rs = top.ReplState;
         rs.state = this.rsState.RENDEZVOUS; // We are now rendezvousing
         rs.replcode = this.genCode();
+        if (chromebook) {
+            window.open("intent://comp/" + rs.replcode + "#Intent;scheme=aicompanion;package=" +
+                        top.ACCEPTABLE_COMPANION_PACKAGE +
+                        ";end");
+        }
         rs.rendezvouscode = this.sha1(rs.replcode);
         rs.seq_count = 1;          // used for the creating the hmac mac
         rs.count = 0;
-        rs.dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECT_TO_COMPANION, this.makeDialogMessage(rs.replcode), Blockly.Msg.REPL_CANCEL, false, null, 1, function() {
-            rs.dialog.hide();
-            rs.state = Blockly.ReplMgr.rsState.IDLE; // We're punting
-            rs.connection = null;
-            me.putYail.reset(true); // Shutdown any polling
-            top.BlocklyPanel_indicateDisconnect();
-        });
+        if (!chromebook) {
+            rs.dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECT_TO_COMPANION, this.makeDialogMessage(rs.replcode), Blockly.Msg.REPL_CANCEL, false, null, 1, function() {
+                rs.dialog.hide();
+                rs.state = Blockly.ReplMgr.rsState.IDLE; // We're punting
+                rs.connection = null;
+                me.putYail.reset(true); // Shutdown any polling
+                top.BlocklyPanel_indicateDisconnect();
+            });
+        }
         this.getFromRendezvous();
     } else {
         if (top.ReplState.state == this.rsState.RENDEZVOUS) {
-            top.ReplState.dialog.hide();
+            if (top.ReplState.dialog) { // It might not be showing if we are on a Chromebook
+                top.ReplState.dialog.hide();
+            }
         }
         try {
             top.webrtcdata.send("#DONE#"); // This should kill the companion
@@ -1449,7 +1460,9 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                     setTimeout(poller, 2000);
                     return;
                 }
-                rs.dialog.hide(); // Take down the QRCode dialog
+                if (rs.dialog) {      // Dialog won't be present when we connect via chromebook
+                    rs.dialog.hide(); // Take down the QRCode dialog
+                }
                 // Keep the user informed about the connection
                 top.ConnectProgressBar_start();
                 top.ConnectProgressBar_setProgress(10, Blockly.Msg.DIALOG_FOUND_COMPANION);
@@ -1616,7 +1629,9 @@ Blockly.ReplMgr.rendPoll = function() {
         top.ReplState.count = top.ReplState.count + 1;
         if (top.ReplState.count > 40) {
             top.ReplState.state = this.rsState.IDLE;
-            top.ReplState.dialog.hide(); // Punt the dialog
+            if (top.ReplState.dialog) {
+                top.ReplState.dialog.hide(); // Punt the dialog
+            }
             dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECTION_FAILURE1, Blockly.Msg.REPL_TRY_AGAIN1, Blockly.Msg.REPL_OK, false, null, 0, function() {
                 dialog.hide();
             });

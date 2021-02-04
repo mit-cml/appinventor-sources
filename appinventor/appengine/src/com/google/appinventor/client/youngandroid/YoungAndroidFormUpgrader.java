@@ -541,8 +541,12 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 6;
     }
     if (srcCompVersion < 7) {
-      // Direction dropdown blocks were added.
+      // The MoveToPoint method was added.
       srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
+      // Direction dropdown blocks were added.
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -866,10 +870,15 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeFileProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
-    if(srcCompVersion < 2) {
+    if (srcCompVersion < 2) {
       // File.AfterFileSaved event was added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // File.LegacyMode property was added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1217,9 +1226,13 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 6;
     }
     if (srcCompVersion < 7) {
+      // The MoveToPoint method was added.
+      srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
       // Direction dropdown blocks were added.
       // Assets helper block was added.
-      srcCompVersion = 7;
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -1716,6 +1729,11 @@ public final class YoungAndroidFormUpgrader {
       // The XMLTextDecodeAsDictionary was added to provide a more robust representation
       // of XML using dictionaries.
       srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8)  {
+    	// The methods PatchText, PatchTextWithEncoding, and PatchFile were added.
+        // No properties need to be modified to upgrade to version 8.
+        srcCompVersion = 8;
     }
     return srcCompVersion;
   }
