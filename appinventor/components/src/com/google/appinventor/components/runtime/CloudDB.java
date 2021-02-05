@@ -680,6 +680,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                             Log.d(LOG_TAG, "Workqueue empty, sending pendingTag, valueListLength = " + pendingValueList.length());
                           }
                           jEval(SET_SUB_SCRIPT, SET_SUB_SCRIPT_SHA1, 1, pendingTag, pendingValue, jsonValueList, projectID);
+                          UpdateDone(pendingTag, "StoreValue");
                         }
                       } catch (JedisException e) {
                         CloudDBError(e.getMessage());
@@ -982,6 +983,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           Jedis jedis = getJedis();
           try {
             jEval(APPEND_SCRIPT, APPEND_SCRIPT_SHA1, 1, key, item, projectID);
+            UpdateDone(key, "AppendValueToList");
           } catch(JedisException e) {
             CloudDBError(e.getMessage());
             flushJedis(true);
@@ -1041,6 +1043,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           try {
             Jedis jedis = getJedis();
             jedis.del(projectID + ":" + tag);
+            UpdateDone(tag, "ClearTag");
           } catch (Exception e) {
             CloudDBError(e.getMessage());
             flushJedis(true);
@@ -1048,6 +1051,26 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         }
       });
   }
+
+  /**
+   * Indicates that operations that store data to CloudDB have completed.
+   *
+   * @param tag The tag that was altered
+   * @param operation one of "ClearTag", "StoreValue" or "AppendValueToList"
+   */
+  @SimpleEvent
+  public void UpdateDone(final String tag, final String operation) {
+    if (DEBUG) {
+      Log.d(CloudDB.LOG_TAG, "UpdateDone: tag = " + tag + " operations = " + operation);
+    }
+    androidUIHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          EventDispatcher.dispatchEvent(CloudDB.this, "UpdateDone", tag, operation);
+        }
+      });
+  }
+
 
   /**
    * Asks `CloudDB` to retrieve all the tags belonging to this project. The

@@ -1437,8 +1437,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
   "CloudDB": {
 
-    //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    // This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+    // UpdateDone event was added.
+    2: "noUpgrade"
 
   },
 
