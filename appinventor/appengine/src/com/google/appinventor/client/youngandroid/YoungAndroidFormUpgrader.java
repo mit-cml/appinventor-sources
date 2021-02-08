@@ -749,7 +749,7 @@ public final class YoungAndroidFormUpgrader {
       // TAP_THRESHOLD variable is now changed to tapThreshold
       // TapThreshold was added
       srcCompVersion = 14;
-      }
+    }
     return srcCompVersion;
   }
 
