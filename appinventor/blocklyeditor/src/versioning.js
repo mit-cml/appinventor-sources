@@ -1213,7 +1213,9 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The CenterAtOrigin property was added.
     // The default value of false is correct for upgraded apps.
-    6: "noUpgrade"
+    6: "noUpgrade",
+    // The MoveToPoint method was added.
+    7: "noUpgrade"
   }, // End Ball upgraders
 
   "BarcodeScanner": {
@@ -1660,7 +1662,9 @@ Blockly.Versioning.AllUpgradeMaps =
           markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
         }
     */
-    6: "ai1CantDoUpgrade" // Just indicates we couldn't do upgrade even if we wanted to
+    6: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
+    // The MoveToPoint method was added.
+    7: "noUpgrade"
 
   }, // End ImageSprite upgraders
 

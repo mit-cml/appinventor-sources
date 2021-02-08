@@ -17,6 +17,7 @@ import com.google.appinventor.components.runtime.errors.AssertionFailure;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.TimerInternal;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import android.os.Handler;
 
@@ -587,7 +588,7 @@ public abstract class Sprite extends VisibleComponent
   }
 
   // Methods providing Simple functions:
-  // Bounce, CollidingWith, MoveIntoBounds, MoveTo, PointTowards.
+  // Bounce, CollidingWith, MoveIntoBounds, MoveTo, MoveToPoint, PointTowards.
 
   /**
    * Makes this `%type%` bounce, as if off a wall. For normal bouncing, the `edge` argument should
@@ -686,6 +687,31 @@ public abstract class Sprite extends VisibleComponent
     updateX(x);
     updateY(y);
     registerChange();
+  }
+
+  /**
+   * Moves the %type% so that its origin is at the specified x and y coordinates.
+   *
+   * @param coordinates a list of length 2 where the first item is the x-coordinate and the
+   *     second item is the y-coordinate.
+   */
+  @SimpleFunction(
+      description = "Moves the origin of %type% to the position of the cooordinates given "
+          + " by the list formatted as [x-coordinate, y-coordinate].")
+  public void MoveToPoint(YailList coordinates) {
+    MoveTo(coerceToDouble(coordinates.getObject(0)), coerceToDouble(coordinates.getObject(1)));
+  }
+
+  protected static double coerceToDouble(Object o) {
+    if (o instanceof Number) {
+      return ((Number) o).doubleValue();
+    } else  {
+      try {
+        return Double.parseDouble(o.toString());
+      } catch (NumberFormatException e) {
+        return Double.NaN;
+      }
+    }
   }
 
   /**
