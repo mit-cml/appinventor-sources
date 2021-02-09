@@ -584,5 +584,15 @@
     "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE": "Sonraki yinelemeyle devam et",
     "Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TITLE_TO_CSV": "csv Satırına Liste",
     "Blockly.Msg.REPL_KEEP_TRYING": "Denemeye Devam Et",
-    "Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2": "Kullandığınız Companion Uygulaması güncel değil. Companion Uygulamsını yeniden başlatıp, aşağıdaki QRCode'u tarayarak güncelleyin."
+    "Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2": "Kullandığınız Companion Uygulaması güncel değil. Companion Uygulamsını yeniden başlatıp, aşağıdaki QRCode'u tarayarak güncelleyin.",
+    "Blockly.Msg.CHANGE_VALUE_TITLE": "Değeri değiştir:",
+    "Blockly.Msg.DOWNLOAD_BLOCKS_AS_PNG": "Tüm Blokları PNG olarak İndir",
+    "Blockly.Msg.UNGENERICIZE_BLOCK": "Özelleştir",
+    "Blockly.Msg.GENERICIZE_BLOCK": "Genelleştir",
+    "Blockly.Msg.SHOW_ALL_COMMENTS": "Tüm Yorumları Göster",
+    "Blockly.Msg.HIDE_ALL_COMMENTS": "Tüm Yorumları Gizle",
+    "Blockly.Msg.ENABLE_ALL_BLOCKS": "Tüm Blokları Etkinleştir",
+    "Blockly.Msg.DISABLE_ALL_BLOCKS": "Tüm Blokları Devre dışı bırak",
+    "Blockly.Msg.SHOW": "Çalışma Kontrollerini Göster",
+    "Blockly.Msg.HIDE": "Çalışma Kontrollerini Gizle"
 }
