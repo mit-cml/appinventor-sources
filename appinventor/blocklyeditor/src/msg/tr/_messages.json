@@ -594,5 +594,9 @@
     "Blockly.Msg.ENABLE_ALL_BLOCKS": "Tüm Blokları Etkinleştir",
     "Blockly.Msg.DISABLE_ALL_BLOCKS": "Tüm Blokları Devre dışı bırak",
     "Blockly.Msg.SHOW": "Çalışma Kontrollerini Göster",
-    "Blockly.Msg.HIDE": "Çalışma Kontrollerini Gizle"
+    "Blockly.Msg.HIDE": "Çalışma Kontrollerini Gizle",
+    "Blockly.Msg.NEW_VARIABLE_TITLE": "Yeni değişken ismi:",
+    "Blockly.Msg.NEW_VARIABLE": "Yeni değişken...",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TOOLTIP": "Anahtarla ilişkilendirilmiş sözlükteki değeri döndürür.",
+    "Blockly.Msg.REMOVE_FROM_BACKPACK": "Sırt Çantamdan Çıkar"
 }
