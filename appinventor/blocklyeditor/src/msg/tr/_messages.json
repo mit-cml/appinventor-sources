@@ -648,5 +648,16 @@
     "Blockly.Msg.LANG_TEXT_COMPARE_NEQ": " ≠",
     "Blockly.Msg.LANG_MATH_BITWISE_AND": "bitsel and",
     "Blockly.Msg.LANG_MATH_BITWISE_IOR": "bitsel or",
-    "Blockly.Msg.LANG_MATH_BITWISE_XOR": "bitsel xor"
+    "Blockly.Msg.LANG_MATH_BITWISE_XOR": "bitsel xor",
+    "Blockly.Msg.LANG_TEXT_REVERSE_INPUT": "tersine",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE": "tüm bindirmeleri değiştir",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER": "sözlük",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST": "en uzun dizgi ilk",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER": "sıra",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX": "tercihen",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT": "metinde",
+    "Blockly.Msg.DIALOG_ENTER_VALUES": "Değerleri girin:",
+    "Blockly.Msg.DIALOG_SECURE_ESTABLISHED": "30 Güvenli Bağlantı Kuruldu",
+    "Blockly.Msg.DIALOG_SECURE_ESTABLISHING": "20 Güvenli Bağlantı Kuruluyor",
+    "Blockly.Msg.DIALOG_SUBMIT": "Gönder"
 }
