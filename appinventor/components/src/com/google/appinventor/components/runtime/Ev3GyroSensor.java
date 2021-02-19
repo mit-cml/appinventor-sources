@@ -185,8 +185,9 @@ public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable
     else
       throw new IllegalArgumentException();
 
-    if (oldMode != mode)
+    if (oldMode != mode) {
       previousValue = -1;
+    }
 
     this.modeString = newModeString;
   }
