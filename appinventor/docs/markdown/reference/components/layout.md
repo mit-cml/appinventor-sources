@@ -8,11 +8,42 @@ title: Layout
 
 Table of Contents:
 
+* [ContextMenu](#ContextMenu)
 * [HorizontalArrangement](#HorizontalArrangement)
 * [HorizontalScrollArrangement](#HorizontalScrollArrangement)
+* [Menu](#Menu)
+* [PopupMenu](#PopupMenu)
+* [Sidebar](#Sidebar)
+* [SidebarHeader](#SidebarHeader)
 * [TableArrangement](#TableArrangement)
 * [VerticalArrangement](#VerticalArrangement)
 * [VerticalScrollArrangement](#VerticalScrollArrangement)
+
+## ContextMenu  {#ContextMenu}
+
+Component for context menu used to hold MenuItems. Context menu
+ is a floating menu that appears on long press of the registered view.
+ Context Menu offers actions that affects the selected content.
+
+
+
+### Properties  {#ContextMenu-Properties}
+
+{:.properties}
+None
+
+
+### Events  {#ContextMenu-Events}
+
+{:.events}
+None
+
+
+### Methods  {#ContextMenu-Methods}
+
+{:.methods}
+None
+
 
 ## HorizontalArrangement  {#HorizontalArrangement}
 
@@ -65,6 +96,9 @@ Table of Contents:
 : Specifies the background color of the HorizontalArrangement as an alpha-red-green-blue
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
+
+{:id="HorizontalArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="HorizontalArrangement.Height" .number .bo} *Height*
 : Specifies the `HorizontalArrangement`'s vertical height, measured in pixels.
@@ -128,6 +162,9 @@ A formatting element in which to place components that should be displayed from 
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
 
+{:id="HorizontalScrollArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
+
 {:id="HorizontalScrollArrangement.Height" .number .bo} *Height*
 : Specifies the `HorizontalScrollArrangement`'s vertical height, measured in pixels.
 
@@ -156,6 +193,181 @@ None
 
 
 ### Methods  {#HorizontalScrollArrangement-Methods}
+
+{:.methods}
+None
+
+
+## Menu  {#Menu}
+
+Component for options menu (one per Screen) used to hold MenuItems.
+ Menu is located on the action bar and is not accessible in classic theme.
+
+
+
+### Properties  {#Menu-Properties}
+
+{:.properties}
+
+{:id="Menu.Items" .list .ro .bo} *Items*
+: Items property getter method: returns a YailList copy containing
+ all items under this menu, or an empty list if no menu item exists.
+ Changes to the YailList itself will have no effect on the menu, but changes
+ to properties of its elements will be reflected in the corresponding item.
+
+{:id="Menu.ShowAbout" .boolean} *ShowAbout*
+: Specifies whether to show an About option that displays additional info.
+
+{:id="Menu.ShowStop" .boolean} *ShowStop*
+: Specifies whether to show a Stop option for users to exit the app.
+
+### Events  {#Menu-Events}
+
+{:.events}
+
+{:id="Menu.Initialize"} Initialize()
+: Event to handle when the menu is first created and its items loaded.
+
+{:id="Menu.ItemSelected"} ItemSelected(*itemIndex*{:.number},*item*{:.component})
+: Event to handle when the app user selects an item from the options menu.
+
+### Methods  {#Menu-Methods}
+
+{:.methods}
+None
+
+
+## PopupMenu  {#PopupMenu}
+
+Component for Popup Menu used to hold MenuItems. Popup menu
+ is anchored to a view. Component is used to provide an overflow-
+ style menu for actions that relate to specific content. This is
+ different from context menu which is generally for actions that
+ affect selected content.
+
+
+
+### Properties  {#PopupMenu-Properties}
+
+{:.properties}
+
+{:id="PopupMenu.ComponentSelector" .component} *ComponentSelector*
+: Property for ComponentSelector
+
+### Events  {#PopupMenu-Events}
+
+{:.events}
+None
+
+
+### Methods  {#PopupMenu-Methods}
+
+{:.methods}
+None
+
+
+## Sidebar  {#Sidebar}
+
+Component for sidebar used to hold MenuItems. Sidebar appears on touching
+ the drawer icon on the ActionBar or by swiping from left edge of the screen.
+
+
+
+### Properties  {#Sidebar-Properties}
+
+{:.properties}
+
+{:id="Sidebar.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
+
+{:id="Sidebar.Height" .number .bo} *Height*
+: Specifies the `Sidebar`'s vertical height, measured in pixels.
+
+{:id="Sidebar.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `Sidebar`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="Sidebar.Visible" .boolean} *Visible*
+: Specifies whether the `Sidebar` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `Sidebar` is showing and `false`{:.logic.block} if hidden.
+
+{:id="Sidebar.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `Sidebar`, measured in pixels.
+
+{:id="Sidebar.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `Sidebar` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#Sidebar-Events}
+
+{:.events}
+None
+
+
+### Methods  {#Sidebar-Methods}
+
+{:.methods}
+None
+
+
+## SidebarHeader  {#SidebarHeader}
+
+Container for SidebarHeader placed inside Sidebar. This area of sidebar
+ is a flexible space that can be used for brand expression, an account
+ switcher, and more.
+
+
+
+### Properties  {#SidebarHeader-Properties}
+
+{:.properties}
+
+{:id="SidebarHeader.AlignHorizontal" .number} *AlignHorizontal*
+: A number that encodes how contents of the `SidebarHeader` are aligned horizontally. The choices
+ are: `1` = left aligned, `2` = right aligned, `3` = horizontally centered. Alignment has no
+ effect if the `SidebarHeader`'s [`Width`](#SidebarHeader.Width) is `Automatic`.
+
+{:id="SidebarHeader.AlignVertical" .number} *AlignVertical*
+: A number that encodes how the contents of the `SidebarHeader` are aligned vertically. The choices
+ are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ Alignment has no effect if the `SidebarHeader`'s [`Height`](#SidebarHeader.Height) is `Automatic`.
+
+{:id="SidebarHeader.BackgroundColor" .color} *BackgroundColor*
+: Specifies the background color of the SidebarHeader as an alpha-red-green-blue
+ integer.  If an Image has been set, the color change will not be visible
+ until the Image is removed.
+
+{:id="SidebarHeader.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
+
+{:id="SidebarHeader.Height" .number .bo} *Height*
+: Specifies the `SidebarHeader`'s vertical height, measured in pixels.
+
+{:id="SidebarHeader.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `SidebarHeader`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="SidebarHeader.Image" .text} *Image*
+: Specifies the path of the background image of the `SidebarHeader`.
+
+{:id="SidebarHeader.Visible" .boolean} *Visible*
+: Specifies whether the `SidebarHeader` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `SidebarHeader` is showing and `false`{:.logic.block} if hidden.
+
+{:id="SidebarHeader.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `SidebarHeader`, measured in pixels.
+
+{:id="SidebarHeader.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `SidebarHeader` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#SidebarHeader-Events}
+
+{:.events}
+None
+
+
+### Methods  {#SidebarHeader-Methods}
 
 {:.methods}
 None
@@ -192,6 +404,9 @@ Use a table arrangement component to display a group of components in a tabular 
 
 {:id="TableArrangement.Columns" .number .do} *Columns*
 : Determines the number of columns in the table.
+
+{:id="TableArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="TableArrangement.Height" .number .bo} *Height*
 : Specifies the `TableArrangement`'s vertical height, measured in pixels.
@@ -278,6 +493,9 @@ None
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
 
+{:id="VerticalArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
+
 {:id="VerticalArrangement.Height" .number .bo} *Height*
 : Specifies the `VerticalArrangement`'s vertical height, measured in pixels.
 
@@ -339,6 +557,9 @@ A formatting element in which to place components that should be displayed one b
 : Specifies the background color of the VerticalScrollArrangement as an alpha-red-green-blue
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
+
+{:id="VerticalScrollArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="VerticalScrollArrangement.Height" .number .bo} *Height*
 : Specifies the `VerticalScrollArrangement`'s vertical height, measured in pixels.

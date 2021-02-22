@@ -14,15 +14,16 @@ import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
-import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockCircle;
 import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
+import com.google.appinventor.client.editor.simple.components.MockContextMenu;
 import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
+import com.google.appinventor.client.editor.simple.components.MockFloatingActionButton;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
@@ -34,29 +35,31 @@ import com.google.appinventor.client.editor.simple.components.MockListPicker;
 import com.google.appinventor.client.editor.simple.components.MockListView;
 import com.google.appinventor.client.editor.simple.components.MockMap;
 import com.google.appinventor.client.editor.simple.components.MockMarker;
+import com.google.appinventor.client.editor.simple.components.MockMenu;
+import com.google.appinventor.client.editor.simple.components.MockMenuItem;
 import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
 import com.google.appinventor.client.editor.simple.components.MockPasswordTextBox;
 import com.google.appinventor.client.editor.simple.components.MockPhoneNumberPicker;
 import com.google.appinventor.client.editor.simple.components.MockPolygon;
+import com.google.appinventor.client.editor.simple.components.MockPopupMenu;
 import com.google.appinventor.client.editor.simple.components.MockRadioButton;
 import com.google.appinventor.client.editor.simple.components.MockRectangle;
 import com.google.appinventor.client.editor.simple.components.MockScrollHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockSidebar;
+import com.google.appinventor.client.editor.simple.components.MockSidebarHeader;
 import com.google.appinventor.client.editor.simple.components.MockSlider;
 import com.google.appinventor.client.editor.simple.components.MockSpinner;
+import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
 import com.google.appinventor.client.editor.simple.components.MockTextBox;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
-
 import com.google.appinventor.shared.storage.StorageUtil;
-
 import com.google.common.collect.Maps;
-
 import com.google.gwt.resources.client.ImageResource;
-
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -156,6 +159,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/web.png", images.web());
     bundledImages.put("images/mediastore.png", images.mediastore());
     bundledImages.put("images/sharing.png", images.sharingComponent());
+    bundledImages.put("images/sidebar.png", images.sidebar());
     bundledImages.put("images/spinner.png", images.spinner());
     bundledImages.put("images/listView.png", images.listview());
     bundledImages.put("images/yandex.png", images.yandex());
@@ -171,6 +175,11 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/navigation.png", images.navigationComponent());
     bundledImages.put("images/arduino.png", images.arduino());
     bundledImages.put("images/magneticSensor.png", images.magneticSensor());
+    bundledImages.put("images/sidebarHeader.png", images.sidebarHeader());
+    bundledImages.put("images/fab.png", images.fab());
+    bundledImages.put("images/menu.png", images.menu());
+    bundledImages.put("images/menuitem.png", images.menuitem());
+
 
     imagesInitialized = true;
   }
@@ -399,6 +408,10 @@ public final class SimpleComponentDescriptor {
       return new MockCanvas(editor);
     } else if (name.equals(MockCheckBox.TYPE)) {
       return new MockCheckBox(editor);
+    } else if (name.equals(MockContextMenu.TYPE)) {
+      return new MockContextMenu(editor);
+    } else if (name.equals(MockPopupMenu.TYPE)) {
+      return new MockPopupMenu(editor);
     } else if (name.equals(MockSwitch.TYPE)) {
       return new MockSwitch(editor);
     } else if (name.equals(MockImage.TYPE)) {
@@ -407,6 +420,10 @@ public final class SimpleComponentDescriptor {
       return new MockLabel(editor);
     } else if (name.equals(MockListView.TYPE)) {
       return new MockListView(editor);
+    } else if (name.equals(MockMenu.TYPE)) {
+      return new MockMenu(editor);
+    } else if (name.equals(MockMenuItem.TYPE)) {
+      return new MockMenuItem(editor);
     } else if (name.equals(MockSlider.TYPE)) {
         return new MockSlider(editor);
     } else if (name.equals(MockPasswordTextBox.TYPE)) {
@@ -463,6 +480,12 @@ public final class SimpleComponentDescriptor {
       return new MockRectangle(editor);
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
+    } else if (name.equals(MockSidebar.TYPE)) {
+      return new MockSidebar(editor);
+    } else if (name.equals(MockSidebarHeader.TYPE)) {
+      return new MockSidebarHeader(editor);
+    } else if(name.equals(MockFloatingActionButton.TYPE)) {
+      return new MockFloatingActionButton(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);

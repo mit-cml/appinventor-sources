@@ -223,25 +223,10 @@ public class ReplForm extends Form {
   // information and providing the "Settings" menu option.
 
   @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // This procedure is called only once.  To change the items dynamically
-    // we would use onPrepareOptionsMenu.
-    super.onCreateOptionsMenu(menu); // sets up the exit and about buttons
-    addSettingsButton(menu);         // Now add our button!
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    super.onPrepareOptionsMenu(menu); // sets up the exit and about buttons
     addLogcatButton(menu);           // Add button to report LogCat information
     return true;
-  }
-
-  public void addSettingsButton(Menu menu) {
-    MenuItem showSettingsItem = menu.add(Menu.NONE, Menu.NONE, 3,
-      "Settings").setOnMenuItemClickListener(new OnMenuItemClickListener() {
-          @Override
-          public boolean onMenuItemClick(MenuItem item) {
-            PhoneStatus.doSettings();
-            return true;
-          }
-        });
-    showSettingsItem.setIcon(android.R.drawable.sym_def_app_icon);
   }
 
   public void addLogcatButton(Menu menu) {

@@ -357,20 +357,6 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     return useWebRTC;
   }
 
-  /**
-   * Static function called from ReplForm when settings menu item is chosen.
-   * Triggers the "OnSettings" event iff there is a PhoneStatus component (which
-   * there will be in the Companion App where this is used).
-   */
-  static void doSettings() {
-    Log.d(LOG_TAG, "doSettings called.");
-    if (mainInstance != null) {
-      mainInstance.OnSettings();
-    } else {
-      Log.d(LOG_TAG, "mainStance is null on doSettings");
-    }
-  }
-
   public static String intToIp(int i) {
     return (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF) + "." + ((i >>24) & 0xFF);
   }

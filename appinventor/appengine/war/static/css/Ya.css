@@ -1102,7 +1102,7 @@ select.ode-PropertyEditor[disabled] {
 .ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormTitle {
   padding: 16px;
   top: 0;
-  left: 0;
+  left: 55px;
 }
 
 .ode-SimpleMockFormMenuButton {
@@ -1114,10 +1114,28 @@ select.ode-PropertyEditor[disabled] {
   font-size: 20px;
   font-weight: bold;
   color: white;
+  cursor: pointer;
   display: none;
 }
 
 .ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormMenuButton {
+  display: inline-block;
+}
+
+.ode-SimpleMockFormSidebarButton {
+  left: 0;
+  padding: 16px;
+  position: absolute;
+  border: 0;
+  background-color: transparent;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  display: none;
+}
+
+.ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormSidebarButton {
   display: inline-block;
 }
 
@@ -1149,6 +1167,11 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockContainer-selected {
   border: 2px solid #8fc202;
+}
+
+.ode-SimpleMockFormMenu {
+  background-color: white;
+  z-index: 100;
 }
 
 .ode-SimpleMockComponent {
@@ -2788,3 +2811,31 @@ div.dropdiv p {
   margin: 0;
   position: relative;
 }
+
+.ode-SimpleMockFormFABContainer {
+  font-weight: normal;
+  font-size: 12px;
+  border: 2px solid transparent;
+  width: 60px;
+  height: 60px;
+  z-index: 100;
+  cursor: pointer;
+}
+
+.ode-SimpleMockFormFABContainer-selected {
+  border: 2px solid #8fc202;
+}
+
+.ode-SimpleMockFormFABButton {
+width: 50px;
+height: 50px;
+margin: 5px;
+border-radius: 100%;
+background: #ff4081;
+}
+.ode-SimpleMockFormFABButton:hover {
+opacity: 0.8;
+}
+
+
+

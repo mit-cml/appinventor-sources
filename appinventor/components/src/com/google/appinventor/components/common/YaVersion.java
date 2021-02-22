@@ -801,6 +801,14 @@ public class YaVersion {
   // - The ContactUri property was added
   public static final int CONTACTPICKER_COMPONENT_VERSION = 6;
 
+  // For CONTEXT_MENU_COMPONENT_VERSION 1:
+  // - Initial Context Menu implementation using Android Menu
+  public static final int CONTEXT_MENU_COMPONENT_VERSION = 1;
+
+  // For CONTEXT_MENUITEM_COMPONENT_VERSION 1:
+  // - Initial Context MenuItem implementation using Android MenuItem
+  public static final int CONTEXT_MENUITEM_COMPONENT_VERSION = 1;
+
   // For DATEPICKER_COMPONENT_VERSION 2:
   // The datepicker dialog was updated to show the current date
   // instead of the last set date by default.
@@ -831,6 +839,10 @@ public class YaVersion {
   // For FILE_COMPONENT_VERSION 3:
   // - The LegacyMode property was added.
   public static final int FILE_COMPONENT_VERSION = 3;
+
+  // For FLOATING_ACTION_BUTTON_COMPONENT_VERSION 1:
+  // - Initial FloatingActionButton implementation
+  public static final int FLOATING_ACTION_BUTTON_COMPONENT_VERSION = 1;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -1038,6 +1050,14 @@ public class YaVersion {
   // - Initial Navigation implementation
   public static final int NAVIGATION_COMPONENT_VERSION = 1;
 
+  // For MENU_COMPONENT_VERSION 1:
+  // - Initial Menu implementation using Android Menu
+  public static final int MENU_COMPONENT_VERSION = 1;
+
+  // For MENUITEM_COMPONENT_VERSION 1:
+  // - Initial MenuItem implementation using Android MenuItem
+  public static final int MENUITEM_COMPONENT_VERSION = 1;
+
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;
 
@@ -1145,6 +1165,10 @@ public class YaVersion {
   // - Added fill and stroke opacity properties
   public static final int POLYGON_COMPONENT_VERSION = 2;
 
+  // For POPUP_MENU_COMPONENT_VERSION 1:
+  // - Initial Popup Menu implementation using Android Menu
+  public static final int POPUP_MENU_COMPONENT_VERSION = 1;
+
   // For RECTANGLE_COMPONENT_VERSION 1:
   // - Initial Rectangle implementation for Maps
   // For RECTANGLE_COMPONENT_VERSION 2:
@@ -1152,6 +1176,18 @@ public class YaVersion {
   public static final int RECTANGLE_COMPONENT_VERSION = 2;
 
   public static final int SHARING_COMPONENT_VERSION = 1;
+
+  // For SIDEBAR_COMPONENT_VERSION 1:
+  // - Initial sidebar implementation
+  public static final int SIDEBAR_COMPONENT_VERSION = 1;
+
+  // For SIDEBARHEADER_COMPONENT_VERSION 1:
+  // - Initial sidebar header implementation
+  public static final int SIDEBAR_HEADER_COMPONENT_VERSION = 1;
+
+  // For SIDEBAR_ITEM_COMPONENT_VERSION 1:
+  // - Initial sidebar item implementation
+  public static final int SIDEBAR_ITEM_COMPONENT_VERSION = 1;
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.

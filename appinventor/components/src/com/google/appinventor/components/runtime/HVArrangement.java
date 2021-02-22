@@ -50,7 +50,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   // Layout
   private final int orientation;
-  private final LinearLayout viewLayout;
+  protected final LinearLayout viewLayout;
   private ViewGroup frameContainer;
   private boolean scrollable = false;
   // translates App Inventor alignment codes to Android gravity

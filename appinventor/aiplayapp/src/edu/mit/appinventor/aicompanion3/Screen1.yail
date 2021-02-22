@@ -367,8 +367,6 @@ $Source $Yail
 (add-component MainPanel com.google.appinventor.components.runtime.PhoneStatus PhoneStatus1 
 )
 
-(define-event PhoneStatus1 OnSettings()(set-this-form)
-    (set-and-coerce-property! 'MainPanel 'Visible #f 'boolean)(set-and-coerce-property! 'SettingsPanel 'Visible #t 'boolean)(set-and-coerce-property! 'rendezvoustextbox 'Text ((get-var p$getRendezvousServer) ) 'text)(set-and-coerce-property! 'aidLabel 'Text (call-component-method 'PhoneStatus1 'InstallationId (*list-for-runtime*) '()) 'text))
 ;;; Web1
 
 (add-component MainPanel com.google.appinventor.components.runtime.Web Web1 
@@ -397,4 +395,18 @@ $Source $Yail
 (add-component Screen1 com.google.appinventor.components.runtime.TinyDB TinyDB1 
 )
 
+;;; Menu1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Menu Menu1
+)
+
+;;; SettingsMenu
+
+(add-component Menu1 com.google.appinventor.components.runtime.MenuItem SettingsMenu
+(set-and-coerce-property! 'SettingsMenu 'Text "Settings" 'text)
+
+)
+
+(define-event SettingsMenu Click()(set-this-form)
+    (set-and-coerce-property! 'MainPanel 'Visible #f 'boolean)(set-and-coerce-property! 'SettingsPanel 'Visible #t 'boolean)(set-and-coerce-property! 'rendezvoustextbox 'Text ((get-var p$getRendezvousServer) ) 'text)(set-and-coerce-property! 'aidLabel 'Text (call-component-method 'PhoneStatus1 'InstallationId (*list-for-runtime*) '()) 'text))
 (init-runtime)

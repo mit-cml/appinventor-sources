@@ -247,8 +247,8 @@
     </statement>
   </block>
   <block type="component_event" id="27" x="0" y="922">
-    <mutation component_type="PhoneStatus" is_generic="false" instance_name="PhoneStatus1" event_name="OnSettings"></mutation>
-    <field name="COMPONENT_SELECTOR">PhoneStatus1</field>
+    <mutation component_type="MenuItem" is_generic="false" instance_name="SettingsMenu" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">SettingsMenu</field>
     <statement name="DO">
       <block type="component_set_get" id="28" inline="false">
         <mutation component_type="VerticalArrangement" set_or_get="set" property_name="Visible" is_generic="false" instance_name="MainPanel"></mutation>

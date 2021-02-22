@@ -11,10 +11,12 @@ Table of Contents:
 * [Button](#Button)
 * [CheckBox](#CheckBox)
 * [DatePicker](#DatePicker)
+* [FloatingActionButton](#FloatingActionButton)
 * [Image](#Image)
 * [Label](#Label)
 * [ListPicker](#ListPicker)
 * [ListView](#ListView)
+* [MenuItem](#MenuItem)
 * [Notifier](#Notifier)
 * [PasswordTextBox](#PasswordTextBox)
 * [Screen](#Screen)
@@ -41,6 +43,9 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 : Specifies the `Button`'s background color as an alpha-red-green-blue
  integer.  If an [`Image`](#Button.Image) has been set, the color
  change will not be visible until the [`Image`](#Button.Image) is removed.
+
+{:id="Button.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="Button.Enabled" .boolean} *Enabled*
 : Specifies whether the `Button` should be active and clickable.
@@ -156,6 +161,9 @@ None
 {:id="CheckBox.Checked" .boolean} *Checked*
 : Set to `true`{:.logic.block} if the box is checked, `false`{:.logic.block} otherwise.
 
+{:id="CheckBox.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
+
 {:id="CheckBox.Enabled" .boolean} *Enabled*
 : Specifies whether the `CheckBox` should be active and clickable.
 
@@ -235,6 +243,9 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 : Specifies the `DatePicker`'s background color as an alpha-red-green-blue
  integer.  If an [`Image`](#DatePicker.Image) has been set, the color
  change will not be visible until the [`Image`](#DatePicker.Image) is removed.
+
+{:id="DatePicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="DatePicker.Day" .number .ro .bo} *Day*
 : Returns the Day of the month that was last picked using the DatePicker.
@@ -349,6 +360,55 @@ Valid values for the month field are 1-12 and 1-31 for the day field.
 {:id="DatePicker.SetDateToDisplayFromInstant" class="method"} <i/> SetDateToDisplayFromInstant(*instant*{:.InstantInTime})
 : Allows the user to set the date from the instant to be displayed when the date picker opens.
 
+## FloatingActionButton  {#FloatingActionButton}
+
+Component for Floating Action Button. This is a circular
+ button that triggers the primary action in the app. The default icon is
+ a white plus which can be changed using [`Icon`](#FloatingActionButton.Icon) property.
+
+
+
+### Properties  {#FloatingActionButton-Properties}
+
+{:.properties}
+
+{:id="FloatingActionButton.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
+
+{:id="FloatingActionButton.Height" .number .bo} *Height*
+: Specifies the `FloatingActionButton`'s vertical height, measured in pixels.
+
+{:id="FloatingActionButton.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `FloatingActionButton`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="FloatingActionButton.Icon" .text} *Icon*
+: Property for Icon
+
+{:id="FloatingActionButton.Visible" .boolean} *Visible*
+: Specifies whether the `FloatingActionButton` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `FloatingActionButton` is showing and `false`{:.logic.block} if hidden.
+
+{:id="FloatingActionButton.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `FloatingActionButton`, measured in pixels.
+
+{:id="FloatingActionButton.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `FloatingActionButton` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#FloatingActionButton-Events}
+
+{:.events}
+
+{:id="FloatingActionButton.Click"} Click()
+: Event raised when user clicks on Floating Action Button
+
+### Methods  {#FloatingActionButton-Methods}
+
+{:.methods}
+None
+
+
 ## Image  {#Image}
 
 Component for displaying images and basic animations.
@@ -369,6 +429,9 @@ Component for displaying images and basic animations.
 
 {:id="Image.Clickable" .boolean} *Clickable*
 : Specifies whether the image should be clickable or not.
+
+{:id="Image.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="Image.Height" .number .bo} *Height*
 : Specifies the `Image`'s vertical height, measured in pixels.
@@ -431,6 +494,9 @@ Labels are components used to show text.
 {:id="Label.BackgroundColor" .color} *BackgroundColor*
 : Specifies the label's background color as an alpha-red-green-blue
  integer.
+
+{:id="Label.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="Label.FontBold" .boolean .do} *FontBold*
 : Specifies whether the label's text should be bold.
@@ -525,6 +591,9 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 : Specifies the `ListPicker`'s background color as an alpha-red-green-blue
  integer.  If an [`Image`](#ListPicker.Image) has been set, the color
  change will not be visible until the [`Image`](#ListPicker.Image) is removed.
+
+{:id="ListPicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="ListPicker.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
@@ -666,6 +735,9 @@ This is a visible component that allows to place a list of text elements in your
 {:id="ListView.BackgroundColor" .color} *BackgroundColor*
 : The color of the `ListView` background.
 
+{:id="ListView.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
+
 {:id="ListView.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
 
@@ -721,6 +793,52 @@ This is a visible component that allows to place a list of text elements in your
  The selected element is available in the [`Selection`](#ListView.Selection) property.
 
 ### Methods  {#ListView-Methods}
+
+{:.methods}
+None
+
+
+## MenuItem  {#MenuItem}
+
+A Menu Item can only be placed inside Menus components and Sidebar.
+ It displays a piece of text specified by the [`Text`](#MenuItem.Text) property
+ or an icon specified by the [`Icon`](#MenuItem.Icon) property on action bar
+ or Sidebar. Additional properties include visibility and enabled/
+ disabled, all of which can be set in the Designer or Blocks Editor.
+ Click event is triggered on user selection.
+
+
+
+### Properties  {#MenuItem-Properties}
+
+{:.properties}
+
+{:id="MenuItem.Enabled" .boolean} *Enabled*
+: Specifies whether the menu item should be active and clickable.
+
+{:id="MenuItem.Icon" .text} *Icon*
+: Specifies the path of the menu item's icon.
+
+{:id="MenuItem.ShowOnActionBar" .boolean} *ShowOnActionBar*
+: Specifies whether the menu item should show on action bar:
+ If `true`, then item will appear as an icon on the action bar
+ (given that there is enough space);
+ If `false`, then item will always appear as text in the overflow menu.
+
+{:id="MenuItem.Text" .text} *Text*
+: Specifies the text displayed by the menu item.
+
+{:id="MenuItem.Visible" .boolean} *Visible*
+: Specifies whether the menu item should be visible or hidden from menu.
+
+### Events  {#MenuItem-Events}
+
+{:.events}
+
+{:id="MenuItem.Click"} Click()
+: Event to handle when user selects this menu item.
+
+### Methods  {#MenuItem-Methods}
 
 {:.methods}
 None
@@ -845,6 +963,9 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.BackgroundColor" .color} *BackgroundColor*
 : The background color of the `PasswordTextBox``. You can choose a color by name in the Designer or in
  the Blocks Editor. The default background color is 'default' (shaded 3-D look).
+
+{:id="PasswordTextBox.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="PasswordTextBox.Enabled" .boolean} *Enabled*
 : If set, user can enter text into the `PasswordTextBox`.
@@ -1148,6 +1269,9 @@ This class is used to display a `Slider`.
  integer, i.e., `0xAARRGGBB`.  An alpha of `00`
  indicates fully transparent and `FF` means opaque.
 
+{:id="Slider.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
+
 {:id="Slider.HeightPercent" .number .wo .bo} *HeightPercent*
 : Specifies the `Slider`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
@@ -1212,6 +1336,9 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 ### Properties  {#Spinner-Properties}
 
 {:.properties}
+
+{:id="Spinner.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="Spinner.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
@@ -1280,6 +1407,9 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 {:id="Switch.BackgroundColor" .color} *BackgroundColor*
 : Specifies the background color of the `Switch` as an alpha-red-green-blue
  integer.
+
+{:id="Switch.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="Switch.Enabled" .boolean} *Enabled*
 : Specifies whether the `Switch` should be active and clickable.
@@ -1394,6 +1524,9 @@ Users enter text in a text box component.
 : The background color of the `TextBox``. You can choose a color by name in the Designer or in
  the Blocks Editor. The default background color is 'default' (shaded 3-D look).
 
+{:id="TextBox.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
+
 {:id="TextBox.Enabled" .boolean} *Enabled*
 : If set, user can enter text into the `TextBox`.
 
@@ -1501,6 +1634,9 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 : Specifies the `TimePicker`'s background color as an alpha-red-green-blue
  integer.  If an [`Image`](#TimePicker.Image) has been set, the color
  change will not be visible until the [`Image`](#TimePicker.Image) is removed.
+
+{:id="TimePicker.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="TimePicker.Enabled" .boolean} *Enabled*
 : Specifies whether the `TimePicker` should be active and clickable.
@@ -1661,6 +1797,9 @@ Component for viewing Web pages.
 ### Properties  {#WebViewer-Properties}
 
 {:.properties}
+
+{:id="WebViewer.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Property for ContextMenuSelector
 
 {:id="WebViewer.CurrentPageTitle" .text .ro .bo} *CurrentPageTitle*
 : Returns the title of the page currently being viewed

@@ -12,6 +12,7 @@ import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.common.base.Preconditions;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,6 +28,7 @@ import java.util.Map;
  */
 public abstract class MockContainer extends MockVisibleComponent implements DropTarget {
 
+  private boolean containsFloatingActionButton = false;
   protected final MockLayout layout;
 
   // List of components within the container
@@ -126,7 +128,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param beforeVisibleIndex  visible-index at which the inserted component will appear,
    *                            or {@code -1} to insert the component at the end
    */
-  public final void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
+  public void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
     List<MockComponent> visibleChildren = getShowingVisibleChildren();
 
     int beforeActualIndex;
@@ -153,9 +155,19 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param beforeIndex  index at which the inserted component will reside in the children,
    *                     or {@code -1} to insert the component at the end
    */
-  private void addComponent(MockComponent component, int beforeIndex) {
+  protected void addComponent(MockComponent component, int beforeIndex) {
     // Set the container to be the parent of the component
     component.setContainer(this);
+
+    if (component instanceof MockFloatingActionButton) {
+      if (containsFloatingActionButton) {
+        Window.alert("Floating Action Button is already present");
+        return;
+      }
+      else {
+        containsFloatingActionButton = true;
+      }
+    }
 
     // Add the component as a child component of the container
     if (beforeIndex == -1) {
@@ -171,7 +183,19 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       // NOTE: The order of widgets in the root panel does not necessarily
       //       match the order of their associated children of this container
       rootPanel.add(component);
-      refreshForm();
+      refreshForm(true);
+      if (component instanceof MockContextMenu) {
+        component.setVisible(true);
+      }
+      if (component instanceof  MockMenuItem) {
+        if (component.getContainer() instanceof MockContextMenu || component.getContainer() instanceof MockPopupMenu) {
+          component.getProperties().removeProperty("Icon");
+          component.getProperties().removeProperty("ShowOnActionBar");
+        } else if (component.getContainer() instanceof MockSidebar) {
+          component.getProperties().removeProperty("ShowOnActionBar");
+        }
+        component.getContainer().setVisible(true);
+      }
     }
 
     getForm().fireComponentAdded(component);
@@ -188,6 +212,9 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    *        to another container
    */
   public void removeComponent(MockComponent component, boolean permanentlyDeleted) {
+    if (component instanceof MockFloatingActionButton) {
+      containsFloatingActionButton = false;
+    }
     // Remove the component from the list of child components
     children.remove(component);
 
@@ -195,7 +222,10 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     if (component.isVisibleComponent()) {
       rootPanel.remove(component);
       if (permanentlyDeleted) {
-        refreshForm();
+        refreshForm(true);
+        if (component instanceof  MockMenuItem) {
+          component.getContainer().setVisible(true);
+        }
       }
     } else {
       editor.getNonVisibleComponentsPanel().removeComponent(component);
@@ -254,9 +284,15 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       component = (MockComponent) source.getDragWidget();
     }
     if (component instanceof MockVisibleComponent) {
+      if(component instanceof MockFloatingActionButton) {
+        return (this instanceof MockForm);
+      }
       // Sprites are only allowed on Canvas, not other containers.
       // Map features are only allowed on Map, not other containers.
-      if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature)) {
+      // Menu Items are only allowed in Menu, not other containers.
+      if (!(component instanceof MockSprite) &&
+          !(component instanceof MockMapFeature) &&
+          !(component instanceof MockMenuItem)) {
         return true;
       }
     }

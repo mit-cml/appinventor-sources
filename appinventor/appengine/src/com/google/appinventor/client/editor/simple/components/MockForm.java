@@ -6,15 +6,6 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
@@ -31,9 +22,9 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
-
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -44,6 +35,15 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TreeItem;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Mock Form component. This implementation provides two main preview sizes corresponding to
@@ -62,10 +62,14 @@ public final class MockForm extends MockContainer {
 
     // UI elements
     private Label title;
+    private MockMenu menu;
     private Button menuButton;
+    private MockSidebar sidebar;
+    private Button sidebarButton;
     private AbsolutePanel bar;
     private boolean actionBar;
     private String backgroundColor;
+    private MockSidebarHeader sidebarHeader;
 
     public String getTitle() {
       return title.getText();
@@ -83,14 +87,86 @@ public final class MockForm extends MockContainer {
       menuButton.setText("\u22ee");
       menuButton.setStylePrimaryName("ode-SimpleMockFormMenuButton");
 
+      sidebarButton = new Button();
+      sidebarButton.setText("\u2630");
+      sidebarButton.setStylePrimaryName("ode-SimpleMockFormSidebarButton");
+
       bar = new AbsolutePanel();
       bar.add(title);
       bar.add(menuButton);
+      bar.add(sidebarButton);
 
       initWidget(bar);
 
       setStylePrimaryName("ode-SimpleMockFormTitleBar");
       setSize("100%", TITLEBAR_HEIGHT + "px");
+    }
+
+    /*
+     * Initialize menu (should only be called after components are loaded).
+     */
+    void loadMenu() {
+      for (MockComponent child : children) {
+        if (child instanceof MockMenu) {
+          menu = (MockMenu) child;
+          break;
+        }
+      }
+      if (menu == null) {
+        menu = new MockMenu(editor);
+        addComponent(menu);
+      }
+      menuButton.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          menu.toggle();
+        }
+      });
+      updateMenuEnabled();
+    }
+
+    /*
+     * Disable menu if action bar is absent.
+     */
+    void updateMenuEnabled() {
+      if (menu != null) {
+        menu.setEnabled(actionBar && isVisible());
+      }
+    }
+
+    /*
+     * Initialize sidebar (should only be called after components are loaded).
+     */
+    void loadSidebar() {
+      for (MockComponent child : children) {
+        if (child instanceof MockSidebar) {
+          sidebar = (MockSidebar) child;
+          break;
+        }
+      }
+      if (sidebar == null) {
+        sidebarHeader= new MockSidebarHeader(editor);
+        sidebar = new MockSidebar(editor);
+        addComponent(sidebar);
+        sidebar.addComponent(sidebarHeader, 0);
+      }
+      sidebarButton.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          sidebar.toggle();
+        }
+      });
+      updateSidebarEnabled();
+    }
+
+    /*
+     * This method updates the visibility of sidebar depending
+     * on the presence/absence of Action Bar and Visible property
+     * ofSidebar. Sidebar is visible only when action bar is
+     * present and sidebar is set visible.
+     */
+    void updateSidebarEnabled() {
+      if (sidebar != null) {
+        sidebar.setEnabled(actionBar && isVisible());
+      }
     }
 
     /*
@@ -110,6 +186,8 @@ public final class MockForm extends MockContainer {
         removeStyleDependentName("ActionBar");
         MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, "&HFF696969");
       }
+      updateMenuEnabled();
+      updateSidebarEnabled();
     }
 
     void setBackgroundColor(String color) {
@@ -314,6 +392,13 @@ public final class MockForm extends MockContainer {
     initialized = true;
     // Now that the default for Scrollable is false, we need to force setting the property when creating the MockForm
     setScrollableProperty(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    titleBar.loadMenu();
+    titleBar.loadSidebar();
   }
 
   public void changePreviewSize(int width, int height, int idx) {
@@ -665,6 +750,8 @@ public final class MockForm extends MockContainer {
   private void setTitleVisibleProperty(String text) {
     boolean visible = Boolean.parseBoolean(text);
     titleBar.setVisible(visible);
+    titleBar.updateMenuEnabled();
+    titleBar.updateSidebarEnabled();
   }
 
   private void setActionBarProperty(String actionBar) {
@@ -718,11 +805,13 @@ public final class MockForm extends MockContainer {
       final String newColor = "&HFF000000";
       MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);
+      MockComponentsUtil.setWidgetTextColor(titleBar.sidebarButton, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);
     } else {
       final String newColor = "&HFFFFFFFF";
       MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);
+      MockComponentsUtil.setWidgetTextColor(titleBar.sidebarButton, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);
     }
     if (theme.equals("AppTheme")) {
@@ -836,6 +925,9 @@ public final class MockForm extends MockContainer {
         for (MockComponent child : layoutInfo.visibleChildren) {
           child.setVisible(true);
           collectLayoutInfos(layoutInfoMap, child);
+          if (child instanceof MockContextMenu) {
+            child.setVisible(false);
+          }
         }
       }
 

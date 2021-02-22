@@ -216,6 +216,18 @@ public interface Images extends Resources {
   ImageResource listbox();
 
   /**
+   * Designer palette item: menu component
+   */
+  @Source("com/google/appinventor/images/menu.png")
+  ImageResource menu();
+
+  /**
+   * Designer palette item: menuitem component
+   */
+  @Source("com/google/appinventor/images/menuitem.png")
+  ImageResource menuitem();
+
+  /**
    * Designer palette item: orientationsensor component
    */
   @Source("com/google/appinventor/images/orientationsensor.png")
@@ -346,6 +358,18 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/ball.png")
   ImageResource ball();
+
+  /**
+   * Designer palette item: Sidebar
+   */
+  @Source("com/google/appinventor/images/sidebar.png")
+  ImageResource sidebar();
+
+  /**
+   * Designer palette item: SidebarHeader
+   */
+  @Source("com/google/appinventor/images/sidebarHeader.png")
+  ImageResource sidebarHeader();
 
   /**
    * Designer palette item: Slider
@@ -671,6 +695,18 @@ public interface Images extends Resources {
   */
   @Source("com/google/appinventor/images/wilson.png")
   ImageResource wilson();
+
+  /**
+   * Floating Action button default Icon
+   */
+  @Source("com/google/appinventor/images/fabDefaultImage.png")
+  ImageResource defaultImage();
+
+  /**
+   * Floating Action button Logo
+   */
+  @Source("com/google/appinventor/images/fab.png")
+  ImageResource fab();
 
   /**
   * Talk to Me Logo

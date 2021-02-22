@@ -6,11 +6,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import static android.Manifest.permission.ACCESS_NETWORK_STATE;
-import static android.Manifest.permission.ACCESS_WIFI_STATE;
-import static android.Manifest.permission.INTERNET;
-import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -34,7 +29,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -45,9 +39,7 @@ import android.widget.ScrollView;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import com.google.appinventor.common.version.AppInventorFeatures;
-
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -78,6 +70,7 @@ import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+import org.json.JSONException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -96,7 +89,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.json.JSONException;
+import static android.Manifest.permission.*;
+import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
 
 
 /**
@@ -150,6 +144,8 @@ public class Form extends AppInventorCompatActivity
   // Timer event will still fire, even when the activity is no longer in the foreground. For this
   // reason, we cannot assume that the activeForm is the foreground activity.
   protected static Form activeForm;
+
+  private Menu menu = null;
 
   private float deviceDensity;
   private float compatScalingFactor;
@@ -209,6 +205,7 @@ public class Form extends AppInventorCompatActivity
   private static boolean showListsAsJson;
 
   private final Set<String> permissions = new HashSet<String>();
+  private Map<View,ContextMenu> componentMap = new HashMap<>();
 
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
@@ -226,7 +223,11 @@ public class Form extends AppInventorCompatActivity
 
   // Listeners for options menu.
   private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
+  private final Set<OnPrepareOptionsMenuListener> onPrepareOptionsMenuListeners = Sets.newHashSet();
   private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
+
+  // Listeners for context menu.
+  private final Set<View.OnCreateContextMenuListener> onCreateContextMenuListeners = Sets.newHashSet();
 
   // Listeners for permission results
   private final HashMap<Integer, PermissionResultHandler> permissionHandlers = Maps.newHashMap();
@@ -400,6 +401,7 @@ public class Form extends AppInventorCompatActivity
   private void onCreateFinish2() {
     defaultPropertyValues();
 
+
     // Get startup text if any before adding components
     Intent startIntent = getIntent();
     if (startIntent != null && startIntent.hasExtra(ARGUMENT_NAME)) {
@@ -511,7 +513,7 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
-// What's this code?
+  // What's this code?
 //
 // There is either an App Inventor bug, or Android bug (likely both)
 // that results in the contents of the screen being rendered "too
@@ -822,8 +824,16 @@ public class Form extends AppInventorCompatActivity
     onCreateOptionsMenuListeners.add(component);
   }
 
+  public void registerForOnPrepareOptionsMenu(OnPrepareOptionsMenuListener component) {
+    onPrepareOptionsMenuListeners.add(component);
+  }
+
   public void registerForOnOptionsItemSelected(OnOptionsItemSelectedListener component) {
     onOptionsItemSelectedListeners.add(component);
+  }
+
+  public void registerForOnCreateContextMenu(View.OnCreateContextMenuListener component) {
+    onCreateContextMenuListeners.add(component);
   }
 
   public Dialog onCreateDialog(int id) {
@@ -2306,56 +2316,46 @@ public class Form extends AppInventorCompatActivity
   // Configure the system menu to include items to kill the application and to show "about"
   // information
 
+  public Menu getMenu() {
+    return menu;
+  }
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    // This procedure is called only once.  To change the items dynamically
-    // we would use onPrepareOptionsMenu.
-    super.onCreateOptionsMenu(menu);
-    // add the menu items
-    // Comment out the next line if we don't want the exit button
-    addExitButtonToMenu(menu);
-    addAboutInfoToMenu(menu);
-    for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
-      onCreateOptionsMenuListener.onCreateOptionsMenu(menu);
+    this.menu = menu;
+    Log.d(LOG_TAG, "onCreateOptionsMenu");
+    for (OnCreateOptionsMenuListener listener : onCreateOptionsMenuListeners) {
+      listener.onCreateOptionsMenu(menu);
     }
     return true;
   }
 
-  public void addExitButtonToMenu(Menu menu) {
-    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
-    "Stop this application")
-    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-      public boolean onMenuItemClick(MenuItem item) {
-        showExitApplicationNotification();
-        return true;
-      }
-    });
-    stopApplicationItem.setIcon(android.R.drawable.ic_notification_clear_all);
-  }
-
-  public void addAboutInfoToMenu(Menu menu) {
-    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 2,
-    "About this application")
-    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-      public boolean onMenuItemClick(MenuItem item) {
-        showAboutApplicationNotification();
-        return true;
-      }
-    });
-    aboutAppItem.setIcon(android.R.drawable.sym_def_app_icon);
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    menu.clear();
+    for (OnPrepareOptionsMenuListener listener : onPrepareOptionsMenuListeners) {
+      listener.onPrepareOptionsMenu(menu);
+    }
+    return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
-      if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
-        return true;
+    // handles the navigation drawer icon touch event
+    if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+      return true;
+    } else {
+      // handles the options menu item touch event
+      for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
+        if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
+          return true;
+        }
       }
     }
     return false;
   }
 
-  private void showExitApplicationNotification() {
+  public void showExitApplicationNotification() {
     String title = "Stop application?";
     String message = "Stop this application and exit? You'll need to relaunch " +
         "the application to use it again.";
@@ -2383,7 +2383,7 @@ public class Form extends AppInventorCompatActivity
     yandexTranslateTagline = "<p><small>Language translation powered by Yandex.Translate</small></p>";
   }
 
-  private void showAboutApplicationNotification() {
+  public void showAboutApplicationNotification() {
     String title = "About this app";
     String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
     // Users can hide the taglines by including an HTML open comment <!-- in the about screen message
@@ -2391,6 +2391,20 @@ public class Form extends AppInventorCompatActivity
     message = message.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
+  }
+
+  public void getComponent(View component, ContextMenu menu){
+    componentMap.put(component, menu);
+  }
+
+  @Override
+  public void onCreateContextMenu(android.view.ContextMenu menu, View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
+    super.onCreateContextMenu(menu, v, menuInfo);
+    for (View.OnCreateContextMenuListener listener: onCreateContextMenuListeners) {
+      if (listener.equals(componentMap.get(v))) {
+        listener.onCreateContextMenu(menu, v, menuInfo);
+      }
+    }
   }
 
   // This is called from clear-current-form in runtime.scm.
@@ -2411,7 +2425,9 @@ public class Form extends AppInventorCompatActivity
     onDestroyListeners.clear();
     onInitializeListeners.clear();
     onCreateOptionsMenuListeners.clear();
+    onPrepareOptionsMenuListeners.clear();
     onOptionsItemSelectedListeners.clear();
+    onCreateContextMenuListeners.clear();
     screenInitialized = false;
     // Notifiy those who care
     for (OnClearListener onClearListener : onClearListeners) {
@@ -2448,6 +2464,9 @@ public class Form extends AppInventorCompatActivity
     }
     if (component instanceof OnCreateOptionsMenuListener) {
       onCreateOptionsMenuListeners.remove(component);
+    }
+    if (component instanceof OnPrepareOptionsMenuListener) {
+      onPrepareOptionsMenuListeners.remove(component);
     }
     if (component instanceof OnOptionsItemSelectedListener) {
       onOptionsItemSelectedListeners.remove(component);
