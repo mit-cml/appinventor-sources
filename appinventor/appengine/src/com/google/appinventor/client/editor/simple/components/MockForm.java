@@ -645,6 +645,9 @@ public final class MockForm extends MockContainer {
     boolean visible = Boolean.parseBoolean(text);
     phoneBar.setVisible(visible);
     phoneBar.getVisibility(visible);
+    if (screenWidth == 0 || screenHeight == 0) { // This happens when a project is loaded
+      return;                                    // so don't attempt to resize to 0,0
+    }
     resizePanel(screenWidth,screenHeight); // update the MockForm size
   }
 
