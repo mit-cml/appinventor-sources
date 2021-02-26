@@ -71,4 +71,13 @@ public interface UserInfoServiceAsync {
    */
   void storeSharedBackpack(String backPackId, String content, AsyncCallback<Void> callback);
 
+  /**
+   * @see UserInfoService#getUserFolders()
+   */
+  void getUserFolders(AsyncCallback<String> async);
+
+  /**
+   * @see UserInfoService#setUserFolders(String)
+   */
+  void setUserFolders(String folderData, AsyncCallback<String> async);
 }

@@ -26,14 +26,32 @@ public interface ProjectServiceAsync {
       AsyncCallback<UserProject> callback);
 
   /**
-   * @see ProjectService#newProjectFromTemplate(String, String, NewProjectParameters, String)
+   * @see ProjectService#newProject(String, String, NewProjectParameters, String)
+   */
+  void newProject(String projectType, String projectName, NewProjectParameters params,
+                  String parentFolder, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#newProjectFromTemplate(String, String)
    */
   void newProjectFromTemplate(String projectName, String pathToZip, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#newProjectFromTemplate(String, String, String)
+   */
+  void newProjectFromTemplate(String projectName, String pathToZip,
+                              String parentFolder, AsyncCallback<UserProject> callback);
 
   /**
    * @see ProjectService#newProjectFromExternalTemplate(String, String)
    */
   void newProjectFromExternalTemplate(String projectName, String zipData, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#newProjectFromExternalTemplate(String, String, String)
+   */
+  void newProjectFromExternalTemplate(String projectName, String zipData,
+                                      String parentFolder, AsyncCallback<UserProject> callback);
 
   /**
    * @see ProjectService#retrieveTemplateData(String)
@@ -49,6 +67,18 @@ public interface ProjectServiceAsync {
    * @see ProjectService#moveToTrash(long)
    */
   void moveToTrash(long projectId, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#moveProjectToFolder(long, String)
+   */
+  void moveProjectToFolder(long projectId, String newFolder,
+                            AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#moveProjectsToFolder(List, List) 
+   */
+  void moveProjectsToFolder(List<Long> projectIds, List<String> parentFolders,
+                            AsyncCallback<List<UserProject>> callback);
 
   /**
    * @see ProjectService#restoreProject(long)
@@ -72,6 +102,7 @@ public interface ProjectServiceAsync {
 
   /**
    * @see ProjectService#deleteProject(long)
+
    */
   void deleteProject(long projectId, AsyncCallback<Void> callback);
 
@@ -151,7 +182,7 @@ public interface ProjectServiceAsync {
   void save(String sessionId, long projectId, String fileId, String source, AsyncCallback<Long> callback);
 
   /**
-   * @see ProjectService#save2(String, long, String, String)
+   * @see ProjectService#save2(String, long, String, boolean, String)
    */
   void save2(String sessionId, long projectId, String fileId, boolean force, String source, AsyncCallback<Long> callback);
 
@@ -161,14 +192,14 @@ public interface ProjectServiceAsync {
   void save(String sessionId, List<FileDescriptorWithContent> filesAndContent, AsyncCallback<Long> callback);
 
   /**
-   * @see ProjectService#screnshot(String, long, String, String)
+   * @see ProjectService#screenshot(String, long, String, String)
    */
 
   void screenshot(String sessionId, long projectId, String fileId, String content,
     AsyncCallback<RpcResult> callback);
 
   /**
-   * @see ProjectService#build(long, String, String, boolean)
+   * @see ProjectService#build(long, String, String, boolean, boolean)
    */
   void build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab, AsyncCallback<RpcResult> callback);
 
@@ -191,5 +222,4 @@ public interface ProjectServiceAsync {
    * @see ProjectService#log(String)
    */
   void log(String message, AsyncCallback<Void> callback);
-
 }

@@ -30,9 +30,19 @@ public class UserProject implements IsSerializable {
   private String projectType;
 
   /**
+   * The attribution ID.
+   */
+  private long attributionId;
+
+  /**
    * The moved to Trash flag.
    */
   private boolean projectMovedToTrashFlag;
+
+  /**
+   * The folder containing the project. A null parent folder represents the top level directory.
+   */
+  private String parentFolder;
 
   /**
    * The date the project was created expressed in milliseconds since
@@ -62,13 +72,15 @@ public class UserProject implements IsSerializable {
    * @param projectName the project name
    * @param projectType the project type
    */
-  public UserProject(long projectId, String projectName, String projectType, long creationDate, boolean projectMovedToTrashFlag) {
+  public UserProject(long projectId, String projectName, String projectType, long creationDate,
+                     boolean projectMovedToTrashFlag, String parentFolder) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = creationDate;
     this.projectMovedToTrashFlag = projectMovedToTrashFlag;
+    this.parentFolder = parentFolder;
   }
 
   /**
@@ -79,13 +91,14 @@ public class UserProject implements IsSerializable {
    * @param projectType the project type
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
-      long modificationDate, boolean projectMovedToTrashFlag) {
+      long modificationDate, boolean projectMovedToTrashFlag, String parentFolder) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = modificationDate;
     this.projectMovedToTrashFlag = projectMovedToTrashFlag;
+    this.parentFolder = parentFolder;
   }
 
   /**
@@ -139,6 +152,14 @@ public class UserProject implements IsSerializable {
 
   public boolean isInTrash() {
     return projectMovedToTrashFlag;
+  }
+
+  public String getParentFolder() {
+    return this.parentFolder;
+  }
+
+  public void setParentFolder(String parentFolder) {
+    this.parentFolder = parentFolder;
   }
 
   @Override

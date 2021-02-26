@@ -14,11 +14,13 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * This class manages projects.
+ * This class manages projects and project folders.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -149,6 +151,25 @@ public final class ProjectManager {
     Project project = projectsMap.get(projectId);
     fireProjectTrashed(project);
   }
+  /**
+   * Adds a new folder.
+   *
+   * @param folderName the new folder name
+   */
+  public void addFolder(String folderName){
+
+    fireOnFolderAddition(folderName);
+  }
+
+  /**
+   * Deletes the specified folder
+   *
+   * @param folderName the new folder name
+   */
+  public void deleteFolder(String folderName){
+    fireOnFolderDeletion(folderName);
+  }
+
 
   /**
    * Adds a {@link ProjectManagerEventListener} to the listener list.
@@ -203,6 +224,24 @@ public final class ProjectManager {
   private void fireProjectDeleted(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onProjectDeleted(project);
+    }
+  }
+
+  /*
+   * Triggers a 'folder added' event to be sent to the listener on the listener list.
+   */
+  private void fireOnFolderAddition(String folder) {
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+      listener.onFolderAddition(folder);
+    }
+  }
+
+  /*
+   * Triggers a 'folder added' event to be sent to the listener on the listener list.
+   */
+  private void fireOnFolderDeletion(String folder) {
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+      listener.onFolderDeletion(folder);
     }
   }
 

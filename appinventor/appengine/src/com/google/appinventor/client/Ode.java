@@ -417,6 +417,21 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Changes the caption of the project view to reflect the folder specified.
+   *
+   * @param folderName the name of the currently active folder
+   */
+  public void setProjectViewFolder(final String folderName) {
+    final String newCaption = (folderName == null)
+        ? MESSAGES.projectListBoxCaption()
+        : MESSAGES.projectListBoxCaption() + "/" + folderName;
+    ProjectListBox projectListBox = ProjectListBox.getProjectListBox();
+    if (projectListBox != null) {
+      projectListBox.setCaption(newCaption);
+    }
+  }
+
+  /**
    * Switch to the Trash tab
    */
 

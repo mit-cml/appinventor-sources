@@ -161,7 +161,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     final String USER_ID = "400";
     final String USER_EMAIL = "newuser400@test.com";
     storage.getUser(USER_ID, USER_EMAIL);
-    storage.createProject(USER_ID, project, SETTINGS);
+    storage.createProject(USER_ID, project, SETTINGS, null);
     assertEquals(1, storage.getProjects(USER_ID).size());
   }
 
@@ -173,7 +173,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
     try {
       throwingStorage.getUser(USER_ID, USER_EMAIL);
-      throwingStorage.createProject(USER_ID, project, SETTINGS);
+      throwingStorage.createProject(USER_ID, project, SETTINGS, null);
     } catch (RuntimeException e) {
       assertEquals(0, throwingStorage.getProjects(USER_ID).size());
       return;
@@ -190,7 +190,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
     try {
       throwingStorage.getUser(USER_ID, USER_EMAIL);
-      throwingStorage.createProject(USER_ID, project, SETTINGS);
+      throwingStorage.createProject(USER_ID, project, SETTINGS, null);
     } catch (RuntimeException e) {
       assertEquals(0, throwingStorage.getProjects(USER_ID).size());
       return;
@@ -501,7 +501,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     final String USER_ID2 = "1700";
     createUserFiles(USER_ID, USER_EMAIL, storage);
 
-    long projectId = storage.createProject(USER_ID, project, SETTINGS);
+    long projectId = storage.createProject(USER_ID, project, SETTINGS, null);
     assertTrue(Arrays.equals(RAW_FILE_CONTENT1,
         storage.downloadRawFile(USER_ID, projectId, RAW_FILE_NAME1)));
     try {
@@ -622,6 +622,6 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     Project project = new Project(name);
     project.setProjectType(type);
     project.addTextFile(new TextFile(fileName, ""));
-    return storageIo.createProject(userId, project, SETTINGS);
+    return storageIo.createProject(userId, project, SETTINGS, null);
   }
 }

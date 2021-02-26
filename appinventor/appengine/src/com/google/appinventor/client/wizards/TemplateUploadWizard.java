@@ -14,6 +14,7 @@ import java.util.Map;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.tracking.Tracking;
@@ -580,6 +581,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
 
     // Callback for updating the project explorer after the project is created on the back-end
     final Ode ode = Ode.getInstance();
+    final String currentFolder = ProjectListBox.getProjectListBox().getProjectList().getCurrentFolder();
     final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(
       // failure message
       MESSAGES.createProjectError()) {
@@ -593,6 +595,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
             YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
             projectName,
             new NewYoungAndroidProjectParameters(projectName),
+            currentFolder,
             this);
           return;
         }
@@ -617,7 +620,10 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
             }
             @Override
             public void onResponseReceived(Request request, Response response) {
-              ode.getProjectService().newProjectFromExternalTemplate(projectName,response.getText(),callback);
+              ode.getProjectService().newProjectFromExternalTemplate(projectName,
+                  response.getText(),
+                  currentFolder,
+                  callback);
             }
 
           });
@@ -627,7 +633,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     } else {
       pathToZip = TEMPLATES_ROOT_DIRECTORY + projectName + "/" + projectName +
         PROJECT_ARCHIVE_EXTENSION;
-      ode.getProjectService().newProjectFromTemplate(projectName, pathToZip, callback);
+      ode.getProjectService().newProjectFromTemplate(projectName, pathToZip, currentFolder, callback);
     }
   }
 
@@ -708,7 +714,11 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
           // The response.getText is the zip data used to create a new project.
           // The callback opens the project
           if (response != null && response.getStatusCode() == 200 && response.getText() != null && !response.getText().isEmpty()) {
-            ode.getProjectService().newProjectFromExternalTemplate(projectName, response.getText(), callback);
+            String currentFolder = ProjectListBox.getProjectListBox().getProjectList().getCurrentFolder();
+            ode.getProjectService().newProjectFromExternalTemplate(projectName,
+                response.getText(),
+                currentFolder,
+                callback);
           } else if (url.startsWith("http:")) {
             openTemplateProject(url.replaceFirst("http:", "https:"), onSuccessCommand);
           }
