@@ -891,6 +891,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       "if (type(decodedValue) == 'table') then " +
       "  local removedValue = table.remove(decodedValue, 1);" +
       "  local newValue = cjson.encode(decodedValue);" +
+      "  if (newValue == \"{}\") then " +
+      "    newValue = \"[]\" " +
+      "  end " +
       "  redis.call('set', project .. \":\" .. key, newValue);" +
       "  table.insert(subTable, key);" +
       "  table.insert(subTable1, newValue);" +
@@ -901,7 +904,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       "  return error('You can only remove elements from a list');" +
       "end";
 
-  private static final String POP_FIRST_SCRIPT_SHA1 = "ed4cb4717d157f447848fe03524da24e461028e1";
+  private static final String POP_FIRST_SCRIPT_SHA1 = "68a7576e7dc283a8162d01e3e7c2d5c4ab3ff7a5";
 
   /**
    * Obtain the first element of a list and atomically remove it. If two devices use this function
