@@ -1463,7 +1463,7 @@ public class YailEvalTest extends TestCase {
   private String readTestCode(String test) {
     try (InputStream is = getClass().getClassLoader()
         .getResourceAsStream("com/google/appinventor/buildserver/" + test + ".scm");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+         ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       assertNotNull(is);
       byte[] buffer = new byte[4096];
       int read;

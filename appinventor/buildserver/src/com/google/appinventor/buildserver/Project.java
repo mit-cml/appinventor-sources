@@ -403,4 +403,14 @@ public final class Project {
     }
     return sources;
   }
+
+  @Override
+  public String toString() {
+    return "Project{" +
+        "properties=" + properties +
+        ", projectDir='" + projectDir + '\'' +
+        ", buildDirOverride='" + buildDirOverride + '\'' +
+        ", sources=" + sources +
+        '}';
+  }
 }

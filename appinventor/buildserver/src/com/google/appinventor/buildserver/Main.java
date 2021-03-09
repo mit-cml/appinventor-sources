@@ -23,9 +23,6 @@ import java.util.zip.ZipFile;
  */
 public final class Main {
 
-  public final static String APK_EXTENSION_VALUE = "apk";
-  public final static String AAB_EXTENSION_VALUE = "aab";
-
   static class CommandLineOptions {
     @Option(name = "--isForCompanion", usage = "create the MIT AI2 Companion APK")
     boolean isForCompanion = false;
@@ -115,7 +112,7 @@ public final class Main {
                                          commandLineOptions.childProcessRamMb,
                                          commandLineOptions.dexCacheDir,
                                          null,
-                                         AAB_EXTENSION_VALUE.equals(commandLineOptions.ext));
+                                         commandLineOptions.ext);
     System.exit(result.getResult());
   }
 
