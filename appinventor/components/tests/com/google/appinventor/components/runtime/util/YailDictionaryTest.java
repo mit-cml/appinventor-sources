@@ -372,15 +372,10 @@ public class YailDictionaryTest {
             YailList.makeList(new Object[] {
                 YailList.makeList(new Object[] { "a", "b" }), 2, 3})}),
         YailList.makeList(new Object[] { "dict",
+            YailDictionary.makeDictionary("a","b")}),
+        YailList.makeList(new Object[] { "list-with-dict", 
             YailList.makeList(new Object[] {
-                YailList.makeList(new Object[] { "a", "b" })})}),
-        YailList.makeList(new Object[] { "list-with-dict",
-            YailList.makeList(new Object[] {
-                YailList.makeList(new Object[] {
-                    YailList.makeList(new Object[] {
-                        "a", "b"
-                    })
-                })
+                YailDictionary.makeDictionary("a","b")
             })})
     });
   }
