@@ -17,12 +17,8 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.project.ProjectComparators;
-import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.common.collect.Ordering;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -48,8 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 /**
  * The project list shows all   and the current folder's projects in a table.
  *
@@ -70,10 +64,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   // TODO: add these to OdeMessages.java
-  private static final String NOT_PUBLISHED = "No";
-  private static final String PUBLISHED = "Yes";
-  private static final String PUBLISHBUTTONTITLE = "Open a dialog to publish your app to the Gallery";
-  private static final String UPDATEBUTTONTITLE = "Open a dialog to publish your newest version in the Gallery";
   private static final char FOLDER_DIVIDER = '/';
 
   private final List<String> selectedFolders;
@@ -261,7 +251,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     Label nameLabel;
     Label dateCreatedLabel;
     Label dateModifiedLabel;
-    Label publishedLabel;
   }
 
   private class FolderWidgets extends ListEntryWidgets {
@@ -269,7 +258,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     final Label nameLabel;
     final Label dateCreatedLabel = new Label();
     final Label dateModifiedLabel = new Label();
-    final Label publishedLabel = new Label();
 
     /**
      * Constructor for standard folder links- the displayed folder name is relative its parent
@@ -443,47 +431,40 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     refreshSortIndicators();
 
     // Refill the table.
-//<<<<<<< HEAD
     int previous_rowmax = table.getRowCount() - 1;
-//    table.resizeRows(Integer.max(3, previous_rowmax + 1));
-//    int row = 0;
-//    for (Project project : projects) {
-//      if (project.isInTrash() == isInTrash) {
-//        row++;
-//        ProjectWidgets pw = projectWidgets.get(project);
-//        if (selectedProjects.contains(project)) {
-//          table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-//          pw.checkBox.setValue(true);
+    table.clear();
     final int folderNumber = (currentFolder != null) ? 1 + currentSubFolders.size() : currentSubFolders.size();
     table.resize(1 + folderNumber + currentProjects.size(), 4);
     int row = 1;
-    if (currentFolder != null) {
-      table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-      FolderWidgets fw = new FolderWidgets();
-      configureFolderDragDrop(table.getRowFormatter().getElement(row), row, getParentFolder(), false);
-      table.setWidget(row, 0, fw.dateCreatedLabel); // These duplicate lines of table.setWidget code do
-      table.setWidget(row, 1, fw.nameLabel); // not work properly after being converted into JS
-      table.setWidget(row, 2, fw.dateCreatedLabel); // if abstracted into a function
-      table.setWidget(row, 3, fw.dateModifiedLabel);
-      row++;
-    }
-    for (String folder : currentSubFolders) {
-      FolderWidgets fw = folderWidgets.get(folder);
-      if (selectedFolders.contains(folder)) {
-        table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-        fw.checkBox.setValue(true);
-      } else {
+    if (!isInTrash) {
+      if (currentFolder != null) {
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-        fw.checkBox.setValue(false);
+        FolderWidgets fw = new FolderWidgets();
+        configureFolderDragDrop(table.getRowFormatter().getElement(row), row, getParentFolder(), false);
+        table.setWidget(row, 0, fw.dateCreatedLabel); // These duplicate lines of table.setWidget code do
+        table.setWidget(row, 1, fw.nameLabel); // not work properly after being converted into JS
+        table.setWidget(row, 2, fw.dateCreatedLabel); // if abstracted into a function
+        table.setWidget(row, 3, fw.dateModifiedLabel);
+        row++;
       }
-      configureFolderDragDrop(table.getRowFormatter().getElement(row), row, folder, true);
-      table.setWidget(row, 0, fw.checkBox);
-      table.setWidget(row, 1, fw.nameLabel);
-      table.setWidget(row, 2, fw.dateCreatedLabel);
-      table.setWidget(row, 3, fw.dateModifiedLabel);
-      row++;
+      for (String folder : currentSubFolders) {
+        FolderWidgets fw = folderWidgets.get(folder);
+        if (selectedFolders.contains(folder)) {
+          table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
+          fw.checkBox.setValue(true);
+        } else {
+          table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
+          fw.checkBox.setValue(false);
+        }
+        configureFolderDragDrop(table.getRowFormatter().getElement(row), row, folder, true);
+        table.setWidget(row, 0, fw.checkBox);
+        table.setWidget(row, 1, fw.nameLabel);
+        table.setWidget(row, 2, fw.dateCreatedLabel);
+        table.setWidget(row, 3, fw.dateModifiedLabel);
+        row++;
+      }
     }
-    for (Project project : currentProjects) {
+    for (Project project : (isInTrash ? allProjects : currentProjects)) {
       if (project.isInTrash() == isInTrash) {
 
         ProjectWidgets pw = projectWidgets.get(project);
@@ -512,15 +493,11 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         if (row >= previous_rowmax) {
           table.insertRow(row + 1);
         }
-        table.setWidget(row, 0, pw.checkBox);
-        table.setWidget(row, 1, pw.nameLabel);
-        table.setWidget(row, 2, pw.dateCreatedLabel);
-        table.setWidget(row, 3, pw.dateModifiedLabel);
+        row++;
       }
-      row++;
     }
     selectAllCheckBox.setValue(false);
-    table.resizeRows(row + 1);
+    table.resizeRows(row);
 
     if (isInTrash && table.getRowCount() == 1) {
       Ode.getInstance().createEmptyTrashDialog(true);
@@ -730,10 +707,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       if (!projectListLoading) {
         refreshTable(true);
       }
-    }
-
-    public void setPublishedHeaderVisible ( boolean visible){
-      table.getWidget(0, 4).setVisible(visible);
     }
 
     /**
