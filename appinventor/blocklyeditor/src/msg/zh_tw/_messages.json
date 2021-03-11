@@ -671,7 +671,7 @@
     "Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TITLE": "%1 是一個字典嗎?",
     "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE": "巡覽所有階層",
     "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE": "列出透過巡覽字典或串列 %2 的鍵路徑 %1",
-    "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP": "回傳字典中所有鍵的串列",
+    "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP": "以串列回傳字典中所有的鍵",
     "Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TITLE": "結合字典",
     "Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_INPUT": "從字典 %2 合併入字典 %1",
     "Blockly.Msg.LANG_DICTIONARIES_COPY_TOOLTIP": "回傳字典的淺副本",
@@ -697,5 +697,18 @@
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TITLE": "鍵",
     "Blockly.Msg.LANG_DICTIONARIES_GETTERS_TITLE": "取得",
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE": "在字典的鍵路徑上設定值",
-    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP": "由字典結構樹路徑開始處設定值"
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP": "由字典結構樹路徑開始處設定值",
+    "Blockly.Msg.LANG_PROCEDURES_DEFRETURN_PROCEDURE": "程序",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TOOLTIP": "從選擇的字典開始，並基於選擇的路徑沿著它及子項的鍵，以串列回傳在巡覽結束時找到的節點。",
+    "Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TOOLTIP": "由「來源」字典複製鍵值對到「目的」字典中",
+    "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TOOLTIP": "以串列回傳字典中所有的值",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER": "順序",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX": "偏好",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT": "在字串中",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER": "返回透過取代所有事件而獲得的新文字內容\n由輸入字典鍵定義，並帶有相應鍵的值。\n在選擇取代一個或另一個鍵之間的情況下，首先替換字典中最先出現的元素。",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST": "返回透過取代所有事件而獲得的新文字內容\n由輸入字典鍵定義，並帶有相應鍵的值。\n在選擇取代一個或另一個鍵之間的情況下，最長的鍵將首先被取代。",
+    "Blockly.Msg.LANG_TEXT_REVERSE_INPUT": "反向",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE": "取代所有的對照",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER": "字典",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST": "最長的字串在前"
 }
