@@ -1,5 +1,5 @@
 /* -*- mode: swift; swift-mode:basic-offset: 2; -*- */
-/* Copyright © 2017-2020 Massachusetts Institute of Technology, All rights reserved. */
+/* Copyright © 2017-2021 Massachusetts Institute of Technology, All rights reserved. */
 /**
  * @file Player.swift Implementation of the MIT App Inventor Player
  * component for iOS.
@@ -25,6 +25,11 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
   
   public override init(_ container: ComponentContainer) {
     super.init(container)
+    if #available(iOS 10.0, *) {
+      // We need to switch the audiosession to playback mode in case the phone is in silent mode
+      // Otherwise, no sound will play.
+      try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+    }
   }
   
   @objc open var Source: String {
