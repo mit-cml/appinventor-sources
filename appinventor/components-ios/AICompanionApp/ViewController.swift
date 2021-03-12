@@ -187,7 +187,20 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     NSLog("Code = \(code)")
     let url = URL(string: "http://rendezvous.appinventor.mit.edu/rendezvous/");
     var request = URLRequest(url: url!)
-    let values = "key=\(code)&ipaddr=\((NetworkUtils.getIPAddress())!)&port=9987&webrtc=false&version=2.51&api=12.0&os=ios&installer=unknown"
+    let values = [
+      "key": code,
+      "ipaddr": NetworkUtils.getIPAddress()!,
+      "port": "9987",
+      "webrtc": String(describing: phoneStatus.WebRTC),
+      "version": phoneStatus.GetVersionName(),
+      "api": phoneStatus.SdkLevel(),
+      "installer": phoneStatus.GetInstaller(),
+      "os": form.Platform,
+      "aid": phoneStatus.InstallationId(),
+      "r2": "true"
+    ].map({ (key: String, value: String) -> String in
+      return "\(key)=\(value)"
+    }).joined(separator: "&")
     NSLog("Values = \(values)")
     request.httpMethod = "POST"
     request.httpBody = values.data(using: String.Encoding.utf8)

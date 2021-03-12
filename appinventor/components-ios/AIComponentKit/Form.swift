@@ -505,7 +505,7 @@ let kMinimumToastWait = 10.0
   }
 
   @objc open var Platform: String {
-    return "iOS"
+    return UIDevice.current.systemName
   }
 
   @objc open var PlatformVersion: String {
