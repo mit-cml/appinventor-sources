@@ -33,7 +33,7 @@ open class Web: NonvisibleComponent {
       return _url
     }
     set(url) {
-      _url = url
+      _url = url.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed) ?? ""
     }
   }
   

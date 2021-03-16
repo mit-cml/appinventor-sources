@@ -14,7 +14,7 @@ private let DEFAULT_CENTER: String = "42.359144, -71.093612"
 
 private let MAX_ZOOM_LEVEL: Int = 18
 private let MIN_ZOOM_LEVEL: Int = 1
-private let kFingerSize: CGFloat = 24.0
+private let kFingerSize: CGFloat = 1.0
 
 private let ZOOM_LEVEL_0 = 80082944.031721031553788
 
@@ -644,12 +644,11 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
       overlay.feature!.marker.SetLocation(coordinate.latitude, coordinate.longitude)
       _activeMarker = overlay.feature!.marker
       if let marker = _activeMarker {
+        overlay.feature!.Click()
         mapView.removeAnnotation(marker.annotation)
         mapView.addAnnotation(marker.annotation)
-        overlay.feature!.Click()
-        DispatchQueue.main.async {
-          self._activeMarker?.ShowInfobox()
-        }
+        overlay.feature?.ShowInfobox()
+         
       }
     } else {
       getOverlayAtPoint(coordinate) { _ in
@@ -739,7 +738,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     let tapOverlay = Geometry.create("POLYGON((\(lon - lonSpan) \(lat - latSpan), \(lon - lonSpan) \(lat + latSpan), \(lon + lonSpan) \(lat + latSpan), \(lon + lonSpan) \(lat - latSpan), \(lon - lonSpan) \(lat - latSpan)))")
     for overlay in mapView.overlays {
       if let shape = overlay as? MapOverlayShape, let tapLocation = tapOverlay {
-        if filter(shape.feature!), (shape.feature!._shape?.intersects(tapLocation) ?? false), shape.feature!.Visible {
+        if filter(shape.feature!), (shape.feature!._shape?.intersects(tapLocation) ?? false), shape.visible {
           if let past = _activeOverlay {
             _activeOverlay = past.feature!.index < shape.feature!.index ? shape: past
           } else {

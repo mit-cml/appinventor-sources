@@ -61,7 +61,7 @@ open class PolygonMarker: Marker {
 
   @objc open override var Description: String {
     didSet {
-      _marker.Description = annotation.description
+      _marker.Description = annotation.subtitle ?? ""
     }
   }
 
@@ -126,7 +126,7 @@ open class PolygonMarker: Marker {
 
   @objc open override var Title: String? {
     didSet {
-      _marker.Title = annotation.subtitle
+      _marker.Title = annotation.title
     }
   }
 
@@ -184,7 +184,8 @@ open class PolygonMarker: Marker {
     _marker.SetLocation(Centroid.latitude, Centroid.longitude)
     map?.removeFeature(_marker)
     map?.addFeature(_marker)
-    DispatchQueue.main.async {
+    let deadlineTime = DispatchTime.now() + .milliseconds(500)
+    DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
       self._marker.ShowInfobox()
     }
   }

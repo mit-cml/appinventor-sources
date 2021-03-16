@@ -207,14 +207,9 @@ import GEOSwift
 
   // This method is used to represent the callout text
   private func setText() {
-    let title = annotation.title ?? ""
-    let text = NSMutableAttributedString(string: title,
-        attributes: [NSAttributedString.Key.font:UIFont.preferredFont(forTextStyle: .title3)])
-    if title != "" {
-      text.append(NSAttributedString(string: "\n"))
-    }
-    text.append(NSAttributedString(string: annotation.subtitle ?? "",
-        attributes: [NSAttributedString.Key.font:UIFont.preferredFont(forTextStyle: .body)]))
+    let subTitle = annotation.subtitle ?? ""
+    let text = NSAttributedString(string: subTitle,
+        attributes: [NSAttributedString.Key.font:UIFont.preferredFont(forTextStyle: .body)])
     annotation.callout.attributedText = text
   }
 
