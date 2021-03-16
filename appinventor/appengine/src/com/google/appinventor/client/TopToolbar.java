@@ -12,7 +12,6 @@ import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
-import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
 import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
@@ -234,8 +233,8 @@ public class TopToolbar extends Composite {
           new ImportProjectAction()));
       fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTTEMPLATE, MESSAGES.importTemplateButton(),
           new ImportTemplateAction()));
-      fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
-          new DeleteAction()));
+      fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.trashProjectButton(),
+          new MoveToTrashAction()));
       fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_TRASH, MESSAGES.deleteFromTrashButton(),
           new DeleteForeverProjectAction()));
       fileItems.add(null);
@@ -643,47 +642,45 @@ public class TopToolbar extends Composite {
     }
   }
 
-  private static class DeleteAction implements Command {
+  public static class MoveToTrashAction implements Command {
     @Override
     public void execute() {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
         @Override
         public void execute() {
-          if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
-            List<Project> selectedProjects =
-                ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-            if (selectedProjects.size() > 0) {
-              // Show one confirmation window for selected projects.
-              if (deleteConfirmation(selectedProjects)) {
-                for (Project project : selectedProjects) {
-                  project.moveToTrash();
-                }
+          List<Project> selectedProjects =
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+          List<String> selectedFolders =
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
+          if (selectedProjects.size() > 0 || selectedFolders.size() > 0) {
+            // Show one confirmation window for selected projects.
+            if (deleteConfirmation(selectedProjects, selectedFolders)) {
+              for (Project project : selectedProjects) {
+                project.setParentFolder(null);
+                project.moveToTrash();
               }
-            } else {
-              // The user can select a project to resolve the
-              // error.
-              ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
+              Ode.getInstance().switchToProjectsView();
+              for(String folder : selectedFolders){
+                ProjectListBox.getProjectListBox().getProjectList().trashFolder(folder);
+              }
             }
-          } else { //We are deleting a project in the designer view
-            List<Project> selectedProjects = new ArrayList<Project>();
-            Project currentProject = Ode.getInstance().getProjectManager().getProject(Ode.getInstance().getCurrentYoungAndroidProjectId());
-            selectedProjects.add(currentProject);
-            if (deleteConfirmation(selectedProjects)) {
-              currentProject.moveToTrash();
-              //Add the command to stop this current project from saving
-            }
+            Ode.getInstance().switchToProjectsView();
+          } else {
+            // The user can select a project to resolve the
+            // error.
+            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
           }
-          Ode.getInstance().switchToProjectsView();
         }
       });
     }
 
-
-    private boolean deleteConfirmation(List<Project> projects) {
-      String message;
-      if (projects.size() == 1) {
-        message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
-      } else {
+    private boolean deleteConfirmation(List<Project> projects, List<String> folders) {
+      String projectMessage, folderMessage;
+      if (projects.size() == 0) {
+        projectMessage = null;
+      } else if (projects.size() == 1) {
+        projectMessage = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
+      } else{
         StringBuilder sb = new StringBuilder();
         String separator = "";
         for (Project project : projects) {
@@ -691,9 +688,31 @@ public class TopToolbar extends Composite {
           separator = ", ";
         }
         String projectNames = sb.toString();
-        message = MESSAGES.confirmMoveToTrash(projectNames);
+        projectMessage = MESSAGES.confirmMoveToTrash(projectNames);
       }
-      return Window.confirm(message);
+
+      if (folders.size() == 0) {
+        folderMessage = null;
+      } else if (folders.size() == 1) {
+        folderMessage = MESSAGES.confirmTrashSingleFolder(folders.get(0));
+      } else{
+        StringBuilder sb = new StringBuilder();
+        String separator = "";
+        for (String folder : folders) {
+          sb.append(separator).append(folder);
+          separator = ", ";
+        }
+        String folderNames = sb.toString();
+        folderMessage = MESSAGES.confirmTrashMultipleFolders(folderNames);
+      }
+
+      if (folderMessage == null) {
+        return Window.confirm(projectMessage);
+      } else if (projectMessage == null){
+        return Window.confirm(folderMessage);
+      } else{
+        return Window.confirm(projectMessage + "\n" + folderMessage);
+      }
     }
   }
 
@@ -1064,7 +1083,7 @@ public class TopToolbar extends Composite {
       return;
     }
     if (view == 0) {  // We are in the Projects view
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.trashProjectButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(),
           ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0);
@@ -1081,7 +1100,7 @@ public class TopToolbar extends Composite {
         buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), false);
       }
     } else { // We have to be in the Designer/Blocks view
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
+      fileDropDown.setItemEnabled(MESSAGES.trashProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
       ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0);

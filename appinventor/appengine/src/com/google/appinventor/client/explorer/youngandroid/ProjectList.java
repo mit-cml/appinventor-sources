@@ -118,7 +118,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     dateModifiedSortIndicator = new Label("");
     refreshSortIndicators();
     selectAllCheckBox = new CheckBox();
-    setHeaderRow();
 
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");
@@ -396,6 +395,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   public void refreshTable(boolean needToSort, boolean isInTrash) {
+    if (isInTrash && (getCurrentFolder() != null)) {
+      changeCurrentFolder(null);
+    }
+
     if (needToSort) {
       // Sort the projects.
       Comparator<Project> comparator;
@@ -433,38 +436,38 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     // Refill the table.
     int previous_rowmax = table.getRowCount() - 1;
     table.clear();
+    setHeaderRow();
     final int folderNumber = (currentFolder != null) ? 1 + currentSubFolders.size() : currentSubFolders.size();
     table.resize(1 + folderNumber + currentProjects.size(), 4);
     int row = 1;
-    if (!isInTrash) {
-      if (currentFolder != null) {
-        table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-        FolderWidgets fw = new FolderWidgets();
-        configureFolderDragDrop(table.getRowFormatter().getElement(row), row, getParentFolder(), false);
-        table.setWidget(row, 0, fw.dateCreatedLabel); // These duplicate lines of table.setWidget code do
-        table.setWidget(row, 1, fw.nameLabel); // not work properly after being converted into JS
-        table.setWidget(row, 2, fw.dateCreatedLabel); // if abstracted into a function
-        table.setWidget(row, 3, fw.dateModifiedLabel);
-        row++;
-      }
-      for (String folder : currentSubFolders) {
-        FolderWidgets fw = folderWidgets.get(folder);
-        if (selectedFolders.contains(folder)) {
-          table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-          fw.checkBox.setValue(true);
-        } else {
-          table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-          fw.checkBox.setValue(false);
-        }
-        configureFolderDragDrop(table.getRowFormatter().getElement(row), row, folder, true);
-        table.setWidget(row, 0, fw.checkBox);
-        table.setWidget(row, 1, fw.nameLabel);
-        table.setWidget(row, 2, fw.dateCreatedLabel);
-        table.setWidget(row, 3, fw.dateModifiedLabel);
-        row++;
-      }
+    if (currentFolder != null) {
+      table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
+      FolderWidgets fw = new FolderWidgets();
+      configureFolderDragDrop(table.getRowFormatter().getElement(row), row, getParentFolder(), false);
+      table.setWidget(row, 0, fw.dateCreatedLabel); // These duplicate lines of table.setWidget code do
+      table.setWidget(row, 1, fw.nameLabel); // not work properly after being converted into JS
+      table.setWidget(row, 2, fw.dateCreatedLabel); // if abstracted into a function
+      table.setWidget(row, 3, fw.dateModifiedLabel);
+      row++;
     }
-    for (Project project : (isInTrash ? allProjects : currentProjects)) {
+    for (String folder : currentSubFolders) {
+      FolderWidgets fw = folderWidgets.get(folder);
+      if (selectedFolders.contains(folder)) {
+        table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
+        fw.checkBox.setValue(true);
+      } else {
+        table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
+        fw.checkBox.setValue(false);
+      }
+      configureFolderDragDrop(table.getRowFormatter().getElement(row), row, folder, true);
+      table.setWidget(row, 0, fw.checkBox);
+      table.setWidget(row, 1, fw.nameLabel);
+      table.setWidget(row, 2, fw.dateCreatedLabel);
+      table.setWidget(row, 3, fw.dateModifiedLabel);
+      row++;
+    }
+
+    for (Project project : currentProjects) {
       if (project.isInTrash() == isInTrash) {
 
         ProjectWidgets pw = projectWidgets.get(project);
@@ -674,26 +677,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       final Set<String> folders = new HashSet<String>(projectsByFolder.keySet());
       for (String folder : folders) {
         if (isParentOrSameFolder(deletionFolder, folder)) {
-          for (final Project project : projectsByFolder.get(folder)) {
-            final long oldProjectId = project.getProjectId();
-
-            Ode.getInstance().getProjectService().moveToTrash(oldProjectId, //Avoid rebuilding table for each project
-                new OdeAsyncCallback<UserProject>(
-                    // failure message
-                    MESSAGES.moveToTrashProjectError()) {
-                  @Override
-                  public void onSuccess(UserProject projectInfo) {
-                    if (projectInfo.getProjectId() == oldProjectId) {
-                      allProjects.remove(project);
-                      projectWidgets.remove(project);
-                      Ode.getInstance().getProjectManager().trashProject(projectInfo.getProjectId());
-                      if (selectedProjects.size() == 0) {
-                        Ode.getInstance().createEmptyTrashDialog(true);
-                      }
-                    }
-                  }
-                });
-          }
           projectsByFolder.remove(folder);
           folderWidgets.remove(folder);
         }
@@ -771,6 +754,42 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       } else {
         return currentFolder.substring(0, lastDivider);
       }
+    }
+
+    public void trashFolder(String folder) {
+      for (String f : this.projectsByFolder.keySet()) {
+        // Projects from this folder and all subfolders must be trashed.
+        // Deleting the single folder should handle subfolders (?)
+        if (f != null) {
+          String folder_chain[] = f.split("/");
+          if (folder_chain[0] == folder) {
+            for (Project p1 : projectsByFolder.get(f)) {
+              final Project p = p1;
+              Ode.getInstance().getProjectService().moveProjectToFolder(p1.getProjectId(), null,
+                  new AsyncCallback<UserProject>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                      ErrorReporter.reportError(MESSAGES.couldNotChangeProjectFolder());
+                    }
+
+                    @Override
+                    public void onSuccess(UserProject userProject) {
+                      onProjectRemovedFromFolder(p);
+                      selectedProjects.remove(p);
+                      p.setParentFolder(userProject.getParentFolder());
+                      onProjectMovedToFolder(p);
+                      p.moveToTrash();
+                    }
+                  });
+            }
+          }
+        }
+      }
+      doDeleteFolder(folder);
+    }
+
+    private void doDeleteFolder(final String folderName) {
+      Ode.getInstance().getProjectManager().deleteFolder(folderName);// TODO() Need to call RPC to delete folder
     }
 
     /**

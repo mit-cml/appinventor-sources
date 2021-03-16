@@ -8,14 +8,12 @@ package com.google.appinventor.client.explorer.youngandroid;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.NewFolderWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
-import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
@@ -34,8 +32,6 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_PROJECT= "Projects";
   private static final String WIDGET_NAME_RESTORE= "Restore";
   private static final String WIDGET_NAME_DELETE_FROM_TRASH= "Delete From Trash";
-  private static final String WIDGET_NAME_SENDTONG = "Send to Gallery";
-  private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
   private static final String WIDGET_NAME_CREATE_FOLDER = "New Folder";
 
   private boolean isReadOnly;
@@ -55,10 +51,10 @@ public class ProjectToolbar extends Toolbar {
     addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
         new NewAction(this)));
 
-    addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
-        new MoveToTrashAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_TRASH,MESSAGES.trashButton(),
-        new TrashAction()));
+    addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.trashProjectButton(),
+        new TopToolbar.MoveToTrashAction()));
+    addButton(new ToolbarItem(WIDGET_NAME_TRASH,MESSAGES.switchToTrashButton(),
+        new SwitchToTrashAction()));
     addButton(new ToolbarItem(WIDGET_NAME_PROJECT,MESSAGES.myProjectsButton(),
         new BackToProjectViewAction()));
     addButton(new ToolbarItem(WIDGET_NAME_RESTORE,MESSAGES.restoreProjectButton(),
@@ -108,83 +104,6 @@ public class ProjectToolbar extends Toolbar {
     }
   }
 
-  private static class MoveToTrashAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
-        @Override
-        public void execute() {
-          List<Project> selectedProjects =
-              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-          List<String> selectedFolders =
-              ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
-          if (selectedProjects.size() > 0 || selectedFolders.size() > 0) {
-            // Show one confirmation window for selected projects.
-            if (deleteConfirmation(selectedProjects, selectedFolders)) {
-              for (Project project : selectedProjects) {
-                project.moveToTrash();
-              }
-              Ode.getInstance().switchToProjectsView();
-              for(String folder : selectedFolders){
-                doDeleteFolder(folder);
-              }
-            }
-            Ode.getInstance().switchToProjectsView();
-          } else {
-            // The user can select a project to resolve the
-            // error.
-            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
-          }
-        }
-      });
-    }
-
-    private boolean deleteConfirmation(List<Project> projects, List<String> folders) {
-      String projectMessage, folderMessage;
-      if (projects.size() == 0) {
-        projectMessage = null;
-      } else if (projects.size() == 1) {
-        projectMessage = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
-      } else{
-        StringBuilder sb = new StringBuilder();
-        String separator = "";
-        for (Project project : projects) {
-          sb.append(separator).append(project.getProjectName());
-          separator = ", ";
-        }
-        String projectNames = sb.toString();
-          projectMessage = MESSAGES.confirmMoveToTrash(projectNames);
-      }
-
-      if (folders.size() == 0) {
-        folderMessage = null;
-      } else if (folders.size() == 1) {
-        folderMessage = MESSAGES.confirmTrashSingleFolder(folders.get(0));
-      } else{
-        StringBuilder sb = new StringBuilder();
-        String separator = "";
-        for (String folder : folders) {
-          sb.append(separator).append(folder);
-          separator = ", ";
-        }
-        String folderNames = sb.toString();
-        folderMessage = MESSAGES.confirmTrashMultipleFolders(folderNames);
-      }
-
-      if (folderMessage == null) {
-        return Window.confirm(projectMessage);
-      } else if (projectMessage == null){
-        return Window.confirm(folderMessage);
-      } else{
-        return Window.confirm(projectMessage + "\n" + folderMessage);
-      }
-    }
-
-    private void doDeleteFolder(final String folderName) {
-      Ode.getInstance().getProjectManager().deleteFolder(folderName);// TODO() Need to call RPC to delete folder
-    }
-  }
-
   private static class CreateNewFolderAction implements Command {
     // Need to: spawn widget, in that widget, validate name-- then call projectmanager to create new folder, and
     // afterwards update the folder names by converting the list of folders to a serialized string to store
@@ -202,7 +121,7 @@ public class ProjectToolbar extends Toolbar {
   }
 
   //implementing trash method this method will show the Trash Tab
-  private static class TrashAction implements Command {
+  private static class SwitchToTrashAction implements Command {
     @Override
     public void execute() {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
