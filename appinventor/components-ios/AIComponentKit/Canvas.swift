@@ -236,7 +236,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       Clear()
       
       // The color 'none' is rendered as white
-      let newColor = backgroundColor != Int32(bitPattern: Color.none.rawValue) ? backgroundColor : Int32(bitPattern: Color.white.rawValue)
+      let newColor = backgroundColor != Int32(bitPattern: Color.default.rawValue) ? backgroundColor : Int32(bitPattern: Color.white.rawValue)
       if newColor != _backgroundColor {
         _backgroundImageView.backgroundColor = argbToColor(newColor)
         _backgroundImageView.layer.zPosition = -CGFloat.infinity
