@@ -201,7 +201,7 @@ public class Ode implements EntryPoint {
   public static final int PROJECTS = 1;
   public static final int USERADMIN = 2;
   public static final int TRASHCAN = 3;
-  public static int currentView = DESIGNER;
+  public static int currentView = PROJECTS;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
