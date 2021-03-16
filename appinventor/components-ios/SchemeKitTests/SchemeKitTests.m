@@ -663,4 +663,13 @@ typedef union {
   pic_close(pic);
 }
 
+- (void)testParseFloat {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  NSString *result = [interpreter evalForm:@".5"];
+  XCTAssertEqualObjects(@"0.5", result);
+
+  result = [interpreter evalForm:@"(+ .5)"];
+  XCTAssertEqualObjects(@"0.5", result);
+}
+
 @end
