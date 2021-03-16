@@ -441,7 +441,7 @@ public class LoginServlet extends HttpServlet {
   }
 
   private void fail(HttpServletRequest req, HttpServletResponse resp, String error, String locale) throws IOException {
-    resp.sendRedirect("/login/?locale=" + locale + "&error=" + sanitizer.sanitize(error));
+    resp.sendRedirect("/login/?locale=" + sanitizer.sanitize(locale) + "&error=" + sanitizer.sanitize(error));
     return;
   }
 
