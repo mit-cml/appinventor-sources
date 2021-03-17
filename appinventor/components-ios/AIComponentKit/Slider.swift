@@ -33,7 +33,7 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     _view.maximumValue = 100.0
     _view.minimumValue = 0.0
     _view.isEnabled = true
-    _view.addTarget(self, action: #selector(self.positionChanged(sender:forEvent:)), for: .valueChanged)
+    _view.addTarget(self, action: #selector(self.positionChanged(sender:)), for: .valueChanged)
   }
   
   public override var view: UIView {
@@ -111,9 +111,9 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
     thumbPosition.isNaN ? _view.setValue(50.0, animated: true) : _view.setValue(thumbPosition, animated: true)
   }
   
-  @objc private func positionChanged(sender: UISlider, forEvent event: UIEvent) {
-    _thumbPosition = (_maxValue - _minValue) * sender.value / 100
-    PositionChanged(_thumbPosition + _minValue)
+  @objc func positionChanged(sender: UISlider) {
+    _thumbPosition = (_maxValue - _minValue) * sender.value / 100 + _minValue
+    PositionChanged(_thumbPosition)
   }
   
   @objc open func PositionChanged(_ thumbPosition: Float) {

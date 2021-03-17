@@ -53,6 +53,34 @@ class SliderTests: XCTestCase {
     XCTAssertEqual(slider.MinValue, kSliderMinValue - 10, "Slider does not update MinValue when MinValue is larger than MinValue")
   }
 
+  func testMinValue() {
+    slider.MinValue = 0.1
+    slider.MaxValue = 1.0
+    slider.ThumbPosition = 0
+    XCTAssertEqual(0.1, slider.ThumbPosition)
+  }
+
+  func testMaxValue() {
+    slider.MinValue = 0.1
+    slider.MaxValue = 1.0
+    slider.ThumbPosition = 2
+    XCTAssertEqual(1.0, slider.ThumbPosition)
+  }
+
+  func testPositionChanged() {
+    slider.MinValue = 0.1
+    slider.MaxValue = 1.0
+
+    let view = slider.view as! UISlider
+    view.value = 0.0
+    slider.performSelector(onMainThread: #selector(Slider.positionChanged(sender:)), with: view, waitUntilDone: true)
+    XCTAssertEqual(0.1, slider.ThumbPosition)
+
+    view.value = 100.0
+    slider.performSelector(onMainThread: #selector(Slider.positionChanged(sender:)), with: view, waitUntilDone: true)
+    XCTAssertEqual(1.0, slider.ThumbPosition)
+  }
+
   fileprivate func baseTest(minDiff: Float32? = 0, maxDiff: Float32? = 0) {
     let min = kSliderMinValue + (minDiff ?? 0)
     let max = kSliderMaxValue + (maxDiff ?? 0)
