@@ -551,7 +551,9 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 }
 
 - (void)mark {
+#ifdef MEMDEBUG
   NSLog(@"YailDictionary.mark");
+#endif
   [_interpreter mark:_value];
   for (id key in _keys) {
     if ([key respondsToSelector:@selector(mark)]) {

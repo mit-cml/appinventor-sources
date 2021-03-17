@@ -1021,14 +1021,14 @@ let kMinimumToastWait = 10.0
       marked = false
     }
     marked = true
-  #if DEBUG
+  #if MEMDEBUG
     NSLog("Form.mark")
   #endif
     environment.mark()
     initThunks.mark()
   }
 
-#if DEBUG
+#if MEMDEBUG
   deinit {
     NSLog("Deallocating \(self)")
   }

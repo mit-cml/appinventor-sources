@@ -1064,7 +1064,7 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     return _container?.isVisible(component: self) ?? false
   }
 
-#if DEBUG
+#if MEMDEBUG
   deinit {
     NSLog("Deinitializing \(self)")
   }

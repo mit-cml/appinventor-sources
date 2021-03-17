@@ -339,7 +339,7 @@ yail_native_class_dtor(pic_state *pic, struct native_class *data) {
   ClassWrapper *wrapper = [[ClassWrapper alloc] initWithClass:data->class_];
   ValueHolder *holder = objects[wrapper];
   if (holder) {
-#ifdef DEBUG
+#ifdef MEMDEBUG
     NSLog(@"Deallocating class %@", [wrapper description]);
 #endif
     [objects removeObjectForKey:wrapper];
@@ -415,12 +415,12 @@ yail_make_native_instance_internal(pic_state *pic, id object, int type) {
   ValueHolder *wrappedValue = nil;
   CopyableReference *ref = [CopyableReference referenceWithObject:object];
   if ((wrappedValue = [objects objectForKey:ref])) {
-#ifdef DEBUG
+#ifdef MEMDEBUG
     NSLog(@"Returning existing reference for %@", [object debugDescription]);
 #endif
     return wrappedValue.value;
   }
-#ifdef DEBUG
+#ifdef MEMDEBUG
   NSLog(@"Allocating picrin object for %@", [object debugDescription]);
 #endif
   size_t ai = pic_enter(pic);  // prevent this from turning into a strong reference
@@ -484,13 +484,13 @@ yail_native_instance_dtor(pic_state *pic, struct native_instance *instance) {
   CopyableReference *ref = [CopyableReference referenceWithObject:instance->object_];
   ValueHolder *value = objects[ref];
   if (value) {
-#ifdef DEBUG
+#ifdef MEMDEBUG
     NSLog(@"Deallocating picrin object for %@", [instance->object_ debugDescription]);
 #endif
     [objects removeObjectForKey:ref];
     instance->object_ = nil;
   } else {
-#ifdef DEBUG
+#ifdef MEMDEBUG
     NSLog(@"No reference counter for deallocated object.");
 #endif
     instance->object_ = nil;
@@ -1409,7 +1409,7 @@ yail_define_alias(pic_state *pic) {
 void
 yail_gc_mark(pic_state *pic, pic_value v) {
   id value = yail_native_instance_ptr(pic, v)->object_;
-#ifdef DEBUG
+#ifdef MEMDEBUG
   if (looking_for_gcroots) {
     NSString *str = NSStringFromClass([value class]);
     NSLog(@"Type %@", str);

@@ -401,7 +401,7 @@ static SCMInterpreter *_defaultInterpreter = nil;
   pic_gc(_pic);
 }
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 
 - (void)printGCRoots:(id)object {
   NSLog(@"Looking for strong references to %@", object);

@@ -28,7 +28,7 @@
  */
 - (void)runGC;
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 
 /**
  * Run the garbage collector and idenitfy at least one strong path from the GC roots to the object.

@@ -81,7 +81,7 @@ YailList *yail_list_objc(pic_state *pic, pic_value o);
  */
 YailDictionary *yail_dict_objc(pic_state *pic, pic_value o);
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 
 /**
  * Gets the corresponding Scheme value for the @c object if the object is

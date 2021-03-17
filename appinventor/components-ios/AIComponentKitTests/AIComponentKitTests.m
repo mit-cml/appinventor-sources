@@ -110,10 +110,12 @@
   NSLog(@"Running GC");
   [interpreter runGC];
   NSLog(@"Testing environment");
+#ifdef MEMDBEUG
   id strongForm = weakForm;
   if (strongForm != nil) {
     [interpreter printGCRoots:strongForm];
   }
+#endif
   XCTAssertNil(environment);
 }
 
@@ -152,15 +154,19 @@
   }
   [interpreter evalForm:@"(set! *this-form* #!null)"];
   [interpreter runGC];
+#ifdef MEMDEBUG
   id strongForm = weakForm;
   if (strongForm) {
     [interpreter printGCRoots:strongForm];
   }
+#endif
   XCTAssertNil(weakForm);
+#ifdef MEMDEBUG
   id strongMap = weakMap;
   if (strongMap) {
     [interpreter printGCRoots:strongMap];
   }
+#endif
   XCTAssertNil(weakMap);
 }
 
