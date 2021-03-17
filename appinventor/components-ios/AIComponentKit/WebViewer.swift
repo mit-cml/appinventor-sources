@@ -127,7 +127,8 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
   //NOTE: To load file, assumes the presence of an "assets" folder
   fileprivate func processURL(_ url: String){
     _wantLoad = true
-    if url.starts(with: "file:///android_asset/"), let fileURL = URL(string: url) {
+    if url.starts(with: "file:///android_asset/") || url.starts(with: "http://localhost/"),
+        let fileURL = URL(string: url) {
       let assetPath = AssetManager.shared.pathForExistingFileAsset(fileURL.lastPathComponent)
       if !assetPath.isEmpty {
         let assetURL = URL(fileURLWithPath: assetPath)
@@ -152,8 +153,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
             ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
             ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.message)
       }
-    }
-    else if let newUrl = URL(string: url) {
+    } else if let newUrl = URL(string: url) {
       _view.load(URLRequest(url: newUrl))
     } else {
       do {
