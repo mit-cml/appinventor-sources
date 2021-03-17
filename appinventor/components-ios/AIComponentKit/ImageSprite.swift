@@ -44,12 +44,8 @@ open class ImageSprite: Sprite {
     }
     set(rotates) {
       if rotates != _rotates {
-        if rotates {
-           DisplayLayer.transform = CATransform3DMakeRotation(HeadingRadians, 0, 0, 1.0)
-        } else {
-          DisplayLayer.transform = CATransform3DMakeRotation(0, 0, 0, 1.0)
-        }
         _rotates = rotates
+        updateDisplayLayer()
         registerChanges()
       }
     }
@@ -62,7 +58,7 @@ open class ImageSprite: Sprite {
     set(heading) {
       super.Heading = heading
       if _rotates {
-        DisplayLayer.transform = CATransform3DMakeRotation(HeadingRadians, 0, 0, 1.0)
+        updateDisplayLayer()
         registerChanges()
       }
     }
@@ -121,6 +117,11 @@ open class ImageSprite: Sprite {
     let yCenter = CGFloat(YCenter)
     CATransaction.begin()
     CATransaction.setAnimationDuration(0.0)
+    if _rotates {
+      DisplayLayer.transform = CATransform3DMakeRotation(HeadingRadians, 0, 0, 1.0)
+    } else {
+      DisplayLayer.transform = CATransform3DMakeRotation(0, 0, 0, 1.0)
+    }
     d.position = CGPoint(x: xCenter, y: yCenter)
     d.bounds = CGRect(x: xCenter, y: yCenter, width: CGFloat(Width), height: CGFloat(Height))
     CATransaction.commit()
