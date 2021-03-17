@@ -15,10 +15,10 @@ from getopt import getopt, GetoptError
 os.environ['SERVER_SOFTWARE'] = 'MIT Whitelist Generator 1.0' # Googlism
 
 def auth_func():
-  return (input('Email: '), getpass.getpass('Password: '))
+  return (raw_input('Email: '), getpass.getpass('Password: '))
 
 def main():
-    if 'google' in sys.modules:
+    if sys.modules.has_key('google'):
       del sys.modules['google'] # This interferes with imports later
     getlibdir()
     from google.appengine.ext import db
@@ -51,8 +51,8 @@ def main():
         elif opt[0] == '--getonly':
             getonly = True
 
-    print('Using %s for input' % whitelistname)
-    print('Connecting to %s' % host)
+    print 'Using %s for input' % whitelistname
+    print 'Connecting to %s' % host
     if host == 'localhost':
         host = host + ':8888'
         secure = False
@@ -84,17 +84,17 @@ def main():
             break
 
     if getonly:
-        print('Getonly set, returning existing whitelist with no changes')
+        print 'Getonly set, returning existing whitelist with no changes'
         for person in installed_people:
-            print(person.emailLower)
+            print person.emailLower
         return
 
     WHITE = {}
     for email in input_people:
-        WHITE[str(email)] = [0, None]
+        WHITE[unicode(email)] = [0, None]
     for person in installed_people:
         email = person.emailLower
-        if email in WHITE:
+        if WHITE.has_key(email):
             WHITE[email] = [2, person]
         else:
             WHITE[email] = [1, person]
@@ -102,31 +102,31 @@ def main():
     # Now we go through the dictionary. Remove people in state 1
     # and add people in state 0
 
-    for (email, z) in list(WHITE.items()):
+    for (email, z) in WHITE.items():
         state, person = z
         if state == 0:
             v = WhiteListData()
             v.emailLower = email
             v.put()
-            print('Added %s' % email)
+            print 'Added %s' % email
         elif state == 1:
             person.delete()
-            print('Removed %s' % email)
+            print 'Removed %s' % email
 
 
 def getlibdir():
     '''Find the googl_appengine library directory'''
     from os.path import expanduser
-    import configparser
+    import ConfigParser
     doupdate = False
-    config = configparser.RawConfigParser()
+    config = ConfigParser.RawConfigParser()
     configfile = expanduser('~/.appinv_whitelist')
     config.read(configfile)
     libdir = '/usr/local/google_appengine' # Default
     if config.has_section('whitelist'):
         try:
             libdir = config.get('whitelist', 'googlelibdir')
-        except configparser.NoOptionError:
+        except ConfigParser.NoOptionError:
             config.set('whitelist', 'googlelibdir', libdir)
             doupdate = True
     else:
@@ -141,7 +141,7 @@ def getlibdir():
     try:
         from google.appengine.ext import db
     except ImportError:
-        newpath = input('Google Python App Engine SDK Path [%s]: ' % libdir)
+        newpath = raw_input('Google Python App Engine SDK Path [%s]: ' % libdir)
         if newpath == '':
             newpath = libdir
         libdir = newpath
@@ -149,7 +149,7 @@ def getlibdir():
         f = open(configfile, 'w')
         config.write(f)
         f.close()
-        print('Location of Google Library Directory Saved, exiting, try again...')
+        print 'Location of Google Library Directory Saved, exiting, try again...'
         sys.exit(0)
 
 # The stuff below is to permit the prompt for the library dir to
@@ -202,7 +202,7 @@ comp = Completer()
 try:
     import readline
 except ImportError:
-    print("Module readline not available.")
+    print "Module readline not available."
 else:
     import rlcompleter
     readline.set_completer_delims(' \t\n;')

@@ -37,7 +37,7 @@ def check_chunks(checkstyle_output, chunks):
             linenum = int(match.group('line'))
             while i < len(chunks):
                 if chunks[i][0] <= linenum < chunks[i][1]:
-                    print((line.strip()))
+                    print(line.strip())
                     success = False
                     break
                 elif chunks[i][0] <= linenum:
@@ -62,8 +62,8 @@ def process_chunk_info(line):
     parts = line.split(' ')
     del_info = parts[1][1:]
     add_info = parts[2][1:]
-    del_start, del_length = list(map(int, del_info.split(','))) if ',' in del_info else (int(del_info), 1)
-    add_start, add_length = list(map(int, add_info.split(','))) if ',' in add_info else (int(add_info), 1)
+    del_start, del_length = map(int, del_info.split(',')) if ',' in del_info else (int(del_info), 1)
+    add_start, add_length = map(int, add_info.split(',')) if ',' in add_info else (int(add_info), 1)
     return del_start, del_length, add_start, add_length
 
 
