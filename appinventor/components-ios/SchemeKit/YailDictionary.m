@@ -643,9 +643,12 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
   return [self debugDescription];
 }
 
+#ifdef MEMDEBUG
 - (void)dealloc {
   NSLog(@"Deallocating YailDictionary");
+  [super dealloc];
 }
+#endif
 
 @end
 
