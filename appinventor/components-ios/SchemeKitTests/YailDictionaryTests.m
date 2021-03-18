@@ -168,8 +168,7 @@
   YailDictionary *dict = [@{@"first": @"test", @"second": @5}
                           yailDictionaryUsingInterpreter:interpreter];
   BOOL first = YES;
-  for (YailList *pair in dict) {
-    id key = pair[1];
+  for (id key in dict) {
     if (first) {
       XCTAssertEqualObjects(@"first", key);
       XCTAssertEqualObjects(@"test", dict[key]);

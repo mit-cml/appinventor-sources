@@ -256,8 +256,8 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 
 - (nonnull YailList *)dictToAlist {
   NSMutableArray *copy = [[NSMutableArray alloc] initWithCapacity:self.count];
-  for (id entry in self) {
-    [copy addObject:entry];
+  for (id key in self) {
+    [copy addObject:[YailList listInInterpreter:_interpreter ofValues:key, _backend[key], nil]];
   }
   return [copy yailListUsingInterpreter:_interpreter];
 }
@@ -606,14 +606,8 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
   }
   NSUInteger i = 0;
   while (i < len && (start + i) < _keys.count) {
-    id key = _keys[i];
-    id value = _backend[key];
-    if (value != nil && [value isKindOfClass:[SCMWeakReference class]]) {
-      value = ((SCMWeakReference *) value).object;
-    }
-    YailList *list = [YailList listInInterpreter:_interpreter ofValues:key, value, nil];
-    [_retainArray addObject:list];
-    buffer[i++] = list;
+    id key = _keys[start + i];
+    buffer[i++] = key;
   }
   state->state = start + i;
   state->itemsPtr = buffer;
@@ -657,7 +651,16 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 - (nonnull YailDictionary *)yailDictionaryUsingInterpreter:(SCMInterpreter *)interpreter {
   YailDictionary *dict = [YailDictionary emptyDictionaryIn:interpreter];
   for (id key in self) {
-    dict[key] = self[key];
+    id value = self[key];
+    if ([value conformsToProtocol:@protocol(SCMValue)]) {
+      dict[key] = value;
+    } else if ([value isKindOfClass:[NSArray class]]) {
+      dict[key] = [(NSArray *)value yailListUsingInterpreter:interpreter];
+    } else if ([value isKindOfClass:[NSDictionary class]]) {
+      dict[key] = [(NSDictionary *)value yailDictionaryUsingInterpreter:interpreter];
+    } else {
+      dict[key] = value;
+    }
   }
   return dict;
 }
