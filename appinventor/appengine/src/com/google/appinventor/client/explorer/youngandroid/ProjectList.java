@@ -139,22 +139,12 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       @Override
       public void onValueChange(ValueChangeEvent<Boolean> event) {
         boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-        for (Map.Entry<Project, ProjectWidgets> projectWidget : projectWidgets.entrySet()) {
-          if (getProjectCurrentView(projectWidget.getKey()) != Ode.getInstance().getCurrentView()) {
-            continue;
-          }
-          int row = Integer.valueOf(projectWidget.getValue().checkBox.getName());
-          if (isChecked) {
-            if (selectedProjects.contains(projectWidget.getKey())) {
-              continue;
-            }
-            table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-            selectedProjects.add(projectWidget.getKey());
-            projectWidget.getValue().checkBox.setValue(true);
-          } else {
-            table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-            selectedProjects.remove(projectWidget.getKey());
-            projectWidget.getValue().checkBox.setValue(false);
+        for (int row = 1; row < table.getRowCount(); ++row) {
+          CheckBox c = (CheckBox)table.getWidget(row, 0);
+          if (isChecked && !c.getValue() && c.isEnabled()) {
+            c.setValue(true, true);
+          } else if (!isChecked && c.getValue() && c.isEnabled()) {
+            c.setValue(false, true);
           }
         }
         Ode.getInstance().getProjectToolbar().updateButtons();
@@ -267,9 +257,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
           boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-          int row = (currentFolder == null)
-              ? 1 + currentSubFolders.indexOf(folderName)
-              : 2 + currentSubFolders.indexOf(folderName); // The first folder will always be the parent folder when available
+          int row = Integer.parseInt(checkBox.getName());
           if (isChecked) {
             table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
             selectedFolders.add(folderName);
@@ -334,9 +322,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
           boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-          int row = (currentFolder == null)
-              ? 1 + currentSubFolders.size() + currentProjects.indexOf(project)
-              : 2 + currentSubFolders.size() + currentProjects.indexOf(project);
+          int row = Integer.parseInt(checkBox.getName());
           if (isChecked) {
             table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
             selectedProjects.add(project);
@@ -434,17 +420,18 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     refreshSortIndicators();
 
     // Refill the table.
-    int previous_rowmax = table.getRowCount() - 1;
     table.clear();
     setHeaderRow();
     final int folderNumber = (currentFolder != null) ? 1 + currentSubFolders.size() : currentSubFolders.size();
     table.resize(1 + folderNumber + currentProjects.size(), 4);
+    int previous_rowmax = table.getRowCount() - 1;
     int row = 1;
     if (currentFolder != null) {
       table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
       FolderWidgets fw = new FolderWidgets();
       configureFolderDragDrop(table.getRowFormatter().getElement(row), row, getParentFolder(), false);
-      table.setWidget(row, 0, fw.dateCreatedLabel); // These duplicate lines of table.setWidget code do
+      fw.checkBox.setName(String.valueOf(row));
+      table.setWidget(row, 0, fw.checkBox); // These duplicate lines of table.setWidget code do
       table.setWidget(row, 1, fw.nameLabel); // not work properly after being converted into JS
       table.setWidget(row, 2, fw.dateCreatedLabel); // if abstracted into a function
       table.setWidget(row, 3, fw.dateModifiedLabel);
@@ -459,6 +446,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
         fw.checkBox.setValue(false);
       }
+      fw.checkBox.setName(String.valueOf(row));
       configureFolderDragDrop(table.getRowFormatter().getElement(row), row, folder, true);
       table.setWidget(row, 0, fw.checkBox);
       table.setWidget(row, 1, fw.nameLabel);
