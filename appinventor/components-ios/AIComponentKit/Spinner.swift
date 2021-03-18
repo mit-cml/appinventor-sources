@@ -172,13 +172,7 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
         pendingSelectionIndex = 1
       }
       _items.removeAll()
-      for item in items {
-        if let str = item as? String {
-          _items.append(str)
-        } else {
-          _items.append((item as AnyObject).debugDescription)
-        }
-      }
+      _items = (items as [AnyObject]).toStringArray()
       _viewController!.reloadComponents()
       SelectionIndex = pendingSelectionIndex
     }

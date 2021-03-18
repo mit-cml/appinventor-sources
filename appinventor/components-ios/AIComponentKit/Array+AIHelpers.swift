@@ -16,10 +16,8 @@ extension Array {
     for el in self {
       if first && el is SCMSymbol {  // skip *list* header
         first = false
-      } else if let x = el as? String {
-        copy.append(x)
       } else {
-        copy.append(String(describing: el))
+        copy.append(toString(el))
       }
     }
     return copy

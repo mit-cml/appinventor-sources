@@ -330,6 +330,8 @@ static SCMInterpreter *_defaultInterpreter = nil;
 - (nonnull id<SCMValue>)valueForObject:(nullable id)object {
   if (object == nil) {
     return [SCMValue nilValue];
+  } else if ([object conformsToProtocol:@protocol(SCMValue)]) {
+    return (id<SCMValue>)object;
   } else if ([object isKindOfClass:[SCMValue class]]) {
     return (SCMValue *)object;
   } else if ([object isKindOfClass:[YailList class]]) {

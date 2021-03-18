@@ -7,10 +7,8 @@
 #import <math.h>
 
 static SCMValue *valueNil = nil;
-static SCMValue *valueTrue = nil;
-static SCMValue *valueFalse = nil;
-static SCMValue *valueInts[257];
-static SCMValue *valueDouble[12];
+static NSNumber *valueInts[257];
+static NSNumber *valueDouble[12];
 static NSString *kValueKey = @"value";
 
 @implementation SCMValue
@@ -31,106 +29,100 @@ static NSString *kValueKey = @"value";
 
 @synthesize value = _value;
 
-+ (instancetype)trueValue {
-  if (valueTrue == nil) {
-    valueTrue = [[self alloc] initWithValue:pic_true_value(nil)];
-  }
-  return valueTrue;
++ (NSNumber *)trueValue {
+  return [NSNumber numberWithBool:TRUE];
 }
 
-+ (instancetype)falseValue {
-  if (valueFalse == nil) {
-    valueFalse = [[self alloc] initWithValue:pic_false_value(nil)];
-  }
-  return valueFalse;
++ (NSNumber *)falseValue {
+  return [NSNumber numberWithBool:FALSE];
 }
 
-+ (instancetype)nilValue {
++ (SCMValue *)nilValue {
   if (valueNil == nil) {
     valueNil = [[self alloc] initWithValue:pic_nil_value(nil)];
   }
   return valueNil;
 }
 
-+ (instancetype)intValue:(int)i {
++ (NSNumber *)intValue:(int)i {
   if (i >= 0 && i <= 255) {
     if (!valueInts[i]) {
-      valueInts[i] = [[self alloc] initWithValue:pic_int_value(nil, i)];
+      valueInts[i] = [NSNumber numberWithInt:i];
     }
     return valueInts[i];
   } else if (i == -1) {
     if (!valueInts[256]) {
-      valueInts[256] = [[self alloc] initWithValue:pic_int_value(nil, -1)];
+      valueInts[256] = [NSNumber numberWithInt:-1];
     }
     return valueInts[256];
   } else {
-    return [[self alloc] initWithValue:pic_int_value(nil, i)];
+    return [NSNumber numberWithInt:i];
   }
 }
 
-+ (instancetype)doubleValue:(double)value {
++ (NSNumber *)doubleValue:(double)value {
   if (value == 0.0) {
     if (!valueDouble[0]) {
-      valueDouble[0] = [[self alloc] initWithValue:pic_float_value(nil, 0.0)];
+      valueDouble[0] = [NSNumber numberWithDouble:0.0];
     }
     return valueDouble[0];
   } else if (value == 1.0) {
     if (!valueDouble[1]) {
-      valueDouble[1] = [[self alloc] initWithValue:pic_float_value(nil, 1.0)];
+      valueDouble[1] = [NSNumber numberWithDouble:1.0];
     }
     return valueDouble[1];
   } else if (value == 2.0) {
     if (!valueDouble[2]) {
-      valueDouble[2] = [[self alloc] initWithValue:pic_float_value(nil, 2.0)];
+      valueDouble[2] = [NSNumber numberWithDouble:2.0];
     }
     return valueDouble[2];
   } else if (value == 0.5) {
     if (!valueDouble[3]) {
-      valueDouble[3] = [[self alloc] initWithValue:pic_float_value(nil, 0.5)];
+      valueDouble[3] = [NSNumber numberWithDouble:0.5];
     }
     return valueDouble[3];
   } else if (value == -0.5) {
     if (!valueDouble[4]) {
-      valueDouble[4] = [[self alloc] initWithValue:pic_float_value(nil, -0.5)];
+      valueDouble[4] = [NSNumber numberWithDouble:-0.5];
     }
     return valueDouble[4];
   } else if (value == -2.0) {
     if (!valueDouble[5]) {
-      valueDouble[5] = [[self alloc] initWithValue:pic_float_value(nil, -2.0)];
+      valueDouble[5] = [NSNumber numberWithDouble:-2.0];
     }
     return valueDouble[5];
   } else if (value == -1.0) {
     if (!valueDouble[6]) {
-      valueDouble[6] = [[self alloc] initWithValue:pic_float_value(nil, -1.0)];
+      valueDouble[6] = [NSNumber numberWithDouble:-1.0];
     }
     return valueDouble[6];
   } else if (value == 10.0) {
     if (!valueDouble[7]) {
-      valueDouble[7] = [[self alloc] initWithValue:pic_float_value(nil, 10.0)];
+      valueDouble[7] = [NSNumber numberWithDouble:10.0];
     }
     return valueDouble[7];
   } else if (value == M_PI) {
     if (!valueDouble[8]) {
-      valueDouble[8] = [[self alloc] initWithValue:pic_float_value(nil, M_PI)];
+      valueDouble[8] = [NSNumber numberWithDouble:M_PI];
     }
     return valueDouble[8];
   } else if (value == M_E) {
     if (!valueDouble[9]) {
-      valueDouble[9] = [[self alloc] initWithValue:pic_float_value(nil, M_E)];
+      valueDouble[9] = [NSNumber numberWithDouble:M_E];
     }
     return valueDouble[9];
   } else if (value == INFINITY) {
     if (!valueDouble[10]) {
-      valueDouble[10] = [[self alloc] initWithValue:pic_float_value(nil, INFINITY)];
+      valueDouble[10] = [NSNumber numberWithDouble:INFINITY];
     }
     return valueDouble[10];
   } else if (value == -INFINITY) {
     if (!valueDouble[11]) {
-      valueDouble[11] = [[self alloc] initWithValue:pic_float_value(nil, -INFINITY)];
+      valueDouble[11] = [NSNumber numberWithDouble:-INFINITY];
     }
     return valueDouble[11];
   } else {
-    return [[self alloc] initWithValue:pic_float_value(nil, value)];
+    return [NSNumber numberWithDouble:value];
   }
 }
 
@@ -199,9 +191,9 @@ static NSString *kValueKey = @"value";
 
 - (id)awakeAfterUsingCoder:(NSCoder *)coder {
   if (pic_true_p(nil, _value)) {
-    return valueTrue ? valueTrue : (valueTrue = self);
+    return [NSNumber numberWithBool:TRUE];
   } else if (pic_false_p(nil, _value)) {
-    return valueFalse ? valueFalse : (valueFalse = self);
+    return [NSNumber numberWithBool:FALSE];
   } else if (pic_nil_p(nil, _value)) {
     return valueNil ? valueNil : (valueNil = self);
   } else if (pic_int_p(nil, _value)) {
@@ -253,10 +245,10 @@ static NSString *kValueKey = @"value";
 - (const char *)objCType {
   if (pic_int_p(nil, _value)) {
     return "i";
-  } else if (pic_float(nil, _value)) {
+  } else if (pic_float_p(nil, _value)) {
     return "d";
   } else if (pic_true_p(nil, _value) || pic_false_p(nil, _value)) {
-    return "c";
+    return [NSNumber numberWithBool:TRUE].objCType;
   } else if (pic_nil_p(nil, _value)) {
     return "v";
   }
@@ -265,6 +257,18 @@ static NSString *kValueKey = @"value";
 
 - (BOOL)boolValue {
   return pic_true_p(nil, _value) ? YES : NO;
+}
+
+- (char)charValue {
+  if (pic_false_p(nil, _value) || pic_nil_p(nil, _value)) {
+    return 0;
+  } else if (pic_true_p(nil, _value)) {
+    return 1;
+  } else if (pic_int_p(nil, _value)) {
+    return (char) pic_int(nil, _value);
+  } else{
+    return (char) pic_float(nil, _value);
+  }
 }
 
 - (int)intValue {
@@ -288,6 +292,76 @@ static NSString *kValueKey = @"value";
     return [NSString stringWithFormat:@"%f", pic_float(nil, _value)];
   } else {
     return [super debugDescription];
+  }
+}
+
+@end
+
+@implementation NSNumber (SCMValueProtocol)
+
+- (BOOL)isPicEqual:(pic_value)other {
+  return self.value == other;
+}
+
+- (void)mark {
+  // nothing to do for built-in types
+}
+
+- (BOOL)isBool {
+  return CFGetTypeID((__bridge CFTypeRef)(self)) == CFBooleanGetTypeID();
+}
+
+- (BOOL)isNumber {
+  return CFGetTypeID((__bridge CFTypeRef)(self)) != CFBooleanGetTypeID();
+}
+
+- (BOOL)isString {
+  return NO;
+}
+
+- (BOOL)isList {
+  return NO;
+}
+
+- (BOOL)isDictionary {
+  return NO;
+}
+
+- (BOOL)isComponent {
+  return NO;
+}
+
+- (BOOL)isNil {
+  return NO;
+}
+
+- (BOOL)isSymbol {
+  return NO;
+}
+
+- (BOOL)isCons {
+  return NO;
+}
+
+- (BOOL)isExact {
+  if (self.isNumber) {
+    return self.objCType[0] == 'f' || self.objCType[0] == 'd';
+  }
+  return NO;
+}
+
+- (pic_value)value {
+  if (self.isBool) {
+    return self.boolValue ? pic_true_value(nil) : pic_false_value(nil);
+  } else if (self.objCType[0] == 'f' || self.objCType[0] == 'd') {
+    return pic_float_value(nil, self.doubleValue);
+  } else {
+    long long val = self.longLongValue;
+    if (val < INT_MIN || val >= INT_MAX) {
+      return pic_float_value(nil, val);
+    } else {
+      return pic_int_value(nil, (int) val);
+    }
   }
 }
 

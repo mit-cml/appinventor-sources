@@ -29,10 +29,14 @@
 
 @interface SCMValue : NSNumber<SCMValue>
 
-+ (instancetype)trueValue;
-+ (instancetype)falseValue;
-+ (instancetype)nilValue;
-+ (instancetype)intValue:(int)value;
-+ (instancetype)doubleValue:(double)value;
+@property (class, readonly, nonnull) NSNumber *trueValue;
+@property (class, readonly, nonnull) NSNumber *falseValue;
+@property (class, readonly, nonnull) SCMValue *nilValue;
++ (nonnull NSNumber *)intValue:(int)value;
++ (nonnull NSNumber *)doubleValue:(double)value;
+
+@end
+
+@interface NSNumber (SCMValueProtocol) <SCMValue>
 
 @end

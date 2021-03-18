@@ -78,6 +78,7 @@
 		068E0EB71DC251BA0086FFDA /* Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0EB61DC251BA0086FFDA /* Slider.swift */; };
 		068E0EB91DC251E90086FFDA /* Texting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0EB81DC251E90086FFDA /* Texting.swift */; };
 		06925559228B01B60091057E /* NSLock+Synchronized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06925558228B01B60091057E /* NSLock+Synchronized.swift */; };
+		06941F402603B4A900F8E1B2 /* StringUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06941F3F2603B4A900F8E1B2 /* StringUtil.swift */; };
 		06A47CD323F12EF400668126 /* PermissionException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A47CD223F12EF400668126 /* PermissionException.swift */; };
 		06A623842507BC3200961743 /* Array+AIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A623832507BC3200961743 /* Array+AIHelpers.swift */; };
 		06A623862507BDA800961743 /* CoercionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A623852507BDA800961743 /* CoercionTests.swift */; };
@@ -300,6 +301,7 @@
 		068E0EB61DC251BA0086FFDA /* Slider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Slider.swift; sourceTree = "<group>"; };
 		068E0EB81DC251E90086FFDA /* Texting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texting.swift; sourceTree = "<group>"; };
 		06925558228B01B60091057E /* NSLock+Synchronized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLock+Synchronized.swift"; sourceTree = "<group>"; };
+		06941F3F2603B4A900F8E1B2 /* StringUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringUtil.swift; sourceTree = "<group>"; };
 		06A47CD223F12EF400668126 /* PermissionException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionException.swift; sourceTree = "<group>"; };
 		06A623832507BC3200961743 /* Array+AIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+AIHelpers.swift"; sourceTree = "<group>"; };
 		06A623852507BDA800961743 /* CoercionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoercionTests.swift; sourceTree = "<group>"; };
@@ -698,6 +700,7 @@
 				067D1B151D9B398E00A6190E /* RetValManager.h */,
 				067D1B161D9B398E00A6190E /* RetValManager.m */,
 				061DC7B5224027C900539213 /* ScaleFrameLayout.swift */,
+				06941F3F2603B4A900F8E1B2 /* StringUtil.swift */,
 				0685B5B22003C931005153ED /* ThemeEnum.swift */,
 				DE4EA34720AE2D2D009681D8 /* XMLUtil.swift */,
 				0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */,
@@ -1218,6 +1221,7 @@
 				086DC63821023E1A00FDA182 /* EvCommand.swift in Sources */,
 				DEDA5AE8201247FA00C5287E /* YandexTranslate.swift in Sources */,
 				06604B732034EFE70066C459 /* CsvUtil.swift in Sources */,
+				06941F402603B4A900F8E1B2 /* StringUtil.swift in Sources */,
 				061DC7B82241574D00539213 /* UIImage+Tint.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
 				0417585520098566007D2C31 /* File.swift in Sources */,

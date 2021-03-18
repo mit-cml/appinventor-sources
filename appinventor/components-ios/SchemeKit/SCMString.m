@@ -36,6 +36,16 @@
   return self;
 }
 
+- (instancetype)initWithCharactersNoCopy:(unichar *)characters length:(NSUInteger)length
+    freeWhenDone:(BOOL)freeBuffer {
+  if (self = [super init]) {
+    _store = [[NSString alloc] initWithCharactersNoCopy:characters length:length freeWhenDone:freeBuffer];
+    interpreter_ = SCMInterpreter.shared;
+    value_ = pic_cstr_value(interpreter_.state, [_store cStringUsingEncoding:NSUTF8StringEncoding]);
+  }
+  return self;
+}
+
 /// MARK: NSString Implementation
 
 - (NSUInteger)length {
