@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2021 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -29,7 +29,7 @@ open class XmlToJson: NSObject, XMLParserDelegate {
         return try getJsonRepresentation(elemStack[0])
       }
     } else {
-      throw YailRuntimeError("Failed to parse xml data", "XML Parsing")
+      throw YailRuntimeError("Failed to parse XML data", "XML Parsing")
     }
   }
 
@@ -81,5 +81,87 @@ open class XmlToJson: NSObject, XMLParserDelegate {
     }
     text = ""
     elemStack.removeLast()
+  }
+}
+
+/**
+ * The `XmlToDictionaries` class is used to parse an XML document into `YailDictionary` objects.
+ */
+open class XmlToDictionaries: NSObject, XMLParserDelegate {
+  private var elemStack = [YailDictionary]()
+  private var root: YailDictionary? = nil
+
+  public static let main = XmlToDictionaries()
+
+  /**
+   * Parses the XML documented serialized in `xml` into a `YailDictionary` structure with the
+   * following keys:
+   *
+   * - Parameter xml: A `String` containing a XML document.
+   *
+   * - Returns: A `YailDictionary` containing the XML content if `xml` represents a valid document,
+   *     otherwise `nil` is returned.
+   *
+   * - Throws: `YailRuntimeError` when the XML document does not parse correctly.
+   */
+  open func parseXML(_ xml: String) throws -> YailDictionary? {
+    if xml.isEmpty {
+      return nil
+    }
+    if let data = xml.data(using: .utf8) {
+      let parser = XMLParser(data: data)
+      parser.delegate = self
+      parser.parse()
+      if let error = parser.parserError {
+        throw error
+      } else {
+        return root
+      }
+    } else {
+      throw YailRuntimeError("Failed to parse XML data", "XML Parsing")
+    }
+  }
+
+  /// MARK: XMLParserDelegate
+
+  public func parserDidStartDocument(_ parser: XMLParser) {
+    elemStack.removeAll()
+  }
+
+  public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
+    let el = YailDictionary()
+    el["$tag"] = qName ?? elementName
+    el["$namespaceUri"] = namespaceURI ?? ""
+    el["$localName"] = elementName
+    if let qName = qName, let colon = qName.firstIndex(of: ":") {
+      el["$namespace"] = String(qName[..<colon])
+    } else {
+      el["$namespace"] = ""
+    }
+    let attrs = YailDictionary()
+    attrs.addEntries(from: attributeDict)
+    el["$attributes"] = attrs
+    el["$content"] = NSMutableArray()
+    if let parent = elemStack.last {
+      (parent["$content"] as! NSMutableArray).add(el)
+      if !parent.containsKey(elementName) {
+        parent[elementName] = NSMutableArray()
+      }
+      (parent[elementName] as! NSMutableArray).add(el)
+    }
+    if elemStack.isEmpty {
+      root = el
+    }
+    elemStack.append(el)
+  }
+
+  public func parser(_ parser: XMLParser, foundCharacters string: String) {
+    if let element = elemStack.last {
+      (element["$content"] as! NSMutableArray).add(string)
+    }
+  }
+
+  public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+    _ = elemStack.popLast()
   }
 }

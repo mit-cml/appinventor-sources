@@ -67,6 +67,7 @@
 		067D2BCF2040FB4B00D1EB16 /* variables.yail in Resources */ = {isa = PBXBuildFile; fileRef = 067D2BCE2040FB4B00D1EB16 /* variables.yail */; };
 		067D2BD12040FE0500D1EB16 /* procedures.yail in Resources */ = {isa = PBXBuildFile; fileRef = 067D2BD02040FE0500D1EB16 /* procedures.yail */; };
 		0680ED591E012A2100732883 /* TableArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0680ED581E012A2100732883 /* TableArrangement.swift */; };
+		0681C4B326024E6800F70BC6 /* WebTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0681C4B226024E6800F70BC6 /* WebTests.swift */; };
 		0685B5B32003C931005153ED /* ThemeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0685B5B22003C931005153ED /* ThemeEnum.swift */; };
 		068AA8191DE61D8E0011CC74 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068AA8181DE61D8E0011CC74 /* Application.swift */; };
 		068AA81B1DE61FE20011CC74 /* ApplicationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */; };
@@ -290,6 +291,7 @@
 		067D2BCE2040FB4B00D1EB16 /* variables.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = variables.yail; sourceTree = "<group>"; };
 		067D2BD02040FE0500D1EB16 /* procedures.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = procedures.yail; sourceTree = "<group>"; };
 		0680ED581E012A2100732883 /* TableArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableArrangement.swift; sourceTree = "<group>"; };
+		0681C4B226024E6800F70BC6 /* WebTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebTests.swift; sourceTree = "<group>"; };
 		0685B5B22003C931005153ED /* ThemeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeEnum.swift; sourceTree = "<group>"; };
 		068AA8181DE61D8E0011CC74 /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationFactory.swift; sourceTree = "<group>"; };
@@ -895,6 +897,7 @@
 				CBC78693202E0B6E005363A3 /* FileTests.swift */,
 				0623BBEF2476291D00FEB2B6 /* TinyDBTests.swift */,
 				DE68A88C20B4971400233AF9 /* XMLTests.swift */,
+				0681C4B226024E6800F70BC6 /* WebTests.swift */,
 			);
 			path = nonvisible;
 			sourceTree = "<group>";
@@ -1324,6 +1327,7 @@
 				0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */,
 				06AC1CC81DB4559800A59EB3 /* AIComponentKitTests.m in Sources */,
 				DE102DB920F53189002C71F0 /* FontUtilTests.swift in Sources */,
+				0681C4B326024E6800F70BC6 /* WebTests.swift in Sources */,
 				06009FF4227CF8D100E4EC4A /* FormatTests.swift in Sources */,
 				0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */,
 				06FB67DF247D4CEC00ABEAD6 /* ListPickerTests.swift in Sources */,

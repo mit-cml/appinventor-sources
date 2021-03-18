@@ -345,7 +345,7 @@ open class Web: NonvisibleComponent {
 
   @objc open func JsonTextDecode(_ jsonString: String) -> AnyObject {
     do {
-      return try getPublicObjectFromJson(jsonString)
+      return try getPublicObjectFromJson(jsonString, false)
     } catch let error {
       _form?.dispatchErrorOccurredEvent(self, "JsonTextDecode",
           ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED.code, error.localizedDescription)
@@ -365,6 +365,41 @@ open class Web: NonvisibleComponent {
       NSLog("Unexpected error occurred: ", error.localizedDescription)
     }
     return nil
+  }
+
+  @objc open func JsonObjectEncode(_ jsonObject: AnyObject) -> String {
+    do {
+      return try getJsonRepresentation(jsonObject)
+    } catch {
+      _form?.dispatchErrorOccurredEvent(self, "JsonObjectEncode",
+          ErrorMessage.ERROR_WEB_JSON_TEXT_ENCODE_FAILED)
+      print(error)
+      return ""
+    }
+  }
+
+  @objc open func JsonTextDecodeWithDictionaries(_ jsonText: String) -> AnyObject {
+    do {
+      return try getPublicObjectFromJson(jsonText, true)
+    } catch {
+      _form?.dispatchErrorOccurredEvent(self, "JsonTextDecodeWithDictionaries",
+          ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED, jsonText)
+      return "" as NSString
+    }
+  }
+
+  @objc open func UriDecode(_ text: String) -> String {
+    return text.removingPercentEncoding ?? text
+  }
+
+  @objc open func XMLTextDecodeAsDictionary(_ xmlText: String) -> YailDictionary {
+    do {
+      return try XmlToDictionaries.main.parseXML(xmlText) ?? YailDictionary()
+    } catch {
+      _form?.dispatchErrorOccurredEvent(self, "XMLTextDecodeAsDictionary",
+          .ERROR_WEB_XML_TEXT_DECODE_FAILED, xmlText)
+      return YailDictionary()
+    }
   }
 
   // MARK: - Web Events

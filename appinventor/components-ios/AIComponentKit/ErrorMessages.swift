@@ -53,7 +53,10 @@ import Foundation
   case ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS = 1111
   case ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST = 1112
   case ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS = 1113
+  case ERROR_WEB_UNABLE_TO_DELETE = 1114
+  case ERROR_WEB_XML_TEXT_DECODE_FAILED = 1115
   case ERROR_WEB_REQUEST_TIMED_OUT = 1117
+  case ERROR_WEB_JSON_TEXT_ENCODE_FAILED = 1118
 
   // Camcorder Errors
   case ERROR_CAMCORDER_NO_CLIP_RETURNED = 1201
@@ -213,8 +216,14 @@ import Foundation
       return "Unable to build request data: element %s is not a list"
     case .ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS:
       return "Unable to build request data: element %s does not contain two elements"
+    case .ERROR_WEB_UNABLE_TO_DELETE:
+      return "Unable to delete a resource with the specified URL: %@"
+    case .ERROR_WEB_XML_TEXT_DECODE_FAILED:
+      return "Unable to decode the XML text: %@"
     case .ERROR_WEB_REQUEST_TIMED_OUT:
       return "Took longer than timeout period to receive data from the URL: %s"
+    case .ERROR_WEB_JSON_TEXT_ENCODE_FAILED:
+      return "Unable to encode as JSON the object %@"
 
     // Camcorder Errors
     case .ERROR_CAMCORDER_NO_CLIP_RETURNED:

@@ -743,6 +743,13 @@ let kMinimumToastWait = 10.0
     }
   }
 
+  open func dispatchErrorOccurredEvent(_ component: Component, _ functionName: String, _ error: ErrorMessage, _ messageArgs: Any...) {
+    runOnUiThread {
+      let formattedMessage = String(format: error.message, messageArgs: messageArgs)
+      self.ErrorOccurred(component, functionName, error.code, formattedMessage)
+    }
+  }
+
   @objc open func dispatchErrorOccurredEventObjC(_ component: Component, _ functionNames: String, _ errorNumber: Int32, _ messageArgs: [AnyObject]) {
     runOnUiThread {
       if let error = ErrorMessage(rawValue: Int(errorNumber)) {

@@ -5,11 +5,14 @@ import Foundation
 
 // let numberRegex = NSRegularExpression(pattern: "-?[1-9]?[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?")
 func getJsonRepresentation(_ object: AnyObject?) throws -> String {
-  if object == nil {
+  guard let object = object else {
     return "null"
   }
-  let object = [object]
-  let repr = try JSONSerialization.data(withJSONObject: object)
+  let wrappedObject = [object]
+  guard JSONSerialization.isValidJSONObject(wrappedObject) else {
+    throw YailRuntimeError("Unable to serialize message", "JSONError")
+  }
+  let repr = try JSONSerialization.data(withJSONObject: wrappedObject)
   let trimmed = repr.subdata(in: repr.startIndex.advanced(by: 1)..<repr.endIndex.advanced(by: -1))
   return String(data: trimmed, encoding: .utf8)!
 }
@@ -28,9 +31,9 @@ func getObjectFromJson(_ json: String?) throws -> AnyObject? {
   return nil
 }
 
-func getPublicObjectFromJson(_ json: String?) throws -> AnyObject {
+func getPublicObjectFromJson(_ json: String?, _ useDicts: Bool) throws -> AnyObject {
   let json = try getObjectFromJson(json)
-  return convertJsonItem(json)
+  return convertJsonItem(json, useDicts)
 }
 
 
@@ -39,29 +42,41 @@ fileprivate func getListFromJsonObject(_ json: NSDictionary) -> [[AnyObject]] {
   for (key, value) in json {
     var nestedArray = [AnyObject]()
     nestedArray.append(key as AnyObject)
-    nestedArray.append(convertJsonItem(value as AnyObject))
+    nestedArray.append(convertJsonItem(value as AnyObject, false))
     returnList.append(nestedArray)
   }
   return returnList
 }
 
-fileprivate func getListFromJsonArray(_ json: NSArray) -> [AnyObject] {
+fileprivate func getDictFromJsonObject(_ json: NSDictionary) -> [String:AnyObject] {
+  var returnDict = [String:AnyObject]()
+  for (key, value) in json {
+    returnDict[key as! String] = convertJsonItem(value as AnyObject, true)
+  }
+  return returnDict
+}
+
+fileprivate func getListFromJsonArray(_ json: NSArray, _ useDicts: Bool) -> [AnyObject] {
   var returnList = [AnyObject]()
   for item in json {
-    returnList.append(convertJsonItem(item as AnyObject))
+    returnList.append(convertJsonItem(item as AnyObject, useDicts))
   }
   return returnList
 }
 
-fileprivate func convertJsonItem(_ item: AnyObject?) -> AnyObject {
+fileprivate func convertJsonItem(_ item: AnyObject?, _ useDicts: Bool) -> AnyObject {
   if item == nil {
     return "null" as AnyObject
   }
   if let jsonObject = item as? NSDictionary {
-    return getListFromJsonObject(jsonObject) as AnyObject
+    if useDicts {
+      return getDictFromJsonObject(jsonObject) as AnyObject
+    } else {
+      return getListFromJsonObject(jsonObject) as AnyObject
+    }
   }
   if let jsonArray = item as? NSArray {
-    return getListFromJsonArray(jsonArray) as AnyObject
+    return getListFromJsonArray(jsonArray, useDicts) as AnyObject
   }
   if let bool = item as? Bool {
     return bool as AnyObject
