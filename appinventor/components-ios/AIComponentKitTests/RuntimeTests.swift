@@ -231,6 +231,14 @@ class RuntimeTests: XCTestCase {
     XCTAssertEqual("[]", interpreter.evalForm("(get-display-representation (coerce-to-yail-list (make-yail-dictionary)))"))
     XCTAssertNil(interpreter.exception)
     XCTAssertEqual("[non-coercible]", interpreter.evalForm("(get-display-representation (coerce-to-yail-list 0))"))
+  }
+
+  func testJoinStrings() throws {
+    let interpreter = try getInterpreterForTesting()
+    let form = Form()
+    interpreter.setCurrentForm(form)
+    XCTAssertEqual("true, false, test, 5, \"test\"",
+                   interpreter.evalForm("(call-yail-primitive yail-list-join-with-separator (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* #t #f \"test\" 5 \"\\\"test\\\"\" ) '(any any any any any ) \"make a list\") \", \") '(list text) \"join with separator\")"))
     XCTAssertNil(interpreter.exception)
   }
 }

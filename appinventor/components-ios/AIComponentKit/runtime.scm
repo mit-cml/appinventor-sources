@@ -1521,6 +1521,11 @@ list, use the make-yail-list constructor with no arguments.
        (= (length (yail-list-contents candidate-pair)) 2)))
 
 
+;;; Joins list elements into a string separated by separator
+;;; Important to convert yail-list to yail-list-contents so that *list*
+;;; is not included as first string.
+(define (yail-list-join-with-separator yail-list separator)
+  (yail:invoke AIComponentKit.StringUtil 'joinStrings yail-list separator))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
