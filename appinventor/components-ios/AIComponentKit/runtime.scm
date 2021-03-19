@@ -461,7 +461,7 @@
 (define (coerce-to-yail-list arg)
   (cond
    ((yail-list? arg) arg)
-   ((yail-dictionary arg) (yail-dictionary-dict-to-alist arg))
+   ((yail-dictionary? arg) (yail-dictionary-dict-to-alist arg))
    (else *non-coercible-value*)))
 
 (define (coerce-to-pair arg)

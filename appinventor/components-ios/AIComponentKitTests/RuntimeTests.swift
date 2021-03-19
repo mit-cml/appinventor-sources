@@ -221,4 +221,16 @@ class RuntimeTests: XCTestCase {
     XCTAssertEqual("[\"many\", \"commas\"]",
         interpreter.evalForm("(get-display-representation (string-split \"many,commas,,,,,\" \",\"))"))
   }
+
+  func testCoerceToList() throws {
+    let interpreter = try getInterpreterForTesting()
+    let form = Form()
+    interpreter.setCurrentForm(form)
+    XCTAssertEqual("[]", interpreter.evalForm("(get-display-representation (coerce-to-yail-list (make-yail-list)))"))
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("[]", interpreter.evalForm("(get-display-representation (coerce-to-yail-list (make-yail-dictionary)))"))
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("[non-coercible]", interpreter.evalForm("(get-display-representation (coerce-to-yail-list 0))"))
+    XCTAssertNil(interpreter.exception)
+  }
 }
