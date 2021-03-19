@@ -10,6 +10,7 @@ public final class Button: ButtonBase, AbstractMethodsForButton {
     _view.titleLabel?.text = "Button1"
     _view.addTarget(self, action: #selector(click), for: UIControl.Event.primaryActionTriggered)
     let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(Button.longPress(_:)))
+    longPressGesture.minimumPressDuration = 0.5
     _view.addGestureRecognizer(longPressGesture)
   }
 
@@ -22,7 +23,7 @@ public final class Button: ButtonBase, AbstractMethodsForButton {
   }
   
   @objc public func longPress(_ gesture: UILongPressGestureRecognizer) {
-    if ( gesture.state == UIGestureRecognizer.State.ended) {
+    if ( gesture.state == UIGestureRecognizer.State.began) {
       LongClick()
     }
   }
