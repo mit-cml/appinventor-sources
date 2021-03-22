@@ -118,7 +118,7 @@ def reset():
 
 @route('/replstart/:device')
 def replstart(device=None):
-    print(('Device =', device))
+    print('Device =', device)
     try:
         subprocess.check_output('"%s" -s %s forward tcp:8001 tcp:8001' % (ADB, device), shell=True)
         if re.match('emulator.*', device):  # Only fake the menu key for the emulator
@@ -130,7 +130,7 @@ def replstart(device=None):
         response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
         return ''
     except subprocess.CalledProcessError as e:
-        print(('Problem starting companion app : status', e.returncode))
+        print('Problem starting companion app : status', e.returncode)
         return ''
 
 
@@ -154,7 +154,7 @@ def checkrunning(emulator):
             return match.group(1)
         return False
     except subprocess.CalledProcessError as e:
-        print(('Problem checking for devices : status', e.returncode))
+        print('Problem checking for devices : status', e.returncode)
         return False
 
 
@@ -163,7 +163,7 @@ def killadb():
         subprocess.check_output('"%s" kill-server' % ADB, shell=True)
         print('Killed adb')
     except subprocess.CalledProcessError as e:
-        print(('Problem stopping adb : status', e.returncode))
+        print('Problem stopping adb : status', e.returncode)
 
 
 def killemulator():
@@ -171,7 +171,7 @@ def killemulator():
         subprocess.check_output('"%s"' % KILL_EMULATOR, shell=True)
         print('Killed emulator')
     except subprocess.CalledProcessError as e:
-        print(('Problem stopping emulator : status', e.returncode))
+        print('Problem stopping emulator : status', e.returncode)
 
 
 def shutdown():
@@ -183,10 +183,10 @@ def shutdown():
 
 
 if __name__ == '__main__':
-    print(('App Inventor version:', VERSION, '\n'))
-    print(('Architecture:', platform.machine(), '\n'))
-    print(('AppInventor tools located here:', PLATDIR, '\n'))
-    print(('ADB path:', ADB))
+    print('App Inventor version:', VERSION, '\n')
+    print('Architecture:', platform.machine(), '\n')
+    print('AppInventor tools located here:', PLATDIR, '\n')
+    print('ADB path:', ADB)
 
     import atexit
     atexit.register(shutdown)
