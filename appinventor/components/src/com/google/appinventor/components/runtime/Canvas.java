@@ -154,7 +154,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   // This used to be 15 and people complained that they could not draw small circles. So we
   // made it a user settable property because if the threshold is too small, then touches might
-  // be misinterpreted as drags. Default value is appropriate for most cases but there may be 
+  // be misinterpreted as drags. Default value is appropriate for most cases but there may be
   // different requirements. This might require more experimentation. We might also want to take
   // screen resolution into account and/or try to make a more clever motion parser.
   private int tapThreshold = 15;
@@ -1090,29 +1090,28 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
   
   /**
-   * Returns the tapThreshold to differentiate a drag from a tap.
+   * Returns the movement threshold to differentiate a drag from a tap.
    *
-   * @return tapThreshold : The number of pixels right, left, up, or down, a sequence of drags 
+   * @return tapThreshold : The number of pixels right, left, up, or down, a sequence of drags
    *     must move from the starting point to be considered a drag (instead of a touch).
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-          description = "Set the number of pixels right, left, up or down, a sequence of drags must"
-          + "move from the starting point to be considered a drag (instead of a touch).",
-          userVisible = false
+      description = "Set the number of pixels right, left, up or down, a sequence of drags must"
+          + "move from the starting point to be considered a drag (instead of a touch)."
   )
   public int TapThreshold() {
     return tapThreshold;
   }
 
   /**
-   * Specifies the tapThreshold to differentiate a drag from a tap.
+   * Specifies the movement threshold to differentiate a drag from a tap.
    *
    * @param threshold The number of pixels right, left, up, or down, a sequence of drags must
    *     move from the starting point to be considered a drag (instead of a touch).
    */
   @SimpleProperty
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
-          defaultValue = "15")
+      defaultValue = "15")
   public void TapThreshold(int threshold) {
     this.tapThreshold = threshold;
   }
