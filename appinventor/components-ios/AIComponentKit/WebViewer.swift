@@ -13,19 +13,20 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
   fileprivate var _followLinks : Bool = true
   fileprivate var _temporaryLink : String = ""
   fileprivate var _wantLoad = false
+  private var _webviewerApiSource: String = ""
+  private var _webviewerApi: WKUserScript
 
   public override init(_ parent: ComponentContainer) {
-    var code = ""
-
     do {
       if let errorPath = Bundle(for: WebViewer.self).url(forResource: "webviewer", withExtension: "js") {
-        code = try String(contentsOf: errorPath)
+        _webviewerApiSource = try String(contentsOf: errorPath)
       }
     } catch {}
 
-    let script = WKUserScript(source: code, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+    _webviewerApi = WKUserScript(source: _webviewerApiSource,
+        injectionTime: .atDocumentStart, forMainFrameOnly: false)
     let controller = WKUserContentController()
-    controller.addUserScript(script)
+    controller.addUserScript(_webviewerApi)
     let config = WKWebViewConfiguration()
     config.userContentController = controller
     _view = WKWebView(frame: CGRect.zero, configuration: config)
@@ -120,6 +121,17 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     }
     set (newVal) {
       _webViewString = newVal
+      let escapedValue = newVal.replace(target: "\\", withString: "\\\\")
+        .replace(target: "'", withString: "\\'")
+        .replace(target: "\r", withString: "\\r")
+        .replace(target: "\n", withString: "\\n")
+        .replace(target: "\t", withString: "\\t")
+      let script = _webviewerApiSource.replace(target: "\"\"",
+          withString: "'\(escapedValue)'")
+      _webviewerApi = WKUserScript(source: script, injectionTime: .atDocumentStart,
+          forMainFrameOnly: false)
+      _view.configuration.userContentController.removeAllUserScripts()
+      _view.configuration.userContentController.addUserScript(_webviewerApi)
       _view.evaluateJavaScript("window.AppInventor.updateFromBlocks('\(newVal)')");
     }
   }
