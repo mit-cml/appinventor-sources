@@ -522,6 +522,7 @@ public class YaVersion {
   // - IMAGESPRITE_COMPONENT_VERSION was incremented to 7
   // For YOUNG_ANDROID_VERSION 211:
   // - CANVAS_COMPONENT_VERSION was incremented to 14
+  // - CLOUDDB_COMPONENT_VERSION was incremented to 2
   public static final int YOUNG_ANDROID_VERSION = 211;
 
   // ............................... Blocks Language Version Number ...............................
@@ -1259,7 +1260,10 @@ public class YaVersion {
 
   // For CLOUDDB_COMPONENT_VERSION 1:
   // - CloudDB component introduced
-  public static final int CLOUDDB_COMPONENT_VERSION = 1;
+  // For CLOUDDB_COMPONENT_VERSION 2:
+  // - Added the UpdateDone event
+  //   to control its use
+  public static final int CLOUDDB_COMPONENT_VERSION = 2;
 
   // For TWITTER_COMPONENT_VERSION 2:
   // - The Authorize method and IsAuthorized event handler were added to support

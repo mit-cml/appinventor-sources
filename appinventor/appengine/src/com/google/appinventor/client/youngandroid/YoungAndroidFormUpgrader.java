@@ -372,6 +372,8 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeFeatureCollection(componentProperties, srcCompVersion);
       } else if (componentType.equals("YandexTranslate")) {
         srcCompVersion = upgradeYandexTranslateProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("CloudDB")) {
+        srcCompVersion = upgradeCloudDBProperties(componentProperties, srcCompVersion);
       }
 
       if (srcCompVersion < sysCompVersion) {
@@ -1771,6 +1773,16 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // Version 2
       // The ApiKey property was added
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeCloudDBProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Version 2
+      // UpdateDone event and ProvideUpdateDone property were added
       srcCompVersion = 2;
     }
     return srcCompVersion;

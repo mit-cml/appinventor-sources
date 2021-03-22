@@ -176,12 +176,18 @@ public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable
   }
 
   private void setMode(String newModeString) {
+    final int oldMode = mode;
+
     if (SENSOR_MODE_ANGLE_STRING.equals(newModeString))
       mode = SENSOR_MODE_ANGLE;
     else if (SENSOR_MODE_RATE_STRING.equals(newModeString))
       mode = SENSOR_MODE_RATE;
     else
       throw new IllegalArgumentException();
+
+    if (oldMode != mode) {
+      previousValue = -1;
+    }
 
     this.modeString = newModeString;
   }
