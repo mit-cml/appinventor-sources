@@ -1396,7 +1396,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
     //  BackgroundImageinBase64 was added
     // No blocks need to be modified to upgrade to version 13.
-    13: "noUpgrade"
+    13: "noUpgrade",
+    
+    // TAP_THRESHOLD modified to be user settable
+    // TAP_THRESHOLD renamed to tapThreshold
+    // TapThreshold is added
+    // No blocks need to be modified to upgrade to version 14.
+    14: "noUpgrade"
 
   }, // End Canvas upgraders
 

@@ -521,6 +521,7 @@ public class YaVersion {
   // - BALL_COMPONENT_VERSION was incremented to 7
   // - IMAGESPRITE_COMPONENT_VERSION was incremented to 7
   // For YOUNG_ANDROID_VERSION 211:
+  // - CANVAS_COMPONENT_VERSION was incremented to 14
   // - CLOUDDB_COMPONENT_VERSION was incremented to 2
   public static final int YOUNG_ANDROID_VERSION = 211;
 
@@ -767,7 +768,11 @@ public class YaVersion {
   // - ExtendMovesOutsideCanvas was added
   // For CANVAS_COMPONENT_VERSION 13
   // - BackgroundImageinBase64 was added
-  public static final int CANVAS_COMPONENT_VERSION = 13;
+  // For CANVAS_PROPERTY_VERSION 14
+  // -TAP_THRESHOLD was changed from being constant to user settable 
+  // -TAP_THRESHOLD renamed to tapThreshold
+  // -TapThreshold was added
+  public static final int CANVAS_COMPONENT_VERSION = 14;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
