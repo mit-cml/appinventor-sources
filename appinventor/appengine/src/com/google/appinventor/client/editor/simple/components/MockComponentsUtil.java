@@ -262,7 +262,7 @@ public final class MockComponentsUtil {
     int len = color.length();
     if (len < digits) {
       do {
-        color = color + '0';
+        color = '0' + color;
       } while (++len < digits);
 
       return color;
