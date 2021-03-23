@@ -958,6 +958,9 @@
 (define (atan2-degrees y x)
   (radians->degrees-internal (atan y x)))
 
+(define (string-reverse str)
+  (yail:invoke AIComponentKit.StringUtil 'reverseString: str))
+
 ;;; returns a string that is the number formatted with a
 ;;; specified number of decimal places
 (define (format-as-decimal number places)

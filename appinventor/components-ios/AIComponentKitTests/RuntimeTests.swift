@@ -241,4 +241,13 @@ class RuntimeTests: XCTestCase {
                    interpreter.evalForm("(call-yail-primitive yail-list-join-with-separator (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* #t #f \"test\" 5 \"\\\"test\\\"\" ) '(any any any any any ) \"make a list\") \", \") '(list text) \"join with separator\")"))
     XCTAssertNil(interpreter.exception)
   }
+
+  func testReverseStrings() throws {
+    let interpreter = try getInterpreterForTesting()
+    let form = Form()
+    interpreter.setCurrentForm(form)
+    XCTAssertEqual("olleH", interpreter.evalForm("(string-reverse \"Hello\")"))
+    XCTAssertEqual("🌎😀olleH", interpreter.evalForm("(string-reverse \"Hello😀🌎\")"))
+    XCTAssertEqual("54321", interpreter.evalForm("(call-yail-primitive string-reverse (*list-for-runtime* 12345) '(text) \"reverse\")"))
+  }
 }
