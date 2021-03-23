@@ -689,4 +689,22 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/get-app.png")
   ImageResource GetApp();
+
+  /**
+   * Folder icon
+   */
+  @Source("com/google/appinventor/images/folder.png")
+  ImageResource folderIcon();
+
+  /**
+   * Arrow pointing up for general-purpose navigation
+   */
+  @Source("com/google/appinventor/images/up_arrow.png")
+  ImageResource upArrow();
+
+  /**
+   * Parent folder navigation icon
+   */
+  @Source("com/google/appinventor/images/up_folder.png")
+  ImageResource upFolder();
 }

@@ -16,6 +16,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.Ode.getImageBundle;
+
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.common.collect.Ordering;
@@ -31,6 +33,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -109,7 +112,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     projectsByFolder.put(null, currentProjects);
 
     // Initialize UI
-    table = new Grid(3, 4); // The table initially contains just the header row.
+    table = new Grid(3, 5); // The table initially contains just the header row.
     table.addStyleName("ode-ProjectTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
@@ -158,7 +161,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     nameHeader.add(nameHeaderLabel);
     nameSortIndicator.addStyleName("ode-ProjectHeaderLabel");
     nameHeader.add(nameSortIndicator);
-    table.setWidget(0, 1, nameHeader);
+    table.setWidget(0, 2, nameHeader);
+    table.getColumnFormatter().setWidth(0, "30px");
+    table.getColumnFormatter().setWidth(1, "1px");
 
     HorizontalPanel dateCreatedHeader = new HorizontalPanel();
     final Label dateCreatedHeaderLabel = new Label(MESSAGES.projectDateCreatedHeader());
@@ -166,7 +171,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     dateCreatedHeader.add(dateCreatedHeaderLabel);
     dateCreatedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
     dateCreatedHeader.add(dateCreatedSortIndicator);
-    table.setWidget(0, 2, dateCreatedHeader);
+    table.setWidget(0, 3, dateCreatedHeader);
+    table.getColumnFormatter().setWidth(3, "200px");
+
 
     HorizontalPanel dateModifiedHeader = new HorizontalPanel();
     final Label dateModifiedHeaderLabel = new Label(MESSAGES.projectDateModifiedHeader());
@@ -174,7 +181,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     dateModifiedHeader.add(dateModifiedHeaderLabel);
     dateModifiedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
     dateModifiedHeader.add(dateModifiedSortIndicator);
-    table.setWidget(0, 3, dateModifiedHeader);
+    table.setWidget(0, 4, dateModifiedHeader);
+    table.getColumnFormatter().setWidth(4, "200px");
 
     MouseDownHandler mouseDownHandler = new MouseDownHandler() {
       @Override
@@ -237,6 +245,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   private abstract class ListEntryWidgets {
     CheckBox checkBox;
+    Image nameIcon;
     Label nameLabel;
     Label dateCreatedLabel;
     Label dateModifiedLabel;
@@ -244,6 +253,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   private class FolderWidgets extends ListEntryWidgets {
     final CheckBox checkBox;
+    final Image nameIcon;
     final Label nameLabel;
     final Label dateCreatedLabel = new Label();
     final Label dateModifiedLabel = new Label();
@@ -273,8 +283,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       final String displayName = (lastDividerLocation == -1)
           ? folderName
           : folderName.substring(lastDividerLocation + 1);
-      nameLabel = new Label(displayName);
-      nameLabel.addClickHandler(new ClickHandler() {
+      ClickHandler folderClick = new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           Ode ode = Ode.getInstance();
@@ -283,8 +292,13 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           }
           changeCurrentFolder(folderName);
         }
-      });
+      };
+      nameLabel = new Label(displayName);
+      nameLabel.addClickHandler(folderClick);
       nameLabel.addStyleName("ode-FolderNameLabel");
+      nameIcon = new Image(getImageBundle().folderIcon());
+      nameIcon.addClickHandler(folderClick);
+      nameIcon.setStylePrimaryName("ode-SimplePaletteItem-icon");
     }
 
     /**
@@ -295,8 +309,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       this.checkBox = new CheckBox();
       this.checkBox.setEnabled(false);
 
-      nameLabel = new Label(MESSAGES.parentFolderName());
-      nameLabel.addClickHandler(new ClickHandler() {
+      ClickHandler folderClick = new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           Ode ode = Ode.getInstance();
@@ -305,8 +318,14 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           }
           changeCurrentFolder(getParentFolder());
         }
-      });
+      };
+
+      nameLabel = new Label(MESSAGES.parentFolderName());
+      nameLabel.addClickHandler(folderClick);
       nameLabel.addStyleName("ode-FolderNameLabel");
+      nameIcon = new Image(getImageBundle().upFolder());
+      nameIcon.addClickHandler(folderClick);
+      nameIcon.setStylePrimaryName("ode-SimplePaletteItem-icon");
     }
   }
 
@@ -423,7 +442,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     table.clear();
     setHeaderRow();
     final int folderNumber = (currentFolder != null) ? 1 + currentSubFolders.size() : currentSubFolders.size();
-    table.resize(1 + folderNumber + currentProjects.size(), 4);
+    table.resize(1 + folderNumber + currentProjects.size(), 5);
     int previous_rowmax = table.getRowCount() - 1;
     int row = 1;
     if (currentFolder != null) {
@@ -431,10 +450,11 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       FolderWidgets fw = new FolderWidgets();
       configureFolderDragDrop(table.getRowFormatter().getElement(row), row, getParentFolder(), false);
       fw.checkBox.setName(String.valueOf(row));
-      table.setWidget(row, 0, fw.checkBox); // These duplicate lines of table.setWidget code do
-      table.setWidget(row, 1, fw.nameLabel); // not work properly after being converted into JS
-      table.setWidget(row, 2, fw.dateCreatedLabel); // if abstracted into a function
-      table.setWidget(row, 3, fw.dateModifiedLabel);
+      table.setWidget(row, 0, fw.checkBox);
+      table.setWidget(row, 1, fw.nameIcon);
+      table.setWidget(row, 2, fw.nameLabel);
+      table.setWidget(row, 3, fw.dateCreatedLabel);
+      table.setWidget(row, 4, fw.dateModifiedLabel);
       row++;
     }
     for (String folder : currentSubFolders) {
@@ -449,9 +469,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       fw.checkBox.setName(String.valueOf(row));
       configureFolderDragDrop(table.getRowFormatter().getElement(row), row, folder, true);
       table.setWidget(row, 0, fw.checkBox);
-      table.setWidget(row, 1, fw.nameLabel);
-      table.setWidget(row, 2, fw.dateCreatedLabel);
-      table.setWidget(row, 3, fw.dateModifiedLabel);
+      table.setWidget(row, 1, fw.nameIcon);
+      table.setWidget(row, 2, fw.nameLabel);
+      table.setWidget(row, 3, fw.dateCreatedLabel);
+      table.setWidget(row, 4, fw.dateModifiedLabel);
       row++;
     }
 
@@ -469,9 +490,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         }
         configureProjectDrag(table.getRowFormatter().getElement(row), Long.toString(project.getProjectId()));
         table.setWidget(row, 0, pw.checkBox);
-        table.setWidget(row, 1, pw.nameLabel);
-        table.setWidget(row, 2, pw.dateCreatedLabel);
-        table.setWidget(row, 3, pw.dateModifiedLabel);
+        table.setWidget(row, 2, pw.nameLabel);
+        table.setWidget(row, 3, pw.dateCreatedLabel);
+        table.setWidget(row, 4, pw.dateModifiedLabel);
 
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
         pw.checkBox.setValue(false);
