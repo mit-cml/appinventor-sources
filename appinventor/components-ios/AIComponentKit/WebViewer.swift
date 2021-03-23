@@ -5,7 +5,7 @@ import Foundation
 import WebKit
 import CoreLocation
 
-open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigationDelegate, WKScriptMessageHandler {
+open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler {
   fileprivate var _view : WKWebView
   fileprivate var _homeURL : String = ""
   fileprivate var _webViewString : String = ""
@@ -15,6 +15,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
   fileprivate var _wantLoad = false
   private var _webviewerApiSource: String = ""
   private var _webviewerApi: WKUserScript
+  private var _webAlert: UIAlertController? = nil
 
   public override init(_ parent: ComponentContainer) {
     do {
@@ -28,6 +29,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     let controller = WKUserContentController()
     controller.addUserScript(_webviewerApi)
     let config = WKWebViewConfiguration()
+    config.preferences.javaScriptEnabled = true
     config.userContentController = controller
     _view = WKWebView(frame: CGRect.zero, configuration: config)
     _view.translatesAutoresizingMaskIntoConstraints = false
@@ -36,6 +38,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     let swipeRecog = UISwipeGestureRecognizer(target: self, action: #selector(navigation))
     _view.addGestureRecognizer(swipeRecog)
     _view.navigationDelegate = self
+    _view.uiDelegate = self
     controller.add(self, name: "webString")
     parent.add(self)
     Width = kLengthFillParent
@@ -132,19 +135,23 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
           forMainFrameOnly: false)
       _view.configuration.userContentController.removeAllUserScripts()
       _view.configuration.userContentController.addUserScript(_webviewerApi)
-      _view.evaluateJavaScript("window.AppInventor.updateFromBlocks('\(newVal)')");
+      _view.evaluateJavaScript("window.AppInventor.updateFromBlocks('\(newVal)')")
     }
   }
 
   //NOTE: To load file, assumes the presence of an "assets" folder
   fileprivate func processURL(_ url: String){
     _wantLoad = true
+    let firstHashTag = url.firstIndex(of: "#") ?? url.endIndex
+    let firstQuestionMark = url.firstIndex(of: "?") ?? firstHashTag
+    let queryParameters = url.suffix(from: firstQuestionMark)
     if url.starts(with: "file:///android_asset/") || url.starts(with: "http://localhost/"),
         let fileURL = URL(string: url) {
       let assetPath = AssetManager.shared.pathForExistingFileAsset(fileURL.lastPathComponent)
       if !assetPath.isEmpty {
         let assetURL = URL(fileURLWithPath: assetPath)
-        _view.loadFileURL(assetURL, allowingReadAccessTo: assetURL.deletingLastPathComponent())
+        let url2 = NSURL(string: String(queryParameters), relativeTo: assetURL)!
+        _view.load(NSURLRequest(url: url2 as URL) as URLRequest)
       } else {
         form?.dispatchErrorOccurredEvent(self, "WebViewer",
             ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
@@ -154,7 +161,8 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
       if let fileURL = URL(string: url){
         do {
           let assetURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("AppInventor/\(fileURL.lastPathComponent)")
-          _view.loadFileURL(assetURL, allowingReadAccessTo: assetURL.deletingLastPathComponent())
+          let url2 = NSURL(string: String(queryParameters), relativeTo: assetURL)!
+          _view.load(NSURLRequest(url: url2 as URL) as URLRequest)
         } catch {
           form?.dispatchErrorOccurredEvent(self, "WebViewer",
               ErrorMessage.ERROR_WEB_VIEWER_MISSING_FILE.code,
@@ -262,7 +270,50 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKNavigati
     _wantLoad = false
   }
 
-
+  open func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
+                      initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+    self._webAlert = UIAlertController(title: message,
+                                            message: nil,
+                                            preferredStyle: .alert)
+    self._webAlert?.addAction(UIAlertAction(title: "OK", style: .cancel) {
+        _ in completionHandler()}
+    )
+    
+    _container?.form?.present(self._webAlert!, animated: true)
+  }
+  
+  open func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,          completionHandler: @escaping (Bool) -> Void) {
+    self._webAlert = UIAlertController(title: message, message: nil, preferredStyle: .actionSheet)
+    self._webAlert?.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) in
+      completionHandler(true)
+    }))
+    self._webAlert?.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (action) in
+      completionHandler(false)
+    }))
+    
+    _container?.form?.present(self._webAlert!, animated: true)
+  }
+  
+  open func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?,
+                        initiatedByFrame frame: WKFrameInfo,
+                        completionHandler: @escaping (String?) -> Void) {
+    self._webAlert = UIAlertController(title: nil, message: prompt, preferredStyle: .alert)
+    self._webAlert?.addTextField { (textField) in
+      textField.text = defaultText
+    }
+    self._webAlert!.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) in
+      if let text = self._webAlert?.textFields?.first?.text {
+        completionHandler(text)
+      } else {
+        completionHandler(defaultText)
+      }
+    }))
+    self._webAlert?.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (action) in
+      completionHandler(nil)
+    }))
+    _container?.form?.present(self._webAlert!, animated: true)
+  }
+  
   open func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
     if let string = message.body as? String {
       _webViewString = string
