@@ -1126,13 +1126,13 @@ Blockly.Blocks.component_set_get = {
       {name:"checkComponentNotExistsError"}, {name: 'checkGenericComponentSocket'},
       {name: 'checkEmptySetterSocket'}];
 
-    if (thisBlock.propertyObject && this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
-      // [lyn, 2015/12/27] mark deprecated properties as bad
-      this.badBlock();
-      this.setDisabled(true);
-    }
+      if (thisBlock.propertyObject && this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
+        // [lyn, 2015/12/27] mark deprecated properties as bad
+        this.badBlock();
+        this.setDisabled(true);
+      }
 
-    this.verify();
+      this.verify();
 
     for (var i = 0, input; input = this.inputList[i]; i++) {
       input.init();
@@ -1366,6 +1366,73 @@ Blockly.Blocks.component_component_block = {
           instance_name: instance.name
         }
       });
+    });
+    return tb;
+  },
+
+  verify : function() {
+    // TODO(ewpatton): Logic assumes that components cannot be removed (e.g., editing AIA)
+    if (this.getTopWorkspace().getComponentDatabase().hasType(this.typeName)) {
+      this.notBadBlock();
+    } else {
+      this.badBlock();
+    }
+  }
+
+};
+
+/**
+ * Create a component list block for a given component type.
+ * @lends {Blockly.BlockSvg}
+ * @lends {Blockly.Block}
+ */
+Blockly.Blocks.component_all_component_block = {
+  category : 'Component',
+
+  helpUrl : function() {
+    var mode = this.typeName === "Form" ? "Screen" : this.typeName;
+    return Blockly.ComponentBlock.HELPURLS[mode];
+  },
+
+  mutationToDom : function() {
+    var container = document.createElement('mutation');
+    container.setAttribute('component_type', this.typeName);
+    return container;
+  },
+
+  domToMutation : function(xmlElement) {
+
+    this.typeName = xmlElement.getAttribute('component_type');
+    this.setColour(Blockly.ComponentBlock.COLOUR_COMPONENT);
+    this.componentTypeDropDown = Blockly.ComponentBlock.createComponentTypeDropDown(this);
+    this.componentTypeDropDown.setValue(this.typeName);
+
+    this.appendDummyInput()
+      .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY)
+      .appendField(this.componentTypeDropDown, Blockly.ComponentBlock.COMPONENT_TYPE_SELECTOR);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.OUTPUT));
+    this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkComponentTypeNotExistsError"}];
+  },
+  // Renames the block's instanceName, type, and reset its title
+  rename : function(oldname, newname) {
+    return true;
+  },
+
+  typeblock : function(){
+    var componentDb = Blockly.mainWorkspace.getComponentDatabase();
+    var tb = [];
+
+    componentDb.forEachInstance(function(instance) {
+      tb.push({
+        translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY + " " + instance.typeName,
+        mutatorAttributes: {
+          component_type: instance.typeName,
+        }
+      });
+    });
+
+    goog.array.removeDuplicates(tb, null, function(t) {
+      return t.mutatorAttributes.component_type;
     });
     return tb;
   },
