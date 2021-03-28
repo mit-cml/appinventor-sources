@@ -337,6 +337,11 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
     }
   }, this);
 
+  // add the all components getter
+  Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_all_component_block', {
+    component_type: typeName
+  }));
+
   return xmlArray;
 };
 
