@@ -309,6 +309,42 @@ Blockly.ComponentDatabase.prototype.getComponentNamesByType = function(component
 };
 
 /**
+ * Obtain type names of added components for presentation in a drop-down field.
+ *
+ * @returns {Array.<Array.<string>>} An array of 2-tuples containing the type of each component.
+ *   If no components are declared, a single element list is returned with the pair
+ *   (' ', 'none').
+ */
+Blockly.ComponentDatabase.prototype.getComponentTypes = function() {
+  var componentTypeArray = [];
+  for (var uid in this.instances_) {
+    var typeName = this.instances_[uid].typeName;
+    if(typeName != "Form")
+      componentTypeArray.push([this.i18nComponentTypes_[typeName], typeName]);
+  }
+
+  goog.array.removeDuplicates(componentTypeArray, null, function(type) {
+    return type[1];
+  });
+
+  if (componentTypeArray.length == 0) {
+    return [[' ', 'none']]
+  } else {
+    // Sort the components by name
+    componentTypeArray.sort(function(a, b) {
+      if (a[0] < b[0]) {
+        return -1;
+      } else if (a[0] > b[0]) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    return componentTypeArray;
+  }
+};
+
+/**
  * Populate the types database.
  *
  * @param {ComponentInfo[]} componentInfos
