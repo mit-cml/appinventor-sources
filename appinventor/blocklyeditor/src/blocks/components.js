@@ -38,6 +38,7 @@ Blockly.ComponentBlock.COLOUR_SET = '#266643';  // [38, 102, 67]
 Blockly.ComponentBlock.COLOUR_COMPONENT = '#439970';  // [67, 153, 112]
 
 Blockly.ComponentBlock.COMPONENT_SELECTOR = "COMPONENT_SELECTOR";
+Blockly.ComponentBlock.COMPONENT_TYPE_SELECTOR = "COMPONENT_TYPE_SELECTOR";
 
 /**
  * Add a menu option to the context menu for {@code block} to swap between
@@ -1410,7 +1411,7 @@ Blockly.Blocks.component_all_component_block = {
     this.appendDummyInput()
       .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY)
       .appendField(this.componentTypeDropDown, Blockly.ComponentBlock.COMPONENT_TYPE_SELECTOR);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.OUTPUT));
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.OUTPUT));
     this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkComponentTypeNotExistsError"}];
   },
   // Renames the block's instanceName, type, and reset its title
@@ -1423,12 +1424,16 @@ Blockly.Blocks.component_all_component_block = {
     var tb = [];
 
     componentDb.forEachInstance(function(instance) {
-      tb.push({
-        translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY + " " + instance.typeName,
-        mutatorAttributes: {
-          component_type: instance.typeName,
-        }
-      });
+      if(instance.typeName != "Form") {
+        tb.push({
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY +
+                          " " +
+                          componentDb.getInternationalizedComponentType(instance.typeName),
+          mutatorAttributes: {
+            component_type: instance.typeName,
+          }
+        });
+      }
     });
 
     goog.array.removeDuplicates(tb, null, function(t) {
@@ -1469,6 +1474,12 @@ Blockly.ComponentBlock.isClockMethodName =  function  (name) {
 Blockly.ComponentBlock.createComponentDropDown = function(block){
   var componentDropDown = new Blockly.FieldDropdown([["",""]]);
   componentDropDown.menuGenerator_ = function(){ return block.getTopWorkspace().getComponentDatabase().getComponentNamesByType(block.typeName); };
+  return componentDropDown;
+};
+
+Blockly.ComponentBlock.createComponentTypeDropDown = function(block){
+  var componentDropDown = new Blockly.FieldDropdown([["",""]]);
+  componentDropDown.menuGenerator_ = function(){ return block.getTopWorkspace().getComponentDatabase().getComponentTypes(); };
   return componentDropDown;
 };
 
