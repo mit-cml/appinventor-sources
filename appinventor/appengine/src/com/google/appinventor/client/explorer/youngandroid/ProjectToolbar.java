@@ -12,10 +12,13 @@ import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.Toolbar;
+import com.google.appinventor.client.wizards.MoveToFolderWizard;
 import com.google.appinventor.client.wizards.NewFolderWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.List;
 
@@ -33,6 +36,7 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_RESTORE= "Restore";
   private static final String WIDGET_NAME_DELETE_FROM_TRASH= "Delete From Trash";
   private static final String WIDGET_NAME_CREATE_FOLDER = "New Folder";
+  private static final String WIDGET_NAME_MOVE_TO_FOLDER = "Move to Folder";
 
   private boolean isReadOnly;
 
@@ -63,6 +67,8 @@ public class ProjectToolbar extends Toolbar {
         new TopToolbar.DeleteForeverProjectAction()));
     addButton(new ToolbarItem(WIDGET_NAME_CREATE_FOLDER, MESSAGES.createFolderButton(),
         new CreateNewFolderAction()));
+    addButton(new ToolbarItem(WIDGET_NAME_MOVE_TO_FOLDER, MESSAGES.moveToFolderButton(),
+        new MoveToFolderAction()));
 
     setTrashTabButtonsVisible(false);
     updateButtons();
@@ -79,6 +85,8 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible(WIDGET_NAME_NEW, visible);
     setButtonVisible(WIDGET_NAME_TRASH,visible);
     setButtonVisible(WIDGET_NAME_DELETE,visible);
+    setButtonVisible(WIDGET_NAME_CREATE_FOLDER, visible);
+    setButtonVisible(WIDGET_NAME_MOVE_TO_FOLDER, visible);
   }
 
   private static class NewAction implements Command {
@@ -120,7 +128,18 @@ public class ProjectToolbar extends Toolbar {
     }
   }
 
-  //implementing trash method this method will show the Trash Tab
+  private static class MoveToFolderAction implements Command {
+    @Override
+    public void execute() {
+      if (Ode.getInstance().screensLocked()) {
+        return;                 // Refuse to switch if locked (save file happening)
+      }
+      new MoveToFolderWizard().center();
+    }
+  }
+
+
+    //implementing trash method this method will show the Trash Tab
   private static class SwitchToTrashAction implements Command {
     @Override
     public void execute() {
@@ -179,6 +198,7 @@ public class ProjectToolbar extends Toolbar {
       setButtonEnabled(WIDGET_NAME_NEW, false);
       setButtonEnabled(WIDGET_NAME_DELETE, false);
       setButtonEnabled(WIDGET_NAME_RESTORE, false);
+      setButtonEnabled(WIDGET_NAME_MOVE_TO_FOLDER, false);
       Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
       return;
     }
@@ -187,6 +207,7 @@ public class ProjectToolbar extends Toolbar {
 
     setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);
+    setButtonEnabled(WIDGET_NAME_MOVE_TO_FOLDER, numSelectedProjects > 0);
     Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
   }
 

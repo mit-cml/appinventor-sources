@@ -36,6 +36,7 @@ import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -656,15 +657,15 @@ public class TopToolbar extends Composite {
             // Show one confirmation window for selected projects.
             if (deleteConfirmation(selectedProjects, selectedFolders)) {
               for (Project project : selectedProjects) {
-                project.setParentFolder(null);
                 project.moveToTrash();
+                ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().remove(project);
               }
-              Ode.getInstance().switchToProjectsView();
               for(String folder : selectedFolders){
                 ProjectListBox.getProjectListBox().getProjectList().trashFolder(folder);
+                ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders().remove(folder);
               }
             }
-            Ode.getInstance().switchToProjectsView();
+            ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
           } else {
             // The user can select a project to resolve the
             // error.

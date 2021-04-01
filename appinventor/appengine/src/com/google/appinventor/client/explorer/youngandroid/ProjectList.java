@@ -400,9 +400,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   public void refreshTable(boolean needToSort, boolean isInTrash) {
-    if (isInTrash && (getCurrentFolder() != null)) {
-      changeCurrentFolder(null);
-    }
+//    if (isInTrash && (getCurrentFolder() != null)) {
+//      changeCurrentFolder(null);
+//    }
 
     if (needToSort) {
       // Sort the projects.
@@ -445,36 +445,37 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     table.resize(1 + folderNumber + currentProjects.size(), 5);
     int previous_rowmax = table.getRowCount() - 1;
     int row = 1;
-    if (currentFolder != null) {
-      table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-      FolderWidgets fw = new FolderWidgets();
-      configureFolderDragDrop(table.getRowFormatter().getElement(row), row, getParentFolder(), false);
-      fw.checkBox.setName(String.valueOf(row));
-      table.setWidget(row, 0, fw.checkBox);
-      table.setWidget(row, 1, fw.nameIcon);
-      table.setWidget(row, 2, fw.nameLabel);
-      table.setWidget(row, 3, fw.dateCreatedLabel);
-      table.setWidget(row, 4, fw.dateModifiedLabel);
-      row++;
-    }
-    for (String folder : currentSubFolders) {
-      FolderWidgets fw = folderWidgets.get(folder);
-      if (selectedFolders.contains(folder)) {
-        table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-        fw.checkBox.setValue(true);
-      } else {
+      if (currentFolder != null) {
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
+        FolderWidgets fw = new FolderWidgets();  // This is the parent folder option
+        configureFolderDragDrop(table.getRowFormatter().getElement(row), row, getParentFolder(), false);
         fw.checkBox.setValue(false);
+        fw.checkBox.setName(String.valueOf(row));
+        table.setWidget(row, 0, fw.checkBox);
+        table.setWidget(row, 1, fw.nameIcon);
+        table.setWidget(row, 2, fw.nameLabel);
+        table.setWidget(row, 3, fw.dateCreatedLabel);
+        table.setWidget(row, 4, fw.dateModifiedLabel);
+        row++;
       }
-      fw.checkBox.setName(String.valueOf(row));
-      configureFolderDragDrop(table.getRowFormatter().getElement(row), row, folder, true);
-      table.setWidget(row, 0, fw.checkBox);
-      table.setWidget(row, 1, fw.nameIcon);
-      table.setWidget(row, 2, fw.nameLabel);
-      table.setWidget(row, 3, fw.dateCreatedLabel);
-      table.setWidget(row, 4, fw.dateModifiedLabel);
-      row++;
-    }
+      for (String folder : currentSubFolders) {
+        FolderWidgets fw = folderWidgets.get(folder);
+        if (selectedFolders.contains(folder)) {
+          table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
+          fw.checkBox.setValue(true);
+        } else {
+          table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
+          fw.checkBox.setValue(false);
+        }
+        fw.checkBox.setName(String.valueOf(row));
+        configureFolderDragDrop(table.getRowFormatter().getElement(row), row, folder, true);
+        table.setWidget(row, 0, fw.checkBox);
+        table.setWidget(row, 1, fw.nameIcon);
+        table.setWidget(row, 2, fw.nameLabel);
+        table.setWidget(row, 3, fw.dateCreatedLabel);
+        table.setWidget(row, 4, fw.dateModifiedLabel);
+        row++;
+      }
 
     for (Project project : currentProjects) {
       if (project.isInTrash() == isInTrash) {
@@ -631,24 +632,31 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   @Override
   public void onTrashProjectRestored(Project project) {
     selectedProjects.remove(project);
-    refreshTable(false);
+    updateCurrentSubFolders();
+    if (!projectListLoading) {
+      refreshTable(false);
+    }
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
 
     @Override
     public void onProjectTrashed (Project project){
       selectedProjects.remove(project);
-      refreshTable(false);
+      updateCurrentSubFolders();
+      if (!projectListLoading) {
+        refreshTable(false);
+      }
       Ode.getInstance().getProjectToolbar().updateButtons();
-
-      refreshTable(false);
     }
 
     @Override
     public void onProjectDeleted (Project project){
-      selectedProjects.remove(project);
-      projectWidgets.remove(project);
-      refreshTable(false);
+//      selectedProjects.remove(project);
+//      updateCurrentSubFolders();
+//      projectWidgets.remove(project);
+//      if (!projectListLoading) {
+//        refreshTable(false);
+//      }
       Ode.getInstance().getProjectToolbar().updateButtons();
     }
 
@@ -674,8 +682,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       if (!projectsByFolder.containsKey(folder)) {
         projectsByFolder.put(folder, new ArrayList<Project>());
         this.folderWidgets.put(folder, new FolderWidgets(folder));
+        updateCurrentSubFolders();
       }
-      updateCurrentSubFolders();
       if (!projectListLoading) {
         refreshTable(true);
       }
@@ -704,15 +712,13 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     /**
      * Navigates to newFolder and refreshes the table
      */
-    private void changeCurrentFolder (String newFolder){
+    public void changeCurrentFolder (String newFolder){
       this.currentFolder = newFolder;
       this.currentProjects = this.projectsByFolder.get(newFolder);
-      updateCurrentSubFolders();
-
       selectedFolders.clear();
-
       Ode ode = Ode.getInstance();
       ode.setProjectViewFolder(newFolder);
+      updateCurrentSubFolders();
       if (!projectListLoading) {
         refreshTable(true);
       }
@@ -740,6 +746,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           parentFolder = parentFolder.substring(0, lastDivider);
         }
       }
+      updateCurrentSubFolders();
     }
 
     @Override
@@ -748,6 +755,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       if (parentFolderProjects != null) {
         parentFolderProjects.remove(project);
       }
+      updateCurrentSubFolders();
     }
 
     /**
@@ -766,35 +774,16 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     }
 
     public void trashFolder(String folder) {
-      for (String f : this.projectsByFolder.keySet()) {
+      for (String f : projectsByFolder.keySet()) {
         // Projects from this folder and all subfolders must be trashed.
         // Deleting the single folder should handle subfolders (?)
-        if (f != null) {
-          String folder_chain[] = f.split("/");
-          if (folder_chain[0] == folder) {
-            for (Project p1 : projectsByFolder.get(f)) {
-              final Project p = p1;
-              Ode.getInstance().getProjectService().moveProjectToFolder(p1.getProjectId(), null,
-                  new AsyncCallback<UserProject>() {
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                      ErrorReporter.reportError(MESSAGES.couldNotChangeProjectFolder());
-                    }
-
-                    @Override
-                    public void onSuccess(UserProject userProject) {
-                      onProjectRemovedFromFolder(p);
-                      selectedProjects.remove(p);
-                      p.setParentFolder(userProject.getParentFolder());
-                      onProjectMovedToFolder(p);
-                      p.moveToTrash();
-                    }
-                  });
-            }
+        if (f != null && f.startsWith(folder)) {
+          for (Project p : projectsByFolder.get(f)) {
+            p.moveToTrash();
           }
         }
       }
-      doDeleteFolder(folder);
+      currentSubFolders.remove(folder);
     }
 
     private void doDeleteFolder(final String folderName) {
@@ -807,11 +796,20 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
      * @return List of direct child folders
      */
     private void updateCurrentSubFolders () {
+      boolean isInTrash = Ode.getInstance().getCurrentView() == Ode.TRASHCAN;
       this.currentSubFolders = new ArrayList<String>();
       if (this.currentFolder == null) {
         for (String folder : this.projectsByFolder.keySet()) {
           if (folder != null && !folder.contains("/")) {
-            this.currentSubFolders.add(folder);
+            if (!isInTrash && projectsByFolder.get(folder).size() == 0) {
+              this.currentSubFolders.add(folder);
+            }
+            for (Project p : projectsByFolder.get(folder)) {
+              if (p.isInTrash() == isInTrash) {
+                this.currentSubFolders.add(folder);
+                break;
+              }
+            }
           }
         }
       } else {
@@ -821,7 +819,15 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
               && !folder.equals(this.currentFolder)
               && folder.startsWith(this.currentFolder + "/")
               && folder.indexOf(FOLDER_DIVIDER, this.currentFolder.length() + 1) == -1) {
-            this.currentSubFolders.add(folder);
+            if (!isInTrash && projectsByFolder.get(folder).size() == 0) {
+              this.currentSubFolders.add(folder);
+            }
+            for (Project p : projectsByFolder.get(folder)) {
+              if (p.isInTrash() == isInTrash) {
+                this.currentSubFolders.add(folder);
+                break;
+              }
+            }
           }
         }
       }
@@ -847,7 +853,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   /**
    * Handles the movement of the project with id projectId to targetFolder.
    */
-  private void handleProjectMove(final long projectId, final String targetFolder){
+  public void handleProjectMove(final long projectId, final String targetFolder){
     Project p1 = null;
     for (Project p : this.currentProjects){
       if (p.getProjectId() == projectId){
@@ -869,6 +875,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
             selectedProjects.remove(project);
             project.setParentFolder(userProject.getParentFolder());
             onProjectMovedToFolder(project);
+            updateCurrentSubFolders();
             refreshTable(false);
           }
         });
@@ -878,7 +885,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    * Handles the movement of the folder movingFolder (and all subfolders & projects within) to
    * targetFolder.
    */
-  private void handleFolderMove(final String movingFolder, final String targetFolder){
+  public void handleFolderMove(final String movingFolder, final String targetFolder){
       if (movingFolder.equals(targetFolder)) return;
       final List<Project> projects = getProjectsInFolder(movingFolder);
       final List<Long> projectIds = new ArrayList<Long>();

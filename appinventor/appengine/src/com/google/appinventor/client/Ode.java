@@ -395,8 +395,8 @@ public class Ode implements EntryPoint {
     Runnable next = new Runnable() {
         @Override
         public void run() {
-          ProjectListBox.getProjectListBox().loadProjectList();
           currentView = PROJECTS;
+          ProjectListBox.getProjectListBox().loadProjectList();
           getTopToolbar().updateFileMenuButtons(currentView);
           deckPanel.showWidget(projectsTabIndex);
           // If we started a project, then the start button was disabled (to avoid
@@ -439,8 +439,8 @@ public class Ode implements EntryPoint {
     Ode.getInstance().getTopToolbar().updateMoveToTrash("Delete From Trash");
     hideChaff();
     hideTutorials();
-    ProjectListBox.getProjectListBox().loadTrashList();
     currentView = TRASHCAN;
+    ProjectListBox.getProjectListBox().loadTrashList();
     projectToolbar.enableStartButton();
     projectToolbar.setProjectTabButtonsVisible(false);
     projectToolbar.setTrashTabButtonsVisible(true);
