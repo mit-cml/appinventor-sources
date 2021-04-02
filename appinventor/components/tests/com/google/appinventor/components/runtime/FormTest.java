@@ -35,7 +35,7 @@ public class FormTest extends RobolectricTestBase {
     InputStream is = null;
     try {
       is = getForm().openAsset(TARGET_FILE);
-      assertEquals("Hello, world!\n", readStream(is));
+      assertEquals("Hello, world!" + System.lineSeparator(), readStream(is));
     } finally {
       IOUtils.closeQuietly("test", is);
     }
@@ -52,7 +52,7 @@ public class FormTest extends RobolectricTestBase {
     InputStream is = null;
     try {
       is = getForm().openAssetForExtension(new TestExtension(getForm()), TARGET_FILE);
-      assertEquals("Sample extension asset\n", readStream(is));
+      assertEquals("Sample extension asset" + System.lineSeparator(), readStream(is));
     } finally {
       IOUtils.closeQuietly("test", is);
     }
