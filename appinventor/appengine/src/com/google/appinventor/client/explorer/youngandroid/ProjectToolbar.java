@@ -171,11 +171,15 @@ public class ProjectToolbar extends Toolbar {
     @Override
     public void execute() {
       List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      if (selectedProjects.size() > 0) {
+      List<String> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
+      if (selectedProjects.size() > 0  || selectedFolders.size() > 0) {
         for (Project project : selectedProjects) {
           project.restoreFromTrash();
         }
-        Ode.getInstance().switchToTrash();
+        for (String folder : selectedFolders) {
+            ProjectListBox.getProjectListBox().getProjectList().restoreFolder(folder);
+            ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders().remove(folder);
+        }
       } else {
         // The user can select a project to resolve the
         // error.
@@ -205,9 +209,9 @@ public class ProjectToolbar extends Toolbar {
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0 || numSelectedFolders > 0);
     Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
 
-    setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, numSelectedProjects > 0);
-    setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);
-    setButtonEnabled(WIDGET_NAME_MOVE_TO_FOLDER, numSelectedProjects > 0);
+    setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, numSelectedProjects > 0 || numSelectedFolders > 0);
+    setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0 || numSelectedFolders > 0);
+    setButtonEnabled(WIDGET_NAME_MOVE_TO_FOLDER, numSelectedProjects > 0 || numSelectedFolders > 0);
     Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
   }
 

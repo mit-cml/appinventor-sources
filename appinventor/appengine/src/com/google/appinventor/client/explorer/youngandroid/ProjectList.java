@@ -400,10 +400,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   public void refreshTable(boolean needToSort, boolean isInTrash) {
-//    if (isInTrash && (getCurrentFolder() != null)) {
-//      changeCurrentFolder(null);
-//    }
-
     if (needToSort) {
       // Sort the projects.
       Comparator<Project> comparator;
@@ -779,7 +775,24 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         // Deleting the single folder should handle subfolders (?)
         if (f != null && f.startsWith(folder)) {
           for (Project p : projectsByFolder.get(f)) {
-            p.moveToTrash();
+            if (!p.isInTrash()) {
+              p.moveToTrash();
+            }
+          }
+        }
+      }
+      currentSubFolders.remove(folder);
+    }
+
+    public void restoreFolder(String folder) {
+      for (String f : projectsByFolder.keySet()) {
+        // Projects from this folder and all subfolders must be trashed.
+        // Deleting the single folder should handle subfolders (?)
+        if (f != null && f.startsWith(folder)) {
+          for (Project p : projectsByFolder.get(f)) {
+            if (p.isInTrash()) {
+              p.restoreFromTrash();
+            }
           }
         }
       }
