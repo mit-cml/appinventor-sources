@@ -523,7 +523,9 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 211:
   // - CANVAS_COMPONENT_VERSION was incremented to 14
   // - CLOUDDB_COMPONENT_VERSION was incremented to 2
-  public static final int YOUNG_ANDROID_VERSION = 211;
+  // For YOUNG_ANDROID_VERSION 212:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 34
+  public static final int YOUNG_ANDROID_VERSION = 212;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -607,7 +609,9 @@ public class YaVersion {
   // - The and/or blocks gained mutators.
   // For BLOCKS_LANGUAGE_VERSION 33
   // - Added "contains any" and "contains all" options to the text contains block.
-  public static final int BLOCKS_LANGUAGE_VERSION = 33;
+  // For BLOCKS_LANGUAGE_VERSION 34
+  // - Added "every component" block.
+  public static final int BLOCKS_LANGUAGE_VERSION = 34;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -769,7 +773,7 @@ public class YaVersion {
   // For CANVAS_COMPONENT_VERSION 13
   // - BackgroundImageinBase64 was added
   // For CANVAS_PROPERTY_VERSION 14
-  // -TAP_THRESHOLD was changed from being constant to user settable 
+  // -TAP_THRESHOLD was changed from being constant to user settable
   // -TAP_THRESHOLD renamed to tapThreshold
   // -TapThreshold was added
   public static final int CANVAS_COMPONENT_VERSION = 14;
