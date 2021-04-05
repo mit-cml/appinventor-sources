@@ -1397,7 +1397,7 @@ Blockly.Versioning.AllUpgradeMaps =
     //  BackgroundImageinBase64 was added
     // No blocks need to be modified to upgrade to version 13.
     13: "noUpgrade",
-    
+
     // TAP_THRESHOLD modified to be user settable
     // TAP_THRESHOLD renamed to tapThreshold
     // TapThreshold is added
@@ -1845,7 +1845,10 @@ Blockly.Versioning.AllUpgradeMaps =
     32: "noUpgrade",
 
     // AI2: Added "contains any" and "contains all" options to the text contains block.
-    33:"noUpgrade"
+    33:"noUpgrade",
+
+    // AI2: Added "every component" block.
+    34:"noUpgrade"
 
   }, // End Language upgraders
 
@@ -2679,7 +2682,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added methods JsonTextDecodeWithDictionaries and XMLTextDecodeAsDictionary
     7: "noUpgrade",
-	
+
 	// AI2: Added methods PatchText, PatchTextWithEncoding, and PatchFile
     8: "noUpgrade"
 
