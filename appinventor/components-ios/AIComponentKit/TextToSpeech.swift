@@ -166,6 +166,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     utterance.pitchMultiplier = _pitch
     utterance.rate = _speechRate
     utterance.voice = _voice
+    _tts.stopSpeaking(at: AVSpeechBoundary.immediate)
     _tts.speak(utterance)
   }
 
