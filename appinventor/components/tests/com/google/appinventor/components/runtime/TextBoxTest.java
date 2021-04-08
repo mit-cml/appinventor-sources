@@ -25,10 +25,13 @@ public class TextBoxTest extends RobolectricTestBase {
     assertEquals("Expected default TextBox font typeface " + Component.TYPEFACE_DEFAULT, Component.TYPEFACE_DEFAULT, aTextBox.FontTypeface());
     assertEquals(Component.FONT_DEFAULT_SIZE, aTextBox.FontSize(), 0.0);
     assertEquals("Expected TextBox text color", Component.COLOR_DEFAULT, aTextBox.TextColor());
+    assertFalse(aTextBox.FontBold());
+    assertFalse(aTextBox.FontItalic());
     assertFalse(aTextBox.NumbersOnly());
     assertFalse(aTextBox.MultiLine());
     assertFalse(aTextBox.ReadOnly());
     assertEquals("Expected default TextBox text", "", aTextBox.Text());
+    assertEquals("Expected default TextBox hint", "", aTextBox.Hint());
   }
 
   @Test
