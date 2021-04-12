@@ -258,6 +258,7 @@ public class BuildServer {
     RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
     DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
     variables.put("state", getShutdownState() + "");
+    variables.put("hostname", InetAddress.getLocalHost().getHostName());
     if (shuttingTime != 0) {
       variables.put("shutdown-time", dateTimeFormat.format(new Date(shuttingTime)));
     }
