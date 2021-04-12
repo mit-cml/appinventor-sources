@@ -17,10 +17,10 @@ public class YoungAndroidFontTypefaceChoicePropertyEditor extends ChoiceProperty
 
   // Font typeface choices
   private static final Choice[] fontTypefaces = new Choice[] {
-    new Choice(MESSAGES.defaultFontTypeface(), "0"),
-    new Choice(MESSAGES.sansSerifFontTypeface() , "1"),
-    new Choice(MESSAGES.serifFontTypeface(), "2"),
-    new Choice(MESSAGES.monospaceFontTypeface(), "3")
+    new Choice(MESSAGES.defaultFontTypeface() + " : " + "0", "0"),
+    new Choice(MESSAGES.sansSerifFontTypeface() + " : " + "1", "1"),
+    new Choice(MESSAGES.serifFontTypeface() + " : " + "2", "2"),
+    new Choice(MESSAGES.monospaceFontTypeface() + " : " + "3", "3")
   };
 
   public YoungAndroidFontTypefaceChoicePropertyEditor() {

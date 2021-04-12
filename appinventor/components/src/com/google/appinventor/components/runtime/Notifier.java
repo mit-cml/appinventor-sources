@@ -448,8 +448,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_TOAST_LENGTH,
       defaultValue = Component.TOAST_LENGTH_LONG + "")
-  @SimpleProperty(
-      userVisible = false)
+  @SimpleProperty
   public void NotifierLength(int length){
     notifierLength = length;
   }
@@ -462,6 +461,17 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       category = PropertyCategory.APPEARANCE)
   public int NotifierLength() {
     return notifierLength;
+  }
+
+  /**
+   * Returns the alert's background color.
+   *
+   * @return   text RGB color with alpha
+   */
+  @SimpleProperty(description="Specifies the background color for alerts (not dialogs).",
+      category = PropertyCategory.APPEARANCE)
+  public int BackgroundColor() {
+    return backgroundColor;
   }
 
   /**

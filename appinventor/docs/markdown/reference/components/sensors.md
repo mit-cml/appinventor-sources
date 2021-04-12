@@ -52,8 +52,8 @@ Non-visible component that can detect shaking and measure acceleration approxima
  the sensor will generate events.  Otherwise, no events are
  generated even if the device is accelerated or shaken.
 
-{:id="AccelerometerSensor.LegacyMode" .boolean .wo .do} *LegacyMode*
-: Prior to the release that added this property the AccelerometerSensor component passed through sensor values directly as received from the Android system. However these values do not compensate for tablets that default to Landscape mode, requiring the MIT App Inventor programmer to compensate. However compensating would result in incorrect results in Portrait mode devices such as phones. We now detect Landscape mode tablets and perform the compensation. However if your project is already compensating for the change, you will now get incorrect results. Although our preferred solution is for you to update your project, you can also just set this property to “true” and our compensation code will be deactivated. Note: We recommend that you update your project as we may remove this property in a future release.
+{:id="AccelerometerSensor.LegacyMode" .boolean .do} *LegacyMode*
+: Property for LegacyMode
 
 {:id="AccelerometerSensor.MinimumInterval" .number} *MinimumInterval*
 : Specifies the minimum interval required between back-to-back [`Shaking`](#AccelerometerSensor.Shaking) events,

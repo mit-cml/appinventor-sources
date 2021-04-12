@@ -93,8 +93,7 @@ public class Ev3Motors extends LegoMindstormsEv3Base {
    * Returns the motor port.
    */
   @SimpleProperty(description = "The motor ports that the motors are connected to. The ports are specified by a sequence of port letters.",
-                  category = PropertyCategory.BEHAVIOR,
-                  userVisible = false)
+                  category = PropertyCategory.BEHAVIOR)
   public String MotorPorts() {
     return bitFieldToMotorPortLetters(motorPortBitField);
   }
@@ -128,8 +127,7 @@ public class Ev3Motors extends LegoMindstormsEv3Base {
    * Returns the diameter of the wheels attached on motors.
    */
   @SimpleProperty(description = "The diameter of the wheels attached on the motors in centimeters.",
-                  category = PropertyCategory.BEHAVIOR,
-                  userVisible = false)
+                  category = PropertyCategory.BEHAVIOR)
   public double WheelDiameter() {
     return wheelDiameter;
   }

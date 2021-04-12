@@ -93,6 +93,7 @@ public final class Player extends AndroidNonvisibleComponent
 
   // determines if playing should loop
   private boolean loop;
+  private int volume = 50;
 
   // choices on player policy: Foreground, Always
   private boolean playOnlyInForeground;
@@ -289,6 +290,11 @@ public final class Player extends AndroidNonvisibleComponent
     loop = shouldLoop;
   }
 
+  @SimpleProperty(description = "Returns the volume", category = PropertyCategory.BEHAVIOR)
+  public int Volume() {
+    return volume;
+  }
+
   /**
    * Sets the volume property to a number between 0 and 100.
    *
@@ -300,12 +306,13 @@ public final class Player extends AndroidNonvisibleComponent
   @SimpleProperty(
       description = "Sets the volume to a number between 0 and 100")
   public void Volume(int vol) {
-    if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
-      if (vol > 100 || vol < 0) {
-        form.dispatchErrorOccurredEvent(this, "Volume", ErrorMessages.ERROR_PLAYER_INVALID_VOLUME, vol); 
-      } else {
+    if (vol > 100 || vol < 0) {
+      form.dispatchErrorOccurredEvent(this, "Volume", ErrorMessages.ERROR_PLAYER_INVALID_VOLUME, vol);
+    } else {
+      if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
         player.setVolume(((float) vol) / 100, ((float) vol) / 100);
       }
+      this.volume = vol;
     }
   }
 
@@ -349,6 +356,7 @@ public final class Player extends AndroidNonvisibleComponent
     }
     if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER || playerState == State.PAUSED_BY_EVENT ) {
       player.setLooping(loop);
+      player.setVolume(((float) volume) / 100, ((float) volume) / 100);
       player.start();
       playerState = State.PLAYING;
       // Player should now be in state 2(PLAYING)

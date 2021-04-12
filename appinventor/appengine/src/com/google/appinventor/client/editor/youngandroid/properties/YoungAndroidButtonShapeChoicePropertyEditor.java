@@ -17,10 +17,10 @@ public class YoungAndroidButtonShapeChoicePropertyEditor extends ChoicePropertyE
 
   // Button shape choices
   private static final Choice[] shapes = new Choice[] {
-    new Choice(MESSAGES.defaultButtonShape(), "0"),
-    new Choice(MESSAGES.roundedButtonShape(), "1"),
-    new Choice(MESSAGES.rectButtonShape(), "2"),
-    new Choice(MESSAGES.ovalButtonShape(), "3")
+    new Choice(MESSAGES.defaultButtonShape() + " : " + "0", "0"),
+    new Choice(MESSAGES.roundedButtonShape() + " : " + "1", "1"),
+    new Choice(MESSAGES.rectButtonShape() + " : " + "2", "2"),
+    new Choice(MESSAGES.ovalButtonShape() + " : " + "3", "3")
   };
 
   public YoungAndroidButtonShapeChoicePropertyEditor() {
