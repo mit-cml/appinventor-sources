@@ -2366,8 +2366,8 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 27:
     // - Platform and PlatformVersion read-only blocks were added
+    // - Added StatusBarColor, LightStatusBar, NavigationBarColor, and LightNavigationBar properties
     27: "noUpgrade"
-
 
   }, // End Screen
 

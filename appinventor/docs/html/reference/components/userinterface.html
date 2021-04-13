@@ -898,6 +898,12 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>The image used for your App’s display icon should be a square png or jpeg image with dimensions
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
  The build server will generate images of standard dimensions for Android devices.</dd>
+  <dt id="Screen.LightNavigationBar" class="boolean do"><em>LightNavigationBar</em></dt>
+  <dd>This sets the text color used in the navigation bar in Android Oreo (8.0) and later.</dd>
+  <dt id="Screen.LightStatusBar" class="boolean do"><em>LightStatusBar</em></dt>
+  <dd>This sets the text color used in the status bar in Android Marshmallow (6.0) and later.</dd>
+  <dt id="Screen.NavigationBarColor" class="color do"><em>NavigationBarColor</em></dt>
+  <dd>This is the color used for the navigation bar in Android Lollipop (5.0) and later.</dd>
   <dt id="Screen.OpenScreenAnimation" class="text"><em>OpenScreenAnimation</em></dt>
   <dd>The animation for switching to another screen. Valid options are <code class="highlighter-rouge">default</code>, <code class="highlighter-rouge">fade</code>, <code class="highlighter-rouge">zoom</code>,
  <code class="highlighter-rouge">slidehorizontal</code>, <code class="highlighter-rouge">slidevertical</code>, and <code class="highlighter-rouge">none</code>.</dd>
@@ -943,6 +949,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
     <p><strong>Note:</strong> This property appears on Screen1 only and controls the sizing for all screens in
  the app.</p>
   </dd>
+  <dt id="Screen.StatusBarColor" class="color do"><em>StatusBarColor</em></dt>
+  <dd>This is the color used for the status bar in Android Lollipop (5.0) and later.</dd>
   <dt id="Screen.Theme" class="text wo do"><em>Theme</em></dt>
   <dd>Selects the theme for the application. Theme can only be set at compile time and the Companion
  will approximate changes during live development. Possible options are:

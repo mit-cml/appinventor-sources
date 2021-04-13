@@ -898,6 +898,7 @@ public class YaVersion {
   // - Updated the default value of ShowListsAsJson from false -> true
   // For FORM_COMPONENT_VERSION 27:
   // - Added the Platform and PlatformVersion read-only blocks
+  // - Added StatusBarColor, LightStatusBar, NavigationBarColor, and LightNavigationBar properties
   public static final int FORM_COMPONENT_VERSION = 27;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:

@@ -978,6 +978,15 @@ Top-level component containing all other components in the program.
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
  The build server will generate images of standard dimensions for Android devices.
 
+{:id="Screen.LightNavigationBar" .boolean .do} *LightNavigationBar*
+: This sets the text color used in the navigation bar in Android Oreo (8.0) and later.
+
+{:id="Screen.LightStatusBar" .boolean .do} *LightStatusBar*
+: This sets the text color used in the status bar in Android Marshmallow (6.0) and later.
+
+{:id="Screen.NavigationBarColor" .color .do} *NavigationBarColor*
+: This is the color used for the navigation bar in Android Lollipop (5.0) and later.
+
 {:id="Screen.OpenScreenAnimation" .text} *OpenScreenAnimation*
 : The animation for switching to another screen. Valid options are `default`, `fade`, `zoom`,
  `slidehorizontal`, `slidevertical`, and `none`.
@@ -1030,6 +1039,9 @@ Top-level component containing all other components in the program.
 
    **Note:** This property appears on Screen1 only and controls the sizing for all screens in
  the app.
+
+{:id="Screen.StatusBarColor" .color .do} *StatusBarColor*
+: This is the color used for the status bar in Android Lollipop (5.0) and later.
 
 {:id="Screen.Theme" .text .wo .do} *Theme*
 : Selects the theme for the application. Theme can only be set at compile time and the Companion
