@@ -324,6 +324,26 @@ public class BuildServer {
     variables.put("maximum-simultaneous-build-tasks-occurred", maximumActiveBuildTasks + "");
     variables.put("active-build-tasks", buildExecutor.getActiveTaskCount() + "");
 
+    return mapToHtml(variables);
+  }
+
+  private Response mapToHtml(Map<String, String> variables) {
+    StringBuilder html = new StringBuilder();
+    html.append("<html><body><tt>");
+    for (Map.Entry<String, String> variable : variables.entrySet()) {
+      html.append("<b>").append(variable.getKey()).append("</b> ")
+          .append(variable.getValue()).append("<br>");
+    }
+    html.append("</tt></body></html>");
+    return Response.ok(html.toString(), MediaType.TEXT_HTML_TYPE).build();
+  }
+
+  @GET
+  @Path("stats")
+  @Produces(MediaType.TEXT_HTML)
+  public Response stats() throws IOException {
+    Map<String, String> variables = new LinkedHashMap<String, String>();
+
     // Build Stats
     if (statReporter instanceof SimpleStatReporter) {
       StatCalculator calculator = new StatCalculator();
@@ -338,14 +358,7 @@ public class BuildServer {
           variables);
     }
 
-    StringBuilder html = new StringBuilder();
-    html.append("<html><body><tt>");
-    for (Map.Entry<String, String> variable : variables.entrySet()) {
-      html.append("<b>").append(variable.getKey()).append("</b> ")
-        .append(variable.getValue()).append("<br>");
-    }
-    html.append("</tt></body></html>");
-    return Response.ok(html.toString(), MediaType.TEXT_HTML_TYPE).build();
+    return mapToHtml(variables);
   }
 
   private void processStats(String prefix, Stats stats, Map<String, String> variables) {
