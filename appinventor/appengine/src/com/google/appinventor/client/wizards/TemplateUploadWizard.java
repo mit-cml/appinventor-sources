@@ -631,9 +631,14 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     }
   }
 
-  private static native boolean isTemplateName(String name)/*-{
-    return new RegExp('^[A-Za-z][A-Za-z0-9]+$').test(name);
-  }-*/;
+  private static boolean isTemplateName(String name) {
+    for (TemplateInfo template : builtInTemplates) {
+      if (template.name.equals(name)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * Called from Ode when a template Url is passed as GET parameter.
