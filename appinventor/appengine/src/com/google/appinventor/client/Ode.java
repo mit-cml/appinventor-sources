@@ -766,10 +766,6 @@ public class Ode implements EntryPoint {
               @Override
               public void onProjectsLoaded() {
                 projectManager.removeProjectManagerEventListener(this);
-                if (!handleQueryString() && shouldAutoloadLastProject()) {
-                  openPreviousProject();
-                }
-
                 // This handles any built-in templates stored in /war
                 // Retrieve template data stored in war/templates folder and
                 // and save it for later use in TemplateUploadWizard
@@ -781,6 +777,10 @@ public class Ode implements EntryPoint {
                       public void onSuccess(String json) {
                         // Save the templateData
                         TemplateUploadWizard.initializeBuiltInTemplates(json);
+
+                        if (!handleQueryString() && shouldAutoloadLastProject()) {
+                          openPreviousProject();
+                        }
                       }
                     };
                 Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
