@@ -344,6 +344,8 @@ public class BuildServer {
   public Response stats() throws IOException {
     Map<String, String> variables = new LinkedHashMap<String, String>();
 
+    variables.put("hostname", InetAddress.getLocalHost().getHostName());
+
     // Build Stats
     if (statReporter instanceof SimpleStatReporter) {
       StatCalculator calculator = new StatCalculator();
