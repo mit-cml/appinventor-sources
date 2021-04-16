@@ -119,11 +119,5 @@ public class SimpleStatReporter implements StatReporter {
       }
       target.push(stats);
     }
-    synchronized (orderedBuilds) {
-      if (target.size() == MAX_STATS) {
-        target.pollFirst();
-      }
-      target.push(stats);
-    }
   }
 }
