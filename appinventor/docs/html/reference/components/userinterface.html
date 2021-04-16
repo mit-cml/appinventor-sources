@@ -410,6 +410,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <h3 id="Image-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="Image.AlternateText" class="text wo"><em>AlternateText</em></dt>
+  <dd>A written description of what the image looks like.</dd>
   <dt id="Image.Animation" class="text wo bo"><em>Animation</em></dt>
   <dd>This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are <code class="highlighter-rouge">ScrollRightSlow</code>, <code class="highlighter-rouge">ScrollRight</code>, <code class="highlighter-rouge">ScrollRightFast</code>,
@@ -887,6 +889,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="Screen.BackgroundImage" class="text"><em>BackgroundImage</em></dt>
   <dd>Specifies the path of the <code class="highlighter-rouge">Screen</code>’s background image. If there is both an <code class="highlighter-rouge">BackgroundImage</code>
  and a <a href="#Screen.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">BackgroundImage</code> will be visible.</dd>
+  <dt id="Screen.BigDefaultText" class="boolean"><em>BigDefaultText</em></dt>
+  <dd>When checked, all default size text will be increased in size.</dd>
   <dt id="Screen.BlocksToolkit" class="text wo do"><em>BlocksToolkit</em></dt>
   <dd>A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project.</dd>
   <dt id="Screen.CloseScreenAnimation" class="text"><em>CloseScreenAnimation</em></dt>
@@ -894,6 +898,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  to a form behind it in the activity stack.</dd>
   <dt id="Screen.Height" class="number ro bo"><em>Height</em></dt>
   <dd>Returns the Screen height in pixels (y-size).</dd>
+  <dt id="Screen.HighContrast" class="boolean"><em>HighContrast</em></dt>
+  <dd>When checked, there will be high contrast mode turned on.</dd>
   <dt id="Screen.Icon" class="text wo do"><em>Icon</em></dt>
   <dd>The image used for your App’s display icon should be a square png or jpeg image with dimensions
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.

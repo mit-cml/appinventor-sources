@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import android.app.DatePickerDialog;
 import android.os.Handler;
 
+import android.view.WindowManager;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -68,6 +69,11 @@ public class DatePicker extends ButtonBase {
     instant = Dates.DateInstant(year, month, day);
     date = new DatePickerDialog(this.container.$context(), datePickerListener, year, javaMonth,
         day);
+    //DUNAND CHANGE
+    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+    lp.copyFrom(date.getWindow().getAttributes());
+    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
 
     androidUIHandler = new Handler();
 

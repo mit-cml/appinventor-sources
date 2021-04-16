@@ -887,6 +887,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   @Override
+  public List<? extends Component> getChildren(){
+    return sprites;
+  }
+
+  @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
     throw new UnsupportedOperationException("Canvas.setChildWidth() called");
   }

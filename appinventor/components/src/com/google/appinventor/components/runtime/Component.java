@@ -84,9 +84,9 @@ public interface Component {
   static final String DEFAULT_VALUE_COLOR_DEFAULT = "&H00000000";
 
   /*
-   * Font constants.
+   * Font constants. DUNANDCHANGE
    */
-  static final float FONT_DEFAULT_SIZE = 14;
+    static final float FONT_DEFAULT_SIZE = 14;
 
   /*
    * Layout constants.

@@ -362,6 +362,9 @@ Component for displaying images and basic animations.
 
 {:.properties}
 
+{:id="Image.AlternateText" .text .wo} *AlternateText*
+: A written description of what the image looks like.
+
 {:id="Image.Animation" .text .wo .bo} *Animation*
 : This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
@@ -963,6 +966,9 @@ Top-level component containing all other components in the program.
 : Specifies the path of the `Screen`'s background image. If there is both an `BackgroundImage`
  and a [`BackgroundColor`](#Screen.BackgroundColor) specified, only the `BackgroundImage` will be visible.
 
+{:id="Screen.BigDefaultText" .boolean} *BigDefaultText*
+: When checked, all default size text will be increased in size.
+
 {:id="Screen.BlocksToolkit" .text .wo .do} *BlocksToolkit*
 : A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project.
 
@@ -972,6 +978,9 @@ Top-level component containing all other components in the program.
 
 {:id="Screen.Height" .number .ro .bo} *Height*
 : Returns the Screen height in pixels (y-size).
+
+{:id="Screen.HighContrast" .boolean} *HighContrast*
+: When checked, there will be high contrast mode turned on.
 
 {:id="Screen.Icon" .text .wo .do} *Icon*
 : The image used for your App's display icon should be a square png or jpeg image with dimensions
