@@ -23,6 +23,7 @@ public final class TextValidators {
 
   private static final int MAX_FILENAME_SIZE = 100;
   private static final int MIN_FILENAME_SIZE = 1;
+  public static String INVALID_PROJECT_NAME_TYPE;
 
   protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
           "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
@@ -56,12 +57,16 @@ public final class TextValidators {
       if (!quietly) {
         Window.alert(MESSAGES.malformedProjectNameError());
       }
+      INVALID_PROJECT_NAME_TYPE = "Invalid Format of Project Name";
       return false;
     }
 
     // Check for names that reserved words
     if (isReservedName(projectName)) {
-      Window.alert(MESSAGES.reservedNameError());
+      if (!quietly) {
+        Window.alert(MESSAGES.reservedNameError());
+      }
+      INVALID_PROJECT_NAME_TYPE = "The name is Reserved";
       return false;
     }
 
@@ -72,6 +77,7 @@ public final class TextValidators {
       } else if (!quietly) {
         Window.alert(MESSAGES.duplicateProjectNameError(projectName));
       }
+      INVALID_PROJECT_NAME_TYPE = "A Project with the same name exists";
       return false;
     }
 
