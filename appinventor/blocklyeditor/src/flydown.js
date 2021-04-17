@@ -93,8 +93,8 @@ Blockly.Flydown.prototype.position = function() {
 /**
  * Show and populate the flydown.
  * @param {!Array|string} xmlList List of blocks to show.
- * @param {!num} x x-position of upper-left corner of flydown
- * @param {!num} y y-position of upper-left corner of flydown
+ * @param {number} x x-position of upper-left corner of flydown
+ * @param {number} y y-position of upper-left corner of flydown
  */
 Blockly.Flydown.prototype.showAt = function(xmlList,x,y) {
   Blockly.Events.disable();
@@ -108,6 +108,16 @@ Blockly.Flydown.prototype.showAt = function(xmlList,x,y) {
 
   // Start at bottom of top left arc and proceed clockwise
   // Flydown outline shape is symmetric about vertical axis, so no need to differentiate LTR and RTL paths.
+  var targetWorkspaceMetrics = this.targetWorkspace_.getMetrics();
+  var needsScrollbar = false;
+  var contentBottom = targetWorkspaceMetrics.viewHeight + targetWorkspaceMetrics.absoluteTop;
+  var flydownBottom = this.height_ + y;
+  if (flydownBottom > contentBottom) {
+    var overage = flydownBottom - contentBottom
+    y = Math.max(y - overage, 0);  // don't go beyond the top of the workspace
+    this.height_ = Math.min(this.height_ + overage, targetWorkspaceMetrics.viewHeight);  // don't go beyond the bottom of the workspace
+    needsScrollbar = this.height_ >= targetWorkspaceMetrics.viewHeight;
+  }
   var margin = this.CORNER_RADIUS * this.workspace_.scale;
   var edgeWidth = this.width_ - 2*margin;
   var edgeHeight = this.height_ - 2*margin;
@@ -122,6 +132,14 @@ Blockly.Flydown.prototype.showAt = function(xmlList,x,y) {
   path.push('z'); // complete path by drawing left edge
   this.svgBackground_.setAttribute('d', path.join(' '));
   this.svgGroup_.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
+  if (this.scrollbar_) {
+    this.scrollbar_.setOrigin(x, y);
+    this.scrollbar_.set(0);
+    this.scrollbar_.resize();
+    if (!needsScrollbar) {
+      this.scrollbar_.setVisible(false);  // resizing shows the scrollbar
+    }
+  }
 }
 
 /**
