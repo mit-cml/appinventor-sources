@@ -61,21 +61,24 @@ public class ProjectUploadWizard extends Wizard {
           filename = filename.replaceAll("( )+", " ").replace(" ","_");
           if (!TextValidators.checkNewProjectName(filename,true)) {
          
-        	  // Suggest a new name for uploaded Project
+        	  // Show Dialog Box and rename the project
         	  if(TextValidators.isTitleDuplicate()) {
-        		  // Requires efficient algorithm 
-                 String suggestedName = filename +"2";
+                 String suggestedName = GetSuggestedName(filename);
                  String title = MESSAGES.suggestNameTitleCaption();
+                 
                  if(!TextValidators.checkNewProjectName(suggestedName,true)) {
                 	 suggestedName = "";
                 	 title = MESSAGES.duplicateTitleFormatError();
                  }
+                 
                  new RequestNewProjectNameWizard(new RequestProjectNewName() {
                 	@Override
                     public void GetNewName(String name) {
                       Upload(upload ,name);
                     }
                  } , suggestedName,title);
+              } else if (TextValidators.isTitleInvalid()) {
+            	  Upload(upload ,filename);  
               }
         	  
           } else {
@@ -123,6 +126,28 @@ public class ProjectUploadWizard extends Wizard {
             });
   }
 
+  public String GetSuggestedName(String filename) {
+    // if hello,hello4 are in project list and user tries to upload 
+	// another project hello.aia then it suggest hello5
+		  
+	  int max = 1;
+	  int len = filename.length();
+	  int lastInt;
+	  for(Project proj:Ode.getInstance().getProjectManager().getProjects(filename)) {
+		 String sub = proj.getProjectName().substring(len);
+		 if(sub.length()>0) { 
+	    	 try {
+			 lastInt =Integer.parseInt(sub);
+			 } catch (Exception e) {
+			 lastInt = -1 ;
+			 }
+			 if(lastInt>max) max = lastInt;
+		 }	 
+	   }
+	   max++;
+	   return filename+max;
+  }
+  
   @Override
   public void show() {
     super.show();

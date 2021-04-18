@@ -122,6 +122,10 @@ public final class TextValidators {
 		     projectNameStatus==ProjectNameStatus.DUPLICATEINTRASH;
   }
 
+  public static boolean isTitleInvalid() {
+	  return projectNameStatus==ProjectNameStatus.INVALIDFORMAT;
+  }
+  
   public static boolean checkNewComponentName(String componentName) {
 
     // Check that it meets the formatting requirements.
