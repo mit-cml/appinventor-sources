@@ -61,16 +61,23 @@ public class ProjectUploadWizard extends Wizard {
           filename = filename.replaceAll("( )+", " ").replace(" ","_");
           if (!TextValidators.checkNewProjectName(filename,true)) {
          
-        	  // Suggest a new name for uploaded Project using this String
-             String defaultText = "New Name";
-             
-             new RequestNewProjectNameWizard(new RequestProjectNewName() {
-               @Override
-               public void GetNewName(String name) {
-                 Upload(upload , name);
-               }
-             } , defaultText);
-            
+        	  // Suggest a new name for uploaded Project
+        	  if(TextValidators.isTitleDuplicate()) {
+        		  // Requires efficient algorithm 
+                 String suggestedName = filename +"2";
+                 String title = MESSAGES.suggestNameTitleCaption();
+                 if(!TextValidators.checkNewProjectName(suggestedName,true)) {
+                	 suggestedName = "";
+                	 title = MESSAGES.duplicateTitleFormatError();
+                 }
+                 new RequestNewProjectNameWizard(new RequestProjectNewName() {
+                	@Override
+                    public void GetNewName(String name) {
+                      Upload(upload ,name);
+                    }
+                 } , suggestedName,title);
+              }
+        	  
           } else {
         	  Upload(upload,filename);
           }
