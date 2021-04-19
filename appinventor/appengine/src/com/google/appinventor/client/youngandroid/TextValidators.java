@@ -25,11 +25,11 @@ public final class TextValidators {
   private static final int MIN_FILENAME_SIZE = 1;
 
   enum ProjectNameStatus{
-	  SUCCESS,
-	  INVALIDFORMAT,
-	  RESERVED,
-	  DUPLICATE,
-	  DUPLICATEINTRASH
+    SUCCESS,
+	INVALIDFORMAT,
+	RESERVED,
+	DUPLICATE,
+	DUPLICATEINTRASH
   }
   
   private static ProjectNameStatus projectNameStatus; 
@@ -81,6 +81,7 @@ public final class TextValidators {
     if (Ode.getInstance().getProjectManager().getProject(projectName) != null) {
       if (Ode.getInstance().getProjectManager().getProject(projectName).isInTrash()) {
         Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));
+        projectNameStatus = ProjectNameStatus.DUPLICATEINTRASH;
       } else if (!quietly) {
         Window.alert(MESSAGES.duplicateProjectNameError(projectName));
       }

@@ -17,6 +17,9 @@ import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.wizards.ComponentImportWizard.ImportComponentCallback;
+import com.google.appinventor.client.wizards.ProjectUploadWizard;
+import com.google.appinventor.client.wizards.RequestNewProjectNameWizard;
+import com.google.appinventor.client.wizards.RequestProjectNewNameInterface;
 import com.google.appinventor.client.youngandroid.TextValidators;
 
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -74,6 +77,11 @@ public final class HTML5DragDrop {
   public interface ConfirmCallback {
     void run();
   }
+  
+  @JsFunction
+  public interface StringCallback {
+    void run(String name);
+  }
 
   public static void init() {
     ((HTML5DragDropSupport) GWT.create(HTML5DragDropSupport.class)).init();
@@ -91,6 +99,8 @@ public final class HTML5DragDrop {
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::reportError(*));
     top.HTML5DragDrop_confirmOverwriteKey =
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::confirmOverwriteKey(*));
+    top.HTML5DragDrop_getNewProjectName =
+      $entry(@com.google.appinventor.client.utils.HTML5DragDrop::getNewProjectName(*));
     top.HTML5DragDrop_confirmOverwriteAsset =
       $entry(@com.google.appinventor.client.utils.HTML5DragDrop::confirmOverwriteAsset(*));
     top.HTML5DragDrop_isBlocksEditorOpen =
@@ -197,13 +207,43 @@ public final class HTML5DragDrop {
 
   /**
    * Checks the project name using the standard set of project name validators. If the project name
-   * isn't valid, the drop will be aborted.
+   * isn't valid, the drop will be aborted. It doesn't show an alert on invalid project name.
    *
    * @param projectName the project name based on the dropped file's name
    * @return true if the project name is allowed, otherwise false
    */
   protected static boolean checkProjectNameForCollision(String projectName) {
-    return TextValidators.checkNewProjectName(projectName);
+    return TextValidators.checkNewProjectName(projectName,true);
+  }
+  
+  /**
+   * Shows dialog box to enter new project name when user tries to upload a project with invalid Name.
+   * 
+   * @param filename initial filename of project , used to suggest a new name
+   * @param callback callback to upload after user enters a valid name
+   */
+  protected static void getNewProjectName(String filename, final StringCallback callback) {  
+	filename = filename.substring(0, filename.length() - 4);
+    String suggestedName = "" , title; 
+  	// Show Dialog Box and rename the project
+  	if (TextValidators.isTitleDuplicate()) {
+      suggestedName = ProjectUploadWizard.GetSuggestedName(filename);
+      title = MESSAGES.suggestNameTitleCaption();    
+      if (!TextValidators.checkNewProjectName(suggestedName,true)) {
+        suggestedName = "";
+        title = MESSAGES.duplicateTitleFormatError();
+      }        
+  	} else if (TextValidators.isTitleInvalid()) {
+      title = MESSAGES.invalidTitleFormatError()+" : "+filename;
+    } else {
+      title = MESSAGES.reservedTitleFormatError()+" : "+filename;
+    }
+    new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
+    	@Override
+        public void GetNewName(String name) {
+     		callback.run(name);
+        }
+    } , suggestedName, title);
   }
 
   protected static void handleUploadResponse(String projectIdStr, String type, String name,

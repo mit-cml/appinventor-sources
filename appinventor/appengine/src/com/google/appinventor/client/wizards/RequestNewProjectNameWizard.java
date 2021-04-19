@@ -21,11 +21,6 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-
-interface RequestProjectNewName{
-	public void GetNewName(String name);
-}
-
 /**
  * Wizard for renaming projects
  *
@@ -33,16 +28,14 @@ interface RequestProjectNewName{
 public class RequestNewProjectNameWizard extends Wizard {
 
   private LabeledTextBox projectNameTextBox ;
-  private RequestProjectNewName newName;
+  private RequestProjectNewNameInterface newName;
  
-  public  RequestNewProjectNameWizard (RequestProjectNewName newName,String defaultText,String title) {
-    super(MESSAGES.requestNewProjectNameCaption(), true, false);
-     
-    this.newName= newName;
+  public RequestNewProjectNameWizard (RequestProjectNewNameInterface newName, String defaultText, String title) {
+    super(MESSAGES.requestNewProjectNameCaption(), true, false); 
+    this.newName = newName;
     
-    final DialogBox db = new DialogBox(false, true);
-    //db.setText(TextValidators.getProjectNameStatus());               // title of the dialog box
-    db.setText(title);
+    final DialogBox db = new DialogBox(false, true);              
+    db.setText(title);                                                   // title of the dialog box
     db.setStyleName("ode-DialogBox");
     db.setAnimationEnabled(true);
     db.setHeight("40px");
@@ -123,16 +116,15 @@ public class RequestNewProjectNameWizard extends Wizard {
   }
   
   public void handleOKClick(DialogBox db) {
-	  String newEnteredName = projectNameTextBox.getText();
+    String newEnteredName = projectNameTextBox.getText();
 	  newEnteredName = newEnteredName.replaceAll("( )+", " ").replace(" ","_");
-      if (TextValidators.checkNewProjectName(newEnteredName,true)) {
-     	db.hide();
+      if (TextValidators.checkNewProjectName(newEnteredName, true)) {
+        db.hide();
      	newName.GetNewName(newEnteredName);
-      } 
-      else {
+      } else {
         projectNameTextBox.setFocus(true);
         projectNameTextBox.selectAll();
-        db.setText(TextValidators.getProjectNameStatus()+" : "+newEnteredName);
+        db.setText(TextValidators.getProjectNameStatus() + " : " + newEnteredName);
       }
   }
 }

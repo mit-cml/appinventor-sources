@@ -59,36 +59,33 @@ public class ProjectUploadWizard extends Wizard {
 
           // Make sure the project name is legal and unique.
           filename = filename.replaceAll("( )+", " ").replace(" ","_");
-          if (!TextValidators.checkNewProjectName(filename,true)) {
+          if (!TextValidators.checkNewProjectName(filename, true)) {
          
-        	  String suggestedName="" ,title;
-        	  // Show Dialog Box and rename the project
-        	  if(TextValidators.isTitleDuplicate()) {
-                suggestedName = GetSuggestedName(filename);
-                title = MESSAGES.suggestNameTitleCaption();
-                 
-                 if(!TextValidators.checkNewProjectName(suggestedName,true)) {
-                	 suggestedName = "";
-                	 title = MESSAGES.duplicateTitleFormatError();
-                 }
-                 
-              } else if(TextValidators.isTitleInvalid()) {
-            	  title = MESSAGES.invalidTitleFormatError()+" : "+filename;
-              } else {
-            	  title = MESSAGES.reservedTitleFormatError()+" : "+filename;
-              }
+            String suggestedName = "" , title;
+        	// Show Dialog Box and rename the project
+        	if (TextValidators.isTitleDuplicate()) {
+              suggestedName = GetSuggestedName(filename);
+              title = MESSAGES.suggestNameTitleCaption();   
+            if (!TextValidators.checkNewProjectName(suggestedName, true)) {
+              suggestedName = "";
+              title = MESSAGES.duplicateTitleFormatError();
+            }        
+          } else if (TextValidators.isTitleInvalid()) {
+            title = MESSAGES.invalidTitleFormatError() + " : " + filename;
+          } else {
+            title = MESSAGES.reservedTitleFormatError() + " : " + filename;
+          }
         	  
-              new RequestNewProjectNameWizard(new RequestProjectNewName() {
-             	@Override
-                 public void GetNewName(String name) {
-                   Upload(upload ,name);
-                 }
-              } , suggestedName,title);
+          new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
+            @Override
+            public void GetNewName(String name) {
+              Upload(upload ,name);
+            }
+          }, suggestedName, title);
         	  
           } else {
-        	  Upload(upload,filename);
+        	Upload(upload,filename);
           }
-    
         } else {
           Window.alert(MESSAGES.notProjectArchiveError());
           center();
@@ -97,59 +94,62 @@ public class ProjectUploadWizard extends Wizard {
     });
   }
   
-  private void Upload(FileUpload upload , String filename) {
-	  String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
+  private void Upload(FileUpload upload, String filename) {
+    String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
           ServerLayout.UPLOAD_PROJECT + "/" + filename;
-	  Uploader.getInstance().upload(upload, uploadUrl,
-		  new OdeAsyncCallback<UploadResponse>(
-			  // failure message
-			  MESSAGES.projectUploadError()) {
-		    @Override
-		    public void onSuccess(UploadResponse uploadResponse) {
-			  switch (uploadResponse.getStatus()) {
-			    case SUCCESS:
-                  String info = uploadResponse.getInfo();
-                  UserProject userProject = UserProject.valueOf(info);
-                  Ode ode = Ode.getInstance();
-                  Project uploadedProject = ode.getProjectManager().addProject(userProject);
-                  ode.openYoungAndroidProjectInDesigner(uploadedProject);
-                  break;
-                  case NOT_PROJECT_ARCHIVE:
-                    // This may be a "severe" error; but in the
-                    // interest of reducing the number of red errors, the 
-                    // line has been changed to report info not an error.
-                    // This error is triggered when the user attempts to
-                    // upload a zip file that is not a project.
-                    ErrorReporter.reportInfo(MESSAGES.notProjectArchiveError());
-                    break;
-                  default:
-                    ErrorReporter.reportError(MESSAGES.projectUploadError());
-                    break;
-                }
-              }
-            });
+	Uploader.getInstance().upload(upload, uploadUrl,
+	 new OdeAsyncCallback<UploadResponse>(
+			// failure message
+			MESSAGES.projectUploadError()) {
+		  @Override
+		  public void onSuccess(UploadResponse uploadResponse) {
+			switch (uploadResponse.getStatus()) {
+			  case SUCCESS:
+                String info = uploadResponse.getInfo();
+                UserProject userProject = UserProject.valueOf(info);
+                Ode ode = Ode.getInstance();
+                Project uploadedProject = ode.getProjectManager().addProject(userProject);
+                ode.openYoungAndroidProjectInDesigner(uploadedProject);
+                break;
+              case NOT_PROJECT_ARCHIVE:
+                // This may be a "severe" error; but in the
+                // interest of reducing the number of red errors, the 
+                // line has been changed to report info not an error.
+                // This error is triggered when the user attempts to
+                // upload a zip file that is not a project.
+                ErrorReporter.reportInfo(MESSAGES.notProjectArchiveError());
+                break;
+              default:
+                ErrorReporter.reportError(MESSAGES.projectUploadError());
+                break;
+            }
+          }
+    });
   }
 
-  public String GetSuggestedName(String filename) {
+  public static String GetSuggestedName(String filename) {
     // if hello,hello4 are in project list and user tries to upload 
 	// another project hello.aia then it suggest hello5
 		  
-	  int max = 1;
-	  int len = filename.length();
-	  int lastInt;
-	  for(Project proj:Ode.getInstance().getProjectManager().getProjects(filename)) {
-		 String sub = proj.getProjectName().substring(len);
-		 if(sub.length()>0) { 
-	    	 try {
-			 lastInt =Integer.parseInt(sub);
-			 } catch (Exception e) {
-			 lastInt = -1 ;
-			 }
-			 if(lastInt>max) max = lastInt;
-		 }	 
-	   }
-	   max++;
-	   return filename+max;
+    int max = 1;
+	int len = filename.length();
+	int lastInt = filename.charAt(len-1);
+	if (lastInt <= 57 && lastInt >= 48) {
+	  return filename ; // don't suggest if lastchar is integer
+	}
+	for(Project proj: Ode.getInstance().getProjectManager().getProjects(filename)) {
+	  String sub = proj.getProjectName().substring(len);
+	  if (sub.length() > 0) { 
+	    try {
+		  lastInt = Integer.parseInt(sub);
+		} catch (Exception e) {
+		  lastInt = -1 ;
+		}
+		if (lastInt>max) max = lastInt;
+	  }	 
+	}
+	max++;
+	return filename + max;
   }
   
   @Override
