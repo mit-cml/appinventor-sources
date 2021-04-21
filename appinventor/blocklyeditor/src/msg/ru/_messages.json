@@ -589,10 +589,10 @@
     "Blockly.Msg.CLEAN_UP": "Удалить блоки",
     "Blockly.Msg.REDO": "Вернуть",
     "Blockly.Msg.UNDO": "Отменить",
-    "Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_INPUT": "объединить элементы с разделителем %1 список %2",
+    "Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_INPUT": "объединить элементы и поместить между ними разделитель %1 список %2",
     "Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_LIST": "список",
     "Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_SEPARATOR": "разделитель",
-    "Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TITLE": "объединить с заданным разделителем",
+    "Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TITLE": "объединить и поместить разделитель между элементами",
     "Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP": "Создаёт копию исходного списка, инвертирует порядок элементов в копии и возвращает полученную копию (список с инвертированным порядком элементов).",
     "Blockly.Msg.LANG_LISTS_REVERSE_INPUT_LIST": "список",
     "Blockly.Msg.LANG_LISTS_REVERSE_TITLE_REVERSE": "инвертировать список",
@@ -645,7 +645,7 @@
     "Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE": "создать пустой словарь",
     "Blockly.Msg.LANG_CATEGORY_DICTIONARIES": "Словари",
     "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TOOLTIP": "Используется в блоке «Список значений для вариативного пути», является специальным звеном пути (стандартные звенья: ключ словаря и индекс элемента в списке), указывает системе создать все возможные варианты наложения заданного пути на древовидную структуру данных (JSON, XML), при этом данное специальное звено пути накладывается поочерёдно на все элементы списка или ключи словаря, находящиеся на верхнем уровне внутри соответствующего узла структуры данных.",
-    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE": "список всех подходящих значений, доступных по пути %1 в словаре/списке %2",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE": "список всех подходящих значений, доступных по вариативному пути %1 в словаре/списке %2",
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE": "установить значение для ключа/элемента, доступного по заданному пути в словаре",
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP": "Устанавливает значение для ключа, доступного по данному пути в данном словаре.",
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_INPUT": "установить значение %3 для ключа/элемента, доступного по пути %1 в словаре %2",
@@ -679,5 +679,10 @@
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP": "Возвращает список всех ключей словаря.",
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT": "словарь",
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TITLE": "ключи",
-    "Blockly.Msg.LANG_DICTIONARIES_GETTERS_TITLE": "получить"
+    "Blockly.Msg.LANG_DICTIONARIES_GETTERS_TITLE": "получить",
+    "Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TITLE": "это словарь? %1",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE": "все узлы уровня",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TOOLTIP": "Проходит через ключи заданного словаря в соответствии с заданным путём и возвращает список узлов, которые соответствуют последнему звену пути",
+    "Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TITLE": "объединить словари",
+    "Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TOOLTIP": "Возвращает текст, который состоит из элементов списка и размещённых между ними разделителей"
 }
