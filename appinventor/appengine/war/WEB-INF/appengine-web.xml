@@ -93,9 +93,8 @@
     <property name="localauth.mailserver.password" value="changeme" />
 
     <!-- host[:port] to use for connecting to the build server -->
-    <property name="build.server.host" value="visual-access.csail.mit.edu:18898" />
+    <property name="build.server.host" value="localhost:9990" />
 
-    <!-- value="localhost:9990" -->
     <!-- We provide below for a second buildserver. If this field is
          non-empty then the user is presented a choice of two different
          build servers. This feature was introduced to support building
