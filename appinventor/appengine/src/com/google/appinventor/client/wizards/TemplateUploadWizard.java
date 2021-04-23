@@ -353,53 +353,64 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
           if (!TextValidators.checkNewProjectName(selectedTemplateNAME, true)) {
             center();
             
-            String suggestedName = "" , title;
-        	// Show Dialog Box and rename the project
+            String suggestedName = "";
+            String title;
+            selectedTemplateNAME = selectedTemplateNAME.replace(" ", "_")
+                .replaceAll("[^a-zA-Z0-9_]", "");
+
             if (TextValidators.isTitleReserved()) {
               title = MESSAGES.reservedTitleFormatError() + " : " + selectedTemplateNAME;
-            } else {
-              selectedTemplateNAME = selectedTemplateNAME.replace(" ", "_").replaceAll("[^a-zA-Z0-9_]", "");
-              suggestedName = ProjectUploadWizard.GetSuggestedName(selectedTemplateNAME);
+            } else if (TextValidators.isTitleInvalid()) {
+              suggestedName = ProjectUploadWizard.getSuggestedName(selectedTemplateNAME);
+              title = MESSAGES.invalidTitleFormatError();
               if (!TextValidators.checkNewProjectName(suggestedName, true)) {
-                suggestedName = "";
-                if(TextValidators.isTitleDuplicate()) {
-                  title = MESSAGES.duplicateTitleFormatError() + " : " + selectedTemplateNAME;
-                } else if (TextValidators.isTitleInvalid()) {
-                  title = MESSAGES.invalidTitleFormatError() + " : " + selectedTemplateNAME;
-                } else {
-                  title = MESSAGES.reservedTitleFormatError() + " : " + selectedTemplateNAME;
-                }
+                  suggestedName = "";
+                  title += " : " + selectedTemplateNAME;
               } else {
-                title = MESSAGES.suggestNameTitleCaption();
+                title += MESSAGES.suggestNameTitleCaption();
+              }
+            } else {
+              suggestedName = ProjectUploadWizard.getSuggestedName(selectedTemplateNAME);
+              title = MESSAGES.duplicateTitleFormatError();
+              if (!TextValidators.checkNewProjectName(suggestedName, true)) {
+                  suggestedName = "";
+                  title += " : " + selectedTemplateNAME;
+              } else {
+                title += MESSAGES.suggestNameTitleCaption();
               }
             }
-        	  
+  
             new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
               @Override
-              public void GetNewName(String name) {
+              public void getNewName(String name) {
                 createProject(name);
                 hide();
               }
             }, suggestedName, title);
           } else {
-        	createProject(selectedTemplateNAME);  
+            createProject(selectedTemplateNAME);  
           }
         }
       });
   }
 
+  /**
+   * Create project with given project name.
+   * @param projectNameInExplorer project name to be shown in file explorer
+   */
   public void createProject(String projectNameInExplorer) {
-      NewProjectCommand callbackCommand = new NewProjectCommand() {
-          @Override
-          public void execute(Project project) {
-            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-          }
-        };
+    NewProjectCommand callbackCommand = new NewProjectCommand() {
+        @Override
+        public void execute(Project project) {
+          Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+        }
+    };
 
-      createProjectFromExistingZip(selectedTemplateNAME, callbackCommand, projectNameInExplorer);
+    createProjectFromExistingZip(selectedTemplateNAME, callbackCommand, projectNameInExplorer);
 
-      Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, selectedTemplateNAME + PROJECT_ARCHIVE_EXTENSION);
-      instance = null;  
+    Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA,
+        selectedTemplateNAME + PROJECT_ARCHIVE_EXTENSION);
+    instance = null;  
   }
   
   /**
@@ -608,24 +619,25 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    *   succeeds (can be {@code null})
    */
   public void createProjectFromExistingZip(final String projectName,
-    final NewProjectCommand onSuccessCommand, final String projectNameInExplorer) {
+      final NewProjectCommand onSuccessCommand, final String projectNameInExplorer) {
 
     // Callback for updating the project explorer after the project is created on the back-end
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(
-      // failure message
-      MESSAGES.createProjectError()) {
+        // failure message
+        MESSAGES.createProjectError()) {
       @Override
       public void onSuccess(UserProject projectInfo) {
         // Update project explorer -- i.e., display in project view
         if (projectInfo == null) {
 
-          Window.alert("This template has no aia file. Creating a new project with name = " + projectName);
+          Window.alert("This template has no aia file. Creating a new project with name = " 
+              + projectName);
           ode.getProjectService().newProject(
-            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
-            projectName,
-            new NewYoungAndroidProjectParameters(projectName),
-            this);
+              YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
+              projectName,
+              new NewYoungAndroidProjectParameters(projectName),
+              this);
           return;
         }
         Project project = ode.getProjectManager().addProject(projectInfo);
@@ -639,17 +651,19 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     String pathToZip = "";
     if (usingExternalTemplate) {
       String zipUrl = templateHostUrl + TEMPLATES_ROOT_DIRECTORY + projectName + "/" +
-        projectName + PROJECT_ARCHIVE_ENCODED_EXTENSION;
+          projectName + PROJECT_ARCHIVE_ENCODED_EXTENSION;
       RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, zipUrl);
-     try {
+      try {
         Request response = builder.sendRequest(null, new RequestCallback() {
             @Override
             public void onError(Request request, Throwable exception) {
               Window.alert("Unable to load Project Template Data");
             }
+
             @Override
             public void onResponseReceived(Request request, Response response) {
-              ode.getProjectService().newProjectFromExternalTemplate(projectNameInExplorer,response.getText(),callback);
+              ode.getProjectService().newProjectFromExternalTemplate(projectNameInExplorer,
+                      response.getText(), callback);
             }
 
           });

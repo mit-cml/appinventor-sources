@@ -6,5 +6,5 @@
 package com.google.appinventor.client.wizards;
 
 public interface RequestProjectNewNameInterface {
-	public void GetNewName(String name);
+  public void getNewName(String name);
 }

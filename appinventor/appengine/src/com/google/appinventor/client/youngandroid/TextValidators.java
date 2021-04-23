@@ -24,12 +24,12 @@ public final class TextValidators {
   private static final int MAX_FILENAME_SIZE = 100;
   private static final int MIN_FILENAME_SIZE = 1;
 
-  enum ProjectNameStatus{
+  enum ProjectNameStatus {
     SUCCESS,
-	INVALIDFORMAT,
-	RESERVED,
-	DUPLICATE,
-	DUPLICATEINTRASH
+    INVALIDFORMAT,
+    RESERVED,
+    DUPLICATE,
+    DUPLICATEINTRASH
   }
   
   private static ProjectNameStatus projectNameStatus; 
@@ -72,8 +72,8 @@ public final class TextValidators {
 
     // Check for names that reserved words
     if (isReservedName(projectName)) {
-        Window.alert(MESSAGES.reservedNameError());
-        projectNameStatus = ProjectNameStatus.RESERVED;
+      Window.alert(MESSAGES.reservedNameError());
+      projectNameStatus = ProjectNameStatus.RESERVED;
       return false;
     }
 
@@ -97,38 +97,38 @@ public final class TextValidators {
   }
   
   /**
-   * 
+   * Returns the error due to which project name is invalid.
    * @return The error type of filename.
    */
   public static String getProjectNameStatus() {
-	  switch(projectNameStatus) {
-	  case SUCCESS :
-		  return MESSAGES.successfulTitleFormat();
-	  case INVALIDFORMAT:
-		  return MESSAGES.invalidTitleFormatError();
-	  case RESERVED :
-		  return MESSAGES.reservedTitleFormatError();
-	  case DUPLICATE :
-		  return MESSAGES.duplicateTitleFormatError();
-	  case DUPLICATEINTRASH :
-		  return MESSAGES.duplicateTitleInTrashFormatError();
-	  default :
-		  break;  
-	  }
-	  return "";
+    switch (projectNameStatus) {
+      case SUCCESS :
+        return MESSAGES.successfulTitleFormat();
+      case INVALIDFORMAT:
+        return MESSAGES.invalidTitleFormatError();
+      case RESERVED :
+        return MESSAGES.reservedTitleFormatError();
+      case DUPLICATE :
+        return MESSAGES.duplicateTitleFormatError();
+      case DUPLICATEINTRASH :
+        return MESSAGES.duplicateTitleInTrashFormatError();
+      default :
+        break;
+    }
+    return "";
   }
   
   public static boolean isTitleDuplicate() {
-	  return projectNameStatus == ProjectNameStatus.DUPLICATE || 
-		     projectNameStatus == ProjectNameStatus.DUPLICATEINTRASH;
+    return projectNameStatus == ProjectNameStatus.DUPLICATE 
+      || projectNameStatus == ProjectNameStatus.DUPLICATEINTRASH;
   }
 
   public static boolean isTitleInvalid() {
-	  return projectNameStatus == ProjectNameStatus.INVALIDFORMAT;
+    return projectNameStatus == ProjectNameStatus.INVALIDFORMAT;
   }
   
   public static boolean isTitleReserved() {
-	  return projectNameStatus == ProjectNameStatus.RESERVED;
+    return projectNameStatus == ProjectNameStatus.RESERVED;
   }
   
   public static boolean checkNewComponentName(String componentName) {

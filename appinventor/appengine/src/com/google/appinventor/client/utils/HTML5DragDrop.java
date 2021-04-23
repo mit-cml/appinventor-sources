@@ -217,39 +217,45 @@ public final class HTML5DragDrop {
   }
   
   /**
-   * Shows dialog box to enter new project name when user tries to upload a project with invalid Name.
+   * Shows dialog box to enter new project name when user tries
+   * to upload a project with invalid Name.
    * 
    * @param filename initial filename of project , used to suggest a new name
    * @param callback callback to upload after user enters a valid name
    */
   protected static void getNewProjectName(String filename, final StringCallback callback) {  
-	filename = filename.substring(0, filename.length() - 4);
-    String suggestedName = "" , title;
-	// Show Dialog Box and rename the project
+    filename = filename.substring(0, filename.length() - 4);
+    String suggestedName = "";
+    String title;
+    filename = filename.replace(" ", "_").replaceAll("[^a-zA-Z0-9_]", "");
+
     if (TextValidators.isTitleReserved()) {
       title = MESSAGES.reservedTitleFormatError() + " : " + filename;
-    } else {
-      filename = filename.replace(" ", "_").replaceAll("[^a-zA-Z0-9_]", "");
-      suggestedName = ProjectUploadWizard.GetSuggestedName(filename);
+    } else if (TextValidators.isTitleInvalid()) {
+      suggestedName = ProjectUploadWizard.getSuggestedName(filename);
+      title = MESSAGES.invalidTitleFormatError();
       if (!TextValidators.checkNewProjectName(suggestedName, true)) {
-          suggestedName = "";
-          if(TextValidators.isTitleDuplicate()) {
-            title = MESSAGES.duplicateTitleFormatError() + " : " + filename;
-          } else if (TextValidators.isTitleInvalid()) {
-        	title = MESSAGES.invalidTitleFormatError() + " : " + filename;
-          } else {
-        	title = MESSAGES.reservedTitleFormatError() + " : " + filename;
-          }
+        suggestedName = "";
+        title += " : " + filename;
       } else {
-        title = MESSAGES.suggestNameTitleCaption();
+        title += MESSAGES.suggestNameTitleCaption();
+      }
+    } else {
+      suggestedName = ProjectUploadWizard.getSuggestedName(filename);
+      title = MESSAGES.duplicateTitleFormatError();
+      if (!TextValidators.checkNewProjectName(suggestedName, true)) {
+        suggestedName = "";
+        title += " : " + filename;
+      } else {
+        title += MESSAGES.suggestNameTitleCaption();
       }
     }
     new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
-    	@Override
-        public void GetNewName(String name) {
-     	  callback.run(name);
+        @Override
+        public void getNewName(String name) {
+          callback.run(name);
         }
-    } , suggestedName, title);
+    }, suggestedName, title);
   }
 
   protected static void handleUploadResponse(String projectIdStr, String type, String name,

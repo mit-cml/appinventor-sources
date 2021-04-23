@@ -60,36 +60,42 @@ public class ProjectUploadWizard extends Wizard {
           // Make sure the project name is legal and unique.
           if (!TextValidators.checkNewProjectName(filename, true)) {
          
-            String suggestedName = "" , title;
-        	// Show Dialog Box and rename the project
+            String suggestedName = "";
+            String title;
+            filename = filename.replace(" ", "_").replaceAll("[^a-zA-Z0-9_]", "");
+
             if (TextValidators.isTitleReserved()) {
               title = MESSAGES.reservedTitleFormatError() + " : " + filename;
-            } else {
-              filename = filename.replace(" ", "_").replaceAll("[^a-zA-Z0-9_]", "");
-              suggestedName = GetSuggestedName(filename);
+            } else if (TextValidators.isTitleInvalid()) {
+              suggestedName = getSuggestedName(filename);
+              title = MESSAGES.invalidTitleFormatError();
               if (!TextValidators.checkNewProjectName(suggestedName, true)) {
                   suggestedName = "";
-                  if(TextValidators.isTitleDuplicate()) {
-                    title = MESSAGES.duplicateTitleFormatError() + " : " + filename;
-                  } else if (TextValidators.isTitleInvalid()) {
-                	title = MESSAGES.invalidTitleFormatError() + " : " + filename;
-                  } else {
-                	title = MESSAGES.reservedTitleFormatError() + " : " + filename;
-                  }
+                  title += " : " + filename;
               } else {
-                title = MESSAGES.suggestNameTitleCaption();
+                title += MESSAGES.suggestNameTitleCaption();
+              }
+            } else {
+              suggestedName = getSuggestedName(filename);
+              title = MESSAGES.duplicateTitleFormatError();
+              if (!TextValidators.checkNewProjectName(suggestedName, true)) {
+                  suggestedName = "";
+                  title += " : " + filename;
+              } else {
+                title += MESSAGES.suggestNameTitleCaption();
               }
             }
-        	  
-          new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
-            @Override
-            public void GetNewName(String name) {
-              Upload(upload ,name);
-            }
-          }, suggestedName, title);
-        	  
+
+            // Show Dialog Box and rename the project
+            new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
+              @Override
+              public void getNewName(String name) {
+                upload(upload, name);
+              }
+            }, suggestedName, title);
+  
           } else {
-        	Upload(upload,filename);
+            upload(upload, filename);
           }
         } else {
           Window.alert(MESSAGES.notProjectArchiveError());
@@ -99,17 +105,17 @@ public class ProjectUploadWizard extends Wizard {
     });
   }
   
-  private void Upload(FileUpload upload, String filename) {
-    String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
-          ServerLayout.UPLOAD_PROJECT + "/" + filename;
-	Uploader.getInstance().upload(upload, uploadUrl,
-	 new OdeAsyncCallback<UploadResponse>(
-			// failure message
-			MESSAGES.projectUploadError()) {
-		  @Override
-		  public void onSuccess(UploadResponse uploadResponse) {
-			switch (uploadResponse.getStatus()) {
-			  case SUCCESS:
+  private void upload(FileUpload upload, String filename) {
+    String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/"
+        + ServerLayout.UPLOAD_PROJECT + "/" + filename;
+    Uploader.getInstance().upload(upload, uploadUrl,
+        new OdeAsyncCallback<UploadResponse>(
+        // failure message
+        MESSAGES.projectUploadError()) {
+          @Override
+          public void onSuccess(UploadResponse uploadResponse) {
+            switch (uploadResponse.getStatus()) {
+              case SUCCESS:
                 String info = uploadResponse.getInfo();
                 UserProject userProject = UserProject.valueOf(info);
                 Ode ode = Ode.getInstance();
@@ -129,41 +135,53 @@ public class ProjectUploadWizard extends Wizard {
                 break;
             }
           }
-    });
+      });
   }
 
-  public static String GetSuggestedName(String filename) {
-    // if hello,hello4 are in project list and user tries to upload 
-	// another project hello.aia then it suggests hello5
-		  
+  /**
+   * Suggests a project name based on existing project names
+   * if hello,hello4 are in project list and user tries to upload
+   * another project hello.aia then it suggests hello5 or if user uploads
+   * hello4.aia then it suggests hello5.
+   * @param filename initial filename
+   * @return
+   */
+  public static String getSuggestedName(String filename) {
     int max = 1;
-	int len = filename.length();
-	int lastInt = filename.charAt(len-1);
-	int splitPosition = -1;
-	if (lastInt <= 57 && lastInt >= 48) {
-	  splitPosition = len - 1;
-	  for (int i = len-2 ; i>=0 ; i--) {
-		int cur = filename.charAt(i);
-		if (cur <= 57 && cur >=48) splitPosition--; 
-		else break;
-	  }
-	  
-	  if (splitPosition == 0) return filename;
-	  filename = filename.substring(0, splitPosition);
-	}
-	for(Project proj: Ode.getInstance().getProjectManager().getProjects(filename)) {
-	  String sub = proj.getProjectName().substring(len);
-	  if (sub.length() > 0) { 
-	    try {
-		  lastInt = Integer.parseInt(sub);
-		} catch (Exception e) {
-		  lastInt = -1 ;
-		}
-		if (lastInt>max) max = lastInt;
-	  }	 
-	}
-	max++;
-	return filename + max;
+    int len = filename.length();
+    int lastInt = filename.charAt(len - 1);
+    int splitPosition = -1;
+    if (lastInt <= 57 && lastInt >= 48) {
+      splitPosition = len - 1;
+      for (int i = len - 2; i >= 0; i--) {
+        int cur = filename.charAt(i);
+        if (cur <= 57 && cur >= 48) {
+          splitPosition--; 
+        } else {
+          break;
+        }
+      }
+  
+      if (splitPosition == 0) {
+        return filename;
+      }
+      filename = filename.substring(0, splitPosition);
+    }
+    for (Project proj : Ode.getInstance().getProjectManager().getProjects(filename)) {
+      String sub = proj.getProjectName().substring(len);
+      if (sub.length() > 0) { 
+        try {
+          lastInt = Integer.parseInt(sub);
+        } catch (Exception e) {
+          lastInt = -1;
+        }
+        if (lastInt > max) {
+          max = lastInt;
+        }
+      }
+    }
+    max++;
+    return filename + max;
   }
   
   @Override
