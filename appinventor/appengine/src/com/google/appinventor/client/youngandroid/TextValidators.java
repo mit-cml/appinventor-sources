@@ -119,12 +119,16 @@ public final class TextValidators {
   }
   
   public static boolean isTitleDuplicate() {
-	  return projectNameStatus==ProjectNameStatus.DUPLICATE || 
-		     projectNameStatus==ProjectNameStatus.DUPLICATEINTRASH;
+	  return projectNameStatus == ProjectNameStatus.DUPLICATE || 
+		     projectNameStatus == ProjectNameStatus.DUPLICATEINTRASH;
   }
 
   public static boolean isTitleInvalid() {
-	  return projectNameStatus==ProjectNameStatus.INVALIDFORMAT;
+	  return projectNameStatus == ProjectNameStatus.INVALIDFORMAT;
+  }
+  
+  public static boolean isTitleReserved() {
+	  return projectNameStatus == ProjectNameStatus.RESERVED;
   }
   
   public static boolean checkNewComponentName(String componentName) {

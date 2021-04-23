@@ -58,23 +58,28 @@ public class ProjectUploadWizard extends Wizard {
               substring(Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\')) + 1);
 
           // Make sure the project name is legal and unique.
-          filename = filename.replaceAll("( )+", " ").replace(" ","_");
           if (!TextValidators.checkNewProjectName(filename, true)) {
          
             String suggestedName = "" , title;
         	// Show Dialog Box and rename the project
-        	if (TextValidators.isTitleDuplicate()) {
+            if (TextValidators.isTitleReserved()) {
+              title = MESSAGES.reservedTitleFormatError() + " : " + filename;
+            } else {
+              filename = filename.replace(" ", "_").replaceAll("[^a-zA-Z0-9_]", "");
               suggestedName = GetSuggestedName(filename);
-              title = MESSAGES.suggestNameTitleCaption();   
-            if (!TextValidators.checkNewProjectName(suggestedName, true)) {
-              suggestedName = "";
-              title = MESSAGES.duplicateTitleFormatError();
-            }        
-          } else if (TextValidators.isTitleInvalid()) {
-            title = MESSAGES.invalidTitleFormatError() + " : " + filename;
-          } else {
-            title = MESSAGES.reservedTitleFormatError() + " : " + filename;
-          }
+              if (!TextValidators.checkNewProjectName(suggestedName, true)) {
+                  suggestedName = "";
+                  if(TextValidators.isTitleDuplicate()) {
+                    title = MESSAGES.duplicateTitleFormatError() + " : " + filename;
+                  } else if (TextValidators.isTitleInvalid()) {
+                	title = MESSAGES.invalidTitleFormatError() + " : " + filename;
+                  } else {
+                	title = MESSAGES.reservedTitleFormatError() + " : " + filename;
+                  }
+              } else {
+                title = MESSAGES.suggestNameTitleCaption();
+              }
+            }
         	  
           new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
             @Override
@@ -129,13 +134,22 @@ public class ProjectUploadWizard extends Wizard {
 
   public static String GetSuggestedName(String filename) {
     // if hello,hello4 are in project list and user tries to upload 
-	// another project hello.aia then it suggest hello5
+	// another project hello.aia then it suggests hello5
 		  
     int max = 1;
 	int len = filename.length();
 	int lastInt = filename.charAt(len-1);
+	int splitPosition = -1;
 	if (lastInt <= 57 && lastInt >= 48) {
-	  return filename ; // don't suggest if lastchar is integer
+	  splitPosition = len - 1;
+	  for (int i = len-2 ; i>=0 ; i--) {
+		int cur = filename.charAt(i);
+		if (cur <= 57 && cur >=48) splitPosition--; 
+		else break;
+	  }
+	  
+	  if (splitPosition == 0) return filename;
+	  filename = filename.substring(0, splitPosition);
 	}
 	for(Project proj: Ode.getInstance().getProjectManager().getProjects(filename)) {
 	  String sub = proj.getProjectName().substring(len);

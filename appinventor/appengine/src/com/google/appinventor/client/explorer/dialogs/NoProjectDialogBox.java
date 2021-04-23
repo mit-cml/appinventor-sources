@@ -76,7 +76,7 @@ public class NoProjectDialogBox extends DialogBox {
   @UiHandler("goToPurr")
   void handleGoToPurr(ClickEvent e) {
     this.hide();
-    new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject());
+    new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject(),"HelloPurr");
   }
 
   @UiHandler("goToTalk")

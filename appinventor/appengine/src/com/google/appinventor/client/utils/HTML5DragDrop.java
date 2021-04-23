@@ -224,24 +224,30 @@ public final class HTML5DragDrop {
    */
   protected static void getNewProjectName(String filename, final StringCallback callback) {  
 	filename = filename.substring(0, filename.length() - 4);
-    String suggestedName = "" , title; 
-  	// Show Dialog Box and rename the project
-  	if (TextValidators.isTitleDuplicate()) {
-      suggestedName = ProjectUploadWizard.GetSuggestedName(filename);
-      title = MESSAGES.suggestNameTitleCaption();    
-      if (!TextValidators.checkNewProjectName(suggestedName,true)) {
-        suggestedName = "";
-        title = MESSAGES.duplicateTitleFormatError();
-      }        
-  	} else if (TextValidators.isTitleInvalid()) {
-      title = MESSAGES.invalidTitleFormatError()+" : "+filename;
+    String suggestedName = "" , title;
+	// Show Dialog Box and rename the project
+    if (TextValidators.isTitleReserved()) {
+      title = MESSAGES.reservedTitleFormatError() + " : " + filename;
     } else {
-      title = MESSAGES.reservedTitleFormatError()+" : "+filename;
+      filename = filename.replace(" ", "_").replaceAll("[^a-zA-Z0-9_]", "");
+      suggestedName = ProjectUploadWizard.GetSuggestedName(filename);
+      if (!TextValidators.checkNewProjectName(suggestedName, true)) {
+          suggestedName = "";
+          if(TextValidators.isTitleDuplicate()) {
+            title = MESSAGES.duplicateTitleFormatError() + " : " + filename;
+          } else if (TextValidators.isTitleInvalid()) {
+        	title = MESSAGES.invalidTitleFormatError() + " : " + filename;
+          } else {
+        	title = MESSAGES.reservedTitleFormatError() + " : " + filename;
+          }
+      } else {
+        title = MESSAGES.suggestNameTitleCaption();
+      }
     }
     new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
     	@Override
         public void GetNewName(String name) {
-     		callback.run(name);
+     	  callback.run(name);
         }
     } , suggestedName, title);
   }
@@ -298,7 +304,7 @@ public final class HTML5DragDrop {
    *
    * NB: For security reasons, the browser does not share any information about the thing to be
    * dropped until it is actually dropped. This means we can't selectively show a drop target based
-   * on what is being dragged. Ideally, we would only show the drop target for the proejct list if
+   * on what is being dragged. Ideally, we would only show the drop target for the project list if
    * the dragged item were an AIA and the drop target for the palette if the dragged item were an
    * AIX.
    *
