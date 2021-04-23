@@ -147,10 +147,10 @@ public class ProjectUploadWizard extends Wizard {
    * @return
    */
   public static String getSuggestedName(String filename) {
-    int max = 1;
+    int max = 0;
     int len = filename.length();
     int lastInt = filename.charAt(len - 1);
-    int splitPosition = -1;
+    int splitPosition = len;
     if (lastInt <= 57 && lastInt >= 48) {
       splitPosition = len - 1;
       for (int i = len - 2; i >= 0; i--) {
@@ -168,7 +168,7 @@ public class ProjectUploadWizard extends Wizard {
       filename = filename.substring(0, splitPosition);
     }
     for (Project proj : Ode.getInstance().getProjectManager().getProjects(filename)) {
-      String sub = proj.getProjectName().substring(len);
+      String sub = proj.getProjectName().substring(splitPosition);
       if (sub.length() > 0) { 
         try {
           lastInt = Integer.parseInt(sub);
@@ -178,6 +178,8 @@ public class ProjectUploadWizard extends Wizard {
         if (lastInt > max) {
           max = lastInt;
         }
+      } else {
+        max++;
       }
     }
     max++;
