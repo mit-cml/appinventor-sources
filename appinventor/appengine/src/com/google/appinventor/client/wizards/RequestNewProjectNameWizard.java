@@ -46,7 +46,6 @@ public class RequestNewProjectNameWizard extends Wizard {
     final DialogBox db = new DialogBox(false, true);              
     db.setText(title);                                                   // title of the dialog box
     db.setStyleName("ode-DialogBox");
-    // db.setAnimationEnabled(true);
     db.setHeight("40px");
     db.setWidth("360px");
     
