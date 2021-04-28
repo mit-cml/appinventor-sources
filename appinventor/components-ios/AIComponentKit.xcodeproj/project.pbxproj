@@ -53,6 +53,7 @@
 		0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650F5171F1F1B7A00D4E6FA /* HMAC.swift */; };
 		0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0653CBD71F9719920052065A /* RuntimeTests.swift */; };
 		0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0653CBD91F971BA70052065A /* TestFailure.swift */; };
+		0655BEFB261E4BE600EBE3F6 /* Dictionary+Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0655BEFA261E4BE600EBE3F6 /* Dictionary+Json.swift */; };
 		0658E9BD20126FFA009D6A15 /* control.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BB20126FFA009D6A15 /* control.yail */; };
 		0658E9BE20126FFA009D6A15 /* logic.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BC20126FFA009D6A15 /* logic.yail */; };
 		0658E9C1201399FA009D6A15 /* math.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BF201399F9009D6A15 /* math.yail */; };
@@ -279,6 +280,7 @@
 		0650F5171F1F1B7A00D4E6FA /* HMAC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HMAC.swift; sourceTree = "<group>"; };
 		0653CBD71F9719920052065A /* RuntimeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeTests.swift; sourceTree = "<group>"; };
 		0653CBD91F971BA70052065A /* TestFailure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestFailure.swift; sourceTree = "<group>"; };
+		0655BEFA261E4BE600EBE3F6 /* Dictionary+Json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Json.swift"; sourceTree = "<group>"; };
 		0658E9BB20126FFA009D6A15 /* control.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = control.yail; sourceTree = "<group>"; };
 		0658E9BC20126FFA009D6A15 /* logic.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = logic.yail; sourceTree = "<group>"; };
 		0658E9BF201399F9009D6A15 /* math.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = math.yail; sourceTree = "<group>"; };
@@ -479,6 +481,7 @@
 				703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */,
 				061DC7B72241574D00539213 /* UIImage+Tint.swift */,
 				06500853208E331900AC1327 /* UIView+AIHelpers.swift */,
+				0655BEFA261E4BE600EBE3F6 /* Dictionary+Json.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1243,6 +1246,7 @@
 				CBC7868620113A3C005363A3 /* CircularBuffer.swift in Sources */,
 				06E59EB31D92D19600C42804 /* Label.swift in Sources */,
 				06B215FE1DB95116000B3366 /* Web.swift in Sources */,
+				0655BEFB261E4BE600EBE3F6 /* Dictionary+Json.swift in Sources */,
 				041758532009417D007D2C31 /* String+ChopAffix.swift in Sources */,
 				0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */,
 				CBC787022032272E005363A3 /* String+Replace.swift in Sources */,

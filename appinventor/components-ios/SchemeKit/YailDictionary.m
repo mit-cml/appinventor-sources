@@ -448,6 +448,16 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
   return self;
 }
 
+- (instancetype)initWithDictionary:(NSDictionary *)otherDictionary {
+  if (self = [super init]) {
+    _backend = [[NSMutableDictionary alloc] initWithDictionary:otherDictionary];
+    _keys = [[otherDictionary allKeys] mutableCopy];
+    _interpreter = SCMInterpreter.shared;
+    _value = [_interpreter wrapObject:self];
+  }
+  return self;
+}
+
 - (NSUInteger)count {
   return [_backend count];
 }

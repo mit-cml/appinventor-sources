@@ -53,8 +53,8 @@ static NSMutableDictionary<NSString *, ProtocolWrapper *> *protocols = nil;
 
 - (BOOL)isEqual:(id)object {
   if (object == nil) {
-
-  } else if ([object isKindOfClass:[self class]]) {
+    return NO;
+  } else if ([object isKindOfClass:[ClassWrapper class]]) {
     return class_ == ((ClassWrapper *) object)->class_;
   }
   return NO;
@@ -1013,7 +1013,7 @@ yail_invoke_internal(pic_state *pic, NSInvocation *invocation, int argc, pic_val
       } else if ([value isKindOfClass:[NSArray class]]) {
         return [[[YailList alloc] initWithArray:value inInterpreter:SCMInterpreter.shared] value];
       } else if ([value isKindOfClass:[NSDictionary class]]) {
-        return [[[YailDictionary alloc] initWithDictionary:value] value];
+        return yail_make_native_instance(pic, [[YailDictionary alloc] initWithDictionary:value]);
       } else if ([value isKindOfClass:[NSNumber class]]) {
         NSNumber *num = (NSNumber *)value;
         if (0==strcmp(num.objCType, @encode(BOOL)) || 0==strcmp(num.objCType, "c")) {
@@ -1121,9 +1121,34 @@ yail_format_inexact(pic_state *pic) {
   absvalue = fabs(value);
 
   if (absvalue > 1e6 || absvalue < 1e-6) {
-    snprintf(&buf[0], BUFSIZE, "%E", value);
+    char work[BUFSIZE];
+    snprintf(&work[0], BUFSIZE, "%.5G", value);
+    size_t i = 0;
+    size_t j = 0;
+    BOOL in_exponent = NO;
+    BOOL in_prefix = NO;
+    while (work[i]) {
+      if (work[i] == 'E') {
+        in_exponent = YES;
+        in_prefix = YES;
+        buf[j++] = work[i++];
+      } else if (in_exponent && in_prefix) {
+        if (work[i] == '-') {
+          in_prefix = NO;
+          buf[j++] = work[i++];
+        } else if (work[i] >= '1' && work[i] <= '9') {
+          in_prefix = NO;
+          buf[j++] = work[i++];
+        } else {
+          i++;  // skip this character (either + or 0).
+        }
+      } else {
+        buf[j++] = work[i++];
+      }
+    }
+    buf[j] = 0;  // ensure NULL-terminated string
   } else {
-    snprintf(&buf[0], BUFSIZE, "%F", value);
+    snprintf(&buf[0], BUFSIZE, "%G", value);
   }
 
   return pic_cstr_value(pic, buf);

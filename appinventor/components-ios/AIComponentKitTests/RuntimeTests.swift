@@ -155,7 +155,7 @@ class RuntimeTests: XCTestCase {
     }
     let result = RetValManager.shared().fetch(false)
     XCTAssertNotNil(result)
-    XCTAssertEqual("{\"status\":\"OK\",\"values\":[{\"status\":\"OK\",\"value\":\"[[30.500000, 10.500000], [31.500000, 11.500000]]\",\"type\":\"return\",\"blockid\":\"1\"}]}", result)
+    XCTAssertEqual("{\"status\":\"OK\",\"values\":[{\"status\":\"OK\",\"value\":\"[[30.5, 10.5], [31.5, 11.5]]\",\"type\":\"return\",\"blockid\":\"1\"}]}", result)
   }
 
   func testYailNSDateCoerceToString() throws {
@@ -249,5 +249,68 @@ class RuntimeTests: XCTestCase {
     XCTAssertEqual("olleH", interpreter.evalForm("(string-reverse \"Hello\")"))
     XCTAssertEqual("🌎😀olleH", interpreter.evalForm("(string-reverse \"Hello😀🌎\")"))
     XCTAssertEqual("54321", interpreter.evalForm("(call-yail-primitive string-reverse (*list-for-runtime* 12345) '(text) \"reverse\")"))
+  }
+
+  func testSerialization() throws {
+    let interpreter = try getInterpreterForTesting()
+    let form = Form()
+    let label = Label(form)
+    form.environment["Label1"] = label
+    interpreter.setCurrentForm(form)
+
+    // Test booleans
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text #t 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("true", label.Text)
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text #f 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("false", label.Text)
+
+    // Test numbers
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text 0.0 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("0", label.Text)
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text -42.25 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("-42.25", label.Text)
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text 98765432.1 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("9.8765E7", label.Text)
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text (/ 1.0 0) 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("+infinity", label.Text)
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text (/ -1.0 0) 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("-infinity", label.Text)
+
+    // Test text
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text \"some text\" 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("some text", label.Text)
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text \"some text with \\\"quotes\\\"\" 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("some text with \"quotes\"", label.Text)
+
+    // Test native list
+    form.environment["g$object"] = NSArray()
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text (get-var g$object) 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("[]", label.Text)
+
+    // Test YailList
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text (call-yail-primitive make-yail-list (*list-for-runtime* ) '() \"make a list\") 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("[]", label.Text)
+
+    // Test native dictionary
+    form.environment["g$object"] = NSDictionary()
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text (get-var g$object) 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("{}", label.Text)
+
+    // Test YailDictionary
+    interpreter.evalForm("(set-and-coerce-property! 'Label1 'Text (call-yail-primitive make-yail-dictionary (*list-for-runtime* ) '() \"make a dictionary\") 'text)")
+    XCTAssertNil(interpreter.exception)
+    XCTAssertEqual("{}", label.Text)
   }
 }
