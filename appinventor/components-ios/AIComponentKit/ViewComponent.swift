@@ -22,6 +22,8 @@ import Foundation
   fileprivate var _column = kDefaultRowColumn
   fileprivate var _row = kDefaultRowColumn
 
+  private var _visible = true
+
   // needs to be public for extensions
   @objc public init(_ parent: ComponentContainer) {
     self._container = parent
@@ -43,14 +45,15 @@ import Foundation
 
   @objc open var Visible: Bool {
     get {
-      return _container?.isVisible(component: self) ?? false
+      return _visible
     }
     set(visibility) {
+      _visible = visibility
       guard let container = _container else {
         return
       }
       container.setVisible(component: self, to: visibility)
-      if visible {
+      if attachedToWindow {
         container.setChildWidth(of: self, to: _lastSetWidth)
         container.setChildHeight(of: self, to: _lastSetHeight)
       }
@@ -66,7 +69,7 @@ import Foundation
       guard let container = _container else {
         return
       }
-      if visible {
+      if attachedToWindow {
         container.setChildWidth(of: self, to: width)
       }
       _lastSetWidth = width
@@ -92,7 +95,7 @@ import Foundation
       guard let container = _container else {
         return
       }
-      if visible {
+      if attachedToWindow {
         container.setChildHeight(of: self, to: height)
       }
       _lastSetHeight = height
@@ -138,11 +141,9 @@ import Foundation
 
     form.view.removeConstraints(constraintsToRemove)
     _lastSetHeight = height
-    if visible {
-      _container?.setChildHeight(of: self, to: height)
-    }
     _lastSetWidth = width
-    if visible {
+    if attachedToWindow {
+      _container?.setChildHeight(of: self, to: height)
       _container?.setChildWidth(of: self, to: width)
     }
     if shouldAddConstraint {
@@ -179,7 +180,7 @@ import Foundation
     }
   }
 
-  @objc(isVisible) open var visible: Bool {
-    return (_container?.isVisible(component: self) ?? false) && Visible
+  open var attachedToWindow: Bool {
+    return view.window != nil
   }
 }

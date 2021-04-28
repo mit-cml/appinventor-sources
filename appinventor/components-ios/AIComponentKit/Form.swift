@@ -1012,8 +1012,8 @@ let kMinimumToastWait = 10.0
     }
   }
 
-  @objc(isVisible) open var visible: Bool {
-    return true
+  open func getChildren() -> [Component] {
+    return _components
   }
 
   // MARK: Memory management

@@ -11,7 +11,6 @@ import Foundation
   func setChildHeight(of component: ViewComponent, to height: Int32)
   func isVisible(component: ViewComponent) -> Bool
   func setVisible(component: ViewComponent, to visibility: Bool)
-  @objc(isVisible) var visible: Bool { get }
   var Width: Int32 { get }
   var Height: Int32 { get }
 }

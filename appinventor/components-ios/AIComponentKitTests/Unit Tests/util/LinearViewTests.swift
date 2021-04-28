@@ -54,4 +54,17 @@ class LinearViewTests: XCTestCase {
     testView.setVisibility(of: Button2.view, to: true)
     XCTAssertEqual([Button1.view, Button2.view, Button3.view], testView.arrangedSubviews)
   }
+
+  func testInvisibleComponents() {
+    testForm.clear()
+    let HorizontalArrangement1 = HorizontalArrangement(testForm)
+    HorizontalArrangement1.Width = kLengthFillParent
+    HorizontalArrangement1.Visible = false
+    let Label1 = Label(HorizontalArrangement1)
+    Label1.Width = -1015
+    let Label2 = Label(HorizontalArrangement1)
+    Label2.Width = -1060
+    let Button1 = Button(HorizontalArrangement1)
+    Button1.Width = kLengthFillParent
+  }
 }

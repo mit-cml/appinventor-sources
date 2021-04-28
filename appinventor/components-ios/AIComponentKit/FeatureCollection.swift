@@ -156,8 +156,8 @@ import GEOSwift
   func isVisible(component: ViewComponent) -> Bool {
     return !component.view.isHidden
   }
-  
-  public func isVisible() -> Bool {
-    return _container?.isVisible(component: self) ?? false
+
+  open func getChildren() -> [Component] {
+    return _features as [Component]
   }
 }

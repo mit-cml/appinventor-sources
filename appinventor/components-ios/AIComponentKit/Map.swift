@@ -1059,10 +1059,6 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
   public func setVisible(component: ViewComponent, to visibility: Bool) {
     component.view.isHidden = !visibility
   }
-  
-  public func isVisible() -> Bool {
-    return _container?.isVisible(component: self) ?? false
-  }
 
 #if MEMDEBUG
   deinit {

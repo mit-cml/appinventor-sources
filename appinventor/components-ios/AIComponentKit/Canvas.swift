@@ -962,8 +962,8 @@ extension Canvas: ComponentContainer {
     // unsupported
   }
   
-  public func isVisible() -> Bool {
-    return _container?.isVisible(component: self) ?? false
+  open func getChildren() -> [Component] {
+    return _sprites as [Component]
   }
 }
 
