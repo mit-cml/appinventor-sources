@@ -791,7 +791,7 @@ yail_invoke_internal(pic_state *pic, NSInvocation *invocation, int argc, pic_val
     if (pic_float_p(pic, args[i])) {
       switch([invocation.methodSignature getArgumentTypeAtIndex:j][0]) {
         case '@': {
-          NSString *value = [NSString stringWithFormat:@"%f", pic_float(pic, args[i])];
+          NSNumber *value = [NSNumber numberWithDouble:pic_float(pic, args[i])];
           [invocation setArgument:&value atIndex:j];
           break;
         }
@@ -868,7 +868,7 @@ yail_invoke_internal(pic_state *pic, NSInvocation *invocation, int argc, pic_val
           break;
         }
         case '@': {
-          NSString *value = [NSString stringWithFormat:@"%d", pic_int(pic, args[i])];
+          NSNumber *value = [NSNumber numberWithInteger:pic_int(pic, args[i])];
           [invocation setArgument:&value atIndex:j];
           break;
         }

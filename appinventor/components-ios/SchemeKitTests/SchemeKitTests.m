@@ -106,6 +106,10 @@ typedef union {
   self->strResult = result;
 }
 
+- (void)setNumber:(NSNumber *)result {
+  self->strResult = [result stringValue];
+}
+
 - (id)copyWithZone:(NSZone *)zone {
   return self;
 }
@@ -559,10 +563,10 @@ typedef union {
   SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
   CoercionTestHelper *helper = [CoercionTestHelper helper];
   [interpreter setValue:helper forSymbol:@"test-helper"];
-  [interpreter evalForm:@"(yail:invoke test-helper 'setString 42.25)"];
+  [interpreter evalForm:@"(yail:invoke test-helper 'setNumber 42.25)"];
   XCTAssertNil(interpreter.exception);
   NSLog(@"Result: %@", helper->strResult);
-  XCTAssertTrue([@"42.250000" isEqualToString:helper->strResult]);
+  XCTAssertTrue([@"42.25" isEqualToString:helper->strResult]);
 }
 
 - (void)testUTF8Support {

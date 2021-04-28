@@ -251,6 +251,16 @@ class RuntimeTests: XCTestCase {
     XCTAssertEqual("54321", interpreter.evalForm("(call-yail-primitive string-reverse (*list-for-runtime* 12345) '(text) \"reverse\")"))
   }
 
+  func testGlobalSetGet() throws {
+    let interpreter = try getInterpreterForTesting()
+    let form = Form()
+    interpreter.setCurrentForm(form)
+    XCTAssertEqual("5", interpreter.evalForm("(begin (set-var! g$x 5) (get-var g$x))"))
+    XCTAssertNotNil(form.environment["g$x"] as? NSNumber)
+    XCTAssertEqual("42.25", interpreter.evalForm("(begin (set-var! g$y 42.25) (get-var g$y))"))
+    XCTAssertNotNil(form.environment["g$y"] as? NSNumber)
+  }
+  
   func testSerialization() throws {
     let interpreter = try getInterpreterForTesting()
     let form = Form()
