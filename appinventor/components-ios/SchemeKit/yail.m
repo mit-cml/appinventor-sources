@@ -433,6 +433,13 @@ yail_make_native_instance_internal(pic_state *pic, id object, int type) {
   return value;
 }
 
+const char *
+yail_format_native_instance(pic_state *pic, pic_value o) {
+  id object = yail_native_instance_ptr(pic, o)->object_;
+  const char *buffer = [[object debugDescription] UTF8String];
+  return buffer;
+}
+
 pic_value
 yail_make_native_instance(pic_state *state, id object) {
   int type = YAIL_TYPE_INSTANCE;
@@ -1553,6 +1560,17 @@ yail_format(pic_state *pic) {
   }
 }
 
+pic_value
+yail_print_type(pic_state *pic) {
+  pic_value v;
+
+  pic_get_args(pic, "o", &v);
+
+  NSLog(@"Type: %s", pic_typename(pic, pic_type(pic, v)));
+
+  return pic_undef_value(pic);
+}
+
 /// MARK: Initialization
 
 void
@@ -1600,6 +1618,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "YailDictionary:alistToDict", yail_dictionary_alist_to_dict);
   pic_defun(pic, "yail:define-alias", yail_define_alias);
   pic_defun(pic, "format", yail_format);
+  pic_defun(pic, "yail:print-type", yail_print_type);
   pic_load_cstr(pic, "(define-syntax define-alias (syntax-rules () ((_ alias name) "
       "(yail:define-alias 'alias 'name))))");
   objects = [NSMutableDictionary dictionary];
