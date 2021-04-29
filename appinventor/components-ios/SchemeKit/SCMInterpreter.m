@@ -360,7 +360,9 @@ static SCMInterpreter *_defaultInterpreter = nil;
   if (yail_list_p(_pic, value)) {
     return yail_list_objc(_pic, value);
   } else if (pic_list_p(_pic, value)) {
-    if (pic_car(_pic, value) == symbolTable_[@"*list*"].value) {
+    if (pic_nil_p(_pic, value)) {
+      return [YailList emptyListIn:self];
+    } else if (pic_car(_pic, value) == symbolTable_[@"*list*"].value) {
       return [YailList wrapList:value fromInterpreter:self];
     } else {
       return yail_to_native(_pic, value);
