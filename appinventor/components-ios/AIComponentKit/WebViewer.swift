@@ -142,6 +142,7 @@ open class WebViewer: ViewComponent, AbstractMethodsForViewComponent, WKUIDelega
   //NOTE: To load file, assumes the presence of an "assets" folder
   fileprivate func processURL(_ url: String){
     _wantLoad = true
+    let url = url.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) ?? ""
     let firstHashTag = url.firstIndex(of: "#") ?? url.endIndex
     let firstQuestionMark = url.firstIndex(of: "?") ?? firstHashTag
     let queryParameters = url.suffix(from: firstQuestionMark)
