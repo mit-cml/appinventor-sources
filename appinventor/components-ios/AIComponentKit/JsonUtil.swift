@@ -31,7 +31,17 @@ func getObjectFromJson(_ json: String?) throws -> AnyObject? {
   return nil
 }
 
-func getPublicObjectFromJson(_ json: String?, _ useDicts: Bool) throws -> AnyObject {
+/**
+ * Parses the JSON content given in `json` into YAIL objects. The `useDicts` parameter controls
+ * whether JSON objects are converted to `YailDictionary` (`true`) or associative `YailList`
+ * (`false`).
+ *
+ * - Parameter json: The serialized JSON to parse
+ * - Parameter useDicts: `true` if `YailDictionary` should be used for objects, otherwise `false`
+ * - Returns: The content of `json` parsed into objects
+ * - Throws: If `json` does not represent valid JSON, then an error will be thrown.
+ */
+func getYailObjectFromJson(_ json: String?, _ useDicts: Bool) throws -> AnyObject {
   let json = try getObjectFromJson(json)
   return convertJsonItem(json, useDicts)
 }

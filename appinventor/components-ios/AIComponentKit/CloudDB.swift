@@ -458,7 +458,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
       if let value = value {
         var parsedValue: AnyObject = value
         if let valueAsString = value as? String {
-          parsedValue = try getObjectFromJson(valueAsString) ?? value
+          parsedValue = try getYailObjectFromJson(valueAsString, true)
         }
         EventDispatcher.dispatchEvent(of: self, called: "GotValue", arguments: tag as AnyObject, parsedValue)
       } else {

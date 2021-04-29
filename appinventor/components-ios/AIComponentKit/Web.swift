@@ -345,7 +345,7 @@ open class Web: NonvisibleComponent {
 
   @objc open func JsonTextDecode(_ jsonString: String) -> AnyObject {
     do {
-      return try getPublicObjectFromJson(jsonString, false)
+      return try getYailObjectFromJson(jsonString, false)
     } catch let error {
       _form?.dispatchErrorOccurredEvent(self, "JsonTextDecode",
           ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED.code, error.localizedDescription)
@@ -380,7 +380,7 @@ open class Web: NonvisibleComponent {
 
   @objc open func JsonTextDecodeWithDictionaries(_ jsonText: String) -> AnyObject {
     do {
-      return try getPublicObjectFromJson(jsonText, true)
+      return try getYailObjectFromJson(jsonText, true)
     } catch {
       _form?.dispatchErrorOccurredEvent(self, "JsonTextDecodeWithDictionaries",
           ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED, jsonText)
