@@ -46,59 +46,49 @@ func getYailObjectFromJson(_ json: String?, _ useDicts: Bool) throws -> AnyObjec
   return convertJsonItem(json, useDicts)
 }
 
-
-fileprivate func getListFromJsonObject(_ json: NSDictionary) -> [[AnyObject]] {
-  var returnList = [[AnyObject]]()
+fileprivate func getListFromJsonObject(_ json: NSDictionary) -> YailList<YailList<AnyObject>> {
+  let returnList = YailList<YailList<AnyObject>>()
   for (key, value) in json {
-    var nestedArray = [AnyObject]()
-    nestedArray.append(key as AnyObject)
-    nestedArray.append(convertJsonItem(value as AnyObject, false))
-    returnList.append(nestedArray)
+    let nestedArray = YailList<AnyObject>()
+    nestedArray.add(key as AnyObject)
+    nestedArray.add(convertJsonItem(value as AnyObject, false))
+    returnList.add(nestedArray)
   }
   return returnList
 }
 
-fileprivate func getDictFromJsonObject(_ json: NSDictionary) -> [String:AnyObject] {
-  var returnDict = [String:AnyObject]()
+fileprivate func getDictFromJsonObject(_ json: NSDictionary) -> YailDictionary {
+  let returnDict = YailDictionary()
   for (key, value) in json {
-    returnDict[key as! String] = convertJsonItem(value as AnyObject, true)
+    returnDict[key as! NSString] = convertJsonItem(value as AnyObject, true)
   }
   return returnDict
 }
 
-fileprivate func getListFromJsonArray(_ json: NSArray, _ useDicts: Bool) -> [AnyObject] {
-  var returnList = [AnyObject]()
+fileprivate func getListFromJsonArray(_ json: NSArray, _ useDicts: Bool) -> YailList<AnyObject> {
+  let returnList = YailList<AnyObject>()
   for item in json {
-    returnList.append(convertJsonItem(item as AnyObject, useDicts))
+    returnList.add(convertJsonItem(item as AnyObject, useDicts))
   }
   return returnList
 }
 
 fileprivate func convertJsonItem(_ item: AnyObject?, _ useDicts: Bool) -> AnyObject {
-  if item == nil {
+  if item == nil || item is NSNull {
     return "null" as AnyObject
-  }
-  if let jsonObject = item as? NSDictionary {
+  } else if let jsonObject = item as? NSDictionary {
     if useDicts {
       return getDictFromJsonObject(jsonObject) as AnyObject
     } else {
       return getListFromJsonObject(jsonObject) as AnyObject
     }
-  }
-  if let jsonArray = item as? NSArray {
+  } else if let jsonArray = item as? NSArray {
     return getListFromJsonArray(jsonArray, useDicts) as AnyObject
-  }
-  if let bool = item as? Bool {
+  } else if let bool = item as? Bool {
     return bool as AnyObject
-  }
-  if let string = item as? String {
-    if string == "false" || string == "true" {
-      return (string == "false") as AnyObject
-    } else {
-      return string as AnyObject
-    }
-  }
-  if let number = item as? NSNumber {
+  } else if let string = item as? String {
+    return string as AnyObject
+  } else if let number = item as? NSNumber {
     return number as AnyObject
   }
   return item.debugDescription as AnyObject
