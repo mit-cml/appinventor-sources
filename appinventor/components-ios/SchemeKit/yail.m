@@ -1573,6 +1573,11 @@ yail_print_type(pic_state *pic) {
 
 /// MARK: Initialization
 
+static void
+initialize_rand() {
+  srand48((long) [[NSDate alloc] init].timeIntervalSince1970 * 1000.0);
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
@@ -1625,4 +1630,5 @@ pic_init_yail(pic_state *pic)
   protocols = [NSMutableDictionary dictionary];
   timeZone = [NSTimeZone localTimeZone];
   aliasMap = [NSMutableDictionary dictionary];
+  initialize_rand();
 }
