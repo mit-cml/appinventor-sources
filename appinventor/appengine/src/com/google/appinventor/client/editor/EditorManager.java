@@ -287,7 +287,7 @@ public final class EditorManager {
             afterSaving.execute();
           }
           // Set the project modification date to the returned date
-          // for one of the saved files (it doens't really matter which one).
+          // for one of the saved files (it doesn't really matter which one).
           if ((dateHolder.date != 0) && (dateHolder.projectId != 0)) { // We have a date back from the server
             Ode.getInstance().updateModificationDate(dateHolder.projectId, dateHolder.date);
           }
@@ -366,7 +366,7 @@ public final class EditorManager {
    * in the same RPC transaction. However we are now sending them separately
    * so that we can have more fine grained control over handling errors that
    * happen only on one file. In particular, we need to handle the case where
-   * a trivial blocks workspace is attempting to be written over a non-trival
+   * a trivial blocks workspace is attempting to be written over a non-trivial
    * file.
    *
    * If any unhandled errors occur while saving, the afterSavingFiles
