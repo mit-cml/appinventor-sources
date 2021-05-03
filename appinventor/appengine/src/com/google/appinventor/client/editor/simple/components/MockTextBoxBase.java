@@ -96,8 +96,6 @@ abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener
    */
   private void setBackgroundColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
-      //DUNAND CHANGE
-
       MockForm form = ((YaFormEditor) editor).getForm();
       if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
         text = "&HFF000000";  //black
@@ -136,7 +134,7 @@ abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener
    */
   private void setFontSizeProperty(String text) {
     float convertedText = Float.parseFloat(text);
-    if (convertedText==14.0 || convertedText == 24.0) {      //DUNAND CHANGE
+    if (convertedText == 14.0 || convertedText == 24.0) {
       MockForm form = ((YaFormEditor) editor).getForm();
       if (form != null && form.getPropertyValue("BigDefaultText").equals("True")) {
         MockComponentsUtil.setWidgetFontSize(textBoxWidget, "24");
@@ -227,10 +225,6 @@ abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener
     }
   }
 
-
-
-
-  //DUNAND CHANGE
   @Override
   public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
     if (component.getType().equals(MockForm.TYPE) && propertyName.equals("HighContrast")) {

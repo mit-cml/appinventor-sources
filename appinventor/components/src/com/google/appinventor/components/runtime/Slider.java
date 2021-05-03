@@ -215,8 +215,6 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     });
   }
 
-
-
   /**
    * Whether or not the slider thumb is being be shown.
    *

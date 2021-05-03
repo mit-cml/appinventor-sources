@@ -92,8 +92,6 @@ public final class MockPasswordTextBox extends MockWrapper implements FormChange
    */
   private void setBackgroundColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
-      //text = "&HFFFFFFFF";  // white
-      //DUNAND CHANGE
       MockForm form = ((YaFormEditor) editor).getForm();
       if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
         text = "&HFF000000";  // black
@@ -199,7 +197,6 @@ public final class MockPasswordTextBox extends MockWrapper implements FormChange
   }
 
   @Override
-  //DUNAND CHANGE
   public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
     if (component.getType().equals(MockForm.TYPE) && propertyName.equals("HighContrast")) {
       setBackgroundColorProperty(getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR));
@@ -211,7 +208,6 @@ public final class MockPasswordTextBox extends MockWrapper implements FormChange
       }
       else {
         setFontSizeProperty("14");
-        //setFontSizeProperty(String.valueOf(Component.FONT_DEFAULT_SIZE));
         refreshForm();
 
       }

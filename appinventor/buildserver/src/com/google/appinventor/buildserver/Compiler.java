@@ -764,13 +764,12 @@ public final class Compiler {
     if (!parent.equals("android:Theme")) {
       out.write("<item name=\"windowActionBar\">true</item>\n");
       out.write("<item name=\"android:windowActionBar\">true</item>\n");  // Honeycomb ActionBar
-//      if (parent.contains("Holo") || holo) {
+      if (parent.contains("Holo") || holo) {
         out.write("<item name=\"android:actionBarStyle\">@style/AIActionBar</item>\n");
         out.write("<item name=\"actionBarStyle\">@style/AIActionBar</item>\n");
-//      }
+      }
       // Handles theme for Notifier
       out.write("<item name=\"android:dialogTheme\">@style/AIDialog</item>\n");
-      out.write("<item name=\"android:datePickerDialogTheme\">@style/AIDatePickerDialog</item>\n");
       out.write("<item name=\"dialogTheme\">@style/AIDialog</item>\n");
       out.write("<item name=\"android:cacheColorHint\">#000</item>\n");  // Fixes crash in ListPickerActivity
     } else {
@@ -798,8 +797,6 @@ public final class Compiler {
     out.write("\">\n");
     out.write("<item name=\"android:background\">@color/colorPrimary</item>\n");
     out.write("<item name=\"android:titleTextStyle\">@style/AIActionBarTitle</item>\n");
-    out.write("<item name=\"android:height\">150dp</item>\n");
-    out.write("<item name=\"height\">60dp</item>\n");
     out.write("</style>\n");
     out.write("<style name=\"AIActionBarTitle\" parent=\"android:TextAppearance.Holo.Widget.ActionBar.Title\">\n");
     out.write("<item name=\"android:textColor\">" + (blackText ? "#000" : "#fff") + "</item>\n");
@@ -814,8 +811,7 @@ public final class Compiler {
     out.write("\">\n");
     out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
     out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
-    out.write("<item name=\"colorAccent\">#000</item>\n");
-    out.write("<item name=\"android:textSize\">50sp</item>\n");
+    out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
     if (parent.contains("Holo")) {
       // workaround for weird window border effect
       out.write("<item name=\"android:windowBackground\">@android:color/transparent</item>\n");
@@ -896,11 +892,9 @@ public final class Compiler {
         if (parentTheme.contains("Light")) {
           writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Light.Dialog");
           writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Light.Dialog.Alert");
-          writeDialogTheme(out, "AIDatePickerDialog", "Theme.AppCompat.Light.Dialog");
         } else {
           writeDialogTheme(out, "AIDialog", "Theme.AppCompat.Dialog");
           writeDialogTheme(out, "AIAlertDialog", "Theme.AppCompat.Dialog.Alert");
-          writeDialogTheme(out, "AIDatePickerDialog", "Theme.AppCompat.Dialog");
         }
       }
 

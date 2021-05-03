@@ -100,7 +100,7 @@ public final class MockLabel extends MockVisibleComponent implements FormChangeL
    */
   private void setFontSizeProperty(String text) {
     float convertedText = Float.parseFloat(text);
-    if (convertedText==14.0 || convertedText == 24.0) {      //DUNAND CHANGE
+    if (convertedText == 14.0 || convertedText == 24.0) {
       MockForm form = ((YaFormEditor) editor).getForm();
       if (form != null && form.getPropertyValue("BigDefaultText").equals("True")) {
         MockComponentsUtil.setWidgetFontSize(labelWidget, "24");

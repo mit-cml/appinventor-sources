@@ -112,7 +112,6 @@ public abstract class TextBoxBase extends AndroidViewComponent
     // only). Maybe we need another color value which would be 'SYSTEM_DEFAULT' which
     // will not attempt to explicitly initialize with any of the properties with any
     // particular value.
-    // BackgroundColor(Component.COLOR_NONE);
     Enabled(true);
     fontTypeface = Component.TYPEFACE_DEFAULT;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
@@ -127,7 +126,6 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
     Text("");
     TextColor(Component.COLOR_DEFAULT);
-    //DUNAND CHANGE
     BackgroundColor(Component.COLOR_DEFAULT);
   }
 
@@ -237,12 +235,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setBackgroundColor(view, argb);
     } else {
-      //ViewUtil.setBackgroundDrawable(view, defaultTextBoxDrawable);
-      //DUNAND_CHANGE
       if (isHighContrast || container.$form().$form().HighContrast()) {
         TextViewUtil.setBackgroundColor(view, Component.COLOR_BLACK);
-      }
-      else {
+      } else {
         ViewUtil.setBackgroundDrawable(view, defaultTextBoxDrawable);
       }
     }
@@ -359,7 +354,6 @@ public abstract class TextBoxBase extends AndroidViewComponent
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
   public void FontSize(float size) {
-  //dunand change
     if (Math.abs(size-Component.FONT_DEFAULT_SIZE)<.01 || Math.abs(size-24)<.01) {
       if (container.$form().BigDefaultText()) {
         TextViewUtil.setFontSize(view, 24);
@@ -498,7 +492,6 @@ public abstract class TextBoxBase extends AndroidViewComponent
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setTextColor(view, argb);
     } else {
-      //DUNAND CHANGE
       if (isHighContrast || container.$form().HighContrast()) {
         TextViewUtil.setTextColor(view, COLOR_WHITE);
       }

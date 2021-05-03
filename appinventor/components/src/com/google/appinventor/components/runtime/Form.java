@@ -142,7 +142,6 @@ public class Form extends AppInventorCompatActivity
   private static final int DEFAULT_ACCENT_COLOR =
       hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
 
-  //Dunand change
   private List<Component> allChildren = new ArrayList<>();
 
   // Keep track of the current form object.
@@ -205,7 +204,7 @@ public class Form extends AppInventorCompatActivity
 
   private FrameLayout frameLayout;
   private boolean scrollable;
-  //Dunand change
+
   private boolean highContrast;
   private boolean bigDefaultText;
 
@@ -454,8 +453,8 @@ public class Form extends AppInventorCompatActivity
       ActionBar(themeHelper.hasActionBar());
     }
     Scrollable(false);       // frameLayout is created in Scrollable()
-    HighContrast(false); //DUNAND change
-    BigDefaultText(false); //DUNAND change
+    HighContrast(false);
+    BigDefaultText(false);
     Sizing("Responsive");    // Note: Only the Screen1 value is used as this is per-project
     AboutScreen("");
     BackgroundImage("");
@@ -1129,7 +1128,6 @@ public class Form extends AppInventorCompatActivity
   }
 
 
-///DUNAND CHANGE
   /**
    * HighContrast property getter method.
    *
@@ -1205,8 +1203,6 @@ public class Form extends AppInventorCompatActivity
       }
     }
   }
-
-  ///END DUNAND CHANGE
 
   /**
    * Scrollable property getter method.
@@ -2208,7 +2204,6 @@ public class Form extends AppInventorCompatActivity
     allChildren.add(component);
   }
 
-  //dunand change
   @Override
   public List<? extends Component> getChildren(){
     return allChildren;

@@ -57,7 +57,6 @@ public class TableArrangement extends AndroidViewComponent
   // Layout
   private final TableLayout viewLayout;
 
-  //Dunand change
   private List<Component> allChildren;
 
   /**
@@ -132,13 +131,10 @@ public class TableArrangement extends AndroidViewComponent
 
   @Override
   public void $add(AndroidViewComponent component) {
-
     viewLayout.add(component);
-    //dunand change
     allChildren.add(component);
   }
 
-  //dunand change
   @Override
   public List<? extends Component> getChildren(){
     return allChildren = new ArrayList<>();

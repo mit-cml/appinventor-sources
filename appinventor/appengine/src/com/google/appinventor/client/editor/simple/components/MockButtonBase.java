@@ -173,7 +173,6 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       return;
     }
     if (MockComponentsUtil.isDefaultColor(text)) {
-      //DUNAND CHANGE
       MockForm form = ((YaFormEditor) editor).getForm();
       if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
         MockComponentsUtil.setWidgetBackgroundColor(buttonWidget, "&HFF000000");
@@ -212,11 +211,8 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
    * Sets the button's FontSize property to a new value.
    */
   private void setFontSizeProperty(String text) {
-    //MockComponentsUtil.setWidgetFontSize(buttonWidget, text);
-    //updatePreferredSizeOfButton();
-    //Dunand change
     float convertedText = Float.parseFloat(text);
-    if (convertedText==14.0 || convertedText == 24.0) {      //DUNAND CHANGE
+    if (convertedText == 14.0 || convertedText == 24.0) {
       MockForm form = ((YaFormEditor) editor).getForm();
       if (form != null && form.getPropertyValue("BigDefaultText").equals("True")) {
         MockComponentsUtil.setWidgetFontSize(buttonWidget, "24");
@@ -274,7 +270,6 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
    */
   private void setTextColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
-      //DUNAND CHANGE
       MockForm form = ((YaFormEditor) editor).getForm();
       if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
         MockComponentsUtil.setWidgetTextColor(buttonWidget, "&HFFFFFFFF");
@@ -363,12 +358,10 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
   }
 
   @Override
-  //DUNAND CHANGE
   public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
     if (component.getType().equals(MockForm.TYPE) && propertyName.equals("HighContrast")) {
       setBackgroundColorProperty(getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR));
       setTextColorProperty(getPropertyValue(PROPERTY_NAME_TEXTCOLOR));
-      //setFontSizeProperty(getPropertyValue(PROPERTY_NAME_FONTSIZE));
       updatePreferredSizeOfButton();
       refreshForm();
     }

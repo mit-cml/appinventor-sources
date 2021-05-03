@@ -69,7 +69,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // Image path
   private String imagePath = "";
 
-  //list of children Dunand change
+  //list of component children
   private List<Component> allChildren = new ArrayList<>();
 
   private Drawable defaultButtonDrawable;
@@ -148,14 +148,12 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   @Override
   public void $add(AndroidViewComponent component) {
-
     viewLayout.add(component);
     allChildren.add(component);
   }
 
-  //dunand change
   @Override
-  public List<? extends Component> getChildren(){
+  public List<? extends Component> getChildren() {
     return allChildren;
   }
 

@@ -46,7 +46,6 @@ public interface ComponentContainer {
 
   void setChildHeight(AndroidViewComponent component, int height);
 
-  //dunand change
   List<? extends Component> getChildren();
 
   int Width();

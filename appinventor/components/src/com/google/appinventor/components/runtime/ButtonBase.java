@@ -410,8 +410,6 @@ public abstract class ButtonBase extends AndroidViewComponent
         if (backgroundColor == Component.COLOR_DEFAULT) {
           // If there is no background image and color is default,
           // restore original 3D bevel appearance.
-          //ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
-          //DUNAND_NEW
           if (isHighContrast || container.$form().HighContrast()) {
             ViewUtil.setBackgroundDrawable(view, null);
             ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
@@ -508,12 +506,9 @@ public abstract class ButtonBase extends AndroidViewComponent
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
     }
     else if (backgroundColor == Component.COLOR_DEFAULT) {
-      //DUNAND change
-      //view.getBackground().setColorFilter(SHAPED_DEFAULT_BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
       if (isHighContrast || container.$form().HighContrast()) {
         view.getBackground().setColorFilter(Component.COLOR_BLACK, PorterDuff.Mode.SRC_ATOP);
-      }
-      else{
+      } else {
         view.getBackground().setColorFilter(SHAPED_DEFAULT_BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
       }
     }
@@ -764,7 +759,6 @@ public abstract class ButtonBase extends AndroidViewComponent
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setTextColor(view, argb);
     } else {
-      //DUNAND CHANGE
       //TextViewUtil.setTextColors(view, defaultColorStateList);
       if (isHighContrast || container.$form().HighContrast()){
         TextViewUtil.setTextColor(view, Color.WHITE);
