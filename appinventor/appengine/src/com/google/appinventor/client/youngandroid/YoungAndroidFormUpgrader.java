@@ -1051,6 +1051,11 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 27;
     }
 
+    if (srcCompVersion < 28) {
+      // HighContrast and BigDefaultText properties were added.
+      srcCompVersion = 28;
+    }
+
     return srcCompVersion;
   }
 
@@ -1113,6 +1118,10 @@ public final class YoungAndroidFormUpgrader {
      // The Click event was added.
      // The Clickable property was added.
      srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // The AlternateText property was added.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }

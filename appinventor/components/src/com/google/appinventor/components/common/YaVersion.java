@@ -898,7 +898,10 @@ public class YaVersion {
   // - Updated the default value of ShowListsAsJson from false -> true
   // For FORM_COMPONENT_VERSION 27:
   // - Added the Platform and PlatformVersion read-only blocks
-  public static final int FORM_COMPONENT_VERSION = 27;
+  // For FORM_COMPONENT_VERSION 28:
+  // - Added the AlternateText property
+  // - Added the BigDefaultText property
+  public static final int FORM_COMPONENT_VERSION = 28;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -931,7 +934,9 @@ public class YaVersion {
   // For IMAGE_COMPONENT_VERSION 4:
   // - The Click event was added.
   // - The Clickable property was added.
-  public static final int IMAGE_COMPONENT_VERSION = 4;
+  // For IMAGE_COMPONENT_VERSION 5:
+  // - The AlternateText property was added.
+  public static final int IMAGE_COMPONENT_VERSION = 5;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

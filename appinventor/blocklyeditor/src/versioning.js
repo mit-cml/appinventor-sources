@@ -1606,7 +1606,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Click event was added
     // The Clickable property was added.
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // AlternateText property was added.
+    5: "noUpgrade"
 
   }, // End Image upgraders
 
@@ -2366,7 +2369,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 27:
     // - Platform and PlatformVersion read-only blocks were added
-    27: "noUpgrade"
+    27: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 28:
+    // - HighContrast and BigDefaultText properties were added
+    28: "noUpgrade"
 
 
   }, // End Screen
