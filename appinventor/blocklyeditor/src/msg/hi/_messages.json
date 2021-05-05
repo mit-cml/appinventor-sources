@@ -1,0 +1,15 @@
+{
+    "Blockly.Msg.CONFIRM_DELETE": "मिटाने की पुष्टि",
+    "Blockly.Msg.VERTICAL_PARAMETERS": "लंबवत रूप से पैरामीटर व्यवस्थित करें",
+    "Blockly.Msg.HORIZONTAL_PARAMETERS": "क्षैतिज रूप से पैरामीटर व्यवस्थित करें",
+    "Blockly.Msg.INLINE_INPUTS": "इनलाइन इनपुट",
+    "Blockly.Msg.EXTERNAL_INPUTS": "बाहरी इनपुट्स",
+    "Blockly.Msg.ADD_COMMENT": "टिप्पणी जोड़ें",
+    "Blockly.Msg.REMOVE_COMMENT": "टिप्पणी निकालें",
+    "Blockly.Msg.DUPLICATE_BLOCK": "डुप्लिकेट",
+    "Blockly.Msg.SHOW": "कार्यक्षेत्र नियंत्रण दिखाएं",
+    "Blockly.Msg.HIDE": "कार्यक्षेत्र नियंत्रण छिपाएँ",
+    "Blockly.Msg.CLEAN_UP": "ब्लॉक साफ करें",
+    "Blockly.Msg.REDO": "फिर से करें",
+    "Blockly.Msg.UNDO": "पूर्ववत"
+}
