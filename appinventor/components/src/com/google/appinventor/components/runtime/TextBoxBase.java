@@ -71,6 +71,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
   //Whether or not the button is in big text mode
   private boolean isBigText = false;
 
+  //The default text color of the textbox hint, according to theme
+  private int hintColorDefault;
+
   /**
    * Creates a new TextBoxBase component
    *
@@ -80,6 +83,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   public TextBoxBase(ComponentContainer container, EditText textview) {
     super(container);
     view = textview;
+    hintColorDefault = view.getCurrentHintTextColor();
     // There appears to be an issue where, by default, Android 7+
     // wants to provide suggestions in text boxes. However, we do not
     // compile the necessary layouts for this to work correctly, which
@@ -121,7 +125,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       view.setHintTextColor(COLOR_YELLOW);
     }
     else {
-      view.setHintTextColor(0xFF9E9E9E);
+      view.setHintTextColor(hintColorDefault);
     }
 
     Text("");
@@ -547,7 +551,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       }
       else {
         TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? COLOR_WHITE : Component.COLOR_BLACK);
-        view.setHintTextColor(0xFF9E9E9E);
+        view.setHintTextColor(hintColorDefault);
 
       }
     }

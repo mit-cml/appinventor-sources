@@ -759,7 +759,6 @@ public abstract class ButtonBase extends AndroidViewComponent
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setTextColor(view, argb);
     } else {
-      //TextViewUtil.setTextColors(view, defaultColorStateList);
       if (isHighContrast || container.$form().HighContrast()){
         TextViewUtil.setTextColor(view, Color.WHITE);
       }
