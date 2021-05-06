@@ -122,16 +122,7 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
     for (YailList currentYailList : pairs) {
       Object currentKey = currentYailList.getObject(0);
       Object currentValue = currentYailList.getObject(1);
-
-      if (currentValue instanceof YailList) {
-        if (isAlist((YailList) currentValue)) {
-          map.put(currentKey, alistToDict((YailList) currentValue));
-        } else {
-          map.put(currentKey, checkList((YailList) currentValue));
-        }
-      } else {
-        map.put(currentKey, currentValue);
-      }
+      map.put(currentKey, currentValue);
     }
 
     return new YailDictionary(map);

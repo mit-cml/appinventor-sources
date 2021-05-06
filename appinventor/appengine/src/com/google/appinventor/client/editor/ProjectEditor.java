@@ -88,7 +88,7 @@ public abstract class ProjectEditor extends Composite {
 
   /**
    * Called when the ProjectEditor widget is loaded after having been hidden. 
-   * Subclasses must implement this method, taking responsiblity for causing 
+   * Subclasses must implement this method, taking responsibility for causing 
    * the onShow method of the selected file editor to be called and for updating 
    * any other UI elements related to showing the project editor.
    */
@@ -96,7 +96,7 @@ public abstract class ProjectEditor extends Composite {
   
   /**
    * Called when the ProjectEditor widget is about to be unloaded. Subclasses
-   * must implement this method, taking responsiblity for causing the onHide 
+   * must implement this method, taking responsibility for causing the onHide 
    * method of the selected file editor to be called and for updating any 
    * other UI elements related to hiding the project editor.
    */
@@ -194,7 +194,7 @@ public abstract class ProjectEditor extends Composite {
       selectedFileEditor.onHide();
     }
     // Note that we still want to do the following statements even if 
-    // selectedFileEdtior == fileEditor already. This handles the case of switching back
+    // selectedFileEditor == fileEditor already. This handles the case of switching back
     // to a previously opened project from another project.
     selectedFileEditor = fileEditor;
     deckPanel.showWidget(index);
@@ -296,14 +296,14 @@ public abstract class ProjectEditor extends Composite {
    * is only available from the designer. Each WebViewer then
    * registers its value here. Each time this hashtable is updated we
    * recompute whether or not location permission is needed based on a
-   * logical OR of all of the WebViwer components registered. Note:
-   * Even if no WebViewer component requires location permisson, other
+   * logical OR of all of the WebViewer components registered. Note:
+   * Even if no WebViewer component requires location permission, other
    * components, such as the LocationSensor may require it. That is
    * handled via the @UsesPermissions mechanism and is independent of
    * this code.
    *
    * @param componentName The name of the component registering location permission
-   * @param newVlue either "True" or "False" indicating whether permission is need.
+   * @param newValue either "True" or "False" indicating whether permission is need.
    */
 
   public final void recordLocationSetting(String componentName, String newValue) {

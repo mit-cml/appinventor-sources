@@ -319,6 +319,18 @@ public final class SimpleComponentDescriptor {
   }
 
   /**
+   * Returns the path to the license file used by the component.
+   *
+   * @return path to license file of component
+   */
+  public String getLicense() {
+    String type = COMPONENT_DATABASE.getComponentType(name);
+    return getLicenseURLFromPath(COMPONENT_DATABASE.getLicenseName(name),
+        type.substring(0, type.lastIndexOf('.')),
+        editor.getProjectId());
+  }
+
+  /**
    * Returns a draggable image for the component. Used when dragging a
    * component from the palette onto the form.
    *
@@ -370,6 +382,20 @@ public final class SimpleComponentDescriptor {
     }
   }
 
+  public static String getLicenseURLFromPath(String licensePath, String packageName, long projectId) {
+    if (licensePath.startsWith("aiwebres/") && packageName != null) {
+      // License file is inside aiwebres
+      return StorageUtil.getFileUrl(projectId,
+          "assets/external_comps/" + packageName + "/" + licensePath) + "&inline";
+    } else if(licensePath.startsWith("http:") || licensePath.startsWith("https:")) {
+      // The license is an external URL
+      return licensePath;
+    } else {
+      // No license file specified
+      return "";
+    }
+  }
+
   /**
    * Instantiates mock component by name.
    */
@@ -408,7 +434,7 @@ public final class SimpleComponentDescriptor {
     } else if (name.equals(MockListView.TYPE)) {
       return new MockListView(editor);
     } else if (name.equals(MockSlider.TYPE)) {
-        return new MockSlider(editor);
+      return new MockSlider(editor);
     } else if (name.equals(MockPasswordTextBox.TYPE)) {
       return new MockPasswordTextBox(editor);
     } else if (name.equals(MockRadioButton.TYPE)) {

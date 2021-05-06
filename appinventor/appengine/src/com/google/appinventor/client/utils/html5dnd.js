@@ -225,7 +225,7 @@ function checkValidDrop(e) {
       top.HTML5DragDrop_confirmOverwriteKey(doUploadKeystore(item));
     } else if (isExtension(item) && top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadExtension(item);
-    } else if (goog.string.endsWith(item.name, '.apk')) {
+    } else if (goog.string.endsWith(item.name, '.apk') || goog.string.endsWith(item.name, '.aab')) {
       top.HTML5DragDrop_reportError(2);
     } else if (top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadAsset(item);
