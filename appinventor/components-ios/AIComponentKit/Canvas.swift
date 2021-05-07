@@ -85,7 +85,7 @@ private class CanvasGestureRecognizer: UIGestureRecognizer {
         }
       })
       var handled = false
-      canvas?._sprites.forEach({ (sprite) in
+      draggedSprites.forEach({ (sprite) in
         if sprite.Enabled && sprite.Visible {
           sprite.Dragged(Float(startX), Float(startY), Float(lastX), Float(lastY), Float(x), Float(y))
           handled = true
