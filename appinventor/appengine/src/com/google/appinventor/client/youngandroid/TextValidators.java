@@ -89,7 +89,7 @@ public final class TextValidators {
   public static ProjectNameStatus checkNewProjectName(String projectName) {
     return checkNewProjectName(projectName, false);
   }
-  
+
   public static boolean checkNewComponentName(String componentName) {
 
     // Check that it meets the formatting requirements.
