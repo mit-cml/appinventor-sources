@@ -85,7 +85,7 @@ function importProject(droppedItem) {
   var filename = droppedItem.name;
   filename = filename.substr(filename.lastIndexOf('/') + 1);
   var projectName = filename.substr(0, filename.length - 4);
-  function doUploadProject(blob){
+  function doUploadProject(blob) {
     // Upload project
     var xhr = new XMLHttpRequest();
     var formData = new FormData();
@@ -102,7 +102,7 @@ function importProject(droppedItem) {
     };
     xhr.send(formData);
   }
-  if(!top.HTML5DragDrop_checkProjectNameForCollision(projectName)){
+  if (!top.HTML5DragDrop_checkProjectNameForCollision(projectName)) {
     handleDroppedItem(droppedItem, function(blob) {
       top.HTML5DragDrop_getNewProjectName(blob.name, function(fileName) {
         projectName = fileName;

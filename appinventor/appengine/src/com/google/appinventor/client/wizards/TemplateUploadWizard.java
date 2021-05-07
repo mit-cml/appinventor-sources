@@ -350,35 +350,9 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
         @Override
         public void execute() {
           // Make sure the project name is legal and unique.
-          if (!TextValidators.checkNewProjectName(selectedTemplateNAME, true)) {
+          if (TextValidators.checkNewProjectName(selectedTemplateNAME, true) 
+                  != TextValidators.ProjectNameStatus.SUCCESS) {
             center();
-            
-            String suggestedName = "";
-            String title;
-            selectedTemplateNAME = selectedTemplateNAME.replace(" ", "_")
-                .replaceAll("[^a-zA-Z0-9_]", "");
-
-            if (TextValidators.isTitleReserved()) {
-              title = MESSAGES.reservedTitleFormatError() + " : " + selectedTemplateNAME;
-            } else if (TextValidators.isTitleInvalid()) {
-              suggestedName = ProjectUploadWizard.getSuggestedName(selectedTemplateNAME);
-              title = MESSAGES.invalidTitleFormatError();
-              if (!TextValidators.checkNewProjectName(suggestedName, true)) {
-                  suggestedName = "";
-                  title += " : " + selectedTemplateNAME;
-              } else {
-                title += MESSAGES.suggestNameTitleCaption();
-              }
-            } else {
-              suggestedName = ProjectUploadWizard.getSuggestedName(selectedTemplateNAME);
-              title = MESSAGES.duplicateTitleFormatError();
-              if (!TextValidators.checkNewProjectName(suggestedName, true)) {
-                  suggestedName = "";
-                  title += " : " + selectedTemplateNAME;
-              } else {
-                title += MESSAGES.suggestNameTitleCaption();
-              }
-            }
   
             new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
               @Override
@@ -386,7 +360,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
                 createProject(name);
                 hide();
               }
-            }, suggestedName, title);
+            }, selectedTemplateNAME, true);
           } else {
             createProject(selectedTemplateNAME);  
           }
@@ -699,7 +673,8 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    */
   public static void openProjectFromTemplate(String url, final NewProjectCommand onSuccessCommand) {
     if (isTemplateName(url)) {
-      if (TextValidators.checkNewProjectName(url)) {
+      if (TextValidators.checkNewProjectName(url) 
+              == TextValidators.ProjectNameStatus.SUCCESS) {
         new TemplateUploadWizard().createProjectFromExistingZip(url, new NewProjectCommand() {
           @Override
           public void execute(Project project) {
@@ -750,7 +725,8 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     }
 
     // If project of the same name already exists, just open it
-    if (!TextValidators.checkNewProjectName(projectName)) {
+    if (TextValidators.checkNewProjectName(projectName) 
+              != TextValidators.ProjectNameStatus.SUCCESS) {
       Project project = ode.getProjectManager().getProject(projectName);
       if (onSuccessCommand != null) {
         onSuccessCommand.execute(project);

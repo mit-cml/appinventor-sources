@@ -58,41 +58,16 @@ public class ProjectUploadWizard extends Wizard {
               substring(Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\')) + 1);
 
           // Make sure the project name is legal and unique.
-          if (!TextValidators.checkNewProjectName(filename, true)) {
+          if (TextValidators.checkNewProjectName(filename, true) 
+                      != TextValidators.ProjectNameStatus.SUCCESS) {
          
-            String suggestedName = "";
-            String title;
-            filename = filename.replace(" ", "_").replaceAll("[^a-zA-Z0-9_]", "");
-
-            if (TextValidators.isTitleReserved()) {
-              title = MESSAGES.reservedTitleFormatError() + " : " + filename;
-            } else if (TextValidators.isTitleInvalid()) {
-              suggestedName = getSuggestedName(filename);
-              title = MESSAGES.invalidTitleFormatError();
-              if (!TextValidators.checkNewProjectName(suggestedName, true)) {
-                  suggestedName = "";
-                  title += " : " + filename;
-              } else {
-                title += MESSAGES.suggestNameTitleCaption();
-              }
-            } else {
-              suggestedName = getSuggestedName(filename);
-              title = MESSAGES.duplicateTitleFormatError();
-              if (!TextValidators.checkNewProjectName(suggestedName, true)) {
-                  suggestedName = "";
-                  title += " : " + filename;
-              } else {
-                title += MESSAGES.suggestNameTitleCaption();
-              }
-            }
-
             // Show Dialog Box and rename the project
             new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
               @Override
               public void getNewName(String name) {
                 upload(upload, name);
               }
-            }, suggestedName, title);
+            }, filename, true);
   
           } else {
             upload(upload, filename);
@@ -138,54 +113,6 @@ public class ProjectUploadWizard extends Wizard {
       });
   }
 
-  /**
-   * Suggests a project name based on existing project names
-   * if hello,hello4 are in project list and user tries to upload
-   * another project hello.aia then it suggests hello5 or if user uploads
-   * hello4.aia then it suggests hello5.
-   * @param filename initial filename
-   * @return
-   */
-  public static String getSuggestedName(String filename) {
-    int max = 0;
-    int len = filename.length();
-    int lastInt = filename.charAt(len - 1);
-    int splitPosition = len;
-    if (lastInt <= 57 && lastInt >= 48) {
-      splitPosition = len - 1;
-      for (int i = len - 2; i >= 0; i--) {
-        int cur = filename.charAt(i);
-        if (cur <= 57 && cur >= 48) {
-          splitPosition--; 
-        } else {
-          break;
-        }
-      }
-  
-      if (splitPosition == 0) {
-        return filename;
-      }
-      filename = filename.substring(0, splitPosition);
-    }
-    for (Project proj : Ode.getInstance().getProjectManager().getProjects(filename)) {
-      String sub = proj.getProjectName().substring(splitPosition);
-      if (sub.length() > 0) { 
-        try {
-          lastInt = Integer.parseInt(sub);
-        } catch (Exception e) {
-          lastInt = -1;
-        }
-        if (lastInt > max) {
-          max = lastInt;
-        }
-      } else {
-        max++;
-      }
-    }
-    max++;
-    return filename + max;
-  }
-  
   @Override
   public void show() {
     super.show();

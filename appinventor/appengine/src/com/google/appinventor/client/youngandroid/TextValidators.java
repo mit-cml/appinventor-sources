@@ -24,15 +24,13 @@ public final class TextValidators {
   private static final int MAX_FILENAME_SIZE = 100;
   private static final int MIN_FILENAME_SIZE = 1;
 
-  enum ProjectNameStatus {
+  public enum ProjectNameStatus {
     SUCCESS,
     INVALIDFORMAT,
     RESERVED,
     DUPLICATE,
     DUPLICATEINTRASH
   }
-  
-  private static ProjectNameStatus projectNameStatus; 
 
   protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
           "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
@@ -59,76 +57,37 @@ public final class TextValidators {
    * @param projectName the project name to validate
    * @return {@code true} if the project name is valid, {@code false} otherwise
    */
-  public static boolean checkNewProjectName(String projectName, boolean quietly) {
+  public static ProjectNameStatus checkNewProjectName(String projectName, boolean quietly) {
 
     // Check the format of the project name
     if (!isValidIdentifier(projectName)) {
       if (!quietly) {
         Window.alert(MESSAGES.malformedProjectNameError());
       }
-      projectNameStatus = ProjectNameStatus.INVALIDFORMAT;
-      return false;
+      return ProjectNameStatus.INVALIDFORMAT;
     }
 
     // Check for names that reserved words
     if (isReservedName(projectName)) {
       Window.alert(MESSAGES.reservedNameError());
-      projectNameStatus = ProjectNameStatus.RESERVED;
-      return false;
+      return ProjectNameStatus.RESERVED;
     }
 
     // Check that project does not already exist
     if (Ode.getInstance().getProjectManager().getProject(projectName) != null) {
       if (Ode.getInstance().getProjectManager().getProject(projectName).isInTrash()) {
         Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));
-        projectNameStatus = ProjectNameStatus.DUPLICATEINTRASH;
+        return ProjectNameStatus.DUPLICATEINTRASH;
       } else if (!quietly) {
         Window.alert(MESSAGES.duplicateProjectNameError(projectName));
       }
-      projectNameStatus = ProjectNameStatus.DUPLICATE;
-      return false;
+      return ProjectNameStatus.DUPLICATE;
     }
-    projectNameStatus = ProjectNameStatus.SUCCESS;
-    return true;
+    return ProjectNameStatus.SUCCESS;
   }
 
-  public static boolean checkNewProjectName(String projectName) {
+  public static ProjectNameStatus checkNewProjectName(String projectName) {
     return checkNewProjectName(projectName, false);
-  }
-  
-  /**
-   * Returns the error due to which project name is invalid.
-   * @return The error type of filename.
-   */
-  public static String getProjectNameStatus() {
-    switch (projectNameStatus) {
-      case SUCCESS :
-        return MESSAGES.successfulTitleFormat();
-      case INVALIDFORMAT:
-        return MESSAGES.invalidTitleFormatError();
-      case RESERVED :
-        return MESSAGES.reservedTitleFormatError();
-      case DUPLICATE :
-        return MESSAGES.duplicateTitleFormatError();
-      case DUPLICATEINTRASH :
-        return MESSAGES.duplicateTitleInTrashFormatError();
-      default :
-        break;
-    }
-    return "";
-  }
-  
-  public static boolean isTitleDuplicate() {
-    return projectNameStatus == ProjectNameStatus.DUPLICATE 
-      || projectNameStatus == ProjectNameStatus.DUPLICATEINTRASH;
-  }
-
-  public static boolean isTitleInvalid() {
-    return projectNameStatus == ProjectNameStatus.INVALIDFORMAT;
-  }
-  
-  public static boolean isTitleReserved() {
-    return projectNameStatus == ProjectNameStatus.RESERVED;
   }
   
   public static boolean checkNewComponentName(String componentName) {
