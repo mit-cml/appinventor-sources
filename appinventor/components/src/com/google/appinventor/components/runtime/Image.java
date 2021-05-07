@@ -88,6 +88,12 @@ public final class Image extends AndroidViewComponent {
     return view;
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "A written description of what the image looks like.")
+  public void AlternateText(String description){
+    view.setContentDescription(description);
+  }
+
   @SimpleEvent(description = "An event that occurs when an image is clicked.")
   public void Click() {
     EventDispatcher.dispatchEvent(this, "Click");
