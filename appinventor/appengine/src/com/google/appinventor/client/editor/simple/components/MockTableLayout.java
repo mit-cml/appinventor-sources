@@ -10,6 +10,8 @@ import com.google.appinventor.client.output.OdeLog;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.Widget;
+
 import java.util.Arrays;
 import java.util.Map;
 
@@ -167,7 +169,19 @@ final class MockTableLayout extends MockLayout {
   private Cell getCellOfChild(MockComponent child) {
     String rowString = child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_ROW);
     String colString = child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_COLUMN);
-    return new Cell(Integer.parseInt(rowString), Integer.parseInt(colString));
+    int rowInt = Integer.parseInt(rowString);
+    int colInt = Integer.parseInt(colString);
+
+    if (rowInt == -1 && colInt == -1) {
+      if (dropTargetCell != null) {
+        Cell destCell = dropTargetCell;
+        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_COLUMN, "" + destCell.col);
+        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_ROW, "" + destCell.row);
+        setDropTargetCell(null);
+        return destCell;
+      }
+    } 
+    return new Cell(rowInt, colInt);
   }
 
   /**
@@ -434,6 +448,31 @@ final class MockTableLayout extends MockLayout {
   void dispose() {
     if (dropTargetArea != null) {
       DOM.removeChild(container.getRootPanel().getElement(), dropTargetArea);
+    }
+  }
+
+  private boolean isInside(Widget w, int absX, int absY) {
+    int wx = w.getAbsoluteLeft();
+    int wy = w.getAbsoluteTop();
+    int ww = w.getOffsetWidth();
+    int wh = w.getOffsetHeight();
+    return (wx <= absX) && (absX < wx + ww) && (wy <= absY) && (absY < wy + wh);
+  }
+
+  // Sets a border around cell when mouse is clicked on a cell in table
+
+  public void setCell(Widget table, Widget sender, int x, int y) {
+    int absX = x + sender.getAbsoluteLeft();
+    int absY = y + sender.getAbsoluteTop();
+
+    if (isInside(table, absX, absY)) {
+      setDropTargetCell(getCellContainingPoint(absX - table.getAbsoluteLeft(),
+          absY - table.getAbsoluteTop()));
+      if (!sender.equals(table)) {
+        setDropTargetAreaVisible(false);
+      }
+    } else if (dropTargetCell != null) {
+      setDropTargetCell(null);
     }
   }
 }

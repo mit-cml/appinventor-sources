@@ -7,6 +7,7 @@
 package com.google.appinventor.client.widgets.dnd;
 
 import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
@@ -25,6 +26,8 @@ import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchCancelEvent;
 import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.dom.client.Touch;
+
+import java.util.ArrayList;
 
 /**
  * Provides support for dragging from a {@link DragSource}
@@ -119,6 +122,9 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
   private int dragX;
   private int dragY;
 
+  // List of MockTableArrangements to which mouse click position is passed
+  private static ArrayList<MockTableArrangement> tableArrangementsList;
+  
   // Array of widgets that the drag source widget can be dropped on
   private DropTarget[] dropTargets;
 
@@ -245,7 +251,20 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
       return 0;
     }
   }
-
+  
+  /**
+   * Adds MockTableArrangements which are notified of mouse down positions
+   * and are used to manage copy paste of items in MockTableArrangement.
+   * 
+   * @param table MockTableArrangement to add
+   */
+  public static void addTableArrangement(MockTableArrangement table) {
+    if (tableArrangementsList == null) {
+      tableArrangementsList = new ArrayList<MockTableArrangement>();
+    }
+    tableArrangementsList.add(table);
+  }
+  
   // MouseListener implementation
 
   @Override
@@ -258,6 +277,15 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
     startX = x;
     startY = y;
 
+    if (!tableArrangementsList.isEmpty()) {
+      for (MockTableArrangement t : tableArrangementsList) {
+        if (t.getAbsoluteLeft() == 0 && t.getAbsoluteTop() == 0) {
+          tableArrangementsList.remove(t);
+        }
+        t.sendMouseDown(sender, x, y);
+      }
+    }
+    
     if (!captured) {
       // Force browser to keep sending us events until the mouse is released
       dom.setCapture(sender.getElement());
