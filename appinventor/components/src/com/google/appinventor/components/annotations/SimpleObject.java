@@ -28,4 +28,8 @@ public @interface SimpleObject {
      */
     boolean external() default false;
 
+    /**
+     * True if this component/extension uses Kotlin language.
+     */
+    boolean usesKotlin() default false;
 }

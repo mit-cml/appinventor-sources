@@ -77,11 +77,12 @@
   <!-- ====================================================================
        Pull in definition of propertyregex task from Ant Contrib jar
        ===================================================================== -->
-  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-    <classpath>
-      <pathelement location="${appinventor.dir}/lib/ant-contrib/ant-contrib-1.0b3.jar"/>
-    </classpath>
-  </taskdef>
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${appinventor.dir}/lib/ant-contrib/ant-contrib-1.0b3.jar" />
+
+<!-- ====================================================================
+       Pull in definition of withKotlin task from kotlin-ant.jar
+       ===================================================================== -->
+  <typedef resource="org/jetbrains/kotlin/ant/antlib.xml" classpath="${appinventor.dir}/lib/kotlin/kotlin-ant.jar"/>
 
   <!-- =====================================================================
        Define task ai.javac as the default compilation task for AI.  It sets
@@ -124,6 +125,7 @@
              debug="@{debug}"
              debuglevel="@{debuglevel}">
         <implicit-elements/>
+        <withKotlin />
       </javac>
     </sequential>
   </macrodef>

@@ -87,6 +87,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
     appendComponentInfo(sb, ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET, component.broadcastReceivers);
     appendComponentInfo(sb, ComponentDescriptorConstants.SERVICES_TARGET, component.services);
     appendComponentInfo(sb, ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET, component.contentProviders);
+    appendComponentInfo(sb, ComponentDescriptorConstants.USES_KOTLIN, Collections.singleton(Boolean.toString(component.getUsesKotlin())));
     appendConditionalComponentInfo(component, sb);
     // TODO(Will): Remove the following call once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
