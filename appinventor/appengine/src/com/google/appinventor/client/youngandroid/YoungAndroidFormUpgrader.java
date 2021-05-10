@@ -1088,12 +1088,16 @@ public final class YoungAndroidFormUpgrader {
     }
 
     if (srcCompVersion < 28) {
+      // HighContrast and BigDefaultText properties were added.
+      srcCompVersion = 28;
+    }
+    if (srcCompVersion < 29) {
       // ScreenAnimation dropdown blocks were added.
       // HorizontalAlignment and VerticalAlignment dropdown blocks were added.
       // Adds dropdown block for ScreenOrientation.
       // Assets helper block was added.
       // Adds Permission dropdown block.
-      srcCompVersion = 28;
+      srcCompVersion = 29;
     }
 
     return srcCompVersion;
@@ -1177,6 +1181,10 @@ public final class YoungAndroidFormUpgrader {
      srcCompVersion = 4;
     }
     if (srcCompVersion < 5) {
+      // The AlternateText property was added.
+      srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
       // Assets helper block was added.
       srcCompVersion = 5;
     }

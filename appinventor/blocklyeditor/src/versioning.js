@@ -1948,8 +1948,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // The Clickable property was added.
     4: "noUpgrade",
 
+    // AlternateText property was added.
+    5: "noUpgrade",
+
     // Assets helper block was added.
-    5: Blockly.Versioning.makeSetterUseHelper(
+    6: Blockly.Versioning.makeSetterUseHelper(
         'Image', 'Picture', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End Image upgraders
@@ -2813,12 +2816,16 @@ Blockly.Versioning.AllUpgradeMaps =
     27: "noUpgrade",
 
     // For FORM_COMPONENT_VERSION 28:
+    // - HighContrast and BigDefaultText properties were added
+    28: "noUpgrade"
+
+    // For FORM_COMPONENT_VERSION 29:
     // - Adds dropdown blocks for ScreenAnimation.
     // - Adds dropdown blocks for HorizontalAlignment and VerticalAlignment.
     // - Adds dropdown block for ScreenOrientation.
     // - Assets helper block was added.
     // - Adds Permission dropdown block.
-    28: [Blockly.Versioning.makeSetterUseDropdown(
+    29: [Blockly.Versioning.makeSetterUseDropdown(
             'Form', 'OpenScreenAnimation', 'ScreenAnimation'),
          Blockly.Versioning.makeSetterUseDropdown(
             'Form', 'CloseScreenAnimation', 'ScreenAnimation'),

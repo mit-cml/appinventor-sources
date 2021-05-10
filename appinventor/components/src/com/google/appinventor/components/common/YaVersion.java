@@ -936,12 +936,15 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 27:
   // - Added the Platform and PlatformVersion read-only blocks
   // For FORM_COMPONENT_VERSION 28:
+  // - Added the AlternateText property
+  // - Added the BigDefaultText property
+  // For FORM_COMPONENT_VERSION 29:
   // - Adds dropdown blocks for ScreenAnimation.
   // - Adds dropdown blocks for HorizontalAlignment and VerticalAlignment.
   // - Adds dropdown block for ScreenOrientation.
   // - Assets helper block was added.
   // - Adds Permission dropdown block.
-  public static final int FORM_COMPONENT_VERSION = 28;
+  public static final int FORM_COMPONENT_VERSION = 29;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -981,8 +984,10 @@ public class YaVersion {
   // - The Click event was added.
   // - The Clickable property was added.
   // For IMAGE_COMPONENT_VERSION 5:
+  // - The AlternateText property was added.
+  // For IMAGE_COMPONENT_VERSION 6:
   // - Assets helper block was added.
-  public static final int IMAGE_COMPONENT_VERSION = 5;
+  public static final int IMAGE_COMPONENT_VERSION = 6;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

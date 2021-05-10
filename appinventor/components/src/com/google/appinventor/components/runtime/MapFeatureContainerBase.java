@@ -329,6 +329,11 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
   }
 
   @Override
+  public List<? extends Component> getChildren(){
+    return features;
+  }
+
+  @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
     throw new UnsupportedOperationException("Map.setChildWidth called");
   }

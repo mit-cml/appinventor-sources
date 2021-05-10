@@ -8,6 +8,8 @@ package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
 
+import java.util.List;
+
 /**
  * Components that can contain other components need to implement this
  * interface.
@@ -43,6 +45,8 @@ public interface ComponentContainer {
   void setChildWidth(AndroidViewComponent component, int width);
 
   void setChildHeight(AndroidViewComponent component, int height);
+
+  List<? extends Component> getChildren();
 
   int Width();
 

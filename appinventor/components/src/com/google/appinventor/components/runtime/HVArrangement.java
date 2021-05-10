@@ -39,6 +39,8 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A container for components that arranges them linearly, either
@@ -70,6 +72,9 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   private Drawable backgroundImageDrawable;
   // Image path
   private String imagePath = "";
+
+  //list of component children
+  private List<Component> allChildren = new ArrayList<>();
 
   private Drawable defaultButtonDrawable;
 
@@ -146,6 +151,12 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   @Override
   public void $add(AndroidViewComponent component) {
     viewLayout.add(component);
+    allChildren.add(component);
+  }
+
+  @Override
+  public List<? extends Component> getChildren() {
+    return allChildren;
   }
 
   @Override

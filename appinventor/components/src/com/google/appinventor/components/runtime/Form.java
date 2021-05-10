@@ -149,6 +149,8 @@ public class Form extends AppInventorCompatActivity
   private static final int DEFAULT_ACCENT_COLOR =
       hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
 
+  private List<Component> allChildren = new ArrayList<>();
+
   // Keep track of the current form object.
   // activeForm always holds the Form that is currently handling event dispatching so runtime.scm
   // can lookup symbols in the correct environment.
@@ -210,6 +212,9 @@ public class Form extends AppInventorCompatActivity
   private FrameLayout frameLayout;
   private boolean scrollable;
 
+  private boolean highContrast;
+  private boolean bigDefaultText;
+
   private ScaledFrameLayout scaleLayout;
   private static boolean sCompatibilityMode;
 
@@ -267,6 +272,8 @@ public class Form extends AppInventorCompatActivity
   // It should be changed from 100000 to 65535 if the functionality to extend
   // FragmentActivity is added in future.
   public static final int MAX_PERMISSION_NONCE = 100000;
+
+
 
   public static class PercentStorageRecord {
     public enum Dim {
@@ -453,6 +460,8 @@ public class Form extends AppInventorCompatActivity
       ActionBar(themeHelper.hasActionBar());
     }
     Scrollable(false);       // frameLayout is created in Scrollable()
+    HighContrast(false);
+    BigDefaultText(false);
     Sizing("Responsive");    // Note: Only the Screen1 value is used as this is per-project
     AboutScreen("");
     BackgroundImage("");
@@ -1126,6 +1135,83 @@ public class Form extends AppInventorCompatActivity
         }
       }
     });
+  }
+
+
+  /**
+   * HighContrast property getter method.
+   *
+   * @return  true if we want high constrast mode
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+          description = "When checked, we will use high contrast mode")
+  public boolean HighContrast() {
+    return highContrast;
+  }
+
+  /**
+   * When checked, there will be high contrast mode turned on.
+   *
+   * @param highContrast  true if the high contrast mode is on
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty
+  public void HighContrast(boolean highContrast) {
+
+    //this.scrollable = scrollable;
+    this.highContrast=highContrast;
+    setHighContrastRecursive(this, highContrast);
+    recomputeLayout();
+  }
+
+  private static void setHighContrastRecursive(ComponentContainer container, boolean enabled) {
+    for (Component child : container.getChildren()) {
+      if (child instanceof ComponentContainer) {
+        setHighContrastRecursive((ComponentContainer) child, enabled);
+      } else if (child instanceof AccessibleComponent) {
+        ((AccessibleComponent) child).setHighContrast(enabled);
+      }
+    }
+  }
+
+
+  /**
+   * BigDefaultText property getter method.
+   *
+   * @return  true if we are in the big text mode
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+          description = "When checked, we will use high contrast mode")
+  public boolean BigDefaultText() {
+    return bigDefaultText;
+  }
+
+  /**
+   * When checked, all default size text will be increased in size.
+   *
+   * @param bigDefaultText  true if the big text mode is on
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty
+  public void BigDefaultText(boolean bigDefaultText) {
+
+    //this.scrollable = scrollable;
+    this.bigDefaultText=bigDefaultText;
+    setBigDefaultTextRecursive(this, bigDefaultText);
+    recomputeLayout();
+  }
+
+
+  private static void setBigDefaultTextRecursive(ComponentContainer container, boolean enabled) {
+    for (Component child : container.getChildren()) {
+      if (child instanceof ComponentContainer) {
+        setBigDefaultTextRecursive((ComponentContainer) child, enabled);
+      } else if (child instanceof AccessibleComponent) {
+        ((AccessibleComponent) child).setLargeFont(enabled);
+      }
+    }
   }
 
   /**
@@ -2191,8 +2277,17 @@ public class Form extends AppInventorCompatActivity
 
   @Override
   public void $add(AndroidViewComponent component) {
+
     viewLayout.add(component);
+    allChildren.add(component);
   }
+
+  @Override
+  public List<? extends Component> getChildren(){
+    return allChildren;
+  }
+
+
 
   public float deviceDensity(){
     return this.deviceDensity;
