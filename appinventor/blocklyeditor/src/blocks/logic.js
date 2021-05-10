@@ -363,7 +363,8 @@ Blockly.Blocks['logic_operation'] = {
   },
   updateFields: function(op) {
     if (this.getInputsInline()) {
-      var text = Blockly.Blocks.logic_operation.IDENTITY(op);
+      var text = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
+        Blockly.Msg.LANG_LOGIC_OPERATION_OR;
       for (var input, i = 2; (input = this.inputList[i]); i++) {
         input.fieldRow[0].setText(text);
       }
