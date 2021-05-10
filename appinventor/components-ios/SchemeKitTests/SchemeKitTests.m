@@ -676,4 +676,50 @@ typedef union {
   XCTAssertEqualObjects(@"0.5", result);
 }
 
+- (void)testFormat {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+
+  // Working example
+  NSString *result = [interpreter evalForm:@"(format #f \"text ~S ~A ~~ ~%\" \"abc\" \"def\")"];
+  XCTAssertEqualObjects(@"text \"abc\" def ~ \n", result);
+
+  // Simple example
+  result = [interpreter evalForm:@"(format #f \"test\")"];
+  XCTAssertEqualObjects(@"test", result);
+
+  // Test too few parameters
+  [interpreter evalForm:@"(format)"];
+  XCTAssertNotNil(interpreter.exception);
+  [interpreter clearException];
+
+  // Test bad first argument
+  [interpreter evalForm:@"(format 'foobar \"test\")"];
+  XCTAssertNotNil(interpreter.exception);
+  [interpreter clearException];
+
+  // Test too few replacements in ~a
+  [interpreter evalForm:@"(format #f \"~a\")"];
+  XCTAssertNotNil(interpreter.exception);
+  [interpreter clearException];
+
+  // Test too few replacements in ~s
+  [interpreter evalForm:@"(format #f \"~s\")"];
+  XCTAssertNotNil(interpreter.exception);
+  [interpreter clearException];
+
+  // Test unrecognized substitutions
+  result = [interpreter evalForm:@"(format #f \"~n\")"];
+  XCTAssertEqualObjects(@"~n", result);
+
+  // Test tilde at end of input
+  result = [interpreter evalForm:@"(format #f \"~\")"];
+  XCTAssertEqualObjects(@"", result);
+  XCTAssertNil(interpreter.exception);
+
+  // Print to stdout
+  result = [interpreter evalForm:@"(format #t \"hello world~%\")"];
+  XCTAssertEqualObjects(@"#undefined", result);
+  XCTAssertNil(interpreter.exception);
+}
+
 @end

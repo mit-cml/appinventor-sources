@@ -1475,6 +1475,84 @@ yail_get_native_instance(pic_state *pic, id object) {
   return pic_nil_value(pic);
 }
 
+pic_value
+yail_format(pic_state *pic) {
+  pic_value *args;
+  int argc;
+
+  pic_get_args(pic, "*", &argc, &args);
+
+  if (argc < 2) {
+    pic_error(pic, "format expected at least 2 arguments", 0);
+  }
+
+  pic_value dest = args[0];
+  const char *format_str = pic_str(pic, args[1]);
+  size_t len = strlen(format_str);
+  BOOL is_str = NO;
+  if (pic_false_p(pic, dest)) {
+    dest = pic_fmemopen(pic, NULL, len + 1, "w");
+    is_str = YES;
+  } else if (pic_true_p(pic, dest)) {
+    dest = pic_stdout(pic);
+  } else if (!pic_port_p(pic, dest)) {
+    pic_error(pic, "Expected argument 1 of format to be #t, #f, or a port", 1, dest);
+  }
+
+  int i = 2;
+  while (*format_str) {
+    if (*format_str == '~') {
+      format_str++;
+      if (!*format_str) {
+        break;
+      }
+      switch (*format_str) {
+        case 'a':
+        case 'A':
+          if (i >= argc) {
+            pic_error(pic, "Too few arguments to format", 0);
+          }
+          pic_fprintf(pic, dest, "~a", args[i++]);
+          break;
+
+        case 's':
+        case 'S':
+          if (i >= argc) {
+            pic_error(pic, "Too few arguments to format", 0);
+          }
+          pic_fprintf(pic, dest, "~s", args[i++]);
+          break;
+
+        case '~':
+          pic_fputc(pic, '~', dest);
+          break;
+
+        case '%':
+          pic_fputc(pic, '\n', dest);
+          break;
+
+        default:
+          pic_fputc(pic, '~', dest);
+          pic_fputc(pic, *format_str, dest);
+          break;
+      }
+    } else {
+      pic_fputc(pic, *format_str, dest);
+    }
+    format_str++;
+  }
+  if (is_str) {
+    const char *result;
+    int len;
+    pic_fputc(pic, '\0', dest);
+    pic_fgetbuf(pic, dest, &result, &len);
+    return pic_cstr_value(pic, result);
+  } else {
+    pic_fflush(pic, dest);
+    return pic_undef_value(pic);
+  }
+}
+
 /// MARK: Initialization
 
 void
@@ -1521,6 +1599,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "YailDictionary:makeDictionary", yail_make_dictionary);
   pic_defun(pic, "YailDictionary:alistToDict", yail_dictionary_alist_to_dict);
   pic_defun(pic, "yail:define-alias", yail_define_alias);
+  pic_defun(pic, "format", yail_format);
   pic_load_cstr(pic, "(define-syntax define-alias (syntax-rules () ((_ alias name) "
       "(yail:define-alias 'alias 'name))))");
   objects = [NSMutableDictionary dictionary];
