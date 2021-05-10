@@ -430,6 +430,8 @@ public class MockMarker extends MockMapFeatureBaseWithFill {
       marker.on('click dragstart', marker.clickHandler);
       marker.on('dragend', marker.dragHandler);
     }
+    var isVisible = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getVisibleProperty()();
+    if(!isVisible) map.removeLayer(marker);
   }-*/;
 
   native double getLatitude()/*-{
