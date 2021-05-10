@@ -18,5 +18,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
 public @interface Asset {
-    public String[] value() default {};
+  /**
+   * If specified, a list of extensions used to filter the asset list by.
+   *
+   * @return an empty array (the default) or an array of file extensions used to filter the assets
+   */
+  String[] value() default {};
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Defines a NxtSensorType type used by the NxtDirectCommands component.
  * 
- * Info attained from the "LEGO MINDSTORMS NXT Direct Command" document.
+ * <p>Info attained from the "LEGO MINDSTORMS NXT Direct Command" document.
  * http://kio4.com/b4a/programas/Appendix%202-LEGO%20MINDSTORMS%20NXT%20Direct%20commands.pdf
  * http://www.ni.com/pdf/manuals/372574c.pdf
  * In combination with the documentation here:
@@ -36,7 +36,7 @@ public enum NxtSensorType implements OptionList<Integer> {
   RcxLight(0x03),
   RcxAngle(0x04);
 
-  private int value;
+  private final int value;
 
   NxtSensorType(int type) {
     this.value = type;

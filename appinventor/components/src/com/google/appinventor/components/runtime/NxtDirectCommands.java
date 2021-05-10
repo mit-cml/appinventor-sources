@@ -571,6 +571,13 @@ public class NxtDirectCommands extends LegoMindstormsNxtBase {
     return MessageReadAbstract(box);
   }
 
+  /**
+   * Read a message from the given {@link NxtMailbox}.
+   *
+   * @param mailbox the Nxt inbox identifier
+   * @return the message as a string
+   */
+  @SuppressWarnings("RegularMethodName")
   public String MessageReadAbstract(NxtMailbox mailbox) {
     final String functionName = "MessageRead";
     final int intMailbox = mailbox.toInt();
@@ -590,19 +597,25 @@ public class NxtDirectCommands extends LegoMindstormsNxtBase {
       if (returnPackage.length == 64) {
         int mailboxEcho = getUBYTEValueFromBytes(returnPackage, 3);
         if (mailboxEcho != intMailbox) {
-          Log.w(logTag, "MessageRead: unexpected return mailbox: Box" +
-              mailboxEcho + " (expected " + intMailbox + ")");
+          Log.w(logTag, "MessageRead: unexpected return mailbox: Box"
+              + mailboxEcho + " (expected " + intMailbox + ")");
         }
         int messageLength = getUBYTEValueFromBytes(returnPackage, 4) - 1;
         return getStringValueFromBytes(returnPackage, 5, messageLength);
       } else {
-        Log.w(logTag, "MessageRead: unexpected return package length " +
-            returnPackage.length + " (expected 64)");
+        Log.w(logTag, "MessageRead: unexpected return package length "
+            + returnPackage.length + " (expected 64)");
       }
     }
     return "";
   }
 
+  /**
+   * Write a message to a mailbox (1-10) on the robot.
+   *
+   * @param mailbox the mailbox number
+   * @param message the text of the message
+   */
   @SimpleFunction(description = "Write a message to a mailbox (1-10) on the robot.")
   public void MessageWrite(@Options(NxtMailbox.class) int mailbox, String message) {
     String functionName = "MessageWrite";
@@ -616,6 +629,13 @@ public class NxtDirectCommands extends LegoMindstormsNxtBase {
     MessageWriteAbstract(box, message);
   }
 
+  /**
+   * Write a message to the given {@link NxtMailbox}.
+   *
+   * @param mailbox the target Nxt mailbox identifier
+   * @param message the text message for the Nxt
+   */
+  @SuppressWarnings("RegularMethodName")
   public void MessageWriteAbstract(NxtMailbox mailbox, String message) {
     final String functionName = "MessageWrite";
 

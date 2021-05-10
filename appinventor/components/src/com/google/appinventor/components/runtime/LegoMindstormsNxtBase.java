@@ -270,7 +270,8 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
     evaluateStatus(functionName, returnPackage, command[1]);
   }
 
-  protected final void lsWrite(String functionName, NxtSensorPort port, byte[] data, int rxDataLength) {
+  protected final void lsWrite(String functionName, NxtSensorPort port, byte[] data,
+      int rxDataLength) {
     lsWrite(functionName, port.toInt(), data, rxDataLength);
   }
 

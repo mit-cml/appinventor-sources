@@ -50,6 +50,7 @@ import java.util.List;
  * @author kkashi01@gmail.com (Hossein Amerkashi) (added Image and BackgroundColors)
  */
 
+@SuppressWarnings("AbbreviationAsWordInName")
 @SimpleObject
 public class HVArrangement extends AndroidViewComponent implements Component, ComponentContainer {
   private final Activity context;
@@ -234,14 +235,25 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
           " 3 = horizontally centered.  Alignment has no effect if the arrangement's width is " +
           "automatic.")
   public @Options(HorizontalAlignment.class) int AlignHorizontal() {
-    return horizontalAlignment.toUnderlyingValue();
+    return AlignHorizontalAbstract().toUnderlyingValue();
   }
 
   /**
    * Returns the current horizontal alignment of this arrangement.
    */
+  @SuppressWarnings("RegularMethodName")
   public HorizontalAlignment AlignHorizontalAbstract() {
     return horizontalAlignment;
+  }
+
+  /**
+   * Sets the arrangements horizontal alignment to the given value.
+   * @param alignment the alignment to set the arrangement to.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void AlignHorizontalAbstract(HorizontalAlignment alignment) {
+    alignmentSetter.setHorizontalAlignment(alignment);
+    horizontalAlignment = alignment;
   }
 
   /**
@@ -266,15 +278,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   /**
-   * Sets the arrangements horizontal alignment to the given value.
-   * @param alignment the alignment to set the arrangement to.
-   */
-  public void AlignHorizontalAbstract(HorizontalAlignment alignment) {
-    alignmentSetter.setHorizontalAlignment(alignment);
-    horizontalAlignment = alignment;
-  }
-
-  /**
    * Returns a number that encodes how contents of the %type% are aligned vertically.
    * The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.
    * Alignment has no effect if the arrangement's height is automatic.
@@ -286,14 +289,25 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
           "3 = aligned at the bottom.  Alignment has no effect if the arrangement's height " +
           "is automatic.")
   public @Options(VerticalAlignment.class) int AlignVertical() {
-    return verticalAlignment.toUnderlyingValue();
+    return AlignVerticalAbstract().toUnderlyingValue();
   }
 
   /**
    * Returns the current vertical alignment of this arrangement.
    */
+  @SuppressWarnings("RegularMethodName")
   public VerticalAlignment AlignVerticalAbstract() {
     return verticalAlignment;
+  }
+
+  /**
+   * Sets the arrangements vertical alignment to the given value.
+   * @param alignment the alignment to set the arrangement to.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void AlignVerticalAbstract(VerticalAlignment alignment) {
+    alignmentSetter.setVerticalAlignment(alignment);
+    verticalAlignment = alignment;
   }
 
   /**
@@ -315,15 +329,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       return;
     }
     AlignVerticalAbstract(align);
-  }
-
-  /**
-   * Sets the arrangements vertical alignment to the given value.
-   * @param alignment the alignment to set the arrangement to.
-   */
-  public void AlignVerticalAbstract(VerticalAlignment alignment) {
-    alignmentSetter.setVerticalAlignment(alignment);
-    verticalAlignment = alignment;
   }
 
     /**

@@ -16,8 +16,8 @@ public enum ColorSensorMode implements OptionList<String> {
   Ambient("ambient", 1),
   Color("color", 2);
 
-  private String value;
-  private int intValue;
+  private final String value;
+  private final int intValue;
 
   ColorSensorMode(String mode, int intMode) {
     this.value = mode;
@@ -35,7 +35,7 @@ public enum ColorSensorMode implements OptionList<String> {
   private static final Map<String, ColorSensorMode> lookup = new HashMap<>();
 
   static {
-    for(ColorSensorMode mode : ColorSensorMode.values()) {
+    for (ColorSensorMode mode : ColorSensorMode.values()) {
       lookup.put(mode.toUnderlyingValue(), mode);
     }
   }

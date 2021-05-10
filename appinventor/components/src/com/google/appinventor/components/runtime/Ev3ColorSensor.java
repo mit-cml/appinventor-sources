@@ -315,31 +315,31 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
                                     sensorPortNumber,
                                     SENSOR_TYPE,
                                     mode.toInt());
-    
+
     if (mode != ColorSensorMode.Color) {
       return level;  // No need to clean value.
     }
 
     // Map values according to LEGO's convention.
     switch (level) {
-    case 0:
-      return 0;
-    case 12:
-      return 1;
-    case 25:
-      return 2;
-    case 37:
-      return 3;
-    case 50:
-      return 4;
-    case 62:
-      return 5;
-    case 75:
-      return 6;
-    case 87:
-      return 7;
-    default:
-      return 0;
+      case 0:
+        return 0;
+      case 12:
+        return 1;
+      case 25:
+        return 2;
+      case 37:
+        return 3;
+      case 50:
+        return 4;
+      case 62:
+        return 5;
+      case 75:
+        return 6;
+      case 87:
+        return 7;
+      default:
+        return 0;
     }
   }
 
@@ -390,8 +390,18 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
   /**
    * Sets the sensing mode of this color sensor.
    */
+  @SuppressWarnings("RegularMethodName")
   public void ModeAbstract(ColorSensorMode mode) {
     setMode(mode);
+  }
+
+  /**
+   * Returns the current sensing mode of this color sensor.
+   * @return the current sensing mode of this color sensor.
+   */
+  @SuppressWarnings({"RegularMethodName", "unused"})
+  public ColorSensorMode ModeAbstract() {
+    return mode;
   }
 
   /**
@@ -399,20 +409,11 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
    *     Reflected: Senses the current light level including light reflected by the sensor.
    *     Ambient: Senses the current light level *not* including light reflected by the sensor.
    *     Color: Senses the color the sensor is pointing at.
-   *     
    */
   @SimpleProperty(description = "Get the current sensor mode.",
                   category = PropertyCategory.BEHAVIOR)
   public @Options(ColorSensorMode.class) String Mode() {
     return mode.toUnderlyingValue();
-  }
-
-  /**
-   * Returns the current sensing mode of this color sensor.
-   * @return the current sensing mode of this color sensor.
-   */
-  public ColorSensorMode ModeAbstract() {
-    return mode;
   }
 
   /**

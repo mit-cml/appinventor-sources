@@ -15,7 +15,7 @@ public enum ScaleUnits implements OptionList<Integer> {
   Metric(1),
   Imperial(2);
 
-  private Integer value;
+  private final Integer value;
 
   ScaleUnits(Integer value) {
     this.value = value;
@@ -28,7 +28,7 @@ public enum ScaleUnits implements OptionList<Integer> {
   private static final Map<Integer, ScaleUnits> lookup = new HashMap<>();
 
   static {
-    for(ScaleUnits unit : ScaleUnits.values()) {
+    for (ScaleUnits unit : ScaleUnits.values()) {
       lookup.put(unit.toUnderlyingValue(), unit);
     }
   }

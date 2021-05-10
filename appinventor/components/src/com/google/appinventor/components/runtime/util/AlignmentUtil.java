@@ -60,6 +60,8 @@ public class AlignmentUtil {
       case Right:
         viewLayout.setHorizontalGravity(Gravity.RIGHT);
         break;
+      default:
+        throw new IllegalArgumentException("Bad value to setHorizontalAlignment: " + alignment);
     }
   }
 
@@ -84,6 +86,10 @@ public class AlignmentUtil {
     }
   }
 
+  /**
+   * Sets the vertical alignment of the view layout.
+   * @param alignment the alignment to set the view layout to.
+   */
   public void setVerticalAlignment(VerticalAlignment alignment) {
     switch (alignment) {
       case Top:
@@ -95,6 +101,8 @@ public class AlignmentUtil {
       case Bottom:
         viewLayout.setVerticalGravity(Gravity.BOTTOM);
         break;
+      default:
+        throw new IllegalArgumentException("Bad value to setVerticalAlignment: " + alignment);
     }
   }
 }

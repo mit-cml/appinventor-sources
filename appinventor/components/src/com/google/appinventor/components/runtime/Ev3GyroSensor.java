@@ -67,8 +67,8 @@ public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable
           }
 
           // trigger events according to the conditions
-          if ((mode == GyroSensorMode.Rate && Math.abs(currentValue) >= 1.0) ||
-              (mode == GyroSensorMode.Angle && Math.abs(currentValue - previousValue) >= 1.0)) {
+          if ((mode == GyroSensorMode.Rate && Math.abs(currentValue) >= 1.0)
+              || (mode == GyroSensorMode.Angle && Math.abs(currentValue - previousValue) >= 1.0)) {
             SensorValueChanged(currentValue);
           }
 
@@ -115,8 +115,17 @@ public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable
   /**
    * Sets the sensing mode of this gyro sensor.
    */
+  @SuppressWarnings("RegularMethodName")
   public void ModeAbstract(GyroSensorMode mode) {
     setMode(mode);
+  }
+
+  /**
+   * Returns the current sensing mode of this color sensor.
+   */
+  @SuppressWarnings({"RegularMethodName", "unused"})
+  public GyroSensorMode ModeAbstract() {
+    return mode;
   }
 
   /**
@@ -127,13 +136,6 @@ public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable
                   category = PropertyCategory.BEHAVIOR)
   public @Options(GyroSensorMode.class) String Mode() {
     return mode.toUnderlyingValue();
-  }
-
-  /**
-   * Returns the current sensing mode of this color sensor.
-   */
-  public GyroSensorMode ModeAbstract() {
-    return mode;
   }
 
   /**

@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Defines a NxtSensorMode type used by the NxtDirectCommands component.
  * 
- * Info attained from the "LEGO MINDSTORMS NXT Direct Command" document.
+ * <p>Info attained from the "LEGO MINDSTORMS NXT Direct Command" document.
  * http://kio4.com/b4a/programas/Appendix%202-LEGO%20MINDSTORMS%20NXT%20Direct%20commands.pdf
  * http://www.ni.com/pdf/manuals/372574c.pdf
  * In combination with the documentation here:
@@ -27,7 +27,7 @@ public enum NxtSensorMode implements OptionList<Integer> {
   RcxFahrenheit(0xC0),  // Range [-400, 1580]. Readings in .1 degrees Fahrenheit.
   RcxAngleSteps(0xE0);
 
-  private int value;
+  private final int value;
 
   NxtSensorMode(int mode) {
     this.value = mode;

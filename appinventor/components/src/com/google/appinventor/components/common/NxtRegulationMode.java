@@ -11,21 +11,21 @@ import java.util.Map;
 /**
  * Defines a NxtRegulationMode type used by the NxtDirectCommands component.
  * 
- * Info attained from:
+ * <p>Info attained from:
  * http://kio4.com/b4a/programas/Appendix%202-LEGO%20MINDSTORMS%20NXT%20Direct%20commands.pdf
  * http://www.ni.com/pdf/manuals/372574c.pdf
  * In combination with the documentation here:
  * https://www.mindstorms.rwth-aachen.de/documents/downloads/doc/version-4.07/help/NXT_SetInputMode.html
  * 
- * Note that this property is only important if the motor mode is set to regulated.
+ * <p>Note that this property is only important if the motor mode is set to regulated.
  */
 public enum NxtRegulationMode implements OptionList<Integer> {
   Disabled(0x00),  // No regulation.
   @Default
   Speed(0x01),  // Speed regulation.
-  Syncronization(0x02);  // Enables motor syncronization.
+  Synchronization(0x02);  // Enables motor synchronization.
 
-  private int value;
+  private final int value;
 
   NxtRegulationMode(int mode) {
     this.value = mode;

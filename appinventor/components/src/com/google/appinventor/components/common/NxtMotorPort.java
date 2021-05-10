@@ -16,8 +16,8 @@ public enum NxtMotorPort implements OptionList<String> {
   PortB("B", 1),
   PortC("C", 2);
 
-  private String value;
-  private int intValue;
+  private final String value;
+  private final int intValue;
 
   NxtMotorPort(String port, int intPort) {
     this.value = port;
@@ -35,7 +35,7 @@ public enum NxtMotorPort implements OptionList<String> {
   private static final Map<String, NxtMotorPort> lookup = new HashMap<>();
 
   static {
-    for(NxtMotorPort port : NxtMotorPort.values()) {
+    for (NxtMotorPort port : NxtMotorPort.values()) {
       String str = port.toUnderlyingValue();
       lookup.put(str, port);
       lookup.put(str.toLowerCase(), port);

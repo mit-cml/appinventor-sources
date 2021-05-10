@@ -6,9 +6,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import java.io.IOException;
-
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
@@ -20,10 +17,14 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.util.MediaUtil;
+
+import java.io.IOException;
 
 /**
  * A 'sprite' that can be placed on a {@link Canvas}, where it can react to touches and drags,

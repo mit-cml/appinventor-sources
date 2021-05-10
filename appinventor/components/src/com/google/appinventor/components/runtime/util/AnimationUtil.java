@@ -89,6 +89,7 @@ public final class AnimationUtil {
    * @param activity - the form which is calling another screen
    * @param animType - the animation type
    */
+  @SuppressWarnings("RegularMethodName")
   public static void ApplyOpenScreenAnimation(Activity activity, ScreenAnimation animType) {
     if (animType == null) {
       return;
@@ -107,16 +108,22 @@ public final class AnimationUtil {
         exit = activity.getResources().getIdentifier("hold", "anim", activity.getPackageName());
         break;
       case Zoom:
-        exit = activity.getResources().getIdentifier("zoom_exit", "anim", activity.getPackageName());
-        enter = activity.getResources().getIdentifier("zoom_enter", "anim", activity.getPackageName());
+        exit = activity.getResources().getIdentifier("zoom_exit", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("zoom_enter", "anim",
+            activity.getPackageName());
         break;
       case SlideHorizontal:
-        exit = activity.getResources().getIdentifier("slide_exit", "anim", activity.getPackageName());
-        enter = activity.getResources().getIdentifier("slide_enter", "anim", activity.getPackageName());
+        exit = activity.getResources().getIdentifier("slide_exit", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("slide_enter", "anim",
+            activity.getPackageName());
         break;
       case SlideVertical:
-        exit = activity.getResources().getIdentifier("slide_v_exit", "anim", activity.getPackageName());
-        enter = activity.getResources().getIdentifier("slide_v_enter", "anim", activity.getPackageName());
+        exit = activity.getResources().getIdentifier("slide_v_exit", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("slide_v_enter", "anim",
+            activity.getPackageName());
         break;
       case None:
         // enter and exit are already set to 0, so no animations will be played.
@@ -146,6 +153,7 @@ public final class AnimationUtil {
    * @param activity - the form which is closing
    * @param animType - the animation type
    */
+  @SuppressWarnings("RegularMethodName")
   public static void ApplyCloseScreenAnimation(Activity activity, ScreenAnimation animType) {
     if (animType == null) {
       return;
@@ -164,16 +172,22 @@ public final class AnimationUtil {
         enter = activity.getResources().getIdentifier("hold", "anim", activity.getPackageName());
         break;
       case Zoom:
-        exit = activity.getResources().getIdentifier("zoom_exit_reverse", "anim", activity.getPackageName());
-        enter = activity.getResources().getIdentifier("zoom_enter_reverse", "anim", activity.getPackageName());
+        exit = activity.getResources().getIdentifier("zoom_exit_reverse", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("zoom_enter_reverse", "anim",
+            activity.getPackageName());
         break;
       case SlideHorizontal:
-        exit = activity.getResources().getIdentifier("slide_exit_reverse", "anim", activity.getPackageName());
-        enter = activity.getResources().getIdentifier("slide_enter_reverse", "anim", activity.getPackageName());
+        exit = activity.getResources().getIdentifier("slide_exit_reverse", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("slide_enter_reverse", "anim",
+            activity.getPackageName());
         break;
       case SlideVertical:
-        exit = activity.getResources().getIdentifier("slide_v_exit_reverse", "anim", activity.getPackageName());
-        enter = activity.getResources().getIdentifier("slide_v_enter_reverse", "anim", activity.getPackageName());
+        exit = activity.getResources().getIdentifier("slide_v_exit_reverse", "anim",
+            activity.getPackageName());
+        enter = activity.getResources().getIdentifier("slide_v_enter_reverse", "anim",
+            activity.getPackageName());
         break;
       case None:
         // enter and exit are already set to 0, so no animations will be played.

@@ -10,8 +10,8 @@ package com.google.appinventor.components.common;
  * This can be expanded later if we want to get more information out of option list definitions.
  */
 public interface OptionList<T> {
-    /**
-     * Returns the underlying value of the option.
-     */
-    public T toUnderlyingValue();
+  /**
+   * Returns the underlying value of the option.
+   */
+  T toUnderlyingValue();
 }

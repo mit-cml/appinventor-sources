@@ -212,8 +212,10 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   /**
    * Dispatches the PhoneCallStarted event.
    */
+  @SuppressWarnings("RegularMethodName")
   public void PhoneCallStartedAbstract(StartedStatus status, String phoneNumber) {
-    EventDispatcher.dispatchEvent(this, "PhoneCallStarted", status.toUnderlyingValue(), phoneNumber);
+    EventDispatcher.dispatchEvent(this, "PhoneCallStarted", status.toUnderlyingValue(),
+        phoneNumber);
   }
 
   /**
@@ -250,6 +252,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   /**
    * Dispatched the PhoneCallEnded event.
    */
+  @SuppressWarnings("RegularMethodName")
   public void PhoneCallEndedAbstract(EndedStatus status, String phoneNumber) {
     EventDispatcher.dispatchEvent(this, "PhoneCallEnded", status.toUnderlyingValue(), phoneNumber);
   }
@@ -331,7 +334,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
             PhoneCallEndedAbstract(EndedStatus.IncomingRejected, number);
           } else if (status == CallStatus.INCOMING_ANSWERED) {
             PhoneCallEndedAbstract(EndedStatus.IncomingEnded, number);
-          } else if(status == CallStatus.OUTGOING_WAITING) {
+          } else if (status == CallStatus.OUTGOING_WAITING) {
             PhoneCallEndedAbstract(EndedStatus.OutgoingEnded, number);
           }
           status = null;

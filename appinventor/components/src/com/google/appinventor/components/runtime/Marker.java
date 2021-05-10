@@ -5,29 +5,29 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.MapFactory;
-import org.locationtech.jts.geom.Geometry;
-import org.osmdroid.api.IGeoPoint;
-import org.osmdroid.util.GeoPoint;
+import android.util.Log;
 
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.Options;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
+
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.HorizontalAlignment;
 import com.google.appinventor.components.common.MapFeature;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.VerticalAlignment;
 import com.google.appinventor.components.common.YaVersion;
+
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
+import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureVisitor;
 import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
@@ -35,7 +35,10 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
 
-import android.util.Log;
+import org.locationtech.jts.geom.Geometry;
+
+import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.util.GeoPoint;
 
 /**
  * The `Marker` component indicates points on a {@link Map}, such as buildings or other points of
@@ -202,8 +205,11 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   }
 
   /**
+   * Gets the type of the feature, as a {@link MapFeature} enum.
+   *
    * @return the abstract MapFeature type of this feature. In this case MapFeature.Marker.
    */
+  @SuppressWarnings("RegularMethodName")
   public MapFeature TypeAbstract() {
     return MapFeature.Marker;
   }
@@ -318,34 +324,36 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   }
 
   /**
-   * Sets the horizontal anchor point of this marker relative to its longitude.
-   * @param alignment the alignment to set the anchor point to.
-   */
-  public void AnchorHorizontalAbstract(HorizontalAlignment alignment) {
-    if (alignment != anchorHAlign) {
-      anchorHAlign = alignment;
-      map.getController().updateFeaturePosition(this);
-    }
-  }
-
-  /**
    * Sets or gets the horizontal offset of the `Marker` center relative to its image. Valid values
    * are: `1` (Left), `2` (Right), or `3` (Center).
    */
   @Override
-  @SimpleProperty(description = "The horizontal alignment property controls where the Marker's " +
-      "anchor is located relative to its width. The choices are: 1 = left aligned, 3 = horizontally" +
-      " centered, 2 = right aligned.")
+  @SimpleProperty(description = "The horizontal alignment property controls where the Marker's "
+      + "anchor is located relative to its width. The choices are: 1 = left aligned,"
+      + " 3 = horizontally centered, 2 = right aligned.")
   public @Options(HorizontalAlignment.class) int AnchorHorizontal() {
-    return anchorHAlign.toUnderlyingValue();
+    return AnchorHorizontalAbstract().toUnderlyingValue();
   }
 
   /**
    * Returns the current horizontal alignment of this marker relative to its longitude.
    * @return the current horizontal alignment of this marker relative to its longitude.
    */
+  @SuppressWarnings("RegularMethodName")
   public HorizontalAlignment AnchorHorizontalAbstract() {
     return anchorHAlign;
+  }
+
+  /**
+   * Sets the horizontal anchor point of this marker relative to its longitude.
+   * @param alignment the alignment to set the anchor point to.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void AnchorHorizontalAbstract(HorizontalAlignment alignment) {
+    if (alignment != anchorHAlign) {
+      anchorHAlign = alignment;
+      map.getController().updateFeaturePosition(this);
+    }
   }
 
   @Override
@@ -361,36 +369,38 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     }
     AnchorVerticalAbstract(alignment);
   }
-  
-  /**
-   * Sets the vertical anchor point of this marker relative to its latitude.
-   * @param alignment the alignment to set the anchor point to.
-   */
-  public void AnchorVerticalAbstract(VerticalAlignment alignment) {
-    if (alignment != null) {
-      anchorVAlign = alignment;
-      map.getController().updateFeaturePosition(this);
-    }
-  }
 
   /**
    * Sets or gets the vertical offset of the `Marker` center relative to its image. Valid values
    * are: `1` (Top), `2` (Center), or `3` (Bottom).
    */
   @Override
-  @SimpleProperty(description = "The vertical alignment property controls where the Marker's " +
-      "anchor is located relative to its height. The choices are: 1 = aligned at the top, 2 = vertically " +
-      "centered, 3 = aligned at the bottom.")
+  @SimpleProperty(description = "The vertical alignment property controls where the Marker's "
+      + "anchor is located relative to its height. The choices are: 1 = aligned at the top, 2 = "
+      + "vertically centered, 3 = aligned at the bottom.")
   public @Options(VerticalAlignment.class) int AnchorVertical() {
-    return anchorVAlign.toUnderlyingValue();
+    return AnchorVerticalAbstract().toUnderlyingValue();
   }
 
   /**
    * Returns the current vertical alignment of this marker relative to its latitude.
    * @return the current vertical alignment of this marker relative to its latitude.
    */
+  @SuppressWarnings("RegularMethodName")
   public VerticalAlignment AnchorVerticalAbstract() {
     return anchorVAlign;
+  }
+
+  /**
+   * Sets the vertical anchor point of this marker relative to its latitude.
+   * @param alignment the alignment to set the anchor point to.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void AnchorVerticalAbstract(VerticalAlignment alignment) {
+    if (alignment != null) {
+      anchorVAlign = alignment;
+      map.getController().updateFeaturePosition(this);
+    }
   }
 
   @Override

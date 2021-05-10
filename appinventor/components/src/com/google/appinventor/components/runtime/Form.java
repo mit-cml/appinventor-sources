@@ -62,11 +62,11 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.HorizontalAlignment;
-import com.google.appinventor.components.common.VerticalAlignment;
 import com.google.appinventor.components.common.Permission;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.ScreenAnimation;
 import com.google.appinventor.components.common.ScreenOrientation;
+import com.google.appinventor.components.common.VerticalAlignment;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
@@ -201,8 +201,8 @@ public class Form extends AppInventorCompatActivity
   private VerticalAlignment verticalAlignment;
 
   // Represents the transition animation type.
-  private ScreenAnimation openAnimType;
-  private ScreenAnimation closeAnimType;
+  private ScreenAnimation openAnimType = ScreenAnimation.Default;
+  private ScreenAnimation closeAnimType = ScreenAnimation.Default;
 
   // Syle information
   private int primaryColor = DEFAULT_PRIMARY_COLOR;
@@ -478,6 +478,8 @@ public class Form extends AppInventorCompatActivity
     Theme(ComponentConstants.DEFAULT_THEME);
     ScreenOrientation("unspecified");
     BackgroundColor(Component.COLOR_DEFAULT);
+    OpenScreenAnimationAbstract(ScreenAnimation.Default);
+    CloseScreenAnimationAbstract(ScreenAnimation.Default);
   }
 
   @Override
@@ -1217,6 +1219,7 @@ public class Form extends AppInventorCompatActivity
   /**
    * Asks the user to grant access to a sensitive permission.
    */
+  @SuppressWarnings({"RegularMethodName", "unused"})
   public void AskForPermissionAbstract(Permission permission) {
     // Usually when we are upgrading components to use dropdown blocks we make the Abstract function
     // the "true" function. But in this case I think it makes more sense to use the concrete one.
@@ -1543,6 +1546,7 @@ public class Form extends AppInventorCompatActivity
   /**
    * Returns the requested screen orientation.
    */
+  @SuppressWarnings("RegularMethodName")
   public ScreenOrientation ScreenOrientationAbstract() {
     switch (getRequestedOrientation()) {
       case ActivityInfo.SCREEN_ORIENTATION_BEHIND:
@@ -1559,19 +1563,33 @@ public class Form extends AppInventorCompatActivity
         return ScreenOrientation.Unspecified;
       case ActivityInfo.SCREEN_ORIENTATION_USER:
         return ScreenOrientation.User;
-      case 10: // ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
+      case ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR:
         return ScreenOrientation.FullSensor;
-      case 8: // ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+      case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
         return ScreenOrientation.ReverseLandscape;
-      case 9: // ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+      case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
         return ScreenOrientation.ReversePortrait;
-      case 6: // ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+      case ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE:
         return ScreenOrientation.SensorLandscape;
-      case 7: // ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+      case ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT:
         return ScreenOrientation.SensorPortrait;
       default:
         return ScreenOrientation.Unspecified;
     }
+  }
+
+  /**
+   * Sets the requested screen orientation.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void ScreenOrientationAbstract(ScreenOrientation orientation) {
+    int orientationConst = orientation.getOrientationConstant();
+    if (orientationConst > 5 && SdkLevel.getLevel() < SdkLevel.LEVEL_GINGERBREAD) {
+      dispatchErrorOccurredEvent(this, "ScreenOrientation",
+          ErrorMessages.ERROR_INVALID_SCREEN_ORIENTATION, orientation);
+      return;
+    }
+    setRequestedOrientation(orientationConst);
   }
 
   /**
@@ -1595,19 +1613,6 @@ public class Form extends AppInventorCompatActivity
       return;
     }
     ScreenOrientationAbstract(orientation);
-  }
-
-  /**
-   * Sets the requested screen orientation.
-   */
-  public void ScreenOrientationAbstract(ScreenOrientation orientation) {
-    int orientationConst = orientation.getOrientationConstant();
-    if (orientationConst > 5 && SdkLevel.getLevel() < SdkLevel.LEVEL_GINGERBREAD) {
-      dispatchErrorOccurredEvent(this, "ScreenOrientation",
-          ErrorMessages.ERROR_INVALID_SCREEN_ORIENTATION, orientation);
-      return;
-    }
-    setRequestedOrientation(orientationConst);
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
@@ -1636,31 +1641,23 @@ public class Form extends AppInventorCompatActivity
   * The choices are: 1 = left aligned, 2 = horizontally centered, 3 = right aligned
   */
   @SimpleProperty(
-     category = PropertyCategory.APPEARANCE,
-     description = "A number that encodes how contents of the screen are aligned " +
-         " horizontally. The choices are: 1 = left aligned, 3 = horizontally centered, " +
-         " 2 = right aligned.")
+      category = PropertyCategory.APPEARANCE,
+      description = "A number that encodes how contents of the screen are aligned "
+        + " horizontally. The choices are: 1 = left aligned, 3 = horizontally centered, "
+        + " 2 = right aligned.")
   public @Options(HorizontalAlignment.class) int AlignHorizontal() {
     return horizontalAlignment.toUnderlyingValue();
   }
 
- /**
-  * Returns the current alignment of the screen.
-  * @return the current alignment of the screen.
-  */
-  public HorizontalAlignment AlignHorizontalAbstract() {
-    return horizontalAlignment;
-  }
-
- /**
-  * A number that encodes how contents of the screen are aligned horizontally. The choices are:
-  * `1` (left aligned), `3` (horizontally centered), `2` (right aligned).
-  *
-  * @internaldoc
-  * Sets the horizontal alignment for contents of the screen
-  *
-  * @param alignment
-  */
+  /**
+   * A number that encodes how contents of the screen are aligned horizontally. The choices are:
+   * `1` (left aligned), `3` (horizontally centered), `2` (right aligned).
+   *
+   * @internaldoc
+   * Sets the horizontal alignment for contents of the screen
+   *
+   * @param alignment the new alignment for the form contents
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
       defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
   @SimpleProperty
@@ -1676,9 +1673,19 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
+   * Returns the current alignment of the screen.
+   * @return the current alignment of the screen.
+   */
+  @SuppressWarnings({"RegularMethodName", "unused"})
+  public HorizontalAlignment AlignHorizontalAbstract() {
+    return horizontalAlignment;
+  }
+
+  /**
    * Sets the horizontal alignment for the contents of the screen.
    * @param alignment the alignment to set the contents of the screen to.
    */
+  @SuppressWarnings("RegularMethodName")
   public void AlignHorizontalAbstract(HorizontalAlignment alignment) {
     alignmentSetter.setHorizontalAlignment(alignment);
     horizontalAlignment = alignment;
@@ -1691,32 +1698,25 @@ public class Form extends AppInventorCompatActivity
   */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "A number that encodes how the contents of the arrangement are aligned " +
-      "vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
-      "3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.")
+      description = "A number that encodes how the contents of the arrangement are aligned "
+        + "vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = "
+        + "aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.")
   public @Options(VerticalAlignment.class) int AlignVertical() {
-    return verticalAlignment.toUnderlyingValue();
+    return AlignVerticalAbstract().toUnderlyingValue();
   }
 
- /**
-  * Returns the vertical alignment of the screen's contents.
-  * @return the vertical alignment of the screen's contents.
-  */
-  public VerticalAlignment AlignVerticalAbstract() {
-    return verticalAlignment;
-  }
-
- /**
-  * A number that encodes how the contents of the arrangement are aligned vertically. The choices
-  * are: `1` (aligned at the top), `2` (vertically centered), `3` (aligned at the bottom). Vertical
-  * alignment has no effect if the screen is scrollable.
-  *
-  * @internaldoc
-  * Sets the vertical alignment for contents of the screen
-  *
-  * @param alignment
-  */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
+  /**
+   * A number that encodes how the contents of the arrangement are aligned vertically. The choices
+   * are: `1` (aligned at the top), `2` (vertically centered), `3` (aligned at the bottom). Vertical
+   * alignment has no effect if the screen is scrollable.
+   *
+   * @internaldoc
+   * Sets the vertical alignment for contents of the screen
+   *
+   * @param alignment the new vertical alignment of the form contents
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
       defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
   @SimpleProperty
   public void AlignVertical(@Options(VerticalAlignment.class) int alignment) {
@@ -1731,9 +1731,19 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
+   * Returns the vertical alignment of the screen's contents.
+   * @return the vertical alignment of the screen's contents.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public VerticalAlignment AlignVerticalAbstract() {
+    return verticalAlignment;
+  }
+
+  /**
    * Sets the vertical alignment of the screen's contents.
    * @param alignment the alignment to set the screen's contents to.
    */
+  @SuppressWarnings("RegularMethodName")
   public void AlignVerticalAbstract(VerticalAlignment alignment) {
     alignmentSetter.setVerticalAlignment(alignment);
     verticalAlignment = alignment;
@@ -1756,8 +1766,30 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
+   * Sets the animation type for the transition of this form opening.
+   *
+   * @param animType the type of animation to use for the transition
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
+      defaultValue = "default")
+  @SimpleProperty
+  public void OpenScreenAnimation(@Options(ScreenAnimation.class) String animType) {
+    // Make sure that "animType" is a valid ScreenAnimation.
+    ScreenAnimation anim = ScreenAnimation.fromUnderlyingValue(animType);
+    if (anim == null) {
+      this.dispatchErrorOccurredEvent(this, "Screen",
+          ErrorMessages.ERROR_SCREEN_INVALID_ANIMATION, animType);
+      return;
+    }
+    OpenScreenAnimationAbstract(anim);
+  }
+
+  /**
+   * Gets the current open screen animation.
+   *
    * @return The current open screen animation.
    */
+  @SuppressWarnings({"RegularMethodName", "unused"})
   public ScreenAnimation OpenScreenAnimationAbstract() {
     return openAnimType;
   }
@@ -1767,27 +1799,9 @@ public class Form extends AppInventorCompatActivity
    *
    * @param animType the type of animation to use for the transition
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
-    defaultValue = "default")
-  @SimpleProperty
-  public void OpenScreenAnimation(@Options(ScreenAnimation.class) String animType) {
-    // Make sure that "animType" is a valid ScreenAnimation.
-    ScreenAnimation anim = ScreenAnimation.fromUnderlyingValue(animType);
-    if (anim == null) {
-      this.dispatchErrorOccurredEvent(this, "Screen",
-        ErrorMessages.ERROR_SCREEN_INVALID_ANIMATION, animType);
-      return;
-    }
-    OpenScreenAnimationAbstract(anim);
-  }
-
-  /**
-   * Sets the animation type for the transition of this form opening.
-   *
-   * @param anim the type of animation to use for the transition
-   */
+  @SuppressWarnings("RegularMethodName")
   public void OpenScreenAnimationAbstract(ScreenAnimation animType) {
-   openAnimType = animType;
+    openAnimType = animType;
   }
 
  /**
@@ -1797,21 +1811,14 @@ public class Form extends AppInventorCompatActivity
   * @return open screen animation
   */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-    description = "The animation for closing current screen and returning " +
-    " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, " +
-    "slidevertical, and none")
+      description = "The animation for closing current screen and returning "
+        + " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, "
+        + "slidevertical, and none")
   public @Options(ScreenAnimation.class) String CloseScreenAnimation() {
     if (closeAnimType != null) {
-      return closeAnimType.toUnderlyingValue();
+      return CloseScreenAnimationAbstract().toUnderlyingValue();
     }
     return null;
-  }
-
-  /**
-   * @return The current close screen animation.
-   */
-  public ScreenAnimation CloseScreenAnimationAbstract() {
-    return closeAnimType;
   }
 
   /**
@@ -1821,35 +1828,38 @@ public class Form extends AppInventorCompatActivity
    * @param animType the type of animation to use for the transition
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
-    defaultValue = "default")
+      defaultValue = "default")
   @SimpleProperty
   public void CloseScreenAnimation(@Options(ScreenAnimation.class) String animType) {
     // Make sure that "animType" is a valid ScreenAnimation.
     ScreenAnimation anim = ScreenAnimation.fromUnderlyingValue(animType);
     if (anim == null) {
       this.dispatchErrorOccurredEvent(this, "Screen",
-        ErrorMessages.ERROR_SCREEN_INVALID_ANIMATION, animType);
+          ErrorMessages.ERROR_SCREEN_INVALID_ANIMATION, animType);
       return;
     }
     CloseScreenAnimationAbstract(anim);
   }
 
   /**
+   * Gets the close animation of the screen, as a ScreenAnimation enum.
+   *
+   * @return The current close screen animation.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public ScreenAnimation CloseScreenAnimationAbstract() {
+    return closeAnimType;
+  }
+
+  /**
    * Sets the animation type for the transition of this form closing and returning to a form behind
    * it on the activity stack.
    * 
-   * @param anim the type of animation to use for the transition.
+   * @param animType the type of animation to use for the transition.
    */
+  @SuppressWarnings("RegularMethodName")
   public void CloseScreenAnimationAbstract(ScreenAnimation animType) {
     closeAnimType = animType;
-  }
-
-  /*
-   * Used by ListPicker, and ActivityStarter to get this Form's current opening transition
-   * animation
-   */
-  public String getOpenAnimType() {
-    return openAnimType.toUnderlyingValue();
   }
 
   /**

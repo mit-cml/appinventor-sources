@@ -114,8 +114,11 @@ public class LineString extends MapFeatureBase implements MapLineString {
   }
 
   /**
-   * @return the abstract MapFeature type of this feature. In this case MapFeature.LineStrin.
+   * Gets the type of this feature, as a {@link MapFeature}.
+   *
+   * @return the abstract MapFeature type of this feature. In this case MapFeature.LineString.
    */
+  @SuppressWarnings("RegularMethodName")
   public MapFeature TypeAbstract() {
     return MapFeature.LineString;
   }

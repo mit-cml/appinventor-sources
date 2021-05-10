@@ -21,7 +21,7 @@ public enum Direction implements OptionList<Integer> {
   West(-3),
   Northwest(-4);
 
-  private int value;
+  private final int value;
 
   Direction(int dir) {
     this.value = dir;
@@ -34,7 +34,7 @@ public enum Direction implements OptionList<Integer> {
   private static final Map<Integer, Direction> lookup = new HashMap<>();
 
   static {
-    for(Direction dir : Direction.values()) {
+    for (Direction dir : Direction.values()) {
       lookup.put(dir.toUnderlyingValue(), dir);
     }
   }

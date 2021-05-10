@@ -209,8 +209,17 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   /**
    * Returns the current sensitivity of this component.
    */
+  @SuppressWarnings("RegularMethodName")
   public Sensitivity SensitivityAbstract() {
     return sensitivity;
+  }
+
+  /**
+   * Sets the sensitivity of this sensor.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void SensitivityAbstract(Sensitivity sensitivity) {
+    this.sensitivity = sensitivity;
   }
 
   /**
@@ -234,13 +243,6 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
       return;
     }
     SensitivityAbstract(level);
-  }
-
-  /**
-   * Sets the sensitivity of this sensor.
-   */
-  public void SensitivityAbstract(Sensitivity sensitivity) {
-    this.sensitivity = sensitivity;
   }
 
   /**
@@ -440,8 +442,9 @@ public int getDeviceDefaultOrientation() {
         return delta > moderateShakeThreshold && delta < strongShakeThreshold;
       case Strong:
         return delta > weakShakeThreshold && delta < moderateShakeThreshold;
+      default:
+        return false;
     }
-    return false;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,

@@ -20,7 +20,7 @@ public enum ScreenAnimation implements OptionList<String> {
   SlideVertical("slidevertical"),
   None("none");
 
-  private String value;
+  private final String value;
 
   ScreenAnimation(String anim) {
     this.value = anim;
@@ -33,7 +33,7 @@ public enum ScreenAnimation implements OptionList<String> {
   private static final Map<String, ScreenAnimation> lookup = new HashMap<>();
 
   static {
-    for(ScreenAnimation anim : ScreenAnimation.values()) {
+    for (ScreenAnimation anim : ScreenAnimation.values()) {
       lookup.put(anim.toUnderlyingValue(), anim);
     }
   }

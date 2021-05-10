@@ -94,9 +94,9 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     // here for internationalization.
     names.add("notAlreadyHandled");
     for (String name : names) {
-      sb.append("    map.put(\"PARAM-" + name + "\", MESSAGES." +
-          Character.toLowerCase(name.charAt(0)) + name.substring(1) +
-          "Params());\n");
+      sb.append("    map.put(\"PARAM-").append(name).append("\", MESSAGES.")
+          .append(Character.toLowerCase(name.charAt(0))).append(name.substring(1))
+          .append("Params());\n");
     }
   }
 
@@ -344,13 +344,13 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
 
   protected void outputOptionList(OptionList optionList, StringBuilder sb) {
     String tagName = optionList.getTagName();
-    String lowerTagName = Character.toLowerCase(tagName.charAt(0))
-        + tagName.substring(1);
     sb.append("\n\n/* OptionList ");
     sb.append(tagName);
     sb.append(" */\n\n");
 
     // Translate tag.
+    String lowerTagName = Character.toLowerCase(tagName.charAt(0))
+        + tagName.substring(1);
     sb.append("     map.put(\"OPTIONLIST-")
       .append(tagName)
       .append("\", MESSAGES.")

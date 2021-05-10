@@ -5,23 +5,20 @@
 
 package com.google.appinventor.components.runtime.util;
 
-import java.util.Iterator;
-import java.util.List;
-
-import com.google.appinventor.components.common.MapType;
+import android.os.Build;
+import android.view.View;
 import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.LocationSensor;
 import com.google.appinventor.components.runtime.Map;
+import java.util.Iterator;
+import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 import org.osmdroid.api.IGeoPoint;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.util.BoundingBox;
-
-import android.os.Build;
-import android.view.View;
+import org.osmdroid.util.GeoPoint;
 
 /**
  * Utilities used by the Map component to provide backward compatibility

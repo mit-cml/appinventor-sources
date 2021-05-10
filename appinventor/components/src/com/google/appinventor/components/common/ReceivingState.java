@@ -16,7 +16,7 @@ public enum ReceivingState implements OptionList<Integer> {
   Foreground(2),
   Always(3);
 
-  private int value;
+  private final int value;
 
   ReceivingState(int status) {
     this.value = status;
@@ -29,7 +29,7 @@ public enum ReceivingState implements OptionList<Integer> {
   private static final Map<Integer, ReceivingState> lookup = new HashMap<>();
 
   static {
-    for(ReceivingState status : ReceivingState.values()) {
+    for (ReceivingState status : ReceivingState.values()) {
       lookup.put(status.toUnderlyingValue(), status);
     }
   }

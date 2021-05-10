@@ -17,7 +17,7 @@ public enum VerticalAlignment implements OptionList<Integer> {
   Center(2),
   Bottom(3);
 
-  private int value;
+  private final int value;
 
   VerticalAlignment(int value) {
     this.value = value;
@@ -27,10 +27,10 @@ public enum VerticalAlignment implements OptionList<Integer> {
     return value;
   }
 
-  private static Map<Integer, VerticalAlignment> lookup = new HashMap<>();
+  private static final Map<Integer, VerticalAlignment> lookup = new HashMap<>();
 
   static {
-    for(VerticalAlignment alignment : VerticalAlignment.values()) {
+    for (VerticalAlignment alignment : VerticalAlignment.values()) {
       lookup.put(alignment.toUnderlyingValue(), alignment);
     }
   }

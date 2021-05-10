@@ -17,7 +17,7 @@ public enum TransportMethod implements OptionList<String> {
   Bicycle("cycling-regular"),
   Wheelchair("wheelchair");
 
-  private String value;
+  private final String value;
 
   TransportMethod(String value) {
     this.value = value;
@@ -30,7 +30,7 @@ public enum TransportMethod implements OptionList<String> {
   private static final Map<String, TransportMethod> lookup = new HashMap<>();
 
   static {
-    for(TransportMethod method : TransportMethod.values()) {
+    for (TransportMethod method : TransportMethod.values()) {
       lookup.put(method.toUnderlyingValue(), method);
     }
   }

@@ -16,7 +16,7 @@ public enum MapType implements OptionList<Integer> {
   Aerial(2),
   Terrain(3);
 
-  private Integer value;
+  private final Integer value;
 
   MapType(Integer value) {
     this.value = value;
@@ -29,7 +29,7 @@ public enum MapType implements OptionList<Integer> {
   private static final Map<Integer, MapType> lookup = new HashMap<>();
 
   static {
-    for(MapType type : MapType.values()) {
+    for (MapType type : MapType.values()) {
       lookup.put(type.toUnderlyingValue(), type);
     }
   }

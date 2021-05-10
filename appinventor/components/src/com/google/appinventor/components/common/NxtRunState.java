@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Defines a NxtRunState type used by the NxtDirectCommands component.
  * 
- * Info attained from:
+ * <p>Info attained from:
  * http://kio4.com/b4a/programas/Appendix%202-LEGO%20MINDSTORMS%20NXT%20Direct%20commands.pdf
  * http://www.ni.com/pdf/manuals/372574c.pdf
  * In combination with the documentation here:
@@ -24,7 +24,7 @@ public enum NxtRunState implements OptionList<Integer> {
   RampUp(0x10),
   RampDown(0x40);
 
-  private int value;
+  private final int value;
 
   NxtRunState(int state) {
     this.value = state;

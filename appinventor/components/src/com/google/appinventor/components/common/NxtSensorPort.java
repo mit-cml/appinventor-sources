@@ -17,8 +17,8 @@ public enum NxtSensorPort implements OptionList<String> {
   Port3("3", 2),
   Port4("4", 3);
 
-  private String value;
-  private int intValue;
+  private final String value;
+  private final int intValue;
 
   NxtSensorPort(String port, int intPort) {
     this.value = port;
@@ -36,7 +36,7 @@ public enum NxtSensorPort implements OptionList<String> {
   private static final Map<String, NxtSensorPort> lookup = new HashMap<>();
 
   static {
-    for(NxtSensorPort port : NxtSensorPort.values()) {
+    for (NxtSensorPort port : NxtSensorPort.values()) {
       lookup.put(port.toUnderlyingValue(), port);
     }
   }

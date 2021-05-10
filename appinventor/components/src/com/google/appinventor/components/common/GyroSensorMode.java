@@ -15,8 +15,8 @@ public enum GyroSensorMode implements OptionList<String> {
   Angle("angle", 0),
   Rate("rate", 1);
 
-  private String value;
-  private int intValue;
+  private final String value;
+  private final int intValue;
 
   GyroSensorMode(String mode, int intMode) {
     this.value = mode;
@@ -34,7 +34,7 @@ public enum GyroSensorMode implements OptionList<String> {
   private static final Map<String, GyroSensorMode> lookup = new HashMap<>();
 
   static {
-    for(GyroSensorMode mode : GyroSensorMode.values()) {
+    for (GyroSensorMode mode : GyroSensorMode.values()) {
       lookup.put(mode.toUnderlyingValue(), mode);
     }
   }

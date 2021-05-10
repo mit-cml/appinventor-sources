@@ -18,7 +18,7 @@ public enum MapFeature implements OptionList<String> {
   Polygon("Polygon"),
   Rectangle("Rectangle");
 
-  private String value;
+  private final String value;
 
   MapFeature(String feat) {
     this.value = feat;
@@ -31,7 +31,7 @@ public enum MapFeature implements OptionList<String> {
   private static final Map<String, MapFeature> lookup = new HashMap<>();
 
   static {
-    for(MapFeature feat : MapFeature.values()) {
+    for (MapFeature feat : MapFeature.values()) {
       lookup.put(feat.toUnderlyingValue(), feat);
     }
   }

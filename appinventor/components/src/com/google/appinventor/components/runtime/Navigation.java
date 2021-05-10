@@ -225,14 +225,23 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public @Options(TransportMethod.class) String TransportationMethod() {
-    return method.toUnderlyingValue();
+    return TransportationMethodAbstract().toUnderlyingValue();
   }
 
   /**
    * Returns the current transportation method.
    */
+  @SuppressWarnings("RegularMethodName")
   public TransportMethod TransportationMethodAbstract() {
     return method;
+  }
+
+  /**
+   * Sets the current transportation method.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void TransportationMethodAbstract(TransportMethod method) {
+    this.method = method;
   }
 
   /**
@@ -253,13 +262,6 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
     if (t != null) {
       TransportationMethodAbstract(t);
     }
-  }
-
-  /**
-   * Sets the current transportation method.
-   */
-  public void TransportationMethodAbstract(TransportMethod method) {
-    this.method = method;
   }
 
   @SimpleProperty(description = "Set the end location.")
@@ -331,8 +333,8 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
 
   private void performRequest(GeoPoint start, GeoPoint end, TransportMethod method)
       throws IOException, JSONException {
-    final String finalURL = serviceUrl + method.toUnderlyingValue() + "/geojson/";
-    URL url = new URL(finalURL);
+    final String finalUrl = serviceUrl + method.toUnderlyingValue() + "/geojson/";
+    URL url = new URL(finalUrl);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setDoInput(true);
     connection.setDoOutput(true);

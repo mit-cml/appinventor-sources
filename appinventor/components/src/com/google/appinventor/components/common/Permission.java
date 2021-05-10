@@ -33,7 +33,7 @@ public enum Permission implements OptionList<String> {
   ReadContacts("READ_CONTACTS"),
   UseCredentials("USE_CREDENTIALS");
 
-  private String value;
+  private final String value;
 
   Permission(String perm) {
     this.value = perm;
@@ -46,7 +46,7 @@ public enum Permission implements OptionList<String> {
   private static final Map<String, Permission> lookup = new HashMap<>();
 
   static {
-    for(Permission perm : Permission.values()) {
+    for (Permission perm : Permission.values()) {
       lookup.put(perm.toUnderlyingValue(), perm);
     }
   }

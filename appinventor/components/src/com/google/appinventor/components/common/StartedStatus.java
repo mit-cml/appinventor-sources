@@ -15,7 +15,7 @@ public enum StartedStatus implements OptionList<Integer> {
   Incoming(1),
   Outgoing(2);
 
-  private int value;
+  private final int value;
 
   StartedStatus(int status) {
     this.value = status;
@@ -28,7 +28,7 @@ public enum StartedStatus implements OptionList<Integer> {
   private static final Map<Integer, StartedStatus> lookup = new HashMap<>();
 
   static {
-    for(StartedStatus status : StartedStatus.values()) {
+    for (StartedStatus status : StartedStatus.values()) {
       lookup.put(status.toUnderlyingValue(), status);
     }
   }

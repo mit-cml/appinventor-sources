@@ -45,6 +45,11 @@ import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.io.Writer;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,6 +62,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
@@ -79,14 +86,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor7;
 import javax.lang.model.util.Types;
-
-import java.lang.annotation.Annotation;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
@@ -212,8 +211,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   /**
    * Information about every option list helper block. Keys are simple names, and values are the
-   * corresponding {@link ComponentProcessor.OptionList} objects. This is constructed as a side effect
-   * of {@link #process} for use in {@link #outputResults()}.
+   * corresponding {@link ComponentProcessor.OptionList} objects. This is constructed as a side
+   * effect of {@link #process} for use in {@link #outputResults()}.
    */
   protected final Map<String, OptionList> optionLists = Maps.newTreeMap();
 
@@ -252,7 +251,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final TypeMirror type;
 
     /**
-     * Is this parameter an integer which represents a color?
+     * Indicate whether this parameter is an integer that represents a color.
      */
     protected final boolean color;
 
@@ -535,7 +534,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     private HelperKey returnHelperKey;
     /**
-     * Is this method's return type an integer which represents a color?
+     * Indicate whether this method's return type an integer that represents a
+     * color.
      */
     private boolean color;
 
@@ -613,14 +613,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private boolean color;
     private HelperKey helper;
 
-    protected Property(
-      String name,
-      String description,
-      String longDescription,
-      PropertyCategory category,
-      boolean userVisible,
-      boolean deprecated
-    ) {
+    protected Property(String name, String description, String longDescription,
+        PropertyCategory category, boolean userVisible, boolean deprecated) {
       super(name, description, longDescription, "Property", userVisible, deprecated);
       this.propertyCategory = category;
       this.name = name;
@@ -742,22 +736,23 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   /**
    * An enum specifying the available types of helper blocks aka types of helper UI.
-   * Currently the only type of helper UI is an OPTION_LIST which defines a dropdown UI in the blocks
-   * editor. This is associated with the OptionList data type, ie OptionList data always has an
-   * OPTOIN_LIST style UI in the blocks editor (as of now).
+   * Currently the only type of helper UI is an OPTION_LIST which defines a dropdown UI in the
+   * blocks editor. This is associated with the OptionList data type, ie OptionList data always has
+   * an OPTION_LIST style UI in the blocks editor (as of now).
    */
   protected enum HelperType { OPTION_LIST, ASSET }
 
   /**
    * A key that allows you to access info about a helper block.
    * 
-   * This class could be generic, and we could use subtyping to define the different HelperTypes
-   * but I (Beka) think it makes more sense to make this closely match the JavaScript implementation.
+   * <p>This class could be generic, and we could use subtyping to define the different HelperTypes
+   * but I (Beka) think it makes more sense to make this closely match the JavaScript
+   * implementation.
    */
-  protected final class HelperKey {
-    private HelperType helperType;
+  protected static final class HelperKey {
+    private final HelperType helperType;
 
-    private Object key;
+    private final Object key;
 
     /**
      * Creates a HelperKey which can be used to access data about a helper block.
@@ -791,7 +786,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * Represents a list of Options associated with some (enum) class. The data in this OptionList
    * is used to create OptionList helper blocks.
    * 
-   * Here JSON-ified example of such data, in this case we are looking at the Direction enum with
+   * <p>Here JSON-ified example of such data, in this case we are looking at the Direction enum with
    * a default value of East.
    * {
    *   "className": "com.google.appinventor.components.common.Direction",
@@ -800,14 +795,22 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    *   "defaultOpt": "East",
    *   "underlyingType": "java.lang.Integer",
    *   "options": [
-   *     { "name": "North", "value": "1", "description": "Option for North", "deprecated": "false" },
-   *     { "name": "Northeast", "value": "2", "description": "Option for Northeast", "deprecated": "false" },
-   *     { "name": "East", "value": "3", "description": "Option for East", "deprecated": "false" },
-   *     { "name": "Southeast", "value": "4", "description": "Option for Southeast", "deprecated": "false" },
-   *     { "name": "South", "value": "-1", "description": "Option for South", "deprecated": "false" },
-   *     { "name": "Southwest", "value": "-2", "description": "Option for Southwest", "deprecated": "false" },
-   *     { "name": "West", "value": "-3", "description": "Option for West", "deprecated": "false" },
-   *     { "name": "Northwest", "value": "-4", "description": "Option for Northwest", "deprecated": "false" }
+   *     { "name": "North", "value": "1", "description": "Option for North",
+   *       "deprecated": "false" },
+   *     { "name": "Northeast", "value": "2", "description": "Option for Northeast",
+   *       "deprecated": "false" },
+   *     { "name": "East", "value": "3", "description": "Option for East",
+   *       "deprecated": "false" },
+   *     { "name": "Southeast", "value": "4", "description": "Option for Southeast",
+   *       "deprecated": "false" },
+   *     { "name": "South", "value": "-1", "description": "Option for South",
+   *       "deprecated": "false" },
+   *     { "name": "Southwest", "value": "-2", "description": "Option for Southwest",
+   *       "deprecated": "false" },
+   *     { "name": "West", "value": "-3", "description": "Option for West",
+   *       "deprecated": "false" },
+   *     { "name": "Northwest", "value": "-4", "description": "Option for Northwest",
+   *       "deprecated": "false" }
        ]
    * }
    */
@@ -817,18 +820,18 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * For built-in components the Option name is used to look up the translated display text.
      * For extensions, which do not support i18n, the Option name /is/ the display text.
      */
-    private ArrayList<Option> options;
+    private final ArrayList<Option> options;
 
     /**
      * The fully qualified class name this OptionList is associated with.
      */
-    private String className;
+    private final String className;
 
     /**
      * The tag name this OptionList is associated with. This goes in front of the dropdown in the
      * blocks editor. It is always the simplified class name.
      */
-    private String tagName;
+    private final String tagName;
 
     /**
      * The Option.name of the default option associated with this OptionList.
@@ -836,8 +839,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private String defaultOpt;
 
     /**
-     * The underlying type passed to this OptionList. Eg in the case of OptionList<Integer> this
-     * would be a TypeMirror representing the type Integer.
+     * The underlying type passed to this OptionList. E.g., in the case of OptionList&lt;Integer&gt;
+     * this would be a TypeMirror representing the type Integer.
      */
     private TypeMirror underlyingType;
 
@@ -852,7 +855,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected OptionList(String className, String tagName) {
       this.className = className;
       this.tagName = tagName;
-      options = new ArrayList();
+      options = new ArrayList<>();
     }
 
     /**
@@ -909,7 +912,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * @param option the option to add to this OptionList.
      */
     protected void addOption(Option option) {
-        options.add(option);
+      options.add(option);
     }
 
     /**
@@ -940,18 +943,13 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   /**
    * Represents an option (enum constant) with a name and backing value.
    */
-  protected final class Option extends Feature {
+  protected static final class Option extends Feature {
     /**
      * The value this option is associated with.
      */
-    private String value;
+    private final String value;
 
-    protected Option(
-      String name,
-      String value,
-      String description,
-      boolean deprecated
-    ) {
+    protected Option(String name, String value, String description, boolean deprecated) {
       super(name, description, description, "Option", true, deprecated);
       this.value = value;
     }
@@ -1855,7 +1853,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       if (!mirror.getAnnotationType().asElement().getSimpleName().contentEquals("Options")) {
         continue;
       }
-      for(Entry<? extends ExecutableElement, ? extends AnnotationValue> entry:
+      for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry:
           mirror.getElementValues().entrySet()) {
         // Make sure we are looking at the value argument.
         if (!entry.getKey().getSimpleName().contentEquals("value")) {
@@ -1912,37 +1910,31 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * @param optionElem The element representing the enum defining the options.
    * @return Returns true if the Optionlist was successfully added. False otherwise.
    */
-  private <E extends Enum<E>> boolean tryAddOptionList(Element optionElem) {
+  private boolean tryAddOptionList(Element optionElem) {
     String className = optionElem.asType().toString();
     String tagName = optionElem.getSimpleName().toString();
     OptionList optionList = new OptionList(className, tagName);
 
     // Get the class.
-    Class clazz = null;
+    Class<?> clazz;
     try {
       clazz = Class.forName(className);
     } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("OptionList Class: " + className + " is not available. " +
-        "Make sure that it is available to the compiler.");
-    }
-    if (clazz == null) {
-      return false;
+      throw new IllegalArgumentException("OptionList Class: " + className + " is not available. "
+          + "Make sure that it is available to the compiler.");
     }
 
     // Get the getValue method.
-    java.lang.reflect.Method toValueMethod = null;
+    java.lang.reflect.Method toValueMethod;
     try {
-      toValueMethod = clazz.getDeclaredMethod("toUnderlyingValue", new Class[] {});
+      toValueMethod = clazz.getDeclaredMethod("toUnderlyingValue");
     } catch (NoSuchMethodException e) {
-      throw new IllegalArgumentException("Class: " + className + " must have a toUnderlyingValue() " +
-          "method.");
-    }
-    if (toValueMethod == null) {
-      return false;
+      throw new IllegalArgumentException("Class: " + className + " must have a toUnderlyingValue() "
+          + "method.");
     }
 
     // Get the fromUnderlyingValue method. This is not used, we just need to require it.
-    java.lang.reflect.Method fromValueMethod = null;
+    java.lang.reflect.Method fromValueMethod;
     Type genericType = null;
     try {
       ParameterizedType optionListType = (ParameterizedType) clazz.getGenericInterfaces()[0];
@@ -1950,15 +1942,12 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       Class<?> typeClass = (Class<?>) genericType;
       fromValueMethod = clazz.getDeclaredMethod("fromUnderlyingValue", typeClass);
     } catch (NoSuchMethodException e) {
-      throw new IllegalArgumentException("Class: " + className + " must have a static " +
-          "fromUnderlyingValue(" +  genericType.getTypeName() + ") method.");
-    }
-    if (fromValueMethod == null) {
-      return false;
+      throw new IllegalArgumentException("Class: " + className + " must have a static "
+          + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
     }
     if (!java.lang.reflect.Modifier.isStatic(fromValueMethod.getModifiers())) {
-      throw new IllegalArgumentException("Class: " + className + " must have a static " +
-          "fromUnderlyingValue(" +  genericType.getTypeName() + ") method.");
+      throw new IllegalArgumentException("Class: " + className + " must have a static "
+          + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
     }
   
     // Create a map of enum const names -> values. This is used to filter the below elements
@@ -1966,16 +1955,16 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     Map<String, String> namesToValues = Maps.newTreeMap();
     Object[] constants = clazz.getEnumConstants();
     if (constants == null) {
-      throw new IllegalArgumentException("Class: " + className + " should be an enum and declare " +
-          "enum constants.");
+      throw new IllegalArgumentException("Class: " + className + " should be an enum and declare "
+          + "enum constants.");
     }
     for (Object constant : constants) {
-        try {
-          E enumConst = (E) constant;
-          namesToValues.put(
-            enumConst.name(),
-            toValueMethod.invoke(enumConst, new Object [] {}).toString());
-        } catch (Exception e) {}
+      try {
+        Enum<?> enumConst = (Enum<?>) constant;
+        namesToValues.put(enumConst.name(), toValueMethod.invoke(enumConst).toString());
+      } catch (Exception e) {
+        // pass
+      }
     }
 
     // Add the options to the OptionList.
@@ -2058,7 +2047,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           if (!entry.getKey().getSimpleName().contentEquals("value")) {
             continue;
           }
-          List<AnnotationValue> values = (List<AnnotationValue>)entry.getValue().getValue();
+          List<AnnotationValue> values = (List<AnnotationValue>) entry.getValue().getValue();
           List<String> filter = new ArrayList<String>();
           for (AnnotationValue v : values) {
             filter.add(((String)v.getValue()).toLowerCase());
@@ -2081,11 +2070,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * @return the parameter constructed from the variable element.
    */
   private Parameter varElemToParameter(VariableElement varElem) {
-    Parameter param = new Parameter(
-      varElem.getSimpleName().toString(),
-      varElem.asType(),
-      varElem.getAnnotation(IsColor.class) != null
-    );
+    Parameter param = new Parameter(varElem.getSimpleName().toString(), varElem.asType(),
+        varElem.getAnnotation(IsColor.class) != null);
     param.helper = elementToHelperKey(varElem, varElem.asType());
     return param;
   }
@@ -2653,8 +2639,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "text";
     }
     // {float, double, int, short, long, byte} -> number
-    if (typeString.equals("float") || typeString.equals("double") || typeString.equals("int") ||
-        typeString.equals("short") || typeString.equals("long") || typeString.equals("byte")) {
+    if (typeString.equals("float") || typeString.equals("double") || typeString.equals("int")
+        || typeString.equals("short") || typeString.equals("long") || typeString.equals("byte")) {
       return "number";
     }
     // YailList -> list
@@ -2690,7 +2676,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "component";
     }
 
-    throw new IllegalArgumentException("Cannot convert Java type '" + typeString + "' to Yail type");
+    throw new IllegalArgumentException("Cannot convert Java type '" + typeString
+        + "' to Yail type");
   }
 
   /**

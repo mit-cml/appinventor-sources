@@ -131,8 +131,11 @@ public class Polygon extends PolygonBase implements MapPolygon {
   }
 
   /**
+   * Gets the type of the feature, as a {@link MapFeature} enum.
+   *
    * @return the abstract MapFeature type of this feature. In this case MapFeature.Polygon.
    */
+  @SuppressWarnings("RegularMethodName")
   public MapFeature TypeAbstract() {
     return MapFeature.Polygon;
   }

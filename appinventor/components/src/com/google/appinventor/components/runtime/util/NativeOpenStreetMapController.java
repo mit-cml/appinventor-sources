@@ -1339,6 +1339,8 @@ class NativeOpenStreetMapController implements MapController, MapListener {
       case Imperial:
         scaleBar.setUnitsOfMeasure(UnitsOfMeasure.imperial);
         break;
+      default:
+        break;
     }
     view.invalidate();
   }

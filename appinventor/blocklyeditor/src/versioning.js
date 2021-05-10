@@ -2817,7 +2817,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 28:
     // - HighContrast and BigDefaultText properties were added
-    28: "noUpgrade"
+    28: "noUpgrade",
 
     // For FORM_COMPONENT_VERSION 29:
     // - Adds dropdown blocks for ScreenAnimation.

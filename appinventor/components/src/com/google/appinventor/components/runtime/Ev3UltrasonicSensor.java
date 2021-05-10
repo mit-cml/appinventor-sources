@@ -259,7 +259,7 @@ public class Ev3UltrasonicSensor extends LegoMindstormsEv3Sensor implements Dele
     UltrasonicSensorUnit unit = UltrasonicSensorUnit.fromUnderlyingValue(unitName);
     if (unit == null) {
       form.dispatchErrorOccurredEvent(
-        this, "Unit", ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, unitName);
+          this, "Unit", ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, unitName);
       return;
     }
     setMode(unit);
@@ -268,8 +268,17 @@ public class Ev3UltrasonicSensor extends LegoMindstormsEv3Sensor implements Dele
   /**
    * Sets the unit of this ultrasonic sensor.
    */
+  @SuppressWarnings("RegularMethodName")
   public void UnitAbstract(UltrasonicSensorUnit unit) {
     setMode(unit);
+  }
+
+  /**
+   * Returns the current unit of distance for this ultrasonic sensor.
+   */
+  @SuppressWarnings({"RegularMethodName", "unused"})
+  public UltrasonicSensorUnit UnitAbstract() {
+    return mode;
   }
 
   /**
@@ -279,13 +288,6 @@ public class Ev3UltrasonicSensor extends LegoMindstormsEv3Sensor implements Dele
                   category = PropertyCategory.BEHAVIOR)
   public @Options(UltrasonicSensorUnit.class) String Unit() {
     return mode.toUnderlyingValue();
-  }
-
-  /**
-   * Returns the current unit of distance for this ultrasonic sensor.
-   */
-  public UltrasonicSensorUnit UnitAbstract() {
-    return mode;
   }
 
   /**

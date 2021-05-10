@@ -10,8 +10,8 @@ import java.util.Map;
 
 /**
  * Defines a NxtMotorMode type used by the NxtDirectCommands component.
- * 
- * Info attained from:
+ *
+ * <p>Info attained from:
  * http://kio4.com/b4a/programas/Appendix%202-LEGO%20MINDSTORMS%20NXT%20Direct%20commands.pdf
  * http://www.ni.com/pdf/manuals/372574c.pdf
  * In combination with the documentation here:
@@ -24,7 +24,7 @@ public enum NxtMotorMode implements OptionList<Integer> {
   Regulated(0x04),  // Allows regulation based on the regulationMode property.
   Coast(0x00);  // Motors will rotate freely.
 
-  private int value;
+  private final int value;
 
   NxtMotorMode(int mode) {
     this.value = mode;

@@ -273,10 +273,12 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeFusiontablesControlProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("HorizontalArrangement")) {
-        srcCompVersion = upgradeHorizontalArrangementProperties(componentProperties, srcCompVersion);
+        srcCompVersion = upgradeHorizontalArrangementProperties(componentProperties,
+            srcCompVersion);
 
       } else if (componentType.equals("HorizontalScrollArrangement")) {
-        srcCompVersion = upgradeHorizontalScrollArrangementProperties(componentProperties, srcCompVersion);
+        srcCompVersion = upgradeHorizontalScrollArrangementProperties(componentProperties,
+            srcCompVersion);
 
       } else if (componentType.equals("Image")) {
         srcCompVersion = upgradeImageProperties(componentProperties, srcCompVersion);
@@ -336,7 +338,8 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeVerticalArrangementProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("VerticalScrollArrangement")) {
-        srcCompVersion = upgradeVerticalScrollArrangementProperties(componentProperties, srcCompVersion);
+        srcCompVersion = upgradeVerticalScrollArrangementProperties(componentProperties,
+            srcCompVersion);
 
       } else if (componentType.equals("VideoPlayer")) {
         srcCompVersion = upgradeVideoPlayerProperties(componentProperties, srcCompVersion);
@@ -1145,9 +1148,8 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeHorizontalScrollArrangementProperties(
-    Map<String, JSONValue> componentProperties,
-    int srcCompVersion
-  ) {
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
     if (srcCompVersion < 2) {
       // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
       // Assets helper block was added.
@@ -1548,9 +1550,8 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeVerticalScrollArrangementProperties(
-    Map<String, JSONValue> componentProperties,
-    int srcCompVersion
-  ) {
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
     if (srcCompVersion < 2) {
       // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
       // Assets helper block was added.
@@ -1821,9 +1822,8 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeNavigationProperties(
-    Map<String, JSONValue> componentProperties,
-    int srcCompVersion
-  ) {
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
     if (srcCompVersion < 2) {
       // - Adds TransportMethod dropdown.
       srcCompVersion = 2;

@@ -14,18 +14,25 @@ import java.lang.annotation.Target;
 /**
  * Annotation to mark a parameter/return type as accepting an enum value. This should *only* be
  * used to upgrade old components. Eg, setters that currently accept concrete types like int:
- * 
- * @SimpleProperty
+ *
+ * <code>@SimpleProperty
  * public void AlignHorizontal (@Options(HorizontalAlignment.class) int alignment) { }
- * 
- * New components that want to accept or return an enum should just use that enum type as the
+ * </code>
+ *
+ * <p>New components that want to accept or return an enum should just use that enum type as the
  * parameter type. E.g:
- * 
- * @SimpleProperty
+ *
+ * <code>@SimpleProperty
  * public void CurrentSeason (Season season) { }
+ * </code>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.TYPE_USE})
 public @interface Options {
-    public Class<? extends OptionList> value();
+  /**
+   * The type of the OptionList used to represent values of the annotated property.
+   *
+   * @return a class implementing the OptionList interface
+   */
+  Class<? extends OptionList<?>> value();
 }

@@ -17,7 +17,7 @@ public enum HorizontalAlignment implements OptionList<Integer> {
   Center(3), // Yes this is correct.
   Right(2);
 
-  private int value;
+  private final int value;
 
   HorizontalAlignment(int value) {
     this.value = value;
@@ -27,10 +27,10 @@ public enum HorizontalAlignment implements OptionList<Integer> {
     return value;
   }
 
-  private static Map<Integer, HorizontalAlignment> lookup = new HashMap<>();
+  private static final Map<Integer, HorizontalAlignment> lookup = new HashMap<>();
 
   static {
-    for(HorizontalAlignment alignment : HorizontalAlignment.values()) {
+    for (HorizontalAlignment alignment : HorizontalAlignment.values()) {
       lookup.put(alignment.toUnderlyingValue(), alignment);
     }
   }

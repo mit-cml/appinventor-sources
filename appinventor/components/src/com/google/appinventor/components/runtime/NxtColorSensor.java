@@ -158,8 +158,8 @@ public class NxtColorSensor extends LegoMindstormsNxtSensor implements Deleteabl
 
   @Override
   protected void initializeSensor(String functionName) {
-    NxtSensorType sensorType = detectColor ?
-        NxtSensorType.ColorFull :
+    NxtSensorType sensorType = detectColor
+        ? NxtSensorType.ColorFull :
         mapColorToSensorType.get(generateColor);
     setInputMode(functionName, port, sensorType, NxtSensorMode.Raw);
     resetInputScaledValue(functionName, port);

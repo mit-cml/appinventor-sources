@@ -97,17 +97,17 @@ import javax.tools.FileObject;
  *   ("assets": ["FILENAME",*])?
  * }
  * 
- * A note on helper "ARBITRARY-DATA". The structure given above outlines a system where helper data
- * is duplicated every time that helper is used by a feature of a Component. Ideally this would
+ * <p>A note on helper "ARBITRARY-DATA". The structure given above outlines a system where helper
+ * data is duplicated every time that helper is used by a feature of a Component. Ideally this would
  * not be necessary and helper data could be stored in some kind of dictionary structure. The issue
  * is that this must export an array of objects to be compatible with extension .aia files which
  * have already been released, and adding more dictionaries or arrays to this structure would
  * require it to export an /object/ not an /array/. As such the simplest solution is to simply
  * duplicate data related to the helpers.
  * 
- * It may make sense in the future to revist this choice, but making this decision now would only
- * make it harder to support a more "lean" concept of data in the future, as we would still have to
- * deal with .aia files that use this duplicated format. So it is probably best to continue
+ * <p>It may make sense in the future to revisit this choice, but making this decision now would
+ * only make it harder to support a more "lean" concept of data in the future, as we would still
+ * have to deal with .aia files that use this duplicated format. So it is probably best to continue
  * duplicating data where necessary in the future.
  *
  * @author lizlooney@google.com (Liz Looney)
@@ -431,6 +431,9 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
         break;
       case ASSET:
         outputAsset((Integer)helper.getKey(), sb);
+        break;
+      default:
+        throw new UnsupportedOperationException();
     }
     sb.append("    }\n}");
   }

@@ -41,7 +41,7 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
       requestCode = container.$form().registerForActivityResult(this);
     }
     container.$context().startActivityForResult(getIntent(), requestCode);
-    String openAnim = container.$form().getOpenAnimType();
+    String openAnim = container.$form().OpenScreenAnimation();
     AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
   }
 

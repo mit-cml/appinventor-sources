@@ -16,7 +16,7 @@ public enum Sensitivity implements OptionList<Integer> {
   Moderate(2),
   Strong(3);
 
-  private int value;
+  private final int value;
 
   Sensitivity(int sensitivity) {
     this.value = sensitivity;
@@ -29,7 +29,7 @@ public enum Sensitivity implements OptionList<Integer> {
   private static final Map<Integer, Sensitivity> lookup = new HashMap<>();
 
   static {
-    for(Sensitivity sensitivity : Sensitivity.values()) {
+    for (Sensitivity sensitivity : Sensitivity.values()) {
       lookup.put(sensitivity.toUnderlyingValue(), sensitivity);
     }
   }

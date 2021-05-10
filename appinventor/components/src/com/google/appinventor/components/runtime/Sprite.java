@@ -6,22 +6,21 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Handler;
+
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.Options;
-import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.Direction;
-import com.google.appinventor.components.runtime.errors.AssertionFailure;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.TimerInternal;
 import com.google.appinventor.components.runtime.util.YailList;
-
-import android.os.Handler;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -502,6 +501,7 @@ public abstract class Sprite extends VisibleComponent
   /**
    * Called when the sprite hits an edge of the screen.
    */
+  @SuppressWarnings("RegularMethodName")
   public void EdgeReachedAbstract(Direction edge) {
     // We have to post the edge as an int for backwards compatibility.
     postEvent(this, "EdgeReached", edge.toUnderlyingValue());
@@ -611,7 +611,7 @@ public abstract class Sprite extends VisibleComponent
   @SimpleFunction(
     description = "Makes the %type% bounce, as if off a wall. " +
         "For normal bouncing, the edge argument should be the one returned by EdgeReached.")
-  public void Bounce (@Options(Direction.class) int edge) {
+  public void Bounce(@Options(Direction.class) int edge) {
     // Make sure that "edge" is a valid Direction.
     Direction dir = Direction.fromUnderlyingValue(edge);
     if (dir == null) {
@@ -634,6 +634,7 @@ public abstract class Sprite extends VisibleComponent
    *        ----------  
    *        The correct direction would be `Direction.East`.
    */
+  @SuppressWarnings("RegularMethodName")
   public void BounceAbstract(Direction edge) {
     MoveIntoBounds();
 
