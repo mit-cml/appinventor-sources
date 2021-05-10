@@ -134,10 +134,18 @@ Blockly.Blocks['lexical_variable_get'] = {
   getVars: function() {
     return [this.getFieldValue('VAR')];
   },
-  renameLexicalVar: function(oldName, newName) {
-    // console.log("Renaming lexical variable from " + oldName + " to " + newName);
-    if (oldName === this.getFieldValue('VAR')) {
+  renameLexicalVar: function(oldName, newName, oldTranslatedName, newTranslatedName) {
+    if (oldTranslatedName === undefined) {
+      // Local variables
+      if (oldName === this.getFieldValue('VAR')) {
         this.setFieldValue(newName, 'VAR');
+      }
+    } else if (oldTranslatedName && oldTranslatedName === this.fieldVar_.getText()) {
+      // Global variables
+      this.fieldVar_.setText(newTranslatedName);
+      if (oldName === newName) {
+        this.setFieldValue(newName, 'VAR');
+      }
     }
   },
   renameFree: function (freeSubstitution) {

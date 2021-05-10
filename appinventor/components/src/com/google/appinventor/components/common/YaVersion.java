@@ -520,12 +520,15 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 210:
   // - BALL_COMPONENT_VERSION was incremented to 7
   // - IMAGESPRITE_COMPONENT_VERSION was incremented to 7
-  // For YOUNG_ANDROID_VERSION 211 (helper blocks):
+  // For YOUNG_ANDROID_VERSION 211:
+  // - CANVAS_COMPONENT_VERSION was incremented to 14
+  // - CLOUDDB_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 212 (helper blocks):
   // - BLOCKS_LANGUAGE_VERSION incremented to 34
   // - ACCELEROMETERSENSOR_COMPONENT_VERSION incremented to 5
   // - BALL_COMPONENT_VERSION incremented to 8
   // - BUTTON_COMPONENT_VERSION incremented to 7
-  // - CANVAS_COMPONENT_VERSION incremented to 14
+  // - CANVAS_COMPONENT_VERSION incremented to 15
   // - DATEPICKER_COMPONENT_VERSION incremented to 4
   // - FORM_COMPONENT_VESRION incremented to 28
   // - HORIZONTALaRRANGEMENT_COMPONENT_VERSION incremented to 4
@@ -544,7 +547,7 @@ public class YaVersion {
   // - VERTICALARRANGEMENT_COMPONENT_VERSION incremented to 4
   // - VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION incremented to 2
   // - VIDEOPLAYER_Component_VERSION incremented to 7
-  public static final int YOUNG_ANDROID_VERSION = 211;
+  public static final int YOUNG_ANDROID_VERSION = 212;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -798,9 +801,13 @@ public class YaVersion {
   // - ExtendMovesOutsideCanvas was added
   // For CANVAS_COMPONENT_VERSION 13
   // - BackgroundImageinBase64 was added
-  // For CANVAS_COMPONENT_VERSION 14
+  // For CANVAS_PROPERTY_VERSION 14
+  // -TAP_THRESHOLD was changed from being constant to user settable 
+  // -TAP_THRESHOLD renamed to tapThreshold
+  // -TapThreshold was added
+  // For CANVAS_COMPONENT_VERSION 15
   // - Assets helper block was added.
-  public static final int CANVAS_COMPONENT_VERSION = 14;
+  public static final int CANVAS_COMPONENT_VERSION = 15;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1331,7 +1338,10 @@ public class YaVersion {
 
   // For CLOUDDB_COMPONENT_VERSION 1:
   // - CloudDB component introduced
-  public static final int CLOUDDB_COMPONENT_VERSION = 1;
+  // For CLOUDDB_COMPONENT_VERSION 2:
+  // - Added the UpdateDone event
+  //   to control its use
+  public static final int CLOUDDB_COMPONENT_VERSION = 2;
 
   // For TWITTER_COMPONENT_VERSION 2:
   // - The Authorize method and IsAuthorized event handler were added to support

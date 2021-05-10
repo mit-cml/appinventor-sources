@@ -16,6 +16,7 @@ var expected = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/
 var formJson = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/makeQuiz/Screen1.scm');
 formJson = formJson.substring(9, formJson.length-2);
 var blocks = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/makeQuiz/Screen1.bky');
+var messages = fs.read('../build/blocklyeditor/msg/messages.json');
 
 // PhantomJS page object to open and load an URL
 var page = require('webpage').create();
@@ -41,6 +42,9 @@ page.open('src/demos/yail/yail_testing_index.html', function(status) {
   // Evaluate the following:
   var passed = page.evaluate(function(){
 
+    // Set the translation messages object
+    Blockly.Msg = JSON.parse(arguments[5]);
+
     // Get the expected Yail from Classic
     var expected = arguments[0];
 
@@ -54,7 +58,7 @@ page.open('src/demos/yail/yail_testing_index.html', function(status) {
     return doTheyMatch(expected, newblocks);
 
 
-  }, expected, formJson, blocks, args[1], args[2]); // args[1] and args[2] are blocks Version and YaV
+  }, expected, formJson, blocks, args[1], args[2], messages); // args[1] and args[2] are blocks Version and YaV
 
   //This is the actual result of the test
   console.log(passed);

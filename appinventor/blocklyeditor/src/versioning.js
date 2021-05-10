@@ -1710,8 +1710,14 @@ Blockly.Versioning.AllUpgradeMaps =
     // No blocks need to be modified to upgrade to version 13.
     13: "noUpgrade",
 
+    // TAP_THRESHOLD modified to be user settable
+    // TAP_THRESHOLD renamed to tapThreshold
+    // TapThreshold is added
+    // No blocks need to be modified to upgrade to version 14.
+    14: "noUpgrade",
+
     // Assets helper block was added.
-    14: Blockly.Versioning.makeSetterUseHelper(
+    15: Blockly.Versioning.makeSetterUseHelper(
         'Canvas', 'BackgroundImage', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End Canvas upgraders
@@ -1753,8 +1759,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
   "CloudDB": {
 
-    //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    // This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+    // UpdateDone event was added.
+    2: "noUpgrade"
 
   },
 

@@ -380,6 +380,8 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeNavigationProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("YandexTranslate")) {
         srcCompVersion = upgradeYandexTranslateProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("CloudDB")) {
+        srcCompVersion = upgradeCloudDBProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("Ev3ColorSensor")) {
         srcCompVersion = upgradeEv3ColorSensorProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("Ev3GyroSensor")) {
@@ -773,8 +775,14 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 13;
     }
     if (srcCompVersion < 14) {
-      // Assets helper block was added.
+      // The TAP_THRESHOLD value was changed to be user settable in version 14.
+      // TAP_THRESHOLD variable is now changed to tapThreshold
+      // TapThreshold was added
       srcCompVersion = 14;
+    }
+    if (srcCompVersion < 15) {
+      // Assets helper block was added.
+      srcCompVersion = 15;
     }
     return srcCompVersion;
   }
@@ -1894,6 +1902,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeCloudDBProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Version 2
+      // UpdateDone event and ProvideUpdateDone property were added
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeEv3ColorSensorProperties(
       Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
@@ -1932,7 +1950,6 @@ public final class YoungAndroidFormUpgrader {
       int srcCompVersion) {
     if (srcCompVersion < 2) {
       // Adds dropdown blocks.
-      srcCompVersion = 2;
     }
     return srcCompVersion;
   }

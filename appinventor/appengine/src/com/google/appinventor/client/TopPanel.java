@@ -7,14 +7,16 @@
 package com.google.appinventor.client;
 
 import com.google.appinventor.client.boxes.MotdBox;
+
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+
 import com.google.appinventor.client.tracking.Tracking;
+
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.TextButton;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
+
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.common.base.Strings;
@@ -23,26 +25,19 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.UrlBuilder;
-import com.google.gwt.i18n.client.DateTimeFormat;
+
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.MissingResourceException;
 
@@ -57,10 +52,6 @@ public class TopPanel extends Composite {
   private final DropDownButton accountButton;
   public DropDownButton languageDropDown;
 
-  private final String WIDGET_NAME_MESSAGES = "Messages";
-  private final String WIDGET_NAME_PRIVATE_USER_PROFILE = "Profile";
-  private final TextButton gallery;
-  private final TextButton moderation;
   private final String WIDGET_NAME_SIGN_OUT = "Signout";
   private final String WIDGET_NAME_USER = "User";
   private static final String WIDGET_NAME_LANGUAGE = "Language";
@@ -131,6 +122,7 @@ public class TopPanel extends Composite {
     myProjects.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+        Ode.getInstance().getTopToolbar().updateMoveToTrash("Move To Trash");
         ode.switchToProjectsView();
       }
     });
@@ -148,18 +140,6 @@ public class TopPanel extends Composite {
       }
     });
     links.add(viewTrash);
-
-    // Code on gallerydev branch
-    // Gallery Link
-    gallery = new TextButton(MESSAGES.tabNameGallery());
-    gallery.setStyleName("ode-TopPanelButton");
-    gallery.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        ode.switchToGalleryView();
-      }
-    });
-    links.add(gallery);
 
     Config config = ode.getSystemConfig();
     String guideUrl = config.getGuideUrl();
@@ -180,34 +160,6 @@ public class TopPanel extends Composite {
       links.add(feedbackLink);
     }
 
-  /*
-  // Code on master branch
-    // Gallery Link
-    if (Ode.getInstance().getUser().getIsAdmin()) {
-      TextButton gallery = new TextButton(MESSAGES.galleryTabName());
-      gallery.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent clickEvent) {
-          Window.open("http://gallery.appinventor.mit.edu", "_blank", "scrollbars=1");
-        }
-      });
-
-      gallery.setStyleName("ode-TopPanelButton");
-      links.add(gallery);
-    }
-    */
-
-    moderation = new TextButton(MESSAGES.tabNameModeration());
-    moderation.setStyleName("ode-TopPanelButton");
-    moderation.addClickHandler(new ClickHandler() {
-    @Override
-      public void onClick(ClickEvent clickEvent) {
-        ode.switchToModerationPageView();
-      }
-    });
-    moderation.setVisible(false);
-    links.add(moderation);
-
     // Create the Account Information
     rightPanel = new VerticalPanel();
     rightPanel.setHeight("100%");
@@ -223,7 +175,6 @@ public class TopPanel extends Composite {
     userItems.add(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
 
     accountButton = new DropDownButton(WIDGET_NAME_USER, " " , userItems, true);
-    accountButton.setItemEnabled(WIDGET_NAME_MESSAGES, false);
     accountButton.setStyleName("ode-TopPanelButton");
 
     // Language
@@ -273,17 +224,6 @@ public class TopPanel extends Composite {
     }
   }
 
-  public void updateAccountMessageButton(){
-    // Since we want to insert "Messages" before "Sign Out", we need to clear first.
-    accountButton.clearAllItems();
-
-    // Gallery Items
-    // (1)Private User Profile
-    accountButton.addItem(new DropDownItem(WIDGET_NAME_PRIVATE_USER_PROFILE, MESSAGES.privateProfileLink(), new PrivateProfileAction()));
-    // (2)Sign Out
-    accountButton.addItem(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
-  }
-
   private void addLogo(HorizontalPanel panel) {
     // Logo is a link to App Inv homepage. Add timestamp to logo url
     // to get around browsers that agressively cache the image! This
@@ -315,20 +255,6 @@ public class TopPanel extends Composite {
    */
   public void showUserEmail(String email) {
     accountButton.setCaption(email);
-  }
-
-  /**
-   * Updates the UI to show the moderation's link.
-   */
-  public void showModerationLink(boolean b) {
-    moderation.setVisible(b);
-  }
-
-  /**
-   * Updates the UI to show the moderation's link.
-   */
-  public void showGalleryLink(boolean b) {
-    gallery.setVisible(b);
   }
 
   /**
@@ -400,11 +326,5 @@ public class TopPanel extends Composite {
     }
   }
 
-  private static class PrivateProfileAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().switchToPrivateUserProfileView();
-    }
-  }
 }
 

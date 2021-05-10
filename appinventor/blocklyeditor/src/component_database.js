@@ -420,7 +420,6 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
       info.properties[property.name] = property;
       if (typeof property['deprecated'] === 'string') {
         property['deprecated'] = JSON.parse(property['deprecated']);
-        if (property['deprecated']) continue;
       }
       if (property['helper']) {
         property['helperKey'] = this.processHelper(property['helper']);

@@ -1,10 +1,15 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.stats.SimpleStatReporter;
+import com.google.appinventor.buildserver.stats.StatCalculator;
+import com.google.appinventor.buildserver.stats.StatCalculator.Stats;
+import com.google.appinventor.buildserver.stats.StatReporter;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
@@ -67,7 +72,7 @@ import javax.ws.rs.core.Response;
 // The Java class will be hosted at the URI path "/buildserver"
 @Path("/buildserver")
 public class BuildServer {
-  private ProjectBuilder projectBuilder = new ProjectBuilder();
+  private ProjectBuilder projectBuilder = new ProjectBuilder(statReporter);
 
   static class ProgressReporter {
     // We create a ProgressReporter instance which is handed off to the
@@ -147,9 +152,14 @@ public class BuildServer {
     @Option(name = "--debug",
       usage = "Turn on debugging, which enables the non-async calls of the buildserver.")
     boolean debug = false;
+
     @Option(name = "--dexCacheDir",
             usage = "the directory to cache the pre-dexed libraries")
     String dexCacheDir = null;
+
+    @Option(name = "--statreporter",
+        usage = "the reporter to use for collecting stats")
+    String statReporter = "com.google.appinventor.buildserver.stats.SimpleStatReporter";
 
   }
 
@@ -178,6 +188,9 @@ public class BuildServer {
 
   //The number of failed build requests for this server run
   private static final AtomicInteger failedBuildRequests = new AtomicInteger(0);
+
+  // The reporter for gathering build stats.
+  private static StatReporter statReporter;
 
   //The number of failed build requests for this server run
   private static int maximumActiveBuildTasks = 0;
@@ -257,6 +270,7 @@ public class BuildServer {
     RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
     DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
     variables.put("state", getShutdownState() + "");
+    variables.put("hostname", InetAddress.getLocalHost().getHostName());
     if (shuttingTime != 0) {
       variables.put("shutdown-time", dateTimeFormat.format(new Date(shuttingTime)));
     }
@@ -311,14 +325,53 @@ public class BuildServer {
     variables.put("maximum-simultaneous-build-tasks-occurred", maximumActiveBuildTasks + "");
     variables.put("active-build-tasks", buildExecutor.getActiveTaskCount() + "");
 
+    return mapToHtml(variables);
+  }
+
+  private Response mapToHtml(Map<String, String> variables) {
     StringBuilder html = new StringBuilder();
     html.append("<html><body><tt>");
     for (Map.Entry<String, String> variable : variables.entrySet()) {
       html.append("<b>").append(variable.getKey()).append("</b> ")
-        .append(variable.getValue()).append("<br>");
+          .append(variable.getValue()).append("<br>");
     }
     html.append("</tt></body></html>");
     return Response.ok(html.toString(), MediaType.TEXT_HTML_TYPE).build();
+  }
+
+  @GET
+  @Path("stats")
+  @Produces(MediaType.TEXT_HTML)
+  public Response stats() throws IOException {
+    Map<String, String> variables = new LinkedHashMap<String, String>();
+
+    variables.put("hostname", InetAddress.getLocalHost().getHostName());
+
+    // Build Stats
+    if (statReporter instanceof SimpleStatReporter) {
+      StatCalculator calculator = new StatCalculator();
+      processStats("last1000.",
+          calculator.computeStats(((SimpleStatReporter) statReporter).getOrderedStats()),
+          variables);
+      processStats("successes.",
+          calculator.computeStats(((SimpleStatReporter) statReporter).getSuccessStats()),
+          variables);
+      processStats("failures.",
+          calculator.computeStats(((SimpleStatReporter) statReporter).getFailureStats()),
+          variables);
+    }
+
+    return mapToHtml(variables);
+  }
+
+  private void processStats(String prefix, Stats stats, Map<String, String> variables) {
+    variables.put(prefix + "min", stats.getMinTime() + " ms");
+    variables.put(prefix + "avg", stats.getAvgTime() + " ms");
+    variables.put(prefix + "max", stats.getMaxTime() + " ms");
+    variables.put(prefix + "std", stats.getStdev() + " ms");
+    for (String stage : stats.getStageNames()) {
+      processStats(prefix + stage + ".", stats.getStageStats(stage), variables);
+    }
   }
 
   /**
@@ -400,7 +453,7 @@ public class BuildServer {
   @POST
   @Path("build-from-zip")
   @Produces("application/vnd.android.package-archive;charset=utf-8")
-  public Response buildFromZipFile(@QueryParam("uname") String userName, File zipFile)
+  public Response buildFromZipFile(@QueryParam("uname") String userName, @QueryParam("ext") String ext, File zipFile)
     throws IOException {
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = zipFile;
@@ -410,8 +463,10 @@ public class BuildServer {
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE)
         .entity("Entry point unavailable unless debugging.").build();
 
+    boolean isAab = Main.AAB_EXTENSION_VALUE.equals(ext);
+
     try {
-      build(userName, zipFile, null);
+      build(userName, zipFile, isAab, null);
       String attachedFilename = outputApk.getName();
       FileInputStream outputApkDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputApk);
       // Set the outputApk field to null so that it won't be deleted in cleanUp().
@@ -443,7 +498,7 @@ public class BuildServer {
   @POST
   @Path("build-all-from-zip")
   @Produces("application/zip;charset=utf-8")
-  public Response buildAllFromZipFile(@QueryParam("uname") String userName, File inputZipFile)
+  public Response buildAllFromZipFile(@QueryParam("uname") String userName, @QueryParam("ext") String ext, File inputZipFile)
     throws IOException, JSONException {
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = inputZipFile;
@@ -453,8 +508,10 @@ public class BuildServer {
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE)
         .entity("Entry point unavailable unless debugging.").build();
 
+    boolean isAab = Main.AAB_EXTENSION_VALUE.equals(ext);
+
     try {
-      buildAndCreateZip(userName, inputZipFile, null);
+      buildAndCreateZip(userName, inputZipFile, isAab, null);
       String attachedFilename = outputZip.getName();
       FileInputStream outputZipDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputZip);
       // Set the outputZip field to null so that it won't be deleted in cleanUp().
@@ -501,12 +558,15 @@ public class BuildServer {
     @QueryParam("uname") final String userName,
     @QueryParam("callback") final String callbackUrlStr,
     @QueryParam("gitBuildVersion") final String gitBuildVersion,
+    @QueryParam("ext") final String ext,
     final File inputZipFile) throws IOException {
     // Set the inputZip field so we can delete the input zip file later in
     // cleanUp.
     inputZip = inputZipFile;
     inputZip.deleteOnExit(); // In case build server is killed before cleanUp executes.
     String requesting_host = (new URL(callbackUrlStr)).getHost();
+
+    final boolean isAab = Main.AAB_EXTENSION_VALUE.equals(ext);
 
     //for the request for update part, the file should be empty
     if (inputZip.length() == 0L) {
@@ -562,7 +622,7 @@ public class BuildServer {
             try {
               LOG.info("START NEW BUILD " + count);
               checkMemory();
-              buildAndCreateZip(userName, inputZipFile, new ProgressReporter(callbackUrlStr));
+              buildAndCreateZip(userName, inputZipFile, isAab, new ProgressReporter(callbackUrlStr));
               // Send zip back to the callbackUrl
               LOG.info("CallbackURL: " + callbackUrlStr);
               URL callbackUrl = new URL(callbackUrlStr);
@@ -621,12 +681,12 @@ public class BuildServer {
     // are now handled via a callback mechanism. The "50" here is just a plug
     // number.
     return Response.ok().type(MediaType.TEXT_PLAIN_TYPE)
-      .entity("" + 50).build();
+      .entity("" + 0).build();
   }
 
-  private void buildAndCreateZip(String userName, File inputZipFile, ProgressReporter reporter)
+  private void buildAndCreateZip(String userName, File inputZipFile, boolean isAab, ProgressReporter reporter)
     throws IOException, JSONException {
-    Result buildResult = build(userName, inputZipFile, reporter);
+    Result buildResult = build(userName, inputZipFile, isAab, reporter);
     boolean buildSucceeded = buildResult.succeeded();
     outputZip = File.createTempFile(inputZipFile.getName(), ".zip");
     outputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -664,7 +724,7 @@ public class BuildServer {
     return buildOutputJsonObj.toString();
   }
 
-  private Result build(String userName, File zipFile, ProgressReporter reporter) throws IOException {
+  private Result build(String userName, File zipFile, boolean isAab, ProgressReporter reporter) throws IOException {
     outputDir = Files.createTempDir();
     // We call outputDir.deleteOnExit() here, in case build server is killed before cleanUp
     // executes. However, it is likely that the directory won't be empty and therefore, won't
@@ -673,7 +733,7 @@ public class BuildServer {
     outputDir.deleteOnExit();
     Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, null,
         false, false, false, null,
-        commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir, reporter);
+        commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir, reporter, isAab);
     String buildOutput = buildResult.getOutput();
     LOG.info("Build output: " + buildOutput);
     String buildError = buildResult.getError();
@@ -722,7 +782,9 @@ public class BuildServer {
     CmdLineParser cmdLineParser = new CmdLineParser(commandLineOptions);
     try {
       cmdLineParser.parseArgument(args);
-    } catch (CmdLineException e) {
+      Class<?> clazz = Class.forName(commandLineOptions.statReporter);
+      BuildServer.statReporter = clazz.asSubclass(StatReporter.class).newInstance();
+    } catch (CmdLineException | ReflectiveOperationException e) {
       LOG.severe(e.getMessage());
       cmdLineParser.printUsage(System.err);
       System.exit(1);
@@ -763,7 +825,6 @@ public class BuildServer {
           }
         }
       });
-
 
     // Now that the command line options have been processed, we can create the buildExecutor.
     buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);

@@ -10,8 +10,8 @@ import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.InlineHTML;
 
 /**
  * Mock Switch component, inherited from MockToggleBase
@@ -33,7 +33,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
 
   public InlineHTML switchLabel;
   public SVGPanel switchGraphic;
-  public Boolean isInitialized = false;
+  public Boolean isInitialized;
 
   /**
    * Creates a new MockSwitch component.
@@ -191,5 +191,11 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
       paintSwitch();
       refreshForm();
     }
+  }
+
+  @Override
+  public void onDesignPreviewChanged() {
+    super.onDesignPreviewChanged();
+    paintSwitch();
   }
 }
