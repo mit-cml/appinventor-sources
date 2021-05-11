@@ -142,7 +142,7 @@ Blockly.FieldFlydown.prototype.showFlydownMaker_ = function() {
   return function() {
     if (Blockly.FieldFlydown.showPid_ !== 0 &&
         Blockly.dragMode_ === Blockly.DRAG_NONE && 
-        Blockly.FieldTextInput.htmlInput_ === null) {
+        !Blockly.FieldTextInput.htmlInput_) {
       try {
         field.showFlydown_();
       } catch (e) {
