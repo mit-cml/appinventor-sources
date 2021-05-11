@@ -144,7 +144,9 @@ public class MockLineString extends MockMapFeatureBase {
       this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getTooltip()()
     );
     var isVisible = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getVisibleProperty()();
-    if(!isVisible) map.removeLayer(polyline);
+    if (!isVisible) {
+      map.removeLayer(polyline);
+    }
   }-*/;
 
   private native void preserveLayerData()/*-{
