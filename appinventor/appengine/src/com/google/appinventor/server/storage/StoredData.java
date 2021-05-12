@@ -62,6 +62,9 @@ public class StoredData {
     // Path to template project passed as GET parameter
     String templatePath;
     boolean upgradedGCS;
+
+    // Serialized JSON List of all user's folders
+    public String userFolders;
   }
 
   // Project properties
@@ -122,6 +125,9 @@ public class StoredData {
     // User specific project settings
     // TODO(user): is this ever used?
     String settings;
+
+    // The folder that the project is located in; null represents top-level directory
+    String parentFolder;
   }
 
   // Non-project-specific files (tied to user)

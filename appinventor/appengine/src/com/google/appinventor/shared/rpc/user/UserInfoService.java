@@ -86,4 +86,16 @@ public interface UserInfoService extends RemoteService {
 
   public void storeSharedBackpack(String backPackId, String content);
 
+  /**
+   * Gets the serialized list of user folders.
+   * @return All of the user's folders in a serialized JSON string.
+   */
+  String getUserFolders();
+
+  /**
+   * Sets the user's folders to be equal to the folders provided by folderData.
+   * @param folderData serialized json list of folders
+   */
+  String setUserFolders(String folderData);
+
 }

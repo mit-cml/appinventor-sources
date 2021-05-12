@@ -101,7 +101,7 @@ public class UploadServlet extends OdeServlet {
 
         try {
           UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
-              projectName, uploadedStream);
+              projectName, null, uploadedStream);
           String info = userProject.toString();
           uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, 0, info);
         } catch (FileImporterException e) {

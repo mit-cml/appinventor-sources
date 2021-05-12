@@ -39,12 +39,16 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   private String backPackId = null; // If non-null we have a shared backpack
 
+  private String userFolders; // Serialized JSON representing all of the user's folders
+
   public final static String usercachekey = "f682688a-1065-4cda-8515-a8bd70200ac9"; // UUID
   // This UUID is prepended to any key lookup for User objects. Memcache is a common
   // key/value store for the entire application. By prepending a unique value, we ensure
   // that other modules that use Memcache will not collide with us. By using a UUID,
   // properly generated, we don't have to worry about allocating specific prefixes and
   // ensuring that they are unique.
+
+  public static final String DEFAULT_FOLDERS = "[]"; // JSON List of all folders for new users
 
   /**
    * Creates a new user data transfer object.
@@ -54,12 +58,13 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param tosAccepted TOS accepted?
    * @param sessionId client session Id
    */
-  public User(String id, String email, boolean tosAccepted, boolean isAdmin, String sessionId) {
+  public User(String id, String email, boolean tosAccepted, boolean isAdmin, String sessionId, String userFolders) {
     this.id = id;
     this.email = email;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
     this.sessionId = sessionId;
+    this.setUserFolders(userFolders);
   }
 
   /**
@@ -117,7 +122,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   /**
    * sets the hashed password.
    *
-   * @param hashed password
+   * @param hashedpassword
    */
   public void setPassword(String hashedpassword) {
     this.password = hashedpassword;
@@ -183,7 +188,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   /**
    * Get the unique session id associated with this user
    * This is used to ensure that only one session is opened
-   * per uers. Old sessions are invalidated.
+   * per user. Old sessions are invalidated.
    *
    * @return sessionId
    */
@@ -195,6 +200,23 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   @Override
   public void setSessionId(String sessionId) {
     this.sessionId = sessionId;
+  }
+
+  /**
+   * Get the serialized JSON list of folders that this user has.
+   *
+   * @return userFolders
+   */
+  @Override
+  public String getUserFolders() {
+    return this.userFolders;
+  }
+
+  /**
+   * Sets the user's folders.
+   */
+  public void setUserFolders(String userFolders) {
+      this.userFolders = userFolders;
   }
 
   @Override
@@ -220,7 +242,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     // modify all the places in the source where we create a "User" object. There are
     // only a few places where we assert or read the isReadOnly flag, so we want to
     // limit the places where we have to have knowledge of it to just those places that care
-    User retval =  new User(id, email, tosAccepted, isAdmin, sessionId);
+    User retval =  new User(id, email, tosAccepted, isAdmin, sessionId, userFolders);
     retval.setReadOnly(isReadOnly);
     retval.setBackpackId(this.backPackId);
     return retval;

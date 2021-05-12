@@ -54,7 +54,7 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
     String projectZip = TESTING_SOURCE_PATH + zipFileName;
     File zip = new File(projectZip);
     assertTrue(zip.exists());
-    return fileImporter.importProject(USER_ID, projectName, new FileInputStream(zip));
+    return fileImporter.importProject(USER_ID, projectName, null, new FileInputStream(zip));
   }
 
   public void testImportProject() throws Exception {
@@ -128,7 +128,7 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
     assertTrue(zip.exists());
     String projectName = "MyProject";
     UserProject userProject = fileImporter.importProject(USER_ID, projectName,
-        new FileInputStream(zip), null);
+        null, new FileInputStream(zip), null);
     assertNotNull(userProject);
     assertEquals("YoungAndroid", userProject.getProjectType());
     long projectId = userProject.getProjectId();
@@ -152,7 +152,7 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
     assertTrue(zip.exists());
     String projectName = "MyProject";
     UserProject userProject =  fileImporter.importProject(USER_ID, projectName,
-        new FileInputStream(zip), "HISTORY");
+        null, new FileInputStream(zip), "HISTORY");
     assertNotNull(userProject);
     assertEquals("YoungAndroid", userProject.getProjectType());
     long projectId = userProject.getProjectId();

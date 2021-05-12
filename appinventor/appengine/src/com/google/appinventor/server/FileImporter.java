@@ -29,13 +29,15 @@ public interface FileImporter {
    *
    * @param userId the userId
    * @param projectName project name
+   * @param parentFolder the new project's folder
    * @param uploadedFileStream project archive file
    * @return the UserProject
    * @throws FileImporterException if there is already a project named
    *         projectName or if uploadedFile is not a valid project archive
    * @throws IOException if any file operation fails
    */
-  UserProject importProject(String userId, String projectName, InputStream uploadedFileStream)
+  UserProject importProject(String userId, String projectName,
+                            String parentFolder, InputStream uploadedFileStream)
       throws FileImporterException, IOException;
 
   /**
@@ -44,6 +46,7 @@ public interface FileImporter {
    *
    * @param userId the userId
    * @param projectName
+   * @param parentFolder the new project's folder
    * @param uploadedFileStream project archive file
    * @param projectHistory the optionally specially formatted project history
    *        string, or null
@@ -51,7 +54,7 @@ public interface FileImporter {
    * @throws FileImporterException if there is an error importing
    * @throws IOException if any file operation fails
    */
-  UserProject importProject(String userId, String projectName,
+  UserProject importProject(String userId, String projectName, @Nullable String parentFolder,
                             InputStream uploadedFileStream, @Nullable String projectHistory)
       throws FileImporterException, IOException;
 

@@ -35,6 +35,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,32 +65,60 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
 
   /**
-   * Creates a new project.
-   * @param projectType  type of new project
-   * @param projectName  name of new project
-   * @param params  optional parameter (project type dependent)
+   * Creates a new project with no parent folder.
    *
-   * @return  a {@link UserProject} for new project
+   * @param projectType type of new project
+   * @param projectName name of new project
+   * @param params      optional parameter (project type dependent)
+   * @return a {@link UserProject} for new project
    */
   @Override
   public UserProject newProject(String projectType, String projectName,
                                 NewProjectParameters params) {
+    return newProject(projectType, projectName, params, null);
+  }
+
+  /**
+   * Creates a new project.
+   *
+   * @param projectType  type of new project
+   * @param projectName  name of new project
+   * @param params       optional parameter (project type dependent)
+   * @param parentFolder parent folder of the project
+   * @return a {@link UserProject} for new project
+   */
+  @Override
+  public UserProject newProject(String projectType, String projectName,
+                                NewProjectParameters params, String parentFolder) {
     final String userId = userInfoProvider.getUserId();
-    long projectId = getProjectRpcImpl(userId, projectType).
-        newProject(userId, projectName, params);
+    long projectId = getProjectRpcImpl(userId, projectType)
+        .newProject(userId, projectName, params, parentFolder);
     return makeUserProject(userId, projectId);
   }
 
   /**
    * Creates a new project from a zip file that is already stored
-   *  on the server.
-   * @param projectName  name of new project
-   * @param pathToZip path the to template's zip file
+   * on the server.
    *
-   * @return  a {@link UserProject} for new project
+   * @param projectName name of new project
+   * @param pathToZip   path the to template's zip file
+   * @return a {@link UserProject} for new project
    */
   @Override
   public UserProject newProjectFromTemplate(String projectName, String pathToZip) {
+    return newProjectFromTemplate(projectName, pathToZip, null);
+  }
+
+  /**
+   * Creates a new project from a zip file that is stored on the server.
+   *
+   * @param projectName  name of new project
+   * @param pathToZip    path to the zip files
+   * @param parentFolder the parent folder for the new project
+   * @return a {@link UserProject} for new project
+   */
+  @Override
+  public UserProject newProjectFromTemplate(String projectName, String pathToZip, String parentFolder) {
 
     //Window.alert("newProjectFromTemplate " + host + pathToZip);
     //   System.out.println("newProjectFromTemplate = " +  host + pathToZip);
@@ -95,7 +126,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     try {
       FileInputStream fis = new FileInputStream(pathToZip);
       FileImporter fileImporter = new FileImporterImpl();
-      userProject = fileImporter.importProject(userInfoProvider.getUserId(), projectName, fis);
+      userProject = fileImporter.importProject(userInfoProvider.getUserId(), projectName, parentFolder, fis);
     } catch (IOException e) {
       LOG.log(Level.SEVERE, "I/O Error importing from template project", e);
     } catch (FileImporterException e) {
@@ -106,14 +137,22 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
+   * Alias for newProjectFromExternalTemplate(projectName, zipData, null)
+   */
+  @Override
+  public UserProject newProjectFromExternalTemplate(String projectName, String zipData) {
+    return newProjectFromExternalTemplate(projectName, zipData, null);
+  }
+
+  /**
    * This service is passed a base64 encoded string representing the Zip file.
    * It converts it to a byte array and imports the project using FileImporter.
    *
    * @see http://stackoverflow.com/questions/6409587/
-   *   generating-an-inline-image-with-java-gwt/6495356#6495356
+   * generating-an-inline-image-with-java-gwt/6495356#6495356
    */
   @Override
-  public UserProject newProjectFromExternalTemplate(String projectName, String zipData) {
+  public UserProject newProjectFromExternalTemplate(String projectName, String zipData, String parentFolder) {
 
     System.out.println(">>>>> ProjectService newProjectFromExternalTemplate name = " + projectName);
     UserProject userProject = null;
@@ -130,7 +169,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     try {
       bais = new ByteArrayInputStream(binData);
       userProject = fileImporter.importProject(userInfoProvider.getUserId(),
-        projectName, bais);
+          projectName, parentFolder, bais);
     } catch (FileNotFoundException e) {  // Create a new empty project if no Zip
       LOG.log(Level.SEVERE, "File Not Found importing from template project (external)", e);
     } catch (IOException e) {
@@ -141,13 +180,12 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     return userProject;
   }
 
-
   /**
    * Reads the template data from a JSON File
-   * @param pathToTemplatesDir pathname of the templates directory which may contain
-   *  0 or more template instances, each of which consists of a JSON file describing
-   *  the template, plus a zip file and image files.
    *
+   * @param pathToTemplatesDir pathname of the templates directory which may contain
+   *                           0 or more template instances, each of which consists of a JSON file describing
+   *                           the template, plus a zip file and image files.
    * @return A json-formatted String consisting of an array of template objects
    */
   @Override
@@ -155,20 +193,20 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     String json = "[";
     File templatesRepository = new File(pathToTemplatesDir);
     File templateFolder[] = templatesRepository.listFiles();
-    for (File file: templateFolder) {
+    for (File file : templateFolder) {
       String templateName = file.getName();
       if (file.isDirectory()) {  // Should be a template folder
         File templateFiles[] = file.listFiles();
-        for (File f: templateFiles) {
+        for (File f : templateFiles) {
           if (f.isFile() && f.getName().equals(templateName + ".json")) {
             try {
               BufferedReader in = new BufferedReader(
-                new FileReader(pathToTemplatesDir + "/" + templateName + "/" + templateName + ".json"));
-              json += in.readLine() +  ", ";
+                  new FileReader(pathToTemplatesDir + "/" + templateName + "/" + templateName + ".json"));
+              json += in.readLine() + ", ";
             } catch (IOException e) {
               LOG.log(Level.SEVERE, "I/O Exception reading template json file", e);
               throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), null,
-                new IllegalArgumentException("Cannot Read Internal Project Template"));
+                  new IllegalArgumentException("Cannot Read Internal Project Template"));
             }
           }
         }
@@ -179,13 +217,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   /**
    * Copies a project with a new name.
-   * @param oldProjectId  old project ID
-   * @param newName new project name
    *
-   * @return  a {@link UserProject} for new project
+   * @param oldProjectId old project ID
+   * @param newName      new project name
+   * @return a {@link UserProject} for new project
    */
   @Override
-  public UserProject copyProject(long oldProjectId, String newName){
+  public UserProject copyProject(long oldProjectId, String newName) {
     final String userId = userInfoProvider.getUserId();
     long projectId = getProjectRpcImpl(userId, oldProjectId).
         copyProject(userId, oldProjectId, newName);
@@ -194,7 +232,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   /**
    * Deletes a project.
-   * @param projectId  project ID
+   *
+   * @param projectId project ID
    */
   @Override
   public void deleteProject(long projectId) {
@@ -204,24 +243,63 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   /**
    * Moves the project to trash.
-   * @param projectId  project ID
+   *
+   * @param projectId project ID
    */
   @Override
   public UserProject moveToTrash(long projectId) {
-      String userId = userInfoProvider.getUserId();
-      storageIo.setMoveToTrashFlag(userId,projectId,true);
-      return storageIo.getUserProject(userId,projectId);
+    String userId = userInfoProvider.getUserId();
+    storageIo.setMoveToTrashFlag(userId, projectId, true);
+    return storageIo.getUserProject(userId, projectId);
   }
 
   /**
    * Moves the project back to My Projects Tab.
-   * @param projectId  project ID
+   *
+   * @param projectId project ID
    */
   @Override
   public UserProject restoreProject(long projectId) {
-      String userId = userInfoProvider.getUserId();
-      storageIo.setMoveToTrashFlag(userId,projectId,false);
-      return storageIo.getUserProject(userId,projectId);
+    String userId = userInfoProvider.getUserId();
+    storageIo.setMoveToTrashFlag(userId, projectId, false);
+    return storageIo.getUserProject(userId, projectId);
+  }
+
+  /**
+   * Sets projectId's parent folder to newFolder
+   *
+   * @param projectId project id to change
+   * @param newFolder folder to move to
+   */
+  @Override
+  public UserProject moveProjectToFolder(long projectId, String newFolder) {
+    String userId = userInfoProvider.getUserId();
+    List<UserProject> output = new ArrayList<>();
+    storageIo.setProjectParentFolder(userId, projectId, newFolder);
+    return storageIo.getUserProject(userId, projectId);
+  }
+
+  /**
+   * Moves every project in projectIds to the corresponding folder in newFolders;
+   * association by equal index positions.
+   *
+   * @param projectIds list of project ids whose parent folders should be changed
+   * @param newFolders list of folders to move projects to-- order corresponds to that of projectIds
+   */
+  @Override
+  public List<UserProject> moveProjectsToFolder(List<Long> projectIds, List<String> newFolders) {
+    if (projectIds.size() != newFolders.size()) {
+      throw new IllegalArgumentException("List of project ids and new folders must be same length.");
+    }
+
+    String userId = userInfoProvider.getUserId();
+    List<UserProject> output = new ArrayList<>();
+    for (int i = 0; i < projectIds.size(); i++) {
+      long currentProject = projectIds.get(i);
+      storageIo.setProjectParentFolder(userId, currentProject, newFolders.get(i));
+      output.add(storageIo.getUserProject(userId, currentProject));
+    }
+    return output;
   }
 
   /**
@@ -260,6 +338,10 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Note: The server loads the project directly from the gallery
    *       it is *not* routed via the user's browser
    *
+   * On publish this sets the project's gallery id
+   *
+   * @param projectId project ID
+   * @param galleryId gallery ID
    */
 
   @Override
@@ -272,7 +354,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * Returns an array with project IDs.
    *
-   * @return  IDs of projects found by the back-end
+   * @return IDs of projects found by the back-end
    */
   @Override
   public long[] getProjects() {
@@ -299,9 +381,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   /**
    * Returns the root node for the given project.
-   * @param projectId  project ID as received by {@link #getProjects()}
    *
-   * @return  root node of project
+   * @param projectId project ID as received by {@link #getProjects()}
+   * @return root node of project
    */
   @Override
   public ProjectRootNode getProject(long projectId) {
@@ -311,9 +393,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   /**
    * Returns a string with the project settings.
-   * @param projectId  project ID
    *
-   * @return  settings
+   * @param projectId project ID
+   * @return settings
    */
   @Override
   public String loadProjectSettings(long projectId) {
@@ -323,8 +405,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   /**
    * Stores a string with the project settings.
+   *
    * @param sessionId session id
-   * @param projectId  project ID
+   * @param projectId project ID
    * @param settings  project settings
    */
   @Override
@@ -336,9 +419,10 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   /**
    * Deletes a file in the given project.
+   *
    * @param sessionId session id
-   * @param projectId  project ID
-   * @param fileId  ID of file to delete
+   * @param projectId project ID
+   * @param fileId    ID of file to delete
    * @return modification date for project
    */
   @Override
@@ -351,6 +435,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * Deletes all files that are contained directly in the given directory. Files
    * in subdirectories are not deleted.
+   *
    * @param sessionId session id
    * @param projectId project ID
    * @param directory path of the directory
@@ -361,22 +446,23 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).deleteFiles(userId, projectId,
-            directory);
+        directory);
   }
 
-    /**
-     * Deletes all files and folders that are contained inside the given directory. The given directory itself is deleted.
-     * @param sessionId session id
-     * @param projectId project ID
-     * @param directory path of the directory
-     * @return modification date for project
-     */
+  /**
+   * Deletes all files and folders that are contained inside the given directory. The given directory itself is deleted.
+   *
+   * @param sessionId session id
+   * @param projectId project ID
+   * @param directory path of the directory
+   * @return modification date for project
+   */
   @Override
   public long deleteFolder(String sessionId, long projectId, String directory) throws InvalidSessionException {
-      validateSessionId(sessionId);
-      final String userId = userInfoProvider.getUserId();
-      return getProjectRpcImpl(userId, projectId).deleteFolder(userId, projectId,
-              directory);
+    validateSessionId(sessionId);
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).deleteFolder(userId, projectId,
+        directory);
   }
 
   /**
@@ -385,10 +471,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * typically return their contents. Image files will be more likely to return
    * the URL that the browser can find them at.
    *
-   * @param projectId  project ID
-   * @param fileId  project node whose source should be loaded
-   *
-   * @return  implementation dependent
+   * @param projectId project ID
+   * @param fileId    project node whose source should be loaded
+   * @return implementation dependent
    */
   @Override
   public String load(long projectId, String fileId) {
@@ -401,14 +486,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * actual return value depends on the file kind. Source (text) files should
    * typically return their contents. Image files will be more likely to return
    * the URL that the browser can find them at.
-   *
+   * <p>
    * This version returns a ChecksumedLoadFile which contains the file content
    * and a MD5 checksum.
    *
-   * @param projectId  project ID
-   * @param fileId  project node whose source should be loaded
-   *
-   * @return  implementation dependent
+   * @param projectId project ID
+   * @param fileId    project node whose source should be loaded
+   * @return implementation dependent
    */
   @Override
   public ChecksumedLoadFile load2(long projectId, String fileId) throws ChecksumedFileException {
@@ -421,8 +505,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * while loading a project.
    *
    * @param projectId project id
-   * @param message Error message from the thrown exception
-   *
+   * @param message   Error message from the thrown exception
    */
   @Override
   public void recordCorruption(long projectId, String fileId, String message) {
@@ -434,13 +517,12 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Loads the file information associated with a node in the project tree. The
    * actual return value is the raw file contents.
    *
-   * @param projectId  project ID
-   * @param fileId  project node whose source should be loaded
-   *
-   * @return  raw file content
+   * @param projectId project ID
+   * @param fileId    project node whose source should be loaded
+   * @return raw file content
    */
   @Override
-  public byte [] loadraw(long projectId, String fileId) {
+  public byte[] loadraw(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).loadraw(userId, projectId, fileId);
   }
@@ -449,10 +531,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Loads the file information associated with a node in the project tree. The
    * actual return value is the raw file contents encoded as base64.
    *
-   * @param projectId  project ID
-   * @param fileId  project node whose source should be loaded
-   *
-   * @return  raw file content as base 64
+   * @param projectId project ID
+   * @param fileId    project node whose source should be loaded
+   * @return raw file content as base 64
    */
   @Override
   public String loadraw2(long projectId, String fileId) {
@@ -463,8 +544,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * Loads the contents of multiple files.
    *
-   * @param files  list containing file descriptor of files to be loaded
-   * @return  list containing file descriptors and their associated content
+   * @param files list containing file descriptor of files to be loaded
+   * @return list containing file descriptors and their associated content
    */
   @Override
   public List<FileDescriptorWithContent> load(List<FileDescriptor> files) {
@@ -484,11 +565,10 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Saves the content of the file associated with a node in the project tree.
    *
    * @param sessionId session id
-   * @param projectId  project ID
-   * @param fileId  project node whose source should be saved
-   * @param content  content to be saved
+   * @param projectId project ID
+   * @param fileId    project node whose source should be saved
+   * @param content   content to be saved
    * @return modification date for project
-   *
    * @see #load(long, String)
    */
   @Override
@@ -506,12 +586,11 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * exception of a trivial (empty) blocks workspace is attempted to be saved
    *
    * @param sessionId session id
-   * @param projectId  project ID
-   * @param fileId  project node whose source should be saved
-   * @param force whether to write an empty blocks workspace
-   * @param content  content to be saved
+   * @param projectId project ID
+   * @param fileId    project node whose source should be saved
+   * @param force     whether to write an empty blocks workspace
+   * @param content   content to be saved
    * @return modification date for project
-   *
    * @see #load(long, String)
    */
   @Override
@@ -527,9 +606,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * Saves the contents of multiple files.
    *
-   * @param sessionId session id
-   * @param filesAndContent  list containing file descriptors and their
-   *                         associated content
+   * @param sessionId       session id
+   * @param filesAndContent list containing file descriptors and their
+   *                        associated content
    * @return modification date for last modified project of list
    */
   @Override
@@ -539,29 +618,28 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     final String userId = userInfoProvider.getUserId();
     long date = 0;
     for (FileDescriptorWithContent fileAndContent : filesAndContent) {
-     long projectId = fileAndContent.getProjectId();
-     date = getProjectRpcImpl(userId, projectId).
-         save(userId, projectId, fileAndContent.getFileId(), fileAndContent.getContent());
+      long projectId = fileAndContent.getProjectId();
+      date = getProjectRpcImpl(userId, projectId).
+          save(userId, projectId, fileAndContent.getFileId(), fileAndContent.getContent());
     }
     return date;
   }
 
   @Override
   public RpcResult screenshot(String sessionId, long projectId, String fileId, String content)
-    throws InvalidSessionException {
+      throws InvalidSessionException {
     validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).screenshot(userId, projectId, fileId,
-      content);
+        content);
   }
 
   /**
    * Invokes a build command for the project on the back-end.
    *
-   * @param projectId  project ID
-   * @param target  build target (optional, implementation dependent)
-   *
-   * @return  results of build
+   * @param projectId project ID
+   * @param target    build target (optional, implementation dependent)
+   * @return results of build
    */
   @Override
   public RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab) {
@@ -574,20 +652,19 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * Gets the result of a build command for the project.
    *
-   * @param projectId  project ID
-   * @param target  build target (optional, implementation dependent)
-   *
-   * @return  results of build. The following values may be in RpcResult.result:
-   *            0: Build is done and was successful
-   *            1: Build is done and was unsuccessful
-   *           -1: Build is not yet done.
+   * @param projectId project ID
+   * @param target    build target (optional, implementation dependent)
+   * @return results of build. The following values may be in RpcResult.result:
+   * 0: Build is done and was successful
+   * 1: Build is done and was unsuccessful
+   * -1: Build is not yet done.
    */
   @Override
   public RpcResult getBuildResult(long projectId, String target) {
     // Dispatch
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).getBuildResult(
-      userInfoProvider.getUser(), projectId, target);
+        userInfoProvider.getUser(), projectId, target);
   }
 
   /*

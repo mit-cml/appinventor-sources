@@ -9,6 +9,7 @@ package com.google.appinventor.client.youngandroid;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.gwt.http.client.URL;
@@ -80,6 +81,39 @@ public final class TextValidators {
 
   public static boolean checkNewProjectName(String projectName) {
     return checkNewProjectName(projectName, false);
+  }
+
+  /**
+   * Determines whether the given folder name is valid, displaying an alert
+   * if it is not.  In order to be valid, the project name must satisfy
+   * {@link #isValidIdentifier(String)} and not be a duplicate of an existing
+   * folder name for the same user.
+   *
+   * @param relativeName the name of the folder relative to the current folder
+   * @param fullName the full directory name of the folder
+   * @return {@code true} if the folder name is valid, {@code false} otherwise
+   */
+  public static boolean checkNewFolderName(String relativeName, String fullName) {
+
+    // Check the format of the project name
+    if (!isValidIdentifier(relativeName)) {
+      Window.alert(MESSAGES.malformedFolderNameError());
+      return false;
+    }
+
+    // Check for names that reserved words
+    if (isReservedName(relativeName)) {
+      Window.alert(MESSAGES.reservedNameError());
+      return false;
+    }
+
+    // Check that the folder does not already exist
+    if (ProjectListBox.getProjectListBox().getProjectList().getFolders().contains(fullName)) {
+      Window.alert(MESSAGES.duplicateFolderNameError(fullName));
+      return false;
+    }
+
+    return true;
   }
 
   public static boolean checkNewComponentName(String componentName) {
@@ -220,10 +254,31 @@ public final class TextValidators {
       if (!filename.matches("[A-Za-z][A-Za-z0-9_]*")) {
         // check to make sure if filename has no spaces
         String errorMessage = MESSAGES.whitespaceProjectNameError();
-        filename = filename.trim().replaceAll("( )+", " ").replace(" ","_");
+        filename = filename.trim().replaceAll("( )+", " ").replace(" ", "_");
         warningMessage = errorMessage + ". \n '" + filename + "' will be used if continued.";
       }
     }
     return warningMessage;
+  }
+
+  /**
+   * Determines human-readable message for specific error.
+   * @param folderName name of the folder
+   * @return String representing error message, empty string if no error
+   */
+  public static String getFolderErrorMessage(String folderName) {
+    String errorMessage = "";
+    String noWhitespace = "[\\S]+";
+    String firstCharacterLetter = "[A-Za-z].*";
+    if (!folderName.matches("[A-Za-z][A-Za-z0-9_]*") && folderName.length() > 0) {
+      if (!folderName.matches(noWhitespace)) { //Check to make sure that this project does not contain any whitespace
+        errorMessage = MESSAGES.whitespaceFolderNameError();
+      } else if (!folderName.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
+        errorMessage = MESSAGES.firstCharFolderNameError();
+      } else { //The text contains a character that is not a letter, number, or underscore
+        errorMessage = MESSAGES.invalidCharFolderNameError();
+      }
+    }
+    return errorMessage;
   }
 }

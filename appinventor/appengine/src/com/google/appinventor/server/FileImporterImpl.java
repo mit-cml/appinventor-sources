@@ -55,12 +55,12 @@ public final class FileImporterImpl implements FileImporter {
 
   @Override
   public UserProject importProject(String userId, String projectName,
-      InputStream uploadedFileStream) throws FileImporterException, IOException {
-    return importProject(userId, projectName, uploadedFileStream, null);
+      String parentFolder, InputStream uploadedFileStream) throws FileImporterException, IOException {
+    return importProject(userId, projectName, parentFolder, uploadedFileStream, null);
   }
 
   @Override
-  public UserProject importProject(String userId, String projectName,
+  public UserProject importProject(String userId, String projectName, @Nullable String parentFolder,
                                    InputStream uploadedFileStream, @Nullable String projectHistory)
       throws FileImporterException, IOException {
     // The projectName parameter has already been validated, including checking for an
@@ -152,7 +152,7 @@ public final class FileImporterImpl implements FileImporter {
     }
     String settings = YoungAndroidProjectService.getProjectSettings(null, null, null, null, null,
         null, null, null, null, null, null, null, null, null);
-    long projectId = storageIo.createProject(userId, project, settings);
+    long projectId = storageIo.createProject(userId, project, settings, parentFolder);
     return storageIo.getUserProject(userId, projectId);
   }
 

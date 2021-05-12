@@ -10,8 +10,6 @@ import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
-import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -26,7 +24,7 @@ import java.util.List;
 public interface ProjectService extends RemoteService {
 
   /**
-   * Creates a new project.
+   * Creates a new project with no parent folder.
    * @param projectType type of new project
    * @param projectName name of new project
    * @param params optional parameters (project type dependent)
@@ -37,7 +35,19 @@ public interface ProjectService extends RemoteService {
                          NewProjectParameters params);
 
   /**
-   * Creates a new project from a zip file that is stored on the server.
+   * Creates a new project.
+   * @param projectType  type of new project
+   * @param projectName  name of new project
+   * @param params  optional parameter (project type dependent)
+   * @param parentFolder parent folder of the project
+   *
+   * @return  a {@link UserProject} for new project
+   */
+  UserProject newProject(String projectType, String projectName,
+                         NewProjectParameters params, String parentFolder);
+
+  /**
+   * Creates a new project from a zip file that is stored on the server with no parent folder.
    * @param projectName name of new project
    * @param pathToZip path to the zip files
    *
@@ -46,13 +56,33 @@ public interface ProjectService extends RemoteService {
   UserProject newProjectFromTemplate(String projectName, String pathToZip);
 
   /**
-   * Creates a new project from a zip file is stored on an external server.
+   * Creates a new project from a zip file that is stored on the server.
+   * @param projectName name of new project
+   * @param pathToZip path to the zip files
+   * @param parentFolder the parent folder for the new project
+   *
+   * @return a {@link UserProject} for new project
+   */
+  UserProject newProjectFromTemplate(String projectName, String pathToZip, String parentFolder);
+
+  /**
+   * Creates a new project from a zip file is stored on an external server with no parent folder.
    * @param projectName name of new project
    * @param zipData Base64 string representing the zip file
    *
    * @return a {@link UserProject} for new project
    */
   UserProject newProjectFromExternalTemplate(String projectName, String zipData);
+
+  /**
+   * Creates a new project from a zip file is stored on an external server.
+   * @param projectName name of new project
+   * @param zipData Base64 string representing the zip file
+   * @param parentFolder the parent folder for the project
+   *
+   * @return a {@link UserProject} for new project
+   */
+  UserProject newProjectFromExternalTemplate(String projectName, String zipData, String parentFolder);
 
   /**
    * Reads the template data from a JSON File
@@ -115,6 +145,22 @@ public interface ProjectService extends RemoteService {
    */
 
   public UserProject loadFromGallery(String galleryId) throws IOException;
+
+   /*
+      * Sets projectId's parent folder to newFolder
+      *
+      * @param projectId project id to change
+   * @param newFolder folder to move to
+   */
+  UserProject moveProjectToFolder(long projectId, String newFolder);
+
+  /**
+   * Moves every project in projectIds to the corresponding folder in newFolders;
+   * association by equal index positions.
+   * @param projectIds list of project ids whose parent folders should be changed
+   * @param newFolders list of folders to move projects to-- order corresponds to that of projectIds
+   */
+  List<UserProject> moveProjectsToFolder(List<Long> projectIds, List<String> newFolders);
 
   /**
    * Returns an array with project IDs.
@@ -215,7 +261,7 @@ public interface ProjectService extends RemoteService {
    * Attempt to record the project Id and error message when we detect a corruption
    * while loading a project.
    *
-   * @param projectId project id
+   * @param ProjectId project id
    * @param fileId the fileid (aka filename) of the file in question
    * @param message Error message from the thrown exception
    *

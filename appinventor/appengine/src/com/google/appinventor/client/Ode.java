@@ -395,8 +395,8 @@ public class Ode implements EntryPoint {
     Runnable next = new Runnable() {
         @Override
         public void run() {
-          ProjectListBox.getProjectListBox().loadProjectList();
           currentView = PROJECTS;
+          ProjectListBox.getProjectListBox().loadProjectList();
           getTopToolbar().updateFileMenuButtons(currentView);
           deckPanel.showWidget(projectsTabIndex);
           // If we started a project, then the start button was disabled (to avoid
@@ -417,6 +417,21 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Changes the caption of the project view to reflect the folder specified.
+   *
+   * @param folderName the name of the currently active folder
+   */
+  public void setProjectViewFolder(final String folderName) {
+    final String newCaption = (folderName == null)
+        ? MESSAGES.projectListBoxCaption()
+        : MESSAGES.projectListBoxCaption() + "/" + folderName;
+    ProjectListBox projectListBox = ProjectListBox.getProjectListBox();
+    if (projectListBox != null) {
+      projectListBox.setCaption(newCaption);
+    }
+  }
+
+  /**
    * Switch to the Trash tab
    */
 
@@ -424,8 +439,8 @@ public class Ode implements EntryPoint {
     Ode.getInstance().getTopToolbar().updateMoveToTrash("Delete From Trash");
     hideChaff();
     hideTutorials();
-    ProjectListBox.getProjectListBox().loadTrashList();
     currentView = TRASHCAN;
+    ProjectListBox.getProjectListBox().loadTrashList();
     projectToolbar.enableStartButton();
     projectToolbar.setProjectTabButtonsVisible(false);
     projectToolbar.setTrashTabButtonsVisible(true);

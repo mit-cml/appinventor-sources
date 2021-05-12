@@ -16,7 +16,7 @@ package com.google.appinventor.client.explorer.project;
  * method. When a project is added to the project manager, the listeners'
  * {@link #onProjectAdded(Project)} methods will be invoked. When a project is
  * removed (either closed or deleted) the listeners'
- * {@link #onProjectRemoved(Project)} methods will be invoked.
+ * {@link #onProjectDeleted(Project)} (Project)} methods will be invoked.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -56,4 +56,23 @@ public interface ProjectManagerEventListener {
    */
   void onProjectsLoaded();
 
+  /**
+   * Invoked when a folder is added
+   */
+  void onFolderAddition(String folder);
+
+  /**
+   * Invoked when a folder is added
+   */
+  void onFolderDeletion(String folder);
+
+  /**
+   * Invoked when a project has been moved to a new folder
+   */
+  void onProjectMovedToFolder(Project project);
+
+  /**
+   * Invoked when a project has been removed from its old folder
+   */
+  void onProjectRemovedFromFolder(Project project);
 }
