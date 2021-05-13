@@ -86,6 +86,18 @@ Blockly.ReplStateObj.prototype = {
                                         'credential' : 'boy' }]}
 };
 
+var PROTECT_ENUM_ANDROID = "(define-syntax protect-enum " +
+  "  (lambda (x) " +
+  "    (syntax-case x () " +
+  "      ((_ enum-value number-value) " +
+  "        (if (< com.google.appinventor.components.common.YaVersion:BLOCKS_LANGUAGE_VERSION 34) " +
+  "          #'number-value " +
+  "          #'enum-value)))))";
+var PROTECT_ENUM_IOS = "#f))(define-syntax protect-enum " +
+  "(syntax-rules () ((_ enum-value number-value) " +
+  "(if (equal? \"\" (yail:invoke (yail:invoke AIComponentKit.Form 'getActiveForm) 'VersionName)) " +
+  "#'number-value #'enum-value))))(begin (begin #f";
+
 // Blockly is only loaded once now, so we can init this here.
 top.ReplState = new Blockly.ReplStateObj();
 top.ReplState.phoneState = {};
@@ -342,13 +354,7 @@ Blockly.ReplMgr.putYail = (function() {
 
             if (!sentMacros) {
                 // Add the protect-enum macro (used by dropdown blocks).
-                code = "(define-syntax protect-enum " +
-                  "  (lambda (x) " +
-                  "    (syntax-case x () " +
-                  "      ((_ enum-value number-value) " +
-                  "        (if (< com.google.appinventor.components.common.YaVersion:BLOCKS_LANGUAGE_VERSION 33) " +
-                  "          #'number-value " +
-                  "          #'enum-value)))))" + code;
+                code = (rs.android ? PROTECT_ENUM_ANDROID : PROTECT_ENUM_IOS) + code;
                 sentMacros = true;
             }
 
@@ -639,6 +645,10 @@ Blockly.ReplMgr.putYail = (function() {
                         // sendcode is now an array of strings, also scheme
                         // code, but guaranteed that each will fit in a
                         // webrtc message
+                        if (!sentMacros) {
+                            webrtcdata.send(rs.android ? PROTECT_ENUM_ANDROID : PROTECT_ENUM_IOS);
+                            sentMacros = true;
+                        }
                         sendcode.forEach(function(item) {
                             console.log('Chunk: ' + item);
                             webrtcdata.send(item);
@@ -848,6 +858,7 @@ Blockly.ReplMgr.putYail = (function() {
 //   button.
 //          context.hardreset(context.formName); // kill adb and emulator
             rs.didversioncheck = false;
+            rs.android = true;
             top.BlocklyPanel_indicateDisconnect();
             top.ConnectProgressBar_hide();
             engine.reset();
@@ -1477,6 +1488,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
+                rs.android = (json.os || 'Android').toLowerCase() !== 'ios';
                 rs.extensionurl = rs.baseurl + '_extensions';
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
