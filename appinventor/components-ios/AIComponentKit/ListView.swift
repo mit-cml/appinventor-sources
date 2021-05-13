@@ -207,6 +207,13 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     if cell.selectedBackgroundView == nil {
       cell.selectedBackgroundView = UIView()
     }
+    if elements[indexPath.row].contains("\n") {
+      cell.textLabel?.numberOfLines = 0
+      cell.textLabel?.lineBreakMode = .byWordWrapping
+    } else {
+      cell.textLabel?.numberOfLines = 1
+      cell.textLabel?.lineBreakMode = .byTruncatingTail
+    }
     cell.selectedBackgroundView?.backgroundColor = argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue) ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
     return cell
   }
