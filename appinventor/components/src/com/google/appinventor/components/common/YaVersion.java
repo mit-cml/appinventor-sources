@@ -530,12 +530,12 @@ public class YaVersion {
   // - BUTTON_COMPONENT_VERSION incremented to 7
   // - CANVAS_COMPONENT_VERSION incremented to 15
   // - DATEPICKER_COMPONENT_VERSION incremented to 4
-  // - FORM_COMPONENT_VESRION incremented to 28
-  // - HORIZONTALaRRANGEMENT_COMPONENT_VERSION incremented to 4
-  // - HORIZONTALSCROLLARRANGEMENT_COMPONENTvERSION incremented to 2
+  // - FORM_COMPONENT_VERSION incremented to 28
+  // - HORIZONTALARRANGEMENT_COMPONENT_VERSION incremented to 4
+  // - HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION incremented to 2
   // - IMAGESPRITE_COMPONENT_VERSION incremented to 8
   // - MAP_COMPONENT_VERSION incremented to 6
-  // - MARKER_COMPONENT_VERSION increntmented to 4
+  // - MARKER_COMPONENT_VERSION incremented to 4
   // - NAVIGATION_COMPONENT_VERSION incremented to 2
   // - NXT_DIRECT_COMMANDS_COMPONENT_VERSION incremented to 2
   // - EV3_COLORSENSOR_COMPONENT_VERSION incremented to 2
@@ -546,7 +546,7 @@ public class YaVersion {
   // - TIMEPICKER_COMPONENT_VERSION incremented to 4
   // - VERTICALARRANGEMENT_COMPONENT_VERSION incremented to 4
   // - VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION incremented to 2
-  // - VIDEOPLAYER_Component_VERSION incremented to 7
+  // - VIDEOPLAYER_COMPONENT_VERSION incremented to 7
   public static final int YOUNG_ANDROID_VERSION = 212;
 
   // ............................... Blocks Language Version Number ...............................
