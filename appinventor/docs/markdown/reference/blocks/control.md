@@ -82,7 +82,8 @@ Provides a "dummy socket" for fitting a block that has a plug on its left into a
 
 Opens the screen with the provided name.
 
-The screenName must be one of the Screens created using the Designer. The screenName should be entered into a Text component and typed exactly as named in the Designer. (Case is important, if the designed screen name is myNewScreen, what you use in the puzzle piece cannot be mynewscreen or MyNewScreen for example.)
+The screenName must be one of the Screens created using the Designer. The
+screenName should be selected from the connected screen name dropdown block.
 
 If you do open another screen, you should close it when returning to your main screen to free system memory. Failure to close a screen upon leaving it will eventually lead to memory problems.
 

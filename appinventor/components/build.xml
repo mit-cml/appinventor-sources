@@ -54,6 +54,7 @@
     <mkdir dir="${CommonConstants-class.dir}" />
 
     <ai.javac destdir="${CommonConstants-class.dir}">
+      <include name="**/helpers/*.java" />
       <include name="${components.pkg}/common/*.java" />
       <exclude name="${components.pkg}/common/HtmlEntities.java" />
     </ai.javac>
@@ -218,6 +219,7 @@
       <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
       <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
       <exclude name="${components.pkg}/common/**/*.java" /> <!-- exclude components/common package -->
+      <exclude name="**/helpers/*.java" /> <!-- exclude helpers as they are compiled with CommonConstants -->
       <classpath>
         <path refid="AndroidRuntime.path" />
         <pathelement location="${local.build.dir}/AnnotationProcessors.jar" />

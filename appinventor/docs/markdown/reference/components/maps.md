@@ -82,7 +82,7 @@ The `Circle` component visualizes a circle of a given [`Radius`](#Circle.Radius)
  map feature.
 
 {:id="Circle.Type" .text .ro .bo} *Type*
-: Returns the type of the feature. For Circles, this returns the text "Circle".
+: Returns the type of the feature. For Circles, this returns MapFeature.Circle ("Circle").
 
 {:id="Circle.Visible" .boolean} *Visible*
 : Specifies whether the `Circle` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -305,7 +305,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
  map feature.
 
 {:id="LineString.Type" .text .ro .bo} *Type*
-: Returns the type of the map feature. For LineString, this returns the text "LineString".
+: Returns the type of the map feature. For LineString, this returns MapFeature.LineString ("LineString").
 
 {:id="LineString.Visible" .boolean} *Visible*
 : Specifies whether the `LineString` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -888,7 +888,7 @@ The Navigation component generates directions between two locations using a serv
  map feature.
 
 {:id="Polygon.Type" .text .ro .bo} *Type*
-: Returns the type of the feature. For polygons, this returns the text "Polygon".
+: Returns the type of the feature. For polygons, this returns MapFeature.Polygon ("Polygon").
 
 {:id="Polygon.Visible" .boolean} *Visible*
 : Specifies whether the `Polygon` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -998,7 +998,7 @@ The Navigation component generates directions between two locations using a serv
  map feature.
 
 {:id="Rectangle.Type" .text .ro .bo} *Type*
-: Returns the type of the feature. For rectangles, this returns the text "Rectangle".
+: Returns the type of the feature. For rectangles, this returns MapFeature.Rectangle ("Rectangle").
 
 {:id="Rectangle.Visible" .boolean} *Visible*
 : Specifies whether the `Rectangle` should be visible on the screen.  Value is `true`{:.logic.block}

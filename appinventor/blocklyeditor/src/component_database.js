@@ -38,20 +38,41 @@ Blockly.PROPERTY_READWRITEABLE = 3;
 ComponentInfo = function() {};
 
 /**
+ * @typedef HelperKey
+ * @type {object}
+ * @property {!string} type
+ * @property {*} key
+ */
+HelperKey = function() {};
+
+/**
  * @typedef ParameterDescriptor
  * @type {object}
  * @property {!string} name
  * @property {!type} type
+ * @property {HelperKey} helperKey
  */
 ParameterDescriptor = function() {};
 
 /**
- * @typedef {{name: !string, description: !string, deprecated: ?boolean, parameters: !ParameterDescriptor[]}}
+ * @typedef {{
+ *            name: !string,
+ *            description: !string,
+ *            deprecated: ?boolean,
+ *            parameters: !ParameterDescriptor[]
+ *          }}
  */
 EventDescriptor = function() {};
 
 /**
- * @typedef {{name: !string, description: !string, deprecated: ?boolean, parameters: !ParameterDescriptor[], returnType: ?string}}
+ * @typedef {{
+ *            name: !string,
+ *            description: !string,
+ *            deprecated: ?boolean,
+ *            parameters: !ParameterDescriptor[],
+ *            returnType: ?string
+ *            returnHelperKey: !HelperKey
+ *          }}
  */
 MethodDescriptor = function() {};
 
@@ -61,6 +82,7 @@ MethodDescriptor = function() {};
  * @property {!string} name
  * @property {!string} description
  * @property {!string} type
+ * @property {HelperKey} helperKey
  * @property {!string} rw
  * @property {?boolean} deprecated
  */
@@ -89,6 +111,27 @@ ComponentTypeDescriptor = function() {};
 ComponentInstanceDescriptor = function() {};
 
 /**
+ * @typedef Option
+ * @type {object}
+ * @property {!string} name
+ * @property {!string} value
+ * @property {!string} description
+ * @property {?boolean} deprecated
+ */
+Option = function() {};
+
+/**
+ * @typedef OptionList
+ * @type {object}
+ * @property {!string} className
+ * @property {!string} tag
+ * @property {!string} defaultOpt
+ * @property {!string} underlyingType
+ * @property {!Array.<!Option>} options
+ */
+OptionList = function() {};
+
+/**
  * Database for component type information and instances.
  * @constructor
  */
@@ -101,6 +144,27 @@ Blockly.ComponentDatabase = function() {
   /** @type {Object.<string, string>} */
   this.instanceNameUid_ = {};
 
+  /**
+   * Maps names of option lists to OptionLists.
+   * 
+   * This map is used to de-duplicate duplicated optionList info provided via
+   * the simple_components.json file, so that every option is represented
+   * exactly once in the component database. Everything that needs to reference
+   * an optionList should do so via the getOptionList function using the option
+   * lists's key. This field is used in conjunction with the processOptionList
+   * method to achieve this behavior.
+   * @type {Object.<string, Option>}
+   */
+  this.optionLists_ = {};
+
+  /**
+   * An array of filters which can be added to connections. This filters will
+   * then cause asset blocks attached to the connections to filter their
+   * dropdowns.
+   * @type {!Array<!Array<string>>}
+   */
+  this.filters_ = [];
+
   // Internationalization support
   this.i18nComponentTypes_ = {};
   this.i18nEventNames_ = {};
@@ -110,6 +174,8 @@ Blockly.ComponentDatabase = function() {
   this.i18nParamNames_ = {};
   this.i18nPropertyNames_ = {};
   this.i18nPropertyDescriptions_ = {};
+  this.i18nOptionNames_ = {};
+  this.i18nOptionListTags_ = {};
 };
 
 /**
@@ -332,7 +398,7 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
         event['deprecated'] = JSON.parse(event['deprecated']);
       }
       if (event['parameters'] === undefined) {
-        event['parameters'] = event['params'];
+        event['parameters'] = this.processParameters(event['params']);
         delete event['params'];
       }
       info.eventDictionary[event.name] = event;
@@ -342,8 +408,11 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
         method['deprecated'] = JSON.parse(method['deprecated']);
       }
       if (method['parameters'] === undefined) {
-        method['parameters'] = method['params'];
+        method['parameters'] = this.processParameters(method['params']);
         delete method['params'];
+      }
+      if (method['helper']) {
+        method['returnHelperKey'] = this.processHelper(method['helper']);
       }
       info.methodDictionary[method.name] = method;
     }
@@ -351,6 +420,9 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
       info.properties[property.name] = property;
       if (typeof property['deprecated'] === 'string') {
         property['deprecated'] = JSON.parse(property['deprecated']);
+      }
+      if (property['helper']) {
+        property['helperKey'] = this.processHelper(property['helper']);
       }
       if (property['rw'] == 'read-write') {
         property.mutability = Blockly.PROPERTY_READWRITEABLE;
@@ -376,6 +448,129 @@ Blockly.ComponentDatabase.prototype.populateTypes = function(componentInfos) {
   }
 };
 
+/**
+ * Processes the given array of parameters (from simple_components.json, not
+ * Parameters) and returns an array of Parameters.
+ * @param {!Array.<!Object>} paramData An array of data from
+ *     simple_components.json defining the parameters.
+ * @return {!Array.<!Parameter>} An array of parameters.
+ */
+Blockly.ComponentDatabase.prototype.processParameters = function(paramData) {
+  params = [];
+  for (var i = 0, datum; datum = paramData[i]; i++) {
+    var param = {};
+    param.name = datum.name;
+    param.type = datum.type;
+    param.helperKey = this.processHelper(datum.helper);
+    params.push(param);
+  }
+  return params;
+}
+
+/**
+ * Processes a helper (from simple_components.json) and returns a HelperKey if
+ * possible.
+ * @param {Object} helper The (possibly null) helper definition.
+ * @return {HelperKey} The helper key associated with the helper (if it is
+ *     possible) to create one.
+ */
+Blockly.ComponentDatabase.prototype.processHelper = function(helper) {
+  if (!helper) {
+    return null;
+  }
+  switch (helper.type) {
+    case "OPTION_LIST":
+      return this.processOptionList(helper.data);
+    case "ASSET":
+      return this.processAssetHelper(helper.data);
+  }
+  return null;
+}
+
+/**
+ * Processes data defining an OptionList (from simple_components.json) and
+ * returns a HelperKey associated with the OptionList.
+ * 
+ * This function is used in conjunction with the optionLists_ field to remove
+ * duplicate optionList data provided via the simple_components.json file.
+ * @param {!Object} data The data defining the OptionList.
+ * @return {!HelperKey} The key associated with the OptionList.
+ */
+Blockly.ComponentDatabase.prototype.processOptionList = function(data) {
+  // The first time an optionList is encountered its data is inserted into the
+  // optionLists_ map and its data is cached. All future calls to
+  // processOptionList do not process the option list, and just return
+  // a HelperKey which can be used to retrieve information from this map.
+  if (!this.optionLists_[data.key]) {
+    var options = [];
+    for (var i = 0, option; option = data.options[i]; i++) {
+      options[i] = this.processOption(option);
+    }
+
+    this.optionLists_[data.key] = {
+      className: data.className,
+      tag: data.tag,
+      defaultOpt: data.defaultOpt,
+      underlyingType: data.underlyingType,
+      options: options
+    };
+  }
+  return {
+    type: "OPTION_LIST",
+    key: data.key
+  };
+}
+
+Blockly.ComponentDatabase.prototype.processOption = function(option) {
+  return {
+    name: option.name,
+    value: option.value,
+    description: option.description,
+    deprecated: option.deprecated == "true"
+  };
+}
+
+/**
+ * Processes data defining an asset filter (from simple_components.json) and
+ * returns a HelperKey pointing to the filter.
+ * @param {!Object} data The data defining the filter.
+ * @return {!HelperKey} The key associated with the filter.
+ */
+Blockly.ComponentDatabase.prototype.processAssetHelper = function(data) {
+  var filter = data.filter;
+  if (!filter || filter.length == 0) {
+    return {
+      type: "ASSET",
+      key: null
+    }
+  }
+  // We have to do this because js is very restrictive with array equality.
+  function findIndex(acc, cur, idx) {
+    if (acc != -1) {
+      return acc;
+    }
+    var matches = cur.every(function(string) {
+      return filter.includes(string);
+    });
+    if (matches) {
+      return idx;
+    }
+    return -1;
+  }
+
+  var index = this.filters_.reduce(findIndex, -1);
+  if (index == -1) {
+    // TODO: If filters_ was instead a sorted list we could optimize index
+    //   finding algorithm using a binary search.
+    this.filters_.push(filter);
+    index = this.filters_.length - 1;
+  }
+  return {
+    type: "ASSET",
+    key: index
+  }
+}
+
 Blockly.ComponentDatabase.PROPDESC = /PropertyDescriptions$/;
 Blockly.ComponentDatabase.METHODDESC = /MethodDescrptions$/;
 Blockly.ComponentDatabase.EVENTDESC = /EventDescriptions$/;
@@ -387,28 +582,44 @@ Blockly.ComponentDatabase.EVENTDESC = /EventDescriptions$/;
 Blockly.ComponentDatabase.prototype.populateTranslations = function(translations) {
   var newkey;
   for (var key in translations) {
-    if (translations.hasOwnProperty(key)) {
-      var parts = key.split('-', 2);
-      if (parts[0] === 'COMPONENT') {
-        this.i18nComponentTypes_[parts[1]] = translations[key];
-      } else if (parts[0] === 'PROPERTY') {
-        this.i18nPropertyNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'EVENT') {
-        this.i18nEventNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'METHOD') {
-        this.i18nMethodNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'PARAM') {
-        this.i18nParamNames_[parts[1]] = translations[key];
-      } else if (parts[0] === 'EVENTDESC') {
-        newkey = parts[1].replace(Blockly.ComponentDatabase.EVENTDESC, '');
-        this.i18nEventDescriptions_[parts[1]] = translations[key];
-      } else if (parts[0] === 'METHODDESC') {
-        newkey = parts[1].replace(Blockly.ComponentDatabase.METHODDESC, '');
-        this.i18nMethodDescriptions_[newkey] = translations[key];
-      } else if (parts[0] === 'PROPDESC') {
-        newkey = parts[1].replace(Blockly.ComponentDatabase.PROPDESC, '');
-        this.i18nPropertyDescriptions_[newkey] = translations[key];
-      }
+    if (!translations.hasOwnProperty(key)) {
+      continue;
+    }
+    var parts = key.split('-', 2);
+    var type = parts[0];
+    var jsKey = parts[1];
+    var translation = translations[key];
+    switch(type) {
+      case 'COMPONENT':
+        this.i18nComponentTypes_[jsKey] = translation;
+        break;
+      case 'PROPERTY':
+        this.i18nPropertyNames_[jsKey] = translation;
+        break;
+      case 'EVENT':
+        this.i18nEventNames_[jsKey] = translation;
+        break;
+      case 'METHOD':
+        this.i18nMethodNames_[jsKey] = translation;
+        break;
+      case 'PARAM':
+        this.i18nParamNames_[jsKey] = translation;
+        break;
+      case 'EVENTDESC':
+        this.i18nEventDescriptions_[jsKey] = translation;
+        break;
+      case 'METHODDESC':
+        this.i18nMethodDescriptions_[jsKey] = translation;
+        break;
+      case 'PROPDESC':
+        this.i18nPropertyDescriptions_[jsKey] = translation;
+        break;
+      case 'OPTION':
+        this.i18nOptionNames_[jsKey] = translation;
+        break;
+      case 'OPTIONLIST':
+        this.i18nOptionListTags_[jsKey] = translation;
+        break;
     }
   }
 };
@@ -520,6 +731,35 @@ Blockly.ComponentDatabase.prototype.getGetterNamesForType = function(typeName) {
 };
 
 /**
+ * Returns the OptionList associated with the given key.
+ * @param {!string} key The dictionary key for the OptionList.
+ * @return {OptionList} The associated option list, or undefined if one is not
+ *     found.
+ */
+Blockly.ComponentDatabase.prototype.getOptionList = function(key) {
+  return this.optionLists_[key];
+}
+
+/**
+ * Iterate over all option list definitions calling the callback function with
+ * the OptionList
+ *
+ * @param {function(!OptionList)} callback
+ */
+Blockly.ComponentDatabase.prototype.forEachOptionList = function(callback) {
+  goog.object.forEach(this.optionLists_, callback);
+}
+
+/**
+ * Returns the asset filter associated with the given key, or undefined.
+ * @param {number} key The key associated with a given filter.
+ * @return {Array<string>=}
+ */
+Blockly.ComponentDatabase.prototype.getFilter = function(key) {
+  return this.filters_[key];
+}
+
+/**
  * Get the internationalized string for the given component type.
  * @param {!string} name String naming a component type
  * @param {?string=name} opt_default Optional default value (default: name parameter)
@@ -598,3 +838,31 @@ Blockly.ComponentDatabase.prototype.getInternationalizedPropertyName = function(
 Blockly.ComponentDatabase.prototype.getInternationalizedPropertyDescription = function(component, name, opt_default) {
   return this.i18nPropertyDescriptions_[component + '.' + name] || this.i18nPropertyDescriptions_[name] || opt_default || name;
 };
+
+/**
+ * Returns the internationalized string for the given option name.
+ * @param {string} key The tag name of the option list + the name of the option.
+ *     Used to get the internationalized name.
+ * @param {string} opt_default The default name if an internationalized one is
+ *     not found.
+ * @return {string} The localized string if available, otherwise the unlocalized
+ *     one.
+ */
+Blockly.ComponentDatabase.prototype.getInternationalizedOptionName =
+  function(key, opt_default) {
+    return this.i18nOptionNames_[key] || opt_default;
+  };
+
+/**
+ * Returns the internationalized string for the given option list tag.
+ * @param {string} name The name of the tag used to get the internationlized
+ *     version.
+ * @param {string} opt_default The default name if the internationalized name
+ *     is not available.
+ * @return {string} The localized string if available, otherwise the unlocalized
+ *     string.
+ */
+Blockly.ComponentDatabase.prototype.getInternationalizedOptionListTag =
+  function(name, opt_default) {
+    return this.i18nOptionListTags_[name] || opt_default || name;
+  }

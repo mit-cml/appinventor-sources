@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.telephony.TelephonyManager;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -26,7 +27,9 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.EndedStatus;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.StartedStatus;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.PhoneCallUtil;
@@ -198,9 +201,21 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
       READ_CALL_LOG,  // minSDK 16, needed on SDK 29
       READ_PHONE_STATE
   })
-  public void PhoneCallStarted(int status, String phoneNumber) {
-    // invoke the application's "PhoneCallStarted" event handler.
-    EventDispatcher.dispatchEvent(this, "PhoneCallStarted", status, phoneNumber);
+  public void PhoneCallStarted(@Options(StartedStatus.class) int status, String phoneNumber) {
+    // Make sure status is a valid StartedStatus.
+    StartedStatus startedStatus = StartedStatus.fromUnderlyingValue(status);
+    if (startedStatus != null) {
+      PhoneCallStartedAbstract(startedStatus, phoneNumber);
+    }
+  }
+
+  /**
+   * Dispatches the PhoneCallStarted event.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void PhoneCallStartedAbstract(StartedStatus status, String phoneNumber) {
+    EventDispatcher.dispatchEvent(this, "PhoneCallStarted", status.toUnderlyingValue(),
+        phoneNumber);
   }
 
   /**
@@ -226,9 +241,20 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
       READ_CALL_LOG,  // minSDK 16, needed on SDK 29
       READ_PHONE_STATE,
   })
-  public void PhoneCallEnded(int status, String phoneNumber) {
-    // invoke the application's "PhoneCallEnded" event handler.
-    EventDispatcher.dispatchEvent(this, "PhoneCallEnded", status, phoneNumber);
+  public void PhoneCallEnded(@Options(EndedStatus.class) int status, String phoneNumber) {
+    // Make sure status is a valid EndedStatus.
+    EndedStatus endedStatus = EndedStatus.fromUnderlyingValue(status);
+    if (endedStatus != null) {
+      PhoneCallEndedAbstract(endedStatus, phoneNumber);
+    }
+  }
+
+  /**
+   * Dispatched the PhoneCallEnded event.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void PhoneCallEndedAbstract(EndedStatus status, String phoneNumber) {
+    EventDispatcher.dispatchEvent(this, "PhoneCallEnded", status.toUnderlyingValue(), phoneNumber);
   }
 
   /**
@@ -254,8 +280,14 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   @Override
   public void resultReturned(int requestCode, int resultCode, Intent data) {
     if (requestCode == PHONECALL_REQUEST_CODE) {
-      PhoneCallStarted(2, "");
+      PhoneCallStartedAbstract(StartedStatus.Outgoing, "");
     }
+  }
+
+  private enum CallStatus {
+    INCOMING_WAITING,
+    INCOMING_ANSWERED,
+    OUTGOING_WAITING,
   }
 
   /**
@@ -263,56 +295,55 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
    *
    */
   private class CallStateReceiver extends BroadcastReceiver {
-    private int status; // 0:undetermined, 1:incoming ringed, 2:outgoing dialled,
-                        // 3: incoming answered
-    private String number; // phone call number
+
+    /**
+     * Defines the current status of the call.
+     * 1: Incoming ringed
+     * 2: Outgoing dialled
+     * 3: Incoming answered
+     */
+    private CallStatus status;
+    private String number;
+
     public CallStateReceiver() {
-      status = 0;
+      status = null;
       number = "";
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
       String action = intent.getAction();
-      if(TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(action)){
+      if (TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(action)) {
         String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-        if(TelephonyManager.EXTRA_STATE_RINGING.equals(state)){
-          // Incoming call rings
-          status = 1;
+        if (TelephonyManager.EXTRA_STATE_RINGING.equals(state)) {
+          status = CallStatus.INCOMING_WAITING;
           number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
           if (number == null) {
             // This gets called first with null, then with the actual number.
             // Ignore the first invocation.
             return;
           }
-          PhoneCallStarted(1, number);
-        }else if(TelephonyManager.EXTRA_STATE_OFFHOOK.equals(state)){
-          // Call off-hook
-          if(status == 1){
-            // Incoming call answered
-            status = 3;
+          PhoneCallStartedAbstract(StartedStatus.Incoming, number);
+        } else if (TelephonyManager.EXTRA_STATE_OFFHOOK.equals(state)) {
+          if (status == CallStatus.INCOMING_WAITING) {
+            status = CallStatus.INCOMING_ANSWERED;
             IncomingCallAnswered(number);
           }
-        }else if(TelephonyManager.EXTRA_STATE_IDLE.equals(state)){
-          // Incomming/Outgoing Call ends
-          if(status == 1){
-            // Incoming Missed or Rejected
-            PhoneCallEnded(1, number);
-          }else if(status == 3){
-            // Incoming Answer Ended
-            PhoneCallEnded(2, number);
-          }else if(status == 2){
-            // Outgoing Ended
-            PhoneCallEnded(3, number);
+        } else if (TelephonyManager.EXTRA_STATE_IDLE.equals(state)) { // Incoming/Outgoing Call ends
+          if (status == CallStatus.INCOMING_WAITING) {
+            PhoneCallEndedAbstract(EndedStatus.IncomingRejected, number);
+          } else if (status == CallStatus.INCOMING_ANSWERED) {
+            PhoneCallEndedAbstract(EndedStatus.IncomingEnded, number);
+          } else if (status == CallStatus.OUTGOING_WAITING) {
+            PhoneCallEndedAbstract(EndedStatus.OutgoingEnded, number);
           }
-          status = 0;
+          status = null;
           number = "";
         }
-      }else if(Intent.ACTION_NEW_OUTGOING_CALL.equals(action)){
-        // Outgoing call dialled
-        status = 2;
+      } else if (Intent.ACTION_NEW_OUTGOING_CALL.equals(action)) {
+        status = CallStatus.OUTGOING_WAITING;
         number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
-        PhoneCallStarted(2, number);
+        PhoneCallStartedAbstract(StartedStatus.Outgoing, number);
       }
     }
   }

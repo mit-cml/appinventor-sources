@@ -6,6 +6,49 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.telephony.SmsManager;
+import android.telephony.SmsMessage;
+import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
+import com.google.appinventor.components.annotations.UsesLibraries;
+import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
+import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
+import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.ReceivingState;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.OAuth2Helper;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.SmsBroadcastReceiver;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -18,55 +61,13 @@ import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import android.Manifest;
-import android.net.Uri;
-import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.ArrayList;
-
-import com.google.appinventor.components.runtime.util.FileUtil;
-import com.google.appinventor.components.runtime.util.OAuth2Helper;
-import com.google.appinventor.components.runtime.util.OnInitializeListener;
-import com.google.appinventor.components.runtime.util.SdkLevel;
-import com.google.appinventor.components.runtime.util.SmsBroadcastReceiver;
-
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesLibraries;
-import com.google.appinventor.components.annotations.UsesPermissions;
-import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
-import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
-import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
-import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
-import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-
-import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.telephony.SmsManager;
-import android.telephony.SmsMessage;
-import android.util.Log;
-import android.widget.Toast;
 
 /**
  * ![Texting component icon](images/texting.png)
@@ -213,7 +214,7 @@ public class Texting extends AndroidNonvisibleComponent
   private String authToken;
 
   // Indicates whether the component is receiving messages or not
-  private static int receivingEnabled = ComponentConstants.TEXT_RECEIVING_FOREGROUND;
+  private static ReceivingState receivingState = ReceivingState.Foreground;
   private SmsManager smsManager;
 
   // The phone number to send the text message to.
@@ -260,19 +261,22 @@ public class Texting extends AndroidNonvisibleComponent
 
     SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
     if (prefs != null) {
-      receivingEnabled = prefs.getInt(PREF_RCVENABLED, -1);
-      if (receivingEnabled == -1) {
+      int pref = prefs.getInt(PREF_RCVENABLED, -1);
+      if (pref == -1) {
         if (prefs.getBoolean(PREF_RCVENABLED_LEGACY, true)) {
-          receivingEnabled = ComponentConstants.TEXT_RECEIVING_FOREGROUND;
+          receivingState = ReceivingState.Foreground;
         } else {
-          receivingEnabled = ComponentConstants.TEXT_RECEIVING_OFF;
+          receivingState = ReceivingState.Off;
         }
+      } else {
+        receivingState = ReceivingState.fromUnderlyingValue(pref);
       }
 
       googleVoiceEnabled = prefs.getBoolean(PREF_GVENABLED, false);
-      Log.i(TAG, "Starting with receiving Enabled=" + receivingEnabled + " GV enabled=" + googleVoiceEnabled);
+      Log.i(TAG, "Starting with receiving Enabled=" + receivingState.toUnderlyingValue()
+          + " GV enabled=" + googleVoiceEnabled);
     } else {
-      receivingEnabled = ComponentConstants.TEXT_RECEIVING_OFF;
+      receivingState = ReceivingState.Off;
       googleVoiceEnabled = false;
     }
 
@@ -310,7 +314,7 @@ public class Texting extends AndroidNonvisibleComponent
 
   // Called from runtime.scm
   public void Initialize() {
-    if (receivingEnabled > ComponentConstants.TEXT_RECEIVING_OFF && !haveReceivePermission) {
+    if (receivingState != ReceivingState.Off && !haveReceivePermission) {
       // Request receive SMS permission if we are configured to receive but do not have permission
       requestReceiveSmsPermission("Initialize");
     }
@@ -455,15 +459,16 @@ public class Texting extends AndroidNonvisibleComponent
    */
   @SimpleEvent
   public static void MessageReceived(String number, String messageText) {
-    if (receivingEnabled > ComponentConstants.TEXT_RECEIVING_OFF) {
-      Log.i(TAG, "MessageReceived from " + number + ":" + messageText);
-      if (EventDispatcher.dispatchEvent(component, "MessageReceived", number, messageText)) {
-        Log.i(TAG, "Dispatch successful");
-      } else {
-        Log.i(TAG, "Dispatch failed, caching");
-        synchronized (cacheLock) {
-          addMessageToCache(activity, number, messageText);
-        }
+    if (receivingState == ReceivingState.Off) {
+      return;
+    }
+    Log.i(TAG, "MessageReceived from " + number + ":" + messageText);
+    if (EventDispatcher.dispatchEvent(component, "MessageReceived", number, messageText)) {
+      Log.i(TAG, "Dispatch successful");
+    } else {
+      Log.i(TAG, "Dispatch failed, caching");
+      synchronized (cacheLock) {
+        addMessageToCache(activity, number, messageText);
       }
     }
   }
@@ -538,8 +543,32 @@ public class Texting extends AndroidNonvisibleComponent
     "appear when the app awakens.  As an app developer, it would be a good " +
     "idea to give your users control over this property, so they can make " +
     "their phones ignore text messages when your app is installed.")
-  public int ReceivingEnabled() {
-    return receivingEnabled;
+  public @Options(ReceivingState.class) int ReceivingEnabled() {
+    return ReceivingEnabledAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Returns the texting components current state of receiving for messages.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public ReceivingState ReceivingEnabledAbstract() {
+    return receivingState;
+  }
+
+  /**
+   * Sets the current state of receiving messages for this component.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void ReceivingEnabledAbstract(ReceivingState state) {
+    Texting.receivingState = state;
+    SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putInt(PREF_RCVENABLED, state.toUnderlyingValue());
+    editor.remove(PREF_RCVENABLED_LEGACY); // Remove any legacy value
+    editor.commit();
+    if (state != ReceivingState.Off && !haveReceivePermission) {
+      requestReceiveSmsPermission("ReceivingEnabled");
+    }
   }
 
   /**
@@ -569,23 +598,15 @@ public class Texting extends AndroidNonvisibleComponent
               })
           })
   })
-  public void ReceivingEnabled(int enabled) {
-    if ((enabled < ComponentConstants.TEXT_RECEIVING_OFF) ||
-        (enabled > ComponentConstants.TEXT_RECEIVING_ALWAYS)) {
+  public void ReceivingEnabled(@Options(ReceivingState.class) int enabled) {
+    // Make sure enabled is a valid ReceivingState.
+    ReceivingState state = ReceivingState.fromUnderlyingValue(enabled);
+    if (state == null) {
       container.$form().dispatchErrorOccurredEvent(this, "Texting",
           ErrorMessages.ERROR_BAD_VALUE_FOR_TEXT_RECEIVING, enabled);
       return;
     }
-
-    Texting.receivingEnabled = enabled;
-    SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
-    SharedPreferences.Editor editor = prefs.edit();
-    editor.putInt(PREF_RCVENABLED, enabled);
-    editor.remove(PREF_RCVENABLED_LEGACY); // Remove any legacy value
-    editor.commit();
-    if (enabled > ComponentConstants.TEXT_RECEIVING_OFF && !haveReceivePermission) {
-      requestReceiveSmsPermission("ReceivingEnabled");
-    }
+    ReceivingEnabledAbstract(state);
   }
 
   public static int isReceivingEnabled(Context context) {
@@ -647,7 +668,7 @@ public class Texting extends AndroidNonvisibleComponent
       int delim = phoneAndMessage.indexOf(":");
 
       // If receiving is not enabled, messages are not dispatched
-      if ((receivingEnabled > ComponentConstants.TEXT_RECEIVING_OFF) && delim != -1) {
+      if (receivingState != ReceivingState.Off && delim != -1) {
         MessageReceived(phoneAndMessage.substring(0,delim),
             phoneAndMessage.substring(delim+1));
       }
@@ -1223,7 +1244,7 @@ public class Texting extends AndroidNonvisibleComponent
   public void onStop() {
     SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
     SharedPreferences.Editor editor = prefs.edit();
-    editor.putInt(PREF_RCVENABLED, receivingEnabled);
+    editor.putInt(PREF_RCVENABLED, receivingState.toUnderlyingValue());
     editor.putBoolean(PREF_GVENABLED, googleVoiceEnabled);
     editor.commit();
   }

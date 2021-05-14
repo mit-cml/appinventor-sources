@@ -96,12 +96,11 @@ public class DesignToolbar extends Toolbar {
 
     // Returns true if we added the screen (it didn't previously exist), false otherwise.
     public boolean addScreen(String name, FileEditor formEditor, FileEditor blocksEditor) {
-      if (!screens.containsKey(name)) {
-        screens.put(name, new Screen(name, formEditor, blocksEditor));
-        return true;
-      } else {
+      if (screens.containsKey(name)) {
         return false;
       }
+      screens.put(name, new Screen(name, formEditor, blocksEditor));
+      return true;
     }
 
     public void removeScreen(String name) {
@@ -453,11 +452,12 @@ public class DesignToolbar extends Toolbar {
         OdeLog.wlog("DesignToolbar: ignoring call to switchToProject for current project");
         return true;
       }
-      pushedScreens.clear();    // Effectively switching applications clear stack of screens
+      pushedScreens.clear();  // Effectively switching applications; clear stack of screens.
       clearDropDownMenu(WIDGET_NAME_SCREENS_DROPDOWN);
       OdeLog.log("DesignToolbar: switching to existing project " + projectName + " with id "
           + projectId);
-      currentProject = projectMap.get(projectId);
+      currentProject = project;
+
       // TODO(sharon): add screens to drop-down menu in the right order
       for (Screen screen : currentProject.screens.values()) {
         addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(screen.screenName,

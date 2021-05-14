@@ -523,7 +523,31 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 211:
   // - CANVAS_COMPONENT_VERSION was incremented to 14
   // - CLOUDDB_COMPONENT_VERSION was incremented to 2
-  public static final int YOUNG_ANDROID_VERSION = 211;
+  // For YOUNG_ANDROID_VERSION 212 (helper blocks):
+  // - BLOCKS_LANGUAGE_VERSION incremented to 34
+  // - ACCELEROMETERSENSOR_COMPONENT_VERSION incremented to 5
+  // - BALL_COMPONENT_VERSION incremented to 8
+  // - BUTTON_COMPONENT_VERSION incremented to 7
+  // - CANVAS_COMPONENT_VERSION incremented to 15
+  // - DATEPICKER_COMPONENT_VERSION incremented to 4
+  // - FORM_COMPONENT_VERSION incremented to 28
+  // - HORIZONTALARRANGEMENT_COMPONENT_VERSION incremented to 4
+  // - HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION incremented to 2
+  // - IMAGESPRITE_COMPONENT_VERSION incremented to 8
+  // - MAP_COMPONENT_VERSION incremented to 6
+  // - MARKER_COMPONENT_VERSION incremented to 4
+  // - NAVIGATION_COMPONENT_VERSION incremented to 2
+  // - NXT_DIRECT_COMMANDS_COMPONENT_VERSION incremented to 2
+  // - EV3_COLORSENSOR_COMPONENT_VERSION incremented to 2
+  // - EV3_GYROSENSOR_COMPONENT_VERSION incremented to 2
+  // - EV3_ULTRASONICSENSOR_COMPONENT_VERSION incremented to 2
+  // - SOUND_COMPONENT_VERSION incremented to 4
+  // - TEXTING_COMPONENT_VERSION incremented to 5
+  // - TIMEPICKER_COMPONENT_VERSION incremented to 4
+  // - VERTICALARRANGEMENT_COMPONENT_VERSION incremented to 4
+  // - VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION incremented to 2
+  // - VIDEOPLAYER_COMPONENT_VERSION incremented to 7
+  public static final int YOUNG_ANDROID_VERSION = 212;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -607,7 +631,10 @@ public class YaVersion {
   // - The and/or blocks gained mutators.
   // For BLOCKS_LANGUAGE_VERSION 33
   // - Added "contains any" and "contains all" options to the text contains block.
-  public static final int BLOCKS_LANGUAGE_VERSION = 33;
+  // For BLOCKS_LANGUAGE_VERSION 34
+  // - The helpers_screen_names block was added.
+  // - Add sanitizing concrete values to OptionLists.
+  public static final int BLOCKS_LANGUAGE_VERSION = 34;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -658,7 +685,9 @@ public class YaVersion {
   // - AccelerometerSensor.Sensitivty property was added.
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 4:
   // - Added the LegacyMode property.
-  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 4;
+  // For ACCELEROMERTERSENSOR_COMPONENT_VERSION 5:
+  // - Adds Sensitivity dropdown block.
+  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 5;
 
   // For ACTIVITYSTARTER_COMPONENT_VERSION 2:
   // - The ActivityStarter.DataType, ActivityStarter.ResultType, and ActivityStarter.ResultUri
@@ -689,7 +718,9 @@ public class YaVersion {
   // - The CenterAtOrigin property was added
   // For BALL_COMPONENT_VERSION 7:
   // - The MoveToPoint method was added (for all sprites)
-  public static final int BALL_COMPONENT_VERSION = 7;
+  // For Ball_COMPONENT_VERSION 8:
+  // - Adds dropdown blocks for Direction.
+  public static final int BALL_COMPONENT_VERSION = 8;
 
   // For BARCODESCANNER_COMPONENT_VERSION 2:
   // -- UseExternalScanner property was added (default true)
@@ -728,7 +759,9 @@ public class YaVersion {
   // For BUTTON_COMPONENT_VERSION 6:
   // - Added TouchUp and TouchDown events
   // - FontSize, FontBold, FontItalic properties made visible in block editor
-  public static final int BUTTON_COMPONENT_VERSION = 6;
+  // For BUTTON_COMPONENT_VERSION 7:
+  // - Assets helper block was added.
+  public static final int BUTTON_COMPONENT_VERSION = 7;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
@@ -772,7 +805,9 @@ public class YaVersion {
   // -TAP_THRESHOLD was changed from being constant to user settable 
   // -TAP_THRESHOLD renamed to tapThreshold
   // -TapThreshold was added
-  public static final int CANVAS_COMPONENT_VERSION = 14;
+  // For CANVAS_COMPONENT_VERSION 15
+  // - Assets helper block was added.
+  public static final int CANVAS_COMPONENT_VERSION = 15;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -814,7 +849,9 @@ public class YaVersion {
   // datepicker dialog.
   // For DATEPICKER_COMPONENT_VERSION 3:
   // - SetDateToDisplayFromInstant, and Instant property are added.
-  public static final int DATEPICKER_COMPONENT_VERSION = 3;
+  // For DATEPICKER_COMPONENT_VERSION 3:
+  // - Assets helper block was added.
+  public static final int DATEPICKER_COMPONENT_VERSION = 4;
 
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -901,7 +938,13 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 28:
   // - Added the AlternateText property
   // - Added the BigDefaultText property
-  public static final int FORM_COMPONENT_VERSION = 28;
+  // For FORM_COMPONENT_VERSION 29:
+  // - Adds dropdown blocks for ScreenAnimation.
+  // - Adds dropdown blocks for HorizontalAlignment and VerticalAlignment.
+  // - Adds dropdown block for ScreenOrientation.
+  // - Assets helper block was added.
+  // - Adds Permission dropdown block.
+  public static final int FORM_COMPONENT_VERSION = 29;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -923,9 +966,15 @@ public class YaVersion {
   // - The AlignVertical property was added
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 3:
   // - Added background color & image
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
+  // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  // - Assets helper block was added.
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
 
-  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 1;
+  // For HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
+  // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  // - Assets helper block was added.
+  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
@@ -936,7 +985,9 @@ public class YaVersion {
   // - The Clickable property was added.
   // For IMAGE_COMPONENT_VERSION 5:
   // - The AlternateText property was added.
-  public static final int IMAGE_COMPONENT_VERSION = 5;
+  // For IMAGE_COMPONENT_VERSION 6:
+  // - Assets helper block was added.
+  public static final int IMAGE_COMPONENT_VERSION = 6;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -963,7 +1014,10 @@ public class YaVersion {
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
   // For IMAGESPRITE_COMPONENT_VERSION 7:
   // - The MoveToPoint method was added (for all sprites)
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 7;
+  // For IMAGESPRITE_COMPONENT_VERSION 8:
+  // - Adds dropdown blocks for Direction.
+  // - Assets helper block was added.
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 8;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1034,7 +1088,9 @@ public class YaVersion {
   // For MAP_COMPONENT_VERSION 5:
   // - Added ShowScale property
   // - Added ScaleUnits property
-  public static final int MAP_COMPONENT_VERSION = 5;
+  // For MAP_COMPONENT_VERSION 6:
+  // - Adds ScaleUnits and MapType dropdowns.
+  public static final int MAP_COMPONENT_VERSION = 6;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap
@@ -1042,11 +1098,16 @@ public class YaVersion {
   // - The ShowShadow property was removed
   // For MARKER_COMPONENT_VERSION 3:
   // - Added fill and stroke opacity properties
-  public static final int MARKER_COMPONENT_VERSION = 3;
+  // For MARKER_COMPONENT_VERSION 4:
+  // - Add AlignHorizontal and AlignVertical dropdown blocks.
+  // - Assets helper block was added.
+  public static final int MARKER_COMPONENT_VERSION = 4;
 
   // For NAVIGATION_COMPONENT_VERSION 1:
   // - Initial Navigation implementation
-  public static final int NAVIGATION_COMPONENT_VERSION = 1;
+  // For NAVIGATION_COMPONENT_VERSION 2:
+  // - Adds TransportMethod dropdown.
+  public static final int NAVIGATION_COMPONENT_VERSION = 2;
 
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;
@@ -1065,7 +1126,9 @@ public class YaVersion {
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 
-  public static final int NXT_DIRECT_COMMANDS_COMPONENT_VERSION = 1;
+  // For NXT_DIRECT_COMMANDS_COMPONENT_VERSION 2:
+  // - Adds dropdown blocks.
+  public static final int NXT_DIRECT_COMMANDS_COMPONENT_VERSION = 2;
 
   public static final int NXT_DRIVE_COMPONENT_VERSION = 1;
 
@@ -1079,13 +1142,22 @@ public class YaVersion {
 
   public static final int EV3_MOTORS_COMPONENT_VERSION = 1;
 
-  public static final int EV3_COLORSENSOR_COMPONENT_VERSION = 1;
+  // For EV3_COLORSENSOR_COMPONENT_VERSION 2:
+  // - Remove SetAmbientMode, SetColorMode, and SetReflectedMode. Use Mode setter instead.
+  // - Add ColorSensorMode dropdown.
+  public static final int EV3_COLORSENSOR_COMPONENT_VERSION = 2;
 
-  public static final int EV3_GYROSENSOR_COMPONENT_VERSION = 1;
+  // For EV3_GYROSENSOR_COMPONENT_VERSION 2:
+  // - Remove SetAngleMode and SetRateMode. Use Mode setter instead.
+  // - Add GyroSensorMode dropdown block.
+  public static final int EV3_GYROSENSOR_COMPONENT_VERSION = 2;
 
   public static final int EV3_TOUCHSENSOR_COMPONENT_VERSION = 1;
 
-  public static final int EV3_ULTRASONICSENSOR_COMPONENT_VERSION = 1;
+  // For EV3_ULTRASONICSENSOR_COMPONENT_VERSION 2:
+  // - Remove SetCmUnit and SetInchUnit. Use Unit setter instead.
+  // - Add UltrasonicSensorUnit dropdown block.
+  public static final int EV3_ULTRASONICSENSOR_COMPONENT_VERSION = 2;
 
   public static final int EV3_SOUND_COMPONENT_VERSION = 1;
 
@@ -1176,7 +1248,9 @@ public class YaVersion {
   // - The Sound.SoundError event was added.
   // For SOUND_COMPONENT_VERSION 3:
   // - The Sound.SoundError event was marked userVisible false and is no longer used.
-  public static final int SOUND_COMPONENT_VERSION = 3;
+  // For SOUND_COMPONENT_VERSION 4:
+  // - Assets helper block was added.
+  public static final int SOUND_COMPONENT_VERSION = 4;
 
   // For SOUND_RECORDER_COMPONENT_VERSION 2:
   // - The SavedRecording property was added.
@@ -1221,7 +1295,9 @@ public class YaVersion {
   //   conditional permissions
   // - The SendMessage method was added
   // - The ReceivingEnabled method was given conditional permissions
-  public static final int TEXTING_COMPONENT_VERSION = 4;
+  // For TEXTING_COMPONENT_VERSION 5:
+  // - Adds ReceivingState dropdown block.
+  public static final int TEXTING_COMPONENT_VERSION = 5;
 
   // For TEXTTOSPEECH_COMPONENT_VERSION 2:
   // - added speech pitch and rate
@@ -1244,7 +1320,9 @@ public class YaVersion {
   // timepicker dialog.
   // For TIMEPICKER_COMPONENT_VERSION 3:
   // - SetTimeToDisplayFromInstant, and Instant property are added.
-  public static final int TIMEPICKER_COMPONENT_VERSION = 3;
+  // For TIMEPICKER_COMPONENT_VERSION 4:
+  // - Assets helper block was added.
+  public static final int TIMEPICKER_COMPONENT_VERSION = 4;
 
   // For TINYDB_COMPONENT_VERSION 2:
   // - Added Property: Namespace
@@ -1303,9 +1381,15 @@ public class YaVersion {
   // - The AlignVertical property was added
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 3:
   // - Added background color & image
-  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 3;
+  // For VERTICALARRANGEMENT_COMPONENT_VERSION 4:
+  // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  // - Assets helper block was added.
+  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 4;
 
-  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 1;
+  // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
+  // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+  // - Assets helper block was added.
+  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
   // - The VideoPlayer.VideoPlayerError event was added.
@@ -1318,7 +1402,9 @@ public class YaVersion {
   // - The Volume property (setter only) was added to the VideoPlayer.
   // For VIDEOPLAYER_COMPONENT_VERSION 6:
   // - The Stop method was added to the VideoPlayer.
-  public static final int VIDEOPLAYER_COMPONENT_VERSION = 6;
+  // For VIDEOPLAYER_COMPONENT_VERSION 7:
+  // - Assets helper block was added.
+  public static final int VIDEOPLAYER_COMPONENT_VERSION = 7;
 
   public static final int VOTING_COMPONENT_VERSION = 1;
 

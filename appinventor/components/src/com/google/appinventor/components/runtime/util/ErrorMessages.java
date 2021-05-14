@@ -66,6 +66,10 @@ public final class ErrorMessages {
   public static final int ERROR_NXT_CANNOT_DETECT_COLOR = 417;
   public static final int ERROR_NXT_CANNOT_DETECT_LIGHT = 418;
   public static final int ERROR_NXT_INVALID_GENERATE_COLOR = 419;
+  public static final int ERROR_NXT_INVALID_MOTOR_MODE = 420;
+  public static final int ERROR_NXT_INVALID_REGULATION_MODE = 421;
+  public static final int ERROR_NXT_INVALID_SENSOR_TYPE = 422;
+  public static final int ERROR_NXT_INVALID_SENSOR_MODE = 423;
   // Bluetooth errors
   public static final int ERROR_BLUETOOTH_NOT_AVAILABLE = 501;
   public static final int ERROR_BLUETOOTH_NOT_ENABLED = 502;
@@ -387,6 +391,14 @@ public final class ErrorMessages {
         "Cannot detect light level when the DetectColor property is set to True.");
     errorMessages.put(ERROR_NXT_INVALID_GENERATE_COLOR,
         "The GenerateColor property is limited to None, Red, Green, or Blue.");
+    errorMessages.put(ERROR_NXT_INVALID_MOTOR_MODE,
+        "%d is an invalid NXT motor mode.");
+    errorMessages.put(ERROR_NXT_INVALID_REGULATION_MODE,
+        "%d is an invalid NXT motor regulation mode.");
+    errorMessages.put(ERROR_NXT_INVALID_SENSOR_TYPE,
+        "%d is an invalid NXT sensor type.");
+    errorMessages.put(ERROR_NXT_INVALID_SENSOR_MODE,
+        "%d is an invalid NXT sensor mode.");
     // LegoMindstormsEv3 errors
     errorMessages.put(ERROR_EV3_BLUETOOTH_NOT_SET,
         "The Bluetooth property has not been set.");

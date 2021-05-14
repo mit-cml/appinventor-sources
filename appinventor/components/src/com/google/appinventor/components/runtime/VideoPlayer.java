@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -194,7 +195,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
           + "name of the video file, which should be added in the Designer.",
       category = PropertyCategory.BEHAVIOR)
   @UsesPermissions(READ_EXTERNAL_STORAGE)
-  public void Source(String path) {
+  public void Source(@Asset String path) {
     final String tempPath = (path == null) ? "" : path;
     if (MediaUtil.isExternalFile(container.$context(), tempPath)
         && container.$form().isDeniedPermission(READ_EXTERNAL_STORAGE)) {

@@ -23,6 +23,8 @@ import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPal
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.properties.json.JSONArray;
@@ -30,7 +32,13 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Callback;
@@ -62,7 +70,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * @author sharon@google.com (Sharon Perl) added Blockly functionality
  */
 public final class YaBlocksEditor extends FileEditor
-    implements FormChangeListener, BlockDrawerSelectionListener, ComponentDatabaseChangeListener, BlocklyWorkspaceChangeListener {
+    implements FormChangeListener, BlockDrawerSelectionListener, ComponentDatabaseChangeListener,
+    BlocklyWorkspaceChangeListener, ProjectChangeListener {
 
   // A constant to substract from the total height of the Viewer window, set through
   // the computed height of the user's window (Window.getClientHeight())
@@ -109,8 +118,11 @@ public final class YaBlocksEditor extends FileEditor
   // blocks area again.
   private Set<String> componentUuids = new HashSet<String>();
 
-  // The form editor associated with this blocks editor
+  // The form editor associated with this blocks editor.
   private YaFormEditor myFormEditor;
+
+  // The project associated with this blocks editor.
+  private Project project;
 
   YaBlocksEditor(YaProjectEditor projectEditor, YoungAndroidBlocksNode blocksNode) {
     super(projectEditor, blocksNode);
@@ -159,6 +171,10 @@ public final class YaBlocksEditor extends FileEditor
       palettePanel = null;
       OdeLog.wlog("Can't get form editor for blocks: " + getFileId());
     }
+
+    project = Ode.getInstance().getProjectManager().getProject(blocksNode.getProjectId());
+    project.addProjectChangeListener(this);
+    onProjectLoaded(project);
   }
 
   // FileEditor methods
@@ -269,8 +285,10 @@ public final class YaBlocksEditor extends FileEditor
   public void onClose() {
     // our partner YaFormEditor added us as a FormChangeListener, but we remove ourself.
     getForm().removeFormChangeListener(this);
+    project.removeProjectChangeListener(this);
     BlockSelectorBox.getBlockSelectorBox().removeBlockDrawerSelectionListener(this);
     formToBlocksEditor.remove(fullFormName);
+
   }
 
   public static void toggleWarning() {
@@ -707,6 +725,39 @@ public final class YaBlocksEditor extends FileEditor
   @Override
   public void makeActiveWorkspace() {
     blocksArea.makeActive();
+  }
+
+  @Override
+  public void onProjectLoaded(Project project) {
+    for (ProjectNode node : project.getRootNode().getAllSourceNodes()) {
+      if (node instanceof YoungAndroidFormNode) {
+        blocksArea.addScreen(((YoungAndroidSourceNode) node).getFormName());
+      }
+    }
+    YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode())
+        .getAssetsFolder();
+    for (ProjectNode node : assetsFolder.getChildren()) {
+      blocksArea.addAsset(((YoungAndroidAssetNode) node).getName());
+    }
+  }
+
+  @Override
+  public void onProjectNodeAdded(Project project, ProjectNode node) {
+    if (node instanceof YoungAndroidSourceNode) {
+      blocksArea.addScreen(((YoungAndroidSourceNode) node).getFormName());
+    } else if (node instanceof YoungAndroidAssetNode) {
+      blocksArea.addAsset(((YoungAndroidAssetNode) node).getName());
+    }
+  }
+
+
+  @Override
+  public void onProjectNodeRemoved(Project project, ProjectNode node) {
+    if (node instanceof YoungAndroidSourceNode) {
+      blocksArea.removeScreen(((YoungAndroidSourceNode) node).getFormName());
+    } else if (node instanceof YoungAndroidAssetNode) {
+      blocksArea.removeAsset(((YoungAndroidAssetNode) node).getName());
+    }
   }
 
   private static native void set(JavaScriptObject jso, String key, String value)/*-{

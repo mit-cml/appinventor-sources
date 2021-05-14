@@ -81,6 +81,10 @@ Blockly.Blocks.Utilities.YailTypeToBlocklyTypeMap = {
   'key': {
     'input': ['Key'],
     'output': ['String', 'Key']
+  },
+  'enum': {
+    'input': null,
+    'output': ['Key']
   }
 };
 
@@ -94,6 +98,10 @@ Blockly.Blocks.Utilities.INPUT = 'input';
  * @param {Array<string>=} opt_currentType A type array to append, or null.
  */
 Blockly.Blocks.Utilities.YailTypeToBlocklyType = function(yail, inputOrOutput) {
+  if (yail.indexOf('Enum') != -1) {
+    return yail;
+  }
+
   var type = Blockly.Blocks.Utilities
       .YailTypeToBlocklyTypeMap[yail][inputOrOutput];
   if (type === undefined) {
@@ -101,6 +109,55 @@ Blockly.Blocks.Utilities.YailTypeToBlocklyType = function(yail, inputOrOutput) {
   }
   return type;
 };
+
+/**
+ * Returns the blockly type associated with the given helper key, or null if
+ * there is not one.
+ * @param {!HelperKey} helperKey The helper key to find the equivalent blockly
+ *     type of.
+ * @param {!Blockly.Block} block The block which we will apply the type to. Used
+ *     to access the component database etc.
+ * @return {*} Something to add to the components array, or null/undefined.
+ */
+Blockly.Blocks.Utilities.helperKeyToBlocklyType = function(helperKey, block) {
+  if (!helperKey) {
+    return null;
+  }
+  var utils = Blockly.Blocks.Utilities;
+  switch (helperKey.type) {
+    case "OPTION_LIST":
+      return utils.optionListKeyToBlocklyType(helperKey.key, block);
+    case "ASSET":
+      return utils.assetKeyToBlocklyType(helperKey.key, block);
+  }
+  return null;
+}
+
+/**
+ * Returns the blockly type associated with the given option list helper key.
+ * @param {HelperKey} key The key to find the equivalent blockly type of.
+ * @param {!Blockly.Block} block The block which we will apply the type to. Used
+ *     to access the component database etc.
+ * @return {!string} The correct string representation of the type.
+ */
+Blockly.Blocks.Utilities.optionListKeyToBlocklyType = function(key, block) {
+  var optionList = block.getTopWorkspace().getComponentDatabase()
+      .getOptionList(key);
+  return optionList.className + 'Enum';
+}
+
+/**
+ * Returns a filter array associated with the given key. This can be added to
+ * the connections type check. It causes any asset blocks attached to that
+ * connection to filter their dropdowns.
+ * @param {number=} key The key associated with a filter.
+ * @param {!Blockly.Block} block The block to apply the filter to.
+ * @return {Array<!string>=} An array of filters for use in filtering an
+ *     attached assets block.
+ */
+Blockly.Blocks.Utilities.assetKeyToBlocklyType = function(key, block) {
+  return block.getTopWorkspace().getComponentDatabase().getFilter(key);
+}
 
 
 // Blockly doesn't wrap tooltips, so these can get too wide.  We'll create our own tooltip setter

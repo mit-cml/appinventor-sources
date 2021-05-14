@@ -108,7 +108,12 @@ function unboundVariableHandler(myBlock, yailText) {
   var unbound_vars = Blockly.LexicalVariable.freeVariables(myBlock);
   unbound_vars = unbound_vars.toList();
   if (unbound_vars.length == 0) {
-    Blockly.ReplMgr.putYail(yailText, myBlock);
+    try {
+      Blockly.Yail.forRepl = true;
+      Blockly.ReplMgr.putYail(yailText, myBlock);
+    } finally {
+      Blockly.Yail.forRepl = false;
+    }
   } else {
     var form = "<form onsubmit='return false;'>" + Blockly.Msg.DIALOG_ENTER_VALUES + "<br>";
     for (var v in unbound_vars) {
@@ -122,7 +127,12 @@ function unboundVariableHandler(myBlock, yailText) {
           code += '($' + unbound_vars[i] + ' ' + Blockly.Yail.quotifyForREPL(document.querySelector('input[name="' + unbound_vars[i] + '"]').value) + ') ';
         }
         code += ")" + yailText + ")";
-        Blockly.ReplMgr.putYail(code, myBlock);
+        try {
+          Blockly.Yail.forRepl = true;
+          Blockly.ReplMgr.putYail(code, myBlock);
+        } finally {
+          Blockly.Yail.forRepl = false;
+        }
       }
       dialog.hide();
     });
@@ -197,7 +207,13 @@ Blockly.BlocklyEditor.addDoItOption = function(myBlock, options) {
     } else {
       // Blockly.Yail.blockToCode1 returns a string if the block is a statement
       // and an array if the block is a value
-      var yail = Blockly.Yail.blockToCode1(myBlock);
+      var yail;
+      try {
+        Blockly.Yail.forRepl = true;
+        yail = Blockly.Yail.blockToCode1(myBlock);
+      } finally {
+        Blockly.Yail.forRepl = false;
+      }
       unboundVariableHandler(myBlock, (yail instanceof Array) ? yail[0] : yail);
     }
   };
@@ -392,6 +408,8 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
   workspace.rendered = false;
+  workspace.screenList_ = [];
+  workspace.assetList_ = [];
   workspace.componentDb_ = new Blockly.ComponentDatabase();
   workspace.procedureDb_ = new Blockly.ProcedureDatabase(workspace);
   workspace.variableDb_ = new Blockly.VariableDatabase();

@@ -7,11 +7,13 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.MapFeature;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -97,10 +99,20 @@ public class Rectangle extends PolygonBase implements MapRectangle {
 
   @Override
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "Returns the type of the feature. For rectangles, this returns the text "
-          + "\"Rectangle\".")
-  public String Type() {
-    return MapFactory.MapFeatureType.TYPE_RECTANGLE;
+      description = "Returns the type of the feature. For rectangles, this returns "
+          + "MapFeature.Rectangle (\"Rectangle\").")
+  public @Options(MapFeature.class) String Type() {
+    return TypeAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Gets the type of the feature, as a {@link MapFeature} enum.
+   *
+   * @return the abstract MapFeature type of this feature. In this case MapFeature.Rectangle.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public MapFeature TypeAbstract() {
+    return MapFeature.Rectangle;
   }
 
   /**
