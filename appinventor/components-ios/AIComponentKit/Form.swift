@@ -669,7 +669,7 @@ let kMinimumToastWait = 10.0
 
   @objc open var VersionName: String {
     get {
-      return ""  // not used in companion
+      return (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? ""
     }
     set(version) {
       // not used in companion
