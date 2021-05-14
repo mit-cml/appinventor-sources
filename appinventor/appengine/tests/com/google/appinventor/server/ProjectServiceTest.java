@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -103,7 +103,7 @@ public class ProjectServiceTest {
   @Before
   public void setUp() throws Exception {
     helper.setUp();
-    storageIo = StorageIoInstanceHolder.INSTANCE;
+    storageIo = StorageIoInstanceHolder.getInstance();
 
     PowerMock.mockStatic(LocalUser.class);
     localUserMock = PowerMock.createMock(LocalUser.class);
@@ -111,7 +111,7 @@ public class ProjectServiceTest {
     localUserMock.setSessionId("test-session");
     expectLastCall().times(1);
     expect(LocalUser.getInstance()).andReturn(localUserMock).anyTimes();
-    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
+    localUserMock.set(new User("1", "NonSuch", false, false, null));
     expectLastCall().anyTimes();
     KeyczarEncryptor.rootPath.setForTest(KEYSTORE_ROOT_PATH);
   }
@@ -124,7 +124,7 @@ public class ProjectServiceTest {
     projectServiceImpls = Maps.newHashMap();
     projectServiceImpls.put(USER_ID_ONE, projectServiceImpl);
     projectServiceImpls.put(USER_ID_TWO, projectServiceImpl2);
-    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
+    localUserMock.set(new User("1", "NonSuch", false, false, null));
     localUserMock.setSessionId("test-session");
   }
 
@@ -289,7 +289,7 @@ public class ProjectServiceTest {
 
     checkUserProjects(projectServiceImpl.getProjectInfos(),
         new UserProject(yaProject, PROJECT1_NAME,
-            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), 0L, 0L));
+            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), false));
     PowerMock.verifyAll();
   }
 

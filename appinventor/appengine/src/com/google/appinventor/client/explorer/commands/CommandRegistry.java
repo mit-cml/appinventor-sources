@@ -64,6 +64,8 @@ public class CommandRegistry extends MultiRegistry<ProjectNode, CommandRegistry.
     super(ProjectNode.class);
 
     // Files
+    registerCommand(FileNode.class, new ProjectNodeCommand(MESSAGES.previewFileCommand(),
+        Tracking.PROJECT_ACTION_PREVIEW_FILE_YA, new PreviewFileCommand()));
     registerCommand(FileNode.class, new ProjectNodeCommand(MESSAGES.deleteFileCommand(),
         Tracking.PROJECT_ACTION_DELETE_FILE_YA, new DeleteFileCommand()));
     registerCommand(FileNode.class, new ProjectNodeCommand(MESSAGES.downloadFileCommand(),

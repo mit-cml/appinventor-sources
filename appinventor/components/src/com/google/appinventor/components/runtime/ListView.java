@@ -1,13 +1,16 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -16,6 +19,7 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -24,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -35,10 +40,15 @@ import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 /**
- * ListView Component. Non-Visible component to create a ListView in the Screen from a series of
- * elements added from a comma separated set of text elements. It is similar to the ListPicker
- * component but this one is placed on screen instead of opening a new Activity.
- * TOFO(hal): Think about generalizing this to include more than text/
+ * This is a visible component that allows to place a list of text elements in your {@link Form} to
+ * display. The list can be set using the {@link #ElementsFromString(String)} property or using the
+ * {@link #Elements(YailList)} block in the blocks editor.
+ *
+ *   Warning: This component will not work correctly on Screens that are scrollable if its
+ * {@link #Height(int)} is set to Fill Parent.
+ *
+ * @internaldoc
+ * TODO(hal): Think about generalizing this to include more than text.
  * @author halabelson@google.com (Hal Abelson)
  * @author osmidy@mit.edu (Olivier Midy)
  */
@@ -51,7 +61,8 @@ import com.google.appinventor.components.runtime.util.YailList;
     nonVisible = false,
     iconName = "images/listView.png")
 @SimpleObject
-public final class ListView extends AndroidViewComponent implements AdapterView.OnItemClickListener {
+public final class ListView extends AndroidViewComponent implements AdapterView.OnItemClickListener,
+    AdapterView.OnItemSelectedListener {
 
   private static final String LOG_TAG = "ListView";
 
@@ -79,6 +90,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   private int selectionColor;
   private static final int DEFAULT_SELECTION_COLOR = Component.COLOR_LTGRAY;
+  private static final Drawable UNSELECTED_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
+
+  private Drawable selectionDrawable;
+  private View lastSelected;
 
   private int textSize;
   private static final int DEFAULT_TEXT_SIZE = 22;
@@ -95,8 +110,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     SelectionIndex(0);
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
+    view.setOnItemSelectedListener(this);
     view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
     view.setScrollingCacheEnabled(false);
+    view.setSelector(new StateListDrawable()); // Set to empty selector to prevent issues with dynamic highlighting
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -162,7 +179,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-  * Sets the height of the listView on the screen
+  * Specifies the `%type%`'s vertical height, measured in pixels.
   * @param height for height length
   */
   @Override
@@ -176,7 +193,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-  * Sets the width of the listView on the screen
+  * Specifies the horizontal width of the `%type%`, measured in pixels.
   * @param width for width length
   */
   @Override
@@ -190,7 +207,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Sets true or false to determine whether the search filter box is displayed in the ListView
+   * Sets visibility of the filter bar. `true`{:.logic.block} will show the bar,
+   * `false`{:.logic.block} will hide it.
    *
    * @param showFilter set the visibility according to this input
    */
@@ -210,6 +228,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   /**
    * Returns true or false depending on the visibility of the Filter bar element
+   *
+   * @suppressdoc
    * @return true or false (visibility)
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
@@ -219,10 +239,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Set a list of text elements to build a ListView
+   * Specifies the list of choices to display.
    * @param itemsList a YailList containing the strings to be added to the ListView
    */
-  @SimpleProperty(description="List of text elements to show in the ListView.  This will" +
+  @SimpleProperty(description="List of text elements to show in the ListView.  This will " +
                 "signal an error if the elements are not text strings.",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
@@ -233,6 +253,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Elements property getter method
    *
+   * @suppressdoc
    * @return a YailList representing the list of strings to be picked from
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
@@ -241,10 +262,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Specifies the text elements of the ListView.
+   * Set the list of choices from a string of comma-separated values.
    * @param itemstring a string containing a comma-separated list of the strings to be picked from
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA, defaultValue = "")
   @SimpleProperty(description="The TextView elements specified as a string with the " +
       "items separated by commas " +
       "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
@@ -294,7 +315,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Selection index property getter method.
+   * The index of the currently selected item, starting at `1`. If no item is selected, the value
+   * will be `0`. If an attempt is made to set this to a number less than `1` or greater than the
+   * number of items in the `ListView`, `SelectionIndex` will be set to `0`, and
+   * {@link #Selection(String)} will be set to the empty text.
    */
   @SimpleProperty(
       description = "The index of the currently selected item, starting at " +
@@ -309,6 +333,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   /**
    * Sets the index to the passed argument for selection
+   *
+   * @suppressdoc
    * @param index the index to be selected
    */
   @SimpleProperty(description="Specifies the position of the selected item in the ListView. " +
@@ -322,10 +348,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     selectionIndex = ElementsUtil.selectionIndex(index, items);
     // Now, we need to change Selection to correspond to SelectionIndex.
     selection = ElementsUtil.setSelectionFromIndex(index, items);
+
+    updateSelectionIndex();
   }
 
   /**
-  * Returns the text in the ListView at the position set by SelectionIndex
+  * Returns the text in the `ListView` at the position of {@link #SelectionIndex(int)}.
   */
   @SimpleProperty(description="Returns the text last selected in the ListView.",
       category = PropertyCategory
@@ -336,6 +364,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   /**
    * Selection property setter method.
+   *
+   * @suppressdoc
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
@@ -344,6 +374,36 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     selection = value;
     // Now, we need to change SelectionIndex to correspond to Selection.
     selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, items);
+
+    updateSelectionIndex();
+  }
+
+  /**
+   * Action to take after updating selection index.
+   * Handles highlighting the newly updated item.
+   */
+  private void updateSelectionIndex() {
+    if (selectionIndex > 0) {
+      // Store last active view to refocus it later
+      View previousView = container.$form().getCurrentFocus();
+
+      // We need to request focus from the ListView in order for the
+      // drawable changes to apply to the active item view.
+      view.requestFocusFromTouch();
+
+      // Set selection to 0-based index (which will in turn call
+      // the necessary listener)
+      view.setSelection(selectionIndex - 1);
+
+      // Re-focus last view
+      if (previousView != null) {
+        previousView.requestFocus();
+      }
+    } else if (lastSelected != null) {
+        // Un-set selected drawable from the last selected item
+        lastSelected.setBackgroundDrawable(UNSELECTED_DRAWABLE);
+        lastSelected = null;
+      }
   }
 
   /**
@@ -356,12 +416,38 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     this.selection = item.toString();
     this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
 
+    // Un-set drawable from previous last selected item
+    if (lastSelected != null) {
+      lastSelected.setBackgroundDrawable(UNSELECTED_DRAWABLE);
+    }
+
+    // Set selected drawable to current view
+    view.setBackgroundDrawable(selectionDrawable);
+
+    // Update last selected
+    lastSelected = view;
+
     AfterPicking();
   }
 
   /**
+   * Simple event to raise when the component is selected. Implementation of
+   * AdapterView.OnItemSelectedListener.
+   */
+  @Override
+  public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+    // Defer to item click
+    onItemClick(adapterView, view, i, l);
+  }
+
+  @Override
+  public void onNothingSelected(AdapterView<?> adapterView) {
+
+  }
+
+  /**
    * Simple event to be raised after the an element has been chosen in the list.
-   * The selected element is available in the Selection property.
+   * The selected element is available in the {@link #Selection(String)} property.
    */
   @SimpleEvent(description = "Simple event to be raised after the an element has been chosen in the" +
       " list. The selected element is available in the Selection property.")
@@ -393,11 +479,15 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
       description = "The color of the listview background.",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
 
   /**
+   * The color of the `ListView` background.
+   *
+   * @internaldoc
    * Specifies the ListView's background color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
@@ -423,11 +513,15 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * alpha, red, green, and blue components
    */
   @SimpleProperty(description = "The color of the item when it is selected.")
+  @IsColor
   public int SelectionColor() {
     return selectionColor;
   }
 
   /**
+   * The color of the item when it is selected.
+   *
+   * @internaldoc
    * Specifies the ListView's selection color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
@@ -441,9 +535,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void SelectionColor(int argb) {
     selectionColor = argb;
-    view.setSelector(new GradientDrawable(
-      GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb}
-    ));
+    this.selectionDrawable = new GradientDrawable(
+      GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb});
   }
 
   /**
@@ -457,11 +550,15 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
       description = "The text color of the listview items.",
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int TextColor() {
     return textColor;
   }
 
   /**
+   * The text color of the `ListView` items.
+   *
+   * @internaldoc
    * Specifies the ListView item's text color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
@@ -490,7 +587,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Specifies the ListView item's text font size
+   * Specifies the `ListView` item's text font size
    *
    * @param integer value for font size
    */
@@ -504,5 +601,4 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
         textSize = fontSize;
       setAdapterData();
   }
-
 }

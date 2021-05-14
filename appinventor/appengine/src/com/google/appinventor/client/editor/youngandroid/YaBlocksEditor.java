@@ -23,16 +23,28 @@ import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPal
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
@@ -58,7 +70,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * @author sharon@google.com (Sharon Perl) added Blockly functionality
  */
 public final class YaBlocksEditor extends FileEditor
-    implements FormChangeListener, BlockDrawerSelectionListener, ComponentDatabaseChangeListener, BlocklyWorkspaceChangeListener {
+    implements FormChangeListener, BlockDrawerSelectionListener, ComponentDatabaseChangeListener,
+    BlocklyWorkspaceChangeListener, ProjectChangeListener {
 
   // A constant to substract from the total height of the Viewer window, set through
   // the computed height of the user's window (Window.getClientHeight())
@@ -105,8 +118,11 @@ public final class YaBlocksEditor extends FileEditor
   // blocks area again.
   private Set<String> componentUuids = new HashSet<String>();
 
-  // The form editor associated with this blocks editor
+  // The form editor associated with this blocks editor.
   private YaFormEditor myFormEditor;
+
+  // The project associated with this blocks editor.
+  private Project project;
 
   YaBlocksEditor(YaProjectEditor projectEditor, YoungAndroidBlocksNode blocksNode) {
     super(projectEditor, blocksNode);
@@ -155,6 +171,10 @@ public final class YaBlocksEditor extends FileEditor
       palettePanel = null;
       OdeLog.wlog("Can't get form editor for blocks: " + getFileId());
     }
+
+    project = Ode.getInstance().getProjectManager().getProject(blocksNode.getProjectId());
+    project.addProjectChangeListener(this);
+    onProjectLoaded(project);
   }
 
   // FileEditor methods
@@ -265,8 +285,10 @@ public final class YaBlocksEditor extends FileEditor
   public void onClose() {
     // our partner YaFormEditor added us as a FormChangeListener, but we remove ourself.
     getForm().removeFormChangeListener(this);
+    project.removeProjectChangeListener(this);
     BlockSelectorBox.getBlockSelectorBox().removeBlockDrawerSelectionListener(this);
     formToBlocksEditor.remove(fullFormName);
+
   }
 
   public static void toggleWarning() {
@@ -312,9 +334,12 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   public synchronized void sendComponentData() {
+    sendComponentData(false);
+  }
+
+  public synchronized void sendComponentData(boolean force) {
     try {
-      blocksArea.sendComponentData(myFormEditor.encodeFormAsJsonString(true),
-        packageNameFromPath(getFileId()));
+      blocksArea.sendComponentData(myFormEditor.encodeFormAsJsonString(true), packageNameFromPath(getFileId()), force);
     } catch (YailGenerationException e) {
       e.printStackTrace();
     }
@@ -365,21 +390,21 @@ public final class YaBlocksEditor extends FileEditor
     for (int i = 0; i < blockElements.getLength(); ++i) {
       Element blockElem = (Element) blockElements.item(i);
       String blockType = blockElem.getAttribute("type");
-      if (blockType == "component_event") {
+      if ("component_event".equals(blockType)) {
         Element mutElem = (Element) blockElem.getElementsByTagName("mutation").item(0);
         String component_type = mutElem.getAttribute("component_type");
         String event_name = mutElem.getAttribute("event_name");
         Set<String> blockTypes = componentBlocks.get(component_type) == null ? new HashSet<String>() : componentBlocks.get(component_type);
         blockTypes.add(event_name);
         componentBlocks.put(component_type, blockTypes);
-      } else if (blockType == "component_method") {
+      } else if ("component_method".equals(blockType)) {
         Element mutElem = (Element) blockElem.getElementsByTagName("mutation").item(0);
         String component_type = mutElem.getAttribute("component_type");
         String method_name = mutElem.getAttribute("method_name");
         Set<String> blockTypes = componentBlocks.get(component_type) == null ? new HashSet<String>() : componentBlocks.get(component_type);
         blockTypes.add(method_name);
         componentBlocks.put(component_type, blockTypes);
-      } else if (blockType == "component_set_get") {
+      } else if ("component_set_get".equals(blockType)) {
         Element mutElem = (Element) blockElem.getElementsByTagName("mutation").item(0);
         String component_type = mutElem.getAttribute("component_type");
         String property_name = mutElem.getAttribute("property_name");
@@ -586,7 +611,7 @@ public final class YaBlocksEditor extends FileEditor
   private void updateSourceStructureExplorer() {
     MockForm form = getForm();
     if (form != null) {
-      updateBlocksTree(form, form.getSelectedComponent().getSourceStructureExplorerItem());
+      updateBlocksTree(form, form.getLastSelectedComponent().getSourceStructureExplorerItem());
     }
   }
 
@@ -630,8 +655,8 @@ public final class YaBlocksEditor extends FileEditor
    * Start up the Repl (call into the Blockly.ReplMgr via the BlocklyPanel.
    */
   @Override
-  public void startRepl(boolean alreadyRunning, boolean forEmulator, boolean forUsb) {
-    blocksArea.startRepl(alreadyRunning, forEmulator, forUsb);
+  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb) {
+    blocksArea.startRepl(alreadyRunning, forChromebook, forEmulator, forUsb);
   }
 
   /*
@@ -640,6 +665,11 @@ public final class YaBlocksEditor extends FileEditor
   public void hardReset() {
     blocksArea.hardReset();
   }
+
+  /*
+   * Perform a hideChaff of Blockly
+   */
+  public void hideChaff () {blocksArea.hideChaff();}
 
   // Static Function. Find the associated editor for formName and
   // set its "damaged" bit. This will cause the editor manager's scheduleAutoSave
@@ -697,8 +727,166 @@ public final class YaBlocksEditor extends FileEditor
     blocksArea.makeActive();
   }
 
+  @Override
+  public void onProjectLoaded(Project project) {
+    for (ProjectNode node : project.getRootNode().getAllSourceNodes()) {
+      if (node instanceof YoungAndroidFormNode) {
+        blocksArea.addScreen(((YoungAndroidSourceNode) node).getFormName());
+      }
+    }
+    YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode())
+        .getAssetsFolder();
+    for (ProjectNode node : assetsFolder.getChildren()) {
+      blocksArea.addAsset(((YoungAndroidAssetNode) node).getName());
+    }
+  }
+
+  @Override
+  public void onProjectNodeAdded(Project project, ProjectNode node) {
+    if (node instanceof YoungAndroidSourceNode) {
+      blocksArea.addScreen(((YoungAndroidSourceNode) node).getFormName());
+    } else if (node instanceof YoungAndroidAssetNode) {
+      blocksArea.addAsset(((YoungAndroidAssetNode) node).getName());
+    }
+  }
+
+
+  @Override
+  public void onProjectNodeRemoved(Project project, ProjectNode node) {
+    if (node instanceof YoungAndroidSourceNode) {
+      blocksArea.removeScreen(((YoungAndroidSourceNode) node).getFormName());
+    } else if (node instanceof YoungAndroidAssetNode) {
+      blocksArea.removeAsset(((YoungAndroidAssetNode) node).getName());
+    }
+  }
+
+  private static native void set(JavaScriptObject jso, String key, String value)/*-{
+    jso[key] = value;
+  }-*/;
+
+  /**
+   * Converts a Java Map from String to String into a JSON object with the same contents.
+   * @param javaMap The source mapping in Java
+   * @return A JSON object with the same key-value mapping as {@code javaMap}
+   */
+  public static JavaScriptObject toJSO(Map<String, String> javaMap) {
+    JavaScriptObject jso = JavaScriptObject.createObject();
+    for (Map.Entry<String, String> entry : javaMap.entrySet()) {
+      set(jso, entry.getKey(), entry.getValue());
+    }
+    return jso;
+  }
+
+  /**
+   *
+   * @param array
+   * @return
+   */
+  public static JsArrayString toJsArrayString(JSONArray array) {
+    JsArrayString result = (JsArrayString) JsArrayString.createArray();
+    for (JSONValue v : array.getElements()) {
+      result.push(v.asString().getString());
+    }
+    return result;
+  }
+
+  public native void pasteFromJSNI(JavaScriptObject componentSubstitutionMap, JsArrayString blocks)/*-{
+    var workspace = this.@com.google.appinventor.client.editor.youngandroid.YaBlocksEditor::blocksArea.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
+    if (Blockly.Events.isEnabled()) {
+      Blockly.Events.setGroup(true);
+    }
+    blocks.forEach(function(blockXml) {
+      var dom = Blockly.Xml.textToDom(blockXml);
+      var mutations = dom.getElementsByTagName('mutation');
+      for (var i = 0; i < mutations.length; i++) {
+        var mutation = mutations[i];
+        var instanceName = mutation.getAttribute('instance_name');
+        if (instanceName && instanceName in componentSubstitutionMap) {
+          mutation.setAttribute('instance_name', componentSubstitutionMap[instanceName]);
+        }
+      }
+      var fields = dom.getElementsByTagName('field');
+      for (var i = 0; i < fields.length; i++) {
+        var field = fields[i];
+        if (field.getAttribute('name') === 'COMPONENT_SELECTOR') {
+          if (field.textContent in componentSubstitutionMap) {
+            field.firstChild.nodeValue = componentSubstitutionMap[field.textContent];
+          }
+        }
+      }
+      try {
+        var block = Blockly.Xml.domToBlock(dom.firstElementChild, workspace);
+        var blockX = parseInt(dom.firstElementChild.getAttribute('x'), 10);
+        var blockY = parseInt(dom.firstElementChild.getAttribute('y'), 10);
+        if (!isNaN(blockX) && !isNaN(blockY)) {
+          if (workspace.RTL) {
+            blockX = -blockX;
+          }
+          // Offset block until not clobbering another block and not in connection
+          // distance with neighbouring blocks.
+          do {
+            var collide = false;
+            var allBlocks = workspace.getAllBlocks();
+            for (var i = 0, otherBlock; otherBlock = allBlocks[i]; i++) {
+              var otherXY = otherBlock.getRelativeToSurfaceXY();
+              if (Math.abs(blockX - otherXY.x) <= 1 &&
+                Math.abs(blockY - otherXY.y) <= 1) {
+                collide = true;
+                break;
+              }
+            }
+            if (!collide) {
+              // Check for blocks in snap range to any of its connections.
+              var connections = block.getConnections_(false);
+              for (var i = 0, connection; connection = connections[i]; i++) {
+                var neighbour = connection.closest(Blockly.SNAP_RADIUS,
+                  new goog.math.Coordinate(blockX, blockY));
+                if (neighbour.connection) {
+                  collide = true;
+                  break;
+                }
+              }
+            }
+            if (collide) {
+              if (workspace.RTL) {
+                blockX -= Blockly.SNAP_RADIUS;
+              } else {
+                blockX += Blockly.SNAP_RADIUS;
+              }
+              blockY += Blockly.SNAP_RADIUS * 2;
+            }
+          } while (collide);
+          block.moveBy(blockX, blockY);
+        }
+        if (workspace.rendered) {
+          block.initSvg();
+          workspace.requestRender(block);
+        }
+      } catch(e) {
+        console.log(e);
+      }
+    });
+    if (Blockly.Events.isEnabled()) {
+      Blockly.Events.setGroup(false);
+    }
+  }-*/;
+
+  public native JsArrayString getTopBlocksForComponentByName(String name)/*-{
+    var workspace = this.@com.google.appinventor.client.editor.youngandroid.YaBlocksEditor::blocksArea.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
+    var topBlocks = workspace.getTopBlocks();
+    var result = [];
+    for (var i = 0, block; block = topBlocks[i]; i++) {
+      if (block.instanceName === name) {
+        result.push('<xml>' + Blockly.Xml.domToText(Blockly.Xml.blockToDomWithXY(block)) + '</xml>');
+      }
+    }
+    return result;
+  }-*/;
+
   public static native void resendAssetsAndExtensions()/*-{
-    if (top.ReplState && top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED) {
+    if (top.ReplState && (top.ReplState.state == Blockly.ReplMgr.rsState.CONNECTED ||
+                          top.ReplState.state == Blockly.ReplMgr.rsState.EXTENSIONS ||
+                          top.ReplState.state == Blockly.ReplMgr.rsState.ASSET)) {
       Blockly.ReplMgr.resendAssetsAndExtensions();
     }
   }-*/;

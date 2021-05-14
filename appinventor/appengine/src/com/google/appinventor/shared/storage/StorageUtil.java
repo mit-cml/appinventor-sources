@@ -103,10 +103,12 @@ public class StorageUtil {
 
   /**
    * Returns the content type for the given filePath.
+   * References support media files listed at http://developer.android.com/guide/appendix/media-formats.html
    */
   public static String getContentTypeForFilePath(String filePath) {
     filePath = filePath.toLowerCase();
 
+    // Image File Types
     if (filePath.endsWith(".gif")) {
       return "image/gif";
     }
@@ -116,10 +118,72 @@ public class StorageUtil {
     if (filePath.endsWith(".png")) {
       return "image/png";
     }
+    if (filePath.endsWith(".bmp")) {
+      return "image/bmp";
+    }
+    if (filePath.endsWith(".webp")) {
+      return "image/webp";
+    }
     if (filePath.endsWith(".svg")) {
       return "image/svg+xml";
     }
 
+    // Audio File Types
+    if (filePath.endsWith(".mp3")) {
+      return "audio/mp3";
+    }
+    if (filePath.endsWith(".m4a")) {
+      return "audio/m4a";
+    }
+    if (filePath.endsWith(".aac")) {
+      return "audio/aac";
+    }
+    if (filePath.endsWith(".wav")) {
+      return "audio/wav";
+    }
+    if (filePath.endsWith(".flac")) {
+      return "audio/flac";
+    }
+    if (filePath.endsWith(".mid") || filePath.endsWith(".xmf") || filePath.endsWith(".mxmf")) {
+      return "audio/midi";
+    }
+    if (filePath.endsWith(".ota")) {
+      return "audio/ota";
+    }
+    if (filePath.endsWith(".rtttl")) {
+      return "audio/rtttl";
+    }
+    if (filePath.endsWith(".rtx")) {
+      return "audio/rtx";
+    }
+    if (filePath.endsWith(".imy")) {
+      return "audio/imy";
+    }
+    if (filePath.endsWith(".ogg")) {
+      return "audio/ogg";
+    }
+
+    // Video File Types
+    if (filePath.endsWith(".avi")) {
+      return "video/avi";
+    }
+    if (filePath.endsWith(".mp4")) {
+      return "video/mp4";
+    }
+    if (filePath.endsWith(".3gp")) {
+      return "video/3gp";
+    }
+    if (filePath.endsWith(".ts")) {
+      return "video/ts";
+    }
+    if (filePath.endsWith(".webm")) {
+      return "video/webm";
+    }
+    if (filePath.endsWith(".mkv")) {
+      return "video/mkv";
+    }
+
+    // Other File Types
     if (filePath.endsWith(".apk")) {
       return "application/vnd.android.package-archive";
     }
@@ -150,6 +214,22 @@ public class StorageUtil {
   public static boolean isTextFile(String filePath) {
     String contentType = getContentTypeForFilePath(filePath);
     return contentType.startsWith("text/");
+  }
+
+  /**
+   * Returns true if the given filePath refers an audio file.
+   */
+  public static boolean isAudioFile(String filePath) {
+    String contentType = getContentTypeForFilePath(filePath);
+    return contentType.startsWith("audio/");
+  }
+
+  /**
+   * Returns true if the given filePath refers a video file.
+   */
+  public static boolean isVideoFile(String filePath) {
+    String contentType = getContentTypeForFilePath(filePath);
+    return contentType.startsWith("video/");
   }
 
   /**

@@ -8,18 +8,23 @@ package com.google.appinventor.components.scripts;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.SimpleBroadcastReceiver;
+import com.google.appinventor.components.annotations.UsesActivityMetadata;
+import com.google.appinventor.components.annotations.UsesApplicationMetadata;
 import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesNativeLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.annotations.UsesActivities;
 import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
+import com.google.appinventor.components.annotations.UsesContentProviders;
+import com.google.appinventor.components.annotations.UsesServices;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
 import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
 import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
@@ -27,6 +32,11 @@ import com.google.appinventor.components.annotations.androidmanifest.MetaDataEle
 import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
 import com.google.appinventor.components.annotations.androidmanifest.DataElement;
 import com.google.appinventor.components.annotations.androidmanifest.CategoryElement;
+import com.google.appinventor.components.annotations.androidmanifest.ServiceElement;
+import com.google.appinventor.components.annotations.androidmanifest.ProviderElement;
+import com.google.appinventor.components.annotations.androidmanifest.PathPermissionElement;
+import com.google.appinventor.components.annotations.androidmanifest.GrantUriPermissionElement;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -35,21 +45,31 @@ import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.io.Writer;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.AnnotationValueVisitor;
@@ -66,10 +86,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor7;
 import javax.lang.model.util.Types;
-
-import java.lang.annotation.Annotation;
-
-import java.lang.reflect.InvocationTargetException;
 
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
@@ -111,8 +127,10 @@ import javax.tools.StandardLocation;
 public abstract class ComponentProcessor extends AbstractProcessor {
   private static final String OUTPUT_PACKAGE = "";
 
-  public static final String MISSING_SIMPLE_PROPERTY_ANNOTATION =
+  private static final String MISSING_SIMPLE_PROPERTY_ANNOTATION =
       "Designer property %s does not have a corresponding @SimpleProperty annotation.";
+  private static final String BOXED_TYPE_ERROR =
+      "Found use of boxed type %s. Please use the primitive type %s instead";
 
   // Returned by getSupportedAnnotationTypes()
   private static final Set<String> SUPPORTED_ANNOTATION_TYPES = ImmutableSet.of(
@@ -132,7 +150,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       "com.google.appinventor.components.annotations.UsesNativeLibraries",
       "com.google.appinventor.components.annotations.UsesActivities",
       "com.google.appinventor.components.annotations.UsesBroadcastReceivers",
-      "com.google.appinventor.components.annotations.UsesPermissions");
+      "com.google.appinventor.components.annotations.UsesPermissions",
+      "com.google.appinventor.components.annotations.UsesServices",
+      "com.google.appinventor.components.annotations.UsesContentProviders");
 
   // Returned by getRwString()
   private static final String READ_WRITE = "read-write";
@@ -145,6 +165,21 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   private static final String ARM64_V8A_SUFFIX = "-v8a";
   // Must match buildserver.compiler.X86_64_SUFFIX
   private static final String X86_64_SUFFIX = "-x8a";
+
+  private static final String TYPE_PLACEHOLDER = "%type%";
+
+  private static final Map<String, String> BOXED_TYPES = new HashMap<>();
+
+  static {
+    BOXED_TYPES.put("java.lang.Boolean", "boolean");
+    BOXED_TYPES.put("java.lang.Byte", "byte");
+    BOXED_TYPES.put("java.lang.Char", "char");
+    BOXED_TYPES.put("java.lang.Short", "short");
+    BOXED_TYPES.put("java.lang.Integer", "int");
+    BOXED_TYPES.put("java.lang.Long", "long");
+    BOXED_TYPES.put("java.lang.Float", "float");
+    BOXED_TYPES.put("java.lang.Double", "double");
+  }
 
   // The next two fields are set in init().
   /**
@@ -174,6 +209,19 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    */
   protected final SortedMap<String, ComponentInfo> components = Maps.newTreeMap();
 
+  /**
+   * Information about every option list helper block. Keys are simple names, and values are the
+   * corresponding {@link ComponentProcessor.OptionList} objects. This is constructed as a side
+   * effect of {@link #process} for use in {@link #outputResults()}.
+   */
+  protected final Map<String, OptionList> optionLists = Maps.newTreeMap();
+
+  /**
+   * A list of asset filters, which are in fact lists of strings. This gets intialized with an empty
+   * filter by the ComponentProcessor constructor.
+   */
+  protected List<List<String>> filters;
+
   private final List<String> componentTypes = Lists.newArrayList();
 
   /**
@@ -183,46 +231,75 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    */
   private final Set<String> visitedTypes = new HashSet<>();
 
+  public ComponentProcessor() {
+    filters = new ArrayList<List<String>>();
+    filters.add(new ArrayList<String>());
+  }
+
   /**
-   * Represents a parameter consisting of a name and a type.  The type is a
-   * String representation of the java type, such as "int", "double", or
-   * "java.lang.String".
+   * Represents a parameter consisting of a name and a type.
    */
-  protected final class Parameter {
+  protected final class Parameter implements Cloneable {
     /**
      * The parameter name
      */
     protected final String name;
 
     /**
-     * The parameter's Java type, such as "int" or "java.lang.String".
+     * The parameter's Java type, such as int or java.lang.String.
      */
-    protected final String type;
+    protected final TypeMirror type;
+
+    /**
+     * Indicate whether this parameter is an integer that represents a color.
+     */
+    protected final boolean color;
+
+    /**
+     * The helper key associated with this parameter, if any.
+     */
+    protected HelperKey helper;
 
     /**
      * Constructs a Parameter.
      *
      * @param name the parameter name
-     * @param type the parameter's Java type (such as "int" or "java.lang.String")
+     * @param type the parameter's Java type (such as int or java.lang.String)
      */
-    protected Parameter(String name, String type) {
+    protected Parameter(String name, TypeMirror type) {
+      this(name, type, false);
+    }
+
+    protected Parameter(String name, TypeMirror type, boolean color) {
       this.name = name;
       this.type = type;
+      this.color = color;
+      // helper is null by default.
     }
 
     /**
-     * Provides a Yail type for a given parameter type.  This is useful because
-     * the parameter types used for {@link Event} are Simple types (e.g.,
-     * "Single"), while the parameter types used for {@link Method} are
-     * Java types (e.g., "int".
-     *
-     * @param parameter a parameter
-     * @return the string representation of the corresponding Yail type
+     * Returns the HelperKey associated with this parameter, if one exists. Null otherwise.
+     * @return the HelperKey associated with this parameter.
+     */
+    protected HelperKey getHelperKey() {
+      return helper;
+    }
+
+    /**
+     * Returns the string representation of the Yail type for this parameter.
+     * @return the string representation of the Yail type for this parameter.
      * @throws RuntimeException if {@code parameter} does not have a
      *         corresponding Yail type
      */
-    protected String parameterToYailType(Parameter parameter) {
+    protected String getYailType() {
       return javaTypeToYailType(type);
+    }
+
+    @Override
+    public Parameter clone() {
+      Parameter param = new Parameter(name, type, color);
+      param.helper = helper;
+      return param;
     }
   }
 
@@ -230,18 +307,144 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * Represents a component feature that has a name and a description.
    */
   protected abstract static class Feature {
+    private static final Pattern AT_SIGN = Pattern.compile("[^\\\\]@");
+    private static final Pattern LINK_FORM = Pattern.compile("\\{@link ([A-Za-z]*#?)([A-Za-z]*)[^}]*}");
+    private static final Pattern CODE_FORM = Pattern.compile("\\{@code ([^}]*)}");
+
+    private final String featureType;
     protected final String name;
     protected String description;
+    protected boolean defaultDescription = false;
+    protected String longDescription;
+    protected boolean userVisible;
+    protected boolean deprecated;
 
-    protected Feature(String name, String description, String featureType) {
+    protected Feature(String name, String description, String longDescription, String featureType,
+        boolean userVisible, boolean deprecated) {
+      this.featureType = featureType;
       this.name = name;
+      setDescription(description);
+      setLongDescription(longDescription);
+      this.userVisible = userVisible;
+      this.deprecated = deprecated;
+    }
+
+    public boolean isDefaultDescription() {
+      return defaultDescription;
+    }
+
+    public void setDescription(String description) {
       if (description == null || description.isEmpty()) {
         this.description = featureType + " for " + name;
+        defaultDescription = true;
       } else {
         // Throw out the first @ or { and everything after it,
         // in order to strip out @param, @author, {@link ...}, etc.
         this.description = description.split("[@{]")[0].trim();
+        defaultDescription = false;
       }
+    }
+
+    public void setLongDescription(String longDescription) {
+      if (longDescription == null || longDescription.isEmpty()) {
+        this.longDescription = this.description;
+      } else if (longDescription.contains("@suppressdoc")) {
+        this.longDescription = "";
+      } else {
+        this.longDescription = longDescription;
+      }
+      // Handle links
+      Matcher linkMatcher = LINK_FORM.matcher(this.longDescription);
+      StringBuffer sb = new StringBuffer();
+      int lastEnd = 0;
+      while (linkMatcher.find(lastEnd)) {
+        sb.append(this.longDescription, lastEnd, linkMatcher.start());
+        String clazz = linkMatcher.group(1);
+        if (clazz.endsWith("#")) {
+          clazz = clazz.substring(0, clazz.length() - 1);
+        }
+        if ("Form".equals(clazz)) {
+          clazz = "Screen";
+        }
+        String func = linkMatcher.group(2);
+        sb.append("[");
+        if (!clazz.isEmpty()) {
+          sb.append("`");
+          sb.append(clazz);
+          sb.append("`");
+          if (!func.isEmpty()) {
+            sb.append("'s ");
+          }
+        }
+        if (!func.isEmpty()) {
+          sb.append("`");
+          sb.append(func);
+          sb.append("`");
+        }
+        sb.append("](#");
+        if (clazz.isEmpty()) {
+          sb.append("%type%.");
+        } else {
+          sb.append(clazz);
+          if (!func.isEmpty()) {
+            sb.append(".");
+          }
+        }
+        if (!func.isEmpty()) {
+          sb.append(func);
+        }
+        sb.append(")");
+        lastEnd = linkMatcher.end();
+      }
+      sb.append(this.longDescription.substring(lastEnd));
+      this.longDescription = sb.toString();
+      // Map {@code foo} to `foo`
+      sb = new StringBuffer();
+      Matcher codeMatcher = CODE_FORM.matcher(this.longDescription);
+      lastEnd = 0;
+      while (codeMatcher.find(lastEnd)) {
+        sb.append(this.longDescription, lastEnd, codeMatcher.start());
+        sb.append("`");
+        sb.append(codeMatcher.group(1));
+        sb.append("`");
+        lastEnd = codeMatcher.end();
+      }
+      sb.append(this.longDescription.substring(lastEnd));
+      this.longDescription = sb.toString();
+      // Strip out the Javadoc annotations (@param, etc.) for end-user documentation
+      Matcher m = AT_SIGN.matcher(this.longDescription);
+      if (m.find()) {
+        this.longDescription = this.longDescription.substring(0, m.start() + 1);
+      }
+      // Replace escaped @ with just @, e.g., so we can use @ in email address examples.
+      this.longDescription = this.longDescription.replaceAll("\\\\@", "@").trim();
+    }
+
+    public String getLongDescription(ComponentInfo component) {
+      if (longDescription == null || longDescription.isEmpty()) {
+        return description;
+      }
+      String name = component.name.equals("Form") ? "Screen" : component.name;
+      return longDescription.replaceAll("%type%", name).trim();
+    }
+
+    /**
+     * Returns whether this property is visible in the Blocks Editor, as retrieved
+     * from {@link SimpleProperty#userVisible()}.
+     *
+     * @return whether the property is visible in the Blocks Editor
+     */
+    protected boolean isUserVisible() {
+      return userVisible;
+    }
+
+    /**
+     * Returns whether this property is deprecated in the Blocks Editor.
+     *
+     * @return whether the property is visible in the Blocks Editor
+     */
+    protected boolean isDeprecated() {
+      return deprecated;
     }
   }
 
@@ -252,19 +455,19 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   protected abstract class ParameterizedFeature extends Feature {
     // Inherits name, description
     protected final List<Parameter> parameters;
-    protected final boolean userVisible;
-    protected final boolean deprecated; // [lyn, 2015/12/29] added
 
-    protected ParameterizedFeature(String name, String description, String feature,
-        boolean userVisible, boolean deprecated) {
-      super(name, description, feature);
-      this.userVisible = userVisible;
-      this.deprecated = deprecated;
+    protected ParameterizedFeature(String name, String description, String longDescription,
+        String feature, boolean userVisible, boolean deprecated) {
+      super(name, description, longDescription, feature, userVisible, deprecated);
       parameters = Lists.newArrayList();
     }
 
-    protected void addParameter(String name, String type) {
-      parameters.add(new Parameter(name, type));
+    /**
+     * Adds the given parameter to this ParameterizedFeature.
+     * @param param The parameter to add to this ParameterizedFeature.
+     */
+    protected void addParameter(Parameter param) {
+      parameters.add(param);
     }
 
     /**
@@ -279,7 +482,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       StringBuilder sb = new StringBuilder();
       int count = 0;
       for (Parameter param : parameters) {
-        sb.append(param.parameterToYailType(param));
+        sb.append(param.getYailType());
         sb.append(" ");
         sb.append(param.name);
         if (++count != parameters.size()) {
@@ -297,15 +500,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       implements Cloneable, Comparable<Event> {
     // Inherits name, description, and parameters
 
-    protected Event(String name, String description, boolean userVisible, boolean deprecated) {
-      super(name, description, "Event", userVisible, deprecated);
+    protected Event(String name, String description, String longDescription, boolean userVisible, boolean deprecated) {
+      super(name, description, longDescription, "Event", userVisible, deprecated);
     }
 
     @Override
     public Event clone() {
-      Event that = new Event(name, description, userVisible, deprecated);
+      Event that = new Event(name, description, longDescription, userVisible, deprecated);
       for (Parameter p : parameters) {
-        that.addParameter(p.name, p.type);
+        that.addParameter(p.clone());
       }
       return that;
     }
@@ -322,25 +525,71 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    */
   protected final class Method extends ParameterizedFeature
       implements Cloneable, Comparable<Method> {
-    // Inherits name, description, and parameters
-    private String returnType;
+    /**
+     * The method's Java return type. Null if the method is a void method.
+     */
+    private TypeMirror returnType;
+    /**
+     * The helper key associated with this method's return type.
+     */
+    private HelperKey returnHelperKey;
+    /**
+     * Indicate whether this method's return type an integer that represents a
+     * color.
+     */
+    private boolean color;
 
-    protected Method(String name, String description, boolean userVisible, boolean deprecated) {
-      super(name, description, "Method", userVisible, deprecated);
-      // returnType defaults to null
+    protected Method(String name, String description, String longDescription, boolean userVisible,
+        boolean deprecated) {
+      super(name, description, longDescription, "Method", userVisible, deprecated);
     }
 
+    /**
+     * Returns the string representation of this method's Java return type, or null of this method
+     * is a void method.
+     */
     protected String getReturnType() {
-      return returnType;
+      if (returnType != null) {
+        return returnType.toString();
+      }
+      return null;
+    }
+
+    /**
+     * Returns this method's Yail return type (e.g., "number", "text", "list", etc).
+     * @return the method's Yail return type.
+     */
+    protected String getYailReturnType() {
+      return javaTypeToYailType(returnType);
+    }
+
+    /**
+     * Returns the HelperKey associated with the return type of this method, if one exists. Null
+     * otherwise.
+     * 
+     * @return the helper key associated with the return type of this method.
+     */
+    protected HelperKey getReturnHelperKey() {
+      return returnHelperKey;
+    }
+
+    /**
+     * Returns true if this method's return type is an integer which represents a color.
+     * 
+     * @return true if this method's return type is an integer which represents a color.
+     */
+    protected boolean isColor() {
+      return color;
     }
 
     @Override
     public Method clone() {
-      Method that = new Method(name, description, userVisible, deprecated);
+      Method that = new Method(name, description, longDescription, userVisible, deprecated);
       for (Parameter p : parameters) {
-        that.addParameter(p.name, p.type);
+        that.addParameter(p.clone());
       }
       that.returnType = returnType;
+      that.returnHelperKey = returnHelperKey;
       return that;
     }
 
@@ -354,35 +603,34 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * Represents an App Inventor component property (annotated with
    * {@link SimpleProperty}).
    */
-  protected static final class Property implements Cloneable {
+  protected final class Property extends Feature implements Cloneable {
     protected final String name;
-    private String description;
     private PropertyCategory propertyCategory;
-    private boolean userVisible;
-    private boolean deprecated;
-    private String type;
+    private TypeMirror type;
     private boolean readable;
     private boolean writable;
     private String componentInfoName;
+    private boolean color;
+    private HelperKey helper;
 
-    protected Property(String name, String description,
-                       PropertyCategory category, boolean userVisible, boolean deprecated) {
-      this.name = name;
-      this.description = description;
+    protected Property(String name, String description, String longDescription,
+        PropertyCategory category, boolean userVisible, boolean deprecated) {
+      super(name, description, longDescription, "Property", userVisible, deprecated);
       this.propertyCategory = category;
-      this.userVisible = userVisible;
-      this.deprecated = deprecated;
-      // type defaults to null
-      // readable and writable default to false
+      this.name = name;
+      // All other properties can be left as their defaults.
     }
 
     @Override
     public Property clone() {
-      Property that = new Property(name, description, propertyCategory, userVisible, deprecated);
+      Property that = new Property(name, description, longDescription, propertyCategory,
+          isUserVisible(), isDeprecated());
       that.type = type;
       that.readable = readable;
       that.writable = writable;
       that.componentInfoName = componentInfoName;
+      that.color = color;
+      that.helper = helper;
       return that;
     }
 
@@ -413,31 +661,22 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
 
     /**
-     * Returns whether this property is visible in the Blocks Editor, as retrieved
-     * from {@link SimpleProperty#userVisible()}.
-     *
-     * @return whether the property is visible in the Blocks Editor
-     */
-    protected boolean isUserVisible() {
-      return userVisible;
-    }
-
-    /**
-     * Returns whether this property is deprecated in the Blocks Editor.
-     *
-     * @return whether the property is visible in the Blocks Editor
-     */
-    protected boolean isDeprecated() {
-      return deprecated;
-    }
-
-    /**
-     * Returns this property's Java type (e.g., "int", "double", or "java.lang.String").
-     *
-     * @return the feature's Java type
+     * Returns the string representaiton of this property's java type.
+     * 
+     * @return the string representaiton of this property's java type.
      */
     protected String getType() {
-      return type;
+      // Type should always be non-null.
+      return type.toString();
+    }
+
+    /**
+     * Returns this property's Yail type (e.g., "number", "text", "list", etc).
+     * 
+     * @return this property's Yail type (e.g., "number", "text", "list", etc).
+     */
+    protected String getYailType() {
+      return javaTypeToYailType(type);
     }
 
     /**
@@ -456,6 +695,18 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected boolean isWritable() {
       return writable;
+    }
+
+    protected boolean isColor() {
+      return color;
+    }
+
+    /**
+     * Returns the HelperKey associated with this property, if one exists. Null otherwise.
+     * @return the HelperKey associated with this property, if one exists.
+     */
+    protected HelperKey getHelperKey() {
+      return helper;
     }
 
     /**
@@ -484,6 +735,244 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   }
 
   /**
+   * An enum specifying the available types of helper blocks aka types of helper UI.
+   * Currently the only type of helper UI is an OPTION_LIST which defines a dropdown UI in the
+   * blocks editor. This is associated with the OptionList data type, ie OptionList data always has
+   * an OPTION_LIST style UI in the blocks editor (as of now).
+   */
+  protected enum HelperType { OPTION_LIST, ASSET }
+
+  /**
+   * A key that allows you to access info about a helper block.
+   * 
+   * <p>This class could be generic, and we could use subtyping to define the different HelperTypes
+   * but I (Beka) think it makes more sense to make this closely match the JavaScript
+   * implementation.
+   */
+  protected static final class HelperKey {
+    private final HelperType helperType;
+
+    private final Object key;
+
+    /**
+     * Creates a HelperKey which can be used to access data about a helper block.
+     */
+    protected HelperKey(HelperType type, Object key) {
+      this.helperType = type;
+      this.key = key;
+    }
+
+    /**
+     * Returns the type of helper block, aka the type of helper UI. Eg an option list.
+     * @return the type of helper block.
+     */
+    protected HelperType getType() {
+      return helperType;
+    }
+
+    /**
+     * Returns the key to the specific helper data. Eg in the case of an option list helper, this
+     * key could be used to look up values in the optionLists Map.
+     * If the helper block doesn't need any special data, this can just return null.
+     * @return key to the helper data.
+     */
+    protected Object getKey() {
+      return key;
+    }
+  }
+
+
+  /**
+   * Represents a list of Options associated with some (enum) class. The data in this OptionList
+   * is used to create OptionList helper blocks.
+   * 
+   * <p>Here JSON-ified example of such data, in this case we are looking at the Direction enum with
+   * a default value of East.
+   * {
+   *   "className": "com.google.appinventor.components.common.Direction",
+   *   "key": "Direction",
+   *   "tag": "Direction",
+   *   "defaultOpt": "East",
+   *   "underlyingType": "java.lang.Integer",
+   *   "options": [
+   *     { "name": "North", "value": "1", "description": "Option for North",
+   *       "deprecated": "false" },
+   *     { "name": "Northeast", "value": "2", "description": "Option for Northeast",
+   *       "deprecated": "false" },
+   *     { "name": "East", "value": "3", "description": "Option for East",
+   *       "deprecated": "false" },
+   *     { "name": "Southeast", "value": "4", "description": "Option for Southeast",
+   *       "deprecated": "false" },
+   *     { "name": "South", "value": "-1", "description": "Option for South",
+   *       "deprecated": "false" },
+   *     { "name": "Southwest", "value": "-2", "description": "Option for Southwest",
+   *       "deprecated": "false" },
+   *     { "name": "West", "value": "-3", "description": "Option for West",
+   *       "deprecated": "false" },
+   *     { "name": "Northwest", "value": "-4", "description": "Option for Northwest",
+   *       "deprecated": "false" }
+       ]
+   * }
+   */
+  protected final class OptionList {
+    /**
+     * A list of option values (Strings) and option info (Options).
+     * For built-in components the Option name is used to look up the translated display text.
+     * For extensions, which do not support i18n, the Option name /is/ the display text.
+     */
+    private final ArrayList<Option> options;
+
+    /**
+     * The fully qualified class name this OptionList is associated with.
+     */
+    private final String className;
+
+    /**
+     * The tag name this OptionList is associated with. This goes in front of the dropdown in the
+     * blocks editor. It is always the simplified class name.
+     */
+    private final String tagName;
+
+    /**
+     * The Option.name of the default option associated with this OptionList.
+     */
+    private String defaultOpt;
+
+    /**
+     * The underlying type passed to this OptionList. E.g., in the case of OptionList&lt;Integer&gt;
+     * this would be a TypeMirror representing the type Integer.
+     */
+    private TypeMirror underlyingType;
+
+    /**
+     * Creates an OptionList (which is a definition of a option list helper-block) that can be
+     * populated with options.
+     * 
+     * @param className The fully qualified class name this OptionList is associated with.
+     * @param tagName The tag name this OptionList is associated with. This goes in front of the
+     *     dropdown in the blocks editor. It is usually the simplified class name.
+     */
+    protected OptionList(String className, String tagName) {
+      this.className = className;
+      this.tagName = tagName;
+      options = new ArrayList<>();
+    }
+
+    /**
+     * Returns the fully qualified class name this OptionList is associated with.
+     * @return the fully qualified class name this OptionList is associated with.
+     */
+    protected String getClassName() {
+      return className;
+    }
+
+    /**
+     * The tag name, which is used in the dropdown block UI, of this OptionList. It is usually the
+     * simplified class name.
+     * @return The tag name of this OptionList.
+     */
+    protected String getTagName() {
+      return tagName;
+    }
+
+    /**
+     * Sets the default option of this OptionList.
+     * @param defaultOpt the Option.name of the default option to set.
+     */
+    protected void setDefault(String defaultOpt) {
+      this.defaultOpt = defaultOpt;
+    }
+
+    /**
+     * Returns the Option.name of the default option associated with this OptionList.
+     * @return the Option.name of the default option associated with this OptionList.
+     */
+    protected String getDefault() {
+      return defaultOpt;
+    }
+
+    /**
+     * Sets the underlying type of this OptionList.
+     * @param type the underlying type to assign to this OptionList.
+     */
+    protected void setUnderlyingType(TypeMirror type) {
+      underlyingType = type;
+    }
+
+    /**
+     * Returns the underlying type of this OptionList.
+     * @return the underlying type of this OptionList.
+     */
+    protected TypeMirror getUnderlyingType() {
+      return underlyingType;
+    }
+
+    /**
+     * Adds the given Option to the OptionList.
+     * @param option the option to add to this OptionList.
+     */
+    protected void addOption(Option option) {
+      options.add(option);
+    }
+
+    /**
+     * Returns true if this OptionList contains the given option.
+     * @return true if this OptionList contains the given option.
+     */
+    protected boolean containsOption(Option option) {
+      return options.contains(option);
+    }
+
+    /**
+     * Returns true if this option list has no options.
+     * @return true if this option list has no options.
+     */
+    protected boolean isEmpty() {
+      return options.isEmpty();
+    }
+
+    /**
+     * Returns a collection of Options that make up this option list.
+     * @return a collection of Options that make up this option list.
+     */
+    protected Collection<Option> asCollection() {
+      return options;
+    }
+  }
+
+  /**
+   * Represents an option (enum constant) with a name and backing value.
+   */
+  protected static final class Option extends Feature {
+    /**
+     * The value this option is associated with.
+     */
+    private final String value;
+
+    protected Option(String name, String value, String description, boolean deprecated) {
+      super(name, description, description, "Option", true, deprecated);
+      this.value = value;
+    }
+
+    /**
+     * Returns the description of this option.
+     * @return the description of this option.
+     */
+    protected String getDescription() {
+      return description;
+    }
+
+    /**
+     * Returns the value this option is associated with.
+     * @return the value this option is associated with.
+     */
+    protected String getValue() {
+      return value;
+    }
+  }
+
+
+  /**
    * Represents an App Inventor component, including its designer properties,
    * Simple properties, methods, and events.
    */
@@ -508,6 +997,18 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Map<String, String[]> conditionalBroadcastReceivers;
 
     /**
+     * Mapping of component block names to services that should be
+     * included if the block is used.
+     */
+    protected final Map<String, String[]> conditionalServices;
+
+    /**
+     * Mapping of component block names to content providers that should be
+     * included if the block is used.
+     */
+    protected final Map<String, String[]> conditionalContentProviders;
+
+    /**
      * Libraries required by this component.
      */
     protected final Set<String> libraries;
@@ -528,10 +1029,30 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> activities;
 
     /**
+     * Metadata required by this component.
+     */
+    protected final Set<String> metadata;
+
+    /**
+     * Activity metadata required by this component.
+     */
+    protected final Set<String> activityMetadata;
+
+    /**
      * Broadcast receivers required by this component.
      */
     protected final Set<String> broadcastReceivers;
-  
+
+    /**
+     * Services required by this component.
+     */
+    protected final Set<String> services;
+
+    /**
+     * Content providers required by this component.
+     */
+    protected final Set<String> contentProviders;
+
     /**
      * TODO(Will): Remove the following field once the deprecated {@link SimpleBroadcastReceiver}
      *             annotation is removed. It should should remain for the time being
@@ -594,21 +1115,29 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private int androidMinSdk;
     private String versionName;
     private String dateBuilt;
+    private String licenseName;
 
     protected ComponentInfo(Element element) {
       super(element.getSimpleName().toString(),  // Short name
             elementUtils.getDocComment(element),
-            "Component");
+            elementUtils.getDocComment(element),
+            "Component", false, elementUtils.isDeprecated(element));
       type = element.asType().toString();
       displayName = getDisplayNameForComponentType(name);
       permissions = Sets.newHashSet();
       conditionalPermissions = Maps.newTreeMap();
       conditionalBroadcastReceivers = Maps.newTreeMap();
+      conditionalServices = Maps.newTreeMap();
+      conditionalContentProviders = Maps.newTreeMap();
       libraries = Sets.newHashSet();
       nativeLibraries = Sets.newHashSet();
       assets = Sets.newHashSet();
       activities = Sets.newHashSet();
+      metadata = Sets.newHashSet();
+      activityMetadata = Sets.newHashSet();
       broadcastReceivers = Sets.newHashSet();
+      services = Sets.newHashSet();
+      contentProviders = Sets.newHashSet();
       classNameAndActionsBR = Sets.newHashSet();
       designerProperties = Maps.newTreeMap();
       properties = Maps.newTreeMap();
@@ -656,7 +1185,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           // if provided.
           String explicitDescription = designerComponentAnnotation.description();
           if (!explicitDescription.isEmpty()) {
-            description = explicitDescription;
+            setDescription(explicitDescription);
           }
 
           // Set helpDescription to the designerHelpDescription field if
@@ -676,8 +1205,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           showOnPalette = designerComponentAnnotation.showOnPalette();
           nonVisible = designerComponentAnnotation.nonVisible();
           iconName = designerComponentAnnotation.iconName();
+          licenseName = designerComponentAnnotation.licenseName();
           androidMinSdk = designerComponentAnnotation.androidMinSdk();
           versionName = designerComponentAnnotation.versionName();
+          userVisible = designerComponentAnnotation.showOnPalette();
         }
       }
     }
@@ -795,9 +1326,27 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return dateBuilt;
     }
 
+    /**
+     * Returns the name of the license file used by external components
+     * {@link DesignerComponent#licenseName()}.
+     *
+     * @return the name of the license file
+     */
+    protected String getLicenseName() {
+      return licenseName;
+    }
+
     private String getDisplayNameForComponentType(String componentTypeName) {
       // Users don't know what a 'Form' is.  They know it as a 'Screen'.
       return "Form".equals(componentTypeName) ? "Screen" : componentTypeName;
+    }
+
+    protected String getName() {
+      if (name.equals("Form")) {
+        return "Screen";
+      } else {
+        return name;
+      }
     }
 
   }
@@ -811,6 +1360,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     return SUPPORTED_ANNOTATION_TYPES;
+  }
+
+  @Override
+  public SourceVersion getSupportedSourceVersion() {
+    return SourceVersion.RELEASE_7;
   }
 
   @Override
@@ -886,8 +1440,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       throw new RuntimeException(e);
     }
 
-    // Indicate that we have successfully handled the annotations.
-    return true;
+    // We need to return false here so that sibling annotation processors can run
+    return false;
   }
 
     /*
@@ -897,9 +1451,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * superclass.
      */
   private void processComponent(Element element) {
+    boolean isForDesigner = element.getAnnotation(DesignerComponent.class) != null;
     // If the element is not a component (e.g., Float), return early.
-    if (element.getAnnotation(SimpleObject.class) == null &&
-        element.getAnnotation(DesignerComponent.class) == null) {
+    if (element.getAnnotation(SimpleObject.class) == null && !isForDesigner) {
       return;
     }
 
@@ -940,7 +1494,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.nativeLibraries.addAll(parentComponent.nativeLibraries);
         componentInfo.assets.addAll(parentComponent.assets);
         componentInfo.activities.addAll(parentComponent.activities);
+        componentInfo.metadata.addAll(parentComponent.metadata);
+        componentInfo.activityMetadata.addAll(parentComponent.activityMetadata);
         componentInfo.broadcastReceivers.addAll(parentComponent.broadcastReceivers);
+        componentInfo.services.addAll(parentComponent.services);
+        componentInfo.contentProviders.addAll(parentComponent.contentProviders);
         // TODO(Will): Remove the following call once the deprecated
         //             @SimpleBroadcastReceiver annotation is removed. It should
         //             should remain for the time being because otherwise we'll break
@@ -1028,6 +1586,42 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       }
     }
 
+    // Gather the required metadata and build their element strings.
+    UsesApplicationMetadata usesApplicationMetadata = element.getAnnotation(UsesApplicationMetadata.class);
+    if (usesApplicationMetadata != null) {
+      try {
+        for (MetaDataElement me : usesApplicationMetadata.metaDataElements()) {
+          updateWithNonEmptyValue(componentInfo.metadata, metaDataElementToString(me));
+        }
+      } catch (IllegalAccessException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
+            "application metadata and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
+            "application metadata and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      }
+    }
+
+    // Gather the required activity metadata and build their element strings.
+    UsesActivityMetadata usesActivityMetadata = element.getAnnotation(UsesActivityMetadata.class);
+    if (usesActivityMetadata != null) {
+      try {
+        for (MetaDataElement me : usesActivityMetadata.metaDataElements()) {
+          updateWithNonEmptyValue(componentInfo.activityMetadata, metaDataElementToString(me));
+        }
+      } catch (IllegalAccessException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
+                "application metadata and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
+                "application metadata and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      }
+    }
+
     // Gather the required broadcast receivers and build their element strings.
     UsesBroadcastReceivers usesBroadcastReceivers = element.getAnnotation(UsesBroadcastReceivers.class);
     if (usesBroadcastReceivers != null) {
@@ -1045,7 +1639,43 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         throw new RuntimeException(e);
       }
     }
-  
+
+    // Gather the required services and build their element strings.
+    UsesServices usesServices = element.getAnnotation(UsesServices.class);
+    if (usesServices != null) {
+      try {
+        for (ServiceElement se : usesServices.services()) {
+          updateWithNonEmptyValue(componentInfo.services, serviceElementToString(se));
+        }
+      } catch (IllegalAccessException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
+            "service attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
+            "service attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      }
+    }
+
+    // Gather the required content providers and build their element strings.
+    UsesContentProviders usesContentProviders = element.getAnnotation(UsesContentProviders.class);
+    if (usesContentProviders != null) {
+      try {
+        for (ProviderElement pe : usesContentProviders.providers()) {
+          updateWithNonEmptyValue(componentInfo.contentProviders, providerElementToString(pe));
+        }
+      } catch (IllegalAccessException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
+            "provider attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
+            "provider attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      }
+    }
+
     // TODO(Will): Remove the following legacy code once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
     //             should remain for the time being because otherwise we'll break
@@ -1055,7 +1685,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // has a Class Name and zero or more Filter Actions.  In the
     // resulting String, Class name will go first, and each Action
     // will be added, separated by a comma.
-  
+
     SimpleBroadcastReceiver simpleBroadcastReceiver = element.getAnnotation(SimpleBroadcastReceiver.class);
     if (simpleBroadcastReceiver != null) {
       for (String className : simpleBroadcastReceiver.className().split(",")){
@@ -1078,8 +1708,27 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // Build up method information.
     processMethods(componentInfo, element);
 
+    if (isForDesigner) {
+      processDescriptions(componentInfo);
+    }
+
     // Add it to our components map.
     components.put(longComponentName, componentInfo);
+  }
+
+  private void processDescriptions(ComponentInfo info) {
+    final String name = info.displayName;
+    info.description = info.description.replaceAll(TYPE_PLACEHOLDER, name);
+    info.helpUrl = info.helpUrl.replaceAll(TYPE_PLACEHOLDER, name);
+    for (Property property : info.properties.values()) {
+      property.description = property.description.replaceAll(TYPE_PLACEHOLDER, name);
+    }
+    for (Event event : info.events.values()) {
+      event.description = event.description.replaceAll(TYPE_PLACEHOLDER, name);
+    }
+    for (Method method : info.methods.values()) {
+      method.description = method.description.replaceAll(TYPE_PLACEHOLDER, name);
+    }
   }
 
   private boolean isPublicMethod(Element element) {
@@ -1096,8 +1745,21 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                                  propertyName);
     }
 
+    // Use Javadoc for property unless description is set to a non-empty string.
+    String description = elementUtils.getDocComment(element);
+    String longDescription = description;
+    if (!simpleProperty.description().isEmpty()) {
+      description = simpleProperty.description();
+    }
+    if (description == null) {
+      description = "";
+    }
+    // Read only until the first javadoc parameter
+    description = description.split("[^\\\\][@{]")[0].trim();
+
     Property property = new Property(propertyName,
-                                     simpleProperty.description(),
+                                     description,
+                                     longDescription,
                                      simpleProperty.category(),
                                      simpleProperty.userVisible(),
                                      elementUtils.isDeprecated(element));
@@ -1117,6 +1779,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         throw new RuntimeException("Property method is void and has no parameters: "
                                    + propertyName);
       }
+      property.helper = elementToHelperKey(element, ((ExecutableElement)element).getReturnType());
+      if (element.getAnnotation(IsColor.class) != null) {
+        property.color = true;
+      }
     } else {
       // It is a setter.
       property.writable = true;
@@ -1125,17 +1791,289 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                                    propertyName);
       }
       typeMirror = parameters.get(0);
+      Element param = ((ExecutableElement) element).getParameters().get(0);
+      property.helper = elementToHelperKey(param, param.asType());
+      for (VariableElement ve : ((ExecutableElement) element).getParameters()) {
+        if (ve.getAnnotation(IsColor.class) != null) {
+          property.color = true;
+        }
+      }
     }
 
     // Use typeMirror to set the property's type.
     if (!typeMirror.getKind().equals(TypeKind.VOID)) {
-      property.type = typeMirror.toString();
+      property.type = typeMirror;
       updateComponentTypes(typeMirror);
     }
 
     property.componentInfoName = componentInfoName;
 
     return property;
+  }
+
+  /**
+   * Converts an element representing a function (for return types) or a parameter into a HelperKey.
+   * 
+   * @param elem the Element which represents a function (for return types) or a parameter.
+   * @param type the TypeMirror representing the type of that element.
+   * @return The created HelperKey if the element does indeed define a helper, null otherwise.
+   */
+  private HelperKey elementToHelperKey(Element elem, TypeMirror type) {
+    HelperKey key;
+    key = hasOptionListHelper(elem, type);
+    if (key != null) {
+      return key;
+    }
+    key = hasAssetsHelper(elem, type);
+    if (key != null) {
+      return key;
+    }
+    // Add more possibilities here.
+    return null;
+  }
+
+  /**
+   * Returns the associated helper key if the element has an OptionList associated with it.
+   * Null otherwise.
+   *
+   * @param elem the Element which represents a function (for return types) or a parameter.
+   * @param type the TypeMirror representing the type of that element.
+   * @return the associated helper key if the element has an OptionList assciated with it.
+   */
+  private HelperKey hasOptionListHelper(Element elem, TypeMirror type) {
+    // Check if the elem type is an OptionList
+    if (isOptionList(type)) {
+      return optionListToHelperKey(((DeclaredType) type).asElement());
+    }
+
+    // Check if the elem has an @Options annotation.
+    // This is the backwards compat method for getting OptionLists.
+    for (AnnotationMirror mirror : elem.getAnnotationMirrors()) {
+      // Make sure we are dealing with an Options annotation.
+      if (!mirror.getAnnotationType().asElement().getSimpleName().contentEquals("Options")) {
+        continue;
+      }
+      for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry:
+          mirror.getElementValues().entrySet()) {
+        // Make sure we are looking at the value argument.
+        if (!entry.getKey().getSimpleName().contentEquals("value")) {
+          continue;
+        }
+        // Get the AnnotationValue's value. So we are now looking at the
+        // class passed to the @Options annotation.
+        Element optionList = ((DeclaredType)entry.getValue().getValue()).asElement();
+        return optionListToHelperKey(optionList);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns true if the given type implements OptionList. False otherwise.
+   * @param type the type to check if it implements OptionList.
+   * @return true if the given type implements OptionList. False otherwise.
+   */
+  private boolean isOptionList(TypeMirror type) {
+    if (type.getKind() == TypeKind.DECLARED) {
+      TypeElement elem = (TypeElement)((DeclaredType)type).asElement();
+      for (TypeMirror parent : elem.getInterfaces()) {
+        TypeElement parentElem = (TypeElement)((DeclaredType)parent).asElement();
+        if (parentElem.getSimpleName().toString().equals("OptionList")) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns the OptionList HelperKey associated with the given element.
+   * @param element the Element describing a class which implements the OptionList interface.
+   * @return the HelperKey associated with the given element.
+   */
+  private HelperKey optionListToHelperKey(Element optionList) {
+    String name = optionList.getSimpleName().toString();
+    // We haven't seen this type of option list before, so add it.
+    if (optionLists.get(name) == null) {
+      if (!tryAddOptionList(optionList)) {
+        // Couldn't add it for whatever reason.
+        return null;
+      }
+    }
+    // This helper key is storing info about an OptionList.
+    return new HelperKey(HelperType.OPTION_LIST, name);
+  }
+
+  /**
+   * Adds a new OptionList (based on the passed option list element) to the optionLists list.
+   * 
+   * @param optionElem The element representing the enum defining the options.
+   * @return Returns true if the Optionlist was successfully added. False otherwise.
+   */
+  private boolean tryAddOptionList(Element optionElem) {
+    String className = optionElem.asType().toString();
+    String tagName = optionElem.getSimpleName().toString();
+    OptionList optionList = new OptionList(className, tagName);
+
+    // Get the class.
+    Class<?> clazz;
+    try {
+      clazz = Class.forName(className);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalArgumentException("OptionList Class: " + className + " is not available. "
+          + "Make sure that it is available to the compiler.");
+    }
+
+    // Get the getValue method.
+    java.lang.reflect.Method toValueMethod;
+    try {
+      toValueMethod = clazz.getDeclaredMethod("toUnderlyingValue");
+    } catch (NoSuchMethodException e) {
+      throw new IllegalArgumentException("Class: " + className + " must have a toUnderlyingValue() "
+          + "method.");
+    }
+
+    // Get the fromUnderlyingValue method. This is not used, we just need to require it.
+    java.lang.reflect.Method fromValueMethod;
+    Type genericType = null;
+    try {
+      ParameterizedType optionListType = (ParameterizedType) clazz.getGenericInterfaces()[0];
+      genericType = optionListType.getActualTypeArguments()[0];
+      Class<?> typeClass = (Class<?>) genericType;
+      fromValueMethod = clazz.getDeclaredMethod("fromUnderlyingValue", typeClass);
+    } catch (NoSuchMethodException e) {
+      throw new IllegalArgumentException("Class: " + className + " must have a static "
+          + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
+    }
+    if (!java.lang.reflect.Modifier.isStatic(fromValueMethod.getModifiers())) {
+      throw new IllegalArgumentException("Class: " + className + " must have a static "
+          + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
+    }
+  
+    // Create a map of enum const names -> values. This is used to filter the below elements
+    // returned by getEnclosedElements().
+    Map<String, String> namesToValues = Maps.newTreeMap();
+    Object[] constants = clazz.getEnumConstants();
+    if (constants == null) {
+      throw new IllegalArgumentException("Class: " + className + " should be an enum and declare "
+          + "enum constants.");
+    }
+    for (Object constant : constants) {
+      try {
+        Enum<?> enumConst = (Enum<?>) constant;
+        namesToValues.put(enumConst.name(), toValueMethod.invoke(enumConst).toString());
+      } catch (Exception e) {
+        // pass
+      }
+    }
+
+    // Add the options to the OptionList.
+    // Note that getEnclosedElements() returns not only enum constants but also method and field
+    // names, so we need to filter those out using namesToValues.
+    for (Element field : optionElem.getEnclosedElements()) {
+      String fieldName = field.getSimpleName().toString();
+      if (namesToValues.containsKey(fieldName)) {
+        String value = namesToValues.get(fieldName);
+        optionList.addOption(elementToOption(field, value));
+
+        // Set the default to be the first option, or the option tagged with @Default.
+        if (optionList.getDefault() == null || isDefault(field)) {
+          optionList.setDefault(fieldName);
+        }
+      }
+    }
+
+    DeclaredType optionListInterface = (DeclaredType)((TypeElement)optionElem)
+        .getInterfaces().get(0);
+    optionList.setUnderlyingType(optionListInterface.getTypeArguments().get(0));
+
+    if (!optionList.isEmpty()) {
+      optionLists.put(optionElem.getSimpleName().toString(), optionList);
+    }
+
+    return !optionList.isEmpty();
+  }
+
+  /**
+   * Returns true if the leement is tagged with the @Default annotation.
+   * @return true if the element is tagged with the @Default annotation.
+   */
+  private boolean isDefault(Element field) {
+    for (AnnotationMirror mirror : field.getAnnotationMirrors()) {
+      if (mirror.getAnnotationType().asElement().getSimpleName().contentEquals("Default")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Converts an Element into an Option.
+   * @param field the field to convert into an option.
+   * @param value the backing value associated with that field.
+   * @return the option constructed from the field and value.
+   */
+  private Option elementToOption(Element field, String value) {
+    // TODO: getDocComment doesn't seem to work on enum constants?
+    String description = elementUtils.getDocComment(field);
+    if (description == null) {
+      description = "";
+    }
+    // Read only until the first javadoc parameter
+    description = description.split("[^\\\\][@{]")[0].trim();
+
+    return new Option(
+      field.getSimpleName().toString(),
+      value,
+      description,
+      elementUtils.isDeprecated(field)
+    );
+  }
+
+  /**
+   * Returns the associated helper key if the element has an @Asset annotation. Null otherwise.
+   *
+   * @param elem the Element which represents a function (for return types) or a parameter.
+   * @param type the TypeMirror representing the type of that element.
+   * @return the associated helper key if the element has an @Asset annotation.
+   */
+  private HelperKey hasAssetsHelper(Element elem, TypeMirror type) {
+    for (AnnotationMirror mirror : elem.getAnnotationMirrors()) {
+      if (mirror.getAnnotationType().asElement().getSimpleName().contentEquals("Asset")) {
+        int index = 0;  // Index 0 is the empty filter.
+        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
+            mirror.getElementValues().entrySet()) {
+          // Make sure we are looking at the value attribute.
+          if (!entry.getKey().getSimpleName().contentEquals("value")) {
+            continue;
+          }
+          List<AnnotationValue> values = (List<AnnotationValue>) entry.getValue().getValue();
+          List<String> filter = new ArrayList<String>();
+          for (AnnotationValue v : values) {
+            filter.add(((String)v.getValue()).toLowerCase());
+          }
+          Collections.sort(filter);
+          if (!filters.contains(filter)) {
+            filters.add(filter);
+          }
+          index = filters.indexOf(filter);
+        }
+        return new HelperKey(HelperType.ASSET, index);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Converts a VariableElement into a Parameter definition.
+   * @param varElem the element to convert.
+   * @return the parameter constructed from the variable element.
+   */
+  private Parameter varElemToParameter(VariableElement varElem) {
+    Parameter param = new Parameter(varElem.getSimpleName().toString(), varElem.asType(),
+        varElem.getAnnotation(IsColor.class) != null);
+    param.helper = elementToHelperKey(varElem, varElem.asType());
+    return param;
   }
 
   // Transform an @ActivityElement into an XML element String for use later
@@ -1174,6 +2112,43 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     return elementString.append("    </receiver>\\n").toString();
   }
 
+  // Transform a @ServiceElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String serviceElementToString(ServiceElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <service> element's opening tag including any
+    // service element attributes.
+    StringBuilder elementString = new StringBuilder("    <service ");
+    elementString.append(elementAttributesToString(element));
+    elementString.append(">\\n");
+
+    // Now, we collect any <service> subelements.
+    elementString.append(subelementsToString(element.metaDataElements()));
+    elementString.append(subelementsToString(element.intentFilters()));
+
+    // Finally, we close the <service> element and create its String.
+    return elementString.append("    </service>\\n").toString();
+  }
+
+  // Transform a @ProviderElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String providerElementToString(ProviderElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <provider> element's opening tag including any
+    // content provider element attributes.
+    StringBuilder elementString = new StringBuilder("    <provider ");
+    elementString.append(elementAttributesToString(element));
+    elementString.append(">\\n");
+
+    // Now, we collect any <provider> subelements.
+    elementString.append(subelementsToString(element.metaDataElements()));
+    elementString.append(subelementsToString(element.pathPermissionElement()));
+    elementString.append(subelementsToString(element.grantUriPermissionElement()));
+
+    // Finally, we close the <provider> element and create its String.
+    return elementString.append("    </provider>\\n").toString();
+  }
+
   // Transform a @MetaDataElement into an XML element String for use later
   // in creating AndroidManifest.xml.
   private static String metaDataElementToString(MetaDataElement element)
@@ -1195,7 +2170,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     StringBuilder elementString = new StringBuilder("      <intent-filter ");
     elementString.append(elementAttributesToString(element));
     elementString.append(">\\n");
-    
+
     // Now, we collect any <intent-filter> subelements.
     elementString.append(subelementsToString(element.actionElements()));
     elementString.append(subelementsToString(element.categoryElements()));
@@ -1217,7 +2192,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     return elementString.append("/>\\n").toString();
   }
 
-  // Transform an @CategoryElement into an XML element String for use later
+  // Transform a @CategoryElement into an XML element String for use later
   // in creating AndroidManifest.xml.
   private static String categoryElementToString(CategoryElement element)
       throws IllegalAccessException, InvocationTargetException {
@@ -1229,7 +2204,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     return elementString.append("/>\\n").toString();
   }
 
-  // Transform an @DataElement into an XML element String for use later
+  // Transform a @DataElement into an XML element String for use later
   // in creating AndroidManifest.xml.
   private static String dataElementToString(DataElement element)
       throws IllegalAccessException, InvocationTargetException {
@@ -1238,6 +2213,30 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     StringBuilder elementString = new StringBuilder("        <data ");
     elementString.append(elementAttributesToString(element));
     // Finally, we close the <data> element and create its String.
+    return elementString.append("/>\\n").toString();
+  }
+
+  // Transform a @PathPermissionElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String pathPermissionElementToString(PathPermissionElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <path-permission> element's opening tag including any
+    // receiver element attributes.
+    StringBuilder elementString = new StringBuilder("        <path-permission ");
+    elementString.append(elementAttributesToString(element));
+    // Finally, we close the <path-permission> element and create its String.
+    return elementString.append("/>\\n").toString();
+  }
+
+  // Transform a @GrantUriPermissionElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String grantUriPermissionElementToString(GrantUriPermissionElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <grant-uri-permission> element's opening tag including any
+    // receiver element attributes.
+    StringBuilder elementString = new StringBuilder("        <grant-uri-permission ");
+    elementString.append(elementAttributesToString(element));
+    // Finally, we close the <grant-uri-permission> element and create its String.
     return elementString.append("/>\\n").toString();
   }
 
@@ -1273,7 +2272,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
     return attributeString.toString();
   }
-  
+
   // Build the subelement String for a given array of XML elements modeled by
   // corresponding annotations.
   private static String subelementsToString(Annotation[] subelements)
@@ -1290,6 +2289,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         subelementString.append(categoryElementToString((CategoryElement) subelement));
       } else if (subelement instanceof DataElement) {
         subelementString.append(dataElementToString((DataElement) subelement));
+      } else if (subelement instanceof PathPermissionElement) {
+        subelementString.append(pathPermissionElementToString((PathPermissionElement) subelement));
+      } else if (subelement instanceof GrantUriPermissionElement) {
+        subelementString.append(grantUriPermissionElementToString((GrantUriPermissionElement) subelement));
       }
     }
     return subelementString.toString();
@@ -1340,15 +2343,18 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         // prior Property element with the same property name, verifying that
         // they are consistent.
         Property newProperty = executableElementToProperty(element, componentInfo.name);
+        if (designerProperty != null
+            && designerProperty.editorType().equals(PropertyTypeConstants.PROPERTY_TYPE_COLOR)) {
+          // Properties that use a color editor should be marked as a color property
+          newProperty.color = true;
+        }
 
         if (componentInfo.properties.containsKey(propertyName)) {
           Property priorProperty = componentInfo.properties.get(propertyName);
 
           if (!priorProperty.type.equals(newProperty.type)) {
-            // The 'real' type of a property is determined by its getter, if
-            // it has one.  In theory there can be multiple setters which
-            // take different types and those types can differ from the
-            // getter.
+            // If the getter type is different than the setter type, set the type to getter.
+            // If we have multiple setters with different types, throw an error.
             if (newProperty.readable) {
               priorProperty.type = newProperty.type;
             } else if (priorProperty.writable) {
@@ -1359,10 +2365,17 @@ public abstract class ComponentProcessor extends AbstractProcessor {
             }
           }
 
+          // TODO: Should this be moved into the Property class? This was tricky for me to discover.
           // Merge newProperty into priorProperty, which is already in the properties map.
-          if (priorProperty.description.isEmpty() && !newProperty.description.isEmpty()) {
-            priorProperty.description = newProperty.description;
+          if ((priorProperty.description.isEmpty() || priorProperty.isDefaultDescription()
+               || element.getAnnotation(Override.class) != null)
+              && !newProperty.description.isEmpty() && !newProperty.isDefaultDescription()) {
+            priorProperty.setDescription(newProperty.description);
           }
+          if (!newProperty.longDescription.isEmpty() && !newProperty.isDefaultDescription()) {  /* Latter descriptions of the same property override earlier descriptions. */
+            priorProperty.longDescription = newProperty.longDescription;
+          }
+
           if (priorProperty.propertyCategory == PropertyCategory.UNSET) {
             priorProperty.propertyCategory = newProperty.propertyCategory;
           } else if (newProperty.propertyCategory != priorProperty.propertyCategory &&
@@ -1373,11 +2386,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                 newProperty.propertyCategory + " in component " +
                 componentInfo.name);
           }
+          if (priorProperty.helper == null) {
+            priorProperty.helper = newProperty.helper;
+          }
           priorProperty.readable = priorProperty.readable || newProperty.readable;
           priorProperty.writable = priorProperty.writable || newProperty.writable;
-          priorProperty.userVisible = priorProperty.userVisible && newProperty.userVisible;
-          priorProperty.deprecated = priorProperty.deprecated && newProperty.deprecated;
+          priorProperty.userVisible = priorProperty.isUserVisible() && newProperty.isUserVisible();
+          priorProperty.deprecated = priorProperty.isDeprecated() && newProperty.isDeprecated();
           priorProperty.componentInfoName = componentInfo.name;
+          priorProperty.color = newProperty.color || priorProperty.color;
         } else {
           // Add the new property to the properties map.
           componentInfo.properties.put(propertyName, newProperty);
@@ -1424,8 +2441,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
       } else {
         String eventDescription = simpleEventAnnotation.description();
+        String longEventDescription = elementUtils.getDocComment(element);
         if (eventDescription.isEmpty()) {
-          eventDescription = elementUtils.getDocComment(element);
+          eventDescription = longEventDescription;
           if (eventDescription == null) {
             messager.printMessage(Diagnostic.Kind.WARNING,
                                   "In component " + componentInfo.name +
@@ -1436,7 +2454,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
         boolean userVisible = simpleEventAnnotation.userVisible();
         boolean deprecated = elementUtils.isDeprecated(element);
-        Event event = new Event(eventName, eventDescription, userVisible, deprecated);
+        Event event = new Event(eventName, eventDescription, longEventDescription, userVisible, deprecated);
         componentInfo.events.put(event.name, event);
 
         // Verify that this element has an ExecutableType.
@@ -1449,8 +2467,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
         // Extract the parameters.
         for (VariableElement ve : e.getParameters()) {
-          event.addParameter(ve.getSimpleName().toString(),
-                             ve.asType().toString());
+          event.addParameter(varElemToParameter(ve));
           updateComponentTypes(ve.asType());
         }
       }
@@ -1477,9 +2494,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           componentInfo.methods.remove(methodName);
         }
       } else {
+        String methodLongDescription = elementUtils.getDocComment(element);
         String methodDescription = simpleFunctionAnnotation.description();
         if (methodDescription.isEmpty()) {
-          methodDescription = elementUtils.getDocComment(element);
+          methodDescription = methodLongDescription;
           if (methodDescription == null) {
             messager.printMessage(Diagnostic.Kind.WARNING,
                                   "In component " + componentInfo.name +
@@ -1490,7 +2508,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
         boolean userVisible = simpleFunctionAnnotation.userVisible();
         boolean deprecated = elementUtils.isDeprecated(element);
-        Method method = new Method(methodName, methodDescription, userVisible, deprecated);
+        Method method = new Method(methodName, methodDescription, methodLongDescription, userVisible, deprecated);
         componentInfo.methods.put(method.name, method);
 
         // Verify that this element has an ExecutableType.
@@ -1503,14 +2521,17 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
         // Extract the parameters.
         for (VariableElement ve : e.getParameters()) {
-          method.addParameter(ve.getSimpleName().toString(),
-                              ve.asType().toString());
+          method.addParameter(varElemToParameter(ve));
           updateComponentTypes(ve.asType());
         }
 
         // Extract the return type.
         if (e.getReturnType().getKind() != TypeKind.VOID) {
-          method.returnType = e.getReturnType().toString();
+          method.returnType = e.getReturnType();
+          method.returnHelperKey = elementToHelperKey(e, method.returnType);
+          if (e.getAnnotation(IsColor.class) != null) {
+            method.color = true;
+          }
           updateComponentTypes(e.getReturnType());
         }
       }
@@ -1523,7 +2544,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    *
    * @param componentInfo Component info in which to store the conditional information.
    * @param element The currently processed Java language element. This should be a method
-   *                annotated with either @UsesPermission or @UsesBroadcastReceivers.
+   *                annotated with either @UsesPermission, @UsesBroadcastReceivers, @UsesServices or @UsesContentProviders
    * @param blockName The name of the block as it appears in the sources.
    */
   private void processConditionalAnnotations(ComponentInfo componentInfo, Element element,
@@ -1546,10 +2567,36 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         messager.printMessage(Kind.ERROR, "Unable to process broadcast receiver", element);
       }
     }
+
+    UsesServices service = element.getAnnotation(UsesServices.class);
+    if (service != null) {
+      try {
+        Set<String> services = new HashSet<>();
+        for (ServiceElement se : service.services()) {
+          updateWithNonEmptyValue(services, serviceElementToString(se));
+        }
+        componentInfo.conditionalServices.put(blockName, services.toArray(new String[0]));
+      } catch (Exception e) {
+        messager.printMessage(Kind.ERROR, "Unable to process service", element);
+      }
+    }
+
+    UsesContentProviders contentProvider = element.getAnnotation(UsesContentProviders.class);
+    if (contentProvider != null) {
+      try {
+        Set<String> providers = new HashSet<>();
+        for (ProviderElement pe : contentProvider.providers()) {
+          updateWithNonEmptyValue(providers, providerElementToString(pe));
+        }
+        componentInfo.conditionalContentProviders.put(blockName, providers.toArray(new String[0]));
+      } catch (Exception e) {
+        messager.printMessage(Kind.ERROR, "Unable to process content provider", element);
+      }
+    }
   }
 
   /**
-   * <p>Outputs the required component information in the desired format.  It is called by
+   * <p>Outputs the required component information in the desired format. It is called by
    * {@link #process} after the fields {@link #components} and {@link #messager}
    * have been populated.</p>
    *
@@ -1560,58 +2607,77 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   protected abstract void outputResults() throws IOException;
 
   /**
-   * Returns the appropriate Yail type (e.g., "number" or "text") for a
-   * given Java type (e.g., "float" or "java.lang.String").  All component
-   * names are converted to "component".
+   * Returns the appropriate Yail type for a given Java type.
    *
-   * @param type a type name, as returned by {@link TypeMirror#toString()}
-   * @return one of "boolean", "text", "number", "list", or "component".
+   * @param type a TypeMirror representing the Java type.
+   * @return the equivalent Yail type. All component names are converted to "component".
    * @throws RuntimeException if the parameter cannot be mapped to any of the
    *         legal return values
    */
-  protected final String javaTypeToYailType(String type) {
+  protected final String javaTypeToYailType(TypeMirror type) {
+    if (BOXED_TYPES.containsKey(type)) {
+      throw new IllegalArgumentException(String.format(BOXED_TYPE_ERROR, type,
+          BOXED_TYPES.get(type)));
+    }
+
+    // Handle enums
+    if (isOptionList(type)) {
+      // In YAIL code generation we need any easy way to test if a type symbol, represents an
+      // abstract option type. We have chosen to do this by having each type end with "Enum". For
+      // example, if you have a parameter that accepts a Direction the type symbol passed to Yail
+      // would be 'com.google.appinventor.components.common.DirectionEnum.
+      return type.toString() + "Enum";
+    }
+
+    String typeString = type.toString();
     // boolean -> boolean
-    if (type.equals("boolean")) {
-      return type;
+    if (typeString.equals("boolean")) {
+      return typeString;
     }
     // String -> text
-    if (type.equals("java.lang.String")) {
+    if (typeString.equals("java.lang.String")) {
       return "text";
     }
     // {float, double, int, short, long, byte} -> number
-    if (type.equals("float") || type.equals("double") || type.equals("int") ||
-        type.equals("short") || type.equals("long") || type.equals("byte")) {
+    if (typeString.equals("float") || typeString.equals("double") || typeString.equals("int")
+        || typeString.equals("short") || typeString.equals("long") || typeString.equals("byte")) {
       return "number";
     }
     // YailList -> list
-    if (type.equals("com.google.appinventor.components.runtime.util.YailList")) {
+    if (typeString.equals("com.google.appinventor.components.runtime.util.YailList")) {
       return "list";
     }
     // List<?> -> list
-    if (type.startsWith("java.util.List")) {
+    if (typeString.startsWith("java.util.List")) {
       return "list";
+    }
+    if (typeString.equals("com.google.appinventor.components.runtime.util.YailDictionary")) {
+      return "dictionary";
+    }
+    if (typeString.equals("com.google.appinventor.components.runtime.util.YailObject")) {
+      return "yailobject";
     }
 
     // Calendar -> InstantInTime
-    if (type.equals("java.util.Calendar")) {
+    if (typeString.equals("java.util.Calendar")) {
       return "InstantInTime";
     }
 
-    if (type.equals("java.lang.Object")) {
+    if (typeString.equals("java.lang.Object")) {
       return "any";
     }
 
-    if (type.equals("com.google.appinventor.components.runtime.Component")) {
+    if (typeString.equals("com.google.appinventor.components.runtime.Component")) {
       return "component";
     }
 
     // Check if it's a component.
-    if (componentTypes.contains(type)) {
+    if (componentTypes.contains(typeString)) {
       return "component";
     }
 
-    throw new RuntimeException("Cannot convert Java type '" + type +
-                               "' to Yail type");
+    throw new IllegalArgumentException("Cannot convert Java type '" + typeString
+        + "' to Yail type");
   }
 
   /**

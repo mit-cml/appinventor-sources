@@ -13,6 +13,10 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.NxtMotorMode;
+import com.google.appinventor.components.common.NxtMotorPort;
+import com.google.appinventor.components.common.NxtRegulationMode;
+import com.google.appinventor.components.common.NxtRunState;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -23,6 +27,8 @@ import java.util.List;
 // TODO(lizlooney) - We need to document what configuration of robot this component will work
 // with.
 /**
+ * ![NXT component icon](images/legoMindstormsNxt.png)
+ *
  * A component that provides a high-level interface to a LEGO MINDSTORMS NXT
  * robot, with functions that can move and turn the robot.
  *
@@ -37,21 +43,8 @@ import java.util.List;
 @SimpleObject
 public class NxtDrive extends LegoMindstormsNxtBase {
 
-  // Constants for setOutputState parameters.
-  private static final int MODE_MOTORON = 0x01;
-  private static final int MODE_BRAKE = 0x02;
-  private static final int MODE_REGULATED = 0x04;
-  private static final int REGULATION_MODE_IDLE = 0x00;
-  private static final int REGULATION_MODE_MOTOR_SPEED = 0x01;
-  private static final int REGULATION_MODE_MOTOR_SYNC = 0x02;
-  private static final int MOTOR_RUN_STATE_IDLE = 0x00;
-  private static final int MOTOR_RUN_STATE_RAMPUP = 0x10;
-  private static final int MOTOR_RUN_STATE_RUNNING = 0x20;
-  private static final int MOTOR_RUN_STATE_RAMPDOWN = 0x40;
-
-
   private String driveMotors;
-  private List<Integer> driveMotorPorts;
+  private List<NxtMotorPort> driveMotorPorts;
   private double wheelDiameter;
   private boolean stopBeforeDisconnect;
 
@@ -69,9 +62,9 @@ public class NxtDrive extends LegoMindstormsNxtBase {
   @Override
   public void beforeDisconnect(BluetoothConnectionBase bluetoothConnection) {
     if (stopBeforeDisconnect) {
-      for (int port : driveMotorPorts) {
+      for (NxtMotorPort port : driveMotorPorts) {
         setOutputState("Disconnect", port, 0,
-            MODE_BRAKE, REGULATION_MODE_IDLE, 0, MOTOR_RUN_STATE_IDLE, 0);
+            NxtMotorMode.Brake, NxtRegulationMode.Disabled, 0, NxtRunState.Disabled, 0);
       }
     }
   }
@@ -94,15 +87,17 @@ public class NxtDrive extends LegoMindstormsNxtBase {
   @SimpleProperty
   public void DriveMotors(String motorPortLetters) {
     driveMotors = motorPortLetters;
-    driveMotorPorts = new ArrayList<Integer>();
+    driveMotorPorts = new ArrayList<NxtMotorPort>();
     for (int i = 0; i < motorPortLetters.length(); i++) {
-      char ch = motorPortLetters.charAt(i);
-      try {
-        driveMotorPorts.add(convertMotorPortLetterToNumber(ch));
-      } catch (IllegalArgumentException e) {
+      String ch = String.valueOf(motorPortLetters.charAt(i));
+      // Make sure ch is a valid NxtMotorPort. Handles lower & upper case.
+      NxtMotorPort port = NxtMotorPort.fromUnderlyingValue(ch);
+      if (port == null) {
         form.dispatchErrorOccurredEvent(this, "DriveMotors",
             ErrorMessages.ERROR_NXT_INVALID_MOTOR_PORT, ch);
+        continue;
       }
+      driveMotorPorts.add(port);
     }
   }
 
@@ -181,9 +176,9 @@ public class NxtDrive extends LegoMindstormsNxtBase {
       return;
     }
 
-    for (int port : driveMotorPorts) {
+    for (NxtMotorPort port : driveMotorPorts) {
       setOutputState(functionName, port, power,
-          MODE_MOTORON, REGULATION_MODE_MOTOR_SPEED, 0, MOTOR_RUN_STATE_RUNNING, tachoLimit);
+          NxtMotorMode.On, NxtRegulationMode.Speed, 0, NxtRunState.Running, tachoLimit);
     }
   }
 
@@ -219,9 +214,9 @@ public class NxtDrive extends LegoMindstormsNxtBase {
     }
 
     setOutputState(functionName, driveMotorPorts.get(forwardMotorIndex), power,
-        MODE_MOTORON, REGULATION_MODE_MOTOR_SPEED, 0, MOTOR_RUN_STATE_RUNNING, 0);
+        NxtMotorMode.On, NxtRegulationMode.Speed, 0, NxtRunState.Running, 0);
     setOutputState(functionName, driveMotorPorts.get(reverseMotorIndex), -power,
-        MODE_MOTORON, REGULATION_MODE_MOTOR_SPEED, 0, MOTOR_RUN_STATE_RUNNING, 0);
+        NxtMotorMode.On, NxtRegulationMode.Speed, 0, NxtRunState.Running, 0);
   }
 
   // TODO(lizlooney) - it would be nice to have TurnClockwise and TurnCounterClockwise (or
@@ -236,9 +231,9 @@ public class NxtDrive extends LegoMindstormsNxtBase {
       return;
     }
 
-    for (int port : driveMotorPorts) {
+    for (NxtMotorPort port : driveMotorPorts) {
       setOutputState(functionName, port, 0,
-          MODE_BRAKE, REGULATION_MODE_IDLE, 0, MOTOR_RUN_STATE_IDLE, 0);
+          NxtMotorMode.Brake, NxtRegulationMode.Disabled, 0, NxtRunState.Disabled, 0);
     }
   }
 }

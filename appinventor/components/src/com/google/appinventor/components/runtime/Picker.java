@@ -41,16 +41,16 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
       requestCode = container.$form().registerForActivityResult(this);
     }
     container.$context().startActivityForResult(getIntent(), requestCode);
-    String openAnim = container.$form().getOpenAnimType();
+    String openAnim = container.$form().OpenScreenAnimation();
     AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
   }
 
   // Functions
 
   /**
-   * Opens the picker, as though the user clicked on it.
+   * Opens the `%type%`, as though the user clicked on it.
    */
-  @SimpleFunction(description = "Opens the picker, as though the user clicked on it.")
+  @SimpleFunction(description = "Opens the %type%, as though the user clicked on it.")
   public void Open() {
     click();
   }
@@ -58,9 +58,9 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
   // Events
 
   /**
-   * Event to raise when the button of the component is clicked or the list is shown
-   * using the Open block.  This event occurs before the list of items is displayed, and 
-   * can be used to prepare the list before it is shown.
+   * Event to raise when the `%type%` is clicked or the picker is shown
+   * using the {@link #Open()} method.  This event occurs before the picker is displayed, and
+   * can be used to prepare the picker before it is shown.
    */
   @SimpleEvent
   public void BeforePicking() {
@@ -68,7 +68,7 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
   }
 
   /**
-   * Event to be raised after the picker activity returns its
+   * Event to be raised after the `%type%` activity returns its
    * result and the properties have been filled in.
    */
   @SimpleEvent

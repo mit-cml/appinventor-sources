@@ -14,12 +14,16 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.NxtSensorMode;
+import com.google.appinventor.components.common.NxtSensorType;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.os.Handler;
 
 /**
+ * ![NXT component icon](images/legoMindstormsNxt.png)
+ *
  * A component that provides a high-level interface to an ultrasonic sensor on a LEGO
  * MINDSTORMS NXT robot.
  *
@@ -99,7 +103,7 @@ public class NxtUltrasonicSensor extends LegoMindstormsNxtSensor implements Dele
 
   @Override
   protected void initializeSensor(String functionName) {
-    setInputMode(functionName, port, SENSOR_TYPE_LOWSPEED_9V, SENSOR_MODE_RAWMODE);
+    setInputMode(functionName, port, NxtSensorType.Digital12C9V, NxtSensorMode.Raw);
     configureUltrasonicSensor(functionName);
   }
 
@@ -114,6 +118,7 @@ public class NxtUltrasonicSensor extends LegoMindstormsNxtSensor implements Dele
 
   /**
    * Specifies the sensor port that the sensor is connected to.
+   * **Must be set in the Designer.**
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT,
       defaultValue = DEFAULT_SENSOR_PORT)

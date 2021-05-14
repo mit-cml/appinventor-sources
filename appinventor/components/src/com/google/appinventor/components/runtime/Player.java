@@ -1,11 +1,19 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+
+import android.app.Activity;
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.os.Vibrator;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -17,20 +25,11 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
-
-import android.app.Activity;
-import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.os.Vibrator;
-
 import java.io.IOException;
 
 // TODO: This implementation does nothing about releasing the Media
@@ -47,6 +46,18 @@ import java.io.IOException;
 // if the state restrictions are adequate given the API, and prove that
 // there can't be deadlock or starvation.
 /**
+ * Multimedia component that plays audio and controls phone vibration. The name of a multimedia
+ * file is specified in the {@link #Source(String)} property, which can be set in the Designer or
+ * in the Blocks Editor. The length of time for a vibration is specified in the Blocks Editor in
+ * milliseconds (thousandths of a second).
+ *
+ * For supported audio formats, see
+ * [Android Supported Media Formats](//developer.android.com/guide/appendix/media-formats.html).
+ *
+ * This component is best for long sound files, such as songs, while the {@link Sound} component is
+ * more efficient for short files, such as sound effects.
+ *
+ * @internaldoc
  * Multimedia component that plays audio and optionally
  * vibrates.  It is built on top of {@link android.media.MediaPlayer}.
  *
@@ -154,7 +165,8 @@ public final class Player extends AndroidNonvisibleComponent
   /**
    * Sets the audio source.
    *
-   * <p/>See {@link MediaUtil#determineMediaSource} for information about what
+   * @internaldoc
+   * See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
    * @param path  the path to the audio source
@@ -162,8 +174,25 @@ public final class Player extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
+  @UsesPermissions(READ_EXTERNAL_STORAGE)
   public void Source(String path) {
-    sourcePath = (path == null) ? "" : path;
+    final String tempPath = (path == null) ? "" : path;
+    if (MediaUtil.isExternalFile(form, tempPath)
+        && form.isDeniedPermission(READ_EXTERNAL_STORAGE)) {
+      form.askPermission(READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
+        @Override
+        public void HandlePermissionResponse(String permission, boolean granted) {
+          if (granted) {
+            Player.this.Source(tempPath);
+          } else {
+            form.dispatchPermissionDeniedEvent(Player.this, "Source", permission);
+          }
+        }
+      });
+      return;
+    }
+
+    sourcePath = tempPath;
 
     // Clear the previous MediaPlayer.
     if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
@@ -241,7 +270,8 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * Sets the looping property to true or false.
+   * If true, the `Player` will loop when it plays. Setting `Loop` while the player is playing will
+   * affect the current playing.
    *
    * @param shouldLoop determines if the playing should loop
    */
@@ -294,7 +324,9 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * Sets the property PlayOnlyInForeground to true or false.
+   * If true, the `Player` will pause playing when leaving the current screen; if false
+   * (default option), the `Player` continues playing whenever the current screen is displaying or
+   * not.
    *
    * @param shouldForeground determines whether plays only in foreground or always.
    */
@@ -429,7 +461,8 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates that the other player has requested the focus of media
+   * This event is signaled when another player has started (and the current player is playing or
+   * paused, but not stopped).
    */
   @SimpleEvent(description = "This event is signaled when another player has started" +
       " (and the current player is playing or paused, but not stopped).")

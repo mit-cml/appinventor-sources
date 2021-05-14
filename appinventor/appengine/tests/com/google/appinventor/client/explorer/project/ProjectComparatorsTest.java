@@ -27,35 +27,35 @@ public class ProjectComparatorsTest extends TestCase {
     // some of project names begin with lower case to test case ignore sorting
     projects = new ArrayList<Project>();
     projects.add(new Project(
-        new UserProject(1, "WheresSpeedo", "YoungAndroid", 1279563121389L, 1279563121389L, 0L, 0L)));
+        new UserProject(1, "WheresSpeedo", "YoungAndroid", 1279563121389L, 1279563121389L, false)));
     projects.add(new Project(
-        new UserProject(2, "Test", "YoungAndroid", 1283385318767L, 1283385318767L, 0L, 0L)));
+        new UserProject(2, "Test", "YoungAndroid", 1283385318767L, 1283385318767L, false)));
     projects.add(new Project(
-        new UserProject(3, "Calculator", "YoungAndroid", 1285093039591L, 1285093039591L, 0L, 0L)));
+        new UserProject(3, "Calculator", "YoungAndroid", 1285093039591L, 1285093039591L, false)));
     projects.add(new Project(
-        new UserProject(4, "CenteredButton", "YoungAndroid", 1285093334176L, 1285093334176L, 0L, 0L)));
+        new UserProject(4, "CenteredButton", "YoungAndroid", 1285093334176L, 1285093334176L, false)));
     projects.add(new Project(
-        new UserProject(5, "ActivityStarter", "YoungAndroid", 1286912595603L, 1286912595603L, 0L, 0L)));
+        new UserProject(5, "ActivityStarter", "YoungAndroid", 1286912595603L, 1286912595603L, false)));
     projects.add(new Project(
-        new UserProject(6, "Xylophone", "YoungAndroid", 1287376452708L, 1287376452708L, 0L, 0L)));
+        new UserProject(6, "Xylophone", "YoungAndroid", 1287376452708L, 1287376452708L, false)));
     projects.add(new Project(
-        new UserProject(7, "TestErrors", "YoungAndroid", 1289524529700L, 1289524529700L, 0L, 0L)));
+        new UserProject(7, "TestErrors", "YoungAndroid", 1289524529700L, 1289524529700L, false)));
     projects.add(new Project(
-        new UserProject(8, "FastMath", "YoungAndroid", 1289586160944L, 1289586160944L, 0L, 0L)));
+        new UserProject(8, "FastMath", "YoungAndroid", 1289586160944L, 1289586160944L, false)));
     projects.add(new Project(
-        new UserProject(9, "CustomIcon", "YoungAndroid", 1289954486145L, 1289954486145L, 0L, 0L)));
+        new UserProject(9, "CustomIcon", "YoungAndroid", 1289954486145L, 1289954486145L, false)));
     projects.add(new Project(
-        new UserProject(10, "BluetoothLegoNxt", "YoungAndroid", 1290020039719L, 1290020039719L, 0L, 0L)));
+        new UserProject(10, "BluetoothLegoNxt", "YoungAndroid", 1290020039719L, 1290020039719L, false)));
     projects.add(new Project(
-        new UserProject(11, "HideArrangement", "YoungAndroid", 1291068117943L, 1291068117943L, 0L, 0L)));
+        new UserProject(11, "HideArrangement", "YoungAndroid", 1291068117943L, 1291068117943L, false)));
     projects.add(new Project(
-        new UserProject(12, "Issue331", "YoungAndroid", 1291073134051L, 1291073134051L, 0L, 0L)));
+        new UserProject(12, "Issue331", "YoungAndroid", 1291073134051L, 1291073134051L, false)));
     projects.add(new Project(
-        new UserProject(13, "TextAlignment", "YoungAndroid", 1291318515390L, 1291318515390L, 0L, 0L)));
+        new UserProject(13, "TextAlignment", "YoungAndroid", 1291318515390L, 1291318515390L, false)));
     projects.add(new Project(
-        new UserProject(14, "StopWatch", "YoungAndroid", 1291415211435L, 1291415211435L, 0L, 0L)));
+        new UserProject(14, "StopWatch", "YoungAndroid", 1291415211435L, 1291415211435L, false)));
     projects.add(new Project(
-        new UserProject(15, "ProjectCreatedDec7At4_47pm", "YoungAndroid", 1291769259588L, 1291769259588L, 0L, 0L)));
+        new UserProject(15, "ProjectCreatedDec7At4_47pm", "YoungAndroid", 1291769259588L, 1291769259588L, false)));
   }
 
   public void testCompareByNameAscending() {

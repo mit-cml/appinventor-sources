@@ -7,11 +7,27 @@
 package com.google.appinventor.client.explorer;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.TextButton;
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.*;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.OpenHandler;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.user.client.Event;
+
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Label;
 
 import java.util.Iterator;
 
@@ -26,17 +42,40 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public class SourceStructureExplorer extends Composite {
   // UI elements
-  private final Tree tree;
+  private final EventCaptureTree tree;
   private final TextButton renameButton;
   private final TextButton deleteButton;
+
+  /**
+   * This is a hack to work around the fact that for multiselect we need to have
+   * access to the state of the meta/ctrl key but the SelectionHandler doesn't
+   * provide access to the original event that caused the selection. We capture
+   * the most recent event before the selection event is triggered and then
+   * reset once the selection has been updated.
+   */
+  static class EventCaptureTree extends Tree {
+
+    Event lastEvent = null;
+
+    public EventCaptureTree(Resources resources) {
+      super(resources);
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+      lastEvent = event;
+      super.onBrowserEvent(event);
+    }
+  }
 
   /**
    * Creates a new source structure explorer.
    */
   public SourceStructureExplorer() {
     // Initialize UI elements
-    tree = new Tree(Ode.getImageBundle());
+    tree = new EventCaptureTree(Ode.getImageBundle());
     tree.setAnimationEnabled(true);
+    tree.setScrollOnSelectEnabled(false);
     tree.addCloseHandler(new CloseHandler<TreeItem>() {
       @Override
       public void onClose(CloseEvent<TreeItem> event) {
@@ -73,7 +112,7 @@ public class SourceStructureExplorer extends Composite {
             SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
             enableButtons(item);
             //showBlocks(item);
-            item.onSelected();
+            item.onSelected(tree.lastEvent);
           } else {
             disableButtons();
             //hideComponent();
@@ -81,6 +120,7 @@ public class SourceStructureExplorer extends Composite {
         } else {
           disableButtons();
         }
+        tree.lastEvent = null;
       }
     });
     tree.addKeyDownHandler(new KeyDownHandler() {

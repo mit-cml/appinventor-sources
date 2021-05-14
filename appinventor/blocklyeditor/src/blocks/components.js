@@ -47,7 +47,7 @@ Blockly.ComponentBlock.COMPONENT_SELECTOR = "COMPONENT_SELECTOR";
  * @param {Array.<{enabled,text,callback}>} options the menu options
  */
 Blockly.ComponentBlock.addGenericOption = function(block, options) {
-  if (block.type === 'component_event' && block.isGeneric) {
+  if ((block.type === 'component_event' && block.isGeneric) || block.typeName === 'Form') {
     return;  // Cannot make a generic component_event specific for now...
   }
 
@@ -97,7 +97,8 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
   if (block.isGeneric) {
     var compBlock = block.getInputTargetBlock('COMPONENT');
     item.enabled = compBlock && compBlock.type === 'component_component_block';
-    item.text = Blockly.Msg.UNGENERICIZE_BLOCK;
+    item.text = Blockly.BlocklyEditor.makeMenuItemWithHelp(Blockly.Msg.UNGENERICIZE_BLOCK,
+      '/reference/other/any-component-blocks.html');
     item.callback = function () {
       try {
         Blockly.Events.setGroup(true);
@@ -126,7 +127,8 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
     };
   } else if (block.type === 'component_event') {
     item.enabled = true;
-    item.text = Blockly.Msg.GENERICIZE_BLOCK;
+    item.text = Blockly.BlocklyEditor.makeMenuItemWithHelp(Blockly.Msg.GENERICIZE_BLOCK,
+      '/reference/other/any-component-blocks.html');
     item.callback = function() {
       try {
         Blockly.Events.setGroup(true);
@@ -181,7 +183,8 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
     };
   } else {
     item.enabled = true;
-    item.text = Blockly.Msg.GENERICIZE_BLOCK;
+    item.text = Blockly.BlocklyEditor.makeMenuItemWithHelp(Blockly.Msg.GENERICIZE_BLOCK,
+      '/reference/other/any-component-blocks.html');
     item.callback = function() {
       try {
         Blockly.Events.setGroup(true);
@@ -193,6 +196,19 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
   }
   options.splice(options.length - 1, 0, item);
 };
+
+/**
+ * Marks the passed block as a badBlock() and disables it if the data associated
+ * with the block is not defined, or the data is marked as deprecated.
+ * @param {Blockly.BlockSvg} block The block to check for deprecation.
+ * @param {EventDescriptor|MethodDescriptor|PropertyDescriptor} data The data
+ *     associated with the block which is possibly deprecated.
+ */
+Blockly.ComponentBlock.checkDeprecated = function(block, data) {
+  if (data && data.deprecated && block.workspace == Blockly.mainWorkspace) {
+    block.setDisabled(true);
+  }
+}
 
 /**
  * Create an event block of the given type for a component with the given
@@ -280,10 +296,11 @@ Blockly.Blocks.component_event = {
     this.setParameterOrientation(horizParams);
     var tooltipDescription;
     if (eventType) {
-      tooltipDescription = componentDb.getInternationalizedEventDescription(eventType.name);
+      tooltipDescription = componentDb.getInternationalizedEventDescription(this.getTypeName(), eventType.name,
+          eventType.description);
     }
     else {
-      tooltipDescription = componentDb.getInternationalizedEventDescription(this.eventName);
+      tooltipDescription = componentDb.getInternationalizedEventDescription(this.getTypeName(), this.eventName);
     }
     this.setTooltip(tooltipDescription);
     this.setPreviousStatement(false, null);
@@ -297,19 +314,21 @@ Blockly.Blocks.component_event = {
       input.init();
     }
 
-    if (eventType && eventType.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
-      this.badBlock();
-      this.setDisabled(true);
-    }
-
-    this.verify(); // verify the block and mark it accordingly
+    // Set as badBlock if it doesn't exist.
+    this.verify(); 
+    // Disable it if it does exist and is deprecated.
+    Blockly.ComponentBlock.checkDeprecated(this, eventType);
 
     this.rendered = oldRendered;
+  },
+
+  getTypeName: function() {
+    return this.typeName === 'Form' ? 'Screen' : this.typeName;
   },
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
   // Also must create flydown params and DO input if they don't exist.
 
-  // To-DO: consider using top.BlocklyPanel... instead of window.parent.BlocklyPanel
+  // TODO: consider using top.BlocklyPanel... instead of window.parent.BlocklyPanel
 
   setParameterOrientation: function(isHorizontal) {
     var params = this.getParameters();
@@ -335,15 +354,16 @@ Blockly.Blocks.component_event = {
           this.removeInput('DO');
         }
 
-        // .. and insert new ones:
+        // ... and insert new ones:
         if (params.length > 0) {
           var paramInput = this.appendDummyInput('PARAMETERS')
                                .appendField(" ")
                                .setAlign(Blockly.ALIGN_LEFT);
           for (i = 0; param = params[i]; i++) {
-            paramInput.appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false, null, null, param.name), // false means not editable
-                                   'VAR' + i)
-                      .appendField(" ");
+            var field = new Blockly.FieldEventFlydown(
+                param, componentDb, Blockly.FieldFlydown.DISPLAY_BELOW);
+            paramInput.appendField(field, 'VAR' + i)
+                .appendField(" ");
           }
         }
 
@@ -361,13 +381,13 @@ Blockly.Blocks.component_event = {
           this.removeInput('DO');
         }
 
-        // .. and insert new ones:
+        // ... and insert new ones:
 
         // Vertically aligned parameters
         for (i = 0; param = params[i]; i++) {
+          var field = new Blockly.FieldEventFlydown(param, componentDb);
           this.appendDummyInput('VAR' + i)
-              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false),
-                           'VAR' + i)
+              .appendField(field, 'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
         newDoInput = this.appendStatementInput("DO")
@@ -400,7 +420,6 @@ Blockly.Blocks.component_event = {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
       this.componentDropDown.setValue(this.instanceName);
-      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
       return true;
     }
     return false;
@@ -415,8 +434,13 @@ Blockly.Blocks.component_event = {
     }
   },
   helpUrl : function() {
-    var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-    return Blockly.ComponentBlock.EVENTS_HELPURLS[mode];
+    var url = Blockly.ComponentBlock.EVENTS_HELPURLS[this.getTypeName()];
+    if (url && url[0] == '/') {
+      var parts = url.split('#');
+      parts[1] = this.getTypeName() + '.' + this.eventName;
+      url = parts.join('#');
+    }
+    return url;
   },
 
   getVars: function() {
@@ -495,6 +519,8 @@ Blockly.Blocks.component_event = {
       });
     });
 
+    delete types['Form'];
+
     Object.keys(types).forEach(function(typeName) {
       componentDb.forEventInType(typeName, function(_, eventName) {
         tb.push({
@@ -515,6 +541,7 @@ Blockly.Blocks.component_event = {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
     Blockly.ComponentBlock.addGenericOption(this, options);
     Blockly.BlocklyEditor.addPngExportOption(this, options);
+    Blockly.BlocklyEditor.addGenerateYailOption(this, options);
   },
 
   // check if the block corresponds to an event inside componentTypes[typeName].eventDictionary
@@ -588,8 +615,13 @@ Blockly.Blocks.component_event = {
 Blockly.Blocks.component_method = {
   category : 'Component',
   helpUrl : function() {
-      var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-      return Blockly.ComponentBlock.METHODS_HELPURLS[mode];
+      var url = Blockly.ComponentBlock.METHODS_HELPURLS[this.getTypeName()];
+      if (url && url[0] == '/') {
+        var parts = url.split('#');
+        parts[1] = this.getTypeName() + '.' + this.methodName;
+        url = parts.join('#');
+      }
+      return url;
   },
 
   mutationToDom : function() {
@@ -605,7 +637,8 @@ Blockly.Blocks.component_method = {
     if(!this.isGeneric) {
       container.setAttribute('instance_name', this.instanceName);//instance name not needed
     }
-    if (!this.isGeneric && this.typeName == "Clock" && Blockly.ComponentBlock.isClockMethodName(this.methodName)) {
+    if (!this.isGeneric && this.typeName == "Clock" &&
+        Blockly.ComponentBlock.isClockMethodName(this.methodName)) {
       var timeUnit = this.getFieldValue('TIME_UNIT');
       container.setAttribute('method_name', 'Add' + timeUnit);
       container.setAttribute('timeUnit', timeUnit);
@@ -708,9 +741,10 @@ Blockly.Blocks.component_method = {
 
     var tooltipDescription;
     if (methodTypeObject) {
-      tooltipDescription = componentDb.getInternationalizedMethodDescription(methodTypeObject.name);
+      tooltipDescription = componentDb.getInternationalizedMethodDescription(this.getTypeName(), methodTypeObject.name,
+          methodTypeObject.description);
     } else {
-      tooltipDescription = componentDb.getInternationalizedMethodDescription(this.typeName);
+      tooltipDescription = componentDb.getInternationalizedMethodDescription(this.getTypeName(), this.methodName);
     }
     this.setTooltip(tooltipDescription);
 
@@ -720,11 +754,15 @@ Blockly.Blocks.component_method = {
     }
     oldInputValues.splice(0, oldInputValues.length - params.length);
     for (var i = 0, param; param = params[i]; i++) {
-      var newInput = this.appendValueInput("ARG" + i).appendField(componentDb.getInternationalizedParameterName(param.name));
-      newInput.setAlign(Blockly.ALIGN_RIGHT);
-      var blockyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(param.type,Blockly.Blocks.Utilities.INPUT);
-      newInput.connection.setCheck(blockyType);
-      if (oldInputValues[i] && newInput.connection) {
+      var name = componentDb.getInternationalizedParameterName(param.name);
+      var check = this.getParamBlocklyType(param);
+
+      var input = this.appendValueInput("ARG" + i)
+          .appendField(name)
+          .setAlign(Blockly.ALIGN_RIGHT)
+          .setCheck(check);
+
+      if (oldInputValues[i] && input.connection) {
         Blockly.Mutator.reconnect(oldInputValues[i].outputConnection, this, 'ARG' + i);
       }
     }
@@ -745,19 +783,19 @@ Blockly.Blocks.component_method = {
       this.setNextStatement(true);
     }
 
-    this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
+    this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkIsInDefinition"},
+      {name:"checkComponentNotExistsError"}, {name: "checkGenericComponentSocket"}];
 
-    // mark the block bad if the method isn't defined or is marked deprecated
-    var method = this.getMethodTypeObject();
-    if ((!method || method.deprecated === true || method.deprecated === 'true') &&
-        this.workspace === Blockly.mainWorkspace) {
-      this.badBlock();
-      this.setDisabled(true);
-    }
-
-    this.verify(); // verify the block and mark it accordingly
+    // Set as badBlock if it doesn't exist.
+    this.verify(); 
+    // Disable it if it does exist and is deprecated.
+    Blockly.ComponentBlock.checkDeprecated(this, this.getMethodTypeObject());
 
     this.rendered = oldRendered;
+  },
+
+  getTypeName: function() {
+    return this.typeName === 'Form' ? 'Screen' : this.typeName;
   },
   // Rename the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
@@ -766,7 +804,6 @@ Blockly.Blocks.component_method = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
-      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
       return true;
     }
     return false;
@@ -776,7 +813,52 @@ Blockly.Blocks.component_method = {
    * @returns {(MethodDescriptor|undefined)}
    */
   getMethodTypeObject : function() {
-    return this.getTopWorkspace().getComponentDatabase().getMethodForType(this.typeName, this.methodName);
+    return this.getTopWorkspace().getComponentDatabase()
+        .getMethodForType(this.typeName, this.methodName);
+  },
+
+  getParamBlocklyType : function(param) {
+    var check = [];
+
+    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
+        param.type, Blockly.Blocks.Utilities.INPUT);
+    if (blocklyType) {
+      if (Array.isArray(blocklyType)) {
+        // Clone array.
+        check = blocklyType.slice();
+      } else {
+        check.push(blocklyType);
+      }
+    }
+
+    var helperType = Blockly.Blocks.Utilities
+        .helperKeyToBlocklyType(param.helperKey, this);
+    if (helperType && helperType != blocklyType) {
+      check.push(helperType);
+    }
+    return !check.length ? null : check;
+  },
+
+  getReturnBlocklyType : function(methodObj) {
+    var check = [];
+    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(
+        methodObj.returnType, Blockly.Blocks.Utilities.OUTPUT);
+    if (blocklyType) {
+      if (Array.isArray(blocklyType)) {
+        // Clone array.
+        check = blocklyType.slice();
+      } else {
+        check.push(blocklyType);
+      }
+    }
+
+    var helperType = Blockly.Blocks.Utilities
+        .helperKeyToBlocklyType(methodObj.returnHelperKey, this);
+    if (helperType && helperType != blocklyType) {
+      check.push(helperType);
+    }
+
+    return !check.length ? null : check;
   },
 
   /**
@@ -826,6 +908,9 @@ Blockly.Blocks.component_method = {
         });
       });
     });
+
+    delete typeNameDict['Form'];
+
     goog.object.forEach(typeNameDict, function(componentType) {
       componentDb.forMethodInType(componentType, function(_, methodName) {
         tb.push({
@@ -876,8 +961,8 @@ Blockly.Blocks.component_method = {
               modifiedParameters = true;
               break; // invalid input or connection
             }
-            var blockyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(param.type,Blockly.Blocks.Utilities.INPUT);
-            input.connection.setCheck(blockyType); // correct type
+            var check = this.getParamBlocklyType(param);
+            input.setCheck(check);
             found = true;
             break;
           }
@@ -893,7 +978,7 @@ Blockly.Blocks.component_method = {
           modifiedReturnType = true; // missing return type
         }
         else {
-          this.outputConnection.setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType(method.returnType,Blockly.Blocks.Utilities.OUTPUT));
+          this.outputConnection.setCheck(this.getReturnBlocklyType(method));
         }
       }
       else if (!method.returnType) {
@@ -933,12 +1018,18 @@ Blockly.Blocks.component_set_get = {
   category : 'Component',
   //this.blockType = 'getter',
   helpUrl : function() {
-    var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-    return Blockly.ComponentBlock.PROPERTIES_HELPURLS[mode];
+    var url = Blockly.ComponentBlock.PROPERTIES_HELPURLS[this.getTypeName()];
+    if (url && url[0] == '/') {
+      var parts = url.split('#');
+      parts[1] = this.getTypeName() + '.' + this.propertyName;
+      url = parts.join('#');
+    }
+    return url;
   },
 
   init: function() {
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
+    this.genericComponentInput = Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT;
   },
 
   mutationToDom : function() {
@@ -994,8 +1085,9 @@ Blockly.Blocks.component_set_get = {
       this.setColour(Blockly.ComponentBlock.COLOUR_GET);
     }
     var tooltipDescription;
-    if (this.propertyName) {
-      tooltipDescription = componentDb.getInternationalizedPropertyDescription(this.propertyName);
+    if (this.propertyName && this.propertyObject) {
+      tooltipDescription = componentDb.getInternationalizedPropertyDescription(
+        this.getTypeName(), this.propertyName, this.propertyObject.description);
     } else {
       tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
     }
@@ -1011,7 +1103,8 @@ Blockly.Blocks.component_set_get = {
         thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
         if (thisBlock.propertyName) {
-          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.propertyName));
+          thisBlock.setTooltip(componentDb.getInternationalizedPropertyDescription(thisBlock.getTypeName(),
+              thisBlock.propertyName, thisBlock.propertyObject.description));
         } else {
           thisBlock.setTooltip(Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP);
         }
@@ -1085,15 +1178,14 @@ Blockly.Blocks.component_set_get = {
 
     this.setTooltip(tooltipDescription);
 
-    this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
+    this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkIsInDefinition"},
+      {name:"checkComponentNotExistsError"}, {name: 'checkGenericComponentSocket'},
+      {name: 'checkEmptySetterSocket'}];
 
-    if (thisBlock.propertyObject && this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
-      // [lyn, 2015/12/27] mark deprecated properties as bad
-      this.badBlock();
-      this.setDisabled(true);
-    }
-
-    this.verify();
+    // Set as badBlock if it doesn't exist.
+    this.verify(); 
+    // Disable it if it does exist and is deprecated.
+    Blockly.ComponentBlock.checkDeprecated(this, this.propertyObject);
 
     for (var i = 0, input; input = this.inputList[i]; i++) {
       input.init();
@@ -1102,16 +1194,19 @@ Blockly.Blocks.component_set_get = {
     this.rendered = oldRendered;
   },
 
-  setTypeCheck : function() {
+  getTypeName: function() {
+    return this.typeName === 'Form' ? 'Screen' : this.typeName;
+  },
 
+  setTypeCheck : function() {
     var inputOrOutput = Blockly.Blocks.Utilities.OUTPUT;
     if(this.setOrGet == "set") {
       inputOrOutput = Blockly.Blocks.Utilities.INPUT;
     }
 
     var newType = this.getPropertyBlocklyType(this.propertyName,inputOrOutput);
-    // this will disconnect the block if the new outputType doesn't match the
-    // socket the block is plugged into
+    // This will disconnect the block if the new outputType doesn't match the
+    // socket the block is plugged into.
     if(this.setOrGet == "get") {
       this.outputConnection.setCheck(newType);
     } else {
@@ -1120,12 +1215,33 @@ Blockly.Blocks.component_set_get = {
   },
 
   getPropertyBlocklyType : function(propertyName,inputOrOutput) {
-    var yailType = "any"; // necessary for undefined propertyObject
-    if (this.getPropertyObject(propertyName)) {
-      yailType = this.getPropertyObject(propertyName).type;
+    var check = [];
+
+    var yailType = "any"; // Necessary for undefined propertyObject.
+    var property = this.getPropertyObject(propertyName);
+    if (property) {
+      yailType = property.type;
     }
-    return Blockly.Blocks.Utilities.YailTypeToBlocklyType(yailType,inputOrOutput);
+    var blocklyType = Blockly.Blocks.Utilities
+        .YailTypeToBlocklyType(yailType, inputOrOutput);
+    if (blocklyType) {
+      if (Array.isArray(blocklyType)) {
+        // Clone array.
+        check = blocklyType.slice();
+      } else {
+        check.push(blocklyType);
+      }
+    }
+
+    var helperType = Blockly.Blocks.Utilities
+        .helperKeyToBlocklyType(property.helperKey, this);
+    if (helperType && helperType != blocklyType) {
+      check.push(helperType);
+    }
+
+    return !check.length ? null : check;
   },
+
   getPropertyDropDownList : function() {
     var componentDb = this.getTopWorkspace().getComponentDatabase();
     var dropDownList = [];
@@ -1155,7 +1271,6 @@ Blockly.Blocks.component_set_get = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
-      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
       return true;
     }
     return false;
@@ -1179,6 +1294,9 @@ Blockly.Blocks.component_set_get = {
     }
 
     function pushGenericBlock(prefix, mode, property, typeName) {
+      if (typeName === 'Form') {
+        return;  // Skip generation of 'any Form' blocks
+      }
       tb.push({
         translatedName: prefix + componentDb.getInternationalizedComponentType(typeName) + '.' +
           componentDb.getInternationalizedPropertyName(property),
@@ -1268,8 +1386,7 @@ Blockly.Blocks.component_component_block = {
   category : 'Component',
 
   helpUrl : function() {
-    var mode = this.typeName === "Form" ? "Screen" : this.typeName;
-    return Blockly.ComponentBlock.HELPURLS[mode];
+    return Blockly.ComponentBlock.HELPURLS[this.getTypeName()];
   },  // TODO: fix
 
   mutationToDom : function() {
@@ -1290,9 +1407,14 @@ Blockly.Blocks.component_component_block = {
 
     this.appendDummyInput().appendField(this.componentDropDown, Blockly.ComponentBlock.COMPONENT_SELECTOR);
     //this.componentDropDown.setValue(this.instanceName);
-    this.setOutput(true, [this.typeName,"COMPONENT"]);
+    this.setOutput(true, [this.typeName,"COMPONENT","Key"]);
     this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkComponentNotExistsError"}];
   },
+
+  getTypeName: function() {
+    return this.typeName === 'Form' ? 'Screen' : this.typeName;
+  },
+
   // Renames the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
     if (this.instanceName == oldname) {
@@ -1300,7 +1422,6 @@ Blockly.Blocks.component_component_block = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
-      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
       return true;
     }
     return false;
@@ -1393,6 +1514,7 @@ Blockly.ComponentBlock.HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL,
@@ -1405,12 +1527,16 @@ Blockly.ComponentBlock.HELPURLS = {
   "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_HELPURL,
   "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_HELPURL,
   "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL,
+  "Barometer": Blockly.Msg.LANG_COMPONENT_BLOCK_BAROMETER_HELPURL,
   "GyroscopeSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_HELPURL,
+  "Hygrometer": Blockly.Msg.LANG_COMPONENT_BLOCK_HYGROMETER_HELPURL,
+  "LightSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LIGHTSENSOR_HELPURL,
   "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL,
-  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL,
   "NearField": Blockly.Msg.LANG_COMPONENT_BLOCK_NEARFIELDSENSOR_HELPURL,
+  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL,
   "Pedometer": Blockly.Msg.LANG_COMPONENT_BLOCK_PEDOMETERSENSOR_HELPURL,
   "ProximitySensor": Blockly.Msg.LANG_COMPONENT_BLOCK_PROXIMITYSENSOR_HELPURL,
+  "Thermometer": Blockly.Msg.LANG_COMPONENT_BLOCK_THERMOMETER_HELPURL,
   "HorizontalArrangement": Blockly.Msg.LANG_COMPONENT_BLOCK_HORIZARRANGE_HELPURL,
   "HorizontalScrollArrangement": Blockly.Msg.LANG_COMPONENT_BLOCK_HORIZSCROLLARRANGE_HELPURL,
   "TableArrangement": Blockly.Msg.LANG_COMPONENT_BLOCK_TABLEARRANGE_HELPURL,
@@ -1436,6 +1562,7 @@ Blockly.ComponentBlock.HELPURLS = {
   "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_HELPURL,
   "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_HELPURL,
   "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_HELPURL,
+  "Serial": Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_HELPURL,
   "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_HELPURL,
   "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_HELPURL,
   "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_HELPURL,
@@ -1479,6 +1606,7 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_PROPERTIES_HELPURL,
@@ -1491,12 +1619,16 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_PROPERTIES_HELPURL,
   "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_PROPERTIES_HELPURL,
   "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL,
+  "Barometer": Blockly.Msg.LANG_COMPONENT_BLOCK_BAROMETER_HELPURL,
   "GyroscopeSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_PROPERTIES_HELPURL,
+  "Hygrometer": Blockly.Msg.LANG_COMPONENT_BLOCK_HYGROMETER_HELPURL,
+  "LightSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LIGHTSENSOR_HELPURL,
   "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL,
-  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL,
   "NearField": Blockly.Msg.LANG_COMPONENT_BLOCK_NEARFIELDSENSOR_HELPURL,
+  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL,
   "Pedometer": Blockly.Msg.LANG_COMPONENT_BLOCK_PEDOMETERSENSOR_HELPURL,
   "ProximitySensor": Blockly.Msg.LANG_COMPONENT_BLOCK_PROXIMITYSENSOR_HELPURL,
+  "Thermometer": Blockly.Msg.LANG_COMPONENT_BLOCK_THERMOMETER_HELPURL,
   "HorizontalArrangement": Blockly.Msg.LANG_COMPONENT_BLOCK_HORIZARRANGE_HELPURL,
   "HorizontalScrollArrangement": Blockly.Msg.LANG_COMPONENT_BLOCK_HORIZSCROLLARRANGE_HELPURL,
   "TableArrangement": Blockly.Msg.LANG_COMPONENT_BLOCK_TABLEARRANGE_PROPERTIES_HELPURL,
@@ -1522,6 +1654,7 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_PROPERTIES_HELPURL,
   "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_PROPERTIES_HELPURL,
   "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_PROPERTIES_HELPURL,
+  "Serial": Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_PROPERTIES_HELPURL,
   "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL,
   "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_PROPERTIES_HELPURL,
   "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_PROPERTIES_HELPURL,
@@ -1565,6 +1698,7 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_EVENTS_HELPURL,
@@ -1577,12 +1711,16 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_EVENTS_HELPURL,
   "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_EVENTS_HELPURL,
   "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL,
+  "Barometer": Blockly.Msg.LANG_COMPONENT_BLOCK_BAROMETER_HELPURL,
   "GyroscopeSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_EVENTS_HELPURL,
+  "Hygrometer": Blockly.Msg.LANG_COMPONENT_BLOCK_HYGROMETER_HELPURL,
+  "LightSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LIGHTSENSOR_HELPURL,
   "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL,
-  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL,
   "NearField": Blockly.Msg.LANG_COMPONENT_BLOCK_NEARFIELDSENSOR_HELPURL,
+  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL,
   "Pedometer": Blockly.Msg.LANG_COMPONENT_BLOCK_PEDOMETERSENSOR_HELPURL,
   "ProximitySensor": Blockly.Msg.LANG_COMPONENT_BLOCK_PROXIMITYSENSOR_HELPURL,
+  "Thermometer": Blockly.Msg.LANG_COMPONENT_BLOCK_THERMOMETER_HELPURL,
   "NxtColorSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTCOLOR_EVENTS_HELPURL,
   "NxtLightSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTLIGHT_EVENTS_HELPURL,
   "NxtSoundSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTSOUND_EVENTS_HELPURL,
@@ -1601,6 +1739,7 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_EVENTS_HELPURL,
   "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL,
   "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_EVENTS_HELPURL,
+  "Serial": Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_EVENTS_HELPURL,
   "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL,
   "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_EVENTS_HELPURL,
   "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL,
@@ -1641,6 +1780,7 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
   "FeatureCollection": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL,
   "LineString": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL,
   "Marker": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL,
+  "Navigation": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL,
   "Polygon": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL,
   "Rectangle": Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL,
   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_METHODS_HELPURL,
@@ -1653,12 +1793,16 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
   "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_METHODS_HELPURL,
   "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_METHODS_HELPURL,
   "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL,
+  "Barometer": Blockly.Msg.LANG_COMPONENT_BLOCK_BAROMETER_HELPURL,
   "GyroscopeSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_METHODS_HELPURL,
+  "Hygrometer": Blockly.Msg.LANG_COMPONENT_BLOCK_HYGROMETER_HELPURL,
+  "LightSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LIGHTSENSOR_HELPURL,
   "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL,
-  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL,
   "NearField": Blockly.Msg.LANG_COMPONENT_BLOCK_NEARFIELDSENSOR_HELPURL,
+  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL,
   "Pedometer": Blockly.Msg.LANG_COMPONENT_BLOCK_PEDOMETERSENSOR_HELPURL,
   "ProximitySensor": Blockly.Msg.LANG_COMPONENT_BLOCK_PROXIMITYSENSOR_HELPURL,
+  "Thermometer": Blockly.Msg.LANG_COMPONENT_BLOCK_THERMOMETER_HELPURL,
   "NxtColorSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTCOLOR_METHODS_HELPURL,
   "NxtDirectCommands": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTDIRECT_METHODS_HELPURL,
   "NxtDrive": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTDRIVE_METHODS_HELPURL,
@@ -1679,6 +1823,7 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
   "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_METHODS_HELPURL,
   "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL,
   "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL,
+  "Serial": Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_METHODS_HELPURL,
   "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL,
   "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_METHODS_HELPURL,
   "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL,

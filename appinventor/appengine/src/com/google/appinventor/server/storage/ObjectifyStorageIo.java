@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -80,15 +80,15 @@ import com.google.appengine.tools.cloudstorage.RetryParams;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.channels.Channels;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -251,14 +251,10 @@ public class ObjectifyStorageIo implements  StorageIo {
     String cachekey = User.usercachekey + "|" + userId;
     User tuser = (User) memcache.get(cachekey);
     if (tuser != null && tuser.getUserTosAccepted() && ((email == null) || (tuser.getUserEmail().equals(email)))) {
-      if (tuser.getUserName()==null) {
-        setUserName(userId,tuser.getDefaultName());
-        tuser.setUserName(tuser.getDefaultName());
-      }
       return tuser;
     } else {                    // If not in memcache, or tos
                                 // not yet accepted, fetch from datastore
-        tuser = new User(userId, email, null, null, 0, false, false, 0, null);
+        tuser = new User(userId, email, false, false, null);
     }
     final User user = tuser;
     try {
@@ -303,18 +299,7 @@ public class ObjectifyStorageIo implements  StorageIo {
               datastore.put(userData);
             }
           }
-          if(userData.emailFrequency == 0){
-            // when users of old version access UserData,
-            // emailFrequency will be automatically set as 0
-            // force it to be DEFAULT_EMAIL_NOTIFICATION_FREQUENCY
-            userData.emailFrequency = User.DEFAULT_EMAIL_NOTIFICATION_FREQUENCY;
-            datastore.put(userData);
-          }
           user.setUserEmail(userData.email);
-          user.setUserName(userData.name);
-          user.setUserLink(userData.link);
-          user.setUserEmailFrequency(userData.emailFrequency);
-          user.setType(userData.type);
           user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());
           user.setIsAdmin(userData.isAdmin);
           user.setSessionId(userData.sessionid);
@@ -353,8 +338,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         user = createUser(datastore, newId, email);
       }
     }
-    User retUser = new User(user.id, email, user.name, user.link, 0, user.tosAccepted,
-      false, user.type, user.sessionid);
+    User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);
     retUser.setPassword(user.password);
     return retUser;
   }
@@ -369,11 +353,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     userData.tosAccepted = false;
     userData.settings = "";
     userData.email = email == null ? "" : email;
-    userData.name = User.getDefaultName(email);
-    userData.type = User.USER;
-    userData.link = "";
     userData.emaillower = email == null ? "" : emaillower;
-    userData.emailFrequency = User.DEFAULT_EMAIL_NOTIFICATION_FREQUENCY;
     datastore.put(userData);
     return userData;
   }
@@ -406,67 +386,6 @@ public class ObjectifyStorageIo implements  StorageIo {
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.email = email;
-            datastore.put(userData);
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
-    }
-  }
-
-  @Override
-  public void setUserName(final String userId, final String name) {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          String cachekey = User.usercachekey + "|" + userId;
-          memcache.delete(cachekey);  // Flush cached copy prior to update
-          UserData userData = datastore.find(userKey(userId));
-          if (userData != null) {
-            userData.name = name;
-            datastore.put(userData);
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
-    }
-
-  }
-
-  @Override
-  public void setUserLink(final String userId, final String link) {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          String cachekey = User.usercachekey + "|" + userId;
-          memcache.delete(cachekey);  // Flush cached copy prior to update
-          UserData userData = datastore.find(userKey(userId));
-          if (userData != null) {
-            userData.link = link;
-            datastore.put(userData);
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
-    }
-  }
-
-  @Override
-  public void setUserEmailFrequency(final String userId, final int emailFrequency) {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          String cachekey = User.usercachekey + "|" + userId;
-          memcache.delete(cachekey);  // Flush cached copy prior to update
-          UserData userData = datastore.find(userKey(userId));
-          if (userData != null) {
-            userData.emailFrequency = emailFrequency;
             datastore.put(userData);
           }
         }
@@ -538,69 +457,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public String getUserName(final String userId) {
-    final Result<String> name = new Result<String>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          UserData userData = datastore.find(UserData.class, userId);
-          if (userData != null) {
-            name.t = userData.name;
-          } else {
-            name.t = "unknown";
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
-    }
-    return name.t;
-  }
-
-  @Override
-  public String getUserLink(final String userId) {
-    final Result<String> link = new Result<String>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          UserData userData = datastore.find(UserData.class, userId);
-          if (userData != null) {
-            link.t = userData.link;
-          } else {
-            link.t = "unknown";
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
-    }
-    return link.t;
-  }
-
-  @Override
-  public int getUserEmailFrequency(final String userId) {
-    final Result<Integer> emailFrequency = new Result<Integer>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          UserData userData = datastore.find(UserData.class, userId);
-          if (userData != null) {
-            emailFrequency.t = userData.emailFrequency;
-          } else {
-            emailFrequency.t = User.DEFAULT_EMAIL_NOTIFICATION_FREQUENCY;
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
-    }
-    return emailFrequency.t;
-  }
-
-  @Override
   public void storeSettings(final String userId, final String settings) {
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -640,8 +496,6 @@ public class ObjectifyStorageIo implements  StorageIo {
           pd.name = project.getProjectName();
           pd.settings = projectSettings;
           pd.type = project.getProjectType();
-          pd.galleryId = UserProject.NOTPUBLISHED;
-          pd.attributionId = UserProject.FROMSCRATCH;
           datastore.put(pd); // put the project in the db so that it gets assigned an id
 
           assert pd.id != null;
@@ -799,41 +653,23 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
     }
-
   }
 
   @Override
-  public void setProjectGalleryId(final String userId, final long projectId,final long galleryId) {
+  public void setMoveToTrashFlag(final String userId, final long projectId, final boolean flag) {
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           ProjectData projectData = datastore.find(projectKey(projectId));
           if (projectData != null) {
-            projectData.galleryId = galleryId;
+            projectData.projectMovedToTrashFlag = flag;
             datastore.put(projectData);
           }
         }
       }, true);
     } catch (ObjectifyException e) {
-       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
-    }
-  }
-  @Override
-  public void setProjectAttributionId(final String userId, final long projectId,final long attributionId) {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData projectData = datastore.find(projectKey(projectId));
-          if (projectData != null) {
-            projectData.attributionId = attributionId;
-            datastore.put(projectData);
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-       throw CrashReport.createAndLogError(LOG, null,"error in setProjectAttributionId",  e);
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
   }
 
@@ -899,6 +735,19 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+  /**
+   * getProjectType -- Get the type of this project
+   *
+   * @param userId the user whose project this is
+   * @param projectId the id of the project
+   * @return String type of project
+   *
+   * Note: There is currently only one type of project supported,
+   *       so to avoid database calls (which cost both time and money)
+   *       we just return a constant. If we add a second (or more) type
+   *       of project, we should add appropriate code here.
+   */
+
   @Override
   public String getProjectType(final String userId, final long projectId) {
 //    final Result<String> projectType = new Result<String>();
@@ -946,8 +795,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     } else {
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
-          projectData.t.dateModified, projectData.t.galleryId,
-          projectData.t.attributionId);
+          projectData.t.dateModified, projectData.t.projectMovedToTrashFlag);
     }
   }
 
@@ -979,8 +827,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       for (ProjectData projectData : projectDatas.t.values()) {
         uProjects.add(new UserProject(projectData.id, projectData.name,
             projectData.type, projectData.dateCreated,
-            projectData.dateModified, projectData.galleryId,
-            projectData.attributionId));
+            projectData.dateModified, projectData.projectMovedToTrashFlag));
       }
       return uProjects;
     }
@@ -1019,7 +866,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (pd != null) {
             modDate.t = pd.dateModified;
           } else {
-            modDate.t = UserProject.NOTPUBLISHED;
+            modDate.t = (long) 0;
           }
         }
       }, false); // Transaction not needed, and we want the caching we get if we don't
@@ -1066,7 +913,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (pd != null) {
             dateCreated.t = pd.dateCreated;
           } else {
-            dateCreated.t = UserProject.NOTPUBLISHED;
+            dateCreated.t = (long) 0;
           }
         }
       }, true);
@@ -1075,49 +922,6 @@ public class ObjectifyStorageIo implements  StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     return dateCreated.t;
-  }
-
-  @Override
-  public long getProjectGalleryId(String userId, final long projectId) {
-    final Result<Long> galleryId = new Result<Long>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData pd = datastore.find(projectKey(projectId));
-          if (pd != null) {
-            galleryId.t = pd.galleryId;
-          } else {
-            galleryId.t = UserProject.NOTPUBLISHED;
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG,
-          null,"error in getProjectGalleryId", e);
-    }
-    return galleryId.t;
-  }
-  @Override
-  public long getProjectAttributionId(final long projectId) {
-    final Result<Long> attributionId = new Result<Long>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData pd = datastore.find(projectKey(projectId));
-          if (pd != null) {
-            attributionId.t = pd.attributionId;
-          } else {
-            attributionId.t = UserProject.FROMSCRATCH;
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          "error in getProjectAttributionId", e);
-    }
-    return attributionId.t;
   }
 
   @Override
@@ -1706,7 +1510,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     if (!useGcs)                // Using legacy blob store solution
       return false;
     boolean shouldUse =  fileName.contains("assets/")
-      || fileName.endsWith(".apk");
+      || fileName.endsWith(".apk") || fileName.endsWith(".aab");
     if (shouldUse)
       return true;              // Use GCS for package output and assets
     boolean mayUse = (fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
@@ -1985,6 +1789,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     final boolean includeScreenShots,
     final boolean forGallery,
     final boolean fatalError) throws IOException {
+    final boolean forBuildserver = includeAndroidKeystore && includeYail;
     validateGCS();
     final Result<Integer> fileCount = new Result<Integer>();
     fileCount.t = 0;
@@ -1996,6 +1801,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     // entity group.
     final List<FileData> fileData = new ArrayList<FileData>();
     final Result<String> projectName = new Result<String>();
+    final Map<String, Integer> screens = new HashMap<String, Integer>();
     projectName.t = null;
     String fileName = null;
 
@@ -2008,36 +1814,50 @@ public class ObjectifyStorageIo implements  StorageIo {
         @Override
         public void run(Objectify datastore) throws IOException {
           Key<ProjectData> projectKey = projectKey(projectId);
-          boolean foundFiles = false;
           for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
+            fileData.add(fd);
+            String fileName = fd.fileName;
+            if (fileName.startsWith("src/") && (fileName.endsWith(".scm") || fileName.endsWith(".bky") || fileName.endsWith(".yail"))) {
+              String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
+              int count = screens.containsKey(fileNameNoExt) ? screens.get(fileNameNoExt) + 1 : 1;
+              screens.put(fileNameNoExt, count);
+            }
+          }
+          Iterator<FileData> it = fileData.iterator();
+          while (it.hasNext()) {
+            FileData fd = it.next();
             String fileName = fd.fileName;
             if (fileName.startsWith("assets/external_comps") && forGallery) {
               throw new IOException("FATAL Error, external component in gallery app");
             }
-            if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
-              if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
-                // Skip legacy remix history files that were previous stored with the project
-                continue;
+            if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
+              it.remove();
+            } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) ||
+                      (fileName.startsWith("screenshots") && !includeScreenShots) ||
+                      (fileName.startsWith("src/") && fileName.endsWith(".yail") && !includeYail)) {
+              // Skip legacy remix history files that were previous stored with the project
+              // only include screenshots if asked ...
+              // Don't include YAIL files when exporting projects
+              // includeYail will be set to true when we are exporting the source
+              // to send to the buildserver or when the person exporting
+              // a project is an Admin (for debugging).
+              // Otherwise Yail files are confusing cruft. In the case of
+              // the Firebase Component they may contain secrets which we would
+              // rather not have leak into an export .aia file or into the Gallery
+              it.remove();
+            } else if (forBuildserver && fileName.startsWith("src/") &&
+                (fileName.endsWith(".scm") || fileName.endsWith(".bky") || fileName.endsWith(".yail"))) {
+              String fileNameNoExt = fileName.substring(0, fileName.lastIndexOf("."));
+              if ((Integer)screens.get(fileNameNoExt) < 3) {
+                LOG.log(Level.INFO, "Not adding file to build ", fileName);
+                it.remove();
+                if (fileName.endsWith(".yail")) {
+                  deleteFile(userId, projectId, fileName);
+                }
               }
-              if (fileName.startsWith("screenshots") && !includeScreenShots) {
-                // Only include screenshots if asked...
-                continue;
-              }
-              if (fileName.endsWith(".yail") && !includeYail) {
-                // Don't include YAIL files when exporting projects
-                // includeYail will be set to true when we are exporting the source
-                // to send to the buildserver or when the person exporting
-                // a project is an Admin (for debugging).
-                // Otherwise Yail files are confusing cruft. In the case of
-                // the Firebase Component they may contain secrets which we would
-                // rather not have leak into an export .aia file or into the Gallery
-                continue;
-              }
-              fileData.add(fd);
-              foundFiles = true;
             }
           }
-          if (foundFiles) {
+          if (fileData.size() > 0) {
             ProjectData pd = datastore.find(projectKey);
             projectName.t = pd.name;
             if (includeProjectHistory && !Strings.isNullOrEmpty(pd.history)) {
@@ -2795,9 +2615,8 @@ public class ObjectifyStorageIo implements  StorageIo {
             Query<UserData> userDataQuery = datastore.query(UserData.class).filter("email >=", partialEmail);
             int count = 0;
             for (UserData user : userDataQuery) {
-              boolean isModerator = (user.type == 1);
               retval.add(new AdminUser(user.id, user.name, user.email, user.tosAccepted,
-                  user.isAdmin, isModerator, user.visited));
+                  user.isAdmin, user.visited));
               count++;
               if (count > 20) {
                 break;
@@ -2829,11 +2648,6 @@ public class ObjectifyStorageIo implements  StorageIo {
                 userData.password = user.getPassword();
               }
               userData.isAdmin = user.getIsAdmin();
-              if (user.getIsModerator()) {
-                userData.type = User.MODERATOR;
-              } else {
-                userData.type = User.USER;
-              }
               datastore.put(userData);
             } else {            // New User
               String emaillower = user.getEmail().toLowerCase();
@@ -2850,15 +2664,6 @@ public class ObjectifyStorageIo implements  StorageIo {
               userData.settings = "";
               userData.email = user.getEmail();
               userData.emaillower = emaillower;
-              userData.type = User.USER;
-              userData.link = "";
-              userData.name = User.getDefaultName(user.getEmail());
-              userData.emailFrequency = User.DEFAULT_EMAIL_NOTIFICATION_FREQUENCY;
-              if (user.getIsModerator()) {
-                userData.type = User.MODERATOR;
-              } else {
-                userData.type = User.USER;
-              }
               if (!user.getPassword().equals("")) {
                 userData.password = user.getPassword();
               }
@@ -2939,6 +2744,27 @@ public class ObjectifyStorageIo implements  StorageIo {
       return 50;
     } else {
       return ival.intValue();
+    }
+  }
+
+  @Override
+  public void assertUserHasProject(final String userId, final long projectId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @SuppressWarnings("RedundantThrows")
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException, IOException {
+          Key<UserData> userKey = userKey(userId);
+          Key<UserProjectData> userProjectKey = userProjectKey(userKey, projectId);
+          UserProjectData data = datastore.find(userProjectKey);
+          if (data == null) {  // User doesn't have the corresponding project.
+            throw new SecurityException("Unauthorized access");
+          }
+          // User has data for project, so everything checks out.
+        }
+      }, false);
+    } catch(ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
     }
   }
 }

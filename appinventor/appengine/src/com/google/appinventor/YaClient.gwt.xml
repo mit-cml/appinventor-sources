@@ -37,7 +37,6 @@
   <servlet path="/components" class="com.google.appinventor.server.ComponentServiceImpl" />
   <servlet path="/download" class="com.google.appinventor.server.DownloadServlet" />
   <servlet path="/getmotd" class="com.google.appinventor.server.GetMotdServiceImpl" />
-  <servlet path="/help" class="com.google.appinventor.server.HelpServiceImpl" />
   <servlet path="/projects" class="com.google.appinventor.server.ProjectServiceImpl" />
   <servlet path="/upload" class="com.google.appinventor.server.UploadServlet" />
   <servlet path="/userinfo" class="com.google.appinventor.server.UserInfoServiceImpl" />
@@ -73,6 +72,8 @@
   <source path="client/editor/simple/palette"/>
   <source path="client/editor/youngandroid/palette"/>
   <source path="client/editor/youngandroid/properties"/>
+  <source path="client/editor/youngandroid/i18n"/>
+  <source path="client/editor/youngandroid/i18n/msg"/>
   <source path="images"/>
   <source path="shared/jsonp"/>
   <source path="shared/rpc"/>
@@ -83,7 +84,6 @@
   <source path="shared/youngandroid"/>
   <source path="shared/properties/json"/>
   <source path="shared/rpc/component"/>
-  <source path="shared/rpc/help"/>
   <source path="shared/rpc/launch"/>
   <source path="shared/rpc/project"/>
   <source path="shared/rpc/user"/>
@@ -104,6 +104,16 @@
   <generate-with class="com.google.appinventor.rebind.ExtendedServiceProxyGenerator">
     <when-type-assignable class="com.google.gwt.user.client.rpc.RemoteService" />
   </generate-with>
+
+  <replace-with class="com.google.appinventor.client.utils.FocusImplStandard">
+    <when-type-is class="com.google.gwt.user.client.ui.impl.FocusImpl"/>
+    <when-property-is name="user.agent" value="gecko1_8"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.utils.FocusImplSafari">
+    <when-type-is class="com.google.gwt.user.client.ui.impl.FocusImpl"/>
+    <when-property-is name="user.agent" value="safari"/>
+  </replace-with>
 
   <!-- English language, independent of country -->
   <extend-property name="locale" values="en"/>
@@ -133,8 +143,10 @@
   <extend-property name="locale" values="nl"/>
   <!-- German -->
   <extend-property name="locale" values="de"/>
+  <!-- Polish -->
+  <extend-property name="locale" values="pl"/>
+  <!-- Lithuanian -->
+  <extend-property name="locale" values="lt"/>
 
   <set-property-fallback name="locale" value="en"/>
-  <collapse-all-properties/>
-
 </module>

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019 MIT, All rights reserved
+// Copyright 2019-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.util.Log;
 
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -25,14 +24,13 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.AlignmentUtil;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,6 +47,7 @@ public class AbsoluteArrangement extends AndroidViewComponent implements Compone
 
 	// Layout
 	private final RelativeLayout viewLayout;
+	private final List<Component> children = new ArrayList<>();
 	// Backing for background color
 	private int backgroundColor;
 	// This is the Drawable corresponding to the Image property.
@@ -99,6 +98,7 @@ public class AbsoluteArrangement extends AndroidViewComponent implements Compone
 
 	@Override
 	public void $add(AndroidViewComponent component) {
+		children.add(component);
 		viewLayout.add(component);
 	}
 
@@ -142,6 +142,11 @@ public class AbsoluteArrangement extends AndroidViewComponent implements Compone
 
 		ViewUtil.setChildHeightForRelativeLayout(component.getView(), height);
 
+	}
+
+	@Override
+	public List<Component> getChildren() {
+		return Collections.unmodifiableList(children);
 	}
 
 	// AndroidViewComponent implementation
@@ -191,6 +196,7 @@ public class AbsoluteArrangement extends AndroidViewComponent implements Compone
 	/**
 	 * Specifies the path of the button's image.
 	 *
+	 * @internaldoc
 	 * <p/>
 	 * See
 	 * {@link com.google.appinventor.components.runtime.util.MediaUtil#determineMediaSource}

@@ -225,7 +225,6 @@
                     <value name="ADD8">
                       <block type="lists_create_with" id="}V;[y55Tf$v{NV$fLE!%">
                         <mutation items="2"></mutation>
-                        <comment pinned="true" h="64" w="315">Indicates that we can accept iceServers from the Rendezvous server</comment>
                         <value name="ADD0">
                           <block type="text" id="M;4c#e*(tb{AT6CJfQ4x">
                             <field name="TEXT">r2</field>
@@ -438,25 +437,54 @@
     <field name="NAME">isAPK</field>
     <field name="VAR0">input</field>
     <value name="RETURN">
-      <block type="math_compare" id="56">
-        <field name="OP">EQ</field>
+      <block type="logic_or" id="?]t/mFK^K=,Isjx^C]-M">
+        <field name="OP">OR</field>
         <value name="A">
-          <block type="text_starts_at" id="57">
-            <value name="TEXT">
-              <block type="lexical_variable_get" id="58">
-                <field name="VAR">input</field>
+          <block type="math_compare" id="56">
+            <field name="OP">EQ</field>
+            <value name="A">
+              <block type="text_starts_at" id="57">
+                <value name="TEXT">
+                  <block type="lexical_variable_get" id="58">
+                    <field name="VAR">input</field>
+                  </block>
+                </value>
+                <value name="PIECE">
+                  <block type="text" id="59">
+                    <field name="TEXT">http://</field>
+                  </block>
+                </value>
               </block>
             </value>
-            <value name="PIECE">
-              <block type="text" id="59">
-                <field name="TEXT">http://</field>
+            <value name="B">
+              <block type="math_number" id="60">
+                <field name="NUM">1</field>
               </block>
             </value>
           </block>
         </value>
         <value name="B">
-          <block type="math_number" id="60">
-            <field name="NUM">1</field>
+          <block type="math_compare" id="u1Q`jlIW}x?cXeN;dq^d">
+            <field name="OP">EQ</field>
+            <value name="A">
+              <block type="text_starts_at" id="UJMX]nVk^Yt60go#ImlD">
+                <value name="TEXT">
+                  <block type="lexical_variable_get" id="089/L*vyb(*~k;0En;V]">
+                    <field name="VAR">input</field>
+                  </block>
+                </value>
+                <value name="PIECE">
+                  <block type="text" id="p!*FO;,2Y+m*)7dL^pL3">
+                    <field name="TEXT">https://</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="0%#Y4|NYw?_e3?3uJO*8">
+                <field name="NUM">1</field>
+              </block>
+            </value>
           </block>
         </value>
       </block>
@@ -1116,5 +1144,5 @@
       </block>
     </value>
   </block>
-  <yacodeblocks ya-version="184" language-version="26"></yacodeblocks>
+  <yacodeblocks ya-version="204" language-version="30"></yacodeblocks>
 </xml>

@@ -57,6 +57,12 @@ public final class EditableProperty extends Property {
   // Property caption for use in properties panel
   private final String caption;
 
+  // Editor type of the property (for creating new editors)
+  private final String editorType;
+
+  // Additional arguments for the editor
+  private final String[] editorArgs;
+
   /**
    * Creates a new property.
    *
@@ -70,15 +76,22 @@ public final class EditableProperty extends Property {
    * @param type  type of property; see {@code TYPE_*} constants
    */
   public EditableProperty(EditableProperties properties, String name, String defaultValue,
-      String caption, PropertyEditor editor, int type) {
+      String caption, PropertyEditor editor, int type, String editorType, String[] editorArgs) {
     super(name, defaultValue);
 
     this.properties = properties;
     this.type = type;
     this.editor = editor;
     this.caption = caption;
+    this.editorType = editorType;
+    this.editorArgs = editorArgs;
 
     editor.setProperty(this);
+  }
+
+  public EditableProperty(EditableProperties properties, String name, String defaultValue,
+      int type) {
+    this(properties, name, defaultValue, name, new TextPropertyEditor(), type, "", null);
   }
 
   /**
@@ -92,8 +105,8 @@ public final class EditableProperty extends Property {
    * @param type  type of property; see {@code TYPE_*} constants
    */
   public EditableProperty(EditableProperties properties, String name, String defaultValue,
-      int type) {
-    this(properties, name, defaultValue, name, new TextPropertyEditor(), type);
+      int type, String editorType, String[] editorArgs) {
+    this(properties, name, defaultValue, name, new TextPropertyEditor(), type, editorType, editorArgs);
   }
 
   /**
@@ -117,19 +130,30 @@ public final class EditableProperty extends Property {
   }
 
   /**
-   * {@inheritDoc}
+   * Sets the value of the property, optionally forcing the property to reset its value.
    *
-   * Also notifies any property listeners of the change.
+   * @param value the value to set
+   * @param force true if the property change should be forced, otherwise false
+   * @see #setValue(String)
    */
-  @Override
-  public void setValue(String value) {
-    if (!value.equals(getValue())) {
+  public void setValue(String value, boolean force) {
+    if (!value.equals(getValue()) || force) {
       super.setValue(value);
       if (properties != null) {
         properties.firePropertyChangeEvent(getName(), value);
       }
       editor.updateValue();
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * Also notifies any property listeners of the change.
+   */
+  @Override
+  public void setValue(String value) {
+    setValue(value, false);
   }
 
   /**
@@ -146,8 +170,16 @@ public final class EditableProperty extends Property {
    *
    * @return  property caption
    */
-  String getCaption() {
+  public String getCaption() {
     return caption;
+  }
+
+  public String getEditorType() {
+    return editorType;
+  }
+
+  public String[] getEditorArgs() {
+    return editorArgs;
   }
 
 

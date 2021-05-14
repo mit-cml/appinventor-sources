@@ -16,7 +16,6 @@ import java.util.List;
  * Interface for the service providing project information. All declarations
  * in this interface are mirrored in {@link ProjectService}. For further
  * information see {@link ProjectService}.
- *
  */
 public interface ProjectServiceAsync {
 
@@ -47,14 +46,34 @@ public interface ProjectServiceAsync {
   void copyProject(long oldProjectId, String newName, AsyncCallback<UserProject> callback);
 
   /**
+   * @see ProjectService#moveToTrash(long)
+   */
+  void moveToTrash(long projectId, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#restoreProject(long)
+   */
+  void restoreProject(long projectId, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService@loginToGallery()
+   */
+
+  void loginToGallery(AsyncCallback<RpcResult> callback);
+
+  /**
+   * @see ProjectService#sendToGallery(long)
+   */
+  void sendToGallery(long projectId, AsyncCallback<RpcResult> callback);
+  /**
+   * @see ProjectService#loadFromGallery(String)
+   */
+  void loadFromGallery(String galleryId, AsyncCallback<UserProject> callback);
+
+  /**
    * @see ProjectService#deleteProject(long)
    */
   void deleteProject(long projectId, AsyncCallback<Void> callback);
-
-   /**
-   * @see ProjectService#setGalleryid
-   */
-  void setGalleryId(long projectId, long galleryId, AsyncCallback<java.lang.Void> callback);
 
   /**
    * @see ProjectService#getProjects()
@@ -114,7 +133,7 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#loadraw(long, String)
    */
-  void loadraw(long projectId, String fileId, AsyncCallback<byte []> callback);
+  void loadraw(long projectId, String fileId, AsyncCallback<byte[]> callback);
 
   /**
    * @see ProjectService#loadraw2(long, String)
@@ -151,7 +170,7 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#build(long, String, String, boolean)
    */
-  void build(long projectId, String nonce, String target, boolean secondBuildserver, AsyncCallback<RpcResult> callback);
+  void build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab, AsyncCallback<RpcResult> callback);
 
   /**
    * @see ProjectService#getBuildResult(long, String)
@@ -167,8 +186,6 @@ public interface ProjectServiceAsync {
    * @see ProjectService#importMedia(String, long, String, boolean)
    */
   void importMedia(String sessionId, long projectId, String url, boolean save, AsyncCallback<TextFile> odeAsyncCallback);
-
-  void newProjectFromGallery(String appName, String aiaPath, long attributionId, AsyncCallback<UserProject> callback);
 
   /**
    * @see ProjectService#log(String)

@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -34,6 +35,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * A multimedia component that plays sound files and optionally vibrates for the number of
+ * milliseconds (thousandths of a second) specified in the Blocks Editor. The name of the sound
+ * file to play can be specified either in the Designer or in the Blocks Editor.
+ *
+ * For supported sound file formats, see
+ * [Android Supported Media Formats](//developer.android.com/guide/appendix/media-formats.html).
+ *
+ * This `Sound` component is best for short sound files, such as sound effects, while the
+ * {@link Player} component is more efficient for longer sounds, such as songs.
+ *
+ * @internaldoc
  * Multimedia component that plays sounds and optionally vibrates.  A
  * sound is specified via filename.  See also
  * {@link android.media.SoundPool}.
@@ -151,8 +163,10 @@ public class Sound extends AndroidNonvisibleComponent
   }
 
   /**
-   * Sets the sound source
+   * The name of the sound file. Only certain formats are supported.
+   * See http://developer.android.com/guide/appendix/media-formats.html.
    *
+   * @internaldoc
    * <p/>See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
@@ -161,7 +175,7 @@ public class Sound extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void Source(String path) {
+  public void Source(@Asset String path) {
     sourcePath = (path == null) ? "" : path;
 
     // Clear the previous sound.
@@ -216,9 +230,9 @@ public class Sound extends AndroidNonvisibleComponent
   }
 
   /**
-   * Specify the minimum interval required between calls to Play(), in
+   * Specifies the minimum interval required between calls to {@link #Play()}, in
    * milliseconds.
-   * Once the sound starts playing, all further Play() calls will be ignored
+   * Once the sound starts playing, all further {@link #Play()} calls will be ignored
    * until the interval has elapsed.
    * @param interval  minimum interval in ms
    */

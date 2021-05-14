@@ -231,7 +231,7 @@ Blockly.Flydown.prototype.shouldHide = true;
 Blockly.Flydown.prototype.hide = function() {
   if (this.shouldHide) {
     Blockly.Flyout.prototype.hide.call(this);
-    Blockly.FieldDropdown.openFieldFlydown_ = null;
+    Blockly.FieldFlydown.openFieldFlydown_ = null;
   }
   this.shouldHide = true;
 }

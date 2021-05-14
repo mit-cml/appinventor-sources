@@ -37,6 +37,25 @@ Blockly.BlockSvg.prototype.error = null;
 Blockly.BlockSvg.prototype.isBad = false;
 
 /**
+ * This is to prevent any recursive render calls. It is not elegant in the
+ * least, but it is pretty future proof.
+ * @type {boolean}
+ */
+Blockly.BlockSvg.prototype.isRendering = false;
+
+/**
+ * The language-neutral id given to the collapsed input.
+ * @const {string}
+ */
+Blockly.BlockSvg.COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
+
+/**
+ * The language-neutral id given to the collapsed field.
+ * @const {string}
+ */
+Blockly.BlockSvg.COLLAPSED_FIELD_NAME = '_TEMP_COLLAPSED_FIELD';
+
+/**
  * Returns a list of mutator, comment, and warning icons.
  * @return {!Array} List of icons.
  */
@@ -66,9 +85,14 @@ Blockly.BlockSvg.prototype.onMouseDown_ = (function(func) {
         workspace.getParentSvg().parentNode.focus();
       }
       if (Blockly.FieldFlydown.openFieldFlydown_) {
-        if (goog.dom.contains(Blockly.getMainWorkspace().flydown_.svgGroup_, this.svgGroup_)) {
-          //prevent hiding the flyout if a child block is the target
-          Blockly.getMainWorkspace().flydown_.shouldHide = false;
+        var flydown = Blockly.getMainWorkspace().getFlydown();
+        if (flydown) {
+          if (goog.dom.contains(flydown.svgGroup_, this.svgGroup_)) {
+            //prevent hiding the flyout if a child block is the target
+            flydown.shouldHide = false;
+          }
+        } else {
+          console.warn('openFieldFlydown_ was set but flydown_ was undefined!');
         }
       }
       var retval = func.call(this, e);
@@ -124,6 +148,7 @@ Blockly.BlockSvg.prototype.onMouseUp_ = (function(func) {
         if (Blockly.getMainWorkspace().hasBackpack() &&
             Blockly.getMainWorkspace().getBackpack().isOpen) {
           var backpack = Blockly.getMainWorkspace().getBackpack();
+          goog.Timer.callOnce(backpack.close, 100, backpack);
           backpack.addToBackpack(Blockly.selected, true);
           backpack.onMouseUp(e, Blockly.selected.dragStartXY_);
         }
@@ -204,55 +229,67 @@ Blockly.BlockSvg.prototype.render = (function(func) {
 if (Blockly.Instrument.useRenderDown) {
 
 Blockly.BlockSvg.prototype.render = function(opt_bubble) {
-  this.renderDown();
-
-  // Render all blocks above this one (propagate a reflow).
   if (opt_bubble !== false) {
-    if (this.parentBlock_) {
-      var top = this.parentBlock_;
-      while (top.parentBlock_) top = top.parentBlock_;
-      top.render(false);
-    } else {
+    var root = this.getRootBlock();
+    if (root != this) {  // If 'this' is not the top.
+      root.render(false);
+      return;
+    }
+  }
+  if (this.isRendering || !Blockly.BlockSvg.isRenderingOn) {
+    return;
+  }
+  goog.asserts.assertObject(this.svgGroup_,
+    ' Uninitialized block cannot be rendered. Call block.initSvg()');
+
+  this.isRendering = true;
+  try {  // Make sure we set isRendering back to false if something goes wrong.
+    this.renderDown_();
+    if (!this.getParent()) {  // This is a top level block.
+      // Fire an event so the scrollbars can resize.
       this.workspace.resizeContents();
     }
+  } finally {
+    this.isRendering = false;
   }
 };
 
 /**
  * [lyn, 04/01/14] Render a tree of blocks from top down rather than bottom up.
  * This is in contrast to render(), which renders a block and all its antecedents.
+ * @private Should only be called from render.
  */
-Blockly.BlockSvg.prototype.renderDown = function() {
-  if (Blockly.BlockSvg.isRenderingOn) {
-    goog.asserts.assertObject(this.svgGroup_,
-      ' Uninitialized block cannot be renderedDown.  Call block.initSvg()');
-    // Recursively renderDown all my children (as long as I'm not collapsed)
-    if (! (Blockly.Instrument.avoidRenderDownOnCollapsedSubblocks && this.isCollapsed())) {
-      var childBlocks = this.childBlocks_;
-      for (var c = 0, childBlock; childBlock = childBlocks[c]; c++) {
-        childBlock.renderDown();
-      }
-      this.renderHere();
-    } else {
-      // nextConnection is a "child" block, but needs to be rendered because it's not collapsed.
-      if (Blockly.Instrument.avoidRenderDownOnCollapsedSubblocks &&
-        this.nextConnection && this.nextConnection.targetBlock()) {
-        this.nextConnection.targetBlock().renderDown();
-      }
-      this.renderHere();
+Blockly.BlockSvg.prototype.renderDown_ = function() {
+  // Recursively renderDown all my children (as long as I'm not collapsed)
+  if (!this.isCollapsed() || !Blockly.Instrument
+      .avoidRenderDownOnCollapsedSubblocks) {
+    var childBlocks = this.getChildren();  // Includes next block.
+    for (var i = 0, childBlock; (childBlock = childBlocks[i]); i++) {
+      childBlock.render(false);
     }
-    Blockly.Instrument.stats.renderDownCalls++; //***lyn
+  } else {  // Always render next block.
+    var nextBlock = this.getNextBlock();
+    if (nextBlock) {
+      nextBlock.render(false);
+    }
   }
+  this.renderHere_();
+  Blockly.Instrument.stats.renderDownCalls++; //***lyn
   // [lyn, 04/08/14] Because renderDown is recursive, doesn't make sense to track its time here.
 };
 
 /**
  * Render this block. Assumes descendants have already been rendered.
+ * @private Should only be called from renderDown_.
  */
-Blockly.BlockSvg.prototype.renderHere = function(opt_bubble) {
+Blockly.BlockSvg.prototype.renderHere_ = function() {
   var start = new Date().getTime();
   Blockly.Field.startCache();
   this.rendered = true;
+
+  if (this.isCollapsed()) {
+    this.updateCollapsed_();
+  }
 
   // Now render me (even if I am collapsed, since still need to show collapsed block)
   var cursorX = Blockly.BlockSvg.SEP_SPACE_X;
@@ -287,6 +324,44 @@ Blockly.BlockSvg.prototype.renderHere = function(opt_bubble) {
   Blockly.Instrument.stats.renderHereTime += timeDiff;
 };
 
+/**
+ * Makes sure that when the block is collapsed, it is rendered correctly for
+ * that state.
+ * @private
+ */
+Blockly.BlockSvg.prototype.updateCollapsed_ = function() {
+  var collapsed = this.isCollapsed();
+  var collapsedInputName = Blockly.BlockSvg.COLLAPSED_INPUT_NAME;
+  var collapsedFieldName = Blockly.BlockSvg.COLLAPSED_FIELD_NAME;
+
+  for (var i = 0, input; (input = this.inputList[i]); i++) {
+    if (input.name == collapsedInputName) {
+      continue;
+    }
+    input.setVisible(!collapsed);
+  }
+
+  if (!collapsed) {
+    this.removeInput(collapsedInputName);
+    return;
+  }
+
+  var icons = this.getIcons();
+  for (var i = 0, icon; (icon = icons[i]); i++) {
+    icon.setVisible(false);
+  }
+
+  var text = this.toString(Blockly.COLLAPSE_CHARS);
+  var field = this.getField(collapsedFieldName);
+  if (field) {
+    field.setValue(text);
+    return;
+  }
+  var input = this.getInput(collapsedInputName) ||
+      this.appendDummyInput(collapsedInputName);
+  input.appendField(new Blockly.FieldLabel(text), collapsedFieldName);
+};
+
   /**
    * Set whether the block is collapsed or not.
    * @param {boolean} collapsed True if collapsed.
@@ -295,36 +370,11 @@ Blockly.BlockSvg.prototype.renderHere = function(opt_bubble) {
     if (this.collapsed_ == collapsed) {
       return;
     }
-    var renderList = [];
-    // Show/hide the inputs.
-    for (var x = 0, input; input = this.inputList[x]; x++) {
-      // No need to collect renderList if rendering down.
-      input.setVisible(!collapsed);
-    }
-
-    var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
-    if (collapsed) {
-      var icons = this.getIcons();
-      for (var i = 0; i < icons.length; i++) {
-        icons[i].setVisible(false);
-      }
-      var text = this.toString(Blockly.COLLAPSE_CHARS);
-      this.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text).init();
-    } else {
-      this.removeInput(COLLAPSED_INPUT_NAME);
-      // Clear any warnings inherited from enclosed blocks.
-      this.setWarningText(null);
-    }
     Blockly.BlockSvg.superClass_.setCollapsed.call(this, collapsed);
-
-    if (!renderList.length) {
-      // No child blocks, just render this block.
-      renderList[0] = this;
-    }
-    if (this.rendered) {
-      for (var i = 0, block; block = renderList[i]; i++) {
-        block.render();
-      }
+    if (!collapsed) {
+      this.updateCollapsed_();
+    } else if (this.rendered) {
+      this.render();
     }
   };
 }
@@ -535,4 +585,23 @@ Blockly.BlockSvg.prototype.addSelect = function() {
     root.parentNode.appendChild(root);
     block_0 = block_0.getParent();
   } while (block_0);
+};
+
+/**
+ * Load the block's help page in a new window. This version overrides the implementation in Blockly
+ * in order to include the locale query parameter that the documentation page will use to redirect
+ * the user if a translation exists for their language.
+ *
+ * @private
+ */
+Blockly.BlockSvg.prototype.showHelp_ = function() {
+  var url = goog.isFunction(this.helpUrl) ? this.helpUrl() : this.helpUrl;
+  if (url) {
+    var parts = url.split('#');
+    var hereparts = top.location.href.match('[&?]locale=([a-zA-Z-]*)');
+    if (hereparts && hereparts[1].toLowerCase() !== 'en') {
+      parts[0] += '?locale=' + hereparts[1];
+    }
+    window.open(parts.join('#'));
+  }
 };

@@ -11,7 +11,9 @@ import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.output.MessagesOutput;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.http.client.Response;
@@ -29,14 +31,15 @@ public class BuildCommand extends ChainableCommand {
 
   // Whether or not to use the second buildserver
   private boolean secondBuildserver = false;
+  private boolean isAab;
 
   /**
    * Creates a new build command.
    *
    * @param target the build target
    */
-  public BuildCommand(String target, boolean secondBuildserver) {
-    this(target, secondBuildserver, null);
+  public BuildCommand(String target, boolean secondBuildserver, boolean isAab) {
+    this(target, secondBuildserver, isAab, null);
   }
 
   /**
@@ -46,8 +49,9 @@ public class BuildCommand extends ChainableCommand {
    * @param target the build target
    * @param nextCommand the command to execute after the build has finished
    */
-  public BuildCommand(String target, boolean secondBuildserver, ChainableCommand nextCommand) {
+  public BuildCommand(String target, boolean secondBuildserver, boolean isAab, ChainableCommand nextCommand) {
     super(nextCommand);
+    this.isAab = isAab;
     this.target = target;
     this.secondBuildserver = secondBuildserver;
   }
@@ -95,6 +99,15 @@ public class BuildCommand extends ChainableCommand {
               // of red background.
               ErrorReporter.reportInfo(MESSAGES.buildServerDifferentVersion());
               break;
+            case Response.SC_REQUEST_ENTITY_TOO_LARGE:
+              // SC_REQUEST_ENTITY_TOO_LARGE (response code 413) means that the project file was
+              // too large to be sent to the build server.
+              ClientJsonParser parser = new ClientJsonParser();
+              JSONObject info = parser.parse(result.getError()).asObject();
+              int maxSize = info.get("maxSize").asNumber().getInt();
+              double appSize = info.get("aiaSize").asNumber().getDouble();
+              ErrorReporter.reportError(MESSAGES.buildProjectTooLargeError(maxSize, appSize));
+              break;
             default:
               String errorMsg = result.getError();
               // This is not an internal App Inventor bug. The error is reported as info so that
@@ -115,6 +128,6 @@ public class BuildCommand extends ChainableCommand {
     };
 
     String nonce = ode.generateNonce();
-    ode.getProjectService().build(node.getProjectId(), nonce, target, secondBuildserver, callback);
+    ode.getProjectService().build(node.getProjectId(), nonce, target, secondBuildserver, isAab, callback);
   }
 }

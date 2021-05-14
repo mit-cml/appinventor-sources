@@ -87,7 +87,7 @@ public class KeyczarEncryptor implements Encryptor {
       }
       try {
         // TODO(user): Should we use a different key for development vs deployment?
-        String pathToKeys = rootPath.get() + "keystore";
+        String pathToKeys = rootPath.get() + "WEB-INF/keystore";
         crypter = new Crypter(pathToKeys);
         return crypter;
       } catch (KeyczarException e) {

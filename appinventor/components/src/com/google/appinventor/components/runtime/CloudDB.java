@@ -1,10 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2017-2018 MIT, All rights reserved
+// Copyright 2017-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.Manifest;
 import android.app.Activity;
 
 import android.database.Cursor;
@@ -33,6 +34,7 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.CloudDBJedisListener;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
@@ -65,14 +67,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisShardInfo;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.jedis.exceptions.JedisNoScriptException;
 
 /**
- * The CloudDB component stores and retrieves information in the Cloud using Redis, an
- * open source library. The component has methods to store a value under a tag and to
+ * The `CloudDB` component is a Non-visible component that allows you to store data on a Internet
+ * connected database server (using Redis software). This allows the users of your App to share
+ * data with each other. By default data will be stored in a server maintained by MIT, however you
+ * can setup and run your own server. Set the {@link #RedisServer(String)} property and
+ * {@link #RedisPort(int)} property to access your own server.
+ *
+ * @internaldoc
+ * The component has methods to store a value under a tag and to
  * retrieve the value associated with the tag. It also possesses a listener to fire events
  * when stored values are changed. It also posseses a sync capability which helps CloudDB
  * to sync with data collected offline.
@@ -95,8 +104,9 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
     nonVisible = true,
     iconName = "images/cloudDB.png")
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
-  "android.permission.ACCESS_NETWORK_STATE")
-
+  "android.permission.ACCESS_NETWORK_STATE," +
+  "android.permission.READ_EXTERNAL_STORAGE," +
+  "android.permission.WRITE_EXTERNAL_STORAGE")
 @UsesLibraries(libraries = "jedis.jar")
 public final class CloudDB extends AndroidNonvisibleComponent implements Component,
   OnClearListener, OnDestroyListener {
@@ -237,6 +247,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private final List<storedValue> storeQueue = Collections.synchronizedList(new ArrayList());
 
   private ConnectivityManager cm;
+
+  // Do we have storage permission yet
+  private boolean havePermission = false;
 
   private static class storedValue {
     private String tag;
@@ -456,7 +469,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   /**
-   * Getter for the ProjectID.
+   * Gets the ProjectID for this CloudDB project.
    *
    * @return the ProjectID for this CloudDB project
    */
@@ -500,6 +513,13 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   /**
+   * This field contains the authentication token used to login to the backed Redis server. For the
+   * "DEFAULT" server, do not edit this value, the system will fill it in for you. A system
+   * administrator may also provide a special value to you which can be used to share data between
+   * multiple projects from multiple people. If using your own Redis server, set a password in the
+   * server's config and enter it here.
+   *
+   * @internaldoc
    * Getter for the authTokenSignature.
    *
    * @return the authTokenSignature for this CloudDB project
@@ -516,6 +536,12 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     return token;
   }
 
+  /**
+   * Set to `true`{:.logic.block} to use SSL to talk to CloudDB/Redis server. This must be set to
+   * `true`{:.logic.block} for the "DEFAULT" server.
+   *
+   * @param useSSL true if a secure connection should be used for CloudDB
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
            defaultValue = "True")
   public void UseSSL(boolean useSSL) {
@@ -546,7 +572,8 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private static final String SET_SUB_SCRIPT_SHA1 = "765978e4c340012f50733280368a0ccc4a14dfb7";
 
   /**
-   * Asks CloudDB to store the given value under the given tag.
+   * Asks `CloudDB` to store the given `value`{:.variable.block} under the given
+   * `tag`{:.text.block}.
    *
    * @param tag The tag to use
    * @param valueToStore The value to store. Can be any type of value (e.g.
@@ -555,7 +582,18 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   @SimpleFunction(description = "Store a value at a tag.")
   public void StoreValue(final String tag, final Object valueToStore) {
     checkProjectIDNotBlank();
-
+    if (!havePermission) {
+      final CloudDB me = this;
+      form.askPermission(new BulkPermissionRequest(this, "CloudDB",
+          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+          @Override
+          public void onGranted() {
+            me.havePermission = true;
+            StoreValue(tag, valueToStore);
+          }
+        });
+      return;
+    }
     final String value;
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
     boolean isConnected = networkInfo != null && networkInfo.isConnected();
@@ -642,6 +680,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                             Log.d(LOG_TAG, "Workqueue empty, sending pendingTag, valueListLength = " + pendingValueList.length());
                           }
                           jEval(SET_SUB_SCRIPT, SET_SUB_SCRIPT_SHA1, 1, pendingTag, pendingValue, jsonValueList, projectID);
+                          UpdateDone(pendingTag, "StoreValue");
                         }
                       } catch (JedisException e) {
                         CloudDBError(e.getMessage());
@@ -699,9 +738,10 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   /**
-   * GetValue asks CloudDB to get the value stored under the given tag.
-   * It will pass valueIfTagNotThere to GotValue if there is no value stored
-   * under the tag.
+   * `GetValue` asks `CloudDB` to get the value stored under the given tag.
+   * It will pass the result to the {@link #GotValue(String, Object) event.
+   * If there is no value stored under the tag, the
+   * `valueIfTagNotThere`{:.variable.block} will be given.
    *
    * @param tag The tag whose value is to be retrieved.
    * @param valueIfTagNotThere The value to pass to the event if the tag does
@@ -711,9 +751,21 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     "value but will cause a GotValue event to fire when the " +
     "value is looked up.")
   public void GetValue(final String tag, final Object valueIfTagNotThere) {
-    checkProjectIDNotBlank();
     if (DEBUG) {
       Log.d(LOG_TAG, "getting value ... for tag: " + tag);
+    }
+    checkProjectIDNotBlank();
+    if (!havePermission) {
+      final CloudDB me = this;
+      form.askPermission(new BulkPermissionRequest(this, "CloudDB",
+          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+          @Override
+          public void onGranted() {
+            me.havePermission = true;
+            GetValue(tag, valueIfTagNotThere);
+          }
+        });
+      return;
     }
     final AtomicReference<Object> value = new AtomicReference<Object>();
     Cursor cursor = null;
@@ -736,7 +788,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                 Log.d(LOG_TAG, "finished call jedis.get()");
               }
               if (returnValue != null) {
-                String val = JsonUtil.getJsonRepresentationIfValueFileName(returnValue);
+                String val = JsonUtil.getJsonRepresentationIfValueFileName(form, returnValue);
                 if(val != null) value.set(val);
                 else value.set(returnValue);
               }
@@ -754,6 +806,11 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
               flushJedis(true);
               return;
             } catch (JedisException e) {
+              Log.e(LOG_TAG, "Exception in GetValue", e);
+              CloudDBError(e.getMessage());
+              flushJedis(true);
+              return;
+            } catch (Exception e) {
               Log.e(LOG_TAG, "Exception in GetValue", e);
               CloudDBError(e.getMessage());
               flushJedis(true);
@@ -778,6 +835,12 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     }
   }
 
+  /**
+   * Returns `true`{:.logic.block} if we are on the network and will likely be able to connect to
+   * the `CloudDB` server.
+   *
+   * @return true if the network is connected, otherwise false
+   */
   @SimpleFunction(description = "returns True if we are on the network and will likely " +
     "be able to connect to the CloudDB server.")
   public boolean CloudConnected() {
@@ -786,6 +849,13 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     return isConnected;
   }
 
+  /**
+   * Event triggered by the {@link #RemoveFirstFromList(String)} function. The argument
+   * `value`{:.variable.block} is the object that was the first in the list, and which is now
+   * removed.
+   *
+   * @param value the value removed from the beginning of the list
+   */
   @SimpleEvent(description = "Event triggered by the \"RemoveFirstFromList\" function. The " +
     "argument \"value\" is the object that was the first in the list, and which is now " +
     "removed.")
@@ -796,7 +866,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     checkProjectIDNotBlank();
     try {
       if(value != null && value instanceof String) {
-        value = JsonUtil.getObjectFromJson((String) value);
+        value = JsonUtil.getObjectFromJson((String) value, true);
       }
     } catch (JSONException e) {
       Log.e(CloudDB.LOG_TAG,"error while converting to JSON...",e);
@@ -821,6 +891,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       "if (type(decodedValue) == 'table') then " +
       "  local removedValue = table.remove(decodedValue, 1);" +
       "  local newValue = cjson.encode(decodedValue);" +
+      "  if (newValue == \"{}\") then " +
+      "    newValue = \"[]\" " +
+      "  end " +
       "  redis.call('set', project .. \":\" .. key, newValue);" +
       "  table.insert(subTable, key);" +
       "  table.insert(subTable1, newValue);" +
@@ -831,8 +904,16 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       "  return error('You can only remove elements from a list');" +
       "end";
 
-  private static final String POP_FIRST_SCRIPT_SHA1 = "ed4cb4717d157f447848fe03524da24e461028e1";
+  private static final String POP_FIRST_SCRIPT_SHA1 = "68a7576e7dc283a8162d01e3e7c2d5c4ab3ff7a5";
 
+  /**
+   * Obtain the first element of a list and atomically remove it. If two devices use this function
+   * simultaneously, one will get the first element and the the other will get the second element,
+   * or an error if there is no available element. When the element is available, the
+   * {@link #FirstRemoved(Object)} event will be triggered.
+   *
+   * @param tag the tag to pop the first value from
+   */
   @SimpleFunction(description = "Return the first element of a list and atomically remove it. " +
     "If two devices use this function simultaneously, one will get the first element and the " +
     "the other will get the second element, or an error if there is no available element. " +
@@ -905,6 +986,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           Jedis jedis = getJedis();
           try {
             jEval(APPEND_SCRIPT, APPEND_SCRIPT_SHA1, 1, key, item, projectID);
+            UpdateDone(key, "AppendValueToList");
           } catch(JedisException e) {
             CloudDBError(e.getMessage());
             flushJedis(true);
@@ -914,7 +996,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   /**
-   * Indicates that a GetValue request has succeeded.
+   * Indicates that a {@link #GetValue(String, Object)} request has succeeded.
    *
    * @param value the value that was returned. Can be any type of value
    *              (e.g. number, text, boolean or list).
@@ -938,7 +1020,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         Log.d(LOG_TAG, "GotValue: Class of value = " + value.getClass().getName());
       }
       if(value != null && value instanceof String) {
-        value = JsonUtil.getObjectFromJson((String) value);
+        value = JsonUtil.getObjectFromJson((String) value, true);
       }
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
@@ -949,11 +1031,14 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   /**
+   * Remove the tag from CloudDB.
+   *
+   * @internaldoc
    * Asks CloudDB to forget (delete or set to "null") a given tag.
    *
    * @param tag The tag to remove
    */
-  @SimpleFunction(description = "Remove the tag from CloudDB")
+  @SimpleFunction(description = "Remove the tag from CloudDB.")
   public void ClearTag(final String tag) {
     checkProjectIDNotBlank();
     background.submit(new Runnable() {
@@ -961,6 +1046,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           try {
             Jedis jedis = getJedis();
             jedis.del(projectID + ":" + tag);
+            UpdateDone(tag, "ClearTag");
           } catch (Exception e) {
             CloudDBError(e.getMessage());
             flushJedis(true);
@@ -970,9 +1056,28 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   /**
-   * GetTagList asks CloudDB to retrieve all the tags belonging to this project.
+   * Indicates that operations that store data to CloudDB have completed.
    *
-   * The resulting list is returned in GotTagList
+   * @param tag The tag that was altered
+   * @param operation one of "ClearTag", "StoreValue" or "AppendValueToList"
+   */
+  @SimpleEvent
+  public void UpdateDone(final String tag, final String operation) {
+    if (DEBUG) {
+      Log.d(CloudDB.LOG_TAG, "UpdateDone: tag = " + tag + " operations = " + operation);
+    }
+    androidUIHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          EventDispatcher.dispatchEvent(CloudDB.this, "UpdateDone", tag, operation);
+        }
+      });
+  }
+
+
+  /**
+   * Asks `CloudDB` to retrieve all the tags belonging to this project. The
+   * resulting list is returned in the event {@link #TagList(List)}.
    */
   @SimpleFunction(description = "Get the list of tags for this application. " +
       "When complete a \"TagList\" event will be triggered with the list of " +
@@ -1014,7 +1119,8 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   /**
-   * Indicates that a GetTagList request has succeeded.
+   * Event triggered when we have received the list of known tags. Run in response to a call to the
+   * {@link #GetTagList()} function.
    *
    * @param value the list of tags that was returned.
    */
@@ -1026,8 +1132,8 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   /**
-   * Indicates that the data in the CloudDB project has changed.
-   * Launches an event with the tag and value that have been updated.
+   * Indicates that the data in the CloudDB project has changed. Launches an event with the
+   * `tag`{:.text.block} that has been updated and the `value`{:.variable.block} it now has.
    *
    * @param tag the tag that has changed.
    * @param value the new value of the tag.
@@ -1037,7 +1143,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     Object tagValue = "";
     try {
       if(value != null && value instanceof String) {
-        tagValue = JsonUtil.getObjectFromJson((String) value);
+        tagValue = JsonUtil.getObjectFromJson((String) value, true);
       }
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
@@ -1053,7 +1159,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   /**
-   * Indicates that the communication with the CloudDB signaled an error.
+   * Indicates that an error occurred while communicating with the CloudDB Redis server.
    *
    * @param message the error message
    */
@@ -1085,12 +1191,25 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     }
   }
 
+  public Form getForm() {
+    return form;
+  }
+
   public Jedis getJedis(boolean createNew) {
-    Jedis jedis;
     if (dead) {                 // If we are dead, we are dead!
       return null;
     }
+    Jedis jedis;
     try {
+      String jToken;            // The token we actually send to CloudDB
+      // If the first character of the token is %, we toss it away
+      // it is used by MockCloudDB.java to determine if the token should
+      // be kept or fetched from the server when needed
+      if (token != null && !token.equals("") && token.substring(0, 1).equals("%")) {
+        jToken = token.substring(1);
+      } else {
+        jToken = token;
+      }
       if (DEBUG) {
         Log.d(LOG_TAG, "getJedis(true): Attempting a new connection (createNew = " +
           createNew + " redisServer = " + redisServer + " redisPort = " +
@@ -1101,20 +1220,18 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                                 // Root certificate because it isn't present in older
                                 // Android versions
         ensureSslSockFactory();
-        jedis = new Jedis(redisServer, redisPort, true, SslSockFactory, null, null);
+        JedisShardInfo jedisinfo = new JedisShardInfo(redisServer, redisPort,
+          20000 /* connection timeout */, true, SslSockFactory, null, null);
+        jedisinfo.setPassword(jToken);
+        jedis = new Jedis(jedisinfo);
       } else {
-        jedis = new Jedis(redisServer, redisPort, false);
+        JedisShardInfo jedisinfo = new JedisShardInfo(redisServer,
+          redisPort, 20000 /* connection timeout */);
+        jedisinfo.setPassword(jToken);
+        jedis = new Jedis(jedisinfo);
       }
       if (DEBUG) {
         Log.d(LOG_TAG, "getJedis(true): Have new connection.");
-      }
-      // If the first character of the token is %, we toss it away
-      // it is used by MockCloudDB.java to determine if the token should
-      // be kept or fetched from the server when needed
-      if (token.substring(0, 1).equals("%")) {
-        jedis.auth(token.substring(1));
-      } else {
-        jedis.auth(token);
       }
       if (DEBUG) {
         Log.d(LOG_TAG, "getJedis(true): Authentication complete.");
@@ -1202,7 +1319,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         throw new YailRuntimeError("Invalid fileName, was " + originalFileName, "ReadFrom");
       }
       String extension = getFileExtension(fileName);
-      byte [] content = FileUtil.readFile(fileName);
+      byte [] content = FileUtil.readFile(form, fileName);
       String encodedContent = Base64.encodeToString(content, Base64.DEFAULT);
       Object [] results = new Object[2];
       results[0] = "." + extension;

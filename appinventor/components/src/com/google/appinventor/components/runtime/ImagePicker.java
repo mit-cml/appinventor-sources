@@ -1,22 +1,16 @@
 // -*- Mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -31,9 +25,19 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.QUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
- * Component enabling a user to select an image from the phone's gallery.
+ * A special-purpose button. When the user taps an `ImagePicker`, the device's image gallery
+ * appears, and the user can choose an image. After an image is picked, it is saved, and the
+ * {@link #Selection()} property will be the name of the file where the image is stored. In order
+ * to not fill up storage, a maximum of 10 images will be stored. Picking more images will delete
+ * previous images, in order from oldest to newest.
  *
  * @author halabelson@google.com (Hal Abelson)
  */
@@ -175,7 +179,7 @@ public class ImagePicker extends Picker implements ActivityResultListener {
 
     File dest = null;
 
-    String fullDirname = Environment.getExternalStorageDirectory() + imagePickerDirectoryName;
+    String fullDirname = QUtil.getExternalStoragePath(container.$form()) + imagePickerDirectoryName;
     File destDirectory = new File(fullDirname);
 
     try {

@@ -185,6 +185,15 @@ public @interface ActivityElement {
    */
   String clearTaskOnLaunch() default "";
 
+  /** Requests the activity to be displayed in wide color gamut mode on compatible devices.
+   * In wide color gamut mode, a window can render outside of the SRGB gamut to display more
+   * vibrant colors. If the device doesn't support wide color gamut rendering, this attribute
+   * has no effect
+   *
+   * @return  the activity colorMode attribute
+   */
+  String colorMode() default "";
+
   /**
    * Lists configuration changes that the activity will handle itself. When a
    * configuration change occurs at runtime, the activity is shut down and
@@ -213,6 +222,14 @@ public @interface ActivityElement {
    * @return  the activity configChanges attribute
    */
   String configChanges() default "";
+
+  /**
+   * Whether or not the activity is direct-boot aware; that is, whether or
+   * not it can run before the user unlocks the device.
+   *
+   * @return  the activity directBootAware attribute
+   */
+  String directBootAware() default "";
 
   /**
    * Specifies how a new instance of an activity should be added to a task each
@@ -336,6 +353,15 @@ public @interface ActivityElement {
    */
   String icon() default "";
 
+  /** Sets the immersive mode setting for the current activity. If the android:immersive
+   * attribute is set to true in the app's manifest entry for this activity, the
+   * ActivityInfo.flags member always has its FLAG_IMMERSIVE bit set, even if the immersive
+   * mode is changed at runtime using the setImmersive() method.
+   *
+   * @return  the activity immersive attribute
+   */
+  String immersive() default "";
+
   /**
    * A user-readable label for the activity. The label is displayed on-screen
    * when the activity must be represented to the user. It's often displayed
@@ -424,6 +450,21 @@ public @interface ActivityElement {
    */
   String launchMode() default "";
 
+  /** Determines how the system presents this activity when the device is running
+   * in lock task mode.
+   *
+   * Android can run tasks in an immersive, kiosk-like fashion called lock task
+   * mode. When the system runs in lock task mode, device users typically can’t
+   * see notifications, access non-allowlisted apps, or return to the home screen
+   * (unless the Home app is allowlisted). Only apps that have been allowlisted by
+   * a device policy controller (DPC) can run when the system is in lock task mode.
+   * System and privileged apps, however, can run in lock task mode without being
+   * allowlisted.
+   *
+   * @return  the activity lockTaskMode attribute
+   */
+  String lockTaskMode() default "";
+
   /**
    * The maximum number of tasks rooted at this activity in the overview screen.
    * When this number of entries is reached, the system removes the least-recently
@@ -434,6 +475,20 @@ public @interface ActivityElement {
    * @return  the activity maxRecents attribute
    */
   String maxRecents() default "";
+
+  /** The maximum aspect ratio the activity supports. If the app runs on a device
+   * with a wider aspect ratio, the system automatically letterboxes the app,
+   * leaving portions of the screen unused so the app can run at its specified
+   * maximum aspect ratio. Maximum aspect ratio is expressed as the decimal form
+   * of the quotient of the device's longer dimension divided by its shorter
+   * dimension. For example, if the maximum aspect ratio is 7:3, set the value
+   * of this attribute to 2.33. On non-wearable devices, the value of this
+   * attribute needs to be 1.33 or greater. On wearable devices, it must be 1.0
+   * or greater. Otherwise, the system ignores the set value.
+   *
+   * @return  the activity maxAspectRation attribute
+   */
+  String maxAspectRatio() default "";
 
   /**
    * Whether an instance of the activity can be launched into the process of the
@@ -487,6 +542,18 @@ public @interface ActivityElement {
    * @return  the activity parentActivityName attribute
    */
   String parentActivityName() default "";
+
+  /** Defines how an instance of an activity is preserved within a containing task
+   * across device restarts.
+   *
+   * If the root activity of a task sets this attribute's value to persistRootOnly,
+   * then only the root activity is preserved. Otherwise, the activities that are
+   * higher up the task's back stack are examined; any of these activities that set
+   * this attribute's value to persistAcrossReboots are preserved.
+   *
+   * @return  the activity persistableMode attribute
+   */
+  String persistableMode() default "";
 
   /**
    * The name of a permission that clients must have to launch the activity
@@ -579,6 +646,17 @@ public @interface ActivityElement {
    */
   String screenOrientation() default "";
 
+  /** Whether or not the activity is shown when the device's current user is different
+   * than the user who launched the activity. You can set this attribute to a literal
+   * value--"true" or "false"--or you can set the attribute to a resource or theme
+   * attribute that contains a boolean value.
+   *
+   * This attribute was added in API level 23.
+   *
+   * @return  the activity showForAllUsers attribute
+   */
+  String showForAllUsers() default "";
+
   /**
    * Whether or not the activity can be killed and successfully restarted
    * without having saved its state — "true" if it can be restarted without
@@ -609,9 +687,9 @@ public @interface ActivityElement {
    *
    * This attribute was added in API level 24.
    *
-   * @return  the activity supportPictureInPicture attribute
+   * @return  the activity supportsPictureInPicture attribute
    */
-  String supportPictureInPicture() default "";
+  String supportsPictureInPicture() default "";
 
   /**
    * The task that the activity has an affinity for. Activities with the same

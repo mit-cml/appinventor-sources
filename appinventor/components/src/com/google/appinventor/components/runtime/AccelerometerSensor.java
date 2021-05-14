@@ -7,18 +7,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -26,19 +14,44 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-
+import android.os.Build;
 import android.os.Handler;
-
 import android.util.Log;
-
 import android.view.Surface;
 import android.view.WindowManager;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.Sensitivity;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 /**
+ * Non-visible component that can detect shaking and measure acceleration approximately in three
+ * dimensions using SI units (m/s<sup>2</sup>). The components are:
+ *
+ * - **xAccel**: 0 when the phone is at rest on a flat surface, positive when the phone is tilted
+ *   to the right (i.e., its left side is raised), and negative when the phone is tilted to the
+ *   left (i.e., its right size is raised).
+ * - **yAccel**: 0 when the phone is at rest on a flat surface, positive when its bottom is raised,
+ *   and negative when its top is raised.
+ * - **zAccel**: Equal to -9.8 (earth's gravity in meters per second per second when the device is
+ *   at rest parallel to the ground with the display facing up, 0 when perpendicular to the ground,
+ *   and +9.8 when facing down. The value can also be affected by accelerating it with or against
+ *   gravity.
+ *
+ * @internaldoc
  * Physical world component that can detect shaking and measure
  * acceleration in three dimensions.  It is implemented using
  * android.hardware.SensorListener
@@ -78,7 +91,7 @@ import java.util.Queue;
     iconName = "images/accelerometersensor.png")
 @SimpleObject
 public class AccelerometerSensor extends AndroidNonvisibleComponent
-    implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
+    implements OnPauseListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
 
   // Logging and Debugging
   private final static String LOG_TAG = "AccelerometerSensor";
@@ -101,7 +114,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   private float zAccel;
 
   private int accuracy;
-  private int sensitivity;
+  private Sensitivity sensitivity;
   private volatile int deviceDefaultOrientation;
 
   private final SensorManager sensorManager;
@@ -134,7 +147,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   public AccelerometerSensor(ComponentContainer container) {
     super(container.$form());
     form.registerForOnResume(this);
-    form.registerForOnStop(this);
+    form.registerForOnPause(this);
 
     enabled = true;
     resources = container.$context().getResources();
@@ -144,7 +157,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     androidUIHandler = new Handler();
     startListening();
     MinimumInterval(400);
-    Sensitivity(Component.ACCELEROMETER_SENSITIVITY_MODERATE);
+    SensitivityAbstract(Sensitivity.Moderate);
   }
 
 
@@ -163,9 +176,9 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Specifies the minimum interval required between calls to Shaking(),
+   * Specifies the minimum interval required between back-to-back {@link #Shaking()} events,
    * in milliseconds.
-   * Once the phone starts being shaken, all further Shaking() calls will be ignored
+   * Once the phone starts being shaken, all further {@link #Shaking()} events will be ignored
    * until the interval has elapsed.
    * @param interval  minimum interval in ms
    */
@@ -189,13 +202,29 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
       description = "A number that encodes how sensitive the accelerometer is. " +
               "The choices are: 1 = weak, 2 = moderate, " +
               " 3 = strong.")
-  public int Sensitivity() {
+  public @Options(Sensitivity.class) int Sensitivity() {
+    return sensitivity.toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current sensitivity of this component.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public Sensitivity SensitivityAbstract() {
     return sensitivity;
   }
 
   /**
-   * Specifies the sensitivity of the accelerometer
-   * and checks that the argument is a legal value.
+   * Sets the sensitivity of this sensor.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void SensitivityAbstract(Sensitivity sensitivity) {
+    this.sensitivity = sensitivity;
+  }
+
+  /**
+   * Specifies the sensitivity of the accelerometer. Valid values are: `1` (weak), `2` (moderate),
+   * and `3` (strong).
    *
    * @param sensitivity one of {@link Component#ACCELEROMETER_SENSITIVITY_WEAK},
    *          {@link Component#ACCELEROMETER_SENSITIVITY_MODERATE} or
@@ -205,13 +234,15 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ACCELEROMETER_SENSITIVITY,
       defaultValue = Component.ACCELEROMETER_SENSITIVITY_MODERATE + "")
   @SimpleProperty
-  public void Sensitivity(int sensitivity) {
-    if ((sensitivity == 1) || (sensitivity == 2) || (sensitivity == 3)) {
-      this.sensitivity = sensitivity;
-    } else {
+  public void Sensitivity(@Options(Sensitivity.class) int sensitivity) {
+    // Make sure sensitivity is a valid Sensitivity.
+    Sensitivity level = Sensitivity.fromUnderlyingValue(sensitivity);
+    if (level == null) {
       form.dispatchErrorOccurredEvent(this, "Sensitivity",
           ErrorMessages.ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY, sensitivity);
+      return;
     }
+    SensitivityAbstract(level);
   }
 
   /**
@@ -241,6 +272,11 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   }
 
 public int getDeviceDefaultOrientation() {
+    if (Build.VERSION.SDK_INT < SdkLevel.LEVEL_FROYO) {
+      // getRotation() is unavailable on versions of Android lower tha Froyo, so assume a default
+      // orientation of PORTRAIT (which was the implied assumption before we added this check).
+      return Configuration.ORIENTATION_PORTRAIT;
+    }
     Configuration config = resources.getConfiguration();
     int rotation = windowManager.getDefaultDisplay().getRotation();
     if (DEBUG) {
@@ -268,12 +304,13 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Available property getter method (read-only property).
+   * Returns whether the `AccelerometerSensor` hardware is available on the device.
    *
    * @return {@code true} indicates that an accelerometer sensor is available,
    *         {@code false} that it isn't
    */
   @SimpleProperty(
+      description = "Returns whether the accelerometer is available on the device.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Available() {
     List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
@@ -317,7 +354,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Specifies whether the sensor should generate events.  If true,
+   * Specifies whether the sensor should generate events.  If `true`{:.logic.block},
    * the sensor will generate events.  Otherwise, no events are
    * generated even if the device is accelerated or shaken.
    *
@@ -340,7 +377,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Returns the acceleration in the X-dimension in SI units (m/s^2).
+   * Returns the acceleration in the X-dimension in SI units (m/s²).
    * The sensor must be enabled to return meaningful values.
    *
    * @return  X acceleration
@@ -352,7 +389,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Returns the acceleration in the Y-dimension in SI units (m/s^2).
+   * Returns the acceleration in the Y-dimension in SI units (m/s²).
    * The sensor must be enabled to return meaningful values.
    *
    * @return  Y acceleration
@@ -364,7 +401,7 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Returns the acceleration in the Z-dimension in SI units (m/s^2).
+   * Returns the acceleration in the Z-dimension in SI units (m/s²).
    * The sensor must be enabled to return meaningful values.
    *
    * @return  Z acceleration
@@ -395,17 +432,18 @@ public int getDeviceDefaultOrientation() {
     for (float value : cache) {
       average += value;
     }
-
     average /= cache.size();
+    float delta = Math.abs(average - currentValue);
 
-    if (Sensitivity() == 1) { //sensitivity is weak
-      return Math.abs(average - currentValue) > strongShakeThreshold;
-    } else if (Sensitivity() == 2) { //sensitivity is moderate
-      return ((Math.abs(average - currentValue) > moderateShakeThreshold)
-        && (Math.abs(average - currentValue) < strongShakeThreshold));
-    } else { //sensitivity is strong
-      return ((Math.abs(average - currentValue) > weakShakeThreshold)
-        && (Math.abs(average - currentValue) < moderateShakeThreshold));
+    switch (sensitivity) {
+      case Weak:
+        return delta > strongShakeThreshold;
+      case Moderate:
+        return delta > moderateShakeThreshold && delta < strongShakeThreshold;
+      case Strong:
+        return delta > weakShakeThreshold && delta < moderateShakeThreshold;
+      default:
+        return false;
     }
   }
 
@@ -468,10 +506,10 @@ public int getDeviceDefaultOrientation() {
     }
   }
 
-  // OnStopListener implementation
+  // OnPauseListener implementation
 
   @Override
-  public void onStop() {
+  public void onPause() {
     if (enabled) {
       stopListening();
     }

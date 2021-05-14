@@ -66,6 +66,10 @@ public final class ErrorMessages {
   public static final int ERROR_NXT_CANNOT_DETECT_COLOR = 417;
   public static final int ERROR_NXT_CANNOT_DETECT_LIGHT = 418;
   public static final int ERROR_NXT_INVALID_GENERATE_COLOR = 419;
+  public static final int ERROR_NXT_INVALID_MOTOR_MODE = 420;
+  public static final int ERROR_NXT_INVALID_REGULATION_MODE = 421;
+  public static final int ERROR_NXT_INVALID_SENSOR_TYPE = 422;
+  public static final int ERROR_NXT_INVALID_SENSOR_MODE = 423;
   // Bluetooth errors
   public static final int ERROR_BLUETOOTH_NOT_AVAILABLE = 501;
   public static final int ERROR_BLUETOOTH_NOT_ENABLED = 502;
@@ -138,6 +142,10 @@ public final class ErrorMessages {
   public static final int ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS = 1113;
   public static final int ERROR_WEB_UNABLE_TO_DELETE = 1114;
   public static final int ERROR_WEB_XML_TEXT_DECODE_FAILED = 1115;
+  public static final int ERROR_WEB_REQUEST_TIMED_OUT = 1117; //Continuing from number after contact picker
+  public static final int ERROR_WEB_JSON_TEXT_ENCODE_FAILED = 1118;
+  public static final int ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE = ERROR_WEB_UNABLE_TO_POST_OR_PUT;
+  public static final int ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE_FILE = ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
   // Contact picker (and PhoneNumberPicker) errors
   public static final int ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107;
   public static final int ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING = 1108;
@@ -217,6 +225,9 @@ public final class ErrorMessages {
 
   // Form errors that are signalled in runtime.scm
   public static final int ERROR_DIVISION_BY_ZERO = 3200;
+  public static final int ERROR_INDEX_MISSING_IN_LIST = 3201;
+  public static final int ERROR_NUMBER_FORMAT_EXCEPTION = 3202;
+  public static final int ERROR_INVALID_VALUE_IN_PATH = 3203;
 
   // Extension errors are signalled from extensions
   public static final int ERROR_EXTENSION_ERROR = 3300;
@@ -264,7 +275,18 @@ public final class ErrorMessages {
   public static final int ERROR_SERVER = 3808;
   public static final int ERROR_SPEECH_TIMEOUT = 3809;
 
-  // Start the next group of errors at 3900
+  // Serial errors
+  public static final int ERROR_SERIAL_NOT_INITIALIZED = 3901;
+  public static final int ERROR_SERIAL_WRITING = 3902;
+
+  // Navigation Errors
+  public static final int ERROR_INVALID_API_KEY = 4001;
+  public static final int ERROR_UNABLE_TO_REQUEST_DIRECTIONS = 4002;
+  public static final int ERROR_ROUTING_SERVICE_ERROR = 4003;
+  public static final int ERROR_NO_ROUTE_FOUND = 4004;
+
+
+  // Start the next group of errors at 4100
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -369,6 +391,14 @@ public final class ErrorMessages {
         "Cannot detect light level when the DetectColor property is set to True.");
     errorMessages.put(ERROR_NXT_INVALID_GENERATE_COLOR,
         "The GenerateColor property is limited to None, Red, Green, or Blue.");
+    errorMessages.put(ERROR_NXT_INVALID_MOTOR_MODE,
+        "%d is an invalid NXT motor mode.");
+    errorMessages.put(ERROR_NXT_INVALID_REGULATION_MODE,
+        "%d is an invalid NXT motor regulation mode.");
+    errorMessages.put(ERROR_NXT_INVALID_SENSOR_TYPE,
+        "%d is an invalid NXT sensor type.");
+    errorMessages.put(ERROR_NXT_INVALID_SENSOR_MODE,
+        "%d is an invalid NXT sensor mode.");
     // LegoMindstormsEv3 errors
     errorMessages.put(ERROR_EV3_BLUETOOTH_NOT_SET,
         "The Bluetooth property has not been set.");
@@ -481,9 +511,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_WEB_UNSUPPORTED_ENCODING,
         "The encoding %s is not supported.");
     errorMessages.put(ERROR_WEB_UNABLE_TO_POST_OR_PUT,
-        "Unable to post or put the text \"%s\" with the specified URL: %s");
+        "Unable to complete the given request with the text \"%s\" with the specified URL: %s");
     errorMessages.put(ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE,
-        "Unable to post or put the file \"%s\" with the specified URL %s.");
+        "Unable to complete the given request with the file \"%s\" with the specified URL %s.");
     errorMessages.put(ERROR_WEB_JSON_TEXT_DECODE_FAILED,
         "Unable to decode the JSON text: %s");
     errorMessages.put(ERROR_WEB_HTML_TEXT_DECODE_FAILED,
@@ -501,7 +531,11 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS,
         "Unable to build request data: element %s does not contain two elements");
     errorMessages.put(ERROR_WEB_UNABLE_TO_DELETE,
-            "Unable to delete a resource with the specified URL: %s");
+        "Unable to delete a resource with the specified URL: %s");
+    errorMessages.put(ERROR_WEB_REQUEST_TIMED_OUT,
+        "Took longer then timeout period to receive data from the URL: %s");
+    errorMessages.put(ERROR_WEB_JSON_TEXT_ENCODE_FAILED,
+        "Unable to encode as JSON the object %s");
     // Contact picker (and PhoneNumberPicker) errors
     errorMessages.put(ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER,
         "The software used in this app cannot extract contacts from this type of phone.");
@@ -585,6 +619,12 @@ public final class ErrorMessages {
     // signal-runtime-form-error must match the error number used here.
     errorMessages.put(ERROR_DIVISION_BY_ZERO,
         "Trying to divide %s by 0.  The result might not be valid.");
+    errorMessages.put(ERROR_INDEX_MISSING_IN_LIST,
+        "Index %d out of bounds in list %s.");
+    errorMessages.put(ERROR_NUMBER_FORMAT_EXCEPTION,
+        "Expected a number for an index, but got \"%s\" instead.");
+    errorMessages.put(ERROR_INVALID_VALUE_IN_PATH,
+        "Expected a list or dictionary, but found a %s when walking path.");
     // Extension errors
     errorMessages.put(ERROR_EXTENSION_ERROR,
         "Error %d in extension %s: %s");
@@ -654,6 +694,17 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_RECOGNIZER_BUSY, "RecognitionService Busy");
     errorMessages.put(ERROR_SERVER, "Error From Server");
     errorMessages.put(ERROR_SPEECH_TIMEOUT, "No Speech Input");
+
+    // Serial
+    errorMessages.put(ERROR_SERIAL_NOT_INITIALIZED, "Serial was not initialized");
+    errorMessages.put(ERROR_SERIAL_WRITING, "Error writing data to serial");
+
+    // Navigation Errors
+    errorMessages.put(ERROR_INVALID_API_KEY, "No api key provided");
+    errorMessages.put(ERROR_UNABLE_TO_REQUEST_DIRECTIONS,
+        "Unable to request directions. Reason: %s");
+    errorMessages.put(ERROR_ROUTING_SERVICE_ERROR, "Routing service failed with status %d %s");
+    errorMessages.put(ERROR_NO_ROUTE_FOUND, "No route returned by the routing service.");
   }
 
   private ErrorMessages() {

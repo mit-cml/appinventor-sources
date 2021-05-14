@@ -36,7 +36,7 @@ public class ServerLayout {
 
   /**
    * Relative path of the
-   * {@link com.google.appinventor.server.component.ComponentService} within
+   * {@link com.google.appinventor.shared.rpc.component.ComponentService} within
    * the ODE GWT module.
    */
   public static final String COMPONENT_SERVICE = "components";
@@ -50,34 +50,6 @@ public class ServerLayout {
 
   /**
    * Relative path of the
-   * {@link com.google.appinventor.shared.rpc.project.GalleryService} within
-   * the ODE GWT module.
-   */
-  public static final String GALLERY_SERVICE = "gallery";
-
-
-  /**
-   * Relative path of the {@link com.google.appinventor.server.GalleryServlet}
-   * within the ODE GWT module.
-   */
-  public static final String GALLERY_SERVLET = "gallery_servlet";
-
-
-  /**
-   * Relative path of the {@link com.google.appinventor.server.AndroidServlet}
-   * within the ODE GWT module.
-   */
-  public static final String ANDROID_SERVLET = "android";
-
-  /**
-   * Relative path of the
-   * {@link com.google.appinventor.shared.rpc.help.HelpService} within the
-   * ODE GWT module.
-   */
-  public static final String HELP_SERVICE = "help";
-
-  /**
-   * Relative path of the
    * {@link com.google.appinventor.shared.rpc.user.UserInfoService} within the
    * ODE GWT module.
    */
@@ -88,13 +60,6 @@ public class ServerLayout {
    */
 
   public static final String ADMIN_INFO_SERVICE = "admininfo";
-
-  /**
-   * Relative path of the
-   * {@link com.google.appinventor.shared.rpc.launch.LaunchService} within
-   * the ODE GWT module.
-   */
-  public static final String LAUNCH_SERVICE = "launch";
 
   /**
    * Relative path of the
@@ -121,6 +86,12 @@ public class ServerLayout {
    * for downloading a project's sources
    */
   public static final String DOWNLOAD_PROJECT_SOURCE = "project-source";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading selected of a user's projects' sources.
+   */
+  public static final String DOWNLOAD_SELECTED_PROJECTS_SOURCE = "selected-projects-source";
 
   /**
    * Relative path within {@link com.google.appinventor.server.DownloadServlet}
@@ -194,27 +165,6 @@ public class ServerLayout {
    * the Young Android terms of service.
    */
   public static final String YA_TOS_FORM = "Ya_tos_form.html";
-
-  /**
-   * Relative base path of the
-   * {@link com.google.appinventor.server.WebStartJnlpServlet}
-   * within the ODE GWT module.
-   */
-  public static final String WEBSTART_JNLP_SERVLET_BASE = "webstartjnlp/";
-
-  /**
-   * Relative path within
-   * {@link com.google.appinventor.server.WebStartJnlpServlet}
-   * for starting codeblocks (for Young Android)
-   */
-  public static final String WEBSTART_JNLP_PURPOSE_CODEBLOCKS = "codeblocks";
-
-  /**
-   * Relative path of the
-   * {@link com.google.appinventor.server.WebStartFileServlet}
-   * within the ODE GWT module.
-   */
-  public static final String WEBSTART_FILE_SERVLET = "webstartfile";
 
   /**
    * Relative path of the {@link com.google.appinventor.server.ReceiveBuildServlet} within

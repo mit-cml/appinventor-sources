@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.user.client.ui.InlineHTML;
 
@@ -15,7 +16,7 @@ import com.google.gwt.user.client.ui.InlineHTML;
  * Mock Label component.
  *
  */
-public final class MockLabel extends MockVisibleComponent {
+public final class MockLabel extends MockVisibleComponent implements FormChangeListener{
 
   /**
    * Component type name.
@@ -25,9 +26,9 @@ public final class MockLabel extends MockVisibleComponent {
   // GWT label widget used to mock a Simple Label
   private InlineHTML labelWidget;
 
-  private String savedText;     // Saved text, so if we change from
-                                // text to/from html we have the text
-                                // to set
+  private String savedText = "";     // Saved text, so if we change from
+                                     // text to/from html we have the text
+                                     // to set
 
   /**
    * Creates a new MockLabel component.
@@ -41,7 +42,21 @@ public final class MockLabel extends MockVisibleComponent {
     labelWidget = new InlineHTML();
     labelWidget.setStylePrimaryName("ode-SimpleMockComponent");
     initComponent(labelWidget);
+
   }
+
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    ((YaFormEditor) editor).getForm().addFormChangeListener(this);
+  }
+
+  @Override
+  protected void onDetach() {
+    super.onDetach();
+    ((YaFormEditor) editor).getForm().removeFormChangeListener(this);
+  }
+
 
   @Override
   public void onCreateFromPalette() {
@@ -84,7 +99,17 @@ public final class MockLabel extends MockVisibleComponent {
    * Sets the label's FontSize property to a new value.
    */
   private void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(labelWidget, text);
+    float convertedText = Float.parseFloat(text);
+    if (convertedText == 14.0 || convertedText == 24.0) {
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (form != null && form.getPropertyValue("BigDefaultText").equals("True")) {
+        MockComponentsUtil.setWidgetFontSize(labelWidget, "24");
+      } else {
+        MockComponentsUtil.setWidgetFontSize(labelWidget, "14");
+      }
+    } else {
+      MockComponentsUtil.setWidgetFontSize(labelWidget, text);
+    }
   }
 
   /*
@@ -100,9 +125,15 @@ public final class MockLabel extends MockVisibleComponent {
   private void setTextProperty(String text) {
     savedText = text;
     if (getPropertyValue(PROPERTY_NAME_HTMLFORMAT).equals("True")) {
-      labelWidget.setHTML(SimpleHtmlSanitizer.sanitizeHtml(text).asString());
+      String sanitizedText = SimpleHtmlSanitizer.sanitizeHtml(text).asString();
+      if (sanitizedText != null) {
+        sanitizedText = sanitizedText.replaceAll("\\\\n", " ");
+      }
+      labelWidget.setHTML(sanitizedText);
     } else {
-      labelWidget.setText(text);
+      labelWidget.setHTML(text.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;").replaceAll("\\\\n", "<br>")
+      );
     }
   }
 
@@ -150,5 +181,34 @@ public final class MockLabel extends MockVisibleComponent {
       setTextProperty(savedText);
       refreshForm();
     }
+  }
+
+
+  @Override
+  public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
+    if (component.getType().equals(MockForm.TYPE) && propertyName.equals("BigDefaultText")) {
+      setFontSizeProperty(getPropertyValue(PROPERTY_NAME_FONTSIZE));
+      refreshForm();
+    }
+  }
+
+  @Override
+  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+
+  }
+
+  @Override
+  public void onComponentAdded(MockComponent component) {
+
+  }
+
+  @Override
+  public void onComponentRenamed(MockComponent component, String oldName) {
+
+  }
+
+  @Override
+  public void onComponentSelectionChange(MockComponent component, boolean selected) {
+
   }
 }

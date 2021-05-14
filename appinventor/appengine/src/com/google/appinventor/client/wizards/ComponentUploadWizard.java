@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2015 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,9 +8,7 @@ package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.ErrorReporter;
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -30,6 +28,7 @@ public class ComponentUploadWizard extends Wizard {
     super(MESSAGES.componentUploadWizardCaption(), true, false);
 
     final FileUpload uploadWiget = new FileUpload();
+    uploadWiget.getElement().setAttribute("accept", COMPONENT_ARCHIVE_EXTENSION);
     uploadWiget.setName(ServerLayout.UPLOAD_COMPONENT_ARCHIVE_FORM_ELEMENT);
 
     VerticalPanel panel = new VerticalPanel();

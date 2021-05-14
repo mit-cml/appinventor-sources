@@ -7,6 +7,8 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 /**
  * Property editor for choosing an sensor port for a sensor on a Lego Mindstorms
  * EV3 robot.
@@ -16,10 +18,11 @@ import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
  */
 public class YoungAndroidLegoEv3GyroSensorModeChoicePropertyEditor extends ChoicePropertyEditor {
 
-  // Lego Mindstorms EV3 sensor port choices
+
+    // Lego Mindstorms EV3 sensor port choices
   private static final Choice[] modes = new Choice[] {
-    new Choice("angle", "angle"),
-    new Choice("rate", "rate"),
+          new Choice(MESSAGES.angleValues(), "angle"),
+          new Choice(MESSAGES.rateValues(), "rate"),
   };
 
   public YoungAndroidLegoEv3GyroSensorModeChoicePropertyEditor() {

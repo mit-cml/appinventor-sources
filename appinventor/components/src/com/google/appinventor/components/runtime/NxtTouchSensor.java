@@ -14,12 +14,16 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.NxtSensorMode;
+import com.google.appinventor.components.common.NxtSensorType;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.os.Handler;
 
 /**
+ * ![NXT component icon](images/legoMindstormsNxt.png)
+ *
  * A component that provides a high-level interface to a touch sensor on a LEGO
  * MINDSTORMS NXT robot.
  *
@@ -82,11 +86,12 @@ public class NxtTouchSensor extends LegoMindstormsNxtSensor implements Deleteabl
 
   @Override
   protected void initializeSensor(String functionName) {
-    setInputMode(functionName, port, SENSOR_TYPE_SWITCH, SENSOR_MODE_BOOLEANMODE);
+    setInputMode(functionName, port, NxtSensorType.Touch, NxtSensorMode.Boolean);
   }
 
   /**
    * Specifies the sensor port that the sensor is connected to.
+   * **Must be set in the Designer.**
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT,
       defaultValue = DEFAULT_SENSOR_PORT)
