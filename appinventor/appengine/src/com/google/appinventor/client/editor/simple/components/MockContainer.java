@@ -112,7 +112,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     }
   }
 
-  
+
   /**
    * Adds a new component to the end of this container.
    *
@@ -157,7 +157,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    *                     or {@code -1} to insert the component at the end
    */
   private void addComponent(MockComponent component, int beforeIndex) {
-	  
+
     // Set the container to be the parent of the component
     component.setContainer(this);
 
@@ -180,35 +180,35 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
 
     getForm().fireComponentAdded(component);
   }
-  
+
   /**
-   * Adds a new component to the container at the specified left and top margins. 
-   * 
+   * Adds a new component to the container at the specified left and top margins.
+   *
    * @param component component to be added
    * @param left left margin of the component inside the container
    * @param top top margin of the component inside the container
    */
   public final void addComponent(MockComponent component, int left, int top) {
-	  
-	List<MockComponent> visibleChildren = getShowingVisibleChildren();
-	
-	int beforeActualIndex;
-	
-	if (visibleChildren.size() == 0) {
-	  beforeActualIndex = 0;
-	} else {
-	  beforeActualIndex = getChildren().indexOf(visibleChildren.get(visibleChildren.size() - 1)) + 1;
-	}
-	
-	component.setContainer(this);
-	children.add(beforeActualIndex, component);
-	
-	if (component.isVisibleComponent()) {
-	  rootPanel.add(component, left, top);
-	  refreshForm();
-	}
-	
-	getForm().fireComponentAdded(component);
+    List<MockComponent> visibleChildren = getShowingVisibleChildren();
+
+    int beforeActualIndex;
+
+    if (visibleChildren.size() == 0) {
+      beforeActualIndex = 0;
+    } else {
+      beforeActualIndex = getChildren().indexOf(visibleChildren.get(visibleChildren.size() - 1))
+          + 1;
+    }
+
+    component.setContainer(this);
+    children.add(beforeActualIndex, component);
+
+    if (component.isVisibleComponent()) {
+      rootPanel.add(component, left, top);
+      refreshForm();
+    }
+
+    getForm().fireComponentAdded(component);
   }
 
   /**
@@ -222,7 +222,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    *        to another container
    */
   public void removeComponent(MockComponent component, boolean permanentlyDeleted) {
-	  
+
     // Remove the component from the list of child components
     children.remove(component);
 
@@ -340,25 +340,25 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     } else {
       throw new IllegalArgumentException();
     }
-    
+
     Ode.CLog("cool");
-    // handle change of visibility of x and y coordinate properties if 
+    // handle change of visibility of x and y coordinate properties if
     // component is visible
-    if (this instanceof MockAbsoluteArrangement && 
-    	sourceComponent instanceof MockVisibleComponent) {
+    if (this instanceof MockAbsoluteArrangement
+        && sourceComponent instanceof MockVisibleComponent) {
       ((MockVisibleComponent) sourceComponent).setCoordPropertiesVisible(true);
       if (editor instanceof YaFormEditor) {
-    	updatePropertiesPanel = true;
+        updatePropertiesPanel = true;
       }
     } else if (sourceComponent instanceof MockVisibleComponent) {
       ((MockVisibleComponent) sourceComponent).setCoordPropertiesVisible(false);
       if (sourceContainer instanceof MockAbsoluteArrangement) {
-	    if (editor instanceof YaFormEditor) {
-	      updatePropertiesPanel = true;
-    	}
+        if (editor instanceof YaFormEditor) {
+          updatePropertiesPanel = true;
+        }
       }
     }
-    
+
     if (layout.onDrop(sourceComponent, x, y, offsetX, offsetY)) {
       sourceComponent.select(null);
       if (updatePropertiesPanel) {
@@ -367,7 +367,6 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
             true);
       }
     }
-    
   }
 
   public List<DropTarget> getDropTargetsWithin() {

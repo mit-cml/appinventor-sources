@@ -69,8 +69,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   // Useful colors
   protected static final String COLOR_NONE = "00FFFFFF";
   protected static final String COLOR_DEFAULT = "00000000";
-  
-  // to be used to check whether we want to show the x and y coordinate 
+
+  // to be used to check whether we want to show the x and y coordinate
   // properties or not
   private boolean coordPropertiesVisible = false;
 
@@ -90,24 +90,24 @@ public abstract class MockVisibleComponent extends MockComponent {
   MockVisibleComponent(SimpleEditor editor, String type, ImageResource icon) {
     super(editor, type, new Image(icon));
   }
-  
+
   /**
-   * Creates a text property editor that throws an exception if an invalid 
-   * number is entered. 
-   * 
+   * Creates a text property editor that throws an exception if an invalid
+   * number is entered.
+   *
    * @return a text property editor object with an overridden validate method
    */
-  private static final TextPropertyEditor makeCoordTextPropertyEditor() {
-	return new TextPropertyEditor() {
-		 @Override
-		 protected void validate(String text) throws InvalidTextException {
-		   try {
-			 Integer.valueOf(text);
-		   } catch (NumberFormatException e) {
-		     throw new InvalidTextException("invalid coordinate provided: " + text);
-		   }
-		 }
-	};
+  private static TextPropertyEditor makeCoordTextPropertyEditor() {
+    return new TextPropertyEditor() {
+      @Override
+      protected void validate(String text) throws InvalidTextException {
+        try {
+          Integer.valueOf(text);
+        } catch (NumberFormatException e) {
+          throw new InvalidTextException("invalid coordinate provided: " + text);
+        }
+      }
+    };
   }
 
   @Override
@@ -120,9 +120,11 @@ public abstract class MockVisibleComponent extends MockComponent {
         new TextPropertyEditor());
     addProperty(PROPERTY_NAME_ROW, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
         new TextPropertyEditor());
-    addProperty(PROPERTY_NAME_X_COORD, "" + ComponentConstants.DEFAULT_X_Y, MESSAGES.xCoordinateCaption(), 
-		makeCoordTextPropertyEditor());
-    addProperty(PROPERTY_NAME_Y_COORD, "" + ComponentConstants.DEFAULT_X_Y, MESSAGES.yCoordinateCaption(), 
+    addProperty(PROPERTY_NAME_X_COORD, "" + ComponentConstants.DEFAULT_X_Y,
+        MESSAGES.xcoordinatePropertyCaption(),
+        makeCoordTextPropertyEditor());
+    addProperty(PROPERTY_NAME_Y_COORD, "" + ComponentConstants.DEFAULT_X_Y,
+        MESSAGES.ycoordinatePropertyCaption(),
         makeCoordTextPropertyEditor());
     addWidthHeightProperties();
   }
@@ -138,12 +140,12 @@ public abstract class MockVisibleComponent extends MockComponent {
 
   @Override
   protected boolean isPropertyVisible(String propertyName) {
-    if (propertyName.equals(PROPERTY_NAME_COLUMN) ||
-        propertyName.equals(PROPERTY_NAME_ROW)) {
+    if (propertyName.equals(PROPERTY_NAME_COLUMN)
+        || propertyName.equals(PROPERTY_NAME_ROW)) {
       return false;
-    } else if (propertyName.equals(PROPERTY_NAME_X_COORD) || 
-    		   propertyName.equals(PROPERTY_NAME_Y_COORD)) {
-      // the visibility of x and y coordinates strictly depends on whether the component 
+    } else if (propertyName.equals(PROPERTY_NAME_X_COORD)
+        || propertyName.equals(PROPERTY_NAME_Y_COORD)) {
+      // the visibility of x and y coordinates strictly depends on whether the component
       // is placed inside an absolute arrangement or not
       return this.coordPropertiesVisible;
     }
@@ -183,9 +185,9 @@ public abstract class MockVisibleComponent extends MockComponent {
     } else if (propertyName.equals(PROPERTY_NAME_VISIBLE)) {
       setVisibleProperty(newValue);
       refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_X_COORD)) { 
+    } else if (propertyName.equals(PROPERTY_NAME_X_COORD)) {
       refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_Y_COORD)) { 
+    } else if (propertyName.equals(PROPERTY_NAME_Y_COORD)) {
       refreshForm();
     }
   }
@@ -201,28 +203,30 @@ public abstract class MockVisibleComponent extends MockComponent {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
   }
 
-    
+
   /**
    * Sets the visibility of x and y coordinate properties.
-   * 
+   *
    * @param value true or false
    */
   public void setCoordPropertiesVisible(boolean value) {
-	this.coordPropertiesVisible = value;
-	
-	int type = value ? EditableProperty.TYPE_NORMAL : EditableProperty.TYPE_INVISIBLE;
-	
-	EditableProperty xProperty = properties.getProperty(PROPERTY_NAME_X_COORD);
-	EditableProperty yProperty = properties.getProperty(PROPERTY_NAME_Y_COORD);
-	
-	xProperty.setType(type);
-	yProperty.setType(type);
+    this.coordPropertiesVisible = value;
+
+    int type = value ? EditableProperty.TYPE_NORMAL : EditableProperty.TYPE_INVISIBLE;
+
+    EditableProperty x = properties.getProperty(PROPERTY_NAME_X_COORD);
+    EditableProperty y = properties.getProperty(PROPERTY_NAME_Y_COORD);
+
+    x.setType(type);
+    y.setType(type);
   }
-  
+
   /**
+   * Returns the visibility of the coordinate properties.
+   *
    * @return true iff x and y coordinate properties are visible
    */
   public boolean coordPropertiesVisible() {
-	return this.coordPropertiesVisible;
+    return this.coordPropertiesVisible;
   }
 }

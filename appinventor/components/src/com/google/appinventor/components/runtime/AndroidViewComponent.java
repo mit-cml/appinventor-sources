@@ -6,6 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.view.View;
+
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -15,13 +17,10 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-import android.view.View;
-import android.view.ViewGroup;
-
 /**
  * Underlying base class for all components with views; not accessible to Simple programmers.
- * <p>
- * Provides implementations for standard properties and events.
+ *
+ * <p>Provides implementations for standard properties and events.
  *
  */
 @SimpleObject
@@ -37,8 +36,8 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   private int column = ComponentConstants.DEFAULT_ROW_COLUMN;
   private int row = ComponentConstants.DEFAULT_ROW_COLUMN;
   
-  private int xCoord = ComponentConstants.DEFAULT_X_Y;
-  private int yCoord = ComponentConstants.DEFAULT_X_Y;
+  private int xcoord = ComponentConstants.DEFAULT_X_Y;
+  private int ycoord = ComponentConstants.DEFAULT_X_Y;
 
   /**
    * Creates a new AndroidViewComponent.
@@ -281,7 +280,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
   @SimpleProperty(userVisible = false) // making it visible would probably be the better choice
   public int XCoord() { 
-	return xCoord;
+    return xcoord;
   }
   
   /**
@@ -291,7 +290,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
   @SimpleProperty(userVisible = false) 
   public void XCoord(int x) {
-	this.xCoord = x;
+    this.xcoord = x;
   }
   
   /**
@@ -301,7 +300,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
   @SimpleProperty(userVisible = false) // making it true would probably be the better choice
   public int YCoord() { 
-	return yCoord;
+    return ycoord;
   }
   
   /**
@@ -311,7 +310,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
   @SimpleProperty(userVisible = false)
   public void YCoord(int y) {
-	this.yCoord = y;
+    this.ycoord = y;
   }
 
   // Component implementation

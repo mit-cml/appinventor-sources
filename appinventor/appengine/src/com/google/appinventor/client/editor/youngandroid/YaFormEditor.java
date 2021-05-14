@@ -747,8 +747,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     propertiesBox.setVisible(true);
   }
 
-  /*
+  /**
    * Show the given component's properties in the properties panel.
+   *
+   * @param components the list of components to have properties edited
+   * @param selected whether the component(s) are freshly selected by the user
    */
   public void updatePropertiesPanel(List<MockComponent> components, boolean selected) {
     if (components == null || components.size() == 0) {
