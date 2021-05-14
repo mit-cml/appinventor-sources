@@ -7,10 +7,8 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Mock TableArrangement component.
@@ -46,13 +44,8 @@ public final class MockTableArrangement extends MockContainer {
     layoutWidget.add(rootPanel);
 
     initComponent(layoutWidget);
-    DragSourceSupport.addTableArrangement(this);
   }
 
-  public void sendMouseDown(Widget sender, int x, int y) {
-    ((MockTableLayout) layout).setCell(this, sender, x, y);
-  }
-  
   public void removeComponent(MockComponent component, boolean permanentlyDeleted) {
     component.changeProperty(MockVisibleComponent.PROPERTY_NAME_ROW,
         "" + ComponentConstants.DEFAULT_ROW_COLUMN);
