@@ -7,6 +7,7 @@ package com.google.appinventor.shared.rpc.user;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Data Transfer Object representing user data.
@@ -41,6 +42,7 @@ public class Config implements IsSerializable, Serializable {
   private boolean galleryEnabled;
   private String galleryLocation;
   private boolean galleryReadOnly;
+  private List<String> tutorialUrlAllowed;
 
   public Config() {
   }
@@ -219,6 +221,14 @@ public class Config implements IsSerializable, Serializable {
 
   public void setGalleryReadOnly(boolean value) {
     galleryReadOnly = value;
+  }
+
+  public void setTutorialUrlAllowed(List<String> value) {
+    this.tutorialUrlAllowed = value;
+  }
+
+  public List<String> getTutorialsUrlAllowed() {
+    return tutorialUrlAllowed;
   }
 
 }
