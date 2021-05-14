@@ -5,12 +5,18 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import static com.google.gwt.dom.client.Style.Position.ABSOLUTE;
+import static com.google.gwt.dom.client.Style.Unit.PX;
+import static com.google.gwt.dom.client.Style.Visibility.HIDDEN;
+import static com.google.gwt.dom.client.Style.Visibility.VISIBLE;
+
 import com.google.appinventor.client.Ode;
 
 import com.google.appinventor.components.common.ComponentConstants;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 
 import java.util.Map;
 
@@ -89,24 +95,27 @@ final class MockAbsoluteLayout extends MockLayout {
     if (dropTargetArea == null) {
       dropTargetArea = DOM.createDiv();
       setDropTargetAreaVisible(false);
-      DOM.setStyleAttribute(dropTargetArea, "border", "2px solid " + DROP_TARGET_AREA_COLOR);
+      dropTargetArea.getStyle().setBorderStyle(Style.BorderStyle.SOLID);
+      dropTargetArea.getStyle().setBorderColor(DROP_TARGET_AREA_COLOR);
+      dropTargetArea.getStyle().setBorderWidth(2, PX);
       DOM.appendChild(container.getRootPanel().getElement(), dropTargetArea);
     }
   }
 
   private void setDropTargetAreaVisible(boolean visible) {
-    DOM.setStyleAttribute(dropTargetArea, "visibility", visible ? "visible" : "hidden");
+    dropTargetArea.getStyle().setVisibility(visible ? VISIBLE : HIDDEN);
   }
 
   private void setDropTargetAreaBoundsAndShow() {
-    DOM.setStyleAttribute(dropTargetArea, "position", "absolute");
-    DOM.setStyleAttribute(dropTargetArea, "left", 0 + "px");
-    DOM.setStyleAttribute(dropTargetArea, "top", 0 + "px");
+    final Style style = dropTargetArea.getStyle();
+    style.setPosition(ABSOLUTE);
+    style.setLeft(0, PX);
+    style.setTop(0, PX);
     // I shifted layoutWidth and layoutHeight by 4 in order to make the border
     // appear on the bottom and right sides of the layout
     // -TODO there might be a better way to do this
-    DOM.setStyleAttribute(dropTargetArea, "width", (layoutWidth - 4) + "px");
-    DOM.setStyleAttribute(dropTargetArea, "height", (layoutHeight - 4) + "px");
+    style.setWidth(layoutWidth - 4, PX);
+    style.setHeight(layoutHeight - 4, PX);
     setDropTargetAreaVisible(true);
   }
 
@@ -258,7 +267,7 @@ final class MockAbsoluteLayout extends MockLayout {
   @Override
   void dispose() {
     if (dropTargetArea != null) {
-      DOM.removeChild(container.getRootPanel().getElement(), dropTargetArea);
+      container.getRootPanel().getElement().removeChild(dropTargetArea);
     }
   }
 }
