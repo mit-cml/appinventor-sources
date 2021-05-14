@@ -7,7 +7,6 @@ package com.google.appinventor.shared.rpc.user;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

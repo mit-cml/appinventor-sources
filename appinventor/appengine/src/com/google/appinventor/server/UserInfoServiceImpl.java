@@ -15,7 +15,6 @@ import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Implementation of the user information service.
