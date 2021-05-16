@@ -138,7 +138,7 @@ public final class MockLabel extends MockVisibleComponent {
    */
   private void setEnabledMarqueeProperty(String enabled) {
     String text = labelWidget.getElement().getInnerText();
-    if(enabled.equals("True")) {
+    if (enabled.equals("True")) {
       labelWidget.getElement().getStyle().setOverflow(Style.Overflow.HIDDEN);
       Element marqueeElement = DOM.createSpan();
       marqueeElement.addClassName("mock-component--marquee-effect");
@@ -146,7 +146,7 @@ public final class MockLabel extends MockVisibleComponent {
       marqueeElement.setInnerText(text);
       labelWidget.getElement().appendChild(marqueeElement);
     } else {
-      if(labelWidget.getElement().hasChildNodes()) {
+      if (labelWidget.getElement().hasChildNodes()) {
         labelWidget.getElement().getFirstChildElement().removeFromParent();
         labelWidget.getElement().setInnerText(text);
       }
