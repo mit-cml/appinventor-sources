@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.text.TextUtils;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -78,6 +79,9 @@ public final class Label extends AndroidViewComponent {
 
   // HTML content of the label
   private String htmlContent;
+  
+  // Whether or not the label should have a marquee effect
+  private boolean hasMarquee;
 
   /**
    * Creates a new Label component.
@@ -118,6 +122,7 @@ public final class Label extends AndroidViewComponent {
     TextColor(Component.COLOR_DEFAULT);
     HTMLFormat(false);
     HasMargins(true);
+    EnabledMarquee(false);
   }
 
   // put this in the right file
@@ -457,4 +462,30 @@ private void setLabelMargins(boolean hasMargins) {
       TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK);
     }
   }
+  
+  /**
+   * Whether the Label's marquee effect is enabled or not.
+   *
+   * @param enabled  boolean value of enabled
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(description = "Whether the Label's marquee effect is enabled or not.")
+  public void EnabledMarquee(boolean enabled)  {
+    hasMarquee = enabled;
+    if (enabled)  {
+      view.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+    } else {
+      view.setEllipsize(null);
+    }
+    view.setSelected(enabled);
+    view.setSingleLine(enabled);
+    view.setMarqueeRepeatLimit(-1);
+  }
+  
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public boolean EnabledMarquee()  {
+    return hasMarquee;
+  }
+
 }
