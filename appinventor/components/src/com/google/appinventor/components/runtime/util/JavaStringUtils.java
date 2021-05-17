@@ -6,7 +6,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.util.Log;
-
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,6 +40,7 @@ public class JavaStringUtils {
     public void changeOrder(List<String> keys, String text) {
       // Default option: Do nothing (dictionary order)
     }
+
   }
 
   /**
@@ -192,6 +193,14 @@ public class JavaStringUtils {
       Log.i(LOG_TAG_JOIN_STRINGS, "calling joinStrings");
     }
     return join(listOfStrings, separator);
+  }
+
+  public static List<String> split(String text, String at){
+      List<String> split_string = Arrays.asList(text.split(at));
+      if (split_string.get(0).equals("")){
+        split_string.remove(0);
+      }
+      return split_string;
   }
 
   private static String join(List<Object> list, String separator)

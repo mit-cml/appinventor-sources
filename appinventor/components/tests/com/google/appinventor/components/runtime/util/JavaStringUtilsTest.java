@@ -6,7 +6,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import org.junit.Test;
-
+import java.util.List; 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,6 +29,12 @@ public class JavaStringUtilsTest {
     final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
 
     assertEquals(result, text);
+  }
+
+  @Test 
+  public void testsplitString(){
+    List<String> text = JavaStringUtils.split("abcde","");
+    assertEquals(5,text.size()); 
   }
 
   /**
