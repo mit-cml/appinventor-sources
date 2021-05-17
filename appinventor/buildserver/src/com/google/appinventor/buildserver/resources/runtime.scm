@@ -2642,9 +2642,9 @@ Dictionary implementation.
       (array->list
        ((text:toString):split (make-disjunct (yail-list-contents at)) 2))))
 
-(define (string-split text at)
-  (array->list
-   ((text:toString):split (Pattern:quote at))))
+(define (string-split text at) 
+  (JavaStringUtils:split text (Pattern:quote at))) 
+  ;class:method arg , JavaStringUtils.split(text, Pattern.quote(at))
 
 (define (string-split-at-any text at)
   (if (null? (yail-list-contents at))
