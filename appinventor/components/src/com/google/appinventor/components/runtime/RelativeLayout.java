@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019 MIT, All rights reserved
+// Copyright 2019-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,12 +7,15 @@ package com.google.appinventor.components.runtime;
 
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout.LayoutParams;
 
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Relative Layout for placing components at a specified position inside the
@@ -24,10 +27,11 @@ public class RelativeLayout implements Layout {
 
   private final android.widget.RelativeLayout layoutManager;
   private final Handler handler;
+  private final List<AndroidViewComponent> componentsToAdd = new LinkedList<>();
 
   /**
    * Creates a new relative layout with a preferred empty width/height.
-   * 
+   *
    * @param context              view context
    * @param preferredEmptyWidth  the preferred width of an empty layout
    * @param preferredEmptyHeight the preferred height of an empty layout
@@ -115,40 +119,65 @@ public class RelativeLayout implements Layout {
   public void add(AndroidViewComponent component) {
     // We cannot add component to layoutManager just yet because component
     // does not have its own x and y coordinates yet.
-    component.getView().setLayoutParams(new android.widget.RelativeLayout.LayoutParams(
+    component.getView().setLayoutParams(new LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     addComponentLater(component);
   }
 
   /**
+   * Update the position of the component within the layout.
+   *
+   * @param component  the component whose left or top coordinate has changed
+   */
+  public void updateComponentPosition(AndroidViewComponent component) {
+    int x = component.Left();
+    int y = component.Top();
+    if (x == ComponentConstants.DEFAULT_X_Y || y == ComponentConstants.DEFAULT_X_Y) {
+      return;  // not yet
+    }
+    View view = component.getView();
+    LayoutParams params = (LayoutParams) view.getLayoutParams();
+    params.leftMargin = x;
+    params.topMargin = y;
+    view.requestLayout();
+  }
+
+  /**
    * Causes addComponent to be called later.
-   * 
+   *
    * @param component component to be added later
    */
   private void addComponentLater(final AndroidViewComponent component) {
-    handler.post(new Runnable() {
-      public void run() {
-        addComponent(component);
+    synchronized (componentsToAdd) {
+      if (componentsToAdd.size() == 0) {
+        componentsToAdd.add(component);
+        handler.post(new Runnable() {
+          public void run() {
+            synchronized (componentsToAdd) {
+              for (AndroidViewComponent component : componentsToAdd) {
+                addComponent(component);
+              }
+              componentsToAdd.clear();
+            }
+          }
+        });
+      } else {
+        componentsToAdd.add(component);
       }
-    });
+    }
   }
 
   private void addComponent(final AndroidViewComponent component) {
-    int x = component.XCoord();
-    int y = component.YCoord();
+    int x = component.Left();
+    int y = component.Top();
     if (x == ComponentConstants.DEFAULT_X_Y || y == ComponentConstants.DEFAULT_X_Y) {
       addComponentLater(component);
     } else {
-      if (x >= 0 && x < getWidth() && y >= 0 && y < getHeight()) {
-        ViewGroup.LayoutParams params = component.getView().getLayoutParams();
-        android.widget.RelativeLayout.LayoutParams newParams =
-            new android.widget.RelativeLayout.LayoutParams(params.width, params.height);
-        newParams.topMargin = ViewUtil.calculatePixels(component.getView(), y);
-        newParams.leftMargin = ViewUtil.calculatePixels(component.getView(), x);
-        layoutManager.addView(component.getView(), newParams);
-      } else {
-        Log.e("RelativeLayout", "Child has illegal x or y position.");
-      }
+      ViewGroup.LayoutParams params = component.getView().getLayoutParams();
+      LayoutParams newParams = new LayoutParams(params.width, params.height);
+      newParams.topMargin = ViewUtil.calculatePixels(component.getView(), y);
+      newParams.leftMargin = ViewUtil.calculatePixels(component.getView(), x);
+      layoutManager.addView(component.getView(), newParams);
     }
   }
 

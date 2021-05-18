@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -52,8 +52,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_HEIGHT = "Height";
   public static final String PROPERTY_NAME_COLUMN = "Column";
   public static final String PROPERTY_NAME_ROW = "Row";
-  protected static final String PROPERTY_NAME_X_COORD = "XCoord";
-  protected static final String PROPERTY_NAME_Y_COORD = "YCoord";
+  protected static final String PROPERTY_NAME_LEFT = "Left";
+  protected static final String PROPERTY_NAME_TOP = "Top";
 
   // Note: the values below are duplicated in Component.java
   // If you change them here, change them there!
@@ -120,12 +120,6 @@ public abstract class MockVisibleComponent extends MockComponent {
         new TextPropertyEditor());
     addProperty(PROPERTY_NAME_ROW, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
         new TextPropertyEditor());
-    addProperty(PROPERTY_NAME_X_COORD, "" + ComponentConstants.DEFAULT_X_Y,
-        MESSAGES.xcoordinatePropertyCaption(),
-        makeCoordTextPropertyEditor());
-    addProperty(PROPERTY_NAME_Y_COORD, "" + ComponentConstants.DEFAULT_X_Y,
-        MESSAGES.ycoordinatePropertyCaption(),
-        makeCoordTextPropertyEditor());
     addWidthHeightProperties();
   }
 
@@ -143,8 +137,8 @@ public abstract class MockVisibleComponent extends MockComponent {
     if (propertyName.equals(PROPERTY_NAME_COLUMN)
         || propertyName.equals(PROPERTY_NAME_ROW)) {
       return false;
-    } else if (propertyName.equals(PROPERTY_NAME_X_COORD)
-        || propertyName.equals(PROPERTY_NAME_Y_COORD)) {
+    } else if (propertyName.equals(PROPERTY_NAME_LEFT)
+        || propertyName.equals(PROPERTY_NAME_TOP)) {
       // the visibility of x and y coordinates strictly depends on whether the component
       // is placed inside an absolute arrangement or not
       return this.coordPropertiesVisible;
@@ -185,9 +179,9 @@ public abstract class MockVisibleComponent extends MockComponent {
     } else if (propertyName.equals(PROPERTY_NAME_VISIBLE)) {
       setVisibleProperty(newValue);
       refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_X_COORD)) {
+    } else if (propertyName.equals(PROPERTY_NAME_LEFT)) {
       refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_Y_COORD)) {
+    } else if (propertyName.equals(PROPERTY_NAME_TOP)) {
       refreshForm();
     }
   }
@@ -214,8 +208,8 @@ public abstract class MockVisibleComponent extends MockComponent {
 
     int type = value ? EditableProperty.TYPE_NORMAL : EditableProperty.TYPE_INVISIBLE;
 
-    EditableProperty x = properties.getProperty(PROPERTY_NAME_X_COORD);
-    EditableProperty y = properties.getProperty(PROPERTY_NAME_Y_COORD);
+    EditableProperty x = properties.getProperty(PROPERTY_NAME_LEFT);
+    EditableProperty y = properties.getProperty(PROPERTY_NAME_TOP);
 
     x.setType(type);
     y.setType(type);

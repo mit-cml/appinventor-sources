@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -674,13 +674,10 @@ public class YaVersion {
   //   If you edit the description of a component (but not yet a
   //   property,method or event of that component) you must also find and
   //   update the description in OdeMessages.java
-  
-  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
-  
-  public static final int VERTICALSCROLLABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
-  
-  public static final int HORIZONTALSCROLLABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
 
+  // For ABSOLUTEARRANGEMENT_COMPONENT_VERSION 1:
+  // - AbsoluteArrangement component was added.
+  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
 
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.

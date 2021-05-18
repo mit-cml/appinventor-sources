@@ -170,8 +170,16 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 : Specifies the `FeatureCollection`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="FeatureCollection.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="FeatureCollection.Source" .text .ro} *Source*
 : Specifies the source URL used to populate the feature collection. If the feature collection was not loaded from a URL, this will be the empty string.
+
+{:id="FeatureCollection.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="FeatureCollection.Visible" .boolean} *Visible*
 : Specifies whether the `FeatureCollection` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -418,6 +426,10 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Gets the latitude of the center of the Map. To change the latitude, use the
  [`PanTo`](#Map.PanTo) method.
 
+{:id="Map.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Map.LocationSensor" .component .wo} *LocationSensor*
 : Uses the provided [`LocationSensor`](sensors.html#LocationSensor) for user location data
  rather than the built-in location provider.
@@ -460,6 +472,10 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Shows or hides an icon indicating the user's current location on the [`Map`](#Map). The
  availability and accuracy of this feature will depend on whether the user has location
  services enabled and which location providers are available.
+
+{:id="Map.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Map.UserLatitude" .number .ro .bo} *UserLatitude*
 : Returns the user's latitude if ShowUser is enabled.

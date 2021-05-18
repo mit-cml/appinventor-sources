@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019 MIT, All rights reserved
+// Copyright 2019-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -126,8 +126,8 @@ final class MockAbsoluteLayout extends MockLayout {
    * @return the top left coordinates of the child component
    */
   private Coordinates getCoordinatesOfChild(MockComponent child) {
-    int x = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_X_COORD));
-    int y = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_Y_COORD));
+    int x = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_LEFT));
+    int y = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_TOP));
     return new Coordinates(x, y);
   }
 
@@ -171,7 +171,7 @@ final class MockAbsoluteLayout extends MockLayout {
         // If the child's width is set to fill parent, we want to shift the child's top
         // left corner to be on the left frame so that it fills the parent entirely.
         // Then we set its width to be the same as the parent layout's width
-        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_X_COORD, "0");
+        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_LEFT, "0");
         childLayoutInfo.width = layoutWidth;
       } else if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
         int childWidth = (- (childLayoutInfo.width - MockVisibleComponent.LENGTH_PERCENT_TAG))
@@ -185,7 +185,7 @@ final class MockAbsoluteLayout extends MockLayout {
         // If the child's height is set to fill parent, we want to shift the child's top
         // left corner to be on the top frame so that it fills the parent entirely.
         // Then we set its height to be the same as the parent layout's height
-        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_Y_COORD, "0");
+        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_TOP, "0");
         childLayoutInfo.height = layoutHeight;
       } else if (childLayoutInfo.height <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
         int childHeight = (- (childLayoutInfo.height - MockVisibleComponent.LENGTH_PERCENT_TAG))
@@ -198,8 +198,8 @@ final class MockAbsoluteLayout extends MockLayout {
       if (child instanceof MockContainer) {
         ((MockContainer) child).getLayout().layoutChildren(childLayoutInfo);
       }
-      int x = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_X_COORD));
-      int y = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_Y_COORD));
+      int x = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_LEFT));
+      int y = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_TOP));
       container.setChildSizeAndPosition(child, childLayoutInfo, x, y);
     }
 
@@ -247,8 +247,8 @@ final class MockAbsoluteLayout extends MockLayout {
         srcContainer.removeComponent(source, false);
       }
       try {
-        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_X_COORD, "" + leftMargin);
-        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_Y_COORD, "" + topMargin);
+        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_LEFT, "" + leftMargin);
+        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_TOP, "" + topMargin);
       } catch (Exception e) {
         return false;
       }

@@ -138,6 +138,11 @@ public class AbsoluteArrangement extends AndroidViewComponent
   }
 
   @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    viewLayout.updateComponentPosition(component);
+  }
+
+  @Override
   public List<Component> getChildren() {
     return Collections.unmodifiableList(children);
   }

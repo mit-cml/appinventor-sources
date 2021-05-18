@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -30,11 +30,14 @@ public class ComponentConstants {
 
   public static final int EMPTY_HV_ARRANGEMENT_WIDTH = 100;
   public static final int EMPTY_HV_ARRANGEMENT_HEIGHT = 100;
-  
+
   public static final int EMPTY_A_ARRANGEMENT_WIDTH = 100;
   public static final int EMPTY_A_ARRANGEMENT_HEIGHT = 100;
-  
-  public static final int DEFAULT_X_Y = -1;
+
+  /**
+   * Default value for the top and left coordinates of view components.
+   */
+  public static final int DEFAULT_X_Y = Integer.MIN_VALUE;
 
   /**
    * Canvas component.
