@@ -43,6 +43,7 @@ public class Config implements IsSerializable, Serializable {
   private String galleryLocation;
   private boolean galleryReadOnly;
   private List<String> tutorialUrlAllowed;
+  private boolean serverExpired;
 
   public Config() {
   }
@@ -229,6 +230,14 @@ public class Config implements IsSerializable, Serializable {
 
   public List<String> getTutorialsUrlAllowed() {
     return tutorialUrlAllowed;
+  }
+
+  public boolean getServerExpired() {
+    return serverExpired;
+  }
+
+  public void setServerExpired(boolean value) {
+    serverExpired = value;
   }
 
 }

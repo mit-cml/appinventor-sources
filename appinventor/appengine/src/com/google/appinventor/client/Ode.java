@@ -42,6 +42,7 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 
+import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
@@ -888,6 +889,10 @@ public class Ode implements EntryPoint {
 
     Window.setTitle(MESSAGES.titleYoungAndroid());
     Window.enableScrolling(true);
+
+    if (config.getServerExpired()) {
+      RootPanel.get().add(new ExpiredServiceOverlay());
+    }
 
     topPanel = new TopPanel();
     statusPanel = new StatusPanel();
