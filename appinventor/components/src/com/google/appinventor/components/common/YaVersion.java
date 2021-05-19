@@ -547,7 +547,9 @@ public class YaVersion {
   // - VERTICALARRANGEMENT_COMPONENT_VERSION incremented to 4
   // - VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION incremented to 2
   // - VIDEOPLAYER_COMPONENT_VERSION incremented to 7
-  public static final int YOUNG_ANDROID_VERSION = 212;
+  // For YOUNG_ANDROID_VERSION 213:
+  // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
+  public static final int YOUNG_ANDROID_VERSION = 213;
 
   // ............................... Blocks Language Version Number ...............................
 
