@@ -71,6 +71,10 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 : Specifies the path of the `Button`'s image. If there is both an `Image` and a
  [`BackgroundColor`](#Button.BackgroundColor) specified, only the `Image` will be visible.
 
+{:id="Button.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Button.Shape" .number .do} *Shape*
 : Specifies the shape of the `Button`. The valid values for this property are `0` (default),
  `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
@@ -92,6 +96,10 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 {:id="Button.TextColor" .color} *TextColor*
 : Specifies the text color of the `Button` as an alpha-red-green-blue
  integer.
+
+{:id="Button.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Button.Visible" .boolean} *Visible*
 : Specifies whether the `Button` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -181,12 +189,20 @@ None
 : Specifies the `CheckBox`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="CheckBox.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="CheckBox.Text" .text} *Text*
 : Specifies the text displayed by the `CheckBox`.
 
 {:id="CheckBox.TextColor" .color} *TextColor*
 : Specifies the text color of the `CheckBox` as an alpha-red-green-blue
  integer.
+
+{:id="CheckBox.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="CheckBox.Visible" .boolean} *Visible*
 : Specifies whether the `CheckBox` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -271,6 +287,10 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 {:id="DatePicker.Instant" .InstantInTime .ro .bo} *Instant*
 : Returns instant of the date that was last picked using the DatePicker.
 
+{:id="DatePicker.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="DatePicker.Month" .number .ro .bo} *Month*
 : Returns the number of the Month that was last picked using the DatePicker.
 
@@ -298,6 +318,10 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 {:id="DatePicker.TextColor" .color} *TextColor*
 : Specifies the text color of the `DatePicker` as an alpha-red-green-blue
  integer.
+
+{:id="DatePicker.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="DatePicker.Visible" .boolean} *Visible*
 : Specifies whether the `DatePicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -380,6 +404,10 @@ Component for displaying images and basic animations.
 : Specifies the `Image`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Image.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Image.Picture" .text} *Picture*
 : Specifies the path of the `Image`'s `Picture`.
 
@@ -391,6 +419,10 @@ Component for displaying images and basic animations.
 
 {:id="Image.Scaling" .number .bo} *Scaling*
 : This property determines how the picture scales according to the Height or Width of the Image. Scale proportionally (0) preserves the picture aspect ratio. Scale to fit (1) matches the Image area, even if the aspect ratio changes.
+
+{:id="Image.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Image.Visible" .boolean} *Visible*
 : Specifies whether the `Image` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -470,6 +502,10 @@ Labels are components used to show text.
 : Specifies the `Label`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Label.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Label.Text" .text} *Text*
 : Specifies the text displayed by the label.
 
@@ -481,6 +517,10 @@ Labels are components used to show text.
 {:id="Label.TextColor" .color} *TextColor*
 : Specifies the label's text color as an alpha-red-green-blue
  integer.
+
+{:id="Label.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Label.Visible" .boolean} *Visible*
 : Specifies whether the `Label` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -570,6 +610,10 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 {:id="ListPicker.ItemTextColor" .color} *ItemTextColor*
 : The text color of the ListPicker items.
 
+{:id="ListPicker.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="ListPicker.Selection" .text} *Selection*
 : The selected item. When directly changed by the programmer, the [`SelectionIndex`](#ListPicker.SelectionIndex)
  property is also changed to the first item in the [`ListPicker`](#ListPicker) with the given value.
@@ -605,6 +649,10 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 
 {:id="ListPicker.Title" .text} *Title*
 : Optional title displayed at the top of the list of choices.
+
+{:id="ListPicker.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="ListPicker.Visible" .boolean} *Visible*
 : Specifies whether the `ListPicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -682,6 +730,10 @@ This is a visible component that allows to place a list of text elements in your
 : Specifies the `ListView`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="ListView.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="ListView.Selection" .text} *Selection*
 : Returns the text in the `ListView` at the position of [`SelectionIndex`](#ListView.SelectionIndex).
 
@@ -703,6 +755,10 @@ This is a visible component that allows to place a list of text elements in your
 
 {:id="ListView.TextSize" .number} *TextSize*
 : Specifies the `ListView` item's text font size
+
+{:id="ListView.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -877,6 +933,10 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.Hint" .text} *Hint*
 : `PasswordTextBox` hint for the user.
 
+{:id="PasswordTextBox.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="PasswordTextBox.PasswordVisible" .boolean .bo} *PasswordVisible*
 : Specifies whether the password is hidden (default) or shown.
 
@@ -893,6 +953,10 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.TextColor" .color} *TextColor*
 : Specifies the text color of the `PasswordTextBox` as an alpha-red-green-blue
  integer.
+
+{:id="PasswordTextBox.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="PasswordTextBox.Visible" .boolean} *Visible*
 : Specifies whether the `PasswordTextBox` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1160,6 +1224,10 @@ This class is used to display a `Slider`.
 : Specifies the `Slider`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Slider.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Slider.MaxValue" .number} *MaxValue*
 : Sets the maximum value of slider. If the new maximum is less than the
  current minimum, then minimum and maximum will both be set to this value.
@@ -1180,6 +1248,10 @@ This class is used to display a `Slider`.
 : Sets the position of the slider thumb. If this value is greater than [`MaxValue`](#Slider.MaxValue),
  then it will be set to same value as [`MaxValue`](#Slider.MaxValue). If this value is less than
  [`MinValue`](#Slider.MinValue), then it will be set to same value as [`MinValue`](#Slider.MinValue).
+
+{:id="Slider.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Slider.Visible" .boolean} *Visible*
 : Specifies whether the `Slider` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1234,6 +1306,10 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 : Specifies the `Spinner`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Spinner.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Spinner.Prompt" .text} *Prompt*
 : Specifies the text used for the title of the Spinner window.
 
@@ -1245,6 +1321,10 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
  If an attempt is made to set this to a number less than `1` or greater than the number of
  items in the `Spinner`, `SelectionIndex` will be set to `0`, and [`Selection`](#Spinner.Selection)
  will be set to the empty text.
+
+{:id="Spinner.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Spinner.Visible" .boolean} *Visible*
 : Specifies whether the `Spinner` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1314,6 +1394,10 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 : Specifies the `Switch`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Switch.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Switch.On" .boolean} *On*
 : True if the switch is in the On state, false otherwise.
 
@@ -1329,6 +1413,10 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 
 {:id="Switch.ThumbColorInactive" .color} *ThumbColorInactive*
 : Specifies the `Switch`'s thumb color when switch is in the Off state.
+
+{:id="Switch.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Switch.TrackColorActive" .color} *TrackColorActive*
 : Specifies the `Switch`'s track color when in the On state.
@@ -1430,6 +1518,10 @@ Users enter text in a text box component.
 {:id="TextBox.Hint" .text} *Hint*
 : `TextBox` hint for the user.
 
+{:id="TextBox.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="TextBox.MultiLine" .boolean} *MultiLine*
 : If true, then this `TextBox` accepts multiple lines of input, which are entered using the
  return key. For single line text boxes there is a Done key instead of a return key, and
@@ -1458,6 +1550,10 @@ Users enter text in a text box component.
 {:id="TextBox.TextColor" .color} *TextColor*
 : Specifies the text color of the `TextBox` as an alpha-red-green-blue
  integer.
+
+{:id="TextBox.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="TextBox.Visible" .boolean} *Visible*
 : Specifies whether the `TextBox` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1546,6 +1642,10 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 {:id="TimePicker.Instant" .InstantInTime .ro .bo} *Instant*
 : Returns the instant in time that was last picked using the `TimePicker`.
 
+{:id="TimePicker.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="TimePicker.Minute" .number .ro .bo} *Minute*
 : Returns the hour of the time that was last picked using the `TimePicker`.
  The time returned is always in the 24hour format.
@@ -1571,6 +1671,10 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 {:id="TimePicker.TextColor" .color} *TextColor*
 : Specifies the text color of the `TimePicker` as an alpha-red-green-blue
  integer.
+
+{:id="TimePicker.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="TimePicker.Visible" .boolean} *Visible*
 : Specifies whether the `TimePicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1696,11 +1800,19 @@ Component for viewing Web pages.
 : Determine whether or not to ignore SSL errors. Set to `true`{:.logic.block} to ignore errors.
  Use this to accept self signed certificates from websites.
 
+{:id="WebViewer.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="WebViewer.PromptforPermission" .boolean} *PromptforPermission*
 : Determine if the user should be prompted for permission to use the geolocation API while in
  the `WebViewer`. If `true`{:.logic.block}, prompt the user of the `WebViewer` to give
  permission to access the geolocation API. If `false`{:.logic.block}, assume permission is
  granted.
+
+{:id="WebViewer.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="WebViewer.UsesLocation" .boolean .wo .do} *UsesLocation*
 : Specifies whether or not this `WebViewer` can access the JavaScript

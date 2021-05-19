@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -51,6 +52,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_HEIGHT = "Height";
   public static final String PROPERTY_NAME_COLUMN = "Column";
   public static final String PROPERTY_NAME_ROW = "Row";
+  protected static final String PROPERTY_NAME_LEFT = "Left";
+  protected static final String PROPERTY_NAME_TOP = "Top";
 
   // Note: the values below are duplicated in Component.java
   // If you change them here, change them there!
@@ -67,6 +70,10 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String COLOR_NONE = "00FFFFFF";
   protected static final String COLOR_DEFAULT = "00000000";
 
+  // to be used to check whether we want to show the x and y coordinate
+  // properties or not
+  private boolean coordPropertiesVisible = false;
+
   // Stored Settings
   protected String phonePreview = editor.getProjectEditor().getProjectSettingsProperty(
       SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -82,6 +89,25 @@ public abstract class MockVisibleComponent extends MockComponent {
    */
   MockVisibleComponent(SimpleEditor editor, String type, ImageResource icon) {
     super(editor, type, new Image(icon));
+  }
+
+  /**
+   * Creates a text property editor that throws an exception if an invalid
+   * number is entered.
+   *
+   * @return a text property editor object with an overridden validate method
+   */
+  private static TextPropertyEditor makeCoordTextPropertyEditor() {
+    return new TextPropertyEditor() {
+      @Override
+      protected void validate(String text) throws InvalidTextException {
+        try {
+          Integer.valueOf(text);
+        } catch (NumberFormatException e) {
+          throw new InvalidTextException("invalid coordinate provided: " + text);
+        }
+      }
+    };
   }
 
   @Override
@@ -108,9 +134,14 @@ public abstract class MockVisibleComponent extends MockComponent {
 
   @Override
   protected boolean isPropertyVisible(String propertyName) {
-    if (propertyName.equals(PROPERTY_NAME_COLUMN) ||
-        propertyName.equals(PROPERTY_NAME_ROW)) {
+    if (propertyName.equals(PROPERTY_NAME_COLUMN)
+        || propertyName.equals(PROPERTY_NAME_ROW)) {
       return false;
+    } else if (propertyName.equals(PROPERTY_NAME_LEFT)
+        || propertyName.equals(PROPERTY_NAME_TOP)) {
+      // the visibility of x and y coordinates strictly depends on whether the component
+      // is placed inside an absolute arrangement or not
+      return this.coordPropertiesVisible;
     }
     return super.isPropertyVisible(propertyName);
   }
@@ -148,6 +179,10 @@ public abstract class MockVisibleComponent extends MockComponent {
     } else if (propertyName.equals(PROPERTY_NAME_VISIBLE)) {
       setVisibleProperty(newValue);
       refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_LEFT)) {
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_TOP)) {
+      refreshForm();
     }
   }
 
@@ -160,5 +195,32 @@ public abstract class MockVisibleComponent extends MockComponent {
     colorAccent = editor.getProjectEditor().getProjectSettingsProperty(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
+  }
+
+
+  /**
+   * Sets the visibility of x and y coordinate properties.
+   *
+   * @param value true or false
+   */
+  public void setCoordPropertiesVisible(boolean value) {
+    this.coordPropertiesVisible = value;
+
+    int type = value ? EditableProperty.TYPE_NORMAL : EditableProperty.TYPE_INVISIBLE;
+
+    EditableProperty x = properties.getProperty(PROPERTY_NAME_LEFT);
+    EditableProperty y = properties.getProperty(PROPERTY_NAME_TOP);
+
+    x.setType(type);
+    y.setType(type);
+  }
+
+  /**
+   * Returns the visibility of the coordinate properties.
+   *
+   * @return true iff x and y coordinate properties are visible
+   */
+  public boolean coordPropertiesVisible() {
+    return this.coordPropertiesVisible;
   }
 }

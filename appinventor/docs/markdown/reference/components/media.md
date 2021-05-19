@@ -134,6 +134,10 @@ A special-purpose button. When the user taps an `ImagePicker`, the device's imag
 : Specifies the path of the `ImagePicker`'s image. If there is both an `Image` and a
  [`BackgroundColor`](#ImagePicker.BackgroundColor) specified, only the `Image` will be visible.
 
+{:id="ImagePicker.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="ImagePicker.Selection" .text .ro .bo} *Selection*
 : Path to the file containing the image that was selected.
 
@@ -158,6 +162,10 @@ A special-purpose button. When the user taps an `ImagePicker`, the device's imag
 {:id="ImagePicker.TextColor" .color} *TextColor*
 : Specifies the text color of the `ImagePicker` as an alpha-red-green-blue
  integer.
+
+{:id="ImagePicker.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="ImagePicker.Visible" .boolean} *Visible*
 : Specifies whether the `ImagePicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -534,9 +542,17 @@ A multimedia component capable of playing videos. When the application is run, t
 : Specifies the `VideoPlayer`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="VideoPlayer.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="VideoPlayer.Source" .text .wo} *Source*
 : Sets the "path" to the video. Usually, this will be the name of the video file, which should be
  added in the Designer.
+
+{:id="VideoPlayer.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="VideoPlayer.Visible" .boolean} *Visible*
 : Specifies whether the `VideoPlayer` should be visible on the screen.  Value is `true`{:.logic.block}
