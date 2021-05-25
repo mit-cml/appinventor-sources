@@ -2802,21 +2802,11 @@ public final class Compiler {
         JSONObject compJson = buildInfo.getJSONObject(i);
         JSONArray infoArray = null;
         String type = compJson.getString("type");
-        try {
-          infoArray = compJson.getJSONArray(targetInfo);
-        } catch (JSONException e) {
-          // Older compiled extensions will not have a broadcastReceiver
-          // defined. Rather then require them all to be recompiled, we
-          // treat the missing attribute as empty.
-          if (e.getMessage().contains("broadcastReceiver")) {
-            LOG.log(Level.INFO, "Component \"" + type + "\" does not have a broadcast receiver.");
-            continue;
-          } else if (e.getMessage().contains(ComponentDescriptorConstants.ANDROIDMINSDK_TARGET)) {
-            LOG.log(Level.INFO, "Component \"" + type + "\" does not specify a minimum SDK.");
-            continue;
-          } else {
-            throw e;
-          }
+        infoArray = compJson.optJSONArray(targetInfo);
+        if (infoArray == null) {
+          LOG.log(Level.INFO, "Component \"" + type + "\" does not specify " + targetInfo);
+          // Continue to process other components
+          continue;
         }
 
         if (!simpleCompTypes.contains(type) && !extCompTypes.contains(type)) {
