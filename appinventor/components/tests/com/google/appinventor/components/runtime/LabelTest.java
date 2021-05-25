@@ -1,15 +1,26 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
+
 
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Html;
+import android.text.SpannableString;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for Label component.
@@ -89,15 +100,26 @@ public class LabelTest extends RobolectricTestBase {
 
     aLabel.HTMLFormat(true);
     assertTrue(aLabel.HTMLFormat());
+    Html[] textViewSpans = new SpannableString(textView.getText()).getSpans(0, textView.getText().length(), Html.class);
+    Html[] defaultSpans = new SpannableString(htmlTest).getSpans(0, textView.getText().length(), Html.class);
+    assertArrayEquals("Invalid Label HTML text", defaultSpans, textViewSpans);
   }
 
   @Test
   public void testHasMargin() {
     aLabel.HasMargins(true);
     assertTrue(aLabel.HasMargins());
+    ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) textView.getLayoutParams();
+    int defaultMargin = Math.round(2 * getForm().deviceDensity());
+    int[] defaultMargins = {defaultMargin, defaultMargin, defaultMargin, defaultMargin};
+    int[] expectedMargins = {mlp.leftMargin, mlp.topMargin, mlp.rightMargin, mlp.bottomMargin};
+    assertArrayEquals("Invalid Label margin", defaultMargins, expectedMargins);
 
     aLabel.HasMargins(false);
     assertFalse(aLabel.HasMargins());
+    defaultMargins = new int[]{0, 0, 0, 0};
+    expectedMargins = new int[]{mlp.leftMargin, mlp.topMargin, mlp.rightMargin, mlp.bottomMargin};
+    assertArrayEquals("Invalid Label margin", defaultMargins, expectedMargins);
   }
 
   @Test
