@@ -1,9 +1,23 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
+
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.text.InputType;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.EditText;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for TextBox component.
@@ -11,131 +25,164 @@ import static org.junit.Assert.*;
 public class TextBoxTest extends RobolectricTestBase {
 
   private TextBox aTextBox;
+  private EditText editText;
 
   @Before
   public void SetUp() {
     super.setUp();
     aTextBox = new TextBox(getForm());
+    editText = (EditText) aTextBox.getView();
   }
-
+  
   @Test
   public void testTextBoxDefaults() {
-    assertEquals("Expected default TextBox text alignment " + Component.ALIGNMENT_NORMAL, Component.ALIGNMENT_NORMAL, aTextBox.TextAlignment());
-    assertTrue(aTextBox.Enabled());
-    assertEquals("Expected default TextBox font typeface " + Component.TYPEFACE_DEFAULT, Component.TYPEFACE_DEFAULT, aTextBox.FontTypeface());
-    assertEquals(Component.FONT_DEFAULT_SIZE, aTextBox.FontSize(), 0.0);
-    assertEquals("Expected TextBox text color", Component.COLOR_DEFAULT, aTextBox.TextColor());
-    assertFalse(aTextBox.FontBold());
-    assertFalse(aTextBox.FontItalic());
-    assertFalse(aTextBox.NumbersOnly());
-    assertFalse(aTextBox.MultiLine());
-    assertFalse(aTextBox.ReadOnly());
-    assertEquals("Expected default TextBox text", "", aTextBox.Text());
-    assertEquals("Expected default TextBox hint", "", aTextBox.Hint());
+    // Test Default TextAlignment Property
+    assertEquals("Expected default TextBox TextAlignment", Gravity.LEFT | Gravity.TOP, editText.getGravity());
+  
+    // Test Default Enabled Property
+    assertTrue(editText.isEnabled());
+  
+    // Test Default FontTypeFace Property
+    assertEquals("Expected default TextBox FontTypeface", Typeface.DEFAULT, editText.getTypeface());
+  
+    // Test Default FontSize Property
+    assertEquals(Component.FONT_DEFAULT_SIZE, editText.getTextSize(), 0.0);
+  
+    // Test Default TextColor Property
+    assertEquals("Expected TextBox TextColor", -16777216, editText.getTextColors().getDefaultColor());
+    
+    // Test Default NumberOnly Property
+    assertEquals("Invalid TextBox NumberOnly", InputType.TYPE_CLASS_TEXT, editText.getInputType());
+    
+    // Test Default MultiLine Property
+    assertEquals("Invalid TextBox MultiLine", 1, editText.getLineCount());
+    
+    // Test Default ReadOnly Property
+    assertTrue(editText.isEnabled());
+    
+    assertEquals("Expected default TextBox Text", "", editText.getText().toString());
+    assertEquals("Expected default TextBox Hint", "", editText.getHint().toString());
   }
-
+  
   @Test
   public void testBackgroundColor() {
     aTextBox.BackgroundColor(Component.COLOR_BLUE);
-    assertEquals("Invalid TextBox background color", Component.COLOR_BLUE, aTextBox.BackgroundColor());
+    assertEquals("Invalid TextBox background color", Component.COLOR_BLUE, ((ColorDrawable)editText.getBackground()).getColor());
   }
-
+  
   @Test
   public void testEnabled() {
     aTextBox.Enabled(true);
-    assertTrue(aTextBox.Enabled());
-
+    assertTrue(editText.isEnabled());
+    
     aTextBox.Enabled(false);
-    assertFalse(aTextBox.Enabled());
+    assertFalse(editText.isEnabled());
   }
-
+  
   @Test
   public void testFontBold() {
     aTextBox.FontBold(true);
-    assertTrue(aTextBox.FontBold());
-
+    assertEquals("Invalid TextBox FontBold", Typeface.BOLD, editText.getTypeface().getStyle());
+    
     aTextBox.FontBold(false);
-    assertFalse(aTextBox.FontBold());
+    assertEquals("Invalid TextBox FontBold", Typeface.NORMAL , editText.getTypeface().getStyle());
   }
-
+  
   @Test
   public void testFontItalic() {
     aTextBox.FontItalic(true);
-    assertTrue(aTextBox.FontItalic());
-
+    assertEquals("Invalid TextBox FontItalic", Typeface.ITALIC, editText.getTypeface().getStyle());
+    
     aTextBox.FontItalic(false);
-    assertFalse(aTextBox.FontItalic());
+    assertEquals("Invalid TextBox FontItalic", Typeface.NORMAL , editText.getTypeface().getStyle());
   }
-
+  
   @Test
   public void testFontSize() {
     aTextBox.FontSize(22.02f);
-    assertEquals(22.02f, aTextBox.FontSize(), 0.0f);
+    assertEquals(22.02f, editText.getTextSize(), 0.0f);
   }
-
+  
   @Test
   public void testFontTypeface() {
     aTextBox.FontTypeface(Component.TYPEFACE_MONOSPACE);
-    assertEquals("Invalid TextBox font typeface", Component.TYPEFACE_MONOSPACE, aTextBox.FontTypeface());
+    assertEquals("Invalid TextBox FontTypeface", Typeface.MONOSPACE, editText.getTypeface());
   }
-
-  @Test
-  public void testHint() {
-    aTextBox.Hint("MIT App Inventor TextBox Hint");
-    assertEquals("Invalid TextBox text", "MIT App Inventor TextBox Hint", aTextBox.Hint());
-  }
-
-  @Test
-  public void testMultiLine() {
-    aTextBox.MultiLine(true);
-    assertTrue(aTextBox.MultiLine());
-
-    aTextBox.MultiLine(false);
-    assertFalse(aTextBox.MultiLine());
-  }
-
-  @Test
-  public void testNumbersOnly() {
-    aTextBox.NumbersOnly(true);
-    assertTrue(aTextBox.NumbersOnly());
-
-    aTextBox.NumbersOnly(false);
-    assertFalse(aTextBox.NumbersOnly());
-  }
-
-  @Test
-  public void testReadOnly() {
-    aTextBox.ReadOnly(true);
-    assertTrue(aTextBox.ReadOnly());
-
-    aTextBox.ReadOnly(false);
-    assertFalse(aTextBox.ReadOnly());
-  }
-
+  
   @Test
   public void testText() {
     aTextBox.Text("MIT App Inventor");
-    assertEquals("Invalid TextBox text", "MIT App Inventor", aTextBox.Text());
+    assertEquals("Invalid TextBox Text", "MIT App Inventor", editText.getText().toString());
   }
-
+  
+  @Test
+  public void testHint() {
+    aTextBox.Hint("Testing Hint");
+    assertEquals("Invalid TextBox Hint", "Testing Hint", editText.getHint().toString());
+  }
+  
+  @Test
+  public void testMultiLine() {
+    aTextBox.MultiLine(true);
+    aTextBox.Text("MIT App Inventor \nis The Best !!!");
+    assertEquals("Invalid TextBox MultiLine", 2, editText.getLineCount());
+    
+    aTextBox.MultiLine(false);
+    aTextBox.Text("MIT App Inventor \nis The Best !!!");
+    assertEquals("Invalid TextBox MultiLine", 1, editText.getLineCount());
+  }
+  
+  @Test
+  public void testNumbersOnly() {
+    aTextBox.NumbersOnly(true);
+    assertEquals("Invalid TextBox NumberOnly", InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED |InputType.TYPE_NUMBER_FLAG_DECIMAL, editText.getInputType());
+    
+    aTextBox.NumbersOnly(false);
+    assertEquals("Invalid TextBox NumberOnly", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE, editText.getInputType());
+  }
+  
+  @Test
+  public void testReadOnly() {
+    aTextBox.ReadOnly(true);
+    assertFalse(editText.isEnabled());
+    
+    aTextBox.ReadOnly(false);
+    assertTrue(editText.isEnabled());
+  }
+  
   @Test
   public void testTextAlignment() {
     aTextBox.TextAlignment(Component.ALIGNMENT_CENTER);
-    assertEquals("Invalid TextBox text alignment", Component.ALIGNMENT_CENTER, aTextBox.TextAlignment());
+    assertEquals("Invalid TextBox TextAlignment", Gravity.CENTER_HORIZONTAL | Gravity.TOP, editText.getGravity());
+    
+    aTextBox.TextAlignment(Component.ALIGNMENT_NORMAL);
+    assertEquals("Invalid TextBox TextAlignment", Gravity.LEFT | Gravity.TOP, editText.getGravity());
   }
-
+  
   @Test
   public void testTextColor() {
     aTextBox.TextColor(Component.COLOR_BLUE);
-    assertEquals("Invalid TextBox text color", Component.COLOR_BLUE, aTextBox.TextColor());
+    assertEquals("Invalid TextBox TextColor", Component.COLOR_BLUE, editText.getTextColors().getDefaultColor());
   }
-
+  
   @Test
   public void testVisible() {
     aTextBox.Visible(true);
-    assertTrue(aTextBox.Visible());
-
+    assertEquals("Invalid TextBox Visibility", View.VISIBLE, editText.getVisibility());
+    
     aTextBox.Visible(false);
-    assertFalse(aTextBox.Visible());
+    assertEquals("Invalid TextBox Visibility", View.GONE, editText.getVisibility());
+  }
+  
+  @Test
+  public void testHeightPercent() {
+    aTextBox.HeightPercent(30);
+    assertEquals("Invalid TextBox HeightPercent", 30.0d, ((double) editText.getHeight()/getForm().Height()) * 100.0d, 0.999d);
+  }
+  
+  @Test
+  public void testWidthPercent() {
+    aTextBox.WidthPercent(22);
+    assertEquals("Invalid TextBox WidthPercent", 22.0d, ((double) editText.getWidth()/getForm().Width()) * 100.0d, 0.999d);
   }
 }
