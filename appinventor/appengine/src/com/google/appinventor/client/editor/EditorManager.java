@@ -14,7 +14,6 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
@@ -24,6 +23,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +54,7 @@ public final class EditorManager {
   // Fields used for saving and auto-saving.
   private final Set<ProjectSettings> dirtyProjectSettings;
   private final Set<FileEditor> dirtyFileEditors;
+  private final HashMap<String,FileEditor> pendingFileEditors;
   private final Timer autoSaveTimer;
   private boolean autoSaveIsScheduled;
   private long autoSaveRequestTime;
@@ -71,6 +72,7 @@ public final class EditorManager {
 
     dirtyProjectSettings = new HashSet<ProjectSettings>();
     dirtyFileEditors = new HashSet<FileEditor>();
+    pendingFileEditors = new HashMap<String,FileEditor>();
 
     autoSaveTimer = new Timer() {
       @Override
@@ -192,7 +194,7 @@ public final class EditorManager {
     if (!fileEditor.isDamaged()) { // Don't save damaged files
       dirtyFileEditors.add(fileEditor);
     } else {
-      OdeLog.log("Not saving blocks for " + fileEditor.getFileId() + " because it is damaged.");
+      Ode.CLog("Not saving blocks for " + fileEditor.getFileId() + " because it is damaged.");
     }
     scheduleAutoSaveTimer();
   }
@@ -254,6 +256,7 @@ public final class EditorManager {
       FileDescriptorWithContent fileContent = new FileDescriptorWithContent(
           fileEditor.getProjectId(), fileEditor.getFileId(), fileEditor.getRawFileContent());
       filesToSave.add(fileContent);
+      pendingFileEditors.put(fileEditor.getFileId(), fileEditor); // pending save
     }
     dirtyFileEditors.clear();
 
@@ -276,12 +279,15 @@ public final class EditorManager {
       @Override
       public void execute() {
         if (pendingSaveOperations.decrementAndGet() == 0) {
+          // We get here when all save operations have completed, either
+          // with success or not.
+          pendingFileEditors.clear(); // Failed I/O will be back in dirtyFileEditors
           // Execute the afterSaving command if one was given.
           if (afterSaving != null) {
             afterSaving.execute();
           }
           // Set the project modification date to the returned date
-          // for one of the saved files (it doens't really matter which one).
+          // for one of the saved files (it doesn't really matter which one).
           if ((dateHolder.date != 0) && (dateHolder.projectId != 0)) { // We have a date back from the server
             Ode.getInstance().updateModificationDate(dateHolder.projectId, dateHolder.date);
           }
@@ -360,7 +366,7 @@ public final class EditorManager {
    * in the same RPC transaction. However we are now sending them separately
    * so that we can have more fine grained control over handling errors that
    * happen only on one file. In particular, we need to handle the case where
-   * a trivial blocks workspace is attempting to be written over a non-trival
+   * a trivial blocks workspace is attempting to be written over a non-trivial
    * file.
    *
    * If any unhandled errors occur while saving, the afterSavingFiles
@@ -386,6 +392,7 @@ public final class EditorManager {
         final long projectId = fileDescriptor.getProjectId();
         final String fileId = fileDescriptor.getFileId();
         final String content = fileDescriptor.getContent();
+        Ode.CLog("Saving fileId " + fileId + " for projectId " + projectId);
         Ode.getInstance().getProjectService().save2(Ode.getInstance().getSessionId(),
           projectId, fileId, false, content, new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
             @Override
@@ -410,7 +417,22 @@ public final class EditorManager {
               if (caught instanceof BlocksTruncatedException) {
                 Ode.getInstance().blocksTruncatedDialog(projectId, fileId, content, this);
               } else {
+                // We mark the file editor as dirty again because the save failed.
+                //
+                // Note: I considered re-scheduling the auto-save and decided against
+                // it. One reason we might be getting errors is due to a problem with
+                // the server. If a lot of clients start re-scheduling saves, this might
+                // make the situation worse due to the "thundering Herd!" So we compromise
+                // we mark the editors as dirty, so the next update by the user to any
+                // file will retry all of the non-saved files. The "Save Project" menu
+                // item will also re-attempt the failed I/O
+                if (pendingFileEditors.containsKey(fileId)) {
+                  dirtyFileEditors.add(pendingFileEditors.get(fileId));
+                }
                 super.onFailure(caught);
+              }
+              if (afterSavingFiles != null) { // Need to call this to decrement the count
+                afterSavingFiles.execute();   // of files saved (or not in this case)
               }
             }
           });

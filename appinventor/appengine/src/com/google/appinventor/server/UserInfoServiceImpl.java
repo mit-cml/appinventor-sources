@@ -14,6 +14,13 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.storage.StorageUtil;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
 /**
  * Implementation of the user information service.
  *
@@ -27,6 +34,11 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   private static final long serialVersionUID = -7316312435338169166L;
+
+  private static final Logger LOG = Logger.getLogger(UserInfoServiceImpl.class.getName());
+
+  @SuppressWarnings("SimpleDateFormat")
+  private static final DateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 
   /**
    * Returns System Config, including user information record
@@ -71,8 +83,25 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
       config.setSecondBuildserver(true);
     }
 
+    String expirationDate = Flag.createFlag("service.expires.time", "").get();
+    if (!expirationDate.isEmpty()) {
+      try {
+        Date expires = ISO8601.parse(expirationDate);
+        if (expires.before(new Date())) {
+          config.setServerExpired(true);
+        }
+      } catch (ParseException e) {
+        throw CrashReport.createAndLogError(LOG, null, null, e);
+      }
+    }
+
     // Check to see if we need to upgrade this user's project to GCS
     storageIo.checkUpgrade(userInfoProvider.getUserId());
+
+    // Fetch list of allowed tutorial prefixes from the data store
+    List<String> urls = storageIo.getTutorialsUrlAllowed();
+    config.setTutorialUrlAllowed(urls);
+
     return config;
   }
 
