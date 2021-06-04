@@ -195,12 +195,12 @@ public class JavaStringUtils {
     return join(listOfStrings, separator);
   }
 
-  public static List<String> split(String text, String at){
+  public static YailList split(String text, String at){
       List<String> split_string = Arrays.asList(text.split(at));
       if (split_string.get(0).equals("")){
         split_string.remove(0);
       }
-      return split_string;
+      return YailList.makeList(split_string);
   }
 
   private static String join(List<Object> list, String separator)
