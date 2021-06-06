@@ -339,7 +339,6 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   public void ShowPasswordDialog(String message, String title, boolean cancelable) {
     textInputDialog(message, title, cancelable, true);
   }
-
   /**
    * Display an alert with a text entry. If cancelable is true, then also displays a "CANCEL"
    * button, allowing user to cancel out of dialog.
