@@ -140,6 +140,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/phoneip.png", images.phonestatusComponent());
     bundledImages.put("images/phoneCall.png", images.phonecall());
     bundledImages.put("images/player.png", images.player());
+    bundledImages.put("images/radiobutton.png", images.radiobutton());
     bundledImages.put("images/soundEffect.png", images.soundeffect());
     bundledImages.put("images/soundRecorder.png", images.soundRecorder());
     bundledImages.put("images/speechRecognizer.png", images.speechRecognizer());

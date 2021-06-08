@@ -227,7 +227,7 @@ public interface Images extends Resources {
   ImageResource checkbox();
 
   /**
-   * Designer palette item: checkbox component
+   * Designer palette item: switch component
    */
   @Source("com/google/appinventor/images/switch.png")
   ImageResource toggleswitch();
