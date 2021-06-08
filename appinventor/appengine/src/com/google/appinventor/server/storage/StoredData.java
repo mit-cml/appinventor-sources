@@ -301,4 +301,17 @@ public class StoredData {
     public String content;
   }
 
+  @Cached(expirationSeconds=120)
+  @Unindexed
+  static final class AllowedTutorialUrls {
+    // Unique Id - for now we expect there to be only 1 MotdData object.
+    @Id Long id;
+
+    // list of allowed Urls as JSON
+    // we use JSON here to make it easier to hand edit via
+    // datastore editing tools
+    String allowedUrls;
+
+  }
+
 }

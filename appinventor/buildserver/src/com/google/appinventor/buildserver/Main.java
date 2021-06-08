@@ -6,15 +6,17 @@
 
 package com.google.appinventor.buildserver;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.StringArrayOptionHandler;
+import com.google.appinventor.buildserver.stats.NullStatReporter;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
+
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 /**
  * Main entry point for the command line version of the YAIL compiler.
@@ -96,7 +98,7 @@ public final class Main {
       System.exit(1);
     }
 
-    ProjectBuilder projectBuilder = new ProjectBuilder();
+    ProjectBuilder projectBuilder = new ProjectBuilder(new NullStatReporter());
     ZipFile zip = null;
     try {
       zip = new ZipFile(commandLineOptions.inputZipFile);

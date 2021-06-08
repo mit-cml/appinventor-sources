@@ -3,8 +3,13 @@
 // Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.stats.SimpleStatReporter;
+import com.google.appinventor.buildserver.stats.StatCalculator;
+import com.google.appinventor.buildserver.stats.StatCalculator.Stats;
+import com.google.appinventor.buildserver.stats.StatReporter;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
@@ -67,7 +72,7 @@ import javax.ws.rs.core.Response;
 // The Java class will be hosted at the URI path "/buildserver"
 @Path("/buildserver")
 public class BuildServer {
-  private ProjectBuilder projectBuilder = new ProjectBuilder();
+  private ProjectBuilder projectBuilder = new ProjectBuilder(statReporter);
 
   static class ProgressReporter {
     // We create a ProgressReporter instance which is handed off to the
@@ -152,6 +157,10 @@ public class BuildServer {
             usage = "the directory to cache the pre-dexed libraries")
     String dexCacheDir = null;
 
+    @Option(name = "--statreporter",
+        usage = "the reporter to use for collecting stats")
+    String statReporter = "com.google.appinventor.buildserver.stats.SimpleStatReporter";
+
   }
 
   private static final CommandLineOptions commandLineOptions = new CommandLineOptions();
@@ -179,6 +188,9 @@ public class BuildServer {
 
   //The number of failed build requests for this server run
   private static final AtomicInteger failedBuildRequests = new AtomicInteger(0);
+
+  // The reporter for gathering build stats.
+  private static StatReporter statReporter;
 
   //The number of failed build requests for this server run
   private static int maximumActiveBuildTasks = 0;
@@ -258,6 +270,7 @@ public class BuildServer {
     RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
     DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
     variables.put("state", getShutdownState() + "");
+    variables.put("hostname", InetAddress.getLocalHost().getHostName());
     if (shuttingTime != 0) {
       variables.put("shutdown-time", dateTimeFormat.format(new Date(shuttingTime)));
     }
@@ -312,14 +325,53 @@ public class BuildServer {
     variables.put("maximum-simultaneous-build-tasks-occurred", maximumActiveBuildTasks + "");
     variables.put("active-build-tasks", buildExecutor.getActiveTaskCount() + "");
 
+    return mapToHtml(variables);
+  }
+
+  private Response mapToHtml(Map<String, String> variables) {
     StringBuilder html = new StringBuilder();
     html.append("<html><body><tt>");
     for (Map.Entry<String, String> variable : variables.entrySet()) {
       html.append("<b>").append(variable.getKey()).append("</b> ")
-        .append(variable.getValue()).append("<br>");
+          .append(variable.getValue()).append("<br>");
     }
     html.append("</tt></body></html>");
     return Response.ok(html.toString(), MediaType.TEXT_HTML_TYPE).build();
+  }
+
+  @GET
+  @Path("stats")
+  @Produces(MediaType.TEXT_HTML)
+  public Response stats() throws IOException {
+    Map<String, String> variables = new LinkedHashMap<String, String>();
+
+    variables.put("hostname", InetAddress.getLocalHost().getHostName());
+
+    // Build Stats
+    if (statReporter instanceof SimpleStatReporter) {
+      StatCalculator calculator = new StatCalculator();
+      processStats("last1000.",
+          calculator.computeStats(((SimpleStatReporter) statReporter).getOrderedStats()),
+          variables);
+      processStats("successes.",
+          calculator.computeStats(((SimpleStatReporter) statReporter).getSuccessStats()),
+          variables);
+      processStats("failures.",
+          calculator.computeStats(((SimpleStatReporter) statReporter).getFailureStats()),
+          variables);
+    }
+
+    return mapToHtml(variables);
+  }
+
+  private void processStats(String prefix, Stats stats, Map<String, String> variables) {
+    variables.put(prefix + "min", stats.getMinTime() + " ms");
+    variables.put(prefix + "avg", stats.getAvgTime() + " ms");
+    variables.put(prefix + "max", stats.getMaxTime() + " ms");
+    variables.put(prefix + "std", stats.getStdev() + " ms");
+    for (String stage : stats.getStageNames()) {
+      processStats(prefix + stage + ".", stats.getStageStats(stage), variables);
+    }
   }
 
   /**
@@ -730,7 +782,9 @@ public class BuildServer {
     CmdLineParser cmdLineParser = new CmdLineParser(commandLineOptions);
     try {
       cmdLineParser.parseArgument(args);
-    } catch (CmdLineException e) {
+      Class<?> clazz = Class.forName(commandLineOptions.statReporter);
+      BuildServer.statReporter = clazz.asSubclass(StatReporter.class).newInstance();
+    } catch (CmdLineException | ReflectiveOperationException e) {
       LOG.severe(e.getMessage());
       cmdLineParser.printUsage(System.err);
       System.exit(1);
@@ -771,7 +825,6 @@ public class BuildServer {
           }
         }
       });
-
 
     // Now that the command line options have been processed, we can create the buildExecutor.
     buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);

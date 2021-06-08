@@ -6,6 +6,7 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.stats.StatReporter;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
@@ -87,6 +88,8 @@ public final class ProjectBuilder {
     return outputKeystore;
   }
 
+  private final StatReporter statReporter;
+
   /**
    * Creates a new directory beneath the system's temporary directory (as
    * defined by the {@code java.io.tmpdir} system property), and returns its
@@ -117,6 +120,10 @@ public final class ProjectBuilder {
     throw new IllegalStateException("Failed to create directory within "
         + TEMP_DIR_ATTEMPTS + " attempts (tried "
         + baseNamePrefix + "0 to " + baseNamePrefix + (TEMP_DIR_ATTEMPTS - 1) + ')');
+  }
+
+  public ProjectBuilder(StatReporter statReporter) {
+    this.statReporter = statReporter;
   }
 
   Result build(String userName, ZipFile inputZip, File outputDir, String outputFileName,
@@ -168,7 +175,7 @@ public final class ProjectBuilder {
         boolean success =
             Compiler.compile(project, componentTypes, componentBlocks, console, console, userErrors,
                 isForCompanion, isForEmulator, includeDangerousPermissions, keyStorePath,
-                childProcessRam, dexCachePath, outputFileName, reporter, isAab);
+                childProcessRam, dexCachePath, outputFileName, reporter, isAab, statReporter);
         console.close();
         userErrors.close();
 
