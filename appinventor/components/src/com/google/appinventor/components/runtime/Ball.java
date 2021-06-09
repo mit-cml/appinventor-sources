@@ -117,6 +117,8 @@ public final class Ball extends Sprite {
 
   @Override
   public boolean containsPoint(double qx, double qy) {
+    double xCenter = xLeft + Width() / 2;
+    double yCenter = yTop + Height() / 2;
     return ((qx - xCenter) * (qx - xCenter) + (qy - yCenter) * (qy - yCenter))
         <= radius * radius;
   }
@@ -128,13 +130,9 @@ public final class Ball extends Sprite {
       defaultValue = "5")
   @SimpleProperty(description = "The distance from the edge of the Ball to its center.")
   public void Radius(int radius) {
-    int dr = radius - this.radius;
-    // If the origin is at the center, the upper left corner moves to keep the center constant.
-    if (originAtCenter) {
-      xLeft -= dr;
-      yTop -= dr;
-    }
     this.radius = radius;
+    xLeft = xOriginToLeft(xOrigin);
+    yTop = yOriginToTop(yOrigin);
     registerChange();
   }
 

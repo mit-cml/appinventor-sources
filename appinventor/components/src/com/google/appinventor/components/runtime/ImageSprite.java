@@ -107,8 +107,8 @@ public class ImageSprite extends Sprite {
         // Still within those same image bounds.
         canvas.save();
         // rotate the canvas for drawing.  This pivot point of the
-        // rotation will be the center of the sprite
-        canvas.rotate((float) (- Heading()), xinit + w/2, yinit + h/2);
+        // rotation will be the origin of the sprite
+        canvas.rotate((float) (- Heading()), xinit + w * (float) u, yinit + h * (float) v);
         drawable.draw(canvas);
         canvas.restore();
       }
@@ -172,6 +172,7 @@ public class ImageSprite extends Sprite {
   @SimpleProperty
   public void Height(int height) {
     heightHint = height;
+    yTop = yOriginToTop(yOrigin);
     registerChange();
   }
 
@@ -198,6 +199,7 @@ public class ImageSprite extends Sprite {
   @SimpleProperty
   public void Width(int width) {
     widthHint = width;
+    xLeft = xOriginToLeft(xOrigin);
     registerChange();
   }
 
@@ -214,7 +216,7 @@ public class ImageSprite extends Sprite {
    */
   @SimpleProperty(
       description = "Whether the image should rotate to match the ImageSprite's heading. " +
-          "The sprite rotates around its centerpoint.",
+          "The sprite rotates around its origin.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Rotates() {
     return rotates;
@@ -222,7 +224,7 @@ public class ImageSprite extends Sprite {
 
   /**
    * If true, the sprite image rotates to match the sprite's heading. If false, the sprite image
-   * does not rotate when the sprite changes heading. The sprite rotates around its centerpoint.
+   * does not rotate when the sprite changes heading. The sprite rotates around its origin.
    *
    * @param rotates  {@code true} indicates that the image rotates to match the sprite's heading
    * {@code false} indicates that the sprite image doesn't rotate.
@@ -238,7 +240,7 @@ public class ImageSprite extends Sprite {
   // We need to override methods defined in the superclass to generate appropriate documentation.
 
   @SimpleProperty(
-      description = "The horizontal coordinate of the left edge of the ImageSprite, " +
+      description = "The horizontal coordinate of the origin of the ImageSprite, " +
           "increasing as the ImageSprite moves right.")
   @Override
   public double X() {
@@ -246,7 +248,7 @@ public class ImageSprite extends Sprite {
   }
 
   @SimpleProperty(
-      description = "The vertical coordinate of the top edge of the ImageSprite, " +
+      description = "The vertical coordinate of the origin of the ImageSprite, " +
           "increasing as the ImageSprite moves down.")
   @Override
   public double Y() {
@@ -254,12 +256,64 @@ public class ImageSprite extends Sprite {
   }
 
   /**
-   * Moves the %type% so that its left top corner is at the specified `x` and `y` coordinates.
+   * OriginX property's getter method.
+   * @return  Horizontal unit coordinate of origin with respect to left edge
+   */
+  @SimpleProperty(
+          description = "The horizontal unit coordinate of the origin with respect " +
+                  "to the left edge. Value between 0.0 and 1.0. For example, a value of 0.0 means" +
+                  "the origin is on the left edge, 0.5 means the origin is in the middle and 1.0 means the" +
+                  "origin lies on the right edge.")
+  public double OriginX() {
+    return super.U();
+  }
+
+  /**
+   * Horizontal unit coordinate of the origin with respect to left edge. Permitted values in [0, 1].
+   * A value of 0.0 means the origin lies on the left edge, 0.5 means the origin lies in the middle and
+   * 1.0 means the origin is on the right edge.
+   * @param u Horizontal unit coordinate of origin with respect to left edge
+   */
+  @DesignerProperty( editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+          defaultValue = DEFAULT_U + "")
+  @SimpleProperty
+  public void OriginX(double u) {
+    super.U(u);
+  }
+
+  /**
+   * OriginY property's getter method.
+   * @return Vertical unit coordinate of the origin with respect to top edge
+   */
+  @SimpleProperty(
+          description = "The vertical unit coordinate of the origin with respect " +
+                  "to the top edge. Value between 0.0 and 1.0. For example, a value of 0.0 means" +
+                  "the origin is on the top edge, 0.5 means the origin is in the middle and 1.0 means the" +
+                  "origin lies on the bottom edge.")
+  public double OriginY() {
+    return super.V();
+  }
+
+  /**
+   * Vertical unit coordinate of the origin with respect to top edge. Permitted values in [0, 1].
+   * A value of 0.0 means the origin lies on the top edge, 0.5 means the origin lies in the middle and
+   * 1.0 means the origin is on the bottom edge.
+   * @param v Vertical unit coordinate of the origin with respect to top edge
+   */
+  @DesignerProperty( editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+          defaultValue = DEFAULT_V + "")
+  @SimpleProperty
+  public void OriginY(double v) {
+    super.V(v);
+  }
+
+  /**
+   * Moves the %type% so that its origin is at the specified `x` and `y` coordinates.
    * @param x the x-coordinate
    * @param y the y-coordinate
    */
   @SimpleFunction(
-      description = "Moves the ImageSprite so that its left top corner is at " +
+      description = "Moves the ImageSprite so that its origin is at " +
           "the specified x and y coordinates.")
   @Override
   public void MoveTo(double x, double y) {

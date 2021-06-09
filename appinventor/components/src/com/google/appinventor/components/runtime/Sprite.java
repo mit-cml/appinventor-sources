@@ -47,6 +47,8 @@ public abstract class Sprite extends VisibleComponent
   private static final double DEFAULT_Z = 1.0;
   private static final int DIRECTION_NONE = 0;
   protected static final boolean DEFAULT_ORIGIN_AT_CENTER = false;
+  protected static final double DEFAULT_U = 0.0;
+  protected static final double DEFAULT_V = 0.0;
 
   protected final Canvas canvas;              // enclosing Canvas
   private final TimerInternal timerInternal;  // timer to control movement
@@ -73,8 +75,20 @@ public abstract class Sprite extends VisibleComponent
 
   // Added to support having coordinates at center.
   protected boolean originAtCenter;
-  protected double xCenter;
-  protected double yCenter;
+
+  // Added to support custom origin for image sprites.
+  protected double xOrigin;   // x-coordinate of origin
+  protected double yOrigin;   // y-coordinate of origin
+
+  // Unit coordinates of the origin wrt top left corner. Added for custom origin support.
+  // In the designer u -> OriginX and v -> OriginY
+  // (u, v) = (0, 0)      | Top - Left Corner
+  // (u, v) = (1, 0)      | Top - Right Corner
+  // (u, v) = (0, 1)      | Bottom - Left Corner
+  // (u, v) = (1, 1)      | Bottom - Right Corner
+  // (u, v) = (0.5, 0.5)  | Center
+  protected double u;       // unit x-coordinate of the origin w.r.t top left corner
+  protected double v;       // unit y-coordinate of the origin w.r.t top left corner
 
   protected Form form;
 
@@ -130,6 +144,8 @@ public abstract class Sprite extends VisibleComponent
     Speed(DEFAULT_SPEED);
     Visible(DEFAULT_VISIBLE);
     Z(DEFAULT_Z);
+    U(DEFAULT_U);
+    V(DEFAULT_V);
 
     container.$form().registerForOnDestroy(this);
   }
@@ -306,28 +322,24 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
-  public double X() {
-    return originAtCenter ? xCenter : xLeft;
+  protected double X() {
+    return xOrigin;
   }
 
-  private double xLeftToCenter(double xLeft) {
-    return xLeft + Width() / 2;
+  //These methods are protected as they are used by extending subclasses ImageSprite and Ball.
+  protected double xLeftToOrigin(double xLeft) {
+    return xLeft + Width() * u;
   }
 
-  private double xCenterToLeft(double xCenter) {
-    return xCenter - Width() / 2;
+  protected double xOriginToLeft(double xOrigin) {
+    return xOrigin - Width() * u;
   }
 
   // Note that this does not call registerChange(). This was pulled out of X()
   // so both X and Y could be changed with only a single call to registerChange().
   private void updateX(double x) {
-    if (originAtCenter) {
-      xCenter = x;
-      xLeft = xCenterToLeft(x);
-    } else {
-      xLeft = x;
-      xCenter = xLeftToCenter(x);
-    }
+    xOrigin = x;
+    xLeft = xOriginToLeft(x);
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
@@ -339,24 +351,20 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
-  private double yTopToCenter(double yTop) {
-    return yTop + Width() / 2;
+  //These methods are protected as they are used by extending subclasses ImageSprite and Ball
+  protected double yTopToOrigin(double yTop) {
+    return yTop + Height() * v;
   }
 
-  private double yCenterToTop(double yCenter) {
-    return yCenter - Width() / 2;
+  protected double yOriginToTop(double yOrigin) {
+    return yOrigin - Height() * v;
   }
 
   // Note that this does not call registerChange(). This was pulled out of Y()
   // so both X and Y could be changed with only a single call to registerChange().
   private void updateY(double y) {
-    if (originAtCenter) {
-      yCenter = y;
-      yTop = yCenterToTop(y);
-    } else {
-      yTop = y;
-      yCenter = yTopToCenter(y);
-    }
+    yOrigin = y;
+    yTop = yOriginToTop(y);
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
@@ -367,8 +375,8 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
-  public double Y() {
-    return originAtCenter ? yCenter : yTop;
+  protected double Y() {
+    return yOrigin;
   }
 
   /**
@@ -398,6 +406,30 @@ public abstract class Sprite extends VisibleComponent
   // annotations so it can be made a property for Ball but not for ImageSprite.
   protected void OriginAtCenter(boolean b) {
     originAtCenter = b;
+    if(originAtCenter) {
+      u = v = 0.5;
+    } else {
+      u = v = 0.0;
+    }
+  }
+
+  // The following methods get overridden in ImageSprite with the @SimpleProperty and @DesignerProperty
+  // annotations so it can be made a property for ImageSprite but not for Ball. In the designer we refer to
+  // u as OriginX and v as OriginY. ImageSprite thus implements getter / setter for those and not for u and v.
+  protected void U(double u) {
+    this.u = u;
+  }
+
+  protected double U() {
+    return u;
+  }
+
+  protected void V(double v) {
+    this.v = v;
+  }
+
+  protected double V() {
+    return v;
   }
 
   // Methods for event handling: general purpose method postEvent() and
@@ -741,16 +773,16 @@ public abstract class Sprite extends VisibleComponent
 
   /**
    * Turns this `%type%` to point towards a given `target` sprite. The new heading will be parallel
-   * to the line joining the centerpoints of the two sprites.
+   * to the line joining the origins of the two sprites.
    *
    * @param target the other sprite to point towards
    */
   @SimpleFunction(
     description = "Turns the %type% to point towards a designated " +
         "target sprite (Ball or ImageSprite). The new heading will be parallel to the line joining " +
-        "the centerpoints of the two sprites.")
+        "the origins of the two sprites.")
   public void PointTowards(Sprite target) {
-    Heading(-Math.toDegrees(Math.atan2(target.yCenter - yCenter, target.xCenter - xCenter)));
+    Heading(-Math.toDegrees(Math.atan2(target.yOrigin - yOrigin, target.xOrigin - xOrigin)));
   }
 
   /**
@@ -763,7 +795,7 @@ public abstract class Sprite extends VisibleComponent
     description = "Sets the heading of the %type% toward the point " +
         "with the coordinates (x, y).")
   public void PointInDirection(double x, double y) {
-    Heading(-Math.toDegrees(Math.atan2(y - yCenter, x - xCenter)));
+    Heading(-Math.toDegrees(Math.atan2(y - yOrigin, x - xOrigin)));
   }
 
   // Internal methods supporting move-related functionality
@@ -899,16 +931,16 @@ public abstract class Sprite extends VisibleComponent
       // overflow.
       if (xLeft != 0) {
         xLeft = 0;
-        xCenter = xLeftToCenter(xLeft);
+        xOrigin = xLeftToOrigin(xLeft);
         moved = true;
       }
     } else if (overWestEdge()) {
       xLeft = 0;
-      xCenter = xLeftToCenter(xLeft);
+      xOrigin = xLeftToOrigin(xLeft);
       moved = true;
     } else if (overEastEdge(canvasWidth)) {
       xLeft = canvasWidth - Width();
-      xCenter = xLeftToCenter(xLeft);
+      xOrigin = xLeftToOrigin(xLeft);
       moved = true;
     }
 
@@ -920,16 +952,16 @@ public abstract class Sprite extends VisibleComponent
       // overflow.
       if (yTop != 0) {
         yTop = 0;
-        yCenter = yTopToCenter(yTop);
+        yOrigin = yTopToOrigin(yTop);
         moved = true;
       }
     } else if (overNorthEdge()) {
       yTop = 0;
-      yCenter = yTopToCenter(yTop);
+      yOrigin = yTopToOrigin(yTop);
       moved = true;
     } else if (overSouthEdge(canvasHeight)) {
       yTop = canvasHeight - Height();
-      yCenter = yTopToCenter(yTop);
+      yOrigin = yTopToOrigin(yTop);
       moved = true;
     }
 
@@ -944,10 +976,10 @@ public abstract class Sprite extends VisibleComponent
    * caller is responsible for calling {@link #registerChange()}.
    */
   protected void updateCoordinates() {
-    xLeft += speed * headingCos;
-    xCenter = xLeftToCenter(xLeft);
-    yTop += speed * headingSin;
-    yCenter = yTopToCenter(yTop);
+    xOrigin += speed * headingCos;
+    xLeft = xOriginToLeft(xOrigin);
+    yOrigin += speed * headingSin;
+    yTop = yOriginToTop(yOrigin);
   }
 
   // Methods for determining collisions with other Sprites and the edge
