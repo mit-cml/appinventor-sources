@@ -261,8 +261,8 @@ public class ImageSprite extends Sprite {
    */
   @SimpleProperty(
           description = "The horizontal unit coordinate of the origin with respect " +
-                  "to the left edge. Value between 0.0 and 1.0. For example, a value of 0.0 means" +
-                  "the origin is on the left edge, 0.5 means the origin is in the middle and 1.0 means the" +
+                  "to the left edge. Value between 0.0 and 1.0. For example, a value of 0.0 means " +
+                  "the origin is on the left edge, 0.5 means the origin is in the middle and 1.0 means the " +
                   "origin lies on the right edge.")
   public double OriginX() {
     return super.U();
@@ -287,8 +287,8 @@ public class ImageSprite extends Sprite {
    */
   @SimpleProperty(
           description = "The vertical unit coordinate of the origin with respect " +
-                  "to the top edge. Value between 0.0 and 1.0. For example, a value of 0.0 means" +
-                  "the origin is on the top edge, 0.5 means the origin is in the middle and 1.0 means the" +
+                  "to the top edge. Value between 0.0 and 1.0. For example, a value of 0.0 means " +
+                  "the origin is on the top edge, 0.5 means the origin is in the middle and 1.0 means the " +
                   "origin lies on the bottom edge.")
   public double OriginY() {
     return super.V();
