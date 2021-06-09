@@ -406,16 +406,17 @@ public abstract class Sprite extends VisibleComponent
   // annotations so it can be made a property for Ball but not for ImageSprite.
   protected void OriginAtCenter(boolean b) {
     originAtCenter = b;
-    if(originAtCenter) {
+    if (originAtCenter) {
       u = v = 0.5;
     } else {
       u = v = 0.0;
     }
   }
 
-  // The following methods get overridden in ImageSprite with the @SimpleProperty and @DesignerProperty
-  // annotations so it can be made a property for ImageSprite but not for Ball. In the designer we refer to
-  // u as OriginX and v as OriginY. ImageSprite thus implements getter / setter for those and not for u and v.
+  // The following methods get overridden in ImageSprite with the @SimpleProperty and
+  // @DesignerProperty annotations so it can be made a property for ImageSprite but not for Ball.
+  // In the designer we refer to u as OriginX and v as OriginY. ImageSprite thus implements
+  // getter / setter for those and not for u and v.
   protected void U(double u) {
     this.u = u;
   }
@@ -779,8 +780,8 @@ public abstract class Sprite extends VisibleComponent
    */
   @SimpleFunction(
     description = "Turns the %type% to point towards a designated " +
-        "target sprite (Ball or ImageSprite). The new heading will be parallel to the line joining " +
-        "the origins of the two sprites.")
+        "target sprite (Ball or ImageSprite). The new heading will be parallel to the line " +
+        "joining the origins of the two sprites.")
   public void PointTowards(Sprite target) {
     Heading(-Math.toDegrees(Math.atan2(target.yOrigin - yOrigin, target.xOrigin - xOrigin)));
   }

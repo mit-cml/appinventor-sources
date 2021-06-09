@@ -261,20 +261,20 @@ public class ImageSprite extends Sprite {
    */
   @SimpleProperty(
           description = "The horizontal unit coordinate of the origin with respect " +
-                  "to the left edge. Value between 0.0 and 1.0. For example, a value of 0.0 means " +
-                  "the origin is on the left edge, 0.5 means the origin is in the middle and 1.0 means the " +
-                  "origin lies on the right edge.")
+                  "to the left edge. Value between 0.0 and 1.0. For example, a value of 0.0 " +
+                  "mean the origin is on the left edge, 0.5 means the origin is in the middle " +
+                  "and 1.0 means the origin lies on the right edge.")
   public double OriginX() {
     return super.U();
   }
 
   /**
    * Horizontal unit coordinate of the origin with respect to left edge. Permitted values in [0, 1].
-   * A value of 0.0 means the origin lies on the left edge, 0.5 means the origin lies in the middle and
-   * 1.0 means the origin is on the right edge.
+   * A value of 0.0 means the origin lies on the left edge, 0.5 means the origin lies in the middle
+   * and 1.0 means the origin is on the right edge.
    * @param u Horizontal unit coordinate of origin with respect to left edge
    */
-  @DesignerProperty( editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
           defaultValue = DEFAULT_U + "")
   @SimpleProperty
   public void OriginX(double u) {
@@ -288,19 +288,19 @@ public class ImageSprite extends Sprite {
   @SimpleProperty(
           description = "The vertical unit coordinate of the origin with respect " +
                   "to the top edge. Value between 0.0 and 1.0. For example, a value of 0.0 means " +
-                  "the origin is on the top edge, 0.5 means the origin is in the middle and 1.0 means the " +
-                  "origin lies on the bottom edge.")
+                  "the origin is on the top edge, 0.5 means the origin is in the middle and 1.0 " +
+                  "means the origin lies on the bottom edge.")
   public double OriginY() {
     return super.V();
   }
 
   /**
    * Vertical unit coordinate of the origin with respect to top edge. Permitted values in [0, 1].
-   * A value of 0.0 means the origin lies on the top edge, 0.5 means the origin lies in the middle and
-   * 1.0 means the origin is on the bottom edge.
+   * A value of 0.0 means the origin lies on the top edge, 0.5 means the origin lies in the middle
+   * and 1.0 means the origin is on the bottom edge.
    * @param v Vertical unit coordinate of the origin with respect to top edge
    */
-  @DesignerProperty( editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
           defaultValue = DEFAULT_V + "")
   @SimpleProperty
   public void OriginY(double v) {
