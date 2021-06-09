@@ -17,6 +17,7 @@ Table of Contents:
 * [ListView](#ListView)
 * [Notifier](#Notifier)
 * [PasswordTextBox](#PasswordTextBox)
+* [RadioButton](#RadioButton)
 * [Screen](#Screen)
 * [Slider](#Slider)
 * [Spinner](#Spinner)
@@ -877,6 +878,12 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.Hint" .text} *Hint*
 : `PasswordTextBox` hint for the user.
 
+{:id="PasswordTextBox.NumbersOnly" .boolean} *NumbersOnly*
+: If true, then this `PasswordTextBox`` accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if `NumbersOnly` is true, you can set the text to anything at all using the
+ [`Text`](#PasswordTextBox.Text) property.
+
 {:id="PasswordTextBox.PasswordVisible" .boolean .bo} *PasswordVisible*
 : Specifies whether the password is hidden (default) or shown.
 
@@ -923,6 +930,90 @@ Users enter passwords in a password text box component, which hides the text tha
 
 {:id="PasswordTextBox.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `PasswordTextBox`.
+
+## RadioButton  {#RadioButton}
+
+![Example of a RadioButton](images/radiobutton.png)
+
+ `RadioButton` components can detect user taps and can change their boolean state in response.
+
+ A `RadioButton` component raises an event when the user taps it. There are many properties affecting
+ its appearance that can be set in the Designer or Blocks Editor.
+
+
+
+### Properties  {#RadioButton-Properties}
+
+{:.properties}
+
+{:id="RadioButton.BackgroundColor" .color} *BackgroundColor*
+: Specifies the background color of the `RadioButton` as an alpha-red-green-blue
+ integer.
+
+{:id="RadioButton.Checked" .boolean} *Checked*
+: Set to `true`{:.logic.block} if the button is checked, `false`{:.logic.block} otherwise.
+
+{:id="RadioButton.Enabled" .boolean} *Enabled*
+: Specifies whether the `RadioButton` should be active and clickable.
+
+{:id="RadioButton.FontBold" .boolean .do} *FontBold*
+: Specifies whether the text of the `RadioButton` should be bold.
+ Some fonts do not support bold.
+
+{:id="RadioButton.FontItalic" .boolean .do} *FontItalic*
+: Specifies whether the text of the `RadioButton` should be italic.
+ Some fonts do not support italic.
+
+{:id="RadioButton.FontSize" .number} *FontSize*
+: Specifies the text font size of the `RadioButton`, measured in sp(scale-independent pixels).
+
+{:id="RadioButton.FontTypeface" .number .do} *FontTypeface*
+: Specifies the text font face of the `RadioButton` as default, serif, sans
+ serif, or monospace.
+
+{:id="RadioButton.Height" .number .bo} *Height*
+: Specifies the `RadioButton`'s vertical height, measured in pixels.
+
+{:id="RadioButton.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `RadioButton`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="RadioButton.Text" .text} *Text*
+: Specifies the text displayed by the `RadioButton`.
+
+{:id="RadioButton.TextColor" .color} *TextColor*
+: Specifies the text color of the `RadioButton` as an alpha-red-green-blue
+ integer.
+
+{:id="RadioButton.Visible" .boolean} *Visible*
+: Specifies whether the `RadioButton` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `RadioButton` is showing and `false`{:.logic.block} if hidden.
+
+{:id="RadioButton.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `RadioButton`, measured in pixels.
+
+{:id="RadioButton.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `RadioButton` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#RadioButton-Events}
+
+{:.events}
+
+{:id="RadioButton.Changed"} Changed()
+: User tapped and released the `RadioButton`.
+
+{:id="RadioButton.GotFocus"} GotFocus()
+: `RadioButton` became the focused component.
+
+{:id="RadioButton.LostFocus"} LostFocus()
+: `RadioButton` stopped being the focused component.
+
+### Methods  {#RadioButton-Methods}
+
+{:.methods}
+None
+
 
 ## Screen  {#Screen}
 
