@@ -119,6 +119,10 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
   private int dragX;
   private int dragY;
 
+  // Location of last mouse down event
+  public static int absX;
+  public static int absY;
+  
   // Array of widgets that the drag source widget can be dropped on
   private DropTarget[] dropTargets;
 
@@ -257,6 +261,8 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
 
     startX = x;
     startY = y;
+    absX = x + sender.getAbsoluteLeft();
+    absY = y + sender.getAbsoluteTop();
 
     if (!captured) {
       // Force browser to keep sending us events until the mouse is released
