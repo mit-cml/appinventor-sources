@@ -6,7 +6,6 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.util.Log;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -195,12 +194,13 @@ public class JavaStringUtils {
     return join(listOfStrings, separator);
   }
 
-  public static YailList split(String text, String at){
-      List<String> split_string = Arrays.asList(text.split(at));
-      if (split_string.get(0).equals("")){
-        split_string.remove(0);
-      }
-      return YailList.makeList(split_string);
+  public static YailList split(String text, String at) {
+    List<String> parts = new ArrayList<>();
+    Collections.addAll(parts, text.split(at));
+    if ("".equals(at) && parts.get(0).equals("")) {
+      parts.remove(0);
+    }
+    return YailList.makeList(parts);
   }
 
   private static String join(List<Object> list, String separator)
