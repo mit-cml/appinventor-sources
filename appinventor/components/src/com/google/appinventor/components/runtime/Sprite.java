@@ -411,6 +411,8 @@ public abstract class Sprite extends VisibleComponent
     } else {
       u = v = 0.0;
     }
+    xLeft = xOriginToLeft(xOrigin);
+    yTop = yOriginToTop(yOrigin);
   }
 
   // The following methods get overridden in ImageSprite with the @SimpleProperty and
@@ -419,6 +421,7 @@ public abstract class Sprite extends VisibleComponent
   // getter / setter for those and not for u and v.
   protected void U(double u) {
     this.u = u;
+    xLeft = xOriginToLeft(xOrigin);
   }
 
   protected double U() {
@@ -427,6 +430,7 @@ public abstract class Sprite extends VisibleComponent
 
   protected void V(double v) {
     this.v = v;
+    yTop = yOriginToTop(yOrigin);
   }
 
   protected double V() {

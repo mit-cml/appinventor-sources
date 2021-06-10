@@ -373,13 +373,13 @@ A 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react to to
 
 {:id="ImageSprite.OriginX" .number} *OriginX*
 : Horizontal unit coordinate of the origin with respect to left edge. Permitted values in [0, 1].
- A value of 0.0 means the origin lies on the left edge, 0.5 means the origin lies in the middle and
- 1.0 means the origin is on the right edge.
+ A value of 0.0 means the origin lies on the left edge, 0.5 means the origin lies in the middle
+ and 1.0 means the origin is on the right edge.
 
 {:id="ImageSprite.OriginY" .number} *OriginY*
 : Vertical unit coordinate of the origin with respect to top edge. Permitted values in [0, 1].
- A value of 0.0 means the origin lies on the top edge, 0.5 means the origin lies in the middle and
- 1.0 means the origin is on the bottom edge.
+ A value of 0.0 means the origin lies on the top edge, 0.5 means the origin lies in the middle
+ and 1.0 means the origin is on the bottom edge.
 
 {:id="ImageSprite.Picture" .text} *Picture*
 : Specifies the path of the sprite's picture.
