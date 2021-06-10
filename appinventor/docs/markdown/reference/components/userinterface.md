@@ -874,6 +874,12 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.Hint" .text} *Hint*
 : `PasswordTextBox` hint for the user.
 
+{:id="PasswordTextBox.NumbersOnly" .boolean} *NumbersOnly*
+: If true, then this `PasswordTextBox`` accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if `NumbersOnly` is true, you can set the text to anything at all using the
+ [`Text`](#PasswordTextBox.Text) property.
+
 {:id="PasswordTextBox.PasswordVisible" .boolean .bo} *PasswordVisible*
 : Specifies whether the password is hidden (default) or shown.
 
