@@ -196,7 +196,8 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
 
     private void handleOkClick(ProjectRootNode oldProjectNode) {
       String newProjectName = newNameTextBox.getText();
-      if (TextValidators.checkNewProjectName(newProjectName)) {
+      if (TextValidators.checkNewProjectName(newProjectName) 
+            == TextValidators.ProjectNameStatus.SUCCESS) {
         hide();
         copyProjectAction(oldProjectNode, newProjectName);
       } else {
