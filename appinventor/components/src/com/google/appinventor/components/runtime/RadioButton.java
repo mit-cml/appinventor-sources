@@ -58,6 +58,18 @@ public final class RadioButton extends ToggleBase<android.widget.RadioButton> {
     }
 
     /**
+    * If the radio button is already checked, 
+    * this method will not toggle the radio button.
+    */
+    @SimpleFunction(
+      description = "If the radio button is already checked," +  
+      "this method will not toggle the radio button.")
+    public void Toggle() {
+        if (!Checked())
+            Checked(true);
+    }
+
+    /**
     * Checked property setter method.
     *
     * @suppressdoc

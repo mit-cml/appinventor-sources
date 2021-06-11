@@ -1012,8 +1012,10 @@ Users enter passwords in a password text box component, which hides the text tha
 ### Methods  {#RadioButton-Methods}
 
 {:.methods}
-None
 
+{:id="RadioButton.Toggle" class="method"} <i/> Toggle()
+: If the radio button is already checked, 
+ this method will not toggle the radio button.
 
 ## Screen  {#Screen}
 
