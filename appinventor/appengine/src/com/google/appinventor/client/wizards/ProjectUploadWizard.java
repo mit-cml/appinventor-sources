@@ -58,46 +58,59 @@ public class ProjectUploadWizard extends Wizard {
               substring(Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\')) + 1);
 
           // Make sure the project name is legal and unique.
-          if (!TextValidators.checkNewProjectName(filename)) {
-            return;
+          if (TextValidators.checkNewProjectName(filename, true) 
+                      != TextValidators.ProjectNameStatus.SUCCESS) {
+         
+            // Show Dialog Box and rename the project
+            new RequestNewProjectNameWizard(new RequestProjectNewNameInterface() {
+              @Override
+              public void getNewName(String name) {
+                upload(upload, name);
+              }
+            }, filename, true);
+  
+          } else {
+            upload(upload, filename);
           }
-
-          String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
-              ServerLayout.UPLOAD_PROJECT + "/" + filename;
-          Uploader.getInstance().upload(upload, uploadUrl,
-              new OdeAsyncCallback<UploadResponse>(
-                  // failure message
-                  MESSAGES.projectUploadError()) {
-                @Override
-                public void onSuccess(UploadResponse uploadResponse) {
-                  switch (uploadResponse.getStatus()) {
-                    case SUCCESS:
-                      String info = uploadResponse.getInfo();
-                      UserProject userProject = UserProject.valueOf(info);
-                      Ode ode = Ode.getInstance();
-                      Project uploadedProject = ode.getProjectManager().addProject(userProject);
-                      ode.openYoungAndroidProjectInDesigner(uploadedProject);
-                      break;
-                    case NOT_PROJECT_ARCHIVE:
-                      // This may be a "severe" error; but in the
-                      // interest of reducing the number of red errors, the 
-                      // line has been changed to report info not an error.
-                      // This error is triggered when the user attempts to
-                      // upload a zip file that is not a project.
-                      ErrorReporter.reportInfo(MESSAGES.notProjectArchiveError());
-                      break;
-                    default:
-                      ErrorReporter.reportError(MESSAGES.projectUploadError());
-                      break;
-                  }
-                }
-              });
         } else {
           Window.alert(MESSAGES.notProjectArchiveError());
           center();
         }
       }
     });
+  }
+  
+  private void upload(FileUpload upload, String filename) {
+    String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/"
+        + ServerLayout.UPLOAD_PROJECT + "/" + filename;
+    Uploader.getInstance().upload(upload, uploadUrl,
+        new OdeAsyncCallback<UploadResponse>(
+        // failure message
+        MESSAGES.projectUploadError()) {
+          @Override
+          public void onSuccess(UploadResponse uploadResponse) {
+            switch (uploadResponse.getStatus()) {
+              case SUCCESS:
+                String info = uploadResponse.getInfo();
+                UserProject userProject = UserProject.valueOf(info);
+                Ode ode = Ode.getInstance();
+                Project uploadedProject = ode.getProjectManager().addProject(userProject);
+                ode.openYoungAndroidProjectInDesigner(uploadedProject);
+                break;
+              case NOT_PROJECT_ARCHIVE:
+                // This may be a "severe" error; but in the
+                // interest of reducing the number of red errors, the 
+                // line has been changed to report info not an error.
+                // This error is triggered when the user attempts to
+                // upload a zip file that is not a project.
+                ErrorReporter.reportInfo(MESSAGES.notProjectArchiveError());
+                break;
+              default:
+                ErrorReporter.reportError(MESSAGES.projectUploadError());
+                break;
+            }
+          }
+      });
   }
 
   @Override
