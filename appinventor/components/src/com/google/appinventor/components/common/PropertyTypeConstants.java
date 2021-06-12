@@ -327,4 +327,10 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidNavigationMethodChoicePropertyEditor}
    */
   public static final String PROPERTY_TYPE_NAVIGATION_METHOD = "navigation_method";
+
+  /**
+   * Float values limited to the range of valid unit coordinates [0, 1].
+   * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFloatRangePropertyEditor}
+   */
+  public static final String PROPERTY_TYPE_UNIT_COORDINATE =  "unit_coordinate";
 }

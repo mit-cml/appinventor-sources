@@ -274,7 +274,7 @@ public class ImageSprite extends Sprite {
    * and 1.0 means the origin is on the right edge.
    * @param u Horizontal unit coordinate of origin with respect to left edge
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_UNIT_COORDINATE,
           defaultValue = DEFAULT_U + "")
   @SimpleProperty
   public void OriginX(double u) {
@@ -300,7 +300,7 @@ public class ImageSprite extends Sprite {
    * and 1.0 means the origin is on the bottom edge.
    * @param v Vertical unit coordinate of the origin with respect to top edge
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_UNIT_COORDINATE,
           defaultValue = DEFAULT_V + "")
   @SimpleProperty
   public void OriginY(double v) {
