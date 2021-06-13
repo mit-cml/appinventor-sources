@@ -522,16 +522,16 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
     }
   }, this);
 
-  // add the all components getter
-  Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_all_component_block', {
-    component_type: typeName
-  }));
-
   // Create helper blocks at the bottom of the drawer.
   helperKeys.forEach(function(helper) {
     var xml = xmlUtils.helperKeyToXML(helper);
     Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(xml));
   }.bind(this));
+
+  // add the all components getter
+  Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_all_component_block', {
+    component_type: typeName
+  }));
 
   return xmlArray;
 };
