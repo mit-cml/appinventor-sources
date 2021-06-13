@@ -1432,6 +1432,39 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Returns user new layout usage setting.
+   *
+   * @return true if the user has opted to use the new UI, false otherwise
+   */
+  public static boolean getUserNewLayout() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+    return Boolean.parseBoolean(value);
+  }
+
+  /**
+   * Set user new layout usage setting.
+   *
+   * @param newLayout new value for the user's UI preference
+   */
+  public static void setUserNewLayout(boolean newLayout) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            changePropertyValue(SettingsConstants.USER_NEW_LAYOUT,
+                    "" + newLayout);
+    userSettings.saveSettings(new Command() {
+        @Override
+        public void execute() {
+          // Reload for the UI preferences to take effect. We
+          // do this here because we need to make sure that
+          // the user settings were saved before we terminate
+          // this browsing session. This is particularly important
+          // for Firefox
+          Window.Location.reload();
+        }
+      });
+  }
+
+  /**
    * Checks whether the user has autoloading enabled in their settings.
    *
    * @return true if autoloading is enabled, otherwise false.
