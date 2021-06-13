@@ -42,6 +42,8 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 
+import com.google.appinventor.client.views.projects.ProjectsExplorer;
+
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
@@ -407,6 +409,11 @@ public class Ode implements EntryPoint {
           projectToolbar.enableStartButton();
           projectToolbar.setProjectTabButtonsVisible(true);
           projectToolbar.setTrashTabButtonsVisible(false);
+
+          if(Ode.getUserNewLayout()) {
+            ModuleController.get().switchToProjectsModule();
+            ModuleController.get().displayModularLayouts();
+          }
         }
       };
     if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
@@ -422,6 +429,7 @@ public class Ode implements EntryPoint {
    */
 
   public void switchToTrash() {
+    ModuleController.get().displayLegacyLayout();
     Ode.getInstance().getTopToolbar().updateMoveToTrash("Delete From Trash");
     hideChaff();
     hideTutorials();
@@ -437,6 +445,7 @@ public class Ode implements EntryPoint {
    */
 
   public void switchToUserAdminPanel() {
+    ModuleController.get().displayLegacyLayout();
     hideChaff();
     hideTutorials();
     currentView = USERADMIN;
@@ -447,6 +456,7 @@ public class Ode implements EntryPoint {
    * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
    */
   public void switchToDesignView() {
+    ModuleController.get().displayLegacyLayout();
     hideChaff();
     // Only show designer if there is a current editor.
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
@@ -465,6 +475,7 @@ public class Ode implements EntryPoint {
    * Switch to the Debugging tab
    */
   public void switchToDebuggingView() {
+    ModuleController.get().displayLegacyLayout();
     hideChaff();
     hideTutorials();
     deckPanel.showWidget(debuggingTabIndex);
@@ -1078,7 +1089,11 @@ public class Ode implements EntryPoint {
     // Remember, the user may not have any projects at all yet.
     // Or, the user may have deleted their previously opened project.
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT PROJECT. *****
-    deckPanel.showWidget(projectsTabIndex);
+    if(getUserNewLayout()) {
+      ModuleController.get().switchToProjectsModule();
+    } else {
+      deckPanel.showWidget(projectsTabIndex);
+    }
 
     overDeckPanel = new HorizontalPanel();
     overDeckPanel.setHeight("100%");
@@ -1097,7 +1112,11 @@ public class Ode implements EntryPoint {
     //Commenting out for now to gain more space for the blocks editor
     mainPanel.add(statusPanel, DockPanel.SOUTH);
     mainPanel.setSize("100%", "100%");
-    RootPanel.get().add(mainPanel);
+    RootPanel.get().add(ModuleController.get().wrapAroundLegacyLayout(mainPanel));
+
+    if (getUserNewLayout()) {
+      ModuleController.get().displayModularLayouts();
+    }
 
     // Add a handler to the RootPanel to keep track of Google Chrome Pinch Zooming and
     // handle relevant bugs. Chrome maps a Pinch Zoom to a MouseWheelEvent with the
@@ -1216,6 +1235,15 @@ public class Ode implements EntryPoint {
    */
   public TopToolbar getTopToolbar() {
     return topToolbar;
+  }
+
+  /**
+   * Returns the top panel.
+   *
+   * @return  {@link TopPanel}
+   */
+  public TopPanel getTopPanel() {
+    return topPanel;
   }
 
   /**
@@ -1589,11 +1617,11 @@ public class Ode implements EntryPoint {
    */
   public DialogBox createNoProjectsDialog(boolean showDialog) {
     final NoProjectDialogBox dialogBox = new NoProjectDialogBox();
-    
+
     if (showDialog) {
       dialogBox.show();
     }
-  
+
     return dialogBox;
   }
 

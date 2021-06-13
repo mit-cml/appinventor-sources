@@ -67,6 +67,13 @@ body {
 }
 
 /*
+ * Module switcher root panel
+ */
+.ode-ModuleControllerRoot {
+  height: 100vh;
+}
+
+/*
  * Context menus
  */
 
