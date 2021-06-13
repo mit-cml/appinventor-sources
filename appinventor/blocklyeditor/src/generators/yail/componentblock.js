@@ -341,7 +341,7 @@ Blockly.Yail.component_component_block = function() {
  * @param {String} instanceName
  * @returns {Function} component getter code generation function with instanceName bound in
  */
-Blockly.Yail.component_all_component_block = function() {
+Blockly.Yail['component_all_component_block'] = function() {
   var fqcn = this.workspace.getComponentDatabase().getType(this.getFieldValue("COMPONENT_TYPE_SELECTOR")).componentInfo.type;
   return [Blockly.Yail.YAIL_GET_ALL_COMPONENT + fqcn + Blockly.Yail.YAIL_CLOSE_COMBINATION,
           Blockly.Yail.ORDER_ATOMIC];

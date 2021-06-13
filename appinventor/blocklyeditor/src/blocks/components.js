@@ -1460,7 +1460,7 @@ Blockly.Blocks.component_component_block = {
  * @lends {Blockly.BlockSvg}
  * @lends {Blockly.Block}
  */
-Blockly.Blocks.component_all_component_block = {
+Blockly.Blocks['component_all_component_block'] = {
   category : 'Component',
 
   helpUrl : function() {
@@ -1492,16 +1492,15 @@ Blockly.Blocks.component_all_component_block = {
     return true;
   },
 
-  typeblock : function(){
+  typeblock : function() {
     var componentDb = Blockly.mainWorkspace.getComponentDatabase();
     var tb = [];
 
     componentDb.forEachInstance(function(instance) {
-      if(instance.typeName != "Form") {
+      if (instance.typeName != "Form") {
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY +
-                          " " +
-                          componentDb.getInternationalizedComponentType(instance.typeName),
+              " " + componentDb.getInternationalizedComponentType(instance.typeName),
           mutatorAttributes: {
             component_type: instance.typeName,
           }
@@ -1550,9 +1549,9 @@ Blockly.ComponentBlock.createComponentDropDown = function(block){
   return componentDropDown;
 };
 
-Blockly.ComponentBlock.createComponentTypeDropDown = function(block){
+Blockly.ComponentBlock.createComponentTypeDropDown = function(block) {
   var componentDropDown = new Blockly.FieldDropdown([["",""]]);
-  componentDropDown.menuGenerator_ = function(){ return block.getTopWorkspace().getComponentDatabase().getComponentTypes(); };
+  componentDropDown.menuGenerator_ = function() { return block.getTopWorkspace().getComponentDatabase().getComponentTypes(); };
   return componentDropDown;
 };
 
