@@ -93,6 +93,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_SETTINGS = "Settings";
   private static final String WIDGET_NAME_AUTOLOAD = "Autoload Last Project";
   private static final String WIDGET_NAME_DYSLEXIC_FONT = "DyslexicFont";
+  private static final String WIDGET_NAME_NEW_LAYOUT = "NewLayout";
   private static final String WIDGET_NAME_HELP = "Help";
   private static final String WIDGET_NAME_ABOUT = "About";
   private static final String WIDGET_NAME_LIBRARY = "Library";
@@ -343,6 +344,13 @@ public class TopToolbar extends Composite {
     } else {
       settingsItems.add(new DropDownItem(WIDGET_NAME_DYSLEXIC_FONT,  MESSAGES.enableOpenDyslexic(),
           new SetFontDyslexicAction()));
+    }
+    if (Ode.getUserNewLayout()) {
+      settingsItems.add(new DropDownItem(WIDGET_NAME_NEW_LAYOUT, MESSAGES.disableNewLayout(),
+          new SetNewLayoutAction(false)));
+    } else {
+      settingsItems.add(new DropDownItem(WIDGET_NAME_NEW_LAYOUT,  MESSAGES.enableNewLayout(),
+          new SetNewLayoutAction(true)));
     }
     refreshMenu(settingsDropDown, settingsItems);
   }
@@ -826,6 +834,19 @@ public class TopToolbar extends Composite {
       Ode.getInstance().setUserDyslexicFont(false);
       // Window.Location.reload();
       // Not: See above comment
+    }
+  }
+
+  private static class SetNewLayoutAction implements Command {
+    private boolean userLayoutPreference;
+
+    SetNewLayoutAction(boolean preference) {
+      userLayoutPreference = preference;
+    }
+
+    @Override
+    public void execute() {
+      Ode.getInstance().setUserNewLayout(userLayoutPreference);
     }
   }
 
