@@ -1,0 +1,16 @@
+<!-- ProjectsExplorer.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:aic="urn:import:com.google.appinventor.client.components"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <g:FlowPanel styleName="ode-TsopToolbar">
+    <aic:TitleBar />
+
+    <g:FlowPanel>
+      <g:Label>My Projects</g:Label>
+    </g:FlowPanel>
+  </g:FlowPanel>
+</ui:UiBinder>
