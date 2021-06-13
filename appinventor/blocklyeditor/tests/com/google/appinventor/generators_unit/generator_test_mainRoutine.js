@@ -14,6 +14,9 @@
 
 exports.execute =  function (){
 
+  var fs = require('fs');
+  var messages = fs.read('../build/blocklyeditor/msg/messages.json');
+
   // Open the actual page and load all the JavaScript in it
   // if success is true, all went well
   page.open('src/demos/yail/yail_testing_index.html', function(status) {
@@ -32,6 +35,7 @@ exports.execute =  function (){
           // if dropdownOp is false, we test the simple block
           // otherwise set the block dropdown for the code generator to use
           var dropdownOp = arguments[4];
+          Blockly.Msg = JSON.parse(arguments[5]);
 
           var generatedYail = "";
           var yailForBlock;
@@ -56,7 +60,8 @@ exports.execute =  function (){
         delayedGenerator,
         blockName,
         doesReturn,
-        dropdownOp);
+        dropdownOp,
+        messages);
 
     //This is the actual result of the test
     console.log(passed);

@@ -7,6 +7,7 @@ package com.google.appinventor.components.scripts;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -51,6 +52,7 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
         outProperties.add(propertyName);
       }
     }
+
     sb.append("\n\n/* Events */\n\n");
     for (Event event : component.events.values()) {
       String propertyName = event.name;
@@ -65,6 +67,7 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
         outEvents.add(propertyName);
       }
     }
+
     sb.append("\n\n/* Methods */\n\n");
     for (Method method : component.methods.values()) {
       String propertyName = method.name;
@@ -79,14 +82,21 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
         outMethods.add(propertyName);
       }
     }
-    // This special case adds the notAlreadyHandled parameter, which is the second parameter for the generic event
-    // handlers. Since it's not explicitly declared in any event handler, we add it here for internationalization.
-    parameters.put("notAlreadyHandled", new Parameter("notAlreadyHandled", "boolean"));
+
     sb.append("\n\n/* Parameters */\n\n");
+    // TODO: Instead of compiling the names here, can we just create a list instead of a map?
+    ArrayList<String> names = new ArrayList();
     for (Parameter parameter : parameters.values()) {
-      sb.append("    map.put(\"PARAM-" + parameter.name + "\", MESSAGES." +
-          Character.toLowerCase(parameter.name.charAt(0)) + parameter.name.substring(1) +
-          "Params());\n");
+      names.add(parameter.name);
+    }
+    // This special case adds the notAlreadyHandled parameter, which is the second parameter for the
+    // generic event handlers. Since it's not explicitly declared in any event handler, we add it
+    // here for internationalization.
+    names.add("notAlreadyHandled");
+    for (String name : names) {
+      sb.append("    map.put(\"PARAM-").append(name).append("\", MESSAGES.")
+          .append(Character.toLowerCase(name.charAt(0))).append(name.substring(1))
+          .append("Params());\n");
     }
   }
 
@@ -283,6 +293,10 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
       computeTooltipMap(component);
       categories.add(component.getCategory());
     }
+    for (Map.Entry<String, OptionList> entry : optionLists.entrySet()) {
+      OptionList optionList = entry.getValue();
+      outputOptionListAutogen(optionList, sb);
+    }
     for (String key : collisionKeys) {
       tooltips.remove(key);
     }
@@ -327,6 +341,59 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     writer.close();
     messager.printMessage(Kind.NOTE, "Wrote file " + src.toUri());
   }
+
+  protected void outputOptionList(OptionList optionList, StringBuilder sb) {
+    String tagName = optionList.getTagName();
+    sb.append("\n\n/* OptionList ");
+    sb.append(tagName);
+    sb.append(" */\n\n");
+
+    // Translate tag.
+    String lowerTagName = Character.toLowerCase(tagName.charAt(0))
+        + tagName.substring(1);
+    sb.append("     map.put(\"OPTIONLIST-")
+      .append(tagName)
+      .append("\", MESSAGES.")
+      .append(lowerTagName)
+      .append("OptionList());\n");
+
+    // Translate options.
+    for (Option option : optionList.asCollection()) {
+      sb.append("    map.put(\"OPTION-")
+        .append(tagName)
+        .append(option.name)
+        .append("\", MESSAGES.")
+        .append(lowerTagName)
+        .append(option.name)
+        .append("Option());\n");
+    }
+  }
+
+  private void outputOptionListAutogen(OptionList optionList, StringBuilder sb) {
+    String tagName = optionList.getTagName();
+    String lowerTagName = Character.toLowerCase(tagName.charAt(0))
+        + tagName.substring(1);
+
+    sb.append("  @DefaultMessage(\"")
+      .append(sanitize(tagName))
+      .append("\")\n")
+      .append("  @Description(\"\")\n")
+      .append("  String ")
+      .append(lowerTagName)
+      .append("OptionList();\n\n");
+
+    for (Option option : optionList.asCollection()) {
+      sb.append("  @DefaultMessage(\"")
+        .append(sanitize(option.name))
+        .append("\")\n")
+        .append("  @Description(\"\")\n")
+        .append("  String ")
+        .append(lowerTagName)
+        .append(option.name)
+        .append("Option();\n\n");
+    }
+  }
+
 
   @Override
   protected void outputResults() throws IOException {
@@ -400,6 +467,10 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
       ComponentInfo component = entry.getValue();
       outputComponent(component, properties, methods, events, sb);
       categories.add(component.getCategory());
+    }
+    for (Map.Entry<String, OptionList> entry : optionLists.entrySet()) {
+      OptionList optionList = entry.getValue();
+      outputOptionList(optionList, sb);
     }
     sb.append("\n\n    /* Descriptions */\n\n");
     for (String key : tooltips.keySet()) {

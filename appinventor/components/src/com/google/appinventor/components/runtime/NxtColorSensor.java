@@ -14,6 +14,8 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.NxtSensorMode;
+import com.google.appinventor.components.common.NxtSensorType;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -45,20 +47,14 @@ public class NxtColorSensor extends LegoMindstormsNxtSensor implements Deleteabl
   private static final int DEFAULT_BOTTOM_OF_RANGE = 256;
   private static final int DEFAULT_TOP_OF_RANGE = 767;
 
-  static final int SENSOR_TYPE_COLOR_FULL = 0x0D;  // Color detector mode
-  static final int SENSOR_TYPE_COLOR_RED = 0x0E;   // Light sensor mode with red light on
-  static final int SENSOR_TYPE_COLOR_GREEN = 0x0F; // Light sensor mode with green light on
-  static final int SENSOR_TYPE_COLOR_BLUE = 0x10;  // Light sensor mode with blue light on
-  static final int SENSOR_TYPE_COLOR_NONE = 0x11;  // Light sensor mode with no light
-
-  private static final Map<Integer, Integer> mapColorToSensorType;
+  private static final Map<Integer, NxtSensorType> mapColorToSensorType;
   private static final Map<Integer, Integer> mapSensorValueToColor;
   static {
-    mapColorToSensorType = new HashMap<Integer, Integer>();
-    mapColorToSensorType.put(Component.COLOR_RED, SENSOR_TYPE_COLOR_RED);
-    mapColorToSensorType.put(Component.COLOR_GREEN, SENSOR_TYPE_COLOR_GREEN);
-    mapColorToSensorType.put(Component.COLOR_BLUE, SENSOR_TYPE_COLOR_BLUE);
-    mapColorToSensorType.put(Component.COLOR_NONE, SENSOR_TYPE_COLOR_NONE);
+    mapColorToSensorType = new HashMap<Integer, NxtSensorType>();
+    mapColorToSensorType.put(Component.COLOR_RED, NxtSensorType.ColorRed);
+    mapColorToSensorType.put(Component.COLOR_GREEN, NxtSensorType.ColorGreen);
+    mapColorToSensorType.put(Component.COLOR_BLUE, NxtSensorType.ColorBlue);
+    mapColorToSensorType.put(Component.COLOR_NONE, NxtSensorType.ColorNone);
 
     mapSensorValueToColor = new HashMap<Integer, Integer>();
     mapSensorValueToColor.put(0x01, Component.COLOR_BLACK);
@@ -162,8 +158,10 @@ public class NxtColorSensor extends LegoMindstormsNxtSensor implements Deleteabl
 
   @Override
   protected void initializeSensor(String functionName) {
-    int sensorType = detectColor ? SENSOR_TYPE_COLOR_FULL : mapColorToSensorType.get(generateColor);
-    setInputMode(functionName, port, sensorType, SENSOR_MODE_RAWMODE);
+    NxtSensorType sensorType = detectColor
+        ? NxtSensorType.ColorFull :
+        mapColorToSensorType.get(generateColor);
+    setInputMode(functionName, port, sensorType, NxtSensorMode.Raw);
     resetInputScaledValue(functionName, port);
   }
 

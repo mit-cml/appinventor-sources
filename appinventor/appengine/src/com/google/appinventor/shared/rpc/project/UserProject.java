@@ -30,10 +30,6 @@ public class UserProject implements IsSerializable {
   private String projectType;
 
   /**
-   * The attribution ID.
-   */
-  private long attributionId;
-  /**
    * The moved to Trash flag.
    */
   private boolean projectMovedToTrashFlag;
@@ -50,12 +46,7 @@ public class UserProject implements IsSerializable {
    */
   private long modificationDate;
 
-  private long galleryId;
-
   private static final String DELIM = "#DELIM#";
-
-  public static final long NOTPUBLISHED = 0;
-  public static final long FROMSCRATCH = 0;
 
   /**
    * Default constructor. This constructor is required by GWT.
@@ -70,17 +61,13 @@ public class UserProject implements IsSerializable {
    * @param projectId the project id
    * @param projectName the project name
    * @param projectType the project type
-   * @param creationDate the creation date
-   * @param long galleryId the gallery id
    */
-  public UserProject(long projectId, String projectName, String projectType, long creationDate, long galleryId, long attributionId, boolean projectMovedToTrashFlag) {
+  public UserProject(long projectId, String projectName, String projectType, long creationDate, boolean projectMovedToTrashFlag) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = creationDate;
-    this.galleryId = galleryId;
-    this.attributionId = attributionId;
     this.projectMovedToTrashFlag = projectMovedToTrashFlag;
   }
 
@@ -90,34 +77,15 @@ public class UserProject implements IsSerializable {
    * @param projectId the project id
    * @param projectName the project name
    * @param projectType the project type
-   * @param creationData creation date
-   * @param modificationData modification data
-   * @param galleryId gallery id
-   * @param attributionId attribution id
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
-      long modificationDate, long galleryId, long attributionId, boolean projectMovedToTrashFlag) {
+      long modificationDate, boolean projectMovedToTrashFlag) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = modificationDate;
-    this.galleryId = galleryId;
-    this.attributionId = attributionId;
     this.projectMovedToTrashFlag = projectMovedToTrashFlag;
-  }
-
-  /**
-   * Returns the attribution ID.
-   *
-   * @return the attributionId
-   */
-  public long getAttributionId() {
-    return attributionId;
-  }
-
-  public void setAttributionId(long attributionId) {
-    this.attributionId = attributionId;
   }
 
   /**
@@ -154,16 +122,11 @@ public class UserProject implements IsSerializable {
   public long getDateModified() {
     return modificationDate;
   }
-  public long getGalleryId() {
-    return galleryId;
-  }
+
   public void setDateModified(long modificationDate) {
     if (modificationDate != 0) {
       this.modificationDate = modificationDate;
     }
-  }
-  public void setGalleryId(long galleryId) {
-    this.galleryId = galleryId;
   }
 
   public void moveToTrash() {
@@ -216,7 +179,6 @@ public class UserProject implements IsSerializable {
     userProject.projectType = parts[2];
     userProject.creationDate = Long.parseLong(parts[3]);
     userProject.modificationDate = Long.parseLong(parts[4]);
-    userProject.galleryId= UserProject.NOTPUBLISHED;
     return userProject;
   }
 }

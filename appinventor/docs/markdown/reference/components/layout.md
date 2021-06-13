@@ -58,7 +58,7 @@ Table of Contents:
 
 {:id="HorizontalArrangement.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the `HorizontalArrangement` are aligned vertically. The choices
- are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
  Alignment has no effect if the `HorizontalArrangement`'s [`Height`](#HorizontalArrangement.Height) is `Automatic`.
 
 {:id="HorizontalArrangement.BackgroundColor" .color} *BackgroundColor*
@@ -120,7 +120,7 @@ A formatting element in which to place components that should be displayed from 
 
 {:id="HorizontalScrollArrangement.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the `HorizontalScrollArrangement` are aligned vertically. The choices
- are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
  Alignment has no effect if the `HorizontalScrollArrangement`'s [`Height`](#HorizontalScrollArrangement.Height) is `Automatic`.
 
 {:id="HorizontalScrollArrangement.BackgroundColor" .color} *BackgroundColor*
@@ -270,7 +270,7 @@ None
 
 {:id="VerticalArrangement.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the `VerticalArrangement` are aligned vertically. The choices
- are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
  Alignment has no effect if the `VerticalArrangement`'s [`Height`](#VerticalArrangement.Height) is `Automatic`.
 
 {:id="VerticalArrangement.BackgroundColor" .color} *BackgroundColor*
@@ -332,7 +332,7 @@ A formatting element in which to place components that should be displayed one b
 
 {:id="VerticalScrollArrangement.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the `VerticalScrollArrangement` are aligned vertically. The choices
- are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
  Alignment has no effect if the `VerticalScrollArrangement`'s [`Height`](#VerticalScrollArrangement.Height) is `Automatic`.
 
 {:id="VerticalScrollArrangement.BackgroundColor" .color} *BackgroundColor*

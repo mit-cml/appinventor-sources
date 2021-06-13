@@ -99,6 +99,13 @@ public @interface ReceiverElement {
    */
   String exported() default "";
 
+  /** Whether or not the broadcast receiver is direct-boot aware; that is, whether
+   * or not it can run before the user unlocks the device.
+   *
+   * @return  the receiver directBootAware attribute
+   */
+  String directBootAware() default "";
+
   /**
    * An icon representing the broadcast receiver. This attribute must be set as
    * a reference to a drawable resource containing the image definition. If it is
