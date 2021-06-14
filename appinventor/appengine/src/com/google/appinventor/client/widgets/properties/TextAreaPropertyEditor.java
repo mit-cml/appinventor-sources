@@ -20,7 +20,7 @@ public class TextAreaPropertyEditor extends TextPropertyEditorBase {
    * 186px == width of properties panel - side paddings and borders of textarea
    *       == 194px - 8px
    */
-  private static final String MAX_CSS_WIDTH = "186px";
+  private static final String MAX_CSS_WIDTH = "93%";
 
   public TextAreaPropertyEditor() {
    super(new TextArea());
