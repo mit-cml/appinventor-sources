@@ -27,7 +27,7 @@ body {
   direction: ltr;
 }
 a, a:visited, a:hover {
-  color: #0000AA;
+  color: #009688;
 }
 
 /**
@@ -613,20 +613,15 @@ a, a:visited, a:hover {
 }
 
 .gwt-StackPanel {
-  border-bottom: 1px solid #bbbbbb;
+  border-bottom: 1px solid #00000000;
 }
 .gwt-StackPanel .gwt-StackPanelItem {
-  cursor: pointer;
+  cursor: context-menu;
   cursor: hand;
   font-weight: bold;
   font-size: 1.3em;
-  padding: 3px;
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
-  background: #d3def6 url(../images/hborder.png) repeat-x 0px -989px;
 }
 .gwt-StackPanel .gwt-StackPanelContent {
-  border: 1px solid #bbbbbb;
   border-bottom: 0px;
   background: white;
   padding: 2px 2px 10px 5px;
@@ -990,7 +985,6 @@ a, a:visited, a:hover {
   cursor: pointer;
 }
 .gwt-Tree .gwt-TreeItem-selected {
-  background: #93c2f1 url(../images/hborder.png) repeat-x 0px -1463px;
 }
 .gwt-TreeItem .gwt-RadioButton input,
 .gwt-TreeItem .gwt-CheckBox input {
