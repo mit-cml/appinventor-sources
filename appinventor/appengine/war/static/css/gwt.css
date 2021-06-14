@@ -27,7 +27,7 @@ body {
   direction: ltr;
 }
 a, a:visited, a:hover {
-  color: #009688;
+  color: #7a9c24;
 }
 
 /**
@@ -619,11 +619,12 @@ a, a:visited, a:hover {
   cursor: context-menu;
   cursor: hand;
   font-weight: bold;
+  box-shadow: 0 3px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(154 181 156);
   font-size: 1.3em;
 }
 .gwt-StackPanel .gwt-StackPanelContent {
   border-bottom: 0px;
-  background: white;
+  background: #ffffff00;
   padding: 2px 2px 10px 5px;
 }
 
