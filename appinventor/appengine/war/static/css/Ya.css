@@ -11,7 +11,7 @@ Droid Sans has a bug in the size of its descenders:
 they get cut off in Windows.
 @import url("http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold");
 */
-
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&display=swap');
 @font-face {
   font-family: Roboto;
   src: url('../fonts/Roboto-Regular.ttf');
@@ -39,10 +39,8 @@ body, html {
 }
 
 body {
-  background-color: lightgrey;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
-  /* TODO(opensource): Change to commented version below once we're ready */
-  background: url(../images/squairy_light.png);
+  background-color: white;
+  font-family: 'Noto Sans';
 }
 
 .dyslexic * {
@@ -51,8 +49,8 @@ body {
 
 /* For the TOS Form*/
 .floatingBox {
-  width: 300px;
-  height: 250px;
+  width: 1050px;
+  height: 700px;
   background-color: white;
   position: absolute;
   top:0;
@@ -66,6 +64,20 @@ body {
   border: 1px #262626;
 }
 
+.tosBox {
+    overflow: scroll;
+    height: 500px;
+    text-align: left;
+    }
+
+.tosBox h1 {
+    text-align: center;
+}
+
+.tosBox h3 {
+    text-align: center;
+}
+
 /*
  * Context menus
  */
@@ -76,7 +88,7 @@ body {
 
 .ode-ContextMenuItem,
 .ode-CurrentColor {
-  color: #555;
+  color: #009688;
   cursor: pointer;
   padding-top: 3px;
   padding-left: 9px;
@@ -96,13 +108,14 @@ body {
 }
 
 .ode-ContextMenuItemSeparator {
-  *width: 100%;
+  *
+  width: 100%;
   height: 1px;
   margin: 9px 1px;
-  *margin: -5px 0 5px;
+  *
+  margin: -5px 0 5px;
   overflow: hidden;
-  background-color: #e5e5e5;
-  border-bottom: 1px solid #ffffff;
+  border-bottom: 2px solid #00808069;
 }
 
 .ode-CurrentColor {
@@ -111,7 +124,7 @@ body {
 
 .ode-ContextMenuItem-selected {
   color: #ffffff;
-  background: #99CC00;
+  background: teal;
 }
 
 .ode-ContextMenuItem-disabled {
@@ -120,22 +133,20 @@ body {
 
 .ode-Box-content {
   font-size: 13px;
-  background-color: #f7f9f2;
+  background-color: #ffffff;
   /* TODO(opensource): Delete the background-image line below once we're ready */
   background-image: url(../images/watermark.png);
-  color: #555;
+  color: #009688;
   border-left: 1px solid #d2d2d2;
   border-bottom: 1px solid #d2d2d2;
   border-right: 1px solid #d2d2d2;
   margin: 4px;
-  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
 }
 
 .ode-Box-header {
-  background: rgba(102, 153, 0, 0.3);
+  background: #fff;
   height: 31px;
-  border: 1px solid;
-  border-color: #d2d2d2 #d2d2d2 #b0b2a7 #d2d2d2;
+  border: 1px solid teal;
 }
 
 .ode-Box-header-caption,
@@ -147,7 +158,7 @@ body {
 }
 
 .ode-Box-header-caption {
-  color: #555;
+  color: #009688;
 }
 
 .ode-Box-header-caption-highlighted {
@@ -297,16 +308,12 @@ body {
   margin-bottom: 4px;
   padding-right: 4px;
   padding-left: 4px;
-  background-color: #f2f2f2;
-  background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
-  background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
-  background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
-  background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+  background-color: #ffffff;
   background-repeat: repeat-x;
   border: 1px solid #d4d4d4;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
-  *zoom: 1;
+  *
+  zoom: 1;
   -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
   -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
@@ -379,8 +386,7 @@ body {
 }
 
 .ode-TopPanelIconButton:hover {
-  -webkit-filter: drop-shadow(0px 0px 3px #222);
-  filter:         drop-shadow(0px 0px 3px #222);
+
 }
 
 .ode-TopPanelIconButton:active {
@@ -411,7 +417,7 @@ body {
 .ode-TopPanelButton:hover,
 .ActionDropDown-Default:hover
 .ActionDropDown-Options:hover {
-  background: #E6E6E6;
+  background: #ffffff;
   color: #5B5B5B;
 }
 
@@ -548,13 +554,14 @@ body {
 .gwt-Tree .gwt-TreeItem {
   font-size: 12px;
   color: #555;
+  padding: 10px 5px 10px 5px;
   cursor: default;
+  border-radius: 6px;
+  border: 1px solid teal;
   display: block !important;
 }
 
-.gwt-Tree .gwt-TreeItem-selected {
-  background: none;
-}
+.gwt-Tree .gwt-TreeItem-selected {background-color: #0080803d;}
 
 .gwt-Tree .gwt-TreeItem span {
   padding: 8px 4px 4px 4px;
@@ -563,18 +570,17 @@ body {
 
 .gwt-Tree .gwt-TreeItem span:hover,
 .gwt-Tree .gwt-TreeItem-selected span {
-  background-color: #d2e0a6;
 }
 
 /* Young Android Toolbar */
 
 .ya-Toolbar {
-  background-color: #8fc202;
+  background-color: #fff0;
   margin-bottom: 4px;
 }
 
 .ya-Toolbar .ya-ProjectName {
-  color: white;
+  color: #009688;
   font-weight: bold;
   font-size: 18px;
   padding-top: 8px;
@@ -586,47 +592,39 @@ body {
 .ode-TextButton,
 .gwt-Button {
   display: inline-block;
-  *display: inline;
+  *
+  display: inline;
   padding: 2px 6px;
   margin-bottom: 0;
-  *margin-left: .3em;
+  *
+  margin-left: .3em;
   font-size: 14px;
   line-height: 20px;
-  color: #333333;
   text-align: center;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
   vertical-align: middle;
   cursor: pointer;
-  background: transparent;
-  background-color: #f5f5f5;
-  *background-color: #e6e6e6;
-  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
-  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
-  background-repeat: repeat-x;
+  background: #fff;
   border: 1px solid #cccccc;
-  *border: 0;
-  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  border-bottom-color: #b3b3b3;
+  *
+  border: 0;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
   filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-  *zoom: 1;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  *
+  zoom: 1;
   -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 2px solid teal;
 }
 
 .ode-TextButton-up-disabled,
 .gwt-Button-up-disabled {
   color: #333333;
-  background-color: #e6e6e6;
-  *background-color: #d9d9d9;
+  background-color: #ffffff;
+  *
+  background-color: #d9d9d9;
   cursor: default;
   background-image: none;
   opacity: 0.65;
@@ -641,7 +639,7 @@ body {
   color: #333333;
   border-color: #e6e6e6 #e6e6e6 #bfbfbf;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  background-color: #e6e6e6;
+  background-color: #ffffff;
   *background-color: #d9d9d9;
   text-decoration: none;
   background-position: 0 -15px;
@@ -679,7 +677,7 @@ body {
 }
 
 .ya-Toolbar .ode-TextButton {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ode-PanelButtons .ode-TextButton {
@@ -718,14 +716,15 @@ body {
 /* Palette */
 
 .gwt-StackPanelItem div {
-  border-top: 1px solid #d2d2d2;
-  border-bottom: 1px solid #d2d2d2;
-  background-color: #eef2e0;
+  background-color: #ffffff00;
   font-size: 13px;
   cursor: pointer;
   height: 14px;
+  border-radius: 6px;
+  border: 2px solid teal;
   color: #555;
-  padding: 8px 16px;
+  padding: 10px 5px 10px 10px;
+  margin: 5px 0px 5px 0px;
 }
 
 .gwt-StackPanelItem-selected div {
@@ -753,7 +752,7 @@ body {
   background-color: white; /* needed on Firefox */
   height: 15px;
   cursor: pointer;
-  padding: 5px;
+  padding: 10px;
 }
 
 .ode-SimplePaletteItem-icon {
@@ -817,7 +816,6 @@ body {
 }
 
 .ode-PropertiesPanel {
-  background-color: #f7f9f2;
   padding-left: 9px;
   padding-right: 9px;
   padding-bottom: 9px;
@@ -829,7 +827,6 @@ body {
 }
 
 .ode-PropertiesComponentName {
-  background-color: #eef2e0;
   color: #555;
   font-size: 13px;
   border-bottom: 1px solid #d2d2d2;
@@ -839,7 +836,7 @@ body {
 .ode-PropertyLabel {
   padding-top: 10px;
   padding-left: 2px;
-  padding-bottom: 1px;
+  padding-bottom: 10px;
 }
 
 .ode-PropertyEditor {
@@ -852,18 +849,16 @@ body {
 
 .ode-ChoicePropertyEditor {
   padding: 3px;
-  border: thin solid #CCCCCC;
+  border: 2px solid teal;
   border-radius: 3px;
   cursor: pointer;
   background-color: #FFFFFF;
-
   box-shadow: #D3D3D3;
   color: #575757;
   width: auto;
   text-align: center;
   display: inline-block;
   white-space: nowrap;
-
   -o-transition:color .2s ease-out, background-color .2s ease-in;
   -ms-transition:color .2s ease-out, background-color .2s ease-in;
   -moz-transition:color .2s ease-out, background-color .2s ease-in;
@@ -902,9 +897,11 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-ColorChoicePropertyEditor {
-  padding: 3px;
   cursor: pointer;
+  padding: 10px;
+  border: 1px solid teal;
   width: auto;
+  border-radius: 6px;
 }
 
 .ode-ColorChoicePropertyEditor:focus {
@@ -927,7 +924,7 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockForm {
   height: auto !important;
-  background-color: #d2e0a6;
+  background-color: #ffffff;
   border: 2px solid black;
   -webkit-display: flex;
   display: flex;
@@ -949,27 +946,27 @@ select.ode-PropertyEditor[disabled] {
 
 /* ==== start: skins for Android */
 .ode-SimpleMockFormPhoneLandscape {
-  background: url(../images/phoneLandscape.png);
-  background-repeat: no-repeat;
-  background-position: right top;
-  background-size: 100% 100%;
-  padding: 11px 43px 7px 48px;
+    background: url(../images/phoneLandscape.png);
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-size: 100% 100%;
+    padding: 11px 43px 7px 48px;
 }
 
 .ode-SimpleMockFormPhonePortrait {
-  background: url(../images/phonePortrait.png);
+  background: url(https://i.ibb.co/kJvQLkk/image-removebg-preview-10.png);
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  padding: 50px 11px 43px 7px;
+  padding: 65px 19px 43px 17px;
 }
 
 .ode-SimpleMockFormPhoneLandscapeTablet {
-  background: url(../images/phoneLandscapeTablet.png);
-  background-repeat: no-repeat;
-  background-position: right top;
-  background-size: 100% 100%;
-  padding: 15px 56px 12px 64px;;
+    background: url(../images/phoneLandscapeTablet.png);
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-size: 100% 100%;
+    padding: 15px 56px 12px 64px;;
 }
 .ode-SimpleMockFormPhonePortraitTablet {
   background: url(../images/phonePortraitTablet.png);
@@ -1003,7 +1000,6 @@ select.ode-PropertyEditor[disabled] {
   background-color: dimgray;
   color: white;
   font-size: 90%;
-  position: relative;
   border-bottom: 1px solid lightgray;
 }
 
@@ -1011,7 +1007,10 @@ select.ode-PropertyEditor[disabled] {
   background-color: #a5cf47;
   color: white;
   font-size: 20px;
-  position: relative;
+}
+
+.ode-SimpleMockFormPhoneBar {
+  background-color: #000000;
 }
 
 .ode-SimpleMockFormTitle {
@@ -1084,7 +1083,7 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockComponent-selected {
-  border: 2px solid #8fc202;
+  border: 1px solid #009688;
 }
 
 .ode-SimpleMockMapFeature-selected svg * {
@@ -1146,10 +1145,16 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-SimpleMockButton {
   padding: 4px 8px;
+  text-shadow: none;
+  border: 0;
+  border-radius: 2px;
   background-color: #d6d7d7;
-  border-radius: 0px;
-  border-bottom: 2px #b9b9b9 solid;
   color: rgba(0, 0, 0, 0.87);
+}
+
+.ode-SimpleMockForm-Dark .ode-SimpleMockButton {
+  background-color: #5a595b;
+  color: #fff;
 }
 
 /* class for the ListView Mock component */
@@ -1186,16 +1191,15 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-ComponentHelpPopup {
   background-color: white;
-  border-left: 4px solid #8fc202;
-  border-right: 4px solid #8fc202;
-  border-bottom: 4px solid #8fc202;
+  border: 2px solid #009688;
   width: 20%;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
   z-index: 1000;
+  border-radius: 6px;
 }
 
 .ode-ComponentHelpPopup-TitleBar {
-  background-color: #8fc202;
+  background-color: #009688;
   color: white;
   font-weight: bold;
   font-size: 13px;
@@ -1214,7 +1218,8 @@ path.ode-SimpleMockMapFeature-selected {
 
 }
 .ode-ComponentHelpPopup-Link a {
-  color: #8fc202;
+  color: #2fafa3;
+  font-family: 'Noto Sans';
 }
 
 .ode-ComponentHelpPopup > .popupContent > table {
@@ -1412,10 +1417,9 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-DialogBox {
   background-color: white;
-  border-left: 4px solid #8fc202;
-  border-right: 4px solid #8fc202;
-  border-bottom: 4px solid #8fc202;
+  border: 2px solid #009688;
   z-index: 1000;
+  border-radius: 6px;
 }
 
 .ode-DialogBox .gwt-CheckBox {
@@ -1432,17 +1436,16 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .dialogTop {
-  background-color: #8fc202;
+  background-color: #009688;
 }
 
 .ode-DialogBox .Caption {
-  background-color: #8fc202;
+  background-color: #009688;
   color: white;
   font-weight: bold;
   font-size: 13px;
   padding: 5px 10px;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
-
 }
 
 .ode-DialogBox .dialogContent {
@@ -1533,7 +1536,7 @@ a.ode-ExtensionAnchor:hover {
   width: 100%;
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-bar {
-  background-color: #8fc202;
+  background-color: teal;
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-text {
   position: absolute;
@@ -1706,7 +1709,10 @@ input[type="file"] {
 
 select {
   background-color: #ffffff;
-  border: 1px solid #cccccc;
+  border: 2px solid #009688;
+  color: teal;
+  font-family: 'Noto Sans';
+  margin-top: 10px;
 }
 
 select[multiple],
@@ -1721,7 +1727,6 @@ input[type="checkbox"]:focus {
   outline: thin dotted #333;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
-
 }
 
 .uneditable-input,
@@ -2705,30 +2710,34 @@ div.dropdiv p {
   margin: 0;
   position: relative;
 }
+.html-face {font-family: 'Noto Sans';color: teal;}
 
-.download-button {
-  display: grid;
-  max-width: 130px;
-  margin: 0 !important;
-  margin-top: 12px !important;
-  margin-left: -3px !important;
-  height: 130px;
+.ya-ProjectName {font-family: 'Noto Sans';}
+
+div {font-family: 'Noto Sans';color: teal;}
+
+.gwt-StackPanelItem div {
+    font-family: 'Noto Sans';
+    color: teal;
 }
 
-.download-icon {
-  height: 110px;
-  width: 110px;
-  margin-left: auto;
-  margin-right: auto;
+textarea.ode-PropertyEditor {padding: 9px;width: 93%;border: 1px solid teal;font-family: 'Noto Sans';color: teal;margin-top: 10px;}
+
+input.ode-PropertyEditor {
+    padding: 8.5px;
+    width: 93%;
+    border: 1px solid teal;
+    margin-top: 10px;
+    font-family: 'Noto Sans';
+    color: teal;
+    border-radius: 6px;
+    font-size: 12px;
 }
 
-.download-barcode:before {
-    content: "";
-    background-color: #888;
-    position: absolute;
-    width: 1px;
-    height: 160px;
-    top: 40px;
-    left: 50%;
-    display: block;
+input {font-family: 'Noto Sans';color: teal;}
+
+text.blocklyText {font-family: 'Noto Sans';font-size: 14px;}
+
+p {
+    color: teal;
 }
