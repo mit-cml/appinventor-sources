@@ -22,6 +22,20 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--nictype1", "virtio"]
   end
 
+  config.vm.provider :libvirt do |libvirt|
+    config.vm.box = "generic/ubuntu1804"
+    # By default, './' is synced onto '/vagrant' with NFS, which does not work for debian family images for some reason;
+    # hence we use rsync. There are a few broken links in the source tree that will fail the default rsync syncing sche-
+    # me, so we give explicit rsync args and omit "--copy-links".
+    config.vm.synced_folder './', '/vagrant', type: 'rsync', rsync__args: ["--verbose", "--archive", "--update"]
+    # # # # # # # # # # For QEMU/KVM user session # # # # # # # # # #
+    # Reference:
+    # https://github.com/vagrant-libvirt/vagrant-libvirt#qemu-session-support
+    # Uncomment the following if connecting to QEMU/KVM user session:
+    # libvirt.qemu_use_session = true
+    # libvirt.uri = "qemu:///session"
+  end
+
   config.vm.provision :shell, path: "bootstrap.sh"
 
   config.vm.network :forwarded_port, guest: 8888, host: 8888
