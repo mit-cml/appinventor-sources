@@ -88,7 +88,7 @@ body {
 
 .ode-ContextMenuItem,
 .ode-CurrentColor {
-  color: #009688;
+  color: #73824e;
   cursor: pointer;
   padding-top: 3px;
   padding-left: 9px;
@@ -115,7 +115,7 @@ body {
   *
   margin: -5px 0 5px;
   overflow: hidden;
-  border-bottom: 2px solid #00808069;
+  border-bottom: 2px solid #afb797;
 }
 
 .ode-CurrentColor {
@@ -124,7 +124,7 @@ body {
 
 .ode-ContextMenuItem-selected {
   color: #ffffff;
-  background: teal;
+  background: #73824e;
 }
 
 .ode-ContextMenuItem-disabled {
@@ -136,17 +136,15 @@ body {
   background-color: #ffffff;
   /* TODO(opensource): Delete the background-image line below once we're ready */
   background-image: url(../images/watermark.png);
-  color: #009688;
-  border-left: 1px solid #d2d2d2;
-  border-bottom: 1px solid #d2d2d2;
-  border-right: 1px solid #d2d2d2;
+  color: #73824e;
+  border: 1px solid #73824e7d;
   margin: 4px;
 }
 
 .ode-Box-header {
   background: #fff;
   height: 31px;
-  border: 1px solid teal;
+  border: 1px solid #899a5f;
 }
 
 .ode-Box-header-caption,
@@ -158,7 +156,7 @@ body {
 }
 
 .ode-Box-header-caption {
-  color: #009688;
+  color: #899a5f;
 }
 
 .ode-Box-header-caption-highlighted {
@@ -485,7 +483,7 @@ body {
 .ya-NonVisibleComponentsHeader {
   font-size: 13px;
   font-weight: bold;
-  color: #555;
+  color: #73824e;
   padding: 5px;
 }
 
@@ -496,7 +494,7 @@ body {
 
 .ode-SimpleUiDesignerNonVisibleComponents .gwt-Label {
   font-size: 12px;
-  color: #555;
+  color: #73824e;
 }
 
 .ode-Icon, .ode-Icon-selected {
@@ -557,11 +555,11 @@ body {
   padding: 10px 5px 10px 5px;
   cursor: default;
   border-radius: 6px;
-  border: 1px solid teal;
+  border: 1px solid #899a5f;
   display: block !important;
 }
 
-.gwt-Tree .gwt-TreeItem-selected {background-color: #0080803d;}
+.gwt-Tree .gwt-TreeItem-selected {background-color: #8fc2023b;}
 
 .gwt-Tree .gwt-TreeItem span {
   padding: 8px 4px 4px 4px;
@@ -580,7 +578,7 @@ body {
 }
 
 .ya-Toolbar .ya-ProjectName {
-  color: #009688;
+  color: #868686;
   font-weight: bold;
   font-size: 18px;
   padding-top: 8px;
@@ -616,7 +614,7 @@ body {
   zoom: 1;
   -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-  border: 2px solid teal;
+  border: 2px solid #73824e;
 }
 
 .ode-TextButton-up-disabled,
@@ -716,14 +714,10 @@ body {
 /* Palette */
 
 .gwt-StackPanelItem div {
-  background-color: #ffffff00;
+  background-color: #ffffff;
   font-size: 13px;
   cursor: pointer;
   height: 14px;
-  border-radius: 6px;
-  border: 2px solid teal;
-  color: #555;
-  padding: 10px 5px 10px 10px;
   margin: 5px 0px 5px 0px;
 }
 
@@ -742,10 +736,7 @@ body {
 .gwt-StackPanel .gwt-StackPanelContent {
   padding: 8px 4px 8px 8px;
 }
-.gwt-StackPanel .gwt-StackPanelItem {
-  padding: 0px;
-  border: 0px;
-}
+.gwt-StackPanel .gwt-StackPanelItem {border: 1px solid #d4d4d4;}
 
 
 .ode-SimplePaletteItem {
@@ -827,10 +818,11 @@ body {
 }
 
 .ode-PropertiesComponentName {
-  color: #555;
+  color: #73824e;
   font-size: 13px;
   border-bottom: 1px solid #d2d2d2;
   padding: 9px 9px 8px 10px;
+  background: #8fc20229;
 }
 
 .ode-PropertyLabel {
@@ -849,7 +841,7 @@ body {
 
 .ode-ChoicePropertyEditor {
   padding: 3px;
-  border: 2px solid teal;
+  border: 2px solid #899a5f;
   border-radius: 3px;
   cursor: pointer;
   background-color: #FFFFFF;
@@ -899,7 +891,7 @@ select.ode-PropertyEditor[disabled] {
 .ode-ColorChoicePropertyEditor {
   cursor: pointer;
   padding: 10px;
-  border: 1px solid teal;
+  border: 1px solid #899a5f;
   width: auto;
   border-radius: 6px;
 }
@@ -1083,7 +1075,7 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockComponent-selected {
-  border: 1px solid #009688;
+  border: 1px solid #8fc202;
 }
 
 .ode-SimpleMockMapFeature-selected svg * {
@@ -1191,7 +1183,7 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-ComponentHelpPopup {
   background-color: white;
-  border: 2px solid #009688;
+  border: 2px solid #73824e;
   width: 20%;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
   z-index: 1000;
@@ -1199,7 +1191,7 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-ComponentHelpPopup-TitleBar {
-  background-color: #009688;
+  background-color: #73824e;
   color: white;
   font-weight: bold;
   font-size: 13px;
@@ -1218,7 +1210,7 @@ path.ode-SimpleMockMapFeature-selected {
 
 }
 .ode-ComponentHelpPopup-Link a {
-  color: #2fafa3;
+  color: #7a9c24;
   font-family: 'Noto Sans';
 }
 
@@ -1417,7 +1409,7 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-DialogBox {
   background-color: white;
-  border: 2px solid #009688;
+  border: 2px solid #8fc202;
   z-index: 1000;
   border-radius: 6px;
 }
@@ -1436,11 +1428,11 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .dialogTop {
-  background-color: #009688;
+  background-color: #8fc202;
 }
 
 .ode-DialogBox .Caption {
-  background-color: #009688;
+  background-color: #8fc202;
   color: white;
   font-weight: bold;
   font-size: 13px;
@@ -1475,7 +1467,6 @@ path.ode-SimpleMockMapFeature-selected {
 a.ode-ExtensionAnchor {
   display: inline-block;
   padding-bottom: 8px;
-  font-style: italic;
   color: grey;
   -o-transition:color .2s ease-out;
   -ms-transition:color .2s ease-out;
@@ -1536,7 +1527,7 @@ a.ode-ExtensionAnchor:hover {
   width: 100%;
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-bar {
-  background-color: teal;
+  background-color: #8fc202;
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-text {
   position: absolute;
@@ -1709,8 +1700,8 @@ input[type="file"] {
 
 select {
   background-color: #ffffff;
-  border: 2px solid #009688;
-  color: teal;
+  border: 2px solid #899a5f;
+  color: #899a5f;
   font-family: 'Noto Sans';
   margin-top: 10px;
 }
@@ -2710,34 +2701,37 @@ div.dropdiv p {
   margin: 0;
   position: relative;
 }
-.html-face {font-family: 'Noto Sans';color: teal;}
+.html-face {font-family: 'Noto Sans';color: #73824e;}
 
 .ya-ProjectName {font-family: 'Noto Sans';}
 
-div {font-family: 'Noto Sans';color: teal;}
+div {font-family: 'Noto Sans';color: #868686;}
 
 .gwt-StackPanelItem div {
     font-family: 'Noto Sans';
-    color: teal;
+    color: #73824e;
+    text-align: left;
+    vertical-align: middle;
+    padding: 10px 5px 13px 10px;
 }
 
-textarea.ode-PropertyEditor {padding: 9px;width: 93%;border: 1px solid teal;font-family: 'Noto Sans';color: teal;margin-top: 10px;}
+textarea.ode-PropertyEditor {padding: 9px;width: 93%;border: 1px solid #899a5f;font-family: 'Noto Sans';color: #8fc202;margin-top: 10px;}
 
 input.ode-PropertyEditor {
     padding: 8.5px;
     width: 93%;
-    border: 1px solid teal;
+    border: 1px solid #899a5f;
     margin-top: 10px;
     font-family: 'Noto Sans';
-    color: teal;
+    color: #868686;
     border-radius: 6px;
     font-size: 12px;
 }
 
-input {font-family: 'Noto Sans';color: teal;}
+input {font-family: 'Noto Sans';color: #8fc202;}
 
 text.blocklyText {font-family: 'Noto Sans';font-size: 14px;}
 
 p {
-    color: teal;
+    color: #868686;
 }
