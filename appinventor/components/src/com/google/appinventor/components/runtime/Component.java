@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.android.tools.r8.t.b.S;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentConstants;
 
@@ -110,10 +111,10 @@ public interface Component {
   /*
    * Typeface constants.
    */
-  static final int TYPEFACE_DEFAULT = 0;
-  static final int TYPEFACE_SANSSERIF = 1;
-  static final int TYPEFACE_SERIF = 2;
-  static final int TYPEFACE_MONOSPACE = 3;
+  static final String TYPEFACE_DEFAULT = "default";
+  static final String TYPEFACE_SANSSERIF = "sans serif";
+  static final String TYPEFACE_SERIF = "serif";
+  static final String TYPEFACE_MONOSPACE = "monospace";
 
   /*
    * Length constants (for width and height).
