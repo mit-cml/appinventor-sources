@@ -5,7 +5,6 @@
 
 package com.google.appinventor.client.explorer.commands;
 
-import com.android.tools.r8.t.b.V;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.StyleElement;
