@@ -2606,24 +2606,36 @@ public final class Compiler {
 
     // walk components list for libraries ending in ".aar"
     try {
-      for (Set<String> libs : libsNeeded.values()) {
-        Iterator<String> i = libs.iterator();
+      for (String type : libsNeeded.keySet()) {
+        Iterator<String> i = libsNeeded.get(type).iterator();
         while (i.hasNext()) {
-          String libname = i.next();
-          if (libname.endsWith(".aar")) {
+          String lib = i.next();
+          String sourcePath = "";
+          if (lib.endsWith(".aar")) {
             i.remove();
-            if (!processedLibs.contains(libname)) {
+            if (!processedLibs.contains(lib)) {
+              if (simpleCompTypes.contains(type) || type == "ANDROID") {
+                final String pathSuffix = RUNTIME_FILES_DIR + lib;
+                sourcePath = getResource(pathSuffix);
+              } else if (extCompTypes.contains(type)) {
+                final String pathSuffix = "/aars/" + lib;
+                sourcePath = getExtCompDirPath(type) + pathSuffix;
+              } else {
+                userErrors.print(String.format(ERROR_IN_STAGE, "Compile"));
+                return false;
+              }
               // explode libraries into ${buildDir}/exploded-aars/<package>/
-              AARLibrary aarLib = new AARLibrary(new File(getResource(RUNTIME_FILES_DIR + libname)));
+              AARLibrary aarLib = new AARLibrary(new File(sourcePath));
               aarLib.unpackToDirectory(explodedBaseDir);
               explodedAarLibs.add(aarLib);
-              processedLibs.add(libname);
+              processedLibs.add(lib);
             }
           }
         }
       }
+
       return true;
-    } catch(IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "Attach AAR Libraries"));
       return false;
