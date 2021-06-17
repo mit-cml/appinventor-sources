@@ -121,7 +121,6 @@ public class ComponentImportWizard extends Wizard {
     panel.add(tabPanel);
 
     addPage(panel);
-
     getConfirmButton().setText("Import");
 
     setPagePanelHeight(150);

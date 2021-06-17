@@ -666,7 +666,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     if(!url.startsWith("http")) {
       url = "http://" + url;
     }
-    if (url.endsWith(".asc")) {
+    if (url.endsWith(".asc") || url.endsWith(".aia")) {
       openTemplateProject(url, onSuccessCommand);
     } else  {
       retrieveExternalTemplateData(url);
@@ -697,7 +697,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     };
 
     final String projectName;
-    if (url.endsWith(".asc")) {
+    if (url.endsWith(".asc") || url.endsWith(".aia")) {
       projectName = url.substring(1 + url.lastIndexOf("/"), url.lastIndexOf("."));
     } else {
       return;
