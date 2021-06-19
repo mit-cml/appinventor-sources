@@ -5,6 +5,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.explorer.youngandroid;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
@@ -34,16 +35,23 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.appinventor.client.explorer.commands.PreviewFileCommand;
+import com.google.appinventor.client.explorer.commands.ProjectNodeCommand;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.UIObject;
 
 /**
  * The asset list shows all the project's assets, and lets the
  * user delete assets.
  *
  */
-
 public class AssetList extends Composite implements ProjectChangeListener {
 
   // The asset "list" is represented as a tree and follows the same GWT conventions.
+                 
   private Tree assetList;
   private final VerticalPanel panel;
 
@@ -95,15 +103,38 @@ public class AssetList extends Composite implements ProjectChangeListener {
         clientY = event.getClientY();
       }
     });
+    
+    
     assetList.addSelectionHandler(new SelectionHandler<TreeItem>() {
+      private int clickCount = 0;
       @Override
-      public void onSelection(SelectionEvent<TreeItem> event) {
-        TreeItem selected = event.getSelectedItem();
-        ProjectNode node = (ProjectNode) selected.getUserObject();
-        // The actual menu is determined by what is registered for the filenode
-        // type in CommandRegistry.java
-        ProjectNodeContextMenu.show(node, selected.getWidget(), clientX, clientY);
-      }});
+      public void onSelection(final SelectionEvent<TreeItem> event) {
+         clickCount++;
+         if (clickCount == 1) {
+            Timer timer = new Timer() {
+            @Override
+            public void run() {
+                if (clickCount == 1) {
+                   TreeItem selected = event.getSelectedItem();
+                   ProjectNode node = (ProjectNode) selected.getUserObject();
+                   // The actual menu is determined by what is registered for the filenode
+                   // type in CommandRegistry.java
+                   ProjectNodeContextMenu.show(node, selected.getWidget(), clientX, clientY);
+                }
+                if (clickCount == 2) {
+                   // to preview asset
+                   TreeItem selected = event.getSelectedItem();
+                   ProjectNode node = (ProjectNode) selected.getUserObject();
+                   PreviewFileCommand cmd = new PreviewFileCommand();
+                   cmd.execute(node);
+                } 
+                clickCount = 0;
+            }
+            };
+            timer.schedule(300);
+         }
+      }
+    });
   }
 
   /*
