@@ -481,9 +481,9 @@
     "Blockly.Msg.LANG_VARIABLES_GET_TOOLTIP": "Возвращает значение этой переменной.",
     "Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT": "глобальная",
     "Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_NAME": "имя",
-    "Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT": "инициализировать глобальную",
+    "Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT": "инициализировать глобально",
     "Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TO": "в",
-    "Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP": "Создаёт глобальную переменную и присваивает её значение прикреплённых блоков.",
+    "Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP": "Создаёт глобальную переменную и присваивает ей значение, взятое из прикреплённых блоков.",
     "Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_COLLAPSED_TEXT": "локальная",
     "Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_DEFAULT_NAME": "имя",
     "Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_COLLAPSED_TEXT": "локальная",
@@ -644,7 +644,7 @@
     "Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TITLE": "создать словарь",
     "Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE": "создать пустой словарь",
     "Blockly.Msg.LANG_CATEGORY_DICTIONARIES": "Словари",
-    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TOOLTIP": "Используется в блоке «Список значений, извлечённых из набора путей», работает по следующей логике: собирает путь из блоков, располагающихся выше, получает значение для собранного пути, получает список объектов внутри найденного значения (список ключей или элементов), берёт первый объект, добавляет его в конец сформированного пути (который состоит из блоков, располагающихся выше), тем самым создаёт новый путь, далее берёт второй объект и выполняет аналогичные действия, тем самым создаёт второй новый путь (эти два новых пути различаются только конечными узлами), далее выполняет аналогичные действия для остальных объектов и в конечном итоге собирает набор из новых путей (если ниже данного блока располагается ещё один блок, то нижний блок добавляется в конец каждого пути из собранного набора новых путей).",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TOOLTIP": "Используется в блоке «Список значений для вариативного пути», является специальным звеном пути (стандартные звенья: ключ словаря и индекс элемента в списке), указывает системе создать все возможные варианты наложения заданного пути на древовидную структуру данных (JSON, XML), при этом данное специальное звено пути накладывается поочерёдно на все элементы списка или ключи словаря, которые находятся внутри узла структуры данных, соответствующего этому специальному звену.",
     "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TITLE": "список всех подходящих значений, доступных по пути %1 в словаре/списке %2",
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE": "установить значение для ключа/элемента, доступного по заданному пути в словаре",
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP": "Устанавливает значение для ключа, доступного по данному пути в данном словаре.",
@@ -679,5 +679,10 @@
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP": "Возвращает список всех ключей словаря.",
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT": "словарь",
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TITLE": "ключи",
-    "Blockly.Msg.LANG_DICTIONARIES_GETTERS_TITLE": "получить"
+    "Blockly.Msg.LANG_DICTIONARIES_GETTERS_TITLE": "получить",
+    "Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TITLE": "объединить словари",
+    "Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TOOLTIP": "Возвращает текст, который состоит из элементов списка и размещённых между ними разделителей",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE": "все узлы уровня",
+    "Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TOOLTIP": "Проверяет, является ли что-либо словарём",
+    "Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TITLE": "является словарём? %1"
 }
