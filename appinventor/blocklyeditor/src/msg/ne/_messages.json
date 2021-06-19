@@ -1,1 +1,18 @@
-{}
+{
+    "Blockly.Msg.DELETE_X_BLOCKS": "%1 ब्लकहरू मेटाउनुहोस्",
+    "Blockly.Msg.DELETE_BLOCK": "ब्लक हटाउनुहोस्",
+    "Blockly.Msg.DELETE_ALL_BLOCKS": "सबै ब्लकहरू मेटाउने हो?",
+    "Blockly.Msg.CONFIRM_DELETE": "मेटाउने निश्चित गर्नुहोस्",
+    "Blockly.Msg.VERTICAL_PARAMETERS": "प्यारामिटर ठाडो रूपमा मिलाउनुहोस्",
+    "Blockly.Msg.HORIZONTAL_PARAMETERS": "प्यारामिटर तेर्सो रूपमा मिलाउनुहोस्",
+    "Blockly.Msg.INLINE_INPUTS": "इनलाइन इनपुटहरू",
+    "Blockly.Msg.EXTERNAL_INPUTS": "बाह्य इनपुट",
+    "Blockly.Msg.ADD_COMMENT": "टिप्पणी थप्नुहोस्",
+    "Blockly.Msg.REMOVE_COMMENT": "टिप्पणी हटाउनुहोस्",
+    "Blockly.Msg.DUPLICATE_BLOCK": "नक्कल गर्नुहोस्",
+    "Blockly.Msg.SHOW": "कार्यस्थान नियन्त्रणहरू देखाउनुहोस्",
+    "Blockly.Msg.HIDE": "कार्यस्थान नियन्त्रणहरू लुकाउनुहोस्",
+    "Blockly.Msg.CLEAN_UP": "ब्लक खाली गर्नुहोस्",
+    "Blockly.Msg.REDO": "फेरि गर्नुहोस्",
+    "Blockly.Msg.UNDO": "पूर्वस्थिति"
+}
