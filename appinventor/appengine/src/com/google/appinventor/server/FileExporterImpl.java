@@ -6,8 +6,6 @@
 
 package com.google.appinventor.server;
 
-import com.google.common.base.Strings;
-import com.google.appinventor.server.storage.ObjectifyStorageIo;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
@@ -49,7 +47,7 @@ public final class FileExporterImpl implements FileExporter {
     // There should never be more than one .apk file.
 
     for (String fileName : files) {
-      if (fileName.endsWith(".apk")) {
+      if (fileName.endsWith(".apk") || fileName.endsWith(".aab")) {
         byte[] content = storageIo.downloadRawFile(userId, projectId, fileName);
         return new RawFile(StorageUtil.basename(fileName), content);
       }
@@ -68,12 +66,8 @@ public final class FileExporterImpl implements FileExporter {
     boolean fatalError,
     boolean forGallery) throws IOException {
     // Download project source files as a zip.
-    if (storageIo instanceof ObjectifyStorageIo) {
-      return ((ObjectifyStorageIo)storageIo).exportProjectSourceZip(userId, projectId,
-        includeProjectHistory, includeAndroidKeystore, zipName, includeYail, includeScreenShots, forGallery, fatalError);
-    } else {
-      throw new IllegalArgumentException("Objectify only");
-    }
+    return storageIo.exportProjectSourceZip(userId, projectId,
+      includeProjectHistory, includeAndroidKeystore, zipName, includeYail, includeScreenShots, forGallery, fatalError);
   }
 
   @Override

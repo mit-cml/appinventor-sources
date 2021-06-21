@@ -26,9 +26,6 @@ public class AdminUser implements IsSerializable, Serializable {
   // whether user has accepted terms of service
   private boolean tosAccepted;
 
-  // Are they are Gallery Moderator?
-  private boolean isModerator;
-
   // whether the user has admin priviledges
   private boolean isAdmin;
 
@@ -47,17 +44,14 @@ public class AdminUser implements IsSerializable, Serializable {
    * @param email user email address
    * @param tosAccepted TOS accepted?
    * @param isAdmin -- are they an admin
-   * @param isModerator -- are they a gallery moderator
    * @param visited -- when they last logged in.
    */
-  public AdminUser(String id, String name, String email, boolean tosAccepted,
-    boolean isAdmin, boolean isModerator, Date visited) {
+  public AdminUser(String id, String name, String email, boolean tosAccepted, boolean isAdmin, Date visited) {
     this.id = id;
     this.email = email;
     this.name = name;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
-    this.isModerator = isModerator;
     this.type = type;
     this.visited = visited;
   }
@@ -101,14 +95,6 @@ public class AdminUser implements IsSerializable, Serializable {
 
   public void setIsAdmin(boolean value) {
     this.isAdmin = value;
-  }
-
-  public boolean getIsModerator() {
-    return this.isModerator;
-  }
-
-  public void setIsModerator(boolean value) {
-    this.isModerator = value;
   }
 
   public int getType() {

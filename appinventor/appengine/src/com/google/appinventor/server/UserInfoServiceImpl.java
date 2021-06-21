@@ -63,6 +63,9 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     config.setFirebaseURL(Flag.createFlag("firebase.url", "").get());
     config.setDefaultCloudDBserver(Flag.createFlag("clouddb.server", "").get());
     config.setNoop(Flag.createFlag("session.noop", 0).get());
+    config.setGalleryEnabled(Flag.createFlag("gallery.enabled", false).get());
+    config.setGalleryReadOnly(Flag.createFlag("gallery.readonly", false).get());
+    config.setGalleryLocation(Flag.createFlag("gallery.location", "").get());
 
     if (!Flag.createFlag("build2.server.host", "").get().isEmpty()) {
       config.setSecondBuildserver(true);
@@ -109,16 +112,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   }
 
   /**
-   * Returns user information based on userId.
-   *
-   * @return  user information record
-   */
-  @Override
-  public User getUserInformationByUserId(String userId) {
-    return storageIo.getUser(userId);
-  }
-
-  /**
    * Retrieves the user's settings.
    *
    * @return  user's settings
@@ -145,33 +138,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void storeUserSettings(String settings) {
     storageIo.storeSettings(userInfoProvider.getUserId(), settings);
-  }
-
-  /**
-   * Stores the user's name.
-   * @param name  user's name
-   */
-  @Override
-  public void storeUserName(String name) {
-    storageIo.setUserName(userInfoProvider.getUserId(), name);
-  }
-
-  /**
-   * Stores the user's link.
-   * @param link  user's link
-   */
-  @Override
-  public void storeUserLink(String link) {
-    storageIo.setUserLink(userInfoProvider.getUserId(), link);
-  }
-
-  /**
-   * Stores the user's email notification frequency.
-   * @param emailFrequency  user's email frequency
-   */
-  @Override
-  public void storeUserEmailFrequency(int emailFrequency) {
-    storageIo.setUserEmailFrequency(userInfoProvider.getUserId(), emailFrequency);
   }
 
   /**

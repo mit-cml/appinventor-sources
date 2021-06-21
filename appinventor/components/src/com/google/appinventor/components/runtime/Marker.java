@@ -5,33 +5,40 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.MapFactory;
-import org.locationtech.jts.geom.Geometry;
-import org.osmdroid.api.IGeoPoint;
-import org.osmdroid.util.GeoPoint;
+import android.util.Log;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
+
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.HorizontalAlignment;
+import com.google.appinventor.components.common.MapFeature;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.VerticalAlignment;
 import com.google.appinventor.components.common.YaVersion;
+
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
+import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
-import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureVisitor;
 import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
 
-import android.util.Log;
+import org.locationtech.jts.geom.Geometry;
+
+import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.util.GeoPoint;
 
 /**
  * The `Marker` component indicates points on a {@link Map}, such as buildings or other points of
@@ -57,16 +64,14 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   private String imagePath = "";
 
   /**
-   * Horizontal alignment of the marker drawable relative to its longitude. The default value is 3,
-   * which places the anchor at the horizontal center of the drawable.
+   * Horizontal alignment of the marker drawable relative to its longitude. Defaults to center.
    */
-  private int anchorHAlign = 3;
+  private HorizontalAlignment anchorHAlign = HorizontalAlignment.Center;
 
   /**
-   * Vertical alignment of the marker drawable relative to its latitude. The default value is 3,
-   * which places the anchor at the bottom of the drawable.
+   * Vertical alignment of the marker relative to its latitude. Defaults to bottom.
    */
-  private int anchorVAlign = 3;
+  private VerticalAlignment anchorVAlign = VerticalAlignment.Bottom;
 
   /**
    * Location of the marker's anchor.
@@ -192,10 +197,21 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * Return the type of the map feature. For Marker, this returns the text "Marker".
    * @return the type of the feature
    */
-  @SimpleProperty
   @Override
-  public String Type() {
-    return MapFactory.MapFeatureType.TYPE_MARKER;
+  @SimpleProperty(description = "Returns the type of the feature. For Markers, "
+      + "this returns MapFeature.Marker (\"Marker\").")
+  public @Options(MapFeature.class) String Type() {
+    return TypeAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Gets the type of the feature, as a {@link MapFeature} enum.
+   *
+   * @return the abstract MapFeature type of this feature. In this case MapFeature.Marker.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public MapFeature TypeAbstract() {
+    return MapFeature.Marker;
   }
 
   /**
@@ -266,7 +282,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
   @SimpleProperty
-  public void ImageAsset(String path) {
+  public void ImageAsset(@Asset String path) {
     Log.d(TAG, "ImageAsset");
     this.imagePath = path;
     map.getController().updateFeatureImage(this);
@@ -296,15 +312,15 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
       defaultValue = "3")
   @SimpleProperty
-  public void AnchorHorizontal(int horizontal) {
-    if (horizontal == anchorHAlign) {
-      return;
-    } else if (horizontal > 3 || horizontal < 1) {
-      container.$form().dispatchErrorOccurredEvent(this, "AnchorHorizontal", ErrorMessages.ERROR_INVALID_ANCHOR_HORIZONTAL, horizontal);
+  public void AnchorHorizontal(@Options(HorizontalAlignment.class) int horizontal) {
+    // Make sure the horizontal alignment is a valid HorizontalAlignment.
+    HorizontalAlignment alignment = HorizontalAlignment.fromUnderlyingValue(horizontal);
+    if (alignment == null) {
+      container.$form().dispatchErrorOccurredEvent(this, "AnchorHorizontal",
+          ErrorMessages.ERROR_INVALID_ANCHOR_HORIZONTAL, horizontal);
       return;
     }
-    anchorHAlign = horizontal;
-    map.getController().updateFeaturePosition(this);
+    AnchorHorizontalAbstract(alignment);
   }
 
   /**
@@ -312,25 +328,46 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * are: `1` (Left), `2` (Right), or `3` (Center).
    */
   @Override
-  @SimpleProperty(description = "The horizontal alignment property controls where the Marker's " +
-      "anchor is located relative to its width.")
-  public int AnchorHorizontal() {
+  @SimpleProperty(description = "The horizontal alignment property controls where the Marker's "
+      + "anchor is located relative to its width. The choices are: 1 = left aligned,"
+      + " 3 = horizontally centered, 2 = right aligned.")
+  public @Options(HorizontalAlignment.class) int AnchorHorizontal() {
+    return AnchorHorizontalAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current horizontal alignment of this marker relative to its longitude.
+   * @return the current horizontal alignment of this marker relative to its longitude.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public HorizontalAlignment AnchorHorizontalAbstract() {
     return anchorHAlign;
+  }
+
+  /**
+   * Sets the horizontal anchor point of this marker relative to its longitude.
+   * @param alignment the alignment to set the anchor point to.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void AnchorHorizontalAbstract(HorizontalAlignment alignment) {
+    if (alignment != anchorHAlign) {
+      anchorHAlign = alignment;
+      map.getController().updateFeaturePosition(this);
+    }
   }
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
       defaultValue = "3")
   @SimpleProperty
-  public void AnchorVertical(int vertical) {
-    if (vertical == anchorVAlign) {
-      return;
-    } else if (vertical > 3 || vertical < 1) {
+  public void AnchorVertical(@Options(VerticalAlignment.class) int vertical) {
+    // Make sure the vertical alignment is a valid VerticalAlignment.
+    VerticalAlignment alignment = VerticalAlignment.fromUnderlyingValue(vertical);
+    if (alignment == null) {
       container.$form().dispatchErrorOccurredEvent(this, "AnchorVertical", ErrorMessages.ERROR_INVALID_ANCHOR_VERTICAL, vertical);
       return;
     }
-    anchorVAlign = vertical;
-    map.getController().updateFeaturePosition(this);
+    AnchorVerticalAbstract(alignment);
   }
 
   /**
@@ -338,10 +375,32 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * are: `1` (Top), `2` (Center), or `3` (Bottom).
    */
   @Override
-  @SimpleProperty(description = "The vertical alignment property controls where the Marker's " +
-      "anchor is located relative to its height.")
-  public int AnchorVertical() {
+  @SimpleProperty(description = "The vertical alignment property controls where the Marker's "
+      + "anchor is located relative to its height. The choices are: 1 = aligned at the top, 2 = "
+      + "vertically centered, 3 = aligned at the bottom.")
+  public @Options(VerticalAlignment.class) int AnchorVertical() {
+    return AnchorVerticalAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current vertical alignment of this marker relative to its latitude.
+   * @return the current vertical alignment of this marker relative to its latitude.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public VerticalAlignment AnchorVerticalAbstract() {
     return anchorVAlign;
+  }
+
+  /**
+   * Sets the vertical anchor point of this marker relative to its latitude.
+   * @param alignment the alignment to set the anchor point to.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void AnchorVerticalAbstract(VerticalAlignment alignment) {
+    if (alignment != null) {
+      anchorVAlign = alignment;
+      map.getController().updateFeaturePosition(this);
+    }
   }
 
   @Override
@@ -509,7 +568,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
       "in degrees from due north. If the centroids parameter is true, the bearing will be to the " +
       "center of the map feature. Otherwise, the bearing will be computed to the point in the " +
       "feature nearest the Marker.")
-  public double BearingToFeature(MapFeature mapFeature, final boolean centroids) {
+  public double BearingToFeature(MapFactory.MapFeature mapFeature, final boolean centroids) {
     return mapFeature == null ? -1 : mapFeature.accept(bearingComputation, this, centroids);
   }
 

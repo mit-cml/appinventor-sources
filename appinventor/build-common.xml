@@ -291,6 +291,15 @@
   </target>
 
   <!-- ====================================================================
+       blocklyeditor_BlocklyCompile builds:
+       - build/blockly-all.js
+       ==================================================================== -->
+  <target name="blocklyeditor_BlocklyTranslationGenerator">
+    <ant inheritall="false" usenativebasedir="true" dir="${appinventor.dir}/blocklyeditor"
+         target="BlocklyTranslationGenerator"/>
+  </target>
+
+  <!-- ====================================================================
        common_CommonUtils builds:
        - build/common/CommonUtils.jar
        - build/common/CommonUtils-gwt.jar

@@ -410,6 +410,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <h3 id="Image-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="Image.AlternateText" class="text wo"><em>AlternateText</em></dt>
+  <dd>A written description of what the image looks like.</dd>
   <dt id="Image.Animation" class="text wo bo"><em>Animation</em></dt>
   <dd>This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are <code class="highlighter-rouge">ScrollRightSlow</code>, <code class="highlighter-rouge">ScrollRight</code>, <code class="highlighter-rouge">ScrollRightFast</code>,
@@ -897,7 +899,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  <a href="#Notifier"><code class="highlighter-rouge">Notifier</code></a>, the <a href="#DatePicker"><code class="highlighter-rouge">DatePicker</code></a>, and others.</dd>
   <dt id="Screen.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
   <dd>A number that encodes how contents of the screen are aligned horizontally. The choices are:
- <code class="highlighter-rouge">1</code> (left aligned), <code class="highlighter-rouge">2</code> (horizontally centered), <code class="highlighter-rouge">3</code> (right aligned).</dd>
+ <code class="highlighter-rouge">1</code> (left aligned), <code class="highlighter-rouge">3</code> (horizontally centered), <code class="highlighter-rouge">2</code> (right aligned).</dd>
   <dt id="Screen.AlignVertical" class="number"><em>AlignVertical</em></dt>
   <dd>A number that encodes how the contents of the arrangement are aligned vertically. The choices
  are: <code class="highlighter-rouge">1</code> (aligned at the top), <code class="highlighter-rouge">2</code> (vertically centered), <code class="highlighter-rouge">3</code> (aligned at the bottom). Vertical
@@ -912,6 +914,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="Screen.BackgroundImage" class="text"><em>BackgroundImage</em></dt>
   <dd>Specifies the path of the <code class="highlighter-rouge">Screen</code>’s background image. If there is both an <code class="highlighter-rouge">BackgroundImage</code>
  and a <a href="#Screen.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">BackgroundImage</code> will be visible.</dd>
+  <dt id="Screen.BigDefaultText" class="boolean"><em>BigDefaultText</em></dt>
+  <dd>When checked, all default size text will be increased in size.</dd>
   <dt id="Screen.BlocksToolkit" class="text wo do"><em>BlocksToolkit</em></dt>
   <dd>A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project.</dd>
   <dt id="Screen.CloseScreenAnimation" class="text"><em>CloseScreenAnimation</em></dt>
@@ -919,13 +923,14 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  to a form behind it in the activity stack.</dd>
   <dt id="Screen.Height" class="number ro bo"><em>Height</em></dt>
   <dd>Returns the Screen height in pixels (y-size).</dd>
+  <dt id="Screen.HighContrast" class="boolean"><em>HighContrast</em></dt>
+  <dd>When checked, there will be high contrast mode turned on.</dd>
   <dt id="Screen.Icon" class="text wo do"><em>Icon</em></dt>
   <dd>The image used for your App’s display icon should be a square png or jpeg image with dimensions
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
  The build server will generate images of standard dimensions for Android devices.</dd>
   <dt id="Screen.OpenScreenAnimation" class="text"><em>OpenScreenAnimation</em></dt>
-  <dd>The animation for switching to another screen. Valid options are <code class="highlighter-rouge">default</code>, <code class="highlighter-rouge">fade</code>, <code class="highlighter-rouge">zoom</code>,
- <code class="highlighter-rouge">slidehorizontal</code>, <code class="highlighter-rouge">slidevertical</code>, and <code class="highlighter-rouge">none</code>.</dd>
+  <dd>Sets the animation type for the transition of this form opening.</dd>
   <dt id="Screen.Platform" class="text ro bo"><em>Platform</em></dt>
   <dd>Gets the name of the underlying platform running the app. Currently, this is the text
  “Android”. Other platforms may be supported in the future.</dd>

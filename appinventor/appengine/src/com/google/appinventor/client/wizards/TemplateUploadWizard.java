@@ -631,6 +631,15 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     }
   }
 
+  private static boolean isTemplateName(String name) {
+    for (TemplateInfo template : builtInTemplates) {
+      if (template.name.equals(name)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * Called from Ode when a template Url is passed as GET parameter.
    *  The Url could take two forms:
@@ -643,6 +652,17 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    * @param onSuccessCommand command to open the project
    */
   public static void openProjectFromTemplate(String url, final NewProjectCommand onSuccessCommand) {
+    if (isTemplateName(url)) {
+      if (TextValidators.checkNewProjectName(url)) {
+        new TemplateUploadWizard().createProjectFromExistingZip(url, new NewProjectCommand() {
+          @Override
+          public void execute(Project project) {
+            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+          }
+        });
+      }
+      return;
+    }
     if(!url.startsWith("http")) {
       url = "http://" + url;
     }

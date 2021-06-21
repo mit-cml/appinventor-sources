@@ -20,6 +20,7 @@ import com.google.appinventor.client.editor.ProjectEditorFactory;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
+import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
@@ -64,10 +65,11 @@ import java.util.Set;
  *
  * @author lizlooney@google.com (Liz Looney)
  * @author sharon@google.com (Sharon Perl) - added logic for screens in  
- *   DesignToolbar
+ *     DesignToolbar
  */
-public final class YaProjectEditor extends ProjectEditor implements ProjectChangeListener, ComponentDatabaseChangeListener{
-  
+public final class YaProjectEditor extends ProjectEditor implements ProjectChangeListener,
+    ComponentDatabaseChangeListener {
+
   // FileEditors in a YA project come in sets. Every form in the project has 
   // a YaFormEditor for editing the UI, and a YaBlocksEditor for editing the 
   // blocks representation of the program logic. Some day it may also have an 
@@ -109,7 +111,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private boolean screen1FormLoaded = false;
   private boolean screen1BlocksLoaded = false;
   private boolean screen1Added = false;
-  
+
   /**
    * Returns a project editor factory for {@code YaProjectEditor}s.
    *
@@ -493,7 +495,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   }
 
   private boolean readyToLoadProject() {
-    return externalComponentsLoaded;
+    return BlocklyMsg.Loader.isTranslationLoaded() && externalComponentsLoaded;
   }
 
   private void addBlocksEditor(YoungAndroidBlocksNode blocksNode) {

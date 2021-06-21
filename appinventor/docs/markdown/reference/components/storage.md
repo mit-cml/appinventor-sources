@@ -69,6 +69,9 @@ The `CloudDB` component is a Non-visible component that allows you to store data
 : Event triggered when we have received the list of known tags. Run in response to a call to the
  [`GetTagList`](#CloudDB.GetTagList) function.
 
+{:id="CloudDB.UpdateDone"} UpdateDone(*tag*{:.text},*operation*{:.text})
+: Indicates that operations that store data to CloudDB have completed.
+
 ### Methods  {#CloudDB-Methods}
 
 {:.methods}

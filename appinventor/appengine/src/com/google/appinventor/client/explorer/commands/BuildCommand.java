@@ -31,14 +31,15 @@ public class BuildCommand extends ChainableCommand {
 
   // Whether or not to use the second buildserver
   private boolean secondBuildserver = false;
+  private boolean isAab;
 
   /**
    * Creates a new build command.
    *
    * @param target the build target
    */
-  public BuildCommand(String target, boolean secondBuildserver) {
-    this(target, secondBuildserver, null);
+  public BuildCommand(String target, boolean secondBuildserver, boolean isAab) {
+    this(target, secondBuildserver, isAab, null);
   }
 
   /**
@@ -48,8 +49,9 @@ public class BuildCommand extends ChainableCommand {
    * @param target the build target
    * @param nextCommand the command to execute after the build has finished
    */
-  public BuildCommand(String target, boolean secondBuildserver, ChainableCommand nextCommand) {
+  public BuildCommand(String target, boolean secondBuildserver, boolean isAab, ChainableCommand nextCommand) {
     super(nextCommand);
+    this.isAab = isAab;
     this.target = target;
     this.secondBuildserver = secondBuildserver;
   }
@@ -126,6 +128,6 @@ public class BuildCommand extends ChainableCommand {
     };
 
     String nonce = ode.generateNonce();
-    ode.getProjectService().build(node.getProjectId(), nonce, target, secondBuildserver, callback);
+    ode.getProjectService().build(node.getProjectId(), nonce, target, secondBuildserver, isAab, callback);
   }
 }

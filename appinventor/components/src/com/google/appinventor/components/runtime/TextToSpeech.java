@@ -54,7 +54,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 // TODO(hal): This language and country code method using strings as abbreviations was
 // deprecated in API level 21.
 @DesignerComponent(version = YaVersion.TEXTTOSPEECH_COMPONENT_VERSION,
-description = "The TestToSpeech component speaks a given text aloud.  You can set " +
+description = "The TextToSpeech component speaks a given text aloud.  You can set " +
     "the pitch and the rate of speech. " +
     "<p>You can also set a language by supplying a language code.  This changes the pronunciation " +
     "of words, not the actual language spoken.  For example, setting the language to French " +

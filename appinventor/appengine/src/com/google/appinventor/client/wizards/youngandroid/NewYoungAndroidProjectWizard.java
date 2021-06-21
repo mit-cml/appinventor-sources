@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client.wizards.youngandroid;
 
-import java.util.regex.Pattern;
 
 import com.google.appinventor.client.Ode;
 
@@ -22,7 +21,6 @@ import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
