@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -42,6 +42,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_LISTVIEW = "ElementsFromString";
   protected static final String PROPERTY_NAME_SHOW_FILTER_BAR = "ShowFilterBar";
   protected static final String PROPERTY_NAME_TEXTCOLOR = "TextColor";
+  // to set color for secondary text of listview items
+  protected static final String PROPERTY_NAME_DETAILTEXTCOLOR = "TextColorDetail";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
   protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
   protected static final String PROPERTY_NAME_HINT = "Hint";
@@ -51,6 +53,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_HEIGHT = "Height";
   public static final String PROPERTY_NAME_COLUMN = "Column";
   public static final String PROPERTY_NAME_ROW = "Row";
+  protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = "ListData";
+  protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = "ListViewLayout";
 
   // Note: the values below are duplicated in Component.java
   // If you change them here, change them there!

@@ -2255,7 +2255,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
     // AI2:
     // - Added SelectionColor Property
-    5: "noUpgrade"
+    5: "noUpgrade",
+    // AI2:
+    // - Added ...
+    6: "noUpgrade"
 
   }, // End ListView upgraders
 

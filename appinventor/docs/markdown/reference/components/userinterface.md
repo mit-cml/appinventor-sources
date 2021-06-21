@@ -682,11 +682,26 @@ This is a visible component that allows to place a list of text elements in your
 : Specifies the `ListView`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="ListView.ImageHeight" .number} *ImageHeight*
+: Specifies the image height of ListView layouts containing images
+
+{:id="ListView.ImageWidth" .number} *ImageWidth*
+: Specifies the image width of ListView layouts containing images
+
+{:id="ListView.ListData" .text .do} *ListData*
+: Specifies data to be displayed in the ListView rows as an ArrayList of JsonObjects. Designer only property.
+
+{:id="ListView.ListViewLayout" .number .do} *ListViewLayout*
+: Specifies type of layout for ListView row. Designer only property.
+
 {:id="ListView.Selection" .text} *Selection*
 : Returns the text in the `ListView` at the position of [`SelectionIndex`](#ListView.SelectionIndex).
 
 {:id="ListView.SelectionColor" .color} *SelectionColor*
 : The color of the item when it is selected.
+
+{:id="ListView.SelectionDetailText" .text .ro .bo} *SelectionDetailText*
+: Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex
 
 {:id="ListView.SelectionIndex" .number .bo} *SelectionIndex*
 : The index of the currently selected item, starting at `1`. If no item is selected, the value
@@ -701,8 +716,14 @@ This is a visible component that allows to place a list of text elements in your
 {:id="ListView.TextColor" .color} *TextColor*
 : The text color of the `ListView` items.
 
+{:id="ListView.TextColorDetail" .color} *TextColorDetail*
+: Specifies the color of the secondary text in a ListView layout
+
 {:id="ListView.TextSize" .number} *TextSize*
 : Specifies the `ListView` item's text font size
+
+{:id="ListView.TextSizeDetail" .number} *TextSizeDetail*
+: Specifies the ListView item's secondary-text font size
 
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -726,8 +747,21 @@ This is a visible component that allows to place a list of text elements in your
 ### Methods  {#ListView-Methods}
 
 {:.methods}
-None
 
+{:id="ListView.CreateElement" class="method returns dictionary"} <i/> CreateElement(*mainText*{:.text},*detailText*{:.text},*imageName*{:.text})
+: Creates a
+
+{:id="ListView.GetDetailText" class="method returns text"} <i/> GetDetailText(*listElement*{:.dictionary})
+: Get the Detail Text of a ListView element.
+
+{:id="ListView.GetImageName" class="method returns text"} <i/> GetImageName(*listElement*{:.dictionary})
+: Get the name of the image of a ListView element.
+
+{:id="ListView.GetMainText" class="method returns text"} <i/> GetMainText(*listElement*{:.dictionary})
+: Get the Main Text of a ListView element.
+
+{:id="ListView.Refresh" class="method"} <i/> Refresh()
+: Reload the ListView to reflect any changes in the data.
 
 ## Notifier  {#Notifier}
 

@@ -658,10 +658,20 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="ListView.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">ListView</code>’s vertical height as a percentage
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="ListView.ImageHeight" class="number"><em>ImageHeight</em></dt>
+  <dd>Specifies the image height of ListView layouts containing images</dd>
+  <dt id="ListView.ImageWidth" class="number"><em>ImageWidth</em></dt>
+  <dd>Specifies the image width of ListView layouts containing images</dd>
+  <dt id="ListView.ListData" class="text do"><em>ListData</em></dt>
+  <dd>Specifies data to be displayed in the ListView rows as an ArrayList of JsonObjects. Designer only property.</dd>
+  <dt id="ListView.ListViewLayout" class="number do"><em>ListViewLayout</em></dt>
+  <dd>Specifies type of layout for ListView row. Designer only property.</dd>
   <dt id="ListView.Selection" class="text"><em>Selection</em></dt>
   <dd>Returns the text in the <code class="highlighter-rouge">ListView</code> at the position of <a href="#ListView.SelectionIndex"><code class="highlighter-rouge">SelectionIndex</code></a>.</dd>
   <dt id="ListView.SelectionColor" class="color"><em>SelectionColor</em></dt>
   <dd>The color of the item when it is selected.</dd>
+  <dt id="ListView.SelectionDetailText" class="text ro bo"><em>SelectionDetailText</em></dt>
+  <dd>Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex</dd>
   <dt id="ListView.SelectionIndex" class="number bo"><em>SelectionIndex</em></dt>
   <dd>The index of the currently selected item, starting at <code class="highlighter-rouge">1</code>. If no item is selected, the value
  will be <code class="highlighter-rouge">0</code>. If an attempt is made to set this to a number less than <code class="highlighter-rouge">1</code> or greater than the
@@ -672,8 +682,12 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  <code class="logic block highlighter-rouge">false</code> will hide it.</dd>
   <dt id="ListView.TextColor" class="color"><em>TextColor</em></dt>
   <dd>The text color of the <code class="highlighter-rouge">ListView</code> items.</dd>
+  <dt id="ListView.TextColorDetail" class="color"><em>TextColorDetail</em></dt>
+  <dd>Specifies the color of the secondary text in a ListView layout</dd>
   <dt id="ListView.TextSize" class="number"><em>TextSize</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">ListView</code> item’s text font size</dd>
+  <dt id="ListView.TextSizeDetail" class="number"><em>TextSizeDetail</em></dt>
+  <dd>Specifies the ListView item’s secondary-text font size</dd>
   <dt id="ListView.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the <code class="highlighter-rouge">ListView</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
  if the <code class="highlighter-rouge">ListView</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
@@ -694,7 +708,18 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <h3 id="ListView-Methods">Methods</h3>
 
-<p class="methods">None</p>
+<dl class="methods">
+  <dt id="ListView.CreateElement" class="method returns dictionary"><i></i> CreateElement(<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
+  <dd>Creates a</dd>
+  <dt id="ListView.GetDetailText" class="method returns text"><i></i> GetDetailText(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the Detail Text of a ListView element.</dd>
+  <dt id="ListView.GetImageName" class="method returns text"><i></i> GetImageName(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the name of the image of a ListView element.</dd>
+  <dt id="ListView.GetMainText" class="method returns text"><i></i> GetMainText(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the Main Text of a ListView element.</dd>
+  <dt id="ListView.Refresh" class="method"><i></i> Refresh()</dt>
+  <dd>Reload the ListView to reflect any changes in the data.</dd>
+</dl>
 
 <h2 id="Notifier">Notifier</h2>
 

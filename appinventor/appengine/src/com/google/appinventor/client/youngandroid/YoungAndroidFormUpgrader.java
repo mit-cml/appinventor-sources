@@ -1336,6 +1336,10 @@ public final class YoungAndroidFormUpgrader {
       // Added the SelectionColor property
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Added ...
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
