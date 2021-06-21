@@ -72,6 +72,8 @@
   <source path="client/editor/simple/palette"/>
   <source path="client/editor/youngandroid/palette"/>
   <source path="client/editor/youngandroid/properties"/>
+  <source path="client/editor/youngandroid/i18n"/>
+  <source path="client/editor/youngandroid/i18n/msg"/>
   <source path="images"/>
   <source path="shared/jsonp"/>
   <source path="shared/rpc"/>
@@ -143,8 +145,8 @@
   <extend-property name="locale" values="de"/>
   <!-- Polish -->
   <extend-property name="locale" values="pl"/>
+  <!-- Lithuanian -->
+  <extend-property name="locale" values="lt"/>
 
   <set-property-fallback name="locale" value="en"/>
-  <collapse-all-properties/>
-
 </module>

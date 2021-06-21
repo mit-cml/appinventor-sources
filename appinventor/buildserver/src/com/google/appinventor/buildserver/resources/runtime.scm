@@ -1,5 +1,5 @@
 ;;; Copyright 2009-2011 Google, All Rights reserved
-;;; Copyright 2011-2018 MIT, All rights reserved
+;;; Copyright 2011-2021 MIT, All rights reserved
 ;;; Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 ;;; These are the functions that define the YAIL (Young Android Intermediate Language) runtime They
@@ -2613,6 +2613,22 @@ Dictionary implementation.
   (if (= (string-starts-at text piece) 0)
       #f
       #t))
+
+(define (string-contains-any text piece-list)
+  (define (string-contains-any-rec piece-list)
+    (if (null? piece-list)
+        #f
+        (or (string-contains text (car piece-list))
+          (string-contains-any-rec (cdr piece-list)))))
+  (string-contains-any-rec (yail-list-contents piece-list)))
+
+(define (string-contains-all text piece-list)
+  (define (string-contains-all-rec piece-list)
+    (if (null? piece-list)
+        #t
+        (and (string-contains text (car piece-list))
+            (string-contains-all-rec (cdr piece-list)))))
+  (string-contains-all-rec (yail-list-contents piece-list)))
 
 (define (string-split-at-first text at)
   (array->list

@@ -111,7 +111,7 @@ public class ProjectServiceTest {
     localUserMock.setSessionId("test-session");
     expectLastCall().times(1);
     expect(LocalUser.getInstance()).andReturn(localUserMock).anyTimes();
-    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
+    localUserMock.set(new User("1", "NonSuch", false, false, null));
     expectLastCall().anyTimes();
     KeyczarEncryptor.rootPath.setForTest(KEYSTORE_ROOT_PATH);
   }
@@ -124,7 +124,7 @@ public class ProjectServiceTest {
     projectServiceImpls = Maps.newHashMap();
     projectServiceImpls.put(USER_ID_ONE, projectServiceImpl);
     projectServiceImpls.put(USER_ID_TWO, projectServiceImpl2);
-    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
+    localUserMock.set(new User("1", "NonSuch", false, false, null));
     localUserMock.setSessionId("test-session");
   }
 
@@ -289,7 +289,7 @@ public class ProjectServiceTest {
 
     checkUserProjects(projectServiceImpl.getProjectInfos(),
         new UserProject(yaProject, PROJECT1_NAME,
-            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), 0L, false));
+            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), false));
     PowerMock.verifyAll();
   }
 

@@ -106,6 +106,7 @@ public class ExternalComponentGenerator {
       generateExternalComponentDescriptors(name, entry.getValue());
       for (ExternalComponentInfo info : entry.getValue()) {
         copyIcon(name, info.descriptor);
+        copyLicense(name, info.descriptor);
         copyAssets(name, info.descriptor);
       }
       generateExternalComponentBuildFiles(name, entry.getValue());
@@ -227,6 +228,26 @@ public class ExternalComponentGenerator {
       copyFile(image.getAbsolutePath(), dstIcon.getAbsolutePath());
     } else {
       System.out.println("Extensions : Skipping missing icon " + icon);
+    }
+  }
+
+  private static void copyLicense(String packageName, JSONObject componentDescriptor)
+      throws IOException, JSONException {
+    String license = componentDescriptor.getString("licenseName");
+    if("".equals(license) || license.startsWith("http:") || license.startsWith("https:")) {
+      // License will be loaded from the web
+      return;
+    }
+    String packagePath = packageName.replace('.', File.separatorChar);
+    File sourceDir = new File(externalComponentsDirPath + File.separator + ".." + File.separator + ".." + File.separator + "src" + File.separator + packagePath);
+    File licenseFile = new File(sourceDir, license);
+    if(licenseFile.exists()) {
+      File destinationLicense = new File(externalComponentsDirPath + File.separator + packageName + File.separator + license);
+      ensureDirectory(destinationLicense.getParent(), "Unable to create directory " + destinationLicense.getParent());
+      System.out.println("Extensions : " + "Copying file " + licenseFile.getAbsolutePath());
+      copyFile(licenseFile.getAbsolutePath(), destinationLicense.getAbsolutePath());
+    } else {
+      System.out.println("Extensions : Skipping missing license " + license);
     }
   }
 

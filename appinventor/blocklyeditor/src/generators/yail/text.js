@@ -92,6 +92,9 @@ Blockly.Yail['text_compare'] = function() {
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator2
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  if (mode == 'NEQ') {
+    code = '(not ' + code + ')';
+  }
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
@@ -99,7 +102,7 @@ Blockly.Yail['text_compare'].OPERATORS = {
   LT: ['string<?', 'text<', Blockly.Yail.ORDER_NONE],
   GT: ['string>?', 'text>', Blockly.Yail.ORDER_NONE],
   EQUAL: ['string=?', 'text=', Blockly.Yail.ORDER_NONE],
-  NEQ: ['yail-not-equal?', 'not =', Blockly.Yail.ORDER_NONE]
+  NEQ: ['string=?', 'not =', Blockly.Yail.ORDER_NONE]
 };
 
 Blockly.Yail['text_trim'] = function() {
@@ -163,21 +166,43 @@ Blockly.Yail.text_starts_at = function() {
 };
 
 Blockly.Yail['text_contains'] = function() {
-  // String contains.
   var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var argument1 = Blockly.Yail.valueToCode(this, 'PIECE', Blockly.Yail.ORDER_NONE) || "\"\"";
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-contains"
+  var mode = Blockly.Yail.text_contains.OPERATORS[this.getMode()];
+
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + mode.operator
       + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
+  code += Blockly.Yail.YAIL_OPEN_COMBINATION
       + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
       + argument0 + Blockly.Yail.YAIL_SPACER + argument1
       + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "text text"
+  code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + "text " + mode.type
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "contains"
+  code += Blockly.Yail.YAIL_DOUBLE_QUOTE + mode.blockName
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  return [code, mode.order];
+};
+
+Blockly.Yail.text_contains.OPERATORS = {
+  'CONTAINS': {
+    operator: 'string-contains',
+    blockName: 'string contains',
+    order: Blockly.Yail.ORDER_ATOMIC,
+    type: 'text'
+  },
+  'CONTAINS_ANY': {
+    operator: 'string-contains-any',
+    blockName: 'string contains any',
+    order: Blockly.Yail.ORDER_ATOMIC,
+    type: 'list'
+  },
+  'CONTAINS_ALL': {
+    operator: 'string-contains-all',
+    blockName: 'string contains all',
+    order: Blockly.Yail.ORDER_ATOMIC,
+    type: 'list'
+  }
 };
 
 Blockly.Yail['text_split'] = function() {

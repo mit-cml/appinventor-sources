@@ -860,6 +860,11 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="PasswordTextBox.Hint" class="text"><em>Hint</em></dt>
   <dd><code class="highlighter-rouge">PasswordTextBox</code> hint for the user.</dd>
+  <dt id="PasswordTextBox.NumbersOnly" class="boolean"><em>NumbersOnly</em></dt>
+  <dd>If true, then this <code class="highlighter-rouge">PasswordTextBox</code><code class="highlighter-rouge"> accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if </code>NumbersOnly<code class="highlighter-rouge"> is true, you can set the text to anything at all using the
+ [</code>Text`](#PasswordTextBox.Text) property.</dd>
   <dt id="PasswordTextBox.PasswordVisible" class="boolean bo"><em>PasswordVisible</em></dt>
   <dd>Specifies whether the password is hidden (default) or shown.</dd>
   <dt id="PasswordTextBox.Text" class="text"><em>Text</em></dt>
@@ -1500,6 +1505,14 @@ having dark grey components.</li>
 </code></pre></div></div>
 <p>Calling <code class="highlighter-rouge">setWebViewString</code> from JavaScript will also run the <a href="#WebViewer.WebViewStringChange"><code class="highlighter-rouge">WebViewStringChange</code></a>
  event so that the blocks can handle when the <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> property changes.</p>
+
+<p>Beginning with release nb184a, you can specify a HomeUrl beginning with <code class="highlighter-rouge">http://localhost/</code>
+ to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ <code class="highlighter-rouge">file:///android_asset/</code> in compiled apps and <code class="highlighter-rouge">/sdcard/AppInventor/assets/</code> in the Companion.
+ Both of these options will continue to work but the <code class="highlighter-rouge">http://localhost/</code> approach will work in
+ both scenarios. You may also use “file:///appinventor_asset/” which provides more security by
+ preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ web.</p>
 
 <h3 id="WebViewer-Properties">Properties</h3>
 

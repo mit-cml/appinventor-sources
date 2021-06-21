@@ -63,6 +63,10 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
   </target>
 
+  <target name="PlayAppAab">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayAppAab"/>
+  </target>
+
   <target name="PlayAppExtras">
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayAppExtras"/>
   </target>

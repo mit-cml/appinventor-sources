@@ -511,10 +511,11 @@ Blockly.WorkspaceSvg.prototype.verifyAllBlocks = function() {
  * Saves the workspace as an XML file and returns the contents as a
  * string.
  *
+ * @param {boolean} prettify Specify true if the resulting workspace should be pretty-printed.
  * @returns {string} XML serialization of the workspace's blocks.
  */
-Blockly.WorkspaceSvg.prototype.saveBlocksFile = function() {
-  return Blockly.SaveFile.get(this);
+Blockly.WorkspaceSvg.prototype.saveBlocksFile = function(prettify) {
+  return Blockly.SaveFile.get(prettify, this);
 };
 
 /**

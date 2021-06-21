@@ -403,10 +403,10 @@ Component for Serial
 {:.properties}
 
 {:id="Serial.BaudRate" .number} *BaudRate*
-: Property for BaudRate
+: Returns the current baud rate
 
 {:id="Serial.BufferSize" .number} *BufferSize*
-: Property for BufferSize
+: Returns the buffer size in bytes
 
 {:id="Serial.IsInitialized" .boolean .ro .bo} *IsInitialized*
 : Returns true when the Serial has been initialized.

@@ -995,6 +995,12 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.Hint" .text} *Hint*
 : `PasswordTextBox` hint for the user.
 
+{:id="PasswordTextBox.NumbersOnly" .boolean} *NumbersOnly*
+: If true, then this `PasswordTextBox`` accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if `NumbersOnly` is true, you can set the text to anything at all using the
+ [`Text`](#PasswordTextBox.Text) property.
+
 {:id="PasswordTextBox.PasswordVisible" .boolean .bo} *PasswordVisible*
 : Specifies whether the password is hidden (default) or shown.
 
@@ -1783,6 +1789,14 @@ Component for viewing Web pages.
  ```
  Calling `setWebViewString` from JavaScript will also run the [`WebViewStringChange`](#WebViewer.WebViewStringChange)
  event so that the blocks can handle when the [`WebViewString`](#WebViewer.WebViewString) property changes.
+
+ Beginning with release nb184a, you can specify a HomeUrl beginning with `http://localhost/`
+ to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ `file:///android_asset/` in compiled apps and `/sdcard/AppInventor/assets/` in the Companion.
+ Both of these options will continue to work but the `http://localhost/` approach will work in
+ both scenarios. You may also use "file:///appinventor_asset/" which provides more security by
+ preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ web.
 
 
 

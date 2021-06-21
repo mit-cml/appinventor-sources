@@ -78,9 +78,26 @@ public @interface IntentFilterElement {
    * filter. This must be specified as an integer in the interval
    * (-1000, 1000). If the priority is not set, it will default to 0.
    *
-   * @return  the priority of the parent activity or broadcast receiver w.r.t.
+   * @return  the priority of the parent activity/broadcast receiver/service/content provider w.r.t.
    *          handling intents described by this filter
    */
   String priority() default "";
+
+  /**The order in which the filter should be processed when multiple filters
+   * match.
+   * "order" differs from "priority" in that "priority" applies across apps, while
+   * "order" disambiguates multiple matching filters in a single app.
+
+   * When multiple filters could match, use a directed intent instead.
+
+   * The value must be an integer, such as "100". Higher numbers are matched first.
+   * The default value is 0.
+
+   * This attribute was introduced in API Level 28.
+   *
+   * @return the order of the parent activity/broadcast receiver/service/content provider w.r.t.
+   *         handling intents described by this filter
+   */
+  String order() default "";
 
 }

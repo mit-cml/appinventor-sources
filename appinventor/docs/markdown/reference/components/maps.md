@@ -409,7 +409,9 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Enables or disables the two-finger pinch gesture to zoom the Map.
 
 {:id="Map.Features" .list .bo} *Features*
-: Property for Features
+: Gets the list of features attached to the `Map` (without regard to the value of the
+ feature's `Visible`{:.getter.block} property). This list also includes any features created on
+ the `Map` by calls to [`FeatureFromDescription`](#Map.FeatureFromDescription).
 
 {:id="Map.Height" .number .bo} *Height*
 : Specifies the `Map`'s vertical height, measured in pixels.
@@ -445,7 +447,8 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Specifies the rotation of the map in decimal degrees, if any.
 
 {:id="Map.ScaleUnits" .number} *ScaleUnits*
-: Property for ScaleUnits
+: Specifies the units used for the scale overlay. 1 (the default) will give metric units
+ (km, m) whereas 2 will give imperial units (mi, ft).
 
 {:id="Map.ShowCompass" .boolean} *ShowCompass*
 : Specifies whether to a compass overlay on the Map. The compass will be rotated based on the
@@ -780,7 +783,7 @@ The Navigation component generates directions between two locations using a serv
 : The longitude of the end location.
 
 {:id="Navigation.Language" .text} *Language*
-: Property for Language
+: The language to use for textual directions. Default is "en" for English.
 
 {:id="Navigation.ResponseContent" .dictionary .ro .bo} *ResponseContent*
 : The raw response from the server. This can be used to access more details beyond what the

@@ -1131,25 +1131,38 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       form.dispatchPermissionDeniedEvent(Web.this, method, e);
     } catch (FileUtil.FileException e) {
       form.dispatchErrorOccurredEvent(Web.this, method,
-        e.getErrorMessageNumber());
+          e.getErrorMessageNumber());
     } catch (RequestTimeoutException e) {
       form.dispatchErrorOccurredEvent(Web.this, method,
-        ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
+          ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
     } catch (Exception e) {
       int message;
+      String[] args;
+      //noinspection IfCanBeSwitch
       if (method.equals("Get")) {
         message = ErrorMessages.ERROR_WEB_UNABLE_TO_GET;
-      } else if (method.equals("PostFile")) {
-        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
-      } else if (method.equals("PutFile")) {
-        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
+        args = new String[] { webProps.urlString };
       } else if (method.equals("Delete")) {
         message = ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE;
+        args = new String[] { webProps.urlString };
+      } else if (method.equals("PostFile") || method.equals("PutFile")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
+        args = new String[] { postFile, webProps.urlString };
       } else {
         message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT;
+        String content = "";
+        try {
+          if (postData != null) {
+            //noinspection CharsetObjectCanBeUsed
+            content = new String(postData, "UTF-8");
+          }
+        } catch (UnsupportedEncodingException e1) {
+          Log.e(LOG_TAG, "UTF-8 is the default charset for Android but not available???");
+        }
+        args = new String[] { content, webProps.urlString };
       }
       form.dispatchErrorOccurredEvent(Web.this, method,
-        message, webProps.urlString);
+          message, (Object[]) args);
     }
   }
 

@@ -6,43 +6,6 @@
     //blockly.js must come first
     '../lib/blockly/core/blockly.js',
 
-    // Blockly core translations
-    //msg/js/*.js has to come next (for constants)
-    '../lib/blockly/msg/js/ko.js',
-    '../lib/blockly/msg/js/es.js',
-    '../lib/blockly/msg/js/zh-hant.js',
-    '../lib/blockly/msg/js/zh-hans.js',
-    '../lib/blockly/msg/js/fr.js',
-    '../lib/blockly/msg/js/it.js',
-    '../lib/blockly/msg/js/ru.js',
-    '../lib/blockly/msg/js/sv.js',
-    '../lib/blockly/msg/js/nl.js',
-    '../lib/blockly/msg/js/pt-br.js',
-    '../lib/blockly/msg/js/pt.js',
-    '../lib/blockly/msg/js/hu.js',
-    '../lib/blockly/msg/js/de.js',
-    '../lib/blockly/msg/js/pl.js',
-    // English should always come last as the base language
-    '../lib/blockly/msg/js/en.js',
-
-    // App Inventor-specific translations
-    './src/msg/ko_kr/_messages.js',
-    './src/msg/es_es/_messages.js',
-    './src/msg/zh_tw/_messages.js',
-    './src/msg/zh_cn/_messages.js',
-    './src/msg/fr_fr/_messages.js',
-    './src/msg/it_it/_messages.js',
-    './src/msg/ru/_messages.js',
-    './src/msg/sv/_messages.js',
-    './src/msg/pt_br/_messages.js',
-    './src/msg/pt/_messages.js',
-    './src/msg/hu/_messages.js',
-    './src/msg/nl/_messages.js',
-    './src/msg/de/_messages.js',
-    './src/msg/pl/_messages.js',
-    // English should always come last as the base language
-    './src/msg/en/_messages.js',
-
     // Lyn's instrumentation code
     "./src/instrument.js",
 
@@ -101,6 +64,7 @@
     '../lib/blockly/core/zoom_controls.js',
 
     //finally, include any of our own .js file in any order
+    "./src/msg.js",
     "./src/events.js",
     "./src/blocklyeditor.js",
     './src/typeblock.js',
@@ -140,12 +104,12 @@
     "./src/field_procedurename.js",
     "./src/nameSet.js",
     "./src/substitution.js",
-    "./src/language_switch.js",
     "./src/warning.js",
     "./src/toolboxController.js",
     "./src/field.js",
     "./src/rendered_connection.js",
     "./src/input.js",
+    "./src/field_event_flydown.js",
 
     // Dialog Utiltiy
     "./src/util.js",
@@ -191,9 +155,7 @@
   // will be included, so when test-raw.html loads each input in RAW mode,
   // it is important that the proper charset be used.
   "output-charset": "UTF-8",
-  "mode": "RAW",
-//  "mode": "SIMPLE",
-//  "mode" : "WHITESPACE_ONLY",
+  "mode": "SIMPLE",
   "experimental-compiler-options": {
     "languageIn": "ECMASCRIPT5"
   },

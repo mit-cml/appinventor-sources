@@ -7,6 +7,7 @@ package com.google.appinventor.shared.rpc.user;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Data Transfer Object representing user data.
@@ -38,6 +39,11 @@ public class Config implements IsSerializable, Serializable {
   private boolean secondBuildserver; // Whether or not we have a second
                                      // buildserver (used for a different
                                      // target SDK).
+  private boolean galleryEnabled;
+  private String galleryLocation;
+  private boolean galleryReadOnly;
+  private List<String> tutorialUrlAllowed;
+  private boolean serverExpired;
 
   public Config() {
   }
@@ -192,6 +198,46 @@ public class Config implements IsSerializable, Serializable {
 
   public void setSecondBuildserver(boolean value) {
     secondBuildserver = value;
+  }
+
+  public boolean getGalleryEnabled() {
+    return galleryEnabled;
+  }
+
+  public void setGalleryEnabled(boolean value) {
+    galleryEnabled = value;
+  }
+
+  public String getGalleryLocation() {
+    return galleryLocation;
+  }
+
+  public void setGalleryLocation(String value) {
+    galleryLocation = value;
+  }
+
+  public boolean getGalleryReadOnly() {
+    return galleryReadOnly;
+  }
+
+  public void setGalleryReadOnly(boolean value) {
+    galleryReadOnly = value;
+  }
+
+  public void setTutorialUrlAllowed(List<String> value) {
+    this.tutorialUrlAllowed = value;
+  }
+
+  public List<String> getTutorialsUrlAllowed() {
+    return tutorialUrlAllowed;
+  }
+
+  public boolean getServerExpired() {
+    return serverExpired;
+  }
+
+  public void setServerExpired(boolean value) {
+    serverExpired = value;
   }
 
 }

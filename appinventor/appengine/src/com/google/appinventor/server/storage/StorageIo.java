@@ -111,48 +111,6 @@ public interface StorageIo {
   String loadSettings(String userId);
 
   /**
-   * Sets the stored name for user with id userId
-   *
-   */
-  void setUserName(String userId, String name);
-
-  /**
-   * Returns a string with the user's name.
-   *
-   * @param userId user id
-   * @return name
-   */
-  String getUserName(String userId);
-
-  /**
-   * Returns a string with the user's name.
-   *
-   * @param userId user id
-   * @return name
-   */
-  String getUserLink(String userId);
-
-  /**
-   * Sets the stored link for user with id userId
-   *
-   */
-  void setUserLink(String userId, String link);
-
-  /**
-   * Returns the email notification frequency
-   *
-   * @param userId user id
-   * @return emailFrequency email frequency
-   */
-  int getUserEmailFrequency(String userId);
-
-  /**
-   * Sets the stored email notification frequency for user with id userId
-   *
-   */
-  void setUserEmailFrequency(String userId, int emailFrequency);
-
-  /**
    * Stores a string with the user's settings.
    *
    * @param userId user ID
@@ -189,9 +147,9 @@ public interface StorageIo {
    *
    * @param userId user ID
    * @param projectId project ID
-   * @param boolean flag
+   * @param flag
    */
-  void setMoveToTrashFlag(final String userId, final long projectId,boolean flag);
+  void setMoveToTrashFlag(final String userId, final long projectId, boolean flag);
 
   /**
    * Returns an array with the user's projects.
@@ -200,22 +158,6 @@ public interface StorageIo {
    * @return  list of projects
    */
   List<Long> getProjects(String userId);
-
-  /**
-   * sets a projects gallery id when it is published
-   * @param userId a user Id (the request is made on behalf of this user)*
-   * @param projectId project ID
-   * @param galleryId gallery ID
-   */
-  void setProjectGalleryId(final String userId, final long projectId,final long galleryId);
-
-   /**
-   * sets a projects attribution id when it is opened from a gallery project
-   * @param userId a user Id (the request is made on behalf of this user)*
-   * @param projectId project ID
-   * @param attributionId attribution ID
-   */
-  void setProjectAttributionId(final String userId, final long projectId,final long attributionId);
 
   /**
    * Returns a string with the project settings.
@@ -303,7 +245,6 @@ public interface StorageIo {
    *
    * @return long milliseconds
    */
-//  long getGalleryId(String userId, long projectId);
 
   // Non-project-specific file management
 
@@ -436,22 +377,6 @@ public interface StorageIo {
    * @return  list of output file ID
    */
   List<String> getProjectOutputFiles(String userId, long projectId);
-
-  /**
-   * Returns the gallery id for a project.
-   * @param projectId  project ID
-   *
-   * @return  list of output file ID
-   */
-  long getProjectGalleryId(String userId, final long projectId);
-
-   /**
-   * Returns the attribution id for a project-- the app it was copied/remixed from
-   * @param projectId  project ID
-   *
-   * @return galleryId
-   */
-  long getProjectAttributionId(final long projectId);
 
   /**
    * Uploads a file.
@@ -725,5 +650,7 @@ public interface StorageIo {
    * @throws SecurityException if the user doesn't have access to the project
    */
   void assertUserHasProject(String userId, long projectId);
+
+  List<String> getTutorialsUrlAllowed();
 
 }

@@ -198,6 +198,19 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
 };
 
 /**
+ * Marks the passed block as a badBlock() and disables it if the data associated
+ * with the block is not defined, or the data is marked as deprecated.
+ * @param {Blockly.BlockSvg} block The block to check for deprecation.
+ * @param {EventDescriptor|MethodDescriptor|PropertyDescriptor} data The data
+ *     associated with the block which is possibly deprecated.
+ */
+Blockly.ComponentBlock.checkDeprecated = function(block, data) {
+  if (data && data.deprecated && block.workspace == Blockly.mainWorkspace) {
+    block.setDisabled(true);
+  }
+}
+
+/**
  * Create an event block of the given type for a component with the given
  * instance name. eventType is one of the "events" objects in a typeJsonString
  * passed to Blockly.Component.add.
@@ -301,12 +314,10 @@ Blockly.Blocks.component_event = {
       input.init();
     }
 
-    if (eventType && eventType.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
-      this.badBlock();
-      this.setDisabled(true);
-    }
-
-    this.verify(); // verify the block and mark it accordingly
+    // Set as badBlock if it doesn't exist.
+    this.verify(); 
+    // Disable it if it does exist and is deprecated.
+    Blockly.ComponentBlock.checkDeprecated(this, eventType);
 
     this.rendered = oldRendered;
   },
@@ -317,7 +328,7 @@ Blockly.Blocks.component_event = {
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
   // Also must create flydown params and DO input if they don't exist.
 
-  // To-DO: consider using top.BlocklyPanel... instead of window.parent.BlocklyPanel
+  // TODO: consider using top.BlocklyPanel... instead of window.parent.BlocklyPanel
 
   setParameterOrientation: function(isHorizontal) {
     var params = this.getParameters();
@@ -343,15 +354,16 @@ Blockly.Blocks.component_event = {
           this.removeInput('DO');
         }
 
-        // .. and insert new ones:
+        // ... and insert new ones:
         if (params.length > 0) {
           var paramInput = this.appendDummyInput('PARAMETERS')
                                .appendField(" ")
                                .setAlign(Blockly.ALIGN_LEFT);
           for (i = 0; param = params[i]; i++) {
-            paramInput.appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false, null, null, param.name), // false means not editable
-                                   'VAR' + i)
-                      .appendField(" ");
+            var field = new Blockly.FieldEventFlydown(
+                param, componentDb, Blockly.FieldFlydown.DISPLAY_BELOW);
+            paramInput.appendField(field, 'VAR' + i)
+                .appendField(" ");
           }
         }
 
@@ -369,13 +381,13 @@ Blockly.Blocks.component_event = {
           this.removeInput('DO');
         }
 
-        // .. and insert new ones:
+        // ... and insert new ones:
 
         // Vertically aligned parameters
         for (i = 0; param = params[i]; i++) {
+          var field = new Blockly.FieldEventFlydown(param, componentDb);
           this.appendDummyInput('VAR' + i)
-              .appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false),
-                           'VAR' + i)
+              .appendField(field, 'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
         newDoInput = this.appendStatementInput("DO")
@@ -769,15 +781,10 @@ Blockly.Blocks.component_method = {
     this.errors = [{name:"checkIfUndefinedBlock"}, {name:"checkIsInDefinition"},
       {name:"checkComponentNotExistsError"}, {name: "checkGenericComponentSocket"}];
 
-    // mark the block bad if the method isn't defined or is marked deprecated
-    var method = this.getMethodTypeObject();
-    if ((!method || method.deprecated === true || method.deprecated === 'true') &&
-        this.workspace === Blockly.mainWorkspace) {
-      this.badBlock();
-      this.setDisabled(true);
-    }
-
-    this.verify(); // verify the block and mark it accordingly
+    // Set as badBlock if it doesn't exist.
+    this.verify(); 
+    // Disable it if it does exist and is deprecated.
+    Blockly.ComponentBlock.checkDeprecated(this, this.getMethodTypeObject());
 
     this.rendered = oldRendered;
   },
@@ -1028,9 +1035,9 @@ Blockly.Blocks.component_set_get = {
       this.setColour(Blockly.ComponentBlock.COLOUR_GET);
     }
     var tooltipDescription;
-    if (this.propertyName) {
-      tooltipDescription = componentDb.getInternationalizedPropertyDescription(this.getTypeName(), this.propertyName,
-          this.propertyObject.description);
+    if (this.propertyName && this.propertyObject) {
+      tooltipDescription = componentDb.getInternationalizedPropertyDescription(
+        this.getTypeName(), this.propertyName, this.propertyObject.description);
     } else {
       tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
     }
@@ -1125,13 +1132,10 @@ Blockly.Blocks.component_set_get = {
       {name:"checkComponentNotExistsError"}, {name: 'checkGenericComponentSocket'},
       {name: 'checkEmptySetterSocket'}];
 
-    if (thisBlock.propertyObject && this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
-      // [lyn, 2015/12/27] mark deprecated properties as bad
-      this.badBlock();
-      this.setDisabled(true);
-    }
-
-    this.verify();
+    // Set as badBlock if it doesn't exist.
+    this.verify(); 
+    // Disable it if it does exist and is deprecated.
+    Blockly.ComponentBlock.checkDeprecated(this, this.propertyObject);
 
     for (var i = 0, input; input = this.inputList[i]; i++) {
       input.init();

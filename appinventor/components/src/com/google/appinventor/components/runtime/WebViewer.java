@@ -29,6 +29,8 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
+import com.google.appinventor.components.runtime.util.FroyoWebViewClient;
+import com.google.appinventor.components.runtime.util.HoneycombWebViewClient;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -67,6 +69,14 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  * ```
  * Calling `setWebViewString` from JavaScript will also run the {@link #WebViewStringChange(String)}
  * event so that the blocks can handle when the {@link #WebViewString(String)} property changes.
+ *
+ * Beginning with release nb184a, you can specify a HomeUrl beginning with `http://localhost/`
+ * to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ * `file:///android_asset/` in compiled apps and `/sdcard/AppInventor/assets/` in the Companion.
+ * Both of these options will continue to work but the `http://localhost/` approach will work in
+ * both scenarios. You may also use "file:///appinventor_asset/" which provides more security by
+ * preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ * web.
  *
  * @internaldoc
  * Component for displaying web pages
@@ -515,8 +525,12 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   private void resetWebViewClient() {
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
-      webview.setWebViewClient(FroyoUtil.getWebViewClient(ignoreSslErrors, followLinks, container.$form(), this));
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+      webview.setWebViewClient(new HoneycombWebViewClient(followLinks, ignoreSslErrors,
+          container.$form(), this));
+    } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
+      webview.setWebViewClient(new FroyoWebViewClient<>(followLinks, ignoreSslErrors,
+          container.$form(), this));
     } else {
       webview.setWebViewClient(new WebViewerClient());
     }

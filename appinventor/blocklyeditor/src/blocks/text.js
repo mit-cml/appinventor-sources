@@ -317,21 +317,127 @@ Blockly.Blocks['text_starts_at'] = {
 };
 
 Blockly.Blocks['text_contains'] = {
-  // Is text contained in
   category: 'Text',
-  helpUrl: Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL,
+
+  helpUrl: function() {
+    return Blockly.Blocks.text_contains.HELPURLS()[this.getMode()];
+  },
+
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
-    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
-    this.interpolateMsg(Blockly.Msg.LANG_TEXT_CONTAINS_INPUT,
-        ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
-        ['PIECE', checkTypeText, Blockly.ALIGN_RIGHT],
+
+    var utils = Blockly.Blocks.Utilities;
+    var getType = utils.YailTypeToBlocklyType;
+    var dropdown = new Blockly.FieldDropdown(
+        Blockly.Blocks.text_contains.OPERATORS(),
+        Blockly.Blocks.text_contains.adjustToMode.bind(this));
+    var text = new Blockly.FieldLabel(
+        Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE);
+
+    this.setOutput(true, getType("boolean", utils.OUTPUT));
+    this.interpolateMsg(
+        Blockly.Msg.LANG_TEXT_CONTAINS_INPUT,
+        ['OP', dropdown],
+        ['TEXT', getType('text', utils.INPUT), Blockly.ALIGN_RIGHT],
+        ['PIECE_TEXT', text],
+        ['PIECE', getType('text', utils.INPUT), Blockly.ALIGN_RIGHT],
         Blockly.ALIGN_RIGHT);
-    this.setTooltip(Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP);
     this.setInputsInline(false);
+
+    this.setTooltip(function() {
+      return Blockly.Blocks.text_contains.TOOLTIPS()[this.getMode()];
+    }.bind(this));
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS}]
+
+  // TODO: This can be removed after the blockly update b/c validators are
+  // properly triggered on load from XML.
+  domToMutation: function (xmlElement) {
+    var mode = xmlElement.getAttribute('mode');
+    Blockly.Blocks.text_contains.adjustToMode.call(this, mode);
+  },
+
+  mutationToDom: function () {
+    var container = document.createElement('mutation');
+    container.setAttribute('mode', this.getMode());
+    return container;
+  },
+
+  getMode: function() {
+    return this.getFieldValue('OP');
+  },
+
+  typeblock: [
+    {
+      translatedName: Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS,
+      dropDown: {
+        titleName: 'OP',
+        value: 'CONTAINS'
+      }
+    },
+    {
+      translatedName: Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY,
+      dropDown: {
+        titleName: 'OP',
+        value: 'CONTAINS_ANY'
+      }
+    },
+    {
+      translatedName: Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL,
+      dropDown: {
+        titleName: 'OP',
+        value: 'CONTAINS_ALL'
+      }
+    }
+  ]
+};
+
+/**
+ * Updates the block's PIECE input to reflect the current mode.
+ * @param {string} mode 
+ * @this {!Blockly.BlockSvg}
+ */
+Blockly.Blocks.text_contains.adjustToMode = function (mode) {
+  var utils = Blockly.Blocks.Utilities;
+  var getType = utils.YailTypeToBlocklyType;
+
+  if (mode == 'CONTAINS') {
+    this.getInput('PIECE')
+        .setCheck(getType('text', utils.INPUT));
+    this.setFieldValue(
+        Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE,
+        'PIECE_TEXT');
+  } else {
+    this.getInput('PIECE')
+      .setCheck(getType('list', utils.INPUT));
+    this.setFieldValue(
+        Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST,
+        'PIECE_TEXT');
+  }
+};
+
+// The order here determines the order in the dropdown
+Blockly.Blocks.text_contains.OPERATORS = function() {
+  return [
+    [Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS, 'CONTAINS'],
+    [Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY, 'CONTAINS_ANY'],
+    [Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL, 'CONTAINS_ALL'],
+  ]
+};
+
+Blockly.Blocks.text_contains.TOOLTIPS = function() {
+  return {
+    'CONTAINS': Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS,
+    'CONTAINS_ANY': Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY,
+    'CONTAINS_ALL': Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL,
+  }
+};
+
+Blockly.Blocks.text_contains.HELPURLS = function() {
+  return {
+    'CONTAINS': Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS,
+    'CONTAINS_ANY': Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ANY,
+    'CONTAINS_ALL': Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL,
+  }
 };
 
 Blockly.Blocks['text_split'] = {
@@ -354,16 +460,16 @@ Blockly.Blocks['text_split'] = {
         .appendField(Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT, 'ARG2_NAME')
         .setAlign(Blockly.ALIGN_RIGHT);
   },
+  // TODO: This can be removed after the blockly update b/c validators are
+  // properly triggered on load from XML.
   // adjust for the mode when the block is read in
   domToMutation: function (xmlElement) {
     var mode = xmlElement.getAttribute('mode');
     Blockly.Blocks.text_split.adjustToMode(mode, this);
   },
   // put the mode in the DOM so it can be read in by domToMutation
-  // WARNING:  Note that the 'mode' tag below is lowercase.  It would not work
-  // to make it uppercase ('MODE').  There's a bug somewhere (in the browser?) that
-  // writes tags as lowercase.  So writing the date with tag 'MODE' and attempting
-  // to read with tag 'MODE' wil not work.
+  // Note: All attributes must be 100% lowercase because IE always writes
+  // attributes as lowercase.
   mutationToDom: function () {
     var container = document.createElement('mutation');
     var savedMode = this.getFieldValue('OP');

@@ -717,7 +717,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * Content providers required by this component.
      */
     protected final Set<String> contentProviders;
-  
+
     /**
      * TODO(Will): Remove the following field once the deprecated {@link SimpleBroadcastReceiver}
      *             annotation is removed. It should should remain for the time being
@@ -780,6 +780,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private int androidMinSdk;
     private String versionName;
     private String dateBuilt;
+    private String licenseName;
 
     protected ComponentInfo(Element element) {
       super(element.getSimpleName().toString(),  // Short name
@@ -869,6 +870,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           showOnPalette = designerComponentAnnotation.showOnPalette();
           nonVisible = designerComponentAnnotation.nonVisible();
           iconName = designerComponentAnnotation.iconName();
+          licenseName = designerComponentAnnotation.licenseName();
           androidMinSdk = designerComponentAnnotation.androidMinSdk();
           versionName = designerComponentAnnotation.versionName();
           userVisible = designerComponentAnnotation.showOnPalette();
@@ -987,6 +989,16 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     protected String getDateBuilt() {
       return dateBuilt;
+    }
+
+    /**
+     * Returns the name of the license file used by external components
+     * {@link DesignerComponent#licenseName()}.
+     *
+     * @return the name of the license file
+     */
+    protected String getLicenseName() {
+      return licenseName;
     }
 
     private String getDisplayNameForComponentType(String componentTypeName) {
@@ -1328,7 +1340,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         throw new RuntimeException(e);
       }
     }
-  
+
     // TODO(Will): Remove the following legacy code once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
     //             should remain for the time being because otherwise we'll break
@@ -1338,7 +1350,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // has a Class Name and zero or more Filter Actions.  In the
     // resulting String, Class name will go first, and each Action
     // will be added, separated by a comma.
-  
+
     SimpleBroadcastReceiver simpleBroadcastReceiver = element.getAnnotation(SimpleBroadcastReceiver.class);
     if (simpleBroadcastReceiver != null) {
       for (String className : simpleBroadcastReceiver.className().split(",")){
@@ -1555,7 +1567,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     StringBuilder elementString = new StringBuilder("      <intent-filter ");
     elementString.append(elementAttributesToString(element));
     elementString.append(">\\n");
-    
+
     // Now, we collect any <intent-filter> subelements.
     elementString.append(subelementsToString(element.actionElements()));
     elementString.append(subelementsToString(element.categoryElements()));
@@ -1657,7 +1669,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
     return attributeString.toString();
   }
-  
+
   // Build the subelement String for a given array of XML elements modeled by
   // corresponding annotations.
   private static String subelementsToString(Annotation[] subelements)
@@ -1758,10 +1770,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
               && !newProperty.description.isEmpty() && !newProperty.isDefaultDescription()) {
             priorProperty.setDescription(newProperty.description);
           }
-          if (!newProperty.longDescription.isEmpty()) {  /* Latter descriptions of the same property
-                                                            override earlier descriptions. */
+          if (!newProperty.longDescription.isEmpty() && !newProperty.isDefaultDescription()) {  /* Latter descriptions of the same property override earlier descriptions. */
             priorProperty.longDescription = newProperty.longDescription;
           }
+
           if (priorProperty.propertyCategory == PropertyCategory.UNSET) {
             priorProperty.propertyCategory = newProperty.propertyCategory;
           } else if (newProperty.propertyCategory != priorProperty.propertyCategory &&

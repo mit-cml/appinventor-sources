@@ -244,7 +244,9 @@ public class DownloadServlet extends OdeServlet {
 
     // Set http response information
     resp.setStatus(HttpServletResponse.SC_OK);
-    resp.setHeader("content-disposition", "attachment; filename=\"" + fileName + "\"");
+    resp.setHeader(
+        "content-disposition",
+        req.getParameter("inline") != null ? "inline" : "attachment" + "; filename=\"" + fileName + "\"");
     resp.setContentType(StorageUtil.getContentTypeForFilePath(fileName));
     resp.setContentLength(content.length);
 
