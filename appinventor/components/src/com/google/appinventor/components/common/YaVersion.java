@@ -519,7 +519,7 @@ public class YaVersion {
   // - WEB_COMPONENT_VERSION was incremented to 8
   // For YOUNG_ANDROID_VERSION 210:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 6
-  public static final int YOUNG_ANDROID_VERSION = 210;
+  public static final int YOUNG_ANDROID_VERSION = 213;
 
   // ............................... Blocks Language Version Number ...............................
 
