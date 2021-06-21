@@ -14,5 +14,16 @@
     "Blockly.Msg.HIDE": "कार्यस्थान नियन्त्रणहरू लुकाउनुहोस्",
     "Blockly.Msg.CLEAN_UP": "ब्लक खाली गर्नुहोस्",
     "Blockly.Msg.REDO": "फेरि गर्नुहोस्",
-    "Blockly.Msg.UNDO": "पूर्वस्थिति"
+    "Blockly.Msg.UNDO": "पूर्वस्थिति",
+    "Blockly.Msg.ARRANGE_S": "ब्लकहरू विकर्ण रूपमा मिलाउनुहोस्",
+    "Blockly.Msg.ARRANGE_V": "ब्लकहरू ठाडो रूपमा मिलाउनुहोस्",
+    "Blockly.Msg.ARRANGE_H": "ब्लकहरूलाई तेर्सो रूपमा मिलाउनुहोस्",
+    "Blockly.Msg.EXPAND_ALL": "ब्लकहरू विस्तार गर्नुहोस्",
+    "Blockly.Msg.COLLAPSE_ALL": "ब्लाकहरू संकुचन गर्नुहोस्",
+    "Blockly.Msg.EXPORT_IMAGE": "छवि को रूपमा ब्लकहरू डाउनलोड गर्नुहोस्",
+    "Blockly.Msg.HELP": "मद्दत",
+    "Blockly.Msg.ENABLE_BLOCK": "ब्लक सक्षम गर्नुहोस्",
+    "Blockly.Msg.DISABLE_BLOCK": "ब्लक असक्षम गर्नुहोस्",
+    "Blockly.Msg.EXPAND_BLOCK": "ब्लक विस्तार गर्नुहोस्",
+    "Blockly.Msg.COLLAPSE_BLOCK": "ब्लाकहरू संकुचन गर्नुहोस्"
 }
