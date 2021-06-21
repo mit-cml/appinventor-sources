@@ -91,16 +91,16 @@ public class PropertiesUtil {
   }
 
   /**
-   * Populate properties of a MockComponent, given a list of property definitons
+   * Populate properties of a MockComponent, given a list of property definitions
    * @param mockComponent
-   * @param propertyDefintions
+   * @param propertyDefinitions
    */
-  public static void populateProperties(MockComponent mockComponent, List<ComponentDatabaseInterface.PropertyDefinition> propertyDefintions,
+  public static void populateProperties(MockComponent mockComponent, List<ComponentDatabaseInterface.PropertyDefinition> propertyDefinitions,
                                         YaFormEditor editor) {
 
     String componentType = mockComponent.getType();
     // Configure properties
-    for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefintions) {
+    for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefinitions) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
           ComponentsTranslation.getPropertyName(property.getCaption()),
           property.getEditorType(), property.getEditorArgs(),
@@ -112,7 +112,7 @@ public class PropertiesUtil {
   }
 
   // Use individual methods for each property since we can't write the generic
-  // getExstingPropertyEditor due to type safety issues - see below.
+  // getExistingPropertyEditor due to type safety issues - see below.
 
   /**
    * Retrieves the property editor for Horizontal Alignment.

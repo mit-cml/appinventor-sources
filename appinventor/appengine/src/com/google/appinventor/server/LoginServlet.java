@@ -35,7 +35,6 @@ import java.security.spec.InvalidKeySpecException;
 
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -117,7 +116,7 @@ public class LoginServlet extends HttpServlet {
       // This is arranged via a security-constraint setup in web.xml
       com.google.appengine.api.users.User apiUser = userService.getCurrentUser();
       if (apiUser == null) {  // Hmmm. I don't think this should happen
-        fail(req, resp, "Google Authentication Failed"); // Not sure what else to do
+        fail(req, resp, "Google Authentication Failed", locale); // Not sure what else to do
         return;
       }
       String email = apiUser.getEmail();
@@ -185,12 +184,12 @@ public class LoginServlet extends HttpServlet {
     if (page.equals("setpw")) {
       String uid = getParam(req);
       if (uid == null) {
-        fail(req, resp, "Invalid Set Password Link");
+        fail(req, resp, "Invalid Set Password Link", locale);
         return;
       }
       PWData data = storageIo.findPWData(uid);
       if (data == null) {
-        fail(req, resp, "Invalid Set Password Link");
+        fail(req, resp, "Invalid Set Password Link", locale);
         return;
       }
       if (DEBUG) {
@@ -301,13 +300,13 @@ public class LoginServlet extends HttpServlet {
     if (page.equals("sendlink")) {
       String email = params.get("email");
       if (email == null) {
-        fail(req, resp, "No Email Address Provided");
+        fail(req, resp, "No Email Address Provided", locale);
         return;
       }
       // Send email here, for now we put it in the error string and redirect
       PWData pwData = storageIo.createPWData(email);
       if (pwData == null) {
-        fail(req, resp, "Internal Error");
+        fail(req, resp, "Internal Error", locale);
         return;
       }
       String link = trimPage(req) + pwData.id + "/setpw";
@@ -317,23 +316,23 @@ public class LoginServlet extends HttpServlet {
       return;
     } else if (page.equals("setpw")) {
       if (userInfo == null || userInfo.getUserId().equals("")) {
-        fail(req, resp, "Session Timed Out");
+        fail(req, resp, "Session Timed Out", locale);
         return;
       }
       User user = storageIo.getUser(userInfo.getUserId());
       String password = params.get("password");
       if (password == null || password.equals("")) {
-        fail(req, resp, bundle.getString("nopassword"));
+        fail(req, resp, bundle.getString("nopassword"), locale);
         return;
       }
       String hashedPassword;
       try {
         hashedPassword = PasswordHash.createHash(password);
       } catch (NoSuchAlgorithmException e) {
-        fail(req, resp, "System Error hashing password");
+        fail(req, resp, "System Error hashing password", locale);
         return;
       } catch (InvalidKeySpecException e) {
-        fail(req, resp, "System Error hashing password");
+        fail(req, resp, "System Error hashing password", locale);
         return;
       }
 
@@ -355,7 +354,7 @@ public class LoginServlet extends HttpServlet {
 
     String hash = user.getPassword();
     if ((hash == null) || hash.equals("")) {
-      fail(req, resp, "No Password Set for User");
+      fail(req, resp, "No Password Set for User", locale);
       return;
     }
 
@@ -366,7 +365,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     if (!validLogin) {
-      fail(req, resp, bundle.getString("invalidpassword"));
+      fail(req, resp, bundle.getString("invalidpassword"), locale);
       return;
     }
 
@@ -441,8 +440,8 @@ public class LoginServlet extends HttpServlet {
     return sb.toString();
   }
 
-  private void fail(HttpServletRequest req, HttpServletResponse resp, String error) throws IOException {
-    resp.sendRedirect("/login/?error=" + sanitizer.sanitize(error));
+  private void fail(HttpServletRequest req, HttpServletResponse resp, String error, String locale) throws IOException {
+    resp.sendRedirect("/login/?locale=" + sanitizer.sanitize(locale) + "&error=" + sanitizer.sanitize(error));
     return;
   }
 

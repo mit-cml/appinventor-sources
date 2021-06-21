@@ -42,6 +42,7 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 
+import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
@@ -127,11 +128,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Date;
 import java.util.Random;
 
 /**
@@ -203,7 +202,7 @@ public class Ode implements EntryPoint {
   public static final int PROJECTS = 1;
   public static final int USERADMIN = 2;
   public static final int TRASHCAN = 3;
-  public static int currentView = DESIGNER;
+  public static int currentView = PROJECTS;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
@@ -768,10 +767,6 @@ public class Ode implements EntryPoint {
               @Override
               public void onProjectsLoaded() {
                 projectManager.removeProjectManagerEventListener(this);
-                if (!handleQueryString() && shouldAutoloadLastProject()) {
-                  openPreviousProject();
-                }
-
                 // This handles any built-in templates stored in /war
                 // Retrieve template data stored in war/templates folder and
                 // and save it for later use in TemplateUploadWizard
@@ -783,6 +778,10 @@ public class Ode implements EntryPoint {
                       public void onSuccess(String json) {
                         // Save the templateData
                         TemplateUploadWizard.initializeBuiltInTemplates(json);
+
+                        if (!handleQueryString() && shouldAutoloadLastProject()) {
+                          openPreviousProject();
+                        }
                       }
                     };
                 Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
@@ -890,6 +889,10 @@ public class Ode implements EntryPoint {
 
     Window.setTitle(MESSAGES.titleYoungAndroid());
     Window.enableScrolling(true);
+
+    if (config.getServerExpired()) {
+      RootPanel.get().add(new ExpiredServiceOverlay());
+    }
 
     topPanel = new TopPanel();
     statusPanel = new StatusPanel();
@@ -2270,7 +2273,7 @@ public class Ode implements EntryPoint {
    * @return nonce
    */
   public String generateNonce() {
-    int v = random.nextInt(1000000);
+    int v = random.nextInt(10000000);
     nonce = Integer.toString(v, 36); // Base 36 string
     return nonce;
   }
@@ -2431,16 +2434,32 @@ public class Ode implements EntryPoint {
   }
 
   public void setTutorialURL(String newURL) {
-    if (newURL.isEmpty() || (!newURL.startsWith("http://appinventor.mit.edu/")
-        && !newURL.startsWith("http://appinv.us/"))) {
+    if (newURL.isEmpty()) {
+      designToolbar.setTutorialToggleVisible(false);
+      setTutorialVisible(false);
+      return;
+    }
+
+    boolean isUrlAllowed = false;
+    for (String candidate : config.getTutorialsUrlAllowed()) {
+      if (newURL.startsWith(candidate)) {
+        isUrlAllowed = true;
+        break;
+      }
+    }
+
+    if (!isUrlAllowed) {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
+      String[] urlSplits = newURL.split("//"); // [protocol, rest]
+      boolean isHttps = Window.Location.getProtocol() == "https:" || urlSplits[0] == "https:";
       String locale = Window.Location.getParameter("locale");
       if (locale != null) {
         newURL += (newURL.contains("?") ? "&" : "?") + "locale=" + locale;
       }
-      tutorialPanel.setUrl(newURL);
+      String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1];
+      tutorialPanel.setUrl(effectiveUrl);
       designToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);
     }

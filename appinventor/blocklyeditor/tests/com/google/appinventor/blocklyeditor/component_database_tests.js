@@ -4,7 +4,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 var fs = require('fs'); //Always required to read from files
-var messages = fs.read('src/msg/messages.json');
+var messages = fs.read('../build/blocklyeditor/msg/messages.json');
 
 // PhantomJS page object to open and load an URL
 var page = require('webpage').create();

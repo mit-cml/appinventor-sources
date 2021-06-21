@@ -700,7 +700,7 @@ public class BlocklyPanel extends HTMLPanel {
    */
   public native String getBlocksContent() /*-{
     return this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
-      .saveBlocksFile();
+      .saveBlocksFile(@com.google.appinventor.common.version.AppInventorFeatures::doPrettifyXml()());
   }-*/;
 
   /**

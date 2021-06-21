@@ -437,7 +437,7 @@ public final class SimpleComponentDescriptor {
     } else if (name.equals(MockListView.TYPE)) {
       return new MockListView(editor);
     } else if (name.equals(MockSlider.TYPE)) {
-        return new MockSlider(editor);
+      return new MockSlider(editor);
     } else if (name.equals(MockPasswordTextBox.TYPE)) {
       return new MockPasswordTextBox(editor);
     } else if (name.equals(MockRadioButton.TYPE)) {

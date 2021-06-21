@@ -25,6 +25,20 @@
        Definition for generating a Unique ID.
        ===================================================================== -->
 
+  <property name="release" value="false"/>
+
+  <condition property="client.module"
+             value="com.google.appinventor.YaClient"
+             else="com.google.appinventor.YaClient-dev">
+    <equals arg1="${release}" arg2="true" />
+  </condition>
+
+  <condition property="client.flags"
+             value="-optimize 9 -localWorkers 8"
+             else="-style pretty">
+    <equals arg1="${release}" arg2="true" />
+  </condition>
+
   <scriptdef name="generateguid" language="javascript">
     <attribute name="property" />
     <![CDATA[
@@ -594,8 +608,8 @@
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg line="-war"/>
       <arg value="${build.war.dir}"/>
-      <arg line="-logLevel INFO -extra ${build.extra.dir} -style pretty"/>
-      <arg value="com.google.appinventor.YaClient"/>
+      <arg line="-logLevel INFO -extra ${build.extra.dir} ${client.flags}"/>
+      <arg value="${client.module}"/>
     </java>
   </target>
 
@@ -630,7 +644,7 @@
       </classpath>
       <jvmarg value="-Xmx1G" />
       <arg line="-style PRETTY -logLevel INFO" />
-      <arg value="com.google.appinventor.YaClient" />
+      <arg value="com.google.appinventor.YaClient-dev" />
       <arg value="-bindAddress"/>
       <arg value="0.0.0.0"/>
     </java>

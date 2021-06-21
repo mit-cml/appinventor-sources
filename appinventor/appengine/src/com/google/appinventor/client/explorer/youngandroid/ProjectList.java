@@ -71,6 +71,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   // UI elements
   private final Grid table;
+  private final CheckBox selectAllCheckBox;
   private final Label nameSortIndicator;
   private final Label dateCreatedSortIndicator;
   private final Label dateModifiedSortIndicator;
@@ -95,6 +96,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     dateCreatedSortIndicator = new Label("");
     dateModifiedSortIndicator = new Label("");
     refreshSortIndicators();
+    selectAllCheckBox = new CheckBox();
     setHeaderRow();
 
     VerticalPanel panel = new VerticalPanel();
@@ -113,6 +115,33 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    */
   private void setHeaderRow() {
     table.getRowFormatter().setStyleName(0, "ode-ProjectHeaderRow");
+
+    selectAllCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+      @Override
+      public void onValueChange(ValueChangeEvent<Boolean> event) {
+        boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
+        for (Map.Entry<Project, ProjectWidgets> projectWidget : projectWidgets.entrySet()) {
+          if (getProjectCurrentView(projectWidget.getKey()) != Ode.getInstance().getCurrentView()) {
+            continue;
+          }
+          int row = Integer.valueOf(projectWidget.getValue().checkBox.getName());
+          if (isChecked) {
+            if (selectedProjects.contains(projectWidget.getKey())) {
+              continue;
+            }
+            table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
+            selectedProjects.add(projectWidget.getKey());
+            projectWidget.getValue().checkBox.setValue(true);
+          } else {
+            table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
+            selectedProjects.remove(projectWidget.getKey());
+            projectWidget.getValue().checkBox.setValue(false);
+          }
+        }
+        Ode.getInstance().getProjectToolbar().updateButtons();
+      }
+    });
+    table.setWidget(0, 0, selectAllCheckBox);
 
     HorizontalPanel nameHeader = new HorizontalPanel();
     final Label nameHeaderLabel = new Label(MESSAGES.projectNameHeader());
@@ -213,9 +242,15 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           if (isChecked) {
             table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
             selectedProjects.add(project);
+            if (isAllProjectsSelected()) {
+              selectAllCheckBox.setValue(true);
+            }
           } else {
             table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
             selectedProjects.remove(project);
+            if (selectAllCheckBox.getValue()) {
+              selectAllCheckBox.setValue(false);
+            }
           }
           Ode.getInstance().getProjectToolbar().updateButtons();
         }
@@ -318,6 +353,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         table.setWidget(row, 3, pw.dateModifiedLabel);
       }
     }
+    selectAllCheckBox.setValue(false);
     table.resizeRows( row + 1);
 
     if (isInTrash && table.getRowCount() == 1) {
@@ -346,7 +382,32 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   /**
-   * Returns the list of selected projects
+   * Returns if the specified project is in Trash or in MyProjects
+   */
+  public int getProjectCurrentView(Project project) {
+    if (project.isInTrash()) {
+      return Ode.TRASHCAN;
+    } else {
+      return Ode.PROJECTS;
+    }
+  }
+
+  /**
+   * Returns true if all projects under the current view have been selected, and false if not.
+   */
+  public boolean isAllProjectsSelected() {
+    if (Ode.getInstance().getCurrentView() == Ode.PROJECTS
+          && getSelectedProjectsCount() == getMyProjectsCount()) {
+      return true;
+    }
+    if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN
+          && getSelectedProjectsCount() == projects.size() - getMyProjectsCount()) {
+      return true;
+    }
+    return false;
+  }
+  /**
+   * Returns the list of selected projects.
    *
    * @return the selected projects
    */
@@ -354,7 +415,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     return selectedProjects;
   }
 
-  // ProjectManagerEventListener implementation
+  //  ProjectManagerEventListener implementation
 
   @Override
   public void onProjectAdded(Project project) {

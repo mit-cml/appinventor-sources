@@ -1083,7 +1083,9 @@ public class YaVersion {
   // - Added RequestFocus Function (via TextBoxBase)
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 4:
   // - Added PasswordVisible property
-  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 4;
+  // For For PASSWORDTEXTBOX_COMPONENT_VERSION 5:
+  // - Added NumbersOnly property
+  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 5;
 
   // For PEDOMETER_COMPONENT_VERSION 2:
   // - The step sensing algorithm was updated to be more accurate.

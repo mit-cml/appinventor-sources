@@ -7,11 +7,13 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
@@ -25,7 +27,6 @@ public abstract class MockVisibleComponent extends MockComponent {
   // Common property names (not all components support all properties).
   protected static final String PROPERTY_NAME_TEXTALIGNMENT = "TextAlignment";
   protected static final String PROPERTY_NAME_BUTTONSHAPE= "Shape";
-  protected static final String PROPERTY_NAME_RECYCLERVIEW_ORIENTATION= "Orientation";
   protected static final String PROPERTY_NAME_BACKGROUNDCOLOR = "BackgroundColor";
   protected static final String PROPERTY_NAME_BACKGROUNDIMAGE = "BackgroundImage";
   protected static final String PROPERTY_NAME_THUMBCOLORACTIVE = "ThumbColorActive";
@@ -70,6 +71,14 @@ public abstract class MockVisibleComponent extends MockComponent {
   // Useful colors
   protected static final String COLOR_NONE = "00FFFFFF";
   protected static final String COLOR_DEFAULT = "00000000";
+
+  // Stored Settings
+  protected String phonePreview = editor.getProjectEditor().getProjectSettingsProperty(
+      SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+      SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
+  protected String colorAccent = editor.getProjectEditor().getProjectSettingsProperty(
+      SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+      SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
 
   /**
    * Creates a new instance of a visible component.
@@ -145,5 +154,16 @@ public abstract class MockVisibleComponent extends MockComponent {
       setVisibleProperty(newValue);
       refreshForm();
     }
+  }
+
+  @Override
+  public void onDesignPreviewChanged() {
+    super.onDesignPreviewChanged();
+    phonePreview = editor.getProjectEditor().getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
+    colorAccent = editor.getProjectEditor().getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
   }
 }

@@ -69,7 +69,7 @@ public class Camera extends AndroidNonvisibleComponent
   // whether to open into the front-facing camera
   private boolean useFront;
 
-  // wether or not we have permission to use the camera
+  // whether or not we have permission to use the camera
 
   private boolean havePermission = false;
 

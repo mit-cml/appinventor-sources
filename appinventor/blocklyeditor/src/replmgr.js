@@ -313,6 +313,12 @@ Blockly.ReplMgr.putYail = (function() {
     var webrtcforcestop = false;
     var webrtcdata;
     var seennonce = {};
+    var fixchrome89 = function(desc) {
+        var sdp = desc.sdp;
+        sdp = sdp.replace("a=extmap-allow-mixed\r\n", "")
+        desc.sdp = sdp;
+        return desc;
+    };
     var engine = {
         // Enqueue form for the phone
         'putYail' : function(code, block, success, failure) {
@@ -507,7 +513,7 @@ Blockly.ReplMgr.putYail = (function() {
                 webrtcrunning = false;
             };
             webrtcpeer.createOffer().then(function(desc) {
-                offer = desc;
+                offer = fixchrome89(desc);
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', top.ReplState.rendezvous2, true);
                 xhr.send(JSON.stringify({'key' : key + '-s',

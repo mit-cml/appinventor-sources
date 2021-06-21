@@ -1,0 +1,44 @@
+/* -*- mode: css; css-indent-offset: 2; -*- */
+/*
+ * Copyright 2020 MIT, All Rights Reserved.
+ * Released under the Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+.ode-SimpleMockFormPhoneBarAndroidHolo {
+  background-color: #000000;
+}
+
+/*Holo Button*/
+.ode-SimpleMockForm-AndroidHolo .ode-SimpleMockButton {
+  min-height: 34px;
+  padding: 4px 8px;
+  border-bottom: 2px #b9b9b9 solid;
+  background-color: #d6d7d7;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+/* Container for Holo Buttons*/
+.ode-SimpleMockForm-AndroidHolo .ode-SimpleMockComponent-selected .ode-SimpleMockButton  {
+  min-height: 2px;
+}
+
+/* Hover for Holo Button*/
+.ode-SimpleMockForm-AndroidHolo .ode-SimpleMockButton:hover {
+  color: #333333;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+  -moz-transition: background-position 0.1s linear;
+  -o-transition: background-position 0.1s linear;
+  transition: background-position 0.1s linear;
+}
+
+
+
+
+

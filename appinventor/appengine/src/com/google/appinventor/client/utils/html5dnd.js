@@ -23,6 +23,7 @@ top.HTML5DragDrop_getOpenProjectId = function() { return ''; };
 top.HTML5DragDrop_handleUploadResponse = function(_projectId, type, name, response) {};
 top.HTML5DragDrop_reportError = function(errorCode) {};
 top.HTML5DragDrop_confirmOverwriteKey = function(callback) {};
+top.HTML5DragDrop_getNewProjectName = function(filename, callback) {};
 top.HTML5DragDrop_confirmOverwriteAsset = function(proejctId, name, callback) {};
 top.HTML5DragDrop_checkProjectNameForCollision = function(name) {};
 top.HTML5DragDrop_shouldShowDropTarget = function(target) {};s
@@ -81,16 +82,10 @@ function handleDroppedItem(item, cb) {
 }
 
 function importProject(droppedItem) {
-  function doImportProject(blob) {
-    // Check for valid project name
-    var filename = blob.name;
-    filename = filename.substr(filename.lastIndexOf('/') + 1);
-    var projectName = filename.substr(0, filename.length - 4);
-    if (!top.HTML5DragDrop_checkProjectNameForCollision(projectName)) {
-      // Issue with the project name. The user will get details in a dialog.
-      return;
-    }
-
+  var filename = droppedItem.name;
+  filename = filename.substr(filename.lastIndexOf('/') + 1);
+  var projectName = filename.substr(0, filename.length - 4);
+  function doUploadProject(blob) {
     // Upload project
     var xhr = new XMLHttpRequest();
     var formData = new FormData();
@@ -107,7 +102,16 @@ function importProject(droppedItem) {
     };
     xhr.send(formData);
   }
-  handleDroppedItem(droppedItem, doImportProject);
+  if (!top.HTML5DragDrop_checkProjectNameForCollision(projectName)) {
+    handleDroppedItem(droppedItem, function(blob) {
+      top.HTML5DragDrop_getNewProjectName(blob.name, function(fileName) {
+        projectName = fileName;
+        doUploadProject(blob);
+      });
+    });
+  } else {
+    handleDroppedItem(droppedItem,doUploadProject);
+  }
 }
 
 function uploadExtension(droppedItem) {
@@ -225,7 +229,7 @@ function checkValidDrop(e) {
       top.HTML5DragDrop_confirmOverwriteKey(doUploadKeystore(item));
     } else if (isExtension(item) && top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadExtension(item);
-    } else if (goog.string.endsWith(item.name, '.apk')) {
+    } else if (goog.string.endsWith(item.name, '.apk') || goog.string.endsWith(item.name, '.aab')) {
       top.HTML5DragDrop_reportError(2);
     } else if (top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadAsset(item);

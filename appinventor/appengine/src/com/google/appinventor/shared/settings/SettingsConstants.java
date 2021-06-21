@@ -61,6 +61,7 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK = "PrimaryColorDark";
   public static final String YOUNG_ANDROID_SETTINGS_ACCENT_COLOR = "AccentColor";
   public static final String YOUNG_ANDROID_SETTINGS_THEME = "Theme";
+  public static final String YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW= "PhonePreview";
 
   /**
    * Settings for the Blocks editor.

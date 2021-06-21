@@ -168,6 +168,7 @@
     <copy toFile="${public.deps.dir}/android.jar" file="${android.lib}" />
     <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${public.deps.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
+    <copy toFile="${public.deps.dir}/bundletool.jar" file="${lib.dir}/android/tools/bundletool-all-0.15.0.jar" />
     <copy toFile="${public.deps.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
 
     <!-- Add extension libraries here -->
