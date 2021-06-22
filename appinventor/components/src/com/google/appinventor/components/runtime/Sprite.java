@@ -422,6 +422,7 @@ public abstract class Sprite extends VisibleComponent
   protected void U(double u) {
     this.u = u;
     xLeft = xOriginToLeft(xOrigin);
+    registerChange();
   }
 
   protected double U() {
@@ -431,6 +432,7 @@ public abstract class Sprite extends VisibleComponent
   protected void V(double v) {
     this.v = v;
     yTop = yOriginToTop(yOrigin);
+    registerChange();
   }
 
   protected double V() {

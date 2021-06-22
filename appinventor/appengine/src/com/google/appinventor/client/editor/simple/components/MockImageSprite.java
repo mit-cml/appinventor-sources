@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,19 +9,30 @@ package com.google.appinventor.client.editor.simple.components;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
+import com.google.common.primitives.Ints;
+import java.lang.Integer;
 
 /**
  * Mock ImageSprite component.
  *
  */
 public final class MockImageSprite extends MockImageBase implements MockSprite {
-  int x;
-  int y;
 
   /**
    * Component type name.
    */
   public static final String TYPE = "ImageSprite";
+
+  public static final String PROPERTY_NAME_U = "OriginX";
+  public static final String PROPERTY_NAME_V = "OriginY";
+
+  // The coordinates of the origin of the image sprite
+  int xOrigin;
+  int yOrigin;
+
+  // The unit coordinates of the image sprite
+  double v;
+  double u;
 
   /**
    * Creates a new MockImageSprite component.
@@ -43,31 +54,45 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
 
   private void setXProperty(String text) {
     try {
-      x = (int) Math.round(Double.parseDouble(text));
+      xOrigin = (int) Math.round(Double.parseDouble(text));
     } catch (NumberFormatException e) {
       // Don't change value if unparseable (should not happen).
     }
-    MockCanvas mockCanvas = (MockCanvas) getContainer();
-    // mockCanvas will be null for the MockImageSprite on the palette
-    if (mockCanvas != null) {
-      mockCanvas.reorderComponents(this);
-    }
+    refreshCanvas();
   }
   
   private void setYProperty(String text) {
     try {
-      y = (int) Math.round(Double.parseDouble(text));
+      yOrigin = (int) Math.round(Double.parseDouble(text));
     } catch (NumberFormatException e) {
       // Don't change value if unparseable (should not happen).
     }
-    MockCanvas mockCanvas = (MockCanvas) getContainer();
-    // mockCanvas will be null for the MockImageSprite on the palette
-    if (mockCanvas != null) {
-      mockCanvas.reorderComponents(this);
-    }
+    refreshCanvas();
   }
 
   private void setZProperty(String text) {
+    refreshCanvas();
+  }
+
+  private void setUProperty(String text) {
+    try {
+      u = Double.parseDouble(text);
+    } catch (NumberFormatException e) {
+      // Don't change value if unparseable (should not happen).
+    }
+    refreshCanvas();
+  }
+
+  private void setVProperty(String text) {
+    try {
+      v = Double.parseDouble(text);
+    } catch (NumberFormatException e) {
+      // Don't change value if unparseable (should not happen).
+    }
+    refreshCanvas();
+  }
+
+  private void refreshCanvas() {
     MockCanvas mockCanvas = (MockCanvas) getContainer();
     // mockCanvas will be null for the MockImageSprite on the palette
     if (mockCanvas != null) {
@@ -84,26 +109,36 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
       setXProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_Y)) {
       setYProperty(newValue);
-    } 
+    } else if (propertyName.equals(PROPERTY_NAME_U)) {
+      setUProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_V)) {
+      setVProperty(newValue);
+    }
   }
 
   @Override
   public int getLeftX() {
-    return x;
+    return xOrigin - getXOffset();
   }
 
   @Override
   public int getTopY() {
-    return y;
+    return yOrigin - getYOffset();
   }
 
   @Override
   public int getXOffset() {
-    return 0;
+    int width = Integer.parseInt(getPropertyValue(PROPERTY_NAME_WIDTH));
+    // if set to automatic or fill parent get the width from the image resource
+    if (width < 0) width = getPreferredWidth();
+    return (int) Math.round(width * u);
   }
 
   @Override
   public int getYOffset() {
-    return 0;
+    int height = Integer.parseInt(getPropertyValue(PROPERTY_NAME_HEIGHT));
+    // if set to automatic or fill parent get the height from the image resource
+    if (height < 0) height = getPreferredHeight();
+    return (int) Math.round(height * v);
   }
 }
