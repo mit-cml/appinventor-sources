@@ -113,8 +113,9 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
       @Override
       public void execute() {
         String projectName = projectNameTextBox.getText().trim();
-        projectName = projectName.replaceAll("( )+", " ").replace(" ","_");
-        if (TextValidators.checkNewProjectName(projectName)) {
+        projectName = projectName.replaceAll("( )+", " ").replace(" ", "_");
+        if (TextValidators.checkNewProjectName(projectName) 
+              == TextValidators.ProjectNameStatus.SUCCESS) {
           String packageName = StringUtils.getProjectPackage(
               Ode.getInstance().getUser().getUserEmail(), projectName);
           NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
