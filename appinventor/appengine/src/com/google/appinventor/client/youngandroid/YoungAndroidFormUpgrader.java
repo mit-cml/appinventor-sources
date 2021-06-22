@@ -1188,7 +1188,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 6) {
       // Assets helper block was added.
-      srcCompVersion = 5;
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
@@ -1962,6 +1962,7 @@ public final class YoungAndroidFormUpgrader {
       int srcCompVersion) {
     if (srcCompVersion < 2) {
       // Adds dropdown blocks.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
