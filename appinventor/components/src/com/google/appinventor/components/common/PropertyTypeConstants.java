@@ -347,4 +347,16 @@ public class PropertyTypeConstants {
    */
 
   public static final String PROPERTY_TYPE_NAVIGATION_METHOD = "navigation_method";
+
+  /**
+   * Choices of layout type for ListView.
+   * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewLayoutChoicePropertyEditor}
+   */
+  public static final String PROPERTY_TYPE_LISTVIEW_LAYOUT = "ListViewLayout";
+
+  /**
+   * Button to add data for different ListView layout types.
+   * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewAddDataPropertyEditor}
+   */
+  public static final String PROPERTY_TYPE_LISTVIEW_ADD_DATA = "ListViewAddData";
 }

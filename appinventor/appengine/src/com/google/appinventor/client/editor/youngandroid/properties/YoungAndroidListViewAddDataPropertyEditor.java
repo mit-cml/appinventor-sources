@@ -45,7 +45,6 @@ import java.util.List;
  * for different layout types of ListView.
  */
 
-
 public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
   private Button addData;
@@ -84,15 +83,12 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       public void onClick(ClickEvent clickEvent) {
         ClickHandle ch = new ClickHandle(layout);
         ch.center();
-
         ch.setStylePrimaryName("ode-DialogBox");
-
         ch.show();
       }
     });
     initWidget(addData);
   }
-
 
   /**
    * set layout type of ListView so as to display contents AddData dialog box accordingly
@@ -108,7 +104,6 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
     VerticalPanel verticalPanel;
     HorizontalPanel actionButtons;
     Button add, save, cancel;
-
     CellTable<JSONObject> table;
     JSONArray rows;
 
@@ -207,6 +202,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       table.setRowData(itemsCopy);
       table.setEmptyTableWidget(new Label("No row data available yet!"));
       model.addDataDisplay(table);
+
       /*
        * create table columns and type of each column according to the type of ListView layout
        */
@@ -233,7 +229,6 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
           /*
            * creates a row with default data for the corresponding layout type
            */
-
           JSONObject data = new JSONObject();
           if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {
             data.put("Text1", new JSONString(""));
@@ -243,13 +238,11 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
             data.put("Text2", new JSONString(""));
           } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
             data.put("Text1", new JSONString(""));
-
             data.put("Image", new JSONString("None"));
           } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
             data.put("Text1", new JSONString(""));
             data.put("Text2", new JSONString(""));
             data.put("Image", new JSONString("None"));
-
           }
           itemsCopy.add(data);
           table.setRowData(itemsCopy);
@@ -260,7 +253,6 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
        * save the data for the corresponding layout type
        */
       save.addClickHandler(new ClickHandler() {
-
         @Override
         public void onClick(ClickEvent clickEvent) {
           items.clear();
@@ -311,9 +303,7 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
 
       verticalPanel.add(table);
       verticalPanel.add(add);
-
       actionButtons.add(save);
-
       actionButtons.add(cancel);
       actionButtons.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
       verticalPanel.add(actionButtons);
@@ -341,4 +331,3 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
     }
   }
 }
-

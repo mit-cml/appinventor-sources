@@ -362,6 +362,9 @@ Component for displaying images and basic animations.
 
 {:.properties}
 
+{:id="Image.AlternateText" .text .wo} *AlternateText*
+: A written description of what the image looks like.
+
 {:id="Image.Animation" .text .wo .bo} *Animation*
 : This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
@@ -733,6 +736,12 @@ This is a visible component that allows to place a list of text elements in your
 {:id="ListView.TextColorDetail" .color} *TextColorDetail*
 : Specifies the color of the secondary text in a ListView layout
 
+{:id="ListView.TextSize" .number} *TextSize*
+: Specifies the `ListView` item's text font size
+
+{:id="ListView.TextSizeDetail" .number} *TextSizeDetail*
+: Specifies the ListView item's secondary-text font size
+
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
  if the `ListView` is showing and `false`{:.logic.block} if hidden.
@@ -994,7 +1003,7 @@ Top-level component containing all other components in the program.
 
 {:id="Screen.AlignHorizontal" .number} *AlignHorizontal*
 : A number that encodes how contents of the screen are aligned horizontally. The choices are:
- `1` (left aligned), `2` (horizontally centered), `3` (right aligned).
+ `1` (left aligned), `3` (horizontally centered), `2` (right aligned).
 
 {:id="Screen.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the arrangement are aligned vertically. The choices
@@ -1014,6 +1023,9 @@ Top-level component containing all other components in the program.
 : Specifies the path of the `Screen`'s background image. If there is both an `BackgroundImage`
  and a [`BackgroundColor`](#Screen.BackgroundColor) specified, only the `BackgroundImage` will be visible.
 
+{:id="Screen.BigDefaultText" .boolean} *BigDefaultText*
+: When checked, all default size text will be increased in size.
+
 {:id="Screen.BlocksToolkit" .text .wo .do} *BlocksToolkit*
 : A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project.
 
@@ -1024,14 +1036,16 @@ Top-level component containing all other components in the program.
 {:id="Screen.Height" .number .ro .bo} *Height*
 : Returns the Screen height in pixels (y-size).
 
+{:id="Screen.HighContrast" .boolean} *HighContrast*
+: When checked, there will be high contrast mode turned on.
+
 {:id="Screen.Icon" .text .wo .do} *Icon*
 : The image used for your App's display icon should be a square png or jpeg image with dimensions
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
  The build server will generate images of standard dimensions for Android devices.
 
 {:id="Screen.OpenScreenAnimation" .text} *OpenScreenAnimation*
-: The animation for switching to another screen. Valid options are `default`, `fade`, `zoom`,
- `slidehorizontal`, `slidevertical`, and `none`.
+: Sets the animation type for the transition of this form opening.
 
 {:id="Screen.Platform" .text .ro .bo} *Platform*
 : Gets the name of the underlying platform running the app. Currently, this is the text

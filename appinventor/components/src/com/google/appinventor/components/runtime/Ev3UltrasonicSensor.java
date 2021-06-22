@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -14,6 +15,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.UltrasonicSensorUnit;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import android.os.Handler;
@@ -36,18 +38,12 @@ import android.os.Handler;
 @SimpleObject
 public class Ev3UltrasonicSensor extends LegoMindstormsEv3Sensor implements Deleteable {
   private static final int SENSOR_TYPE = 30;
-  private static final int SENSOR_MODE_CM = 0;
-  private static final int SENSOR_MODE_INCH = 1;
-  private static final String SENSOR_MODE_CM_STRING = "cm";
-  private static final String SENSOR_MODE_INCH_STRING = "inch";
 
   private static final int DEFAULT_BOTTOM_OF_RANGE = 30;
   private static final int DEFAULT_TOP_OF_RANGE = 90;
-  private static final String DEFAULT_SENSOR_MODE_STRING = SENSOR_MODE_CM_STRING;
   private static final int DELAY_MILLISECONDS = 50;
 
-  private String modeString = SENSOR_MODE_CM_STRING;
-  private int mode = SENSOR_MODE_CM;
+  private UltrasonicSensorUnit mode = UltrasonicSensorUnit.Centimeters;
   private Handler eventHandler;
   private final Runnable sensorValueChecker;
   private double previousDistance = -1.0;
@@ -102,7 +98,7 @@ public class Ev3UltrasonicSensor extends LegoMindstormsEv3Sensor implements Dele
     BelowRangeEventEnabled(false);
     AboveRangeEventEnabled(false);
     WithinRangeEventEnabled(false);
-    Unit(DEFAULT_SENSOR_MODE_STRING);
+    UnitAbstract(UltrasonicSensorUnit.Centimeters);
   }
 
   @SimpleFunction(description = "Returns the current distance in centimeters as a value between " +
@@ -113,7 +109,8 @@ public class Ev3UltrasonicSensor extends LegoMindstormsEv3Sensor implements Dele
   }
 
   private double getDistance(String functionName) {
-    double distance = readInputSI(functionName, 0, sensorPortNumber, SENSOR_TYPE, mode);
+    double distance = readInputSI(functionName, 0, sensorPortNumber, SENSOR_TYPE,
+        mode.toInt());
     return distance == 255 ? -1.0 : distance;
   }
 
@@ -255,15 +252,33 @@ public class Ev3UltrasonicSensor extends LegoMindstormsEv3Sensor implements Dele
    * Specifies the unit of distance.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LEGO_EV3_ULTRASONIC_SENSOR_MODE,
-                    defaultValue = DEFAULT_SENSOR_MODE_STRING)
+      defaultValue = "cm")
   @SimpleProperty
-  public void Unit(String unitName) {
-    String functionName = "Unit";
-    try {
-      setMode(unitName);
-    } catch(IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, functionName, ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, functionName);
+  public void Unit(@Options(UltrasonicSensorUnit.class) String unitName) {
+    // Make sure unitName is a valid UltrasonicSensorUnit.
+    UltrasonicSensorUnit unit = UltrasonicSensorUnit.fromUnderlyingValue(unitName);
+    if (unit == null) {
+      form.dispatchErrorOccurredEvent(
+          this, "Unit", ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, unitName);
+      return;
     }
+    setMode(unit);
+  }
+
+  /**
+   * Sets the unit of this ultrasonic sensor.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void UnitAbstract(UltrasonicSensorUnit unit) {
+    setMode(unit);
+  }
+
+  /**
+   * Returns the current unit of distance for this ultrasonic sensor.
+   */
+  @SuppressWarnings({"RegularMethodName", "unused"})
+  public UltrasonicSensorUnit UnitAbstract() {
+    return mode;
   }
 
   /**
@@ -271,49 +286,31 @@ public class Ev3UltrasonicSensor extends LegoMindstormsEv3Sensor implements Dele
    */
   @SimpleProperty(description = "The distance unit, which can be either \"cm\" or \"inch\".",
                   category = PropertyCategory.BEHAVIOR)
-  public String Unit() {
-    return modeString;
+  public @Options(UltrasonicSensorUnit.class) String Unit() {
+    return mode.toUnderlyingValue();
   }
 
   /**
    * Measure the distance in centimeters.
    */
   @SimpleFunction(description = "Measure the distance in centimeters.")
+  @Deprecated
   public void SetCmUnit() {
-    String functionName = "SetCmUnit";
-    try {
-      setMode(SENSOR_MODE_CM_STRING);
-    } catch(IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, functionName, ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, functionName);
-    }
+    setMode(UltrasonicSensorUnit.Centimeters);
   }
 
   /**
    * Measure the distance in inches.
    */
   @SimpleFunction(description = "Measure the distance in inches.")
+  @Deprecated
   public void SetInchUnit() {
-    String functionName = "SetInchUnit";
-    try {
-      setMode(SENSOR_MODE_INCH_STRING);
-    } catch(IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, functionName, ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, functionName);
-    }
+    setMode(UltrasonicSensorUnit.Inches);
   }
 
-  private void setMode(String newModeString) {
+  private void setMode(UltrasonicSensorUnit newMode) {
     previousDistance = -1.0;
-
-    if (SENSOR_MODE_CM_STRING.equals(newModeString)) {
-      mode = SENSOR_MODE_CM;
-    }
-    else if (SENSOR_MODE_INCH_STRING.equals(newModeString)) {
-      mode = SENSOR_MODE_INCH;
-    }
-    else
-      throw new IllegalArgumentException();
-
-    this.modeString = newModeString;
+    mode = newMode;
   }
 
   // Deleteable implementation
