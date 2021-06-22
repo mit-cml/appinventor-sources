@@ -675,6 +675,20 @@ This is a visible component that allows to place a list of text elements in your
 {:id="ListView.ElementsFromString" .text .wo} *ElementsFromString*
 : Set the list of choices from a string of comma-separated values.
 
+{:id="ListView.FontSize" .number} *FontSize*
+: Specifies the `ListView` item's text font size
+
+{:id="ListView.FontSizeDetail" .number} *FontSizeDetail*
+: Specifies the `ListView` item's text font size
+
+{:id="ListView.FontTypeface" .number .do} *FontTypeface*
+: Specifies the label's text's font face as default, serif, sans
+ serif, or monospace.
+
+{:id="ListView.FontTypefaceDetail" .number .do} *FontTypefaceDetail*
+: Specifies the label's text's font face as default, serif, sans
+ serif, or monospace.
+
 {:id="ListView.Height" .number .bo} *Height*
 : Specifies the `ListView`'s vertical height, measured in pixels.
 
@@ -693,6 +707,9 @@ This is a visible component that allows to place a list of text elements in your
 
 {:id="ListView.ListViewLayout" .number .do} *ListViewLayout*
 : Specifies type of layout for ListView row. Designer only property.
+
+{:id="ListView.Orientation" .number} *Orientation*
+: Specifies the style the button. This does not check that the argument is a legal value.
 
 {:id="ListView.Selection" .text} *Selection*
 : Returns the text in the `ListView` at the position of [`SelectionIndex`](#ListView.SelectionIndex).

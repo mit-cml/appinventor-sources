@@ -168,6 +168,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   private static final String MAX_MENTIONS_RETURNED = "20";
 
   public Twitter(ComponentContainer container) {
+    
     super(container.$form());
     this.container = container;
     handler = new Handler();

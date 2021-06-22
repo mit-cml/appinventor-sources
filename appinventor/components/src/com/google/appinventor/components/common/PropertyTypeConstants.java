@@ -57,6 +57,13 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_BUTTON_SHAPE = "button_shape";
 
   /**
+   * recyclerview orientation.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidRecyclerViewOrientationPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION = "recyclerview_orientation";
+
+  /**
    * Any of the colors specified in {@link
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor}.
    */
@@ -323,12 +330,6 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_THEME = "theme";
 
   /**
-   * Choices of navigation methods. {@link
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidNavigationMethodChoicePropertyEditor}
-   */
-  public static final String PROPERTY_TYPE_NAVIGATION_METHOD = "navigation_method";
-
-  /**
    * Choices of layout type for ListView.
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewLayoutChoicePropertyEditor}
    */
@@ -339,4 +340,12 @@ public class PropertyTypeConstants {
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewAddDataPropertyEditor}
    */
   public static final String PROPERTY_TYPE_LISTVIEW_ADD_DATA = "ListViewAddData";
+
+  /**
+   * Choices of navigation methods. {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidNavigationMethodChoicePropertyEditor}
+   */
+
+  public static final String PROPERTY_TYPE_NAVIGATION_METHOD = "navigation_method";
+
 }

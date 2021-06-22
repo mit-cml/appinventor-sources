@@ -26,7 +26,7 @@ public abstract class MockVisibleComponent extends MockComponent {
 
   // Common property names (not all components support all properties).
   protected static final String PROPERTY_NAME_TEXTALIGNMENT = "TextAlignment";
-  protected static final String PROPERTY_NAME_BUTTONSHAPE = "Shape";
+  protected static final String PROPERTY_NAME_BUTTONSHAPE= "Shape";
   protected static final String PROPERTY_NAME_BACKGROUNDCOLOR = "BackgroundColor";
   protected static final String PROPERTY_NAME_BACKGROUNDIMAGE = "BackgroundImage";
   protected static final String PROPERTY_NAME_THUMBCOLORACTIVE = "ThumbColorActive";
@@ -40,6 +40,7 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_FONTTYPEFACE = "FontTypeface";
   protected static final String PROPERTY_NAME_TEXT = "Text";
   protected static final String PROPERTY_NAME_LISTVIEW = "ElementsFromString";
+  protected static final String PROPERTY_NAME_LISTVIEW_IMAGES = "Picture";
   protected static final String PROPERTY_NAME_SHOW_FILTER_BAR = "ShowFilterBar";
   protected static final String PROPERTY_NAME_TEXTCOLOR = "TextColor";
   // to set color for secondary text of listview items

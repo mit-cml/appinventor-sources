@@ -8,13 +8,9 @@ package com.google.appinventor.components.runtime;
 
 import android.Manifest;
 import android.app.Activity;
-
 import android.text.TextUtils;
-
 import android.util.Log;
-
 import androidx.annotation.VisibleForTesting;
-
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -36,9 +32,7 @@ import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.RequestTimeoutException;
-
 import com.google.appinventor.components.runtime.repackaged.org.json.XML;
-
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -50,7 +44,6 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.XmlParser;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -70,7 +63,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-
 import java.util.List;
 import java.util.Map;
 

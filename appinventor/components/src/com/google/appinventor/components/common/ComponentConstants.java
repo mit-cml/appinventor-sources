@@ -23,8 +23,9 @@ public class ComponentConstants {
   /**
    * Layout constants.
    */
-  public static final int LAYOUT_ORIENTATION_HORIZONTAL = 0;
-  public static final int LAYOUT_ORIENTATION_VERTICAL = 1;
+  public static final int LAYOUT_ORIENTATION_HORIZONTAL = 1;
+  public static final int LAYOUT_ORIENTATION_VERTICAL = 0;
+  public static final int LAYOUT_ORIENTATION_GRID = 2;
 
   public static final int DEFAULT_ROW_COLUMN = -1;
 
