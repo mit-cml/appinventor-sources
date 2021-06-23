@@ -35,7 +35,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   private int backgroundColor;
 
   // Backing for font typeface
-  private int fontTypeface;
+  private String fontTypeface;
 
   // Backing for font bold
   private boolean bold;
@@ -70,7 +70,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
     BackgroundColor(Component.COLOR_NONE);
     Enabled(true);
     fontTypeface = Component.TYPEFACE_DEFAULT;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_DEFAULT);
@@ -202,7 +202,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
       description = "Set to true if the text of the %type% should be bold.")
   public void FontBold(boolean bold) {
     this.bold = bold;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -233,7 +233,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
       description = "Set to true if the text of the %type% should be italic.")
   public void FontItalic(boolean italic) {
     this.italic = italic;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -300,9 +300,9 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @SimpleProperty(
       description = "Specifies the text font face of the %type%.",
       userVisible = false)
-  public void FontTypeface(int typeface) {
+  public void FontTypeface(String typeface) {
     fontTypeface = typeface;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -318,7 +318,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       userVisible = false)
-  public int FontTypeface() {
+  public String FontTypeface() {
     return fontTypeface;
   }
 

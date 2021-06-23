@@ -89,7 +89,7 @@ public final class MockRadioButton extends MockVisibleComponent {
    * Sets the radioButton's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(radioButtonWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, radioButtonWidget, text);
   }
 
   /*
@@ -145,6 +145,9 @@ public final class MockRadioButton extends MockVisibleComponent {
       setTextColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
       setCheckedProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(radioButtonWidget, newValue);
+      refreshForm();
     }
   }
 }

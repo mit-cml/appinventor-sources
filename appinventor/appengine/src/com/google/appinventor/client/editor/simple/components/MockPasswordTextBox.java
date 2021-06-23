@@ -137,7 +137,7 @@ public final class MockPasswordTextBox extends MockWrapper implements FormChange
    * Sets the PasswordTextBox's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(passwordTextBoxWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, passwordTextBoxWidget, text);
     updatePreferredSize();
   }
 
@@ -193,6 +193,9 @@ public final class MockPasswordTextBox extends MockWrapper implements FormChange
       setHintProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(passwordTextBoxWidget, newValue);
+      refreshForm();
     }
   }
 
