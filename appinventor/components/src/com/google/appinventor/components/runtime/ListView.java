@@ -175,7 +175,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     // need to have the textColor set first, since they reset the
     // adapter
 
-    Width(Component.LENGTH_FILL_PARENT);
     BackgroundColor(Component.COLOR_BLACK);
     SelectionColor(Component.COLOR_LTGRAY);
     TextColor(Component.COLOR_WHITE);
@@ -194,6 +193,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     linearLayout.addView(recyclerView);
     linearLayout.requestLayout();
     container.$add(this);
+    Width(Component.LENGTH_FILL_PARENT);
     ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
   }
 
