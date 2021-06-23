@@ -342,6 +342,8 @@ public class ProjectServiceTest {
         "versioncode=1\n" +
         "versionname=1.0\n" +
         "useslocation=false\n" +
+        "usescamera=false\n" +
+        "usesmicrophone=false\n" +
         "aname=Project1\n" +
         "sizing=Fixed\n" +
         "showlistsasjson=false\n" +
@@ -495,6 +497,8 @@ public class ProjectServiceTest {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"1\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"1.0\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"false\",\"" +
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_CAMERA + "\":\"false\",\"" +
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_MICROPHONE + "\":\"false\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"Project1\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"Fixed\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON + "\":\"false\",\"" +

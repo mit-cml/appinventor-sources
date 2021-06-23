@@ -72,6 +72,8 @@ public final class Project {
    *    assets - assets directory (for image and data files bundled with the application)
    *    build - output directory for the compiler
    *    useslocation - flag indicating whether or not the project uses locations
+   *    usescamera - flag indicating whether or not the project uses the camera
+   *    usesmicrophone - flag indicating whether or not the project uses the microphone
    *    aname - the human-readable application name
    *    androidminsdk - the minimum Android sdk required for the app
    *    theme - the base theme for the app
@@ -88,6 +90,8 @@ public final class Project {
   private static final String ASSETSTAG = "assets";
   private static final String BUILDTAG = "build";
   private static final String USESLOCATIONTAG = "useslocation";
+  private static final String USESCAMERATAG = "usescamera";
+  private static final String USESMICROPHONETAG = "usesmicrophone";
   private static final String ANAMETAG = "aname";
   private static final String ANDROID_MIN_SDK_TAG = "androidminsdk";
   private static final String ACTIONBAR_TAG = "actionbar";
@@ -250,8 +254,37 @@ public final class Project {
    * @return useslocation property
    */
   public String getUsesLocation() {
-    String retval = properties.getProperty(USESLOCATIONTAG);
-    if (retval == null)         // Older Projects won't have this
+    return getOptionalBooleanProperty(USESLOCATIONTAG);
+  }
+
+  /**
+   * gets the usescamera property
+   *
+   * @return usescamera property
+   */
+  public String getUsesCamera() {
+    return getOptionalBooleanProperty(USESCAMERATAG);
+  }
+
+  /**
+   * gets the usesmicrophone property
+   *
+   * @return usesmicrophone property
+   */
+  public String getUsesMicrophone() {
+    return getOptionalBooleanProperty(USESMICROPHONETAG);
+  }
+
+  /**
+   * Auxiliary function for retrieving a boolean property that might
+   * potentially be null.
+   *
+   * @param propertyName  Name of the property
+   * @return property value, or False if it does not exist
+   */
+  private String getOptionalBooleanProperty(String propertyName) {
+    String retval = properties.getProperty(propertyName);
+    if (retval == null) // Older Projects won't have this
       retval = "False";
     return retval;
   }

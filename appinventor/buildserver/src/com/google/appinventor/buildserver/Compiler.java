@@ -376,14 +376,30 @@ public final class Compiler {
     try {
       loadJsonInfo(permissionsNeeded, ComponentDescriptorConstants.PERMISSIONS_TARGET);
       if (project != null) {    // Only do this if we have a project (testing doesn't provide one :-( ).
+        Set<String> webViewerPermissions = Sets.newHashSet(); // via a Property.
+
         LOG.log(Level.INFO, "usesLocation = " + project.getUsesLocation());
         if (project.getUsesLocation().equals("True")) { // Add location permissions if any WebViewer requests it
-          Set<String> locationPermissions = Sets.newHashSet(); // via a Property.
           // See ProjectEditor.recordLocationSettings()
-          locationPermissions.add("android.permission.ACCESS_FINE_LOCATION");
-          locationPermissions.add("android.permission.ACCESS_COARSE_LOCATION");
-          locationPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
-          permissionsNeeded.put("com.google.appinventor.components.runtime.WebViewer", locationPermissions);
+          webViewerPermissions.add("android.permission.ACCESS_FINE_LOCATION");
+          webViewerPermissions.add("android.permission.ACCESS_COARSE_LOCATION");
+          webViewerPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
+        }
+
+        LOG.log(Level.INFO, "usesCamera = " + project.getUsesCamera());
+        if (project.getUsesCamera().equals("True")) { // Add camera permissions if any WebViewer requests it
+          webViewerPermissions.add("android.permission.CAMERA");
+        }
+
+        LOG.log(Level.INFO, "usesMicrophone = " + project.getUsesMicrophone());
+        if (project.getUsesMicrophone().equals("True")) { // Add microphone permissions if any WebViewer requests it
+          webViewerPermissions.add("android.permission.RECORD_AUDIO");
+          webViewerPermissions.add("android.permission.MODIFY_AUDIO_SETTINGS");
+          webViewerPermissions.add("android.permission.MICROPHONE");
+        }
+
+        if (!webViewerPermissions.isEmpty()) {
+          permissionsNeeded.put("com.google.appinventor.components.runtime.WebViewer", webViewerPermissions);
         }
       }
     } catch (IOException e) {

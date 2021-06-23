@@ -51,6 +51,8 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_VERSION_CODE = "VersionCode";
   public static final String YOUNG_ANDROID_SETTINGS_VERSION_NAME = "VersionName";
   public static final String YOUNG_ANDROID_SETTINGS_USES_LOCATION = "UsesLocation";
+  public static final String YOUNG_ANDROID_SETTINGS_USES_CAMERA = "UsesCamera";
+  public static final String YOUNG_ANDROID_SETTINGS_USES_MICROPHONE = "UsesMicrophone";
   public static final String YOUNG_ANDROID_SETTINGS_SIZING = "Sizing";
   public static final String YOUNG_ANDROID_SETTINGS_APP_NAME = "AppName";
   public static final String YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON = "ShowListsAsJson";

@@ -157,7 +157,7 @@ public final class WebViewer extends AndroidViewComponent {
     webview.getSettings().setBuiltInZoomControls(true);
 
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
-      EclairUtil.setupWebViewGeoLoc(this, webview, container.$context());
+      EclairUtil.setupWebViewPermissions(this, webview, container.$context());
 
     container.$add(this);
 
@@ -477,6 +477,34 @@ public final class WebViewer extends AndroidViewComponent {
       description = "Whether or not to give the application permission to use the Javascript geolocation API. " +
           "This property is available only in the designer.")
   public void UsesLocation(boolean uses) {
+    // We don't actually do anything here (the work is in the MockWebViewer)
+  }
+
+  /**
+   * Specifies whether or not this 'WebViewer' can access the Camera of the phone.
+   * 
+   * @param uses  True if the Camera may be accessed
+   */
+   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+   @SimpleProperty(userVisible = false,
+        description = "Whether or not to give the application permission to use the phone's Camera. " +
+          "This property is available only in the designer.")
+  public void UsesCamera(boolean uses) {
+    // We don't actually do anything here (the work is in the MockWebViewer)
+  }
+
+  /**
+   * Specifies whether or not this 'WebViewer' can access the Microphone of the phone.
+   * 
+   * @param uses  True if the Microphone may be accessed
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+  defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+      description = "Whether or not to give the application permission to use the phone's Microphone. " +
+        "This property is available only in the designer.")
+  public void UsesMicrophone(boolean uses) {
     // We don't actually do anything here (the work is in the MockWebViewer)
   }
 

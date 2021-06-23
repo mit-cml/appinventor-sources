@@ -2833,6 +2833,19 @@ public class Form extends AppInventorCompatActivity
       });
   }
 
+  public void askPermissions(final String[] permissions) {
+    final Form form = this;
+    androidUIHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        int nonce = permissionRandom.nextInt(MAX_PERMISSION_NONCE);
+        Log.d(LOG_TAG, "askPermissions: permissions = " + permissions +
+          " requestCode = " + nonce);
+        ActivityCompat.requestPermissions((Activity)form, permissions, nonce);
+      }
+    });
+  }
+
   /**
    * Evaluates the request for bulk permissions and asks the user for any ungranted permissions.
    *

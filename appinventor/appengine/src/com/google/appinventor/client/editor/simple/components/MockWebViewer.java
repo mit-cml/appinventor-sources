@@ -27,6 +27,8 @@ public final class MockWebViewer extends MockVisibleComponent {
 
   // Property names that we need to treat specially
   private static final String PROPERTY_NAME_USESLOCATION = "UsesLocation";
+  private static final String PROPERTY_NAME_USESCAMERA = "UsesCamera";
+  private static final String PROPERTY_NAME_USESMICROPHONE = "UsesMicrophone";
 
   // Large icon image for use in designer.  Smaller version is in the palette.
   private final Image largeImage = new Image(images.webviewerbig());
@@ -85,6 +87,10 @@ public final class MockWebViewer extends MockVisibleComponent {
 
     if (propertyName.equals(PROPERTY_NAME_USESLOCATION)) {
       editor.getProjectEditor().recordLocationSetting(this.getName(), newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_USESCAMERA)) {
+      editor.getProjectEditor().recordCameraSetting(this.getName(), newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_USESMICROPHONE)) {
+      editor.getProjectEditor().recordMicrophoneSetting(this.getName(), newValue);
     }
 
   }

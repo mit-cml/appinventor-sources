@@ -50,6 +50,8 @@ public abstract class ProjectEditor extends Composite {
   private final Map<String, FileEditor> openFileEditors;
   protected final List<String> fileIds; 
   private final HashMap<String,String> locationHashMap = new HashMap<String,String>();
+  private final HashMap<String, String> cameraHashMap = new HashMap<String,String>();
+  private final HashMap<String, String> microphoneHashMap = new HashMap<String, String>();
   private final DeckPanel deckPanel;
   private FileEditor selectedFileEditor;
   private final TreeMap<String, Boolean> screenHashMap = new TreeMap<String, Boolean>();
@@ -307,28 +309,73 @@ public abstract class ProjectEditor extends Composite {
    */
 
   public final void recordLocationSetting(String componentName, String newValue) {
-    OdeLog.log("ProjectEditor: recordLocationSetting(" + componentName + "," + newValue + ")");
-    locationHashMap.put(componentName, newValue);
-    recomputeLocationPermission();
+    recordPermission(componentName, newValue, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION, locationHashMap);
   }
 
-  private final void recomputeLocationPermission() {
-    String usesLocation = "False";
-    for (String c : locationHashMap.values()) {
-      OdeLog.log("ProjectEditor:recomputeLocationPermission: " + c);
+  public final void recordCameraSetting(String componentName, String newValue) {
+    recordPermission(componentName, newValue, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_CAMERA, cameraHashMap);
+  }
+
+  public final void recordMicrophoneSetting(String componentName, String newValue) {
+    recordPermission(componentName, newValue, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_MICROPHONE, microphoneHashMap);
+  }
+
+  /**
+   * Auxiliary function to record a targetted permission for a component.
+   *
+   * @param componentName Name of the component to record permission for
+   * @param newValue New value of the permission
+   * @param permission Name of the permission
+   * @param permissionMap Map holding the permission mappings (component -> value)
+   */
+  private final void recordPermission(String componentName, String newValue, String permission,
+                                 Map<String, String> permissionMap) {
+      OdeLog.log("ProjectEditor: record" + permission + "Setting(" + componentName + "," + newValue + ")");
+      permissionMap.put(componentName, newValue);
+      recomputePermission(permissionMap, permission);
+  }
+
+  /**
+   * Auxiliary function to clear a targetted permission for a component.
+   *
+   * @param componentName Name of the component to clear permission from
+   * @param permission Name of the permission to revoke
+   * @param permissionMap Map holding the permission mappings (component -> value)
+   */
+  private final void clearPermission(String componentName, String permission, Map<String, String> permissionMap) {
+    OdeLog.log("ProjectEditor:clear" + permission + ": clearing " + componentName);
+    permissionMap.remove(componentName);
+    recomputePermission(permissionMap, permission);
+  }
+
+  /**
+   * Auxiliary function to recompute a permission given a permission map
+   *
+   * @param permissionMap Permission map that maps component -> permission value
+   * @param permissionName Name of the permission
+   */
+  private final void recomputePermission(Map<String,String> permissionMap, String permissionName) {
+    String usesPermission = "False";
+    for (String c : permissionMap.values()) {
+      OdeLog.log(permissionName + ": " + c);
       if (c.equals("True")) {
-        usesLocation = "True";
+        usesPermission = "True";
         break;
       }
     }
-    changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION,
-      usesLocation);
+    changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, permissionName, usesPermission);
   }
 
   public void clearLocation(String componentName) {
-    OdeLog.log("ProjectEditor:clearLocation: clearing " + componentName);
-    locationHashMap.remove(componentName);
-    recomputeLocationPermission();
+    clearPermission(componentName, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION, locationHashMap);
+  }
+
+  public void clearCamera(String componentName) {
+    clearPermission(componentName, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_CAMERA, cameraHashMap);
+  }
+
+  public void clearMicrophone(String componentName) {
+    clearPermission(componentName, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_MICROPHONE, microphoneHashMap);
   }
 
   /**

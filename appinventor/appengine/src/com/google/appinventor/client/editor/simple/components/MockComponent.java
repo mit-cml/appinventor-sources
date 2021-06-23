@@ -1136,6 +1136,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
   public void delete() {
     this.editor.getProjectEditor().clearLocation(getName());
+    this.editor.getProjectEditor().clearCamera(getName());
+    this.editor.getProjectEditor().clearMicrophone(getName());
     getForm().select(null);
     // Pass true to indicate that the component is being permanently deleted.
     getContainer().removeComponent(this, true);

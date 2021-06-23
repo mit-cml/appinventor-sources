@@ -1759,9 +1759,15 @@ Component for viewing Web pages.
  permission to access the geolocation API. If `false`{:.logic.block}, assume permission is
  granted.
 
+{:id="WebViewer.UsesCamera" .boolean .wo .do} *UsesCamera*
+: Specifies whether or not this 'WebViewer' can access the Camera of the phone.
+
 {:id="WebViewer.UsesLocation" .boolean .wo .do} *UsesLocation*
 : Specifies whether or not this `WebViewer` can access the JavaScript
  geolocation API.
+
+{:id="WebViewer.UsesMicrophone" .boolean .wo .do} *UsesMicrophone*
+: Specifies whether or not this 'WebViewer' can access the Microphone of the phone.
 
 {:id="WebViewer.Visible" .boolean} *Visible*
 : Specifies whether the `WebViewer` should be visible on the screen.  Value is `true`{:.logic.block}
