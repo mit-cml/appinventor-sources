@@ -154,6 +154,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/firebaseDB.png", images.firebaseDB());
     bundledImages.put("images/twitter.png", images.twitterComponent());
     bundledImages.put("images/voting.png", images.voting());
+    bundledImages.put("images/vertical.png", images.verticalRadioGroup());
     bundledImages.put("images/web.png", images.web());
     bundledImages.put("images/mediastore.png", images.mediastore());
     bundledImages.put("images/sharing.png", images.sharingComponent());
@@ -462,6 +463,8 @@ public final class SimpleComponentDescriptor {
       return new MockVerticalArrangement(editor);
     } else if (name.equals(MockScrollVerticalArrangement.TYPE)) {
       return new MockScrollVerticalArrangement(editor);
+    } else if (name.equals(MockVerticalRadioGroup.TYPE)) {
+      return new MockVerticalRadioGroup(editor);
     } else if (name.equals(MockTableArrangement.TYPE)) {
       return new MockTableArrangement(editor);
     } else if (name.equals(MockImageSprite.TYPE)) {

@@ -1389,6 +1389,8 @@ public class YaVersion {
   // - Assets helper block was added.
   public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 4;
 
+  public static final int VERTICALRADIOGROUP_COMPONENT_VERSION = 1;
+
   // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
   // - Assets helper block was added.
