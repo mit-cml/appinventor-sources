@@ -1,0 +1,207 @@
+# Copyright © 2013-2021 MIT, All rights reserved
+# Released under the Apache License, Version 2.0
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Documentation site set-up
+site_name: MIT App Inventor Docs
+site_description: MIT App Inventor Documentation
+site_author: MIT App Inventor
+site_url: ""
+
+# GitHub repository set-up
+repo_url: https://github.com/mit-cml/appinventor-sources
+edit_uri: edit/gh-pages/docs/
+
+# Documentation theme set-up 
+theme:
+  language: en
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+    logo : material/microscope
+    favicon: material/microscope
+  features:
+    - navigation.tabs
+    - navigation.top
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+# Load extra CSS file(s)
+extra_css:
+  - assets/stylesheets/extra.css
+
+# Load extra JS files(s)
+extra_javascript:
+  - https://unpkg.com/blockly/blockly.min.js
+  - assets/javascripts/index.js
+
+plugins:
+  - search:
+      prebuild_index: true
+      separator: '[\s\-\.]+'
+      lang:
+        - en
+
+markdown_extensions:
+  - attr_list
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.superfences
+  - attr_list
+  - def_list
+  - meta
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.tilde
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tasklist:
+      clickable_checkbox: false
+  - toc:
+      permalink: ⚓︎
+
+# Footer social links for navigation
+extra:
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/MITAppInventor
+      name: MIT App Inventor on Twitter
+    - icon: fontawesome/brands/github
+      link: https://github.com/mit-cml/appinventor-sources
+      name: MIT App Inventor on GitHub
+    - icon: fontawesome/solid/globe
+      link: https://appinventor.mit.edu
+      name: MIT App Inventor
+    - icon: fontawesome/solid/users
+      link: https://community.appinventor.mit.edu
+      name: MIT App Inventor Community
+
+# Add copy right section
+copyright: Copyright &copy; 2021 MIT APP Inventor
+
+# Site navigation are auto generated so don't make any changes here.
+# please look at main app.js file for add new paths into nav configuration
+# Site navigation(s) set-up
+nav:
+  - Home:
+      - Getting Started: "index.md"
+  - Components:
+      - User Interface:
+          - Button: "components/userinterface/button.md"
+          - CheckBox: "components/userinterface/checkbox.md"
+          - DatePicker: "components/userinterface/datepicker.md"
+          - Form: "components/userinterface/form.md"
+          - Image: "components/userinterface/image.md"
+          - Label: "components/userinterface/label.md"
+          - ListPicker: "components/userinterface/listpicker.md"
+          - ListView: "components/userinterface/listview.md"
+          - Notifier: "components/userinterface/notifier.md"
+          - PasswordTextBox: "components/userinterface/passwordtextbox.md"
+          - Slider: "components/userinterface/slider.md"
+          - Spinner: "components/userinterface/spinner.md"
+          - Switch: "components/userinterface/switch.md"
+          - TextBox: "components/userinterface/textbox.md"
+          - TimePicker: "components/userinterface/timepicker.md"
+          - WebViewer: "components/userinterface/webviewer.md"
+      - Layout:
+          - HorizontalArrangement: "components/layout/horizontalarrangement.md"
+          - HorizontalScrollArrangement: "components/layout/horizontalscrollarrangement.md"
+          - TableArrangement: "components/layout/tablearrangement.md"
+          - VerticalArrangement: "components/layout/verticalarrangement.md"
+          - VerticalScrollArrangement: "components/layout/verticalscrollarrangement.md"
+      - Media:
+          - Camcorder: "components/media/camcorder.md"
+          - Camera: "components/media/camera.md"
+          - ImagePicker: "components/media/imagepicker.md"
+          - Player: "components/media/player.md"
+          - Sound: "components/media/sound.md"
+          - SoundRecorder: "components/media/soundrecorder.md"
+          - SpeechRecognizer: "components/media/speechrecognizer.md"
+          - TextToSpeech: "components/media/texttospeech.md"
+          - VideoPlayer: "components/media/videoplayer.md"
+          - YandexTranslate: "components/media/yandextranslate.md"
+      - Drawing and Animation:
+          - Ball: "components/animation/ball.md"
+          - Canvas: "components/animation/canvas.md"
+          - ImageSprite: "components/animation/imagesprite.md"
+      - Maps:
+          - Circle: "components/maps/circle.md"
+          - FeatureCollection: "components/maps/featurecollection.md"
+          - LineString: "components/maps/linestring.md"
+          - Map: "components/maps/map.md"
+          - Marker: "components/maps/marker.md"
+          - Navigation: "components/maps/navigation.md"
+          - Polygon: "components/maps/polygon.md"
+          - Rectangle: "components/maps/rectangle.md"
+      - Sensors:
+          - AccelerometerSensor: "components/sensors/accelerometersensor.md"
+          - BarcodeScanner: "components/sensors/barcodescanner.md"
+          - Barometer: "components/sensors/barometer.md"
+          - Clock: "components/sensors/clock.md"
+          - GyroscopeSensor: "components/sensors/gyroscopesensor.md"
+          - Hygrometer: "components/sensors/hygrometer.md"
+          - LightSensor: "components/sensors/lightsensor.md"
+          - LocationSensor: "components/sensors/locationsensor.md"
+          - MagneticFieldSensor: "components/sensors/magneticfieldsensor.md"
+          - NearField: "components/sensors/nearfield.md"
+          - OrientationSensor: "components/sensors/orientationsensor.md"
+          - Pedometer: "components/sensors/pedometer.md"
+          - ProximitySensor: "components/sensors/proximitysensor.md"
+          - Thermometer: "components/sensors/thermometer.md"
+      - Social:
+          - ContactPicker: "components/social/contactpicker.md"
+          - EmailPicker: "components/social/emailpicker.md"
+          - PhoneCall: "components/social/phonecall.md"
+          - PhoneNumberPicker: "components/social/phonenumberpicker.md"
+          - Sharing: "components/social/sharing.md"
+          - Texting: "components/social/texting.md"
+          - Twitter: "components/social/twitter.md"
+      - Storage:
+          - CloudDB: "components/storage/clouddb.md"
+          - File: "components/storage/file.md"
+          - TinyDB: "components/storage/tinydb.md"
+          - TinyWebDB: "components/storage/tinywebdb.md"
+      - Connectivity:
+          - ActivityStarter: "components/connectivity/activitystarter.md"
+          - BluetoothClient: "components/connectivity/bluetoothclient.md"
+          - BluetoothServer: "components/connectivity/bluetoothserver.md"
+          - Serial: "components/connectivity/serial.md"
+          - Web: "components/connectivity/web.md"
+      - LEGO® MINDSTORMS®:
+          - Ev3ColorSensor: "components/legomindstorms/ev3colorsensor.md"
+          - Ev3Commands: "components/legomindstorms/ev3commands.md"
+          - Ev3GyroSensor: "components/legomindstorms/ev3gyrosensor.md"
+          - Ev3Motors: "components/legomindstorms/ev3motors.md"
+          - Ev3Sound: "components/legomindstorms/ev3sound.md"
+          - Ev3TouchSensor: "components/legomindstorms/ev3touchsensor.md"
+          - Ev3UI: "components/legomindstorms/ev3ui.md"
+          - Ev3UltrasonicSensor: "components/legomindstorms/ev3ultrasonicsensor.md"
+          - NxtColorSensor: "components/legomindstorms/nxtcolorsensor.md"
+          - NxtDirectCommands: "components/legomindstorms/nxtdirectcommands.md"
+          - NxtDrive: "components/legomindstorms/nxtdrive.md"
+          - NxtLightSensor: "components/legomindstorms/nxtlightsensor.md"
+          - NxtSoundSensor: "components/legomindstorms/nxtsoundsensor.md"
+          - NxtTouchSensor: "components/legomindstorms/nxttouchsensor.md"
+          - NxtUltrasonicSensor: "components/legomindstorms/nxtultrasonicsensor.md"
+      - Experimental:
+          - FirebaseDB: "components/experimental/firebasedb.md"
+  - Built-In Blocks:
+      - Control: "blocks/control.md"
+      - Logic: "blocks/logic.md"
+      - Math: "blocks/math.md"
+      - Text: "blocks/text.md"
+      - Lists: "blocks/lists.md"
+      - Dictionaries: "blocks/dictionaries.md"
+      - Colors: "blocks/colors.md"
+      - Variables: "blocks/variables.md"
+      - Procedures: "blocks/procedures.md"
