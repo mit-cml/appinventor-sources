@@ -636,6 +636,7 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 34
   // - The helpers_screen_names block was added.
   // - Add sanitizing concrete values to OptionLists.
+  // - Added "every component" block.
   public static final int BLOCKS_LANGUAGE_VERSION = 34;
 
   // ................................. Target SDK Version Number ..................................
@@ -804,7 +805,7 @@ public class YaVersion {
   // For CANVAS_COMPONENT_VERSION 13
   // - BackgroundImageinBase64 was added
   // For CANVAS_PROPERTY_VERSION 14
-  // -TAP_THRESHOLD was changed from being constant to user settable 
+  // -TAP_THRESHOLD was changed from being constant to user settable
   // -TAP_THRESHOLD renamed to tapThreshold
   // -TapThreshold was added
   // For CANVAS_COMPONENT_VERSION 15

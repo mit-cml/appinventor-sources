@@ -986,7 +986,7 @@ Blockly.Versioning.makeMethodUseHelper =
           .findAllMethodCalls(dom, componentType, methodName);
       for (var i = 0, method; method = methodNodes[i]; i++) {
         for (var j = 0, child; child = method.children[j]; j++) {
-          if (child.tagName == 'value' && 
+          if (child.tagName == 'value' &&
               child.getAttribute('name') == 'ARG' + argNum) {
             replaceFunc(child, workspace);
             break;
@@ -1161,7 +1161,7 @@ Blockly.Versioning.tryReplaceBlockWithDropdown =
 /**
  * Replaces the block currently attached to the passed value input with a screen
  * names block. The current block is replaced iff it is a constant (eg a text or
- * number block). 
+ * number block).
  * @param {Element} valueNode The node to modify.
  */
 Blockly.Versioning.tryReplaceBlockWithScreen = function(valueNode) {
@@ -2202,7 +2202,8 @@ Blockly.Versioning.AllUpgradeMaps =
     33:"noUpgrade",
 
     // AI2: Add screen names dropdown block.
-    34: Blockly.Versioning.makeScreenNamesBeDropdowns,
+    // AI2: Added "every component" block.
+    34: Blockly.Versioning.makeScreenNamesBeDropdowns
 
   }, // End Language upgraders
 
@@ -3187,7 +3188,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added methods JsonTextDecodeWithDictionaries and XMLTextDecodeAsDictionary
     7: "noUpgrade",
-	
+
 	// AI2: Added methods PatchText, PatchTextWithEncoding, and PatchFile
     8: "noUpgrade"
 
