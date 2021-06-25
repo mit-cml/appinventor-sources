@@ -34,6 +34,8 @@ extra_css:
 # Load extra JS files(s)
 extra_javascript:
   - https://unpkg.com/blockly/blockly.min.js
+  - assets/javascripts/blocks/color.js
+  - assets/javascripts/ai2BlocklyBlocks.js
   - assets/javascripts/index.js
 
 plugins:
@@ -89,9 +91,9 @@ extra:
 # Add copy right section
 copyright: Copyright &copy; 2021 MIT APP Inventor
 
-# Site navigation are auto generated so don't make any changes here.
-# please look at main app.js file for add new paths into nav configuration
-# Site navigation(s) set-up
+# Site navigation is auto generated so don't make any changes here.
+# look at main app.js file for add new paths into navigation configuration
+# Site navigation set-up
 nav:
   - Home:
       - Getting Started: "index.md"
@@ -100,7 +102,7 @@ nav:
           - Button: "components/userinterface/button.md"
           - CheckBox: "components/userinterface/checkbox.md"
           - DatePicker: "components/userinterface/datepicker.md"
-          - Form: "components/userinterface/form.md"
+          - Screen: "components/userinterface/screen.md"
           - Image: "components/userinterface/image.md"
           - Label: "components/userinterface/label.md"
           - ListPicker: "components/userinterface/listpicker.md"
