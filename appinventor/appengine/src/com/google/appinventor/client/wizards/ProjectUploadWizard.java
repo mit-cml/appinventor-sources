@@ -53,37 +53,31 @@ public class ProjectUploadWizard extends Wizard {
   public ProjectUploadWizard() {
     super(MESSAGES.projectUploadWizardCaption(), true, false);
 
-    // Initialize UI
-    final CellTable compTable = createCompTable(); //new
-    final FileUpload upload = new FileUpload();
-    final Grid urlGrid = createUrlGrid(); //new
-    final TabPanel tabPanel = new TabPanel(); //new
-    tabPanel.add(upload, MESSAGES.componentImportFromComputer());//new
-    tabPanel.add(urlGrid, MESSAGES.componentImportFromURL());//new
-    tabPanel.selectTab(FROM_MY_COMPUTER_TAB);//new
-    tabPanel.addStyleName("ode-Tabpanel");//new
-    //new 
-    //commented out 
-    // upload.setName(ServerLayout.UPLOAD_PROJECT_ARCHIVE_FORM_ELEMENT);
-    // upload.getElement().setAttribute("accept", PROJECT_ARCHIVE_EXTENSION);
-    // setStylePrimaryName("ode-DialogBox"); 
+    // Initialize UI, same as UI ****
+    final CellTable compTable = createCompTable(); 
+    final FileUpload upload = createFileUpload();
+    final Grid urlGrid = createUrlGrid(); 
+    final TabPanel tabPanel = new TabPanel(); 
+    tabPanel.add(upload, MESSAGES.componentImportFromComputer());
+    tabPanel.add(urlGrid, MESSAGES.componentImportFromURL());
+    tabPanel.selectTab(FROM_MY_COMPUTER_TAB);
+    tabPanel.addStyleName("ode-Tabpanel");
     VerticalPanel panel = new VerticalPanel();
     
-
-    //panel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE); COMMENTED OUT
     panel.add(tabPanel);
-    //panel.add(upload); COMMENTED OUT 
     addPage(panel);
 
     getConfirmButton().setText("Import");
     setPagePanelHeight(150);
     setPixelSize(200, 150);
     setStylePrimaryName("ode-DialogBox");
+
     
     // Create finish command (upload a project archive)
     initFinishCommand(new Command() {
       @Override
       public void execute() {
+        //execute, upload does not exist anymore 
         String filename = upload.getFilename();
         if (tabPanel.getTabBar().getSelectedTab() == URL_TAB) {
           TextBox urlTextBox = (TextBox) urlGrid.getWidget(1, 0);
@@ -153,17 +147,7 @@ public class ProjectUploadWizard extends Wizard {
     });
   }
 
-  @Override
-  public void show() {
-    super.show();
-    // Wizard size (having it resize between page changes is quite annoying)
-    int width = 320;
-    int height = 40;
-    this.center();
 
-    setPixelSize(width, height);
-    super.setPagePanelHeight(40);
-  }
 
   private Grid createUrlGrid() {
     TextBox urlTextBox = new TextBox();
@@ -208,5 +192,12 @@ public class ProjectUploadWizard extends Wizard {
     compTable.addColumn(versionColumn, "Version");
 
     return compTable;
+  }
+
+   private FileUpload createFileUpload() {
+    FileUpload upload = new FileUpload();
+    upload.setName(ServerLayout.UPLOAD_PROJECT_ARCHIVE_FORM_ELEMENT);
+    upload.getElement().setAttribute("accept", PROJECT_ARCHIVE_EXTENSION);
+    return upload;
   }
 }
