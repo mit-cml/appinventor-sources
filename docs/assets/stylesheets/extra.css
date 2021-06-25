@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300;1,400;1,500;1,700&display=swap');
+
+:root {
+  --md-primary-fg-color:        #128BA8;
+  --md-primary-fg-color--light: #41a2b9;
+  --md-primary-fg-color--dark:  #0c6175;
+}
+
+.md-header__title {
+  height: 2.5rem;
+  line-height: 2.5rem;
+}
+
+.md-header[data-md-state="shadow"] {
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+}
+
+.md-grid {
+  max-width: calc(100vw - 32px);
+}
+
+.blocklyMainBackground {
+  stroke-width: 1px !important;
+}
+
+td {
+  vertical-align: middle !important;
+}
+
+.blocklySvg {
+  background-color: inherit !important;
+}
+
+h1 {
+  color: #111111 !important;
+  font-weight: 400 !important;
+}
+
+h2  {
+  color: #212121 !important;
+}
+
+h3  {
+  color: #212121 !important;
+}
+
+h2, h3  {
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
+}
+
+.md-typeset {
+  font-weight: 400 !important;
+}
+
+p {
+  color: #212121 !important;
+  font-weight: 400 !important;
+}
+
+.md-nav__title {
+  font-size: 0.90rem;
+  font-weight: 400;
+  color: #212121 !important;
+}
+
+.md-ellipsis {
+  font-weight: 400 !important;
+  letter-spacing: 0.5px;
+  word-spacing: 1px;
+}
