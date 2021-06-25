@@ -19,12 +19,16 @@ import android.widget.ScrollView;
 
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.HorizontalAlignment;
+import com.google.appinventor.components.common.VerticalAlignment;
 
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.IOException;
@@ -42,6 +46,9 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
   private boolean scrollable = true;
 
   private int backgroundColor;
+
+  private HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left;
+  private VerticalAlignment verticalAlignment = VerticalAlignment.Top;
 
   // List of component children
   private List<Component> allChildren = new ArrayList<>();
@@ -73,7 +80,13 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
       protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // If there was no preferred empty width/height specified (see constructors above) or 
         // If the layout has any children, just call super.
-        if ((preferredEmptyWidth == null || preferredEmptyHeight == null) || (getChildCount() != 0)) {
+        if (preferredEmptyWidth == null || preferredEmptyHeight == null) {
+          super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+          return;
+        }
+
+        // If the layout has any children, just call super.
+        if (getChildCount() != 0) {
           super.onMeasure(widthMeasureSpec, heightMeasureSpec);
           return;
         }
@@ -109,12 +122,12 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
 
     switch (orientation) {
       case ComponentConstants.LAYOUT_ORIENTATION_VERTICAL:
-        setOrientation(android.widget.RadioGroup.VERTICAL);
+        layoutManager.setOrientation(android.widget.RadioGroup.VERTICAL);
         frameContainer = new ScrollView(context);
         break;
       
       case ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL:
-        setOrientation(android.widget.RadioGroup.HORIZONTAL);
+        layoutManager.setOrientation(android.widget.RadioGroup.HORIZONTAL);
         frameContainer = new HorizontalScrollView(context);
         break;
     }
@@ -126,10 +139,6 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
 
     container.$add(this);
     BackgroundColor(Component.COLOR_DEFAULT);
-  }
-
-  public void setOrientation(int orientation) {
-    layoutManager.setOrientation(orientation);
   }
 
   public void setHorizontalGravity(int gravity) {
@@ -229,6 +238,113 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
   @Override
   public View getView() {
     return frameContainer;
+  }
+
+  /**
+   * Returns a number that encodes how contents of the %type% are aligned horizontally.
+   * The choices are: 1 = left aligned, 2 = right aligned, 3 = horizontally centered.
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "A number that encodes how contents of the %type% are aligned " +
+          " horizontally. The choices are: 1 = left aligned, 2 = right aligned, " +
+          " 3 = horizontally centered.  Alignment has no effect if the arrangement's width is " +
+          "automatic.")
+  public @Options(HorizontalAlignment.class) int AlignHorizontal() {
+    return AlignHorizontalAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current horizontal alignment of this arrangement.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public HorizontalAlignment AlignHorizontalAbstract() {
+    return horizontalAlignment;
+  }
+
+  /**
+   * Sets the arrangements horizontal alignment to the given value.
+   * @param alignment the alignment to set the arrangement to.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void AlignHorizontalAbstract(HorizontalAlignment alignment) {
+    //alignmentSetter.setHorizontalAlignment(alignment);
+    horizontalAlignment = alignment;
+  }
+
+  /**
+   * A number that encodes how contents of the `%type%` are aligned horizontally. The choices
+   * are: `1` = left aligned, `2` = right aligned, `3` = horizontally centered. Alignment has no
+   * effect if the `%type%`'s {@link #Width()} is `Automatic`.
+   *
+   * @param alignment
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
+      defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
+  @SimpleProperty
+  public void AlignHorizontal(@Options(HorizontalAlignment.class) int alignment) {
+    // Make sure alignment is a valid HorizontalAlignment.
+    HorizontalAlignment align = HorizontalAlignment.fromUnderlyingValue(alignment);
+    if (align == null) {
+      container.$form().dispatchErrorOccurredEvent(this, "HorizontalAlignment",
+          ErrorMessages.ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT, alignment);
+      return;
+    }
+    AlignHorizontalAbstract(align);
+  }
+
+  /**
+   * Returns a number that encodes how contents of the %type% are aligned vertically.
+   * The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom.
+   * Alignment has no effect if the arrangement's height is automatic.
+   */
+   @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "A number that encodes how the contents of the %type% are aligned " +
+          " vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
+          "3 = aligned at the bottom.  Alignment has no effect if the arrangement's height " +
+          "is automatic.")
+  public @Options(VerticalAlignment.class) int AlignVertical() {
+    return AlignVerticalAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current vertical alignment of this arrangement.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public VerticalAlignment AlignVerticalAbstract() {
+    return verticalAlignment;
+  }
+
+  /**
+   * Sets the arrangements vertical alignment to the given value.
+   * @param alignment the alignment to set the arrangement to.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void AlignVerticalAbstract(VerticalAlignment alignment) {
+    //alignmentSetter.setVerticalAlignment(alignment);
+    verticalAlignment = alignment;
+  }
+
+  /**
+   * A number that encodes how the contents of the `%type%` are aligned vertically. The choices
+   * are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
+   * Alignment has no effect if the `%type%`'s {@link #Height()} is `Automatic`.
+   *
+   * @param alignment
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
+      defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
+  @SimpleProperty
+  public void AlignVertical(@Options(VerticalAlignment.class) int alignment) {
+    // Make sure alignment is a valid VerticalAlignment.
+    VerticalAlignment align = VerticalAlignment.fromUnderlyingValue(alignment);
+    if (align == null) {
+      container.$form().dispatchErrorOccurredEvent(this, "VerticalAlignment",
+          ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
+      return;
+    }
+    AlignVerticalAbstract(align);
   }
 
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
