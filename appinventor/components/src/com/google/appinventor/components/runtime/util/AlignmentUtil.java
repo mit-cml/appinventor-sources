@@ -32,11 +32,11 @@ public class AlignmentUtil {
    * @param alignment
    */
   public void setHorizontalAlignment(int alignment){
-    viewlayout.setHorizontalGravity(getHorizontalAlignment(alignment));
+    viewLayout.setHorizontalGravity(getHorizontalAlignment(alignment));
   }
 
   public void setHorizontalAlignment(HorizontalAlignment alignment){
-    viewlayout.setHorizontalGravity(getHorizontalAlignment(alignment));
+    viewLayout.setHorizontalGravity(getHorizontalAlignment(alignment));
   }
 
   /**
@@ -44,11 +44,11 @@ public class AlignmentUtil {
    * @param alignment
    */
   public void setVerticalAlignment(int alignment){
-    viewlayout.setVerticalGravity(getVerticalAlignment(alignment));
+    viewLayout.setVerticalGravity(getVerticalAlignment(alignment));
   }
 
   public void setVerticalAlignment(VerticalAlignment alignment) {
-    viewlayout.setVerticalGravity(getVerticalAlignment(alignment));
+    viewLayout.setVerticalGravity(getVerticalAlignment(alignment));
   }
 
   /**
@@ -98,7 +98,7 @@ public class AlignmentUtil {
         return Gravity.TOP;
       case ComponentConstants.GRAVITY_CENTER_VERTICAL:
         return Gravity.CENTER_VERTICAL;
-      case ComponentConstants.BOTTOM:
+      case ComponentConstants.GRAVITY_BOTTOM:
         return Gravity.BOTTOM;
       default:
         throw new IllegalArgumentException("Bad value to setHorizontalAlignment: " + alignment);
