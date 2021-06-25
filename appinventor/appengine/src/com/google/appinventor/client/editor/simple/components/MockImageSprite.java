@@ -25,11 +25,11 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
   public static final String PROPERTY_NAME_U = "OriginX";
   public static final String PROPERTY_NAME_V = "OriginY";
 
-  // The coordinates of the origin of the image sprite
+  // The x-y coordinates of the origin of the image sprite
   int xOrigin;
   int yOrigin;
 
-  // The unit coordinates of the image sprite
+  // The unit coordinates of the origin wrt top-left corner
   double v;
   double u;
 
@@ -129,7 +129,9 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
   public int getXOffset() {
     int width = Integer.parseInt(getPropertyValue(PROPERTY_NAME_WIDTH));
     // if set to automatic or fill parent get the width from the image resource
-    if (width < 0) width = getPreferredWidth();
+    if (width < 0) {
+      width = getPreferredWidth();
+    }
     return (int) Math.round(width * u);
   }
 
@@ -137,7 +139,9 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
   public int getYOffset() {
     int height = Integer.parseInt(getPropertyValue(PROPERTY_NAME_HEIGHT));
     // if set to automatic or fill parent get the height from the image resource
-    if (height < 0) height = getPreferredHeight();
+    if (height < 0) {
+      height = getPreferredHeight();
+    }
     return (int) Math.round(height * v);
   }
 }
