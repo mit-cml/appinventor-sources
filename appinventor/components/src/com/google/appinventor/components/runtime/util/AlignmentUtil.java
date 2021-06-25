@@ -20,6 +20,9 @@ import com.google.appinventor.components.runtime.LinearLayout;
 public class AlignmentUtil {
   LinearLayout viewLayout;
 
+  public AlignmentUtil() {
+  }
+
   public AlignmentUtil(LinearLayout viewLayout) {
     this.viewLayout = viewLayout;
   }
