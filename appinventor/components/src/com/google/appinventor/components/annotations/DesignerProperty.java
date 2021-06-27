@@ -23,6 +23,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface DesignerProperty {
+
+  /**
+   * [suvam, 2019/03/26] Added description field to Designer Property.
+   * If non-empty, description to use in user-level documentation.
+   */
+  String description() default "";
+
   /**
    * Determines the property editor used in the designer.
    *

@@ -170,8 +170,9 @@ public interface ComponentDatabaseInterface {
 
 
   /**
-   * Property definition: property name, property editor type and property
-   * default value.
+   * [suvam, 2019/04/26] Added description field to definition.
+   * Property definition: property name, property editor type 
+   * property description and property default value.
    */
   public static class PropertyDefinition {
     private final String name;
@@ -179,21 +180,27 @@ public interface ComponentDatabaseInterface {
     private final String caption;
     private final String editorType;
     private final String[] editorArgs;
+    private final String description;
 
-    public PropertyDefinition(String name, String defaultValue, String editorType, String[] editorArgs) {
-      this(name, defaultValue, name, editorType, editorArgs);
+    public PropertyDefinition(String name, String defaultValue, String editorType, String[] editorArgs, String description) {
+      this(name, defaultValue, name, editorType, editorArgs, description);
     }
 
-    public PropertyDefinition(String name, String defaultValue, String caption, String editorType, String[] editorArgs) {
+    public PropertyDefinition(String name, String defaultValue, String caption, String editorType, String[] editorArgs, String description) {
       this.name = name;
       this.defaultValue = defaultValue;
       this.caption = caption;
       this.editorType = editorType;
       this.editorArgs = editorArgs;
+      this.description = description;
     }
 
     public String getName() {
       return name;
+    }
+
+    public String getDescription() {
+      return description;
     }
 
     public String getCaption() {

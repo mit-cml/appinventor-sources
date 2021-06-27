@@ -391,10 +391,20 @@ class ComponentDatabase implements ComponentDatabaseInterface {
           editorArgsList.add(val.asString().getString());
       }
 
+      /**
+       * [suvam, 2019/04/26] 
+       * TODO since description field doesn't exist in older versions, check for "description" key first
+      */
+      String description = "";
+      if (properties.containsKey("description")) {
+        description = properties.get("description").asString().getString();
+      }
+
       component.add(new PropertyDefinition(properties.get("name").asString().getString(),
           properties.get("defaultValue").asString().getString(),
           properties.get("editorType").asString().getString(),
-          editorArgsList.toArray(new String[0])));
+          editorArgsList.toArray(new String[0]),
+          description));
     }
   }
 
