@@ -28,6 +28,7 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 
+import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
@@ -47,6 +48,8 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
 
   private int backgroundColor;
 
+  // Alignment
+  private AlignmentUtil alignmentSetter = new AlignmentUtil();
   private HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left;
   private VerticalAlignment verticalAlignment = VerticalAlignment.Top;
 
@@ -117,8 +120,8 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
     };
 
     setBaselineAligned(false);
-    setHorizontalGravity(Gravity.LEFT);
-    setVerticalGravity(Gravity.TOP);
+    setHorizontalGravity(alignmentSetter.getHorizontalAlignment(horizontalAlignment));
+    setVerticalGravity(alignmentSetter.getVerticalAlignment(verticalAlignment));
 
     switch (orientation) {
       case ComponentConstants.LAYOUT_ORIENTATION_VERTICAL:
@@ -268,7 +271,7 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
    */
   @SuppressWarnings("RegularMethodName")
   public void AlignHorizontalAbstract(HorizontalAlignment alignment) {
-    //alignmentSetter.setHorizontalAlignment(alignment);
+    alignmentSetter.setHorizontalAlignment(alignment);
     horizontalAlignment = alignment;
   }
 
@@ -322,7 +325,7 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
    */
   @SuppressWarnings("RegularMethodName")
   public void AlignVerticalAbstract(VerticalAlignment alignment) {
-    //alignmentSetter.setVerticalAlignment(alignment);
+    alignmentSetter.setVerticalAlignment(alignment);
     verticalAlignment = alignment;
   }
 
@@ -347,12 +350,24 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
     AlignVerticalAbstract(align);
   }
 
+  /**
+  * Returns the background color of the %type% as an alpha-red-green-blue
+  * integer.
+  *
+  * @return  background RGB color with alpha
+  */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
           description = "Returns the background color of the %type%")
   public int BackgroundColor() {
     return backgroundColor;
   }
 
+  /**
+  * Specifies the background color of the %type% as an alpha-red-green-blue
+  * integer.
+  *
+  * @param argb background RGB color with alpha
+  */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
           defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty(description = "Specifies the background color of the %type%. ")

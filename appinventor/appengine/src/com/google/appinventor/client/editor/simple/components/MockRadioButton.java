@@ -6,9 +6,13 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.gwt.user.client.ui.RadioButton;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.gwt.user.client.ui.RadioButton;
+import com.google.appinventor.client.widgets.properties.BooleanPropertyEditor;
+
+import java.util.Random;
+import java.util.List;
 
 /**
  * Mock RadioButton component.
@@ -35,8 +39,18 @@ public final class MockRadioButton extends MockVisibleComponent {
   public MockRadioButton(SimpleEditor editor) {
     super(editor, TYPE, images.radiobutton());
 
+    Random random = new Random();   
+    // Generates random integers 0 to 999999 
+    int x = random.nextInt(1000000);
+    String randomName = "RadioButton" + String.valueOf(x);
+
     // Initialize mock radioButton UI
-    radioButtonWidget = new RadioButton("dummy-group");
+
+    // Note : GWT RadioButton is not really a radiobutton! It's exactly like 
+    // a radiogroup when given the same randomName. Read it's docs!
+    // WHY CALL IT A RADIOBUTTON THEN !???
+    
+    radioButtonWidget = new RadioButton(randomName);
     radioButtonWidget.setStylePrimaryName("ode-SimpleMockComponent");
     initComponent(radioButtonWidget);
   }
@@ -45,6 +59,10 @@ public final class MockRadioButton extends MockVisibleComponent {
   public void onCreateFromPalette() {
     // Change radio button text to component name.
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
+  }
+
+  public Boolean isChecked() {
+    return radioButtonWidget.getValue();
   }
 
   /*
@@ -113,8 +131,41 @@ public final class MockRadioButton extends MockVisibleComponent {
    * Sets the radioButton's Checked property to a new value.
    */
   private void setCheckedProperty(String text) {
-    radioButtonWidget.setChecked(Boolean.parseBoolean(text));
+    Boolean value = Boolean.parseBoolean(text);
+    MockContainer parent = getContainer();
+    MockRadioButton button;
+    
+    if (value && parent instanceof MockRadioGroup) {
+      for (MockComponent child : parent.getChildren()) {
+        if (child instanceof MockRadioButton) {
+          button = (MockRadioButton) child;
+          if (button != this && button.isChecked()){
+            changeCheckedInPropertyPanel(child, !value);
+          }
+        }
+      }
+    }
+    
+    radioButtonWidget.setValue(value);
   }
+
+  private void changeCheckedInPropertyPanel(MockComponent child, Boolean value) {
+    // Spellings for true and false values 
+    String trueValue = "true", falseValue = "false";
+
+    child.removeProperty(PROPERTY_NAME_CHECKED);
+    if (value){
+      child.addProperty(PROPERTY_NAME_CHECKED, trueValue, PROPERTY_NAME_CHECKED, 
+        new BooleanPropertyEditor(trueValue, trueValue));
+    } else {
+      child.addProperty(PROPERTY_NAME_CHECKED, falseValue, PROPERTY_NAME_CHECKED, 
+        new BooleanPropertyEditor(trueValue, falseValue));
+    }
+  }
+
+  private static native void consoleLog(String name) /*-{
+    console.log(name)
+  }-*/;
 
   // PropertyChangeListener implementation
   @Override
@@ -145,6 +196,7 @@ public final class MockRadioButton extends MockVisibleComponent {
       setTextColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
       setCheckedProperty(newValue);
+      refreshForm();
     }
   }
 }

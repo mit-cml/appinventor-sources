@@ -552,6 +552,15 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   }
 
   /**
+   * Removes a existing property from the component.
+   *
+   * @param name  property name
+   */
+  public final void removeProperty(String name) {
+    properties.removeProperty(name);
+  }
+
+  /**
    * Returns the component name.
    * <p>
    * This should not be called prior to {@link #initComponent(Widget)}.
