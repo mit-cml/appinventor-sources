@@ -77,6 +77,17 @@ abstract class MockImageBase extends MockVisibleComponent {
     }
   }
 
+  /*
+   * This was overridden as on changing width / height, the image is not altered but only the
+   * enclosing div element is resized. Calling resizeImage() resizes the underlying image wrt
+   * the enclosing div element.
+   */
+  @Override
+  public void setPixelSize(int width, int height) {
+    super.setPixelSize(width, height);
+    resizeImage();
+  }
+
   @Override
   public int getPreferredWidth() {
     // The superclass uses getOffsetWidth, which won't work for us.
