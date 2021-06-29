@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.core.client.JavaScriptException;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.widgets.properties.BooleanPropertyEditor;
@@ -135,18 +136,23 @@ public final class MockRadioButton extends MockVisibleComponent {
     MockContainer parent = getContainer();
     MockRadioButton button;
     
-    if (value && parent instanceof MockRadioGroup) {
-      for (MockComponent child : parent.getChildren()) {
-        if (child instanceof MockRadioButton) {
-          button = (MockRadioButton) child;
-          if (button != this && button.isChecked()){
-            changeCheckedInPropertyPanel(child, !value);
+    try {
+      if (value && parent instanceof MockRadioGroup) {
+        for (MockComponent child : parent.getChildren()) {
+          if (child instanceof MockRadioButton) {
+            button = (MockRadioButton) child;
+            if (button != this && button.isChecked()){
+              changeCheckedInPropertyPanel(child, !value);
+            }
           }
         }
       }
+    } catch (JavaScriptException e) {
+      consoleError(e);
+      //throw e;
+    } finally {
+      radioButtonWidget.setValue(value);
     }
-    
-    radioButtonWidget.setValue(value);
   }
 
   private void changeCheckedInPropertyPanel(MockComponent child, Boolean value) {
@@ -156,16 +162,12 @@ public final class MockRadioButton extends MockVisibleComponent {
     child.removeProperty(PROPERTY_NAME_CHECKED);
     if (value){
       child.addProperty(PROPERTY_NAME_CHECKED, trueValue, PROPERTY_NAME_CHECKED, 
-        new BooleanPropertyEditor(trueValue, trueValue));
+        new BooleanPropertyEditor(trueValue, falseValue));
     } else {
       child.addProperty(PROPERTY_NAME_CHECKED, falseValue, PROPERTY_NAME_CHECKED, 
         new BooleanPropertyEditor(trueValue, falseValue));
     }
   }
-
-  private static native void consoleLog(String name) /*-{
-    console.log(name)
-  }-*/;
 
   // PropertyChangeListener implementation
   @Override
@@ -199,4 +201,14 @@ public final class MockRadioButton extends MockVisibleComponent {
       refreshForm();
     }
   }
+
+  // For Testing Purposes
+  private static native void consoleLog(String name) /*-{
+    console.log(name)
+  }-*/;
+
+  private static native void consoleError(JavaScriptException ex) /*-{
+    console.error(ex)
+  }-*/;
+
 }
