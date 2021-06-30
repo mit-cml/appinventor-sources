@@ -33,6 +33,7 @@ turndownService.addRule('supText', {
 // Read simple_components.json file
 const simpleComponents = Array.from(JSON.parse(fs.readFileSync('simple_components.json')));
 const componentsYmlPaths = [];
+const blockParamsInfo = {};
 const finalYmlPaths = {
   "nav": [
     {
@@ -60,6 +61,7 @@ const finalYmlPaths = {
 }
 
 const ROOT = "docs/components/";
+const BLOCK_PARAMS_INFO = "docs/assets/javascripts/blockly/blockParamsInfo.js";
 const PATH_SEPARATOR = "/";
 const FILE_EXE = ".md";
 const HEADING_1 = "# ";
@@ -67,6 +69,11 @@ const HEADING_2 = "## ";
 const HEADING_3 = "### ";
 const NEW_LINE = "\n\n";
 const HORIZONTAL_RULE = "---";
+const LICENSE = `<!--
+  Copyright © 2013-${new Date().getFullYear()} MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->`;
 
 // Create root folder if not present
 if (!fs.existsSync(ROOT)) {
@@ -89,6 +96,8 @@ simpleComponents.forEach(component => {
 
     // Start generating component's docs
     let componentDocs = "";
+    componentDocs += LICENSE + NEW_LINE;
+
     componentDocs += HEADING_1 + component.name + NEW_LINE;
     componentDocs += turndownService.turndown(component.helpString.replace(/\s+/g, ' ').trim()) + NEW_LINE;
     componentDocs += HORIZONTAL_RULE + NEW_LINE;
@@ -124,8 +133,9 @@ simpleComponents.forEach(component => {
             });
           }
           paramString = paramString.slice(0, -1);
+          blockParamsInfo[`${component.name}-${event.name}`] = (paramString == "" ? [] : paramString.split('-'));
           componentDocs += HEADING_3 + event.name + NEW_LINE;
-          let eventBlockWorkspace = `<div block-type = "component_event" component-selector = "${component.name}" event-selector = "${event.name}" event-params = "${paramString}" id = "${component.name.toLowerCase()}-${event.name.toLowerCase()}"></div>`;
+          let eventBlockWorkspace = `<div block-type = "component_event" component-selector = "${component.name}" event-selector = "${event.name}" id = "${component.name.toLowerCase()}-${event.name.toLowerCase()}"></div>`;
           componentDocs += eventBlockWorkspace + NEW_LINE;
           componentDocs += turndownService.turndown(event.description.replace(/\s+/g, ' ').trim()) + NEW_LINE;
           if (event.params.length > 0) {
@@ -150,8 +160,12 @@ simpleComponents.forEach(component => {
             });
           }
           paramString = paramString.slice(0, -1);
+          let tempBlockInfo = {};
+          tempBlockInfo['params'] = (paramString == "" ? [] : paramString.split('-'));
+          tempBlockInfo['isVoid'] = (method.returnType == undefined ? true : false);
+          blockParamsInfo[`${component.name}-${method.name}`] = tempBlockInfo;
           componentDocs += HEADING_3 + method.name + NEW_LINE;
-          let methodBlockWorkspace = `<div block-type = "component_method" component-selector = "${component.name}" method-selector = "${method.name}" method-params = "${paramString}" return-type = "${method.returnType}" id = "${component.name.toLowerCase()}-${method.name.toLowerCase()}"></div>`;
+          let methodBlockWorkspace = `<div block-type = "component_method" component-selector = "${component.name}" method-selector = "${method.name}" id = "${component.name.toLowerCase()}-${method.name.toLowerCase()}"></div>`;
           componentDocs += methodBlockWorkspace + NEW_LINE;
           componentDocs += "Return Type : " + (method.returnType == undefined ? "No Return Value" : method.returnType) + NEW_LINE;
           componentDocs += turndownService.turndown(method.description.replace(/\s+/g, ' ').trim()) + NEW_LINE;
@@ -233,6 +247,9 @@ Object.keys(CATEGORIES).forEach(category => {
 
 // Update component's yml path
 finalYmlPaths.nav[1].Components = componentsYmlPaths;
+
+// Write component block's param info
+fs.writeFileSync(BLOCK_PARAMS_INFO, `const BLOCK_PARAMS_INFO = ${JSON.stringify(blockParamsInfo)}`);
 
 function findIndex(line) {
   if (line.startsWith("# Path")) {

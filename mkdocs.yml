@@ -16,10 +16,10 @@ edit_uri: edit/gh-pages/docs/
 theme:
   language: en
   name: material
+  logo : assets/images/logo.png
+  favicon: assets/images/logo.png
   icon:
     repo: fontawesome/brands/github
-    logo : material/microscope
-    favicon: material/microscope
   features:
     - navigation.tabs
     - navigation.top
@@ -33,9 +33,11 @@ extra_css:
 
 # Load extra JS files(s)
 extra_javascript:
-  - https://unpkg.com/blockly/blockly.min.js
-  - assets/javascripts/blocks/color.js
-  - assets/javascripts/ai2BlocklyBlocks.js
+  - assets/javascripts/blockly/messages.js
+  - assets/javascripts/blockly/blockly-all.js
+  - assets/javascripts/blockly/blockParamsInfo.js
+  - assets/javascripts/blockly/componentBlocks.js
+  - assets/javascripts/blockly/xmlBlocks.js
   - assets/javascripts/index.js
 
 plugins:
