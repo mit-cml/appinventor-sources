@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Color Blocks
 
 ---
@@ -69,7 +75,11 @@ Each basic color block that you drag from the Colors drawer to the Blocks Editor
 
 ### Make Color
 
-<div id = "color_make_color" type = "ai-2-block"></div>
+#### Without Alpha
+<div id = "color_make_color" type = "ai-2-default-block"></div>
+
+#### With Alpha
+<div id = "color_make_color_with_alpha" type = "ai-2-default-block"></div>
 
 make color takes in a list of 3 or 4 numbers. These numbers in this list represent values in an RGB code. RGB codes are used to make colors on the Internet. An RGB color chart is available [here](https://sites.google.com/view/metricrat-ai2/scraps/android-and-html-colour-codes). This first number in this list represents the R value of the code. The second represents the G. The third represents the B. The fourth value is optional and represents the alpha value or how saturated the color is. The default alpha value is 100. Experiment with different values and see how the colors change using this block.
 

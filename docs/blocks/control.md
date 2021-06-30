@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Control Blocks
 
 ---
@@ -10,15 +16,21 @@ Tests a given condition. If the condition is true, performs the actions in a giv
 
 ### If-Else
 
-<div id = "control_if_else" type = "ai-2-block"></div> 
+<div type = "ai-2-default-block" id = "controls_if_else"></div>   
 
 Tests a given condition. If the condition is true, performs the actions in the -then sequence of blocks; otherwise, performs the actions in the -else equence of blocks.
 
 ### If-ElseIf-Else
 
-<div id = "control_if_else_if_else" type = "ai-2-block"></div> 
+<div type = "ai-2-default-block" id = "controls_if_else_if_else"></div>   
 
 Tests a given condition. If the result is true, performs the actions in the -then sequence of blocks; otherwise tests the statement in the -else if section. If the result is true, performs the actions in the -then sequence of blocks; otherwise, performs the actions in the -else sequence of blocks.
+
+### If Then Else
+
+<div id = "controls_choose" type = "ai-2-block"></div> 
+
+Tests a given condition. If the statement is true, performs the actions in the then-return sequence of blocks and returns the then-return value; otherwise, performs the actions in the else-return sequence of blocks and returns the else-return value. This block is similar to the ternary operator (?:) found in some languages.
 
 ### For Each Number From To
 

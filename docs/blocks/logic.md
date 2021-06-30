@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Logic Blocks
 
 ---
@@ -28,7 +34,7 @@ Tests whether its arguments are equal.
 
 ### Not Equal To
 
-<div id = "logic_compare_notEqualTo" type = "ai-2-block"></div>   
+<div id = "logic_compare_notEqualTo" type = "ai-2-default-block"></div>   
 
 Tests to see whether two arguments are not equal.
 
@@ -40,6 +46,6 @@ Tests whether all of a set of logical conditions are true. The result is true if
 
 ### Or
 
-<div id = "logic_or" type = "ai-2-block"></div>   
+<div id = "logic_or" type = "ai-2-default-block"></div>   
 
 Tests whether any of a set of logical conditions are true. The result is true if one or more of the tested conditions are true. The number of tests can be expanded using the mutator. The conditions are tested left to right, and the testing stops as soon as one of the conditions is true. If there are no conditions to test, then the result is false.

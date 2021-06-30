@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Variable Blocks
 
 ---
@@ -12,13 +18,13 @@ Global variables can be changed while an app is running and can be referred to a
 
 ### Get
 
-<div id = "lexical_variable_get" type = "ai-2-block"></div> 
+<div id = "lexical_variable_get" type = "ai-2-default-block"></div> 
 
 This block provides a way to get any variables you may have created.
 
 ### Set
 
-<div id = "lexical_variable_set" type = "ai-2-block"></div> 
+<div id = "lexical_variable_set" type = "ai-2-default-block"></div> 
 
 This block follows the same rules as get. Only variables in scope will be available in the dropdown. Once a variable v is selected, you can attach a block to give v a new value.
 
