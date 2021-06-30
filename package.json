@@ -1,0 +1,27 @@
+{
+  "name": "appinventor-docs",
+  "version": "1.0.0",
+  "description": "Helpful explanations for all of the components and blocks in App Inventor.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mit-cml/appinventor-sources.git"
+  },
+  "keywords": [
+    "appinventor-docs"
+  ],
+  "author": "Evan W. Patton, Preet Vadaliya",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/mit-cml/appinventor-sources/issues"
+  },
+  "homepage": "https://github.com/mit-cml/appinventor-sources#readme",
+  "dependencies": {
+    "json-to-pretty-yaml": "^1.2.2",
+    "repeat-string": "^1.6.1",
+    "turndown": "^7.0.0"
+  }
+}
