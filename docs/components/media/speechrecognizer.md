@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # SpeechRecognizer
 
 Component for using Voice Recognition to convert from speech to text
@@ -20,7 +26,7 @@ Component for using Voice Recognition to convert from speech to text
 
 ### AfterGettingText
 
-<div block-type = "component_event" component-selector = "SpeechRecognizer" event-selector = "AfterGettingText" event-params = "result-partial" id = "speechrecognizer-aftergettingtext"></div>
+<div block-type = "component_event" component-selector = "SpeechRecognizer" event-selector = "AfterGettingText" id = "speechrecognizer-aftergettingtext"></div>
 
 Simple event to raise after the SpeechRecognizer has recognized speech. If
 
@@ -31,7 +37,7 @@ Simple event to raise after the SpeechRecognizer has recognized speech. If
 
 ### BeforeGettingText
 
-<div block-type = "component_event" component-selector = "SpeechRecognizer" event-selector = "BeforeGettingText" event-params = "" id = "speechrecognizer-beforegettingtext"></div>
+<div block-type = "component_event" component-selector = "SpeechRecognizer" event-selector = "BeforeGettingText" id = "speechrecognizer-beforegettingtext"></div>
 
 Simple event to raise when the \`SpeechRecognizer\` is invoked but before its activity is started.
 
@@ -41,7 +47,7 @@ Simple event to raise when the \`SpeechRecognizer\` is invoked but before its ac
 
 ### GetText
 
-<div block-type = "component_method" component-selector = "SpeechRecognizer" method-selector = "GetText" method-params = "" return-type = "undefined" id = "speechrecognizer-gettext"></div>
+<div block-type = "component_method" component-selector = "SpeechRecognizer" method-selector = "GetText" id = "speechrecognizer-gettext"></div>
 
 Return Type : No Return Value
 
@@ -49,7 +55,7 @@ Asks the user to speak, and converts the speech to text. Signals the
 
 ### Stop
 
-<div block-type = "component_method" component-selector = "SpeechRecognizer" method-selector = "Stop" method-params = "" return-type = "undefined" id = "speechrecognizer-stop"></div>
+<div block-type = "component_method" component-selector = "SpeechRecognizer" method-selector = "Stop" id = "speechrecognizer-stop"></div>
 
 Return Type : No Return Value
 

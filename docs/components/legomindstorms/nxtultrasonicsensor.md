@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # NxtUltrasonicSensor
 
 A component that provides a high-level interface to an ultrasonic sensor on a LEGO MINDSTORMS NXT robot.
@@ -56,19 +62,19 @@ A component that provides a high-level interface to an ultrasonic sensor on a LE
 
 ### AboveRange
 
-<div block-type = "component_event" component-selector = "NxtUltrasonicSensor" event-selector = "AboveRange" event-params = "" id = "nxtultrasonicsensor-aboverange"></div>
+<div block-type = "component_event" component-selector = "NxtUltrasonicSensor" event-selector = "AboveRange" id = "nxtultrasonicsensor-aboverange"></div>
 
 Distance has gone above the range.
 
 ### BelowRange
 
-<div block-type = "component_event" component-selector = "NxtUltrasonicSensor" event-selector = "BelowRange" event-params = "" id = "nxtultrasonicsensor-belowrange"></div>
+<div block-type = "component_event" component-selector = "NxtUltrasonicSensor" event-selector = "BelowRange" id = "nxtultrasonicsensor-belowrange"></div>
 
 Distance has gone below the range.
 
 ### WithinRange
 
-<div block-type = "component_event" component-selector = "NxtUltrasonicSensor" event-selector = "WithinRange" event-params = "" id = "nxtultrasonicsensor-withinrange"></div>
+<div block-type = "component_event" component-selector = "NxtUltrasonicSensor" event-selector = "WithinRange" id = "nxtultrasonicsensor-withinrange"></div>
 
 Distance has gone within the range.
 
@@ -78,7 +84,7 @@ Distance has gone within the range.
 
 ### GetDistance
 
-<div block-type = "component_method" component-selector = "NxtUltrasonicSensor" method-selector = "GetDistance" method-params = "" return-type = "number" id = "nxtultrasonicsensor-getdistance"></div>
+<div block-type = "component_method" component-selector = "NxtUltrasonicSensor" method-selector = "GetDistance" id = "nxtultrasonicsensor-getdistance"></div>
 
 Return Type : number
 

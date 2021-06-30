@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # PhoneCall
 
 A non-visible component that makes a phone call to the number specified in the `PhoneNumber` property, which can be set either in the Designer or Blocks Editor. The component has a `MakePhoneCall` method, enabling the program to launch a phone call.
@@ -24,7 +30,7 @@ To directly specify the phone number (e.g., 650-555-1212), set the `PhoneNumber`
 
 ### IncomingCallAnswered
 
-<div block-type = "component_event" component-selector = "PhoneCall" event-selector = "IncomingCallAnswered" event-params = "phoneNumber" id = "phonecall-incomingcallanswered"></div>
+<div block-type = "component_event" component-selector = "PhoneCall" event-selector = "IncomingCallAnswered" id = "phonecall-incomingcallanswered"></div>
 
 Event indicating that an incoming phone call is answered. phoneNumber is the incoming call phone number.
 
@@ -34,7 +40,7 @@ Event indicating that an incoming phone call is answered. phoneNumber is the inc
 
 ### PhoneCallEnded
 
-<div block-type = "component_event" component-selector = "PhoneCall" event-selector = "PhoneCallEnded" event-params = "status-phoneNumber" id = "phonecall-phonecallended"></div>
+<div block-type = "component_event" component-selector = "PhoneCall" event-selector = "PhoneCallEnded" id = "phonecall-phonecallended"></div>
 
 Event indicating that a phone call has ended. If status is 1, incoming call is missed or rejected; if status is 2, incoming call is answered before hanging up; if status is 3, outgoing call is hung up. phoneNumber is the ended call phone number.
 
@@ -45,7 +51,7 @@ Event indicating that a phone call has ended. If status is 1, incoming call is m
 
 ### PhoneCallStarted
 
-<div block-type = "component_event" component-selector = "PhoneCall" event-selector = "PhoneCallStarted" event-params = "status-phoneNumber" id = "phonecall-phonecallstarted"></div>
+<div block-type = "component_event" component-selector = "PhoneCall" event-selector = "PhoneCallStarted" id = "phonecall-phonecallstarted"></div>
 
 Event indicating that a phonecall has started. If status is 1, incoming call is ringing; if status is 2, outgoing call is dialled. phoneNumber is the incoming/outgoing phone number.
 
@@ -60,7 +66,7 @@ Event indicating that a phonecall has started. If status is 1, incoming call is 
 
 ### MakePhoneCall
 
-<div block-type = "component_method" component-selector = "PhoneCall" method-selector = "MakePhoneCall" method-params = "" return-type = "undefined" id = "phonecall-makephonecall"></div>
+<div block-type = "component_method" component-selector = "PhoneCall" method-selector = "MakePhoneCall" id = "phonecall-makephonecall"></div>
 
 Return Type : No Return Value
 
@@ -68,7 +74,7 @@ Launches the default dialer app set to start a phone call usingthe number in the
 
 ### MakePhoneCallDirect
 
-<div block-type = "component_method" component-selector = "PhoneCall" method-selector = "MakePhoneCallDirect" method-params = "" return-type = "undefined" id = "phonecall-makephonecalldirect"></div>
+<div block-type = "component_method" component-selector = "PhoneCall" method-selector = "MakePhoneCallDirect" id = "phonecall-makephonecalldirect"></div>
 
 Return Type : No Return Value
 

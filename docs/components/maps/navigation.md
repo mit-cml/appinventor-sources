@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Navigation
 
 Navigation
@@ -56,7 +62,7 @@ Navigation
 
 ### GotDirections
 
-<div block-type = "component_event" component-selector = "Navigation" event-selector = "GotDirections" event-params = "directions-points-distance-duration" id = "navigation-gotdirections"></div>
+<div block-type = "component_event" component-selector = "Navigation" event-selector = "GotDirections" id = "navigation-gotdirections"></div>
 
 Event triggered when the Openrouteservice returns the directions.
 
@@ -73,7 +79,7 @@ Event triggered when the Openrouteservice returns the directions.
 
 ### RequestDirections
 
-<div block-type = "component_method" component-selector = "Navigation" method-selector = "RequestDirections" method-params = "" return-type = "undefined" id = "navigation-requestdirections"></div>
+<div block-type = "component_method" component-selector = "Navigation" method-selector = "RequestDirections" id = "navigation-requestdirections"></div>
 
 Return Type : No Return Value
 

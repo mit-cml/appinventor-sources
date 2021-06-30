@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # LineString
 
 LineString
@@ -68,31 +74,31 @@ LineString
 
 ### Click
 
-<div block-type = "component_event" component-selector = "LineString" event-selector = "Click" event-params = "" id = "linestring-click"></div>
+<div block-type = "component_event" component-selector = "LineString" event-selector = "Click" id = "linestring-click"></div>
 
 The user clicked on the LineString.
 
 ### Drag
 
-<div block-type = "component_event" component-selector = "LineString" event-selector = "Drag" event-params = "" id = "linestring-drag"></div>
+<div block-type = "component_event" component-selector = "LineString" event-selector = "Drag" id = "linestring-drag"></div>
 
 The user dragged the LineString.
 
 ### LongClick
 
-<div block-type = "component_event" component-selector = "LineString" event-selector = "LongClick" event-params = "" id = "linestring-longclick"></div>
+<div block-type = "component_event" component-selector = "LineString" event-selector = "LongClick" id = "linestring-longclick"></div>
 
 The user long-pressed on the LineString. This event will only trigger if Draggable is false.
 
 ### StartDrag
 
-<div block-type = "component_event" component-selector = "LineString" event-selector = "StartDrag" event-params = "" id = "linestring-startdrag"></div>
+<div block-type = "component_event" component-selector = "LineString" event-selector = "StartDrag" id = "linestring-startdrag"></div>
 
 The user started a drag operation.
 
 ### StopDrag
 
-<div block-type = "component_event" component-selector = "LineString" event-selector = "StopDrag" event-params = "" id = "linestring-stopdrag"></div>
+<div block-type = "component_event" component-selector = "LineString" event-selector = "StopDrag" id = "linestring-stopdrag"></div>
 
 The user stopped a drag operation.
 
@@ -102,7 +108,7 @@ The user stopped a drag operation.
 
 ### DistanceToFeature
 
-<div block-type = "component_method" component-selector = "LineString" method-selector = "DistanceToFeature" method-params = "mapFeature-centroids" return-type = "number" id = "linestring-distancetofeature"></div>
+<div block-type = "component_method" component-selector = "LineString" method-selector = "DistanceToFeature" id = "linestring-distancetofeature"></div>
 
 Return Type : number
 
@@ -115,7 +121,7 @@ Compute the distance, in meters, between two map features.
 
 ### DistanceToPoint
 
-<div block-type = "component_method" component-selector = "LineString" method-selector = "DistanceToPoint" method-params = "latitude-longitude-centroid" return-type = "number" id = "linestring-distancetopoint"></div>
+<div block-type = "component_method" component-selector = "LineString" method-selector = "DistanceToPoint" id = "linestring-distancetopoint"></div>
 
 Return Type : number
 
@@ -129,7 +135,7 @@ Compute the distance, in meters, between a LineString and a latitude, longitude 
 
 ### HideInfobox
 
-<div block-type = "component_method" component-selector = "LineString" method-selector = "HideInfobox" method-params = "" return-type = "undefined" id = "linestring-hideinfobox"></div>
+<div block-type = "component_method" component-selector = "LineString" method-selector = "HideInfobox" id = "linestring-hideinfobox"></div>
 
 Return Type : No Return Value
 
@@ -137,7 +143,7 @@ Hide the infobox if it is shown. If the infobox is not visible this function has
 
 ### ShowInfobox
 
-<div block-type = "component_method" component-selector = "LineString" method-selector = "ShowInfobox" method-params = "" return-type = "undefined" id = "linestring-showinfobox"></div>
+<div block-type = "component_method" component-selector = "LineString" method-selector = "ShowInfobox" id = "linestring-showinfobox"></div>
 
 Return Type : No Return Value
 

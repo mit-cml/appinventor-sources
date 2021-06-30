@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Circle
 
 Circle
@@ -92,31 +98,31 @@ Circle
 
 ### Click
 
-<div block-type = "component_event" component-selector = "Circle" event-selector = "Click" event-params = "" id = "circle-click"></div>
+<div block-type = "component_event" component-selector = "Circle" event-selector = "Click" id = "circle-click"></div>
 
 The user clicked on the Circle.
 
 ### Drag
 
-<div block-type = "component_event" component-selector = "Circle" event-selector = "Drag" event-params = "" id = "circle-drag"></div>
+<div block-type = "component_event" component-selector = "Circle" event-selector = "Drag" id = "circle-drag"></div>
 
 The user dragged the Circle.
 
 ### LongClick
 
-<div block-type = "component_event" component-selector = "Circle" event-selector = "LongClick" event-params = "" id = "circle-longclick"></div>
+<div block-type = "component_event" component-selector = "Circle" event-selector = "LongClick" id = "circle-longclick"></div>
 
 The user long-pressed on the Circle. This event will only trigger if Draggable is false.
 
 ### StartDrag
 
-<div block-type = "component_event" component-selector = "Circle" event-selector = "StartDrag" event-params = "" id = "circle-startdrag"></div>
+<div block-type = "component_event" component-selector = "Circle" event-selector = "StartDrag" id = "circle-startdrag"></div>
 
 The user started a drag operation.
 
 ### StopDrag
 
-<div block-type = "component_event" component-selector = "Circle" event-selector = "StopDrag" event-params = "" id = "circle-stopdrag"></div>
+<div block-type = "component_event" component-selector = "Circle" event-selector = "StopDrag" id = "circle-stopdrag"></div>
 
 The user stopped a drag operation.
 
@@ -126,7 +132,7 @@ The user stopped a drag operation.
 
 ### DistanceToFeature
 
-<div block-type = "component_method" component-selector = "Circle" method-selector = "DistanceToFeature" method-params = "mapFeature-centroids" return-type = "number" id = "circle-distancetofeature"></div>
+<div block-type = "component_method" component-selector = "Circle" method-selector = "DistanceToFeature" id = "circle-distancetofeature"></div>
 
 Return Type : number
 
@@ -139,7 +145,7 @@ Compute the distance, in meters, between two map features.
 
 ### DistanceToPoint
 
-<div block-type = "component_method" component-selector = "Circle" method-selector = "DistanceToPoint" method-params = "latitude-longitude-centroid" return-type = "number" id = "circle-distancetopoint"></div>
+<div block-type = "component_method" component-selector = "Circle" method-selector = "DistanceToPoint" id = "circle-distancetopoint"></div>
 
 Return Type : number
 
@@ -153,7 +159,7 @@ Compute the distance, in meters, between a Circle and a latitude, longitude poin
 
 ### HideInfobox
 
-<div block-type = "component_method" component-selector = "Circle" method-selector = "HideInfobox" method-params = "" return-type = "undefined" id = "circle-hideinfobox"></div>
+<div block-type = "component_method" component-selector = "Circle" method-selector = "HideInfobox" id = "circle-hideinfobox"></div>
 
 Return Type : No Return Value
 
@@ -161,7 +167,7 @@ Hide the infobox if it is shown. If the infobox is not visible this function has
 
 ### SetLocation
 
-<div block-type = "component_method" component-selector = "Circle" method-selector = "SetLocation" method-params = "latitude-longitude" return-type = "undefined" id = "circle-setlocation"></div>
+<div block-type = "component_method" component-selector = "Circle" method-selector = "SetLocation" id = "circle-setlocation"></div>
 
 Return Type : No Return Value
 
@@ -174,7 +180,7 @@ Set the center of the Circle.
 
 ### ShowInfobox
 
-<div block-type = "component_method" component-selector = "Circle" method-selector = "ShowInfobox" method-params = "" return-type = "undefined" id = "circle-showinfobox"></div>
+<div block-type = "component_method" component-selector = "Circle" method-selector = "ShowInfobox" id = "circle-showinfobox"></div>
 
 Return Type : No Return Value
 

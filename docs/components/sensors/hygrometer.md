@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Hygrometer
 
 A sensor component that can measure the relative ambient air humidity. Most Android devices do not have this sensor.
@@ -26,7 +32,7 @@ A sensor component that can measure the relative ambient air humidity. Most Andr
 
 ### HumidityChanged
 
-<div block-type = "component_event" component-selector = "Hygrometer" event-selector = "HumidityChanged" event-params = "humidity" id = "hygrometer-humiditychanged"></div>
+<div block-type = "component_event" component-selector = "Hygrometer" event-selector = "HumidityChanged" id = "hygrometer-humiditychanged"></div>
 
 Called when a change is detected in the ambient air humidity (expressed as a percentage).
 

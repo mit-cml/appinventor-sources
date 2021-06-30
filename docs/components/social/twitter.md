@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Twitter
 
 A non-visible component that enables communication with [Twitter](http://www.twitter.com). Once a user has logged into their Twitter account (and the authorization has been confirmed successful by the `IsAuthorized` event), many more operations are available:
@@ -39,7 +45,7 @@ You must obtain a Consumer Key and Consumer Secret for Twitter authorization spe
 
 ### DirectMessagesReceived
 
-<div block-type = "component_event" component-selector = "Twitter" event-selector = "DirectMessagesReceived" event-params = "messages" id = "twitter-directmessagesreceived"></div>
+<div block-type = "component_event" component-selector = "Twitter" event-selector = "DirectMessagesReceived" id = "twitter-directmessagesreceived"></div>
 
 This event is raised when the recent messages requested through `RequestDirectMessages` have been retrieved. A list of the messages can then be found in the `messages` parameter or the `Messages` property.
 
@@ -49,7 +55,7 @@ This event is raised when the recent messages requested through `RequestDirectMe
 
 ### FollowersReceived
 
-<div block-type = "component_event" component-selector = "Twitter" event-selector = "FollowersReceived" event-params = "followers2" id = "twitter-followersreceived"></div>
+<div block-type = "component_event" component-selector = "Twitter" event-selector = "FollowersReceived" id = "twitter-followersreceived"></div>
 
 This event is raised when all of the followers of the logged-in user requested through `RequestFollowers` have been retrieved. A list of the followers can then be found in the `followers` parameter or the `Followers` property.
 
@@ -59,7 +65,7 @@ This event is raised when all of the followers of the logged-in user requested t
 
 ### FriendTimelineReceived
 
-<div block-type = "component_event" component-selector = "Twitter" event-selector = "FriendTimelineReceived" event-params = "timeline" id = "twitter-friendtimelinereceived"></div>
+<div block-type = "component_event" component-selector = "Twitter" event-selector = "FriendTimelineReceived" id = "twitter-friendtimelinereceived"></div>
 
 This event is raised when the messages requested through `RequestFriendTimeline` have been retrieved. The `timeline` parameter and the `Timeline` property will contain a list of lists, where each sub-list contains a status update of the form (username message)
 
@@ -69,13 +75,13 @@ This event is raised when the messages requested through `RequestFriendTimeline`
 
 ### IsAuthorized
 
-<div block-type = "component_event" component-selector = "Twitter" event-selector = "IsAuthorized" event-params = "" id = "twitter-isauthorized"></div>
+<div block-type = "component_event" component-selector = "Twitter" event-selector = "IsAuthorized" id = "twitter-isauthorized"></div>
 
 This event is raised after the program calls `Authorize` if the authorization was successful. It is also called after a call to `CheckAuthorized` if we already have a valid access token. After this event has been raised, any other method for this component can be called.
 
 ### MentionsReceived
 
-<div block-type = "component_event" component-selector = "Twitter" event-selector = "MentionsReceived" event-params = "mentions" id = "twitter-mentionsreceived"></div>
+<div block-type = "component_event" component-selector = "Twitter" event-selector = "MentionsReceived" id = "twitter-mentionsreceived"></div>
 
 This event is raised when the mentions of the logged-in user requested through `RequestMentions` have been retrieved. A list of the mentions can then be found in the `mentions` parameter or the `Mentions` property.
 
@@ -85,7 +91,7 @@ This event is raised when the mentions of the logged-in user requested through `
 
 ### SearchSuccessful
 
-<div block-type = "component_event" component-selector = "Twitter" event-selector = "SearchSuccessful" event-params = "searchResults" id = "twitter-searchsuccessful"></div>
+<div block-type = "component_event" component-selector = "Twitter" event-selector = "SearchSuccessful" id = "twitter-searchsuccessful"></div>
 
 This event is raised when the results of the search requested through `SearchSuccessful` have been retrieved. A list of the results can then be found in the `results` parameter or the `Results` property.
 
@@ -99,7 +105,7 @@ This event is raised when the results of the search requested through `SearchSuc
 
 ### Authorize
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "Authorize" method-params = "" return-type = "undefined" id = "twitter-authorize"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "Authorize" id = "twitter-authorize"></div>
 
 Return Type : No Return Value
 
@@ -107,7 +113,7 @@ Redirects user to login to Twitter via the Web browser using the OAuth protocol 
 
 ### CheckAuthorized
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "CheckAuthorized" method-params = "" return-type = "undefined" id = "twitter-checkauthorized"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "CheckAuthorized" id = "twitter-checkauthorized"></div>
 
 Return Type : No Return Value
 
@@ -115,7 +121,7 @@ Checks whether we already have access, and if so, causes IsAuthorized event hand
 
 ### DeAuthorize
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "DeAuthorize" method-params = "" return-type = "undefined" id = "twitter-deauthorize"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "DeAuthorize" id = "twitter-deauthorize"></div>
 
 Return Type : No Return Value
 
@@ -123,7 +129,7 @@ Removes Twitter authorization from this running app instance
 
 ### DirectMessage
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "DirectMessage" method-params = "user-message" return-type = "undefined" id = "twitter-directmessage"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "DirectMessage" id = "twitter-directmessage"></div>
 
 Return Type : No Return Value
 
@@ -138,7 +144,7 @@ Requirements: This should only be called after the `IsAuthorized` event has been
 
 ### Follow
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "Follow" method-params = "user" return-type = "undefined" id = "twitter-follow"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "Follow" id = "twitter-follow"></div>
 
 Return Type : No Return Value
 
@@ -150,7 +156,7 @@ Starts following a user.
 
 ### Login
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "Login" method-params = "username-password" return-type = "undefined" id = "twitter-login"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "Login" id = "twitter-login"></div>
 
 Return Type : No Return Value
 
@@ -163,7 +169,7 @@ Twitter's API no longer supports login via username and password. Use the Author
 
 ### RequestDirectMessages
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "RequestDirectMessages" method-params = "" return-type = "undefined" id = "twitter-requestdirectmessages"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "RequestDirectMessages" id = "twitter-requestdirectmessages"></div>
 
 Return Type : No Return Value
 
@@ -173,7 +179,7 @@ Requirements: This should only be called after the `IsAuthorized` event has been
 
 ### RequestFollowers
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "RequestFollowers" method-params = "" return-type = "undefined" id = "twitter-requestfollowers"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "RequestFollowers" id = "twitter-requestfollowers"></div>
 
 Return Type : No Return Value
 
@@ -181,7 +187,7 @@ Gets who is following you.
 
 ### RequestFriendTimeline
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "RequestFriendTimeline" method-params = "" return-type = "undefined" id = "twitter-requestfriendtimeline"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "RequestFriendTimeline" id = "twitter-requestfriendtimeline"></div>
 
 Return Type : No Return Value
 
@@ -189,7 +195,7 @@ Gets the most recent 20 messages in the user's timeline.
 
 ### RequestMentions
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "RequestMentions" method-params = "" return-type = "undefined" id = "twitter-requestmentions"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "RequestMentions" id = "twitter-requestmentions"></div>
 
 Return Type : No Return Value
 
@@ -199,7 +205,7 @@ Requirements: This should only be called after the `IsAuthorized` event has been
 
 ### SearchTwitter
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "SearchTwitter" method-params = "query" return-type = "undefined" id = "twitter-searchtwitter"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "SearchTwitter" id = "twitter-searchtwitter"></div>
 
 Return Type : No Return Value
 
@@ -213,7 +219,7 @@ Requirements: This should only be called after the `IsAuthorized` event has been
 
 ### StopFollowing
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "StopFollowing" method-params = "user" return-type = "undefined" id = "twitter-stopfollowing"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "StopFollowing" id = "twitter-stopfollowing"></div>
 
 Return Type : No Return Value
 
@@ -225,7 +231,7 @@ Stops following a user.
 
 ### Tweet
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "Tweet" method-params = "status" return-type = "undefined" id = "twitter-tweet"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "Tweet" id = "twitter-tweet"></div>
 
 Return Type : No Return Value
 
@@ -239,7 +245,7 @@ Requirements: This should only be called after the `IsAuthorized` event has been
 
 ### TweetWithImage
 
-<div block-type = "component_method" component-selector = "Twitter" method-selector = "TweetWithImage" method-params = "status-imagePath" return-type = "undefined" id = "twitter-tweetwithimage"></div>
+<div block-type = "component_method" component-selector = "Twitter" method-selector = "TweetWithImage" id = "twitter-tweetwithimage"></div>
 
 Return Type : No Return Value
 

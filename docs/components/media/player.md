@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Player
 
 Multimedia component that plays audio and controls phone vibration. The name of a multimedia field is specified in the `Source` property, which can be set in the Designer or in the Blocks Editor. The length of time for a vibration is specified in the Blocks Editor in milliseconds (thousandths of a second).
@@ -42,19 +48,19 @@ This component is best for long sound files, such as songs, while the `Sound` co
 
 ### Completed
 
-<div block-type = "component_event" component-selector = "Player" event-selector = "Completed" event-params = "" id = "player-completed"></div>
+<div block-type = "component_event" component-selector = "Player" event-selector = "Completed" id = "player-completed"></div>
 
 Indicates that the media has reached the end
 
 ### OtherPlayerStarted
 
-<div block-type = "component_event" component-selector = "Player" event-selector = "OtherPlayerStarted" event-params = "" id = "player-otherplayerstarted"></div>
+<div block-type = "component_event" component-selector = "Player" event-selector = "OtherPlayerStarted" id = "player-otherplayerstarted"></div>
 
 This event is signaled when another player has started (and the current player is playing or paused, but not stopped).
 
 ### PlayerError
 
-<div block-type = "component_event" component-selector = "Player" event-selector = "PlayerError" event-params = "message" id = "player-playererror"></div>
+<div block-type = "component_event" component-selector = "Player" event-selector = "PlayerError" id = "player-playererror"></div>
 
 The PlayerError event is no longer used. Please use the Screen.ErrorOccurred event instead.
 
@@ -68,7 +74,7 @@ The PlayerError event is no longer used. Please use the Screen.ErrorOccurred eve
 
 ### Pause
 
-<div block-type = "component_method" component-selector = "Player" method-selector = "Pause" method-params = "" return-type = "undefined" id = "player-pause"></div>
+<div block-type = "component_method" component-selector = "Player" method-selector = "Pause" id = "player-pause"></div>
 
 Return Type : No Return Value
 
@@ -76,7 +82,7 @@ Suspends playing the media if it is playing.
 
 ### Start
 
-<div block-type = "component_method" component-selector = "Player" method-selector = "Start" method-params = "" return-type = "undefined" id = "player-start"></div>
+<div block-type = "component_method" component-selector = "Player" method-selector = "Start" id = "player-start"></div>
 
 Return Type : No Return Value
 
@@ -84,7 +90,7 @@ Plays the media. If it was previously paused, the playing is resumed. If it was 
 
 ### Stop
 
-<div block-type = "component_method" component-selector = "Player" method-selector = "Stop" method-params = "" return-type = "undefined" id = "player-stop"></div>
+<div block-type = "component_method" component-selector = "Player" method-selector = "Stop" id = "player-stop"></div>
 
 Return Type : No Return Value
 
@@ -92,7 +98,7 @@ Stops playing the media and seeks to the beginning of the song.
 
 ### Vibrate
 
-<div block-type = "component_method" component-selector = "Player" method-selector = "Vibrate" method-params = "milliseconds" return-type = "undefined" id = "player-vibrate"></div>
+<div block-type = "component_method" component-selector = "Player" method-selector = "Vibrate" id = "player-vibrate"></div>
 
 Return Type : No Return Value
 

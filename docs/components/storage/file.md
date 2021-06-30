@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # File
 
 Non-visible component for storing and retrieving files. Use this component to write or read files on your device. The default behaviour is to write files to the private data directory associated with your App. The Companion is special cased to write files to /sdcard/AppInventor/data to facilitate debugging. If the file path starts with a slash (/), then the file is created relative to /sdcard. For example writing a file to /myFile.txt will write the file in /sdcard/myFile.txt.
@@ -20,7 +26,7 @@ Non-visible component for storing and retrieving files. Use this component to wr
 
 ### AfterFileSaved
 
-<div block-type = "component_event" component-selector = "File" event-selector = "AfterFileSaved" event-params = "fileName" id = "file-afterfilesaved"></div>
+<div block-type = "component_event" component-selector = "File" event-selector = "AfterFileSaved" id = "file-afterfilesaved"></div>
 
 Event indicating that the contents of the file have been written.
 
@@ -30,7 +36,7 @@ Event indicating that the contents of the file have been written.
 
 ### GotText
 
-<div block-type = "component_event" component-selector = "File" event-selector = "GotText" event-params = "text" id = "file-gottext"></div>
+<div block-type = "component_event" component-selector = "File" event-selector = "GotText" id = "file-gottext"></div>
 
 Event indicating that the contents from the file have been read.
 
@@ -44,7 +50,7 @@ Event indicating that the contents from the file have been read.
 
 ### AppendToFile
 
-<div block-type = "component_method" component-selector = "File" method-selector = "AppendToFile" method-params = "text-fileName" return-type = "undefined" id = "file-appendtofile"></div>
+<div block-type = "component_method" component-selector = "File" method-selector = "AppendToFile" id = "file-appendtofile"></div>
 
 Return Type : No Return Value
 
@@ -57,7 +63,7 @@ Appends text to the end of a file storage, creating the file if it does not exis
 
 ### Delete
 
-<div block-type = "component_method" component-selector = "File" method-selector = "Delete" method-params = "fileName" return-type = "undefined" id = "file-delete"></div>
+<div block-type = "component_method" component-selector = "File" method-selector = "Delete" id = "file-delete"></div>
 
 Return Type : No Return Value
 
@@ -69,7 +75,7 @@ Deletes a file from storage. Prefix the filename with / to delete a specific fil
 
 ### ReadFrom
 
-<div block-type = "component_method" component-selector = "File" method-selector = "ReadFrom" method-params = "fileName" return-type = "undefined" id = "file-readfrom"></div>
+<div block-type = "component_method" component-selector = "File" method-selector = "ReadFrom" id = "file-readfrom"></div>
 
 Return Type : No Return Value
 
@@ -81,7 +87,7 @@ Reads text from a file in storage. Prefix the filename with / to read from a spe
 
 ### SaveFile
 
-<div block-type = "component_method" component-selector = "File" method-selector = "SaveFile" method-params = "text-fileName" return-type = "undefined" id = "file-savefile"></div>
+<div block-type = "component_method" component-selector = "File" method-selector = "SaveFile" id = "file-savefile"></div>
 
 Return Type : No Return Value
 

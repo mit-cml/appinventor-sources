@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # NxtLightSensor
 
 A component that provides a high-level interface to a light sensor on a LEGO MINDSTORMS NXT robot.
@@ -62,19 +68,19 @@ A component that provides a high-level interface to a light sensor on a LEGO MIN
 
 ### AboveRange
 
-<div block-type = "component_event" component-selector = "NxtLightSensor" event-selector = "AboveRange" event-params = "" id = "nxtlightsensor-aboverange"></div>
+<div block-type = "component_event" component-selector = "NxtLightSensor" event-selector = "AboveRange" id = "nxtlightsensor-aboverange"></div>
 
 Light level has gone above the range.
 
 ### BelowRange
 
-<div block-type = "component_event" component-selector = "NxtLightSensor" event-selector = "BelowRange" event-params = "" id = "nxtlightsensor-belowrange"></div>
+<div block-type = "component_event" component-selector = "NxtLightSensor" event-selector = "BelowRange" id = "nxtlightsensor-belowrange"></div>
 
 Light level has gone below the range.
 
 ### WithinRange
 
-<div block-type = "component_event" component-selector = "NxtLightSensor" event-selector = "WithinRange" event-params = "" id = "nxtlightsensor-withinrange"></div>
+<div block-type = "component_event" component-selector = "NxtLightSensor" event-selector = "WithinRange" id = "nxtlightsensor-withinrange"></div>
 
 Light level has gone within the range.
 
@@ -84,7 +90,7 @@ Light level has gone within the range.
 
 ### GetLightLevel
 
-<div block-type = "component_method" component-selector = "NxtLightSensor" method-selector = "GetLightLevel" method-params = "" return-type = "number" id = "nxtlightsensor-getlightlevel"></div>
+<div block-type = "component_method" component-selector = "NxtLightSensor" method-selector = "GetLightLevel" id = "nxtlightsensor-getlightlevel"></div>
 
 Return Type : number
 

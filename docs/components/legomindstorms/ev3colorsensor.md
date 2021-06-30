@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Ev3ColorSensor
 
 A component that provides a high-level interface to a color sensor on a LEGO MINDSTORMS EV3 robot.
@@ -68,19 +74,19 @@ A component that provides a high-level interface to a color sensor on a LEGO MIN
 
 ### AboveRange
 
-<div block-type = "component_event" component-selector = "Ev3ColorSensor" event-selector = "AboveRange" event-params = "" id = "ev3colorsensor-aboverange"></div>
+<div block-type = "component_event" component-selector = "Ev3ColorSensor" event-selector = "AboveRange" id = "ev3colorsensor-aboverange"></div>
 
 Light level has gone above the range.
 
 ### BelowRange
 
-<div block-type = "component_event" component-selector = "Ev3ColorSensor" event-selector = "BelowRange" event-params = "" id = "ev3colorsensor-belowrange"></div>
+<div block-type = "component_event" component-selector = "Ev3ColorSensor" event-selector = "BelowRange" id = "ev3colorsensor-belowrange"></div>
 
 Light level has gone below the range.
 
 ### ColorChanged
 
-<div block-type = "component_event" component-selector = "Ev3ColorSensor" event-selector = "ColorChanged" event-params = "colorCode-colorName" id = "ev3colorsensor-colorchanged"></div>
+<div block-type = "component_event" component-selector = "Ev3ColorSensor" event-selector = "ColorChanged" id = "ev3colorsensor-colorchanged"></div>
 
 Called when the detected color has changed. The ColorChanged event will occur if the Mode property is set to "color" and the ColorChangedEventEnabled property is set to True.
 
@@ -91,7 +97,7 @@ Called when the detected color has changed. The ColorChanged event will occur if
 
 ### WithinRange
 
-<div block-type = "component_event" component-selector = "Ev3ColorSensor" event-selector = "WithinRange" event-params = "" id = "ev3colorsensor-withinrange"></div>
+<div block-type = "component_event" component-selector = "Ev3ColorSensor" event-selector = "WithinRange" id = "ev3colorsensor-withinrange"></div>
 
 Light level has gone within the range.
 
@@ -101,7 +107,7 @@ Light level has gone within the range.
 
 ### GetColorCode
 
-<div block-type = "component_method" component-selector = "Ev3ColorSensor" method-selector = "GetColorCode" method-params = "" return-type = "number" id = "ev3colorsensor-getcolorcode"></div>
+<div block-type = "component_method" component-selector = "Ev3ColorSensor" method-selector = "GetColorCode" id = "ev3colorsensor-getcolorcode"></div>
 
 Return Type : number
 
@@ -109,7 +115,7 @@ It returns the color code from 0 to 7 corresponding to no color, black, blue, gr
 
 ### GetColorName
 
-<div block-type = "component_method" component-selector = "Ev3ColorSensor" method-selector = "GetColorName" method-params = "" return-type = "text" id = "ev3colorsensor-getcolorname"></div>
+<div block-type = "component_method" component-selector = "Ev3ColorSensor" method-selector = "GetColorName" id = "ev3colorsensor-getcolorname"></div>
 
 Return Type : text
 
@@ -117,7 +123,7 @@ Return the color name in one of "No Color", "Black", "Blue", "Green", "Yellow", 
 
 ### GetLightLevel
 
-<div block-type = "component_method" component-selector = "Ev3ColorSensor" method-selector = "GetLightLevel" method-params = "" return-type = "number" id = "ev3colorsensor-getlightlevel"></div>
+<div block-type = "component_method" component-selector = "Ev3ColorSensor" method-selector = "GetLightLevel" id = "ev3colorsensor-getlightlevel"></div>
 
 Return Type : number
 

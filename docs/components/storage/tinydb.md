@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # TinyDB
 
 TinyDB is a non-visible component that stores data for an app.
@@ -28,7 +34,7 @@ When you are developing apps using the AI Companion, all the apps using that com
 
 ### ClearAll
 
-<div block-type = "component_method" component-selector = "TinyDB" method-selector = "ClearAll" method-params = "" return-type = "undefined" id = "tinydb-clearall"></div>
+<div block-type = "component_method" component-selector = "TinyDB" method-selector = "ClearAll" id = "tinydb-clearall"></div>
 
 Return Type : No Return Value
 
@@ -36,7 +42,7 @@ Clear the entire data store.
 
 ### ClearTag
 
-<div block-type = "component_method" component-selector = "TinyDB" method-selector = "ClearTag" method-params = "tag" return-type = "undefined" id = "tinydb-cleartag"></div>
+<div block-type = "component_method" component-selector = "TinyDB" method-selector = "ClearTag" id = "tinydb-cleartag"></div>
 
 Return Type : No Return Value
 
@@ -48,7 +54,7 @@ Clear the entry with the given tag.
 
 ### GetTags
 
-<div block-type = "component_method" component-selector = "TinyDB" method-selector = "GetTags" method-params = "" return-type = "any" id = "tinydb-gettags"></div>
+<div block-type = "component_method" component-selector = "TinyDB" method-selector = "GetTags" id = "tinydb-gettags"></div>
 
 Return Type : any
 
@@ -56,7 +62,7 @@ Return a list of all the tags in the data store.
 
 ### GetValue
 
-<div block-type = "component_method" component-selector = "TinyDB" method-selector = "GetValue" method-params = "tag-valueIfTagNotThere" return-type = "any" id = "tinydb-getvalue"></div>
+<div block-type = "component_method" component-selector = "TinyDB" method-selector = "GetValue" id = "tinydb-getvalue"></div>
 
 Return Type : any
 
@@ -69,7 +75,7 @@ Retrieve the value stored under the given tag. If there's no such tag, then retu
 
 ### StoreValue
 
-<div block-type = "component_method" component-selector = "TinyDB" method-selector = "StoreValue" method-params = "tag-valueToStore" return-type = "undefined" id = "tinydb-storevalue"></div>
+<div block-type = "component_method" component-selector = "TinyDB" method-selector = "StoreValue" id = "tinydb-storevalue"></div>
 
 Return Type : No Return Value
 

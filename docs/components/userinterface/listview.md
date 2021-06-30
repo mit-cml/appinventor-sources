@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # ListView
 
 This is a visible component that displays a list of text elements.  
@@ -63,7 +69,7 @@ The list can be set using the ElementsFromString property or using the Elements 
 
 ### AfterPicking
 
-<div block-type = "component_event" component-selector = "ListView" event-selector = "AfterPicking" event-params = "" id = "listview-afterpicking"></div>
+<div block-type = "component_event" component-selector = "ListView" event-selector = "AfterPicking" id = "listview-afterpicking"></div>
 
 Simple event to be raised after the an element has been chosen in the list. The selected element is available in the Selection property.
 

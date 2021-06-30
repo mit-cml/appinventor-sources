@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Canvas
 
 A two-dimensional touch-sensitive rectangular panel on which drawing can be done and sprites can be moved.
@@ -79,7 +85,7 @@ There are events to tell when and where a Canvas has been touched or a `Sprite` 
 
 ### Dragged
 
-<div block-type = "component_event" component-selector = "Canvas" event-selector = "Dragged" event-params = "startX-startY-prevX-prevY-currentX-currentY-draggedAnySprite" id = "canvas-dragged"></div>
+<div block-type = "component_event" component-selector = "Canvas" event-selector = "Dragged" id = "canvas-dragged"></div>
 
 When the user does a drag from one point (prevX, prevY) to another (x, y). The pair (startX, startY) indicates where the user first touched the screen, and "draggedAnySprite" indicates whether a sprite is being dragged.
 
@@ -95,7 +101,7 @@ When the user does a drag from one point (prevX, prevY) to another (x, y). The p
 
 ### Flung
 
-<div block-type = "component_event" component-selector = "Canvas" event-selector = "Flung" event-params = "x-y-speed-heading-xvel-yvel-flungSprite" id = "canvas-flung"></div>
+<div block-type = "component_event" component-selector = "Canvas" event-selector = "Flung" id = "canvas-flung"></div>
 
 When a fling gesture (quick swipe) is made on the canvas: provides the (x,y) position of the start of the fling, relative to the upper left of the canvas. Also provides the speed (pixels per millisecond) and heading (0-360 degrees) of the fling, as well as the x velocity and y velocity components of the fling's vector. The value "flungSprite" is true if a sprite was located near the the starting point of the fling gesture.
 
@@ -111,7 +117,7 @@ When a fling gesture (quick swipe) is made on the canvas: provides the (x,y) pos
 
 ### TouchDown
 
-<div block-type = "component_event" component-selector = "Canvas" event-selector = "TouchDown" event-params = "x-y" id = "canvas-touchdown"></div>
+<div block-type = "component_event" component-selector = "Canvas" event-selector = "TouchDown" id = "canvas-touchdown"></div>
 
 When the user begins touching the canvas (places finger on canvas and leaves it there): provides the (x,y) position of the touch, relative to the upper left of the canvas
 
@@ -122,7 +128,7 @@ When the user begins touching the canvas (places finger on canvas and leaves it 
 
 ### TouchUp
 
-<div block-type = "component_event" component-selector = "Canvas" event-selector = "TouchUp" event-params = "x-y" id = "canvas-touchup"></div>
+<div block-type = "component_event" component-selector = "Canvas" event-selector = "TouchUp" id = "canvas-touchup"></div>
 
 When the user stops touching the canvas (lifts finger after a TouchDown event): provides the (x,y) position of the touch, relative to the upper left of the canvas
 
@@ -133,7 +139,7 @@ When the user stops touching the canvas (lifts finger after a TouchDown event): 
 
 ### Touched
 
-<div block-type = "component_event" component-selector = "Canvas" event-selector = "Touched" event-params = "x-y-touchedAnySprite" id = "canvas-touched"></div>
+<div block-type = "component_event" component-selector = "Canvas" event-selector = "Touched" id = "canvas-touched"></div>
 
 When the user touches the canvas and then immediately lifts finger: provides the (x,y) position of the touch, relative to the upper left of the canvas. TouchedAnySprite is true if the same touch also touched a sprite, and false otherwise.
 
@@ -149,7 +155,7 @@ When the user touches the canvas and then immediately lifts finger: provides the
 
 ### Clear
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "Clear" method-params = "" return-type = "undefined" id = "canvas-clear"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "Clear" id = "canvas-clear"></div>
 
 Return Type : No Return Value
 
@@ -157,7 +163,7 @@ Clears anything drawn on this Canvas but not any background color or image.
 
 ### DrawArc
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawArc" method-params = "left-top-right-bottom-startAngle-sweepAngle-useCenter-fill" return-type = "undefined" id = "canvas-drawarc"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawArc" id = "canvas-drawarc"></div>
 
 Return Type : No Return Value
 
@@ -176,7 +182,7 @@ Draw an arc on Canvas, by drawing an arc from a specified oval (specified by lef
 
 ### DrawCircle
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawCircle" method-params = "centerX-centerY-radius-fill" return-type = "undefined" id = "canvas-drawcircle"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawCircle" id = "canvas-drawcircle"></div>
 
 Return Type : No Return Value
 
@@ -191,7 +197,7 @@ Draws a circle (filled in) with the given radius centered at the given coordinat
 
 ### DrawLine
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawLine" method-params = "x1-y1-x2-y2" return-type = "undefined" id = "canvas-drawline"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawLine" id = "canvas-drawline"></div>
 
 Return Type : No Return Value
 
@@ -206,7 +212,7 @@ Draws a line between the given coordinates on the canvas.
 
 ### DrawPoint
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawPoint" method-params = "x-y" return-type = "undefined" id = "canvas-drawpoint"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawPoint" id = "canvas-drawpoint"></div>
 
 Return Type : No Return Value
 
@@ -219,7 +225,7 @@ Draws a point at the given coordinates on the canvas.
 
 ### DrawShape
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawShape" method-params = "pointList-fill" return-type = "undefined" id = "canvas-drawshape"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawShape" id = "canvas-drawshape"></div>
 
 Return Type : No Return Value
 
@@ -232,7 +238,7 @@ Draws a shape on the canvas. pointList should be a list contains sub-lists with 
 
 ### DrawText
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawText" method-params = "text-x-y" return-type = "undefined" id = "canvas-drawtext"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawText" id = "canvas-drawtext"></div>
 
 Return Type : No Return Value
 
@@ -246,7 +252,7 @@ Draws the specified text relative to the specified coordinates using the values 
 
 ### DrawTextAtAngle
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawTextAtAngle" method-params = "text-x-y-angle" return-type = "undefined" id = "canvas-drawtextatangle"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "DrawTextAtAngle" id = "canvas-drawtextatangle"></div>
 
 Return Type : No Return Value
 
@@ -261,7 +267,7 @@ Draws the specified text starting at the specified coordinates at the specified 
 
 ### GetBackgroundPixelColor
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "GetBackgroundPixelColor" method-params = "x-y" return-type = "number" id = "canvas-getbackgroundpixelcolor"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "GetBackgroundPixelColor" id = "canvas-getbackgroundpixelcolor"></div>
 
 Return Type : number
 
@@ -274,7 +280,7 @@ Gets the color of the specified point. This includes the background and any draw
 
 ### GetPixelColor
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "GetPixelColor" method-params = "x-y" return-type = "number" id = "canvas-getpixelcolor"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "GetPixelColor" id = "canvas-getpixelcolor"></div>
 
 Return Type : number
 
@@ -287,7 +293,7 @@ Gets the color of the specified point.
 
 ### Save
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "Save" method-params = "" return-type = "text" id = "canvas-save"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "Save" id = "canvas-save"></div>
 
 Return Type : text
 
@@ -295,7 +301,7 @@ Saves a picture of this Canvas to the device's external storage. If an error occ
 
 ### SaveAs
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "SaveAs" method-params = "fileName" return-type = "text" id = "canvas-saveas"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "SaveAs" id = "canvas-saveas"></div>
 
 Return Type : text
 
@@ -307,7 +313,7 @@ Saves a picture of this Canvas to the device's external storage in the file name
 
 ### SetBackgroundPixelColor
 
-<div block-type = "component_method" component-selector = "Canvas" method-selector = "SetBackgroundPixelColor" method-params = "x-y-color" return-type = "undefined" id = "canvas-setbackgroundpixelcolor"></div>
+<div block-type = "component_method" component-selector = "Canvas" method-selector = "SetBackgroundPixelColor" id = "canvas-setbackgroundpixelcolor"></div>
 
 Return Type : No Return Value
 

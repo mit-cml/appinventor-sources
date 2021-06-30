@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Sound
 
 A multimedia component that plays sound files and optionally vibrates for the number of milliseconds (thousandths of a second) specified in the Blocks Editor. The name of the sound file to play can be specified either in the Designer or in the Blocks Editor.
@@ -32,7 +38,7 @@ You might get an error if you attempt to play a sound immeditely after setting t
 
 ### SoundError
 
-<div block-type = "component_event" component-selector = "Sound" event-selector = "SoundError" event-params = "message" id = "sound-sounderror"></div>
+<div block-type = "component_event" component-selector = "Sound" event-selector = "SoundError" id = "sound-sounderror"></div>
 
 The SoundError event is no longer used. Please use the Screen.ErrorOccurred event instead.
 
@@ -46,7 +52,7 @@ The SoundError event is no longer used. Please use the Screen.ErrorOccurred even
 
 ### Pause
 
-<div block-type = "component_method" component-selector = "Sound" method-selector = "Pause" method-params = "" return-type = "undefined" id = "sound-pause"></div>
+<div block-type = "component_method" component-selector = "Sound" method-selector = "Pause" id = "sound-pause"></div>
 
 Return Type : No Return Value
 
@@ -54,7 +60,7 @@ Pauses playing the sound if it is being played.
 
 ### Play
 
-<div block-type = "component_method" component-selector = "Sound" method-selector = "Play" method-params = "" return-type = "undefined" id = "sound-play"></div>
+<div block-type = "component_method" component-selector = "Sound" method-selector = "Play" id = "sound-play"></div>
 
 Return Type : No Return Value
 
@@ -62,7 +68,7 @@ Plays the sound specified by the Source property.
 
 ### Resume
 
-<div block-type = "component_method" component-selector = "Sound" method-selector = "Resume" method-params = "" return-type = "undefined" id = "sound-resume"></div>
+<div block-type = "component_method" component-selector = "Sound" method-selector = "Resume" id = "sound-resume"></div>
 
 Return Type : No Return Value
 
@@ -70,7 +76,7 @@ Resumes playing the sound after a pause.
 
 ### Stop
 
-<div block-type = "component_method" component-selector = "Sound" method-selector = "Stop" method-params = "" return-type = "undefined" id = "sound-stop"></div>
+<div block-type = "component_method" component-selector = "Sound" method-selector = "Stop" id = "sound-stop"></div>
 
 Return Type : No Return Value
 
@@ -78,7 +84,7 @@ Stops playing the sound if it is being played.
 
 ### Vibrate
 
-<div block-type = "component_method" component-selector = "Sound" method-selector = "Vibrate" method-params = "millisecs" return-type = "undefined" id = "sound-vibrate"></div>
+<div block-type = "component_method" component-selector = "Sound" method-selector = "Vibrate" id = "sound-vibrate"></div>
 
 Return Type : No Return Value
 

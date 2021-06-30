@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # CloudDB
 
 Non-visible component that communicates with CloudDB server to store and retrieve information.
@@ -50,7 +56,7 @@ Non-visible component that communicates with CloudDB server to store and retriev
 
 ### CloudDBError
 
-<div block-type = "component_event" component-selector = "CloudDB" event-selector = "CloudDBError" event-params = "message" id = "clouddb-clouddberror"></div>
+<div block-type = "component_event" component-selector = "CloudDB" event-selector = "CloudDBError" id = "clouddb-clouddberror"></div>
 
 Indicates that an error occurred while communicating with the CloudDB Redis server.
 
@@ -60,7 +66,7 @@ Indicates that an error occurred while communicating with the CloudDB Redis serv
 
 ### DataChanged
 
-<div block-type = "component_event" component-selector = "CloudDB" event-selector = "DataChanged" event-params = "tag-value" id = "clouddb-datachanged"></div>
+<div block-type = "component_event" component-selector = "CloudDB" event-selector = "DataChanged" id = "clouddb-datachanged"></div>
 
 Indicates that the data in the CloudDB project has changed. Launches an event with the \`tag\`
 
@@ -71,7 +77,7 @@ Indicates that the data in the CloudDB project has changed. Launches an event wi
 
 ### FirstRemoved
 
-<div block-type = "component_event" component-selector = "CloudDB" event-selector = "FirstRemoved" event-params = "value" id = "clouddb-firstremoved"></div>
+<div block-type = "component_event" component-selector = "CloudDB" event-selector = "FirstRemoved" id = "clouddb-firstremoved"></div>
 
 Event triggered by the "RemoveFirstFromList" function. The argument "value" is the object that was the first in the list, and which is now removed.
 
@@ -81,7 +87,7 @@ Event triggered by the "RemoveFirstFromList" function. The argument "value" is t
 
 ### GotValue
 
-<div block-type = "component_event" component-selector = "CloudDB" event-selector = "GotValue" event-params = "tag-value" id = "clouddb-gotvalue"></div>
+<div block-type = "component_event" component-selector = "CloudDB" event-selector = "GotValue" id = "clouddb-gotvalue"></div>
 
 Indicates that a
 
@@ -92,7 +98,7 @@ Indicates that a
 
 ### TagList
 
-<div block-type = "component_event" component-selector = "CloudDB" event-selector = "TagList" event-params = "value" id = "clouddb-taglist"></div>
+<div block-type = "component_event" component-selector = "CloudDB" event-selector = "TagList" id = "clouddb-taglist"></div>
 
 Event triggered when we have received the list of known tags. Used with the "GetTagList" Function.
 
@@ -102,7 +108,7 @@ Event triggered when we have received the list of known tags. Used with the "Get
 
 ### UpdateDone
 
-<div block-type = "component_event" component-selector = "CloudDB" event-selector = "UpdateDone" event-params = "tag-operation" id = "clouddb-updatedone"></div>
+<div block-type = "component_event" component-selector = "CloudDB" event-selector = "UpdateDone" id = "clouddb-updatedone"></div>
 
 Indicates that operations that store data to CloudDB have completed.
 
@@ -117,7 +123,7 @@ Indicates that operations that store data to CloudDB have completed.
 
 ### AppendValueToList
 
-<div block-type = "component_method" component-selector = "CloudDB" method-selector = "AppendValueToList" method-params = "tag-itemToAdd" return-type = "undefined" id = "clouddb-appendvaluetolist"></div>
+<div block-type = "component_method" component-selector = "CloudDB" method-selector = "AppendValueToList" id = "clouddb-appendvaluetolist"></div>
 
 Return Type : No Return Value
 
@@ -130,7 +136,7 @@ Append a value to the end of a list atomically. If two devices use this function
 
 ### ClearTag
 
-<div block-type = "component_method" component-selector = "CloudDB" method-selector = "ClearTag" method-params = "tag" return-type = "undefined" id = "clouddb-cleartag"></div>
+<div block-type = "component_method" component-selector = "CloudDB" method-selector = "ClearTag" id = "clouddb-cleartag"></div>
 
 Return Type : No Return Value
 
@@ -142,7 +148,7 @@ Remove the tag from CloudDB.
 
 ### CloudConnected
 
-<div block-type = "component_method" component-selector = "CloudDB" method-selector = "CloudConnected" method-params = "" return-type = "boolean" id = "clouddb-cloudconnected"></div>
+<div block-type = "component_method" component-selector = "CloudDB" method-selector = "CloudConnected" id = "clouddb-cloudconnected"></div>
 
 Return Type : boolean
 
@@ -150,7 +156,7 @@ returns True if we are on the network and will likely be able to connect to the 
 
 ### GetTagList
 
-<div block-type = "component_method" component-selector = "CloudDB" method-selector = "GetTagList" method-params = "" return-type = "undefined" id = "clouddb-gettaglist"></div>
+<div block-type = "component_method" component-selector = "CloudDB" method-selector = "GetTagList" id = "clouddb-gettaglist"></div>
 
 Return Type : No Return Value
 
@@ -158,7 +164,7 @@ Get the list of tags for this application. When complete a "TagList" event will 
 
 ### GetValue
 
-<div block-type = "component_method" component-selector = "CloudDB" method-selector = "GetValue" method-params = "tag-valueIfTagNotThere" return-type = "undefined" id = "clouddb-getvalue"></div>
+<div block-type = "component_method" component-selector = "CloudDB" method-selector = "GetValue" id = "clouddb-getvalue"></div>
 
 Return Type : No Return Value
 
@@ -171,7 +177,7 @@ Get the Value for a tag, doesn't return the value but will cause a GotValue even
 
 ### RemoveFirstFromList
 
-<div block-type = "component_method" component-selector = "CloudDB" method-selector = "RemoveFirstFromList" method-params = "tag" return-type = "undefined" id = "clouddb-removefirstfromlist"></div>
+<div block-type = "component_method" component-selector = "CloudDB" method-selector = "RemoveFirstFromList" id = "clouddb-removefirstfromlist"></div>
 
 Return Type : No Return Value
 
@@ -183,7 +189,7 @@ Return the first element of a list and atomically remove it. If two devices use 
 
 ### StoreValue
 
-<div block-type = "component_method" component-selector = "CloudDB" method-selector = "StoreValue" method-params = "tag-valueToStore" return-type = "undefined" id = "clouddb-storevalue"></div>
+<div block-type = "component_method" component-selector = "CloudDB" method-selector = "StoreValue" id = "clouddb-storevalue"></div>
 
 Return Type : No Return Value
 

@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Texting
 
 A component that will, when the `SendMessage` method is called, send the text message specified in the `Message` property to the phone number specified in the `PhoneNumber` property.
@@ -50,7 +56,7 @@ Another way for an app to specify a phone number would be to include a `PhoneNum
 
 ### MessageReceived
 
-<div block-type = "component_event" component-selector = "Texting" event-selector = "MessageReceived" event-params = "number-messageText" id = "texting-messagereceived"></div>
+<div block-type = "component_event" component-selector = "Texting" event-selector = "MessageReceived" id = "texting-messagereceived"></div>
 
 Event that's raised when a text message is received by the phone. \*\*Using this block will add \[dangerous permissions\](//developer.android.com/guide/topics/permissions/overview#dangerous\_permissions) that will require additional approval if your app is submitted to the Google Play Store.\*\*
 
@@ -65,7 +71,7 @@ Event that's raised when a text message is received by the phone. \*\*Using this
 
 ### SendMessage
 
-<div block-type = "component_method" component-selector = "Texting" method-selector = "SendMessage" method-params = "" return-type = "undefined" id = "texting-sendmessage"></div>
+<div block-type = "component_method" component-selector = "Texting" method-selector = "SendMessage" id = "texting-sendmessage"></div>
 
 Return Type : No Return Value
 
@@ -73,7 +79,7 @@ Launch the phone's default text messaging app with the message and phone number 
 
 ### SendMessageDirect
 
-<div block-type = "component_method" component-selector = "Texting" method-selector = "SendMessageDirect" method-params = "" return-type = "undefined" id = "texting-sendmessagedirect"></div>
+<div block-type = "component_method" component-selector = "Texting" method-selector = "SendMessageDirect" id = "texting-sendmessagedirect"></div>
 
 Return Type : No Return Value
 

@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # TinyWebDB
 
 Non-visible component that communicates with a Web service to store and retrieve information.
@@ -20,7 +26,7 @@ Non-visible component that communicates with a Web service to store and retrieve
 
 ### GotValue
 
-<div block-type = "component_event" component-selector = "TinyWebDB" event-selector = "GotValue" event-params = "tagFromWebDB-valueFromWebDB" id = "tinywebdb-gotvalue"></div>
+<div block-type = "component_event" component-selector = "TinyWebDB" event-selector = "GotValue" id = "tinywebdb-gotvalue"></div>
 
 Indicates that a GetValue server request has succeeded.
 
@@ -31,13 +37,13 @@ Indicates that a GetValue server request has succeeded.
 
 ### ValueStored
 
-<div block-type = "component_event" component-selector = "TinyWebDB" event-selector = "ValueStored" event-params = "" id = "tinywebdb-valuestored"></div>
+<div block-type = "component_event" component-selector = "TinyWebDB" event-selector = "ValueStored" id = "tinywebdb-valuestored"></div>
 
 Event indicating that a StoreValue server request has succeeded.
 
 ### WebServiceError
 
-<div block-type = "component_event" component-selector = "TinyWebDB" event-selector = "WebServiceError" event-params = "message" id = "tinywebdb-webserviceerror"></div>
+<div block-type = "component_event" component-selector = "TinyWebDB" event-selector = "WebServiceError" id = "tinywebdb-webserviceerror"></div>
 
 Indicates that the communication with the Web service signaled an error.
 
@@ -51,7 +57,7 @@ Indicates that the communication with the Web service signaled an error.
 
 ### GetValue
 
-<div block-type = "component_method" component-selector = "TinyWebDB" method-selector = "GetValue" method-params = "tag" return-type = "undefined" id = "tinywebdb-getvalue"></div>
+<div block-type = "component_method" component-selector = "TinyWebDB" method-selector = "GetValue" id = "tinywebdb-getvalue"></div>
 
 Return Type : No Return Value
 
@@ -63,7 +69,7 @@ Sends a request to the Web service to get the value stored under the given tag. 
 
 ### StoreValue
 
-<div block-type = "component_method" component-selector = "TinyWebDB" method-selector = "StoreValue" method-params = "tag-valueToStore" return-type = "undefined" id = "tinywebdb-storevalue"></div>
+<div block-type = "component_method" component-selector = "TinyWebDB" method-selector = "StoreValue" id = "tinywebdb-storevalue"></div>
 
 Return Type : No Return Value
 

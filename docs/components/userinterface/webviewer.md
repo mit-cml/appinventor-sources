@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # WebViewer
 
 Component for viewing Web pages. The Home URL can be specified in the Designer or in the Blocks Editor. The view can be set to follow links when they are tapped, and users can fill in Web forms. Warning: This is not a full browser. For example, pressing the phone's hardware Back key will exit the app, rather than move back in the browser history.
@@ -61,7 +67,7 @@ _hello from Javascript_.
 
 ### BeforePageLoad
 
-<div block-type = "component_event" component-selector = "WebViewer" event-selector = "BeforePageLoad" event-params = "url" id = "webviewer-beforepageload"></div>
+<div block-type = "component_event" component-selector = "WebViewer" event-selector = "BeforePageLoad" id = "webviewer-beforepageload"></div>
 
 When a page is about to load this event is run.
 
@@ -71,7 +77,7 @@ When a page is about to load this event is run.
 
 ### ErrorOccurred
 
-<div block-type = "component_event" component-selector = "WebViewer" event-selector = "ErrorOccurred" event-params = "errorCode-description-failingUrl" id = "webviewer-erroroccurred"></div>
+<div block-type = "component_event" component-selector = "WebViewer" event-selector = "ErrorOccurred" id = "webviewer-erroroccurred"></div>
 
 When an error occurs this event is run.
 
@@ -83,7 +89,7 @@ When an error occurs this event is run.
 
 ### PageLoaded
 
-<div block-type = "component_event" component-selector = "WebViewer" event-selector = "PageLoaded" event-params = "url" id = "webviewer-pageloaded"></div>
+<div block-type = "component_event" component-selector = "WebViewer" event-selector = "PageLoaded" id = "webviewer-pageloaded"></div>
 
 When a page is finished loading this event is run.
 
@@ -93,7 +99,7 @@ When a page is finished loading this event is run.
 
 ### WebViewStringChange
 
-<div block-type = "component_event" component-selector = "WebViewer" event-selector = "WebViewStringChange" event-params = "value" id = "webviewer-webviewstringchange"></div>
+<div block-type = "component_event" component-selector = "WebViewer" event-selector = "WebViewStringChange" id = "webviewer-webviewstringchange"></div>
 
 When the JavaScript calls AppInventor.setWebViewString this event is run.
 
@@ -107,7 +113,7 @@ When the JavaScript calls AppInventor.setWebViewString this event is run.
 
 ### CanGoBack
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "CanGoBack" method-params = "" return-type = "boolean" id = "webviewer-cangoback"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "CanGoBack" id = "webviewer-cangoback"></div>
 
 Return Type : boolean
 
@@ -115,7 +121,7 @@ Returns true if the WebViewer can go back in the history list.
 
 ### CanGoForward
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "CanGoForward" method-params = "" return-type = "boolean" id = "webviewer-cangoforward"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "CanGoForward" id = "webviewer-cangoforward"></div>
 
 Return Type : boolean
 
@@ -123,7 +129,7 @@ Returns true if the WebViewer can go forward in the history list.
 
 ### ClearCaches
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "ClearCaches" method-params = "" return-type = "undefined" id = "webviewer-clearcaches"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "ClearCaches" id = "webviewer-clearcaches"></div>
 
 Return Type : No Return Value
 
@@ -131,7 +137,7 @@ Clear WebView caches.
 
 ### ClearCookies
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "ClearCookies" method-params = "" return-type = "undefined" id = "webviewer-clearcookies"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "ClearCookies" id = "webviewer-clearcookies"></div>
 
 Return Type : No Return Value
 
@@ -139,7 +145,7 @@ Clear WebView cookies.
 
 ### ClearLocations
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "ClearLocations" method-params = "" return-type = "undefined" id = "webviewer-clearlocations"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "ClearLocations" id = "webviewer-clearlocations"></div>
 
 Return Type : No Return Value
 
@@ -147,7 +153,7 @@ Clear stored location permissions.
 
 ### GoBack
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "GoBack" method-params = "" return-type = "undefined" id = "webviewer-goback"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "GoBack" id = "webviewer-goback"></div>
 
 Return Type : No Return Value
 
@@ -155,7 +161,7 @@ Go back to the previous page in the history list. Does nothing if there is no pr
 
 ### GoForward
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "GoForward" method-params = "" return-type = "undefined" id = "webviewer-goforward"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "GoForward" id = "webviewer-goforward"></div>
 
 Return Type : No Return Value
 
@@ -163,7 +169,7 @@ Go forward to the next page in the history list. Does nothing if there is no nex
 
 ### GoHome
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "GoHome" method-params = "" return-type = "undefined" id = "webviewer-gohome"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "GoHome" id = "webviewer-gohome"></div>
 
 Return Type : No Return Value
 
@@ -171,7 +177,7 @@ Loads the home URL page. This happens automatically when the home URL is changed
 
 ### GoToUrl
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "GoToUrl" method-params = "url" return-type = "undefined" id = "webviewer-gotourl"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "GoToUrl" id = "webviewer-gotourl"></div>
 
 Return Type : No Return Value
 
@@ -183,7 +189,7 @@ Load the page at the given URL.
 
 ### Reload
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "Reload" method-params = "" return-type = "undefined" id = "webviewer-reload"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "Reload" id = "webviewer-reload"></div>
 
 Return Type : No Return Value
 
@@ -191,7 +197,7 @@ Reload the current page.
 
 ### RunJavaScript
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "RunJavaScript" method-params = "js" return-type = "undefined" id = "webviewer-runjavascript"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "RunJavaScript" id = "webviewer-runjavascript"></div>
 
 Return Type : No Return Value
 
@@ -203,7 +209,7 @@ Run JavaScript in the current page.
 
 ### StopLoading
 
-<div block-type = "component_method" component-selector = "WebViewer" method-selector = "StopLoading" method-params = "" return-type = "undefined" id = "webviewer-stoploading"></div>
+<div block-type = "component_method" component-selector = "WebViewer" method-selector = "StopLoading" id = "webviewer-stoploading"></div>
 
 Return Type : No Return Value
 

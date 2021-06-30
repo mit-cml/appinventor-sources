@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # LightSensor
 
 A sensor component that can measure the light level.
@@ -26,7 +32,7 @@ A sensor component that can measure the light level.
 
 ### LightChanged
 
-<div block-type = "component_event" component-selector = "LightSensor" event-selector = "LightChanged" event-params = "lux" id = "lightsensor-lightchanged"></div>
+<div block-type = "component_event" component-selector = "LightSensor" event-selector = "LightChanged" id = "lightsensor-lightchanged"></div>
 
 Called when a change is detected in the light level.
 

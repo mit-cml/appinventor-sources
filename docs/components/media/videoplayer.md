@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # VideoPlayer
 
 A multimedia component capable of playing videos. When the application is run, the VideoPlayer will be displayed as a rectangle on-screen. If the user touches the rectangle, controls will appear to play/pause, skip ahead, and skip backward within the video. The application can also control behavior by calling the `Start`, `Pause`, and `SeekTo` methods.
@@ -38,13 +44,13 @@ You can also set the media source to a URL that points to a streaming video, but
 
 ### Completed
 
-<div block-type = "component_event" component-selector = "VideoPlayer" event-selector = "Completed" event-params = "" id = "videoplayer-completed"></div>
+<div block-type = "component_event" component-selector = "VideoPlayer" event-selector = "Completed" id = "videoplayer-completed"></div>
 
 Indicates that the video has reached the end
 
 ### VideoPlayerError
 
-<div block-type = "component_event" component-selector = "VideoPlayer" event-selector = "VideoPlayerError" event-params = "message" id = "videoplayer-videoplayererror"></div>
+<div block-type = "component_event" component-selector = "VideoPlayer" event-selector = "VideoPlayerError" id = "videoplayer-videoplayererror"></div>
 
 The VideoPlayerError event is no longer used. Please use the Screen.ErrorOccurred event instead.
 
@@ -58,7 +64,7 @@ The VideoPlayerError event is no longer used. Please use the Screen.ErrorOccurre
 
 ### GetDuration
 
-<div block-type = "component_method" component-selector = "VideoPlayer" method-selector = "GetDuration" method-params = "" return-type = "number" id = "videoplayer-getduration"></div>
+<div block-type = "component_method" component-selector = "VideoPlayer" method-selector = "GetDuration" id = "videoplayer-getduration"></div>
 
 Return Type : number
 
@@ -66,7 +72,7 @@ Returns duration of the video in milliseconds.
 
 ### Pause
 
-<div block-type = "component_method" component-selector = "VideoPlayer" method-selector = "Pause" method-params = "" return-type = "undefined" id = "videoplayer-pause"></div>
+<div block-type = "component_method" component-selector = "VideoPlayer" method-selector = "Pause" id = "videoplayer-pause"></div>
 
 Return Type : No Return Value
 
@@ -74,7 +80,7 @@ Pauses playback of the video. Playback can be resumed at the same location by ca
 
 ### SeekTo
 
-<div block-type = "component_method" component-selector = "VideoPlayer" method-selector = "SeekTo" method-params = "ms" return-type = "undefined" id = "videoplayer-seekto"></div>
+<div block-type = "component_method" component-selector = "VideoPlayer" method-selector = "SeekTo" id = "videoplayer-seekto"></div>
 
 Return Type : No Return Value
 
@@ -86,7 +92,7 @@ Seeks to the requested time (specified in milliseconds) in the video. If the vid
 
 ### Start
 
-<div block-type = "component_method" component-selector = "VideoPlayer" method-selector = "Start" method-params = "" return-type = "undefined" id = "videoplayer-start"></div>
+<div block-type = "component_method" component-selector = "VideoPlayer" method-selector = "Start" id = "videoplayer-start"></div>
 
 Return Type : No Return Value
 
@@ -94,7 +100,7 @@ Starts playback of the video.
 
 ### Stop
 
-<div block-type = "component_method" component-selector = "VideoPlayer" method-selector = "Stop" method-params = "" return-type = "undefined" id = "videoplayer-stop"></div>
+<div block-type = "component_method" component-selector = "VideoPlayer" method-selector = "Stop" id = "videoplayer-stop"></div>
 
 Return Type : No Return Value
 

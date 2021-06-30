@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # YandexTranslate
 
 Use this component to translate words and sentences between different languages. This component needs Internet access, as it will request translations to the Yandex.Translate service. Specify the source and target language in the form source-target using two letter language codes. So"en-es" will translate from English to Spanish while "es-ru" will translate from Spanish to Russian. If you leave out the source language, the service will attempt to detect the source language. So providing just "es" will attempt to detect the source language and translate it to Spanish.
@@ -24,7 +30,7 @@ Note: Translation happens asynchronously in the background. When the translation
 
 ### GotTranslation
 
-<div block-type = "component_event" component-selector = "YandexTranslate" event-selector = "GotTranslation" event-params = "responseCode-translation" id = "yandextranslate-gottranslation"></div>
+<div block-type = "component_event" component-selector = "YandexTranslate" event-selector = "GotTranslation" id = "yandextranslate-gottranslation"></div>
 
 Event triggered when the Yandex.Translate service returns the translated text. This event also provides a response code for error handling. If the responseCode is not 200, then something went wrong with the call, and the translation will not be available.
 
@@ -39,7 +45,7 @@ Event triggered when the Yandex.Translate service returns the translated text. T
 
 ### RequestTranslation
 
-<div block-type = "component_method" component-selector = "YandexTranslate" method-selector = "RequestTranslation" method-params = "languageToTranslateTo-textToTranslate" return-type = "undefined" id = "yandextranslate-requesttranslation"></div>
+<div block-type = "component_method" component-selector = "YandexTranslate" method-selector = "RequestTranslation" id = "yandextranslate-requesttranslation"></div>
 
 Return Type : No Return Value
 

@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # NxtDrive
 
 A component that provides a high-level interface to a LEGO MINDSTORMS NXT robot, with functions that can move and turn the robot.
@@ -38,7 +44,7 @@ A component that provides a high-level interface to a LEGO MINDSTORMS NXT robot,
 
 ### MoveBackward
 
-<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "MoveBackward" method-params = "power-distance" return-type = "undefined" id = "nxtdrive-movebackward"></div>
+<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "MoveBackward" id = "nxtdrive-movebackward"></div>
 
 Return Type : No Return Value
 
@@ -51,7 +57,7 @@ Move the robot backward the given distance, with the specified percentage of max
 
 ### MoveBackwardIndefinitely
 
-<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "MoveBackwardIndefinitely" method-params = "power" return-type = "undefined" id = "nxtdrive-movebackwardindefinitely"></div>
+<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "MoveBackwardIndefinitely" id = "nxtdrive-movebackwardindefinitely"></div>
 
 Return Type : No Return Value
 
@@ -63,7 +69,7 @@ Move the robot backward indefinitely, with the specified percentage of maximum p
 
 ### MoveForward
 
-<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "MoveForward" method-params = "power-distance" return-type = "undefined" id = "nxtdrive-moveforward"></div>
+<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "MoveForward" id = "nxtdrive-moveforward"></div>
 
 Return Type : No Return Value
 
@@ -76,7 +82,7 @@ Move the robot forward the given distance, with the specified percentage of maxi
 
 ### MoveForwardIndefinitely
 
-<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "MoveForwardIndefinitely" method-params = "power" return-type = "undefined" id = "nxtdrive-moveforwardindefinitely"></div>
+<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "MoveForwardIndefinitely" id = "nxtdrive-moveforwardindefinitely"></div>
 
 Return Type : No Return Value
 
@@ -88,7 +94,7 @@ Move the robot forward indefinitely, with the specified percentage of maximum po
 
 ### Stop
 
-<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "Stop" method-params = "" return-type = "undefined" id = "nxtdrive-stop"></div>
+<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "Stop" id = "nxtdrive-stop"></div>
 
 Return Type : No Return Value
 
@@ -96,7 +102,7 @@ Stop the drive motors of the robot.
 
 ### TurnClockwiseIndefinitely
 
-<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "TurnClockwiseIndefinitely" method-params = "power" return-type = "undefined" id = "nxtdrive-turnclockwiseindefinitely"></div>
+<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "TurnClockwiseIndefinitely" id = "nxtdrive-turnclockwiseindefinitely"></div>
 
 Return Type : No Return Value
 
@@ -108,7 +114,7 @@ Turn the robot clockwise indefinitely, with the specified percentage of maximum 
 
 ### TurnCounterClockwiseIndefinitely
 
-<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "TurnCounterClockwiseIndefinitely" method-params = "power" return-type = "undefined" id = "nxtdrive-turncounterclockwiseindefinitely"></div>
+<div block-type = "component_method" component-selector = "NxtDrive" method-selector = "TurnCounterClockwiseIndefinitely" id = "nxtdrive-turncounterclockwiseindefinitely"></div>
 
 Return Type : No Return Value
 

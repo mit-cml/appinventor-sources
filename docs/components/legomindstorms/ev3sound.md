@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Ev3Sound
 
 A component that provides a high-level interface to sound functionalities on LEGO MINDSTORMS EV3 robot.
@@ -20,7 +26,7 @@ A component that provides a high-level interface to sound functionalities on LEG
 
 ### PlayTone
 
-<div block-type = "component_method" component-selector = "Ev3Sound" method-selector = "PlayTone" method-params = "volume-frequency-milliseconds" return-type = "undefined" id = "ev3sound-playtone"></div>
+<div block-type = "component_method" component-selector = "Ev3Sound" method-selector = "PlayTone" id = "ev3sound-playtone"></div>
 
 Return Type : No Return Value
 
@@ -34,7 +40,7 @@ Make the robot play a tone.
 
 ### StopSound
 
-<div block-type = "component_method" component-selector = "Ev3Sound" method-selector = "StopSound" method-params = "" return-type = "undefined" id = "ev3sound-stopsound"></div>
+<div block-type = "component_method" component-selector = "Ev3Sound" method-selector = "StopSound" id = "ev3sound-stopsound"></div>
 
 Return Type : No Return Value
 

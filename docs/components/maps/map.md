@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Map
 
 A two-dimensional container that renders map tiles in the background and allows for multiple Marker elements to identify points on the map. Map tiles are supplied by OpenStreetMap contributors and the United States Geological Survey.
@@ -100,13 +106,13 @@ The Map component provides three utilities for manipulating its boundaries withi
 
 ### BoundsChange
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "BoundsChange" event-params = "" id = "map-boundschange"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "BoundsChange" id = "map-boundschange"></div>
 
 User has changed the map bounds by panning or zooming the map.
 
 ### DoubleTapAtPoint
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "DoubleTapAtPoint" event-params = "latitude-longitude" id = "map-doubletapatpoint"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "DoubleTapAtPoint" id = "map-doubletapatpoint"></div>
 
 The user double-tapped at a point on the map. This event will be followed by a ZoomChanged event if zooming gestures are enabled and the map is not at the highest possible zoom level.
 
@@ -117,7 +123,7 @@ The user double-tapped at a point on the map. This event will be followed by a Z
 
 ### FeatureClick
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "FeatureClick" event-params = "feature" id = "map-featureclick"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "FeatureClick" id = "map-featureclick"></div>
 
 The user clicked on a map feature.
 
@@ -127,7 +133,7 @@ The user clicked on a map feature.
 
 ### FeatureDrag
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "FeatureDrag" event-params = "feature" id = "map-featuredrag"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "FeatureDrag" id = "map-featuredrag"></div>
 
 The user dragged a map feature.
 
@@ -137,7 +143,7 @@ The user dragged a map feature.
 
 ### FeatureLongClick
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "FeatureLongClick" event-params = "feature" id = "map-featurelongclick"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "FeatureLongClick" id = "map-featurelongclick"></div>
 
 The user long-pressed on a map feature.
 
@@ -147,7 +153,7 @@ The user long-pressed on a map feature.
 
 ### FeatureStartDrag
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "FeatureStartDrag" event-params = "feature" id = "map-featurestartdrag"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "FeatureStartDrag" id = "map-featurestartdrag"></div>
 
 The user started dragging a map feature.
 
@@ -157,7 +163,7 @@ The user started dragging a map feature.
 
 ### FeatureStopDrag
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "FeatureStopDrag" event-params = "feature" id = "map-featurestopdrag"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "FeatureStopDrag" id = "map-featurestopdrag"></div>
 
 The user stopped dragging a map feature.
 
@@ -167,7 +173,7 @@ The user stopped dragging a map feature.
 
 ### GotFeatures
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "GotFeatures" event-params = "url-features" id = "map-gotfeatures"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "GotFeatures" id = "map-gotfeatures"></div>
 
 A GeoJSON document was successfully read from url. The features specified in the document are provided as a list in features.
 
@@ -178,7 +184,7 @@ A GeoJSON document was successfully read from url. The features specified in the
 
 ### InvalidPoint
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "InvalidPoint" event-params = "message" id = "map-invalidpoint"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "InvalidPoint" id = "map-invalidpoint"></div>
 
 An invalid coordinate was supplied during a maps operation. The message parameter will have more details about the issue.
 
@@ -188,7 +194,7 @@ An invalid coordinate was supplied during a maps operation. The message paramete
 
 ### LoadError
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "LoadError" event-params = "url-responseCode-errorMessage" id = "map-loaderror"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "LoadError" id = "map-loaderror"></div>
 
 An error was encountered while processing a GeoJSON document at the given url. The responseCode parameter will contain an HTTP status code and the errorMessage parameter will contain a detailed error message.
 
@@ -200,7 +206,7 @@ An error was encountered while processing a GeoJSON document at the given url. T
 
 ### LongPressAtPoint
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "LongPressAtPoint" event-params = "latitude-longitude" id = "map-longpressatpoint"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "LongPressAtPoint" id = "map-longpressatpoint"></div>
 
 The user long-pressed at a point on the map.
 
@@ -211,13 +217,13 @@ The user long-pressed at a point on the map.
 
 ### Ready
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "Ready" event-params = "" id = "map-ready"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "Ready" id = "map-ready"></div>
 
 Map has been initialized and is ready for user interaction.
 
 ### TapAtPoint
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "TapAtPoint" event-params = "latitude-longitude" id = "map-tapatpoint"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "TapAtPoint" id = "map-tapatpoint"></div>
 
 The user tapped at a point on the map.
 
@@ -228,7 +234,7 @@ The user tapped at a point on the map.
 
 ### ZoomChange
 
-<div block-type = "component_event" component-selector = "Map" event-selector = "ZoomChange" event-params = "" id = "map-zoomchange"></div>
+<div block-type = "component_event" component-selector = "Map" event-selector = "ZoomChange" id = "map-zoomchange"></div>
 
 User has changed the zoom level of the map.
 
@@ -238,7 +244,7 @@ User has changed the zoom level of the map.
 
 ### CreateMarker
 
-<div block-type = "component_method" component-selector = "Map" method-selector = "CreateMarker" method-params = "latitude-longitude" return-type = "component" id = "map-createmarker"></div>
+<div block-type = "component_method" component-selector = "Map" method-selector = "CreateMarker" id = "map-createmarker"></div>
 
 Return Type : component
 
@@ -251,7 +257,7 @@ Create a new marker with default properties at the specified latitude and longit
 
 ### FeatureFromDescription
 
-<div block-type = "component_method" component-selector = "Map" method-selector = "FeatureFromDescription" method-params = "description" return-type = "any" id = "map-featurefromdescription"></div>
+<div block-type = "component_method" component-selector = "Map" method-selector = "FeatureFromDescription" id = "map-featurefromdescription"></div>
 
 Return Type : any
 
@@ -263,7 +269,7 @@ Converts a feature description into an App Inventor map feature. Points are conv
 
 ### LoadFromURL
 
-<div block-type = "component_method" component-selector = "Map" method-selector = "LoadFromURL" method-params = "url" return-type = "undefined" id = "map-loadfromurl"></div>
+<div block-type = "component_method" component-selector = "Map" method-selector = "LoadFromURL" id = "map-loadfromurl"></div>
 
 Return Type : No Return Value
 
@@ -275,7 +281,7 @@ Load a feature collection in [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) fo
 
 ### PanTo
 
-<div block-type = "component_method" component-selector = "Map" method-selector = "PanTo" method-params = "latitude-longitude-zoom" return-type = "undefined" id = "map-panto"></div>
+<div block-type = "component_method" component-selector = "Map" method-selector = "PanTo" id = "map-panto"></div>
 
 Return Type : No Return Value
 
@@ -289,7 +295,7 @@ Pans the map center to the given latitude and longitude and adjust the zoom leve
 
 ### Save
 
-<div block-type = "component_method" component-selector = "Map" method-selector = "Save" method-params = "path" return-type = "undefined" id = "map-save"></div>
+<div block-type = "component_method" component-selector = "Map" method-selector = "Save" id = "map-save"></div>
 
 Return Type : No Return Value
 

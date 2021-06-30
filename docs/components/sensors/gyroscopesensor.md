@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # GyroscopeSensor
 
 Non-visible component that can measure angular velocity in three dimensions in units of degrees per second.
@@ -22,7 +28,7 @@ In order to function, the component must have its `Enabled` property set to True
 
 ### GyroscopeChanged
 
-<div block-type = "component_event" component-selector = "GyroscopeSensor" event-selector = "GyroscopeChanged" event-params = "xAngularVelocity-yAngularVelocity-zAngularVelocity-timestamp" id = "gyroscopesensor-gyroscopechanged"></div>
+<div block-type = "component_event" component-selector = "GyroscopeSensor" event-selector = "GyroscopeChanged" id = "gyroscopesensor-gyroscopechanged"></div>
 
 Indicates that the gyroscope sensor data has changed. The timestamp parameter is the time in nanoseconds at which the event occurred.
 

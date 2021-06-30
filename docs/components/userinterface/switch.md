@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Switch
 
 Toggle switch that raises an event when the user clicks on it. There are many properties affecting its appearance that can be set in the Designer or Blocks Editor.
@@ -98,19 +104,19 @@ Toggle switch that raises an event when the user clicks on it. There are many pr
 
 ### Changed
 
-<div block-type = "component_event" component-selector = "Switch" event-selector = "Changed" event-params = "" id = "switch-changed"></div>
+<div block-type = "component_event" component-selector = "Switch" event-selector = "Changed" id = "switch-changed"></div>
 
 User change the state of the \`Switch\` from On to Off or back.
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "Switch" event-selector = "GotFocus" event-params = "" id = "switch-gotfocus"></div>
+<div block-type = "component_event" component-selector = "Switch" event-selector = "GotFocus" id = "switch-gotfocus"></div>
 
 Switch became the focused component.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "Switch" event-selector = "LostFocus" event-params = "" id = "switch-lostfocus"></div>
+<div block-type = "component_event" component-selector = "Switch" event-selector = "LostFocus" id = "switch-lostfocus"></div>
 
 Switch stopped being the focused component.
 

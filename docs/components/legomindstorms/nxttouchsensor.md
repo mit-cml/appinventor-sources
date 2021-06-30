@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # NxtTouchSensor
 
 A component that provides a high-level interface to a touch sensor on a LEGO MINDSTORMS NXT robot.
@@ -38,13 +44,13 @@ A component that provides a high-level interface to a touch sensor on a LEGO MIN
 
 ### Pressed
 
-<div block-type = "component_event" component-selector = "NxtTouchSensor" event-selector = "Pressed" event-params = "" id = "nxttouchsensor-pressed"></div>
+<div block-type = "component_event" component-selector = "NxtTouchSensor" event-selector = "Pressed" id = "nxttouchsensor-pressed"></div>
 
 Touch sensor has been pressed.
 
 ### Released
 
-<div block-type = "component_event" component-selector = "NxtTouchSensor" event-selector = "Released" event-params = "" id = "nxttouchsensor-released"></div>
+<div block-type = "component_event" component-selector = "NxtTouchSensor" event-selector = "Released" id = "nxttouchsensor-released"></div>
 
 Touch sensor has been released.
 
@@ -54,7 +60,7 @@ Touch sensor has been released.
 
 ### IsPressed
 
-<div block-type = "component_method" component-selector = "NxtTouchSensor" method-selector = "IsPressed" method-params = "" return-type = "boolean" id = "nxttouchsensor-ispressed"></div>
+<div block-type = "component_method" component-selector = "NxtTouchSensor" method-selector = "IsPressed" id = "nxttouchsensor-ispressed"></div>
 
 Return Type : boolean
 

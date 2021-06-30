@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # BarcodeScanner
 
 Component for using the Barcode Scanner to read a barcode
@@ -20,7 +26,7 @@ Component for using the Barcode Scanner to read a barcode
 
 ### AfterScan
 
-<div block-type = "component_event" component-selector = "BarcodeScanner" event-selector = "AfterScan" event-params = "result" id = "barcodescanner-afterscan"></div>
+<div block-type = "component_event" component-selector = "BarcodeScanner" event-selector = "AfterScan" id = "barcodescanner-afterscan"></div>
 
 Indicates that the scanner has read a (text) result and provides the result
 
@@ -34,7 +40,7 @@ Indicates that the scanner has read a (text) result and provides the result
 
 ### DoScan
 
-<div block-type = "component_method" component-selector = "BarcodeScanner" method-selector = "DoScan" method-params = "" return-type = "undefined" id = "barcodescanner-doscan"></div>
+<div block-type = "component_method" component-selector = "BarcodeScanner" method-selector = "DoScan" id = "barcodescanner-doscan"></div>
 
 Return Type : No Return Value
 

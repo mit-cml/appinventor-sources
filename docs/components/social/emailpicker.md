@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # EmailPicker
 
 An EmailPicker is a kind of text box. If the user begins entering the name or email address of a contact, the phone will show a dropdown menu of choices that complete the entry. If there are many contacts, the dropdown can take several seconds to appear, and can show intermediate results while the matches are being computed.
@@ -86,13 +92,13 @@ Text boxes like this are usually used with `Button` components, with the user cl
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "EmailPicker" event-selector = "GotFocus" event-params = "" id = "emailpicker-gotfocus"></div>
+<div block-type = "component_event" component-selector = "EmailPicker" event-selector = "GotFocus" id = "emailpicker-gotfocus"></div>
 
 Event raised when the \`EmailPicker\` is selected for input, such as by the user touching it.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "EmailPicker" event-selector = "LostFocus" event-params = "" id = "emailpicker-lostfocus"></div>
+<div block-type = "component_event" component-selector = "EmailPicker" event-selector = "LostFocus" id = "emailpicker-lostfocus"></div>
 
 Event raised when the EmailPicker is no longer selected for input, such as if the user touches a different text box.
 
@@ -102,7 +108,7 @@ Event raised when the EmailPicker is no longer selected for input, such as if th
 
 ### RequestFocus
 
-<div block-type = "component_method" component-selector = "EmailPicker" method-selector = "RequestFocus" method-params = "" return-type = "undefined" id = "emailpicker-requestfocus"></div>
+<div block-type = "component_method" component-selector = "EmailPicker" method-selector = "RequestFocus" id = "emailpicker-requestfocus"></div>
 
 Return Type : No Return Value
 

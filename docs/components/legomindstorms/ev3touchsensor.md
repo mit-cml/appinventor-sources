@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Ev3TouchSensor
 
 A component that provides a high-level interface to a touch sensor on a LEGO MINDSTORMS EV3 robot.
@@ -38,13 +44,13 @@ A component that provides a high-level interface to a touch sensor on a LEGO MIN
 
 ### Pressed
 
-<div block-type = "component_event" component-selector = "Ev3TouchSensor" event-selector = "Pressed" event-params = "" id = "ev3touchsensor-pressed"></div>
+<div block-type = "component_event" component-selector = "Ev3TouchSensor" event-selector = "Pressed" id = "ev3touchsensor-pressed"></div>
 
 Called when the touch sensor is pressed.
 
 ### Released
 
-<div block-type = "component_event" component-selector = "Ev3TouchSensor" event-selector = "Released" event-params = "" id = "ev3touchsensor-released"></div>
+<div block-type = "component_event" component-selector = "Ev3TouchSensor" event-selector = "Released" id = "ev3touchsensor-released"></div>
 
 Called when the touch sensor is pressed.
 
@@ -54,7 +60,7 @@ Called when the touch sensor is pressed.
 
 ### IsPressed
 
-<div block-type = "component_method" component-selector = "Ev3TouchSensor" method-selector = "IsPressed" method-params = "" return-type = "boolean" id = "ev3touchsensor-ispressed"></div>
+<div block-type = "component_method" component-selector = "Ev3TouchSensor" method-selector = "IsPressed" id = "ev3touchsensor-ispressed"></div>
 
 Return Type : boolean
 

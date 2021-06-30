@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Ev3Motors
 
 A component that provides both high- and low-level interfaces to a LEGO MINDSTORMS EV3 robot, with functions that can control the motors.
@@ -56,7 +62,7 @@ A component that provides both high- and low-level interfaces to a LEGO MINDSTOR
 
 ### TachoCountChanged
 
-<div block-type = "component_event" component-selector = "Ev3Motors" event-selector = "TachoCountChanged" event-params = "tachoCount" id = "ev3motors-tachocountchanged"></div>
+<div block-type = "component_event" component-selector = "Ev3Motors" event-selector = "TachoCountChanged" id = "ev3motors-tachocountchanged"></div>
 
 Called when the tacho count has changed.
 
@@ -70,7 +76,7 @@ Called when the tacho count has changed.
 
 ### GetTachoCount
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "GetTachoCount" method-params = "" return-type = "number" id = "ev3motors-gettachocount"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "GetTachoCount" id = "ev3motors-gettachocount"></div>
 
 Return Type : number
 
@@ -78,7 +84,7 @@ Get the current tacho count.
 
 ### ResetTachoCount
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "ResetTachoCount" method-params = "" return-type = "undefined" id = "ev3motors-resettachocount"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "ResetTachoCount" id = "ev3motors-resettachocount"></div>
 
 Return Type : No Return Value
 
@@ -86,7 +92,7 @@ Set the current tacho count to zero.
 
 ### RotateInDistance
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateInDistance" method-params = "power-distance-useBrake" return-type = "undefined" id = "ev3motors-rotateindistance"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateInDistance" id = "ev3motors-rotateindistance"></div>
 
 Return Type : No Return Value
 
@@ -100,7 +106,7 @@ Rotate the motors in a distance.
 
 ### RotateInDuration
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateInDuration" method-params = "power-milliseconds-useBrake" return-type = "undefined" id = "ev3motors-rotateinduration"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateInDuration" id = "ev3motors-rotateinduration"></div>
 
 Return Type : No Return Value
 
@@ -114,7 +120,7 @@ Rotate the motors in a period of time.
 
 ### RotateInTachoCounts
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateInTachoCounts" method-params = "power-tachoCounts-useBrake" return-type = "undefined" id = "ev3motors-rotateintachocounts"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateInTachoCounts" id = "ev3motors-rotateintachocounts"></div>
 
 Return Type : No Return Value
 
@@ -128,7 +134,7 @@ Rotate the motors in a number of tacho counts.
 
 ### RotateIndefinitely
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateIndefinitely" method-params = "power" return-type = "undefined" id = "ev3motors-rotateindefinitely"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateIndefinitely" id = "ev3motors-rotateindefinitely"></div>
 
 Return Type : No Return Value
 
@@ -140,7 +146,7 @@ Start to rotate the motors.
 
 ### RotateSyncInDistance
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateSyncInDistance" method-params = "power-distance-turnRatio-useBrake" return-type = "undefined" id = "ev3motors-rotatesyncindistance"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateSyncInDistance" id = "ev3motors-rotatesyncindistance"></div>
 
 Return Type : No Return Value
 
@@ -155,7 +161,7 @@ Rotate the motors at the same speed for a distance in cm.
 
 ### RotateSyncInDuration
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateSyncInDuration" method-params = "power-milliseconds-turnRatio-useBrake" return-type = "undefined" id = "ev3motors-rotatesyncinduration"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateSyncInDuration" id = "ev3motors-rotatesyncinduration"></div>
 
 Return Type : No Return Value
 
@@ -170,7 +176,7 @@ Rotate the motors at the same speed in a period of time.
 
 ### RotateSyncInTachoCounts
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateSyncInTachoCounts" method-params = "power-tachoCounts-turnRatio-useBrake" return-type = "undefined" id = "ev3motors-rotatesyncintachocounts"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateSyncInTachoCounts" id = "ev3motors-rotatesyncintachocounts"></div>
 
 Return Type : No Return Value
 
@@ -185,7 +191,7 @@ Rotate the motors at the same speed in a number of tacho counts.
 
 ### RotateSyncIndefinitely
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateSyncIndefinitely" method-params = "power-turnRatio" return-type = "undefined" id = "ev3motors-rotatesyncindefinitely"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "RotateSyncIndefinitely" id = "ev3motors-rotatesyncindefinitely"></div>
 
 Return Type : No Return Value
 
@@ -198,7 +204,7 @@ Start to rotate the motors at the same speed.
 
 ### Stop
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "Stop" method-params = "useBrake" return-type = "undefined" id = "ev3motors-stop"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "Stop" id = "ev3motors-stop"></div>
 
 Return Type : No Return Value
 
@@ -210,7 +216,7 @@ Stop the motors of the robot.
 
 ### ToggleDirection
 
-<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "ToggleDirection" method-params = "" return-type = "undefined" id = "ev3motors-toggledirection"></div>
+<div block-type = "component_method" component-selector = "Ev3Motors" method-selector = "ToggleDirection" id = "ev3motors-toggledirection"></div>
 
 Return Type : No Return Value
 

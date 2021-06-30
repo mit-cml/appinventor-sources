@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Serial
 
 Serial component which can be used to connect to devices like Arduino
@@ -26,7 +32,7 @@ Serial component which can be used to connect to devices like Arduino
 
 ### CloseSerial
 
-<div block-type = "component_method" component-selector = "Serial" method-selector = "CloseSerial" method-params = "" return-type = "boolean" id = "serial-closeserial"></div>
+<div block-type = "component_method" component-selector = "Serial" method-selector = "CloseSerial" id = "serial-closeserial"></div>
 
 Return Type : boolean
 
@@ -34,7 +40,7 @@ Closes serial connection. Returns true when closed.
 
 ### InitializeSerial
 
-<div block-type = "component_method" component-selector = "Serial" method-selector = "InitializeSerial" method-params = "" return-type = "undefined" id = "serial-initializeserial"></div>
+<div block-type = "component_method" component-selector = "Serial" method-selector = "InitializeSerial" id = "serial-initializeserial"></div>
 
 Return Type : No Return Value
 
@@ -42,7 +48,7 @@ Initializes serial connection.
 
 ### OpenSerial
 
-<div block-type = "component_method" component-selector = "Serial" method-selector = "OpenSerial" method-params = "" return-type = "boolean" id = "serial-openserial"></div>
+<div block-type = "component_method" component-selector = "Serial" method-selector = "OpenSerial" id = "serial-openserial"></div>
 
 Return Type : boolean
 
@@ -50,7 +56,7 @@ Opens serial connection. Returns true when opened.
 
 ### PrintSerial
 
-<div block-type = "component_method" component-selector = "Serial" method-selector = "PrintSerial" method-params = "data" return-type = "undefined" id = "serial-printserial"></div>
+<div block-type = "component_method" component-selector = "Serial" method-selector = "PrintSerial" id = "serial-printserial"></div>
 
 Return Type : No Return Value
 
@@ -62,7 +68,7 @@ Writes given data to serial, and appends a new line at the end.
 
 ### ReadSerial
 
-<div block-type = "component_method" component-selector = "Serial" method-selector = "ReadSerial" method-params = "" return-type = "text" id = "serial-readserial"></div>
+<div block-type = "component_method" component-selector = "Serial" method-selector = "ReadSerial" id = "serial-readserial"></div>
 
 Return Type : text
 
@@ -70,7 +76,7 @@ Reads data from serial.
 
 ### WriteSerial
 
-<div block-type = "component_method" component-selector = "Serial" method-selector = "WriteSerial" method-params = "data" return-type = "undefined" id = "serial-writeserial"></div>
+<div block-type = "component_method" component-selector = "Serial" method-selector = "WriteSerial" id = "serial-writeserial"></div>
 
 Return Type : No Return Value
 

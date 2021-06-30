@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # TextToSpeech
 
 The TextToSpeech component speaks a given text aloud. You can set the pitch and the rate of speech.
@@ -44,7 +50,7 @@ The languages and countries available depend on the particular device, and can b
 
 ### AfterSpeaking
 
-<div block-type = "component_event" component-selector = "TextToSpeech" event-selector = "AfterSpeaking" event-params = "result" id = "texttospeech-afterspeaking"></div>
+<div block-type = "component_event" component-selector = "TextToSpeech" event-selector = "AfterSpeaking" id = "texttospeech-afterspeaking"></div>
 
 Event to raise after the message is spoken. The result will be true if the message is spoken successfully, otherwise it will be false.
 
@@ -54,7 +60,7 @@ Event to raise after the message is spoken. The result will be true if the messa
 
 ### BeforeSpeaking
 
-<div block-type = "component_event" component-selector = "TextToSpeech" event-selector = "BeforeSpeaking" event-params = "" id = "texttospeech-beforespeaking"></div>
+<div block-type = "component_event" component-selector = "TextToSpeech" event-selector = "BeforeSpeaking" id = "texttospeech-beforespeaking"></div>
 
 Event to raise when Speak is invoked, before the message is spoken.
 
@@ -64,7 +70,7 @@ Event to raise when Speak is invoked, before the message is spoken.
 
 ### Speak
 
-<div block-type = "component_method" component-selector = "TextToSpeech" method-selector = "Speak" method-params = "message" return-type = "undefined" id = "texttospeech-speak"></div>
+<div block-type = "component_method" component-selector = "TextToSpeech" method-selector = "Speak" id = "texttospeech-speak"></div>
 
 Return Type : No Return Value
 

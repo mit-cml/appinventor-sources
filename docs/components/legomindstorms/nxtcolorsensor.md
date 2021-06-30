@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # NxtColorSensor
 
 A component that provides a high-level interface to a color sensor on a LEGO MINDSTORMS NXT robot.
@@ -74,19 +80,19 @@ A component that provides a high-level interface to a color sensor on a LEGO MIN
 
 ### AboveRange
 
-<div block-type = "component_event" component-selector = "NxtColorSensor" event-selector = "AboveRange" event-params = "" id = "nxtcolorsensor-aboverange"></div>
+<div block-type = "component_event" component-selector = "NxtColorSensor" event-selector = "AboveRange" id = "nxtcolorsensor-aboverange"></div>
 
 Light level has gone above the range. The AboveRange event will not occur if the DetectColor property is set to True or if the AboveRangeEventEnabled property is set to False.
 
 ### BelowRange
 
-<div block-type = "component_event" component-selector = "NxtColorSensor" event-selector = "BelowRange" event-params = "" id = "nxtcolorsensor-belowrange"></div>
+<div block-type = "component_event" component-selector = "NxtColorSensor" event-selector = "BelowRange" id = "nxtcolorsensor-belowrange"></div>
 
 Light level has gone below the range. The BelowRange event will not occur if the DetectColor property is set to True or if the BelowRangeEventEnabled property is set to False.
 
 ### ColorChanged
 
-<div block-type = "component_event" component-selector = "NxtColorSensor" event-selector = "ColorChanged" event-params = "color" id = "nxtcolorsensor-colorchanged"></div>
+<div block-type = "component_event" component-selector = "NxtColorSensor" event-selector = "ColorChanged" id = "nxtcolorsensor-colorchanged"></div>
 
 Detected color has changed. The ColorChanged event will not occur if the DetectColor property is set to False or if the ColorChangedEventEnabled property is set to False.
 
@@ -96,7 +102,7 @@ Detected color has changed. The ColorChanged event will not occur if the DetectC
 
 ### WithinRange
 
-<div block-type = "component_event" component-selector = "NxtColorSensor" event-selector = "WithinRange" event-params = "" id = "nxtcolorsensor-withinrange"></div>
+<div block-type = "component_event" component-selector = "NxtColorSensor" event-selector = "WithinRange" id = "nxtcolorsensor-withinrange"></div>
 
 Light level has gone within the range. The WithinRange event will not occur if the DetectColor property is set to True or if the WithinRangeEventEnabled property is set to False.
 
@@ -106,7 +112,7 @@ Light level has gone within the range. The WithinRange event will not occur if t
 
 ### GetColor
 
-<div block-type = "component_method" component-selector = "NxtColorSensor" method-selector = "GetColor" method-params = "" return-type = "number" id = "nxtcolorsensor-getcolor"></div>
+<div block-type = "component_method" component-selector = "NxtColorSensor" method-selector = "GetColor" id = "nxtcolorsensor-getcolor"></div>
 
 Return Type : number
 
@@ -114,7 +120,7 @@ Returns the current detected color, or the color None if the color can not be re
 
 ### GetLightLevel
 
-<div block-type = "component_method" component-selector = "NxtColorSensor" method-selector = "GetLightLevel" method-params = "" return-type = "number" id = "nxtcolorsensor-getlightlevel"></div>
+<div block-type = "component_method" component-selector = "NxtColorSensor" method-selector = "GetLightLevel" id = "nxtcolorsensor-getlightlevel"></div>
 
 Return Type : number
 

@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Web
 
 Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.
@@ -44,7 +50,7 @@ Non-visible component that provides functions for HTTP GET, POST, PUT, and DELET
 
 ### GotFile
 
-<div block-type = "component_event" component-selector = "Web" event-selector = "GotFile" event-params = "url-responseCode-responseType-fileName" id = "web-gotfile"></div>
+<div block-type = "component_event" component-selector = "Web" event-selector = "GotFile" id = "web-gotfile"></div>
 
 Event indicating that a request has finished.
 
@@ -57,7 +63,7 @@ Event indicating that a request has finished.
 
 ### GotText
 
-<div block-type = "component_event" component-selector = "Web" event-selector = "GotText" event-params = "url-responseCode-responseType-responseContent" id = "web-gottext"></div>
+<div block-type = "component_event" component-selector = "Web" event-selector = "GotText" id = "web-gottext"></div>
 
 Event indicating that a request has finished.
 
@@ -70,7 +76,7 @@ Event indicating that a request has finished.
 
 ### TimedOut
 
-<div block-type = "component_event" component-selector = "Web" event-selector = "TimedOut" event-params = "url" id = "web-timedout"></div>
+<div block-type = "component_event" component-selector = "Web" event-selector = "TimedOut" id = "web-timedout"></div>
 
 Event indicating that a request has timed out.
 
@@ -84,7 +90,7 @@ Event indicating that a request has timed out.
 
 ### BuildRequestData
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "BuildRequestData" method-params = "list" return-type = "text" id = "web-buildrequestdata"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "BuildRequestData" id = "web-buildrequestdata"></div>
 
 Return Type : text
 
@@ -96,7 +102,7 @@ Converts a list of two-element sublists, representing name and value pairs, to a
 
 ### ClearCookies
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "ClearCookies" method-params = "" return-type = "undefined" id = "web-clearcookies"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "ClearCookies" id = "web-clearcookies"></div>
 
 Return Type : No Return Value
 
@@ -104,7 +110,7 @@ Clears all cookies for this Web component.
 
 ### Delete
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "Delete" method-params = "" return-type = "undefined" id = "web-delete"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "Delete" id = "web-delete"></div>
 
 Return Type : No Return Value
 
@@ -112,7 +118,7 @@ Performs an HTTP DELETE request using the Url property and retrieves the respons
 
 ### Get
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "Get" method-params = "" return-type = "undefined" id = "web-get"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "Get" id = "web-get"></div>
 
 Return Type : No Return Value
 
@@ -120,7 +126,7 @@ Performs an HTTP GET request using the Url property and retrieves the response. 
 
 ### HtmlTextDecode
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "HtmlTextDecode" method-params = "htmlText" return-type = "text" id = "web-htmltextdecode"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "HtmlTextDecode" id = "web-htmltextdecode"></div>
 
 Return Type : text
 
@@ -132,7 +138,7 @@ Decodes the given HTML text value. HTML character entities such as &amp;, &lt;, 
 
 ### JsonObjectEncode
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "JsonObjectEncode" method-params = "jsonObject" return-type = "text" id = "web-jsonobjectencode"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "JsonObjectEncode" id = "web-jsonobjectencode"></div>
 
 Return Type : text
 
@@ -144,7 +150,7 @@ Returns the value of a built-in type (i.e., boolean, number, text, list, diction
 
 ### JsonTextDecode
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "JsonTextDecode" method-params = "jsonText" return-type = "any" id = "web-jsontextdecode"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "JsonTextDecode" id = "web-jsontextdecode"></div>
 
 Return Type : any
 
@@ -156,7 +162,7 @@ Decodes the given JSON encoded value to produce a corresponding AppInventor valu
 
 ### JsonTextDecodeWithDictionaries
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "JsonTextDecodeWithDictionaries" method-params = "jsonText" return-type = "any" id = "web-jsontextdecodewithdictionaries"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "JsonTextDecodeWithDictionaries" id = "web-jsontextdecodewithdictionaries"></div>
 
 Return Type : any
 
@@ -168,7 +174,7 @@ Decodes the given JSON encoded value to produce a corresponding App Inventor val
 
 ### PatchFile
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "PatchFile" method-params = "path" return-type = "undefined" id = "web-patchfile"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "PatchFile" id = "web-patchfile"></div>
 
 Return Type : No Return Value
 
@@ -182,7 +188,7 @@ If the SaveResponse property is false, the GotText event will be triggered.
 
 ### PatchText
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "PatchText" method-params = "text" return-type = "undefined" id = "web-patchtext"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "PatchText" id = "web-patchtext"></div>
 
 Return Type : No Return Value
 
@@ -197,7 +203,7 @@ If the SaveResponse property is false, the GotText event will be triggered.
 
 ### PatchTextWithEncoding
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "PatchTextWithEncoding" method-params = "text-encoding" return-type = "undefined" id = "web-patchtextwithencoding"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "PatchTextWithEncoding" id = "web-patchtextwithencoding"></div>
 
 Return Type : No Return Value
 
@@ -213,7 +219,7 @@ If the SaveResponse property is false, the GotText event will be triggered.
 
 ### PostFile
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "PostFile" method-params = "path" return-type = "undefined" id = "web-postfile"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "PostFile" id = "web-postfile"></div>
 
 Return Type : No Return Value
 
@@ -227,7 +233,7 @@ If the SaveResponse property is false, the GotText event will be triggered.
 
 ### PostText
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "PostText" method-params = "text" return-type = "undefined" id = "web-posttext"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "PostText" id = "web-posttext"></div>
 
 Return Type : No Return Value
 
@@ -242,7 +248,7 @@ If the SaveResponse property is false, the GotText event will be triggered.
 
 ### PostTextWithEncoding
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "PostTextWithEncoding" method-params = "text-encoding" return-type = "undefined" id = "web-posttextwithencoding"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "PostTextWithEncoding" id = "web-posttextwithencoding"></div>
 
 Return Type : No Return Value
 
@@ -258,7 +264,7 @@ If the SaveResponse property is false, the GotText event will be triggered.
 
 ### PutFile
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "PutFile" method-params = "path" return-type = "undefined" id = "web-putfile"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "PutFile" id = "web-putfile"></div>
 
 Return Type : No Return Value
 
@@ -272,7 +278,7 @@ If the SaveResponse property is false, the GotText event will be triggered.
 
 ### PutText
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "PutText" method-params = "text" return-type = "undefined" id = "web-puttext"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "PutText" id = "web-puttext"></div>
 
 Return Type : No Return Value
 
@@ -287,7 +293,7 @@ If the SaveResponse property is false, the GotText event will be triggered.
 
 ### PutTextWithEncoding
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "PutTextWithEncoding" method-params = "text-encoding" return-type = "undefined" id = "web-puttextwithencoding"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "PutTextWithEncoding" id = "web-puttextwithencoding"></div>
 
 Return Type : No Return Value
 
@@ -303,7 +309,7 @@ If the SaveResponse property is false, the GotText event will be triggered.
 
 ### UriDecode
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "UriDecode" method-params = "text" return-type = "text" id = "web-uridecode"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "UriDecode" id = "web-uridecode"></div>
 
 Return Type : text
 
@@ -315,7 +321,7 @@ Decodes the encoded text value so that the values aren't URL encoded anymore.
 
 ### UriEncode
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "UriEncode" method-params = "text" return-type = "text" id = "web-uriencode"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "UriEncode" id = "web-uriencode"></div>
 
 Return Type : text
 
@@ -327,7 +333,7 @@ Encodes the given text value so that it can be used in a URL.
 
 ### XMLTextDecode
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "XMLTextDecode" method-params = "XmlText" return-type = "any" id = "web-xmltextdecode"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "XMLTextDecode" id = "web-xmltextdecode"></div>
 
 Return Type : any
 
@@ -339,7 +345,7 @@ Decodes the given XML string to produce a dictionary structure. See the App Inve
 
 ### XMLTextDecodeAsDictionary
 
-<div block-type = "component_method" component-selector = "Web" method-selector = "XMLTextDecodeAsDictionary" method-params = "XmlText" return-type = "any" id = "web-xmltextdecodeasdictionary"></div>
+<div block-type = "component_method" component-selector = "Web" method-selector = "XMLTextDecodeAsDictionary" id = "web-xmltextdecodeasdictionary"></div>
 
 Return Type : any
 

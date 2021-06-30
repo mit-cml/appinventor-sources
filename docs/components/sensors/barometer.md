@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Barometer
 
 A sensor component that can measure the ambient air pressure.
@@ -26,7 +32,7 @@ A sensor component that can measure the ambient air pressure.
 
 ### AirPressureChanged
 
-<div block-type = "component_event" component-selector = "Barometer" event-selector = "AirPressureChanged" event-params = "pressure" id = "barometer-airpressurechanged"></div>
+<div block-type = "component_event" component-selector = "Barometer" event-selector = "AirPressureChanged" id = "barometer-airpressurechanged"></div>
 
 Called when a change is detected in the air pressure (provided in hPa).
 

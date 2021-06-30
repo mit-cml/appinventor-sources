@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # TimePicker
 
 A button that, when clicked on, launches a popup dialog to allow the user to select a time.
@@ -92,31 +98,31 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 
 ### AfterTimeSet
 
-<div block-type = "component_event" component-selector = "TimePicker" event-selector = "AfterTimeSet" event-params = "" id = "timepicker-aftertimeset"></div>
+<div block-type = "component_event" component-selector = "TimePicker" event-selector = "AfterTimeSet" id = "timepicker-aftertimeset"></div>
 
 This event is run when a user has set the time in the popup dialog.
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "TimePicker" event-selector = "GotFocus" event-params = "" id = "timepicker-gotfocus"></div>
+<div block-type = "component_event" component-selector = "TimePicker" event-selector = "GotFocus" id = "timepicker-gotfocus"></div>
 
 Indicates the cursor moved over the TimePicker so it is now possible to click it.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "TimePicker" event-selector = "LostFocus" event-params = "" id = "timepicker-lostfocus"></div>
+<div block-type = "component_event" component-selector = "TimePicker" event-selector = "LostFocus" id = "timepicker-lostfocus"></div>
 
 Indicates the cursor moved away from the TimePicker so it is now no longer possible to click it.
 
 ### TouchDown
 
-<div block-type = "component_event" component-selector = "TimePicker" event-selector = "TouchDown" event-params = "" id = "timepicker-touchdown"></div>
+<div block-type = "component_event" component-selector = "TimePicker" event-selector = "TouchDown" id = "timepicker-touchdown"></div>
 
 Indicates that the TimePicker was pressed down.
 
 ### TouchUp
 
-<div block-type = "component_event" component-selector = "TimePicker" event-selector = "TouchUp" event-params = "" id = "timepicker-touchup"></div>
+<div block-type = "component_event" component-selector = "TimePicker" event-selector = "TouchUp" id = "timepicker-touchup"></div>
 
 Indicates that the TimePicker has been released.
 
@@ -126,7 +132,7 @@ Indicates that the TimePicker has been released.
 
 ### LaunchPicker
 
-<div block-type = "component_method" component-selector = "TimePicker" method-selector = "LaunchPicker" method-params = "" return-type = "undefined" id = "timepicker-launchpicker"></div>
+<div block-type = "component_method" component-selector = "TimePicker" method-selector = "LaunchPicker" id = "timepicker-launchpicker"></div>
 
 Return Type : No Return Value
 
@@ -134,7 +140,7 @@ Launches the TimePicker dialog.
 
 ### SetTimeToDisplay
 
-<div block-type = "component_method" component-selector = "TimePicker" method-selector = "SetTimeToDisplay" method-params = "hour-minute" return-type = "undefined" id = "timepicker-settimetodisplay"></div>
+<div block-type = "component_method" component-selector = "TimePicker" method-selector = "SetTimeToDisplay" id = "timepicker-settimetodisplay"></div>
 
 Return Type : No Return Value
 
@@ -147,7 +153,7 @@ Set the time to be shown in the Time Picker popup. Current time is shown by defa
 
 ### SetTimeToDisplayFromInstant
 
-<div block-type = "component_method" component-selector = "TimePicker" method-selector = "SetTimeToDisplayFromInstant" method-params = "instant" return-type = "undefined" id = "timepicker-settimetodisplayfrominstant"></div>
+<div block-type = "component_method" component-selector = "TimePicker" method-selector = "SetTimeToDisplayFromInstant" id = "timepicker-settimetodisplayfrominstant"></div>
 
 Return Type : No Return Value
 

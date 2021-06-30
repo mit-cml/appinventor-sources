@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # DatePicker
 
 A button that, when clicked on, launches a popup dialog to allow the user to select a date.
@@ -92,31 +98,31 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 
 ### AfterDateSet
 
-<div block-type = "component_event" component-selector = "DatePicker" event-selector = "AfterDateSet" event-params = "" id = "datepicker-afterdateset"></div>
+<div block-type = "component_event" component-selector = "DatePicker" event-selector = "AfterDateSet" id = "datepicker-afterdateset"></div>
 
 Event that runs after the user chooses a Date in the dialog
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "DatePicker" event-selector = "GotFocus" event-params = "" id = "datepicker-gotfocus"></div>
+<div block-type = "component_event" component-selector = "DatePicker" event-selector = "GotFocus" id = "datepicker-gotfocus"></div>
 
 Indicates the cursor moved over the DatePicker so it is now possible to click it.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "DatePicker" event-selector = "LostFocus" event-params = "" id = "datepicker-lostfocus"></div>
+<div block-type = "component_event" component-selector = "DatePicker" event-selector = "LostFocus" id = "datepicker-lostfocus"></div>
 
 Indicates the cursor moved away from the DatePicker so it is now no longer possible to click it.
 
 ### TouchDown
 
-<div block-type = "component_event" component-selector = "DatePicker" event-selector = "TouchDown" event-params = "" id = "datepicker-touchdown"></div>
+<div block-type = "component_event" component-selector = "DatePicker" event-selector = "TouchDown" id = "datepicker-touchdown"></div>
 
 Indicates that the DatePicker was pressed down.
 
 ### TouchUp
 
-<div block-type = "component_event" component-selector = "DatePicker" event-selector = "TouchUp" event-params = "" id = "datepicker-touchup"></div>
+<div block-type = "component_event" component-selector = "DatePicker" event-selector = "TouchUp" id = "datepicker-touchup"></div>
 
 Indicates that the DatePicker has been released.
 
@@ -126,7 +132,7 @@ Indicates that the DatePicker has been released.
 
 ### LaunchPicker
 
-<div block-type = "component_method" component-selector = "DatePicker" method-selector = "LaunchPicker" method-params = "" return-type = "undefined" id = "datepicker-launchpicker"></div>
+<div block-type = "component_method" component-selector = "DatePicker" method-selector = "LaunchPicker" id = "datepicker-launchpicker"></div>
 
 Return Type : No Return Value
 
@@ -134,7 +140,7 @@ Launches the DatePicker dialog.
 
 ### SetDateToDisplay
 
-<div block-type = "component_method" component-selector = "DatePicker" method-selector = "SetDateToDisplay" method-params = "year-month-day" return-type = "undefined" id = "datepicker-setdatetodisplay"></div>
+<div block-type = "component_method" component-selector = "DatePicker" method-selector = "SetDateToDisplay" id = "datepicker-setdatetodisplay"></div>
 
 Return Type : No Return Value
 
@@ -148,7 +154,7 @@ Allows the user to set the date to be displayed when the date picker opens. Vali
 
 ### SetDateToDisplayFromInstant
 
-<div block-type = "component_method" component-selector = "DatePicker" method-selector = "SetDateToDisplayFromInstant" method-params = "instant" return-type = "undefined" id = "datepicker-setdatetodisplayfrominstant"></div>
+<div block-type = "component_method" component-selector = "DatePicker" method-selector = "SetDateToDisplayFromInstant" id = "datepicker-setdatetodisplayfrominstant"></div>
 
 Return Type : No Return Value
 

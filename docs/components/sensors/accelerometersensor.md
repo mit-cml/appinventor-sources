@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # AccelerometerSensor
 
 Non-visible component that can detect shaking and measure acceleration approximately in three dimensions using SI units (m/s^2^). The components are:
@@ -42,7 +48,7 @@ Non-visible component that can detect shaking and measure acceleration approxima
 
 ### AccelerationChanged
 
-<div block-type = "component_event" component-selector = "AccelerometerSensor" event-selector = "AccelerationChanged" event-params = "xAccel-yAccel-zAccel" id = "accelerometersensor-accelerationchanged"></div>
+<div block-type = "component_event" component-selector = "AccelerometerSensor" event-selector = "AccelerationChanged" id = "accelerometersensor-accelerationchanged"></div>
 
 Indicates the acceleration changed in the X, Y, and/or Z dimensions.
 
@@ -54,7 +60,7 @@ Indicates the acceleration changed in the X, Y, and/or Z dimensions.
 
 ### Shaking
 
-<div block-type = "component_event" component-selector = "AccelerometerSensor" event-selector = "Shaking" event-params = "" id = "accelerometersensor-shaking"></div>
+<div block-type = "component_event" component-selector = "AccelerometerSensor" event-selector = "Shaking" id = "accelerometersensor-shaking"></div>
 
 Indicates the device started being shaken or continues to be shaken.
 

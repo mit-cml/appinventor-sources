@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # TextBox
 
 A box for the user to enter text. The initial or user-entered text value is in the `Text` property. If blank, the `Hint` property, which appears as faint text in the box, can provide the user with guidance as to what to type.
@@ -108,13 +114,13 @@ If the text entered by the user should not be displayed, use `PasswordTextBox` i
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "TextBox" event-selector = "GotFocus" event-params = "" id = "textbox-gotfocus"></div>
+<div block-type = "component_event" component-selector = "TextBox" event-selector = "GotFocus" id = "textbox-gotfocus"></div>
 
 Event raised when the TextBox is selected for input, such as by the user touching it.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "TextBox" event-selector = "LostFocus" event-params = "" id = "textbox-lostfocus"></div>
+<div block-type = "component_event" component-selector = "TextBox" event-selector = "LostFocus" id = "textbox-lostfocus"></div>
 
 Event raised when the TextBox is no longer selected for input, such as if the user touches a different text box.
 
@@ -124,7 +130,7 @@ Event raised when the TextBox is no longer selected for input, such as if the us
 
 ### HideKeyboard
 
-<div block-type = "component_method" component-selector = "TextBox" method-selector = "HideKeyboard" method-params = "" return-type = "undefined" id = "textbox-hidekeyboard"></div>
+<div block-type = "component_method" component-selector = "TextBox" method-selector = "HideKeyboard" id = "textbox-hidekeyboard"></div>
 
 Return Type : No Return Value
 
@@ -132,7 +138,7 @@ Hide the keyboard. Only multiline text boxes need this. Single line text boxes c
 
 ### RequestFocus
 
-<div block-type = "component_method" component-selector = "TextBox" method-selector = "RequestFocus" method-params = "" return-type = "undefined" id = "textbox-requestfocus"></div>
+<div block-type = "component_method" component-selector = "TextBox" method-selector = "RequestFocus" id = "textbox-requestfocus"></div>
 
 Return Type : No Return Value
 

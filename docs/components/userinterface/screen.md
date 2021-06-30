@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Screen
 
 Top-level component containing all other components in the program
@@ -176,13 +182,13 @@ Top-level component containing all other components in the program
 
 ### BackPressed
 
-<div block-type = "component_event" component-selector = "Screen" event-selector = "BackPressed" event-params = "" id = "screen-backpressed"></div>
+<div block-type = "component_event" component-selector = "Screen" event-selector = "BackPressed" id = "screen-backpressed"></div>
 
 Device back button pressed.
 
 ### ErrorOccurred
 
-<div block-type = "component_event" component-selector = "Screen" event-selector = "ErrorOccurred" event-params = "component-functionName-errorNumber-message" id = "screen-erroroccurred"></div>
+<div block-type = "component_event" component-selector = "Screen" event-selector = "ErrorOccurred" id = "screen-erroroccurred"></div>
 
 Event raised when an error occurs. Only some errors will raise this condition. For those errors, the system will show a notification by default. You can use this event handler to prescribe an error behavior different than the default.
 
@@ -195,13 +201,13 @@ Event raised when an error occurs. Only some errors will raise this condition. F
 
 ### Initialize
 
-<div block-type = "component_event" component-selector = "Screen" event-selector = "Initialize" event-params = "" id = "screen-initialize"></div>
+<div block-type = "component_event" component-selector = "Screen" event-selector = "Initialize" id = "screen-initialize"></div>
 
 The Initialize event is run when the Screen starts and is only run once per screen.
 
 ### OtherScreenClosed
 
-<div block-type = "component_event" component-selector = "Screen" event-selector = "OtherScreenClosed" event-params = "otherScreenName-result" id = "screen-otherscreenclosed"></div>
+<div block-type = "component_event" component-selector = "Screen" event-selector = "OtherScreenClosed" id = "screen-otherscreenclosed"></div>
 
 Event raised when another screen has closed and control has returned to this screen.
 
@@ -212,7 +218,7 @@ Event raised when another screen has closed and control has returned to this scr
 
 ### PermissionDenied
 
-<div block-type = "component_event" component-selector = "Screen" event-selector = "PermissionDenied" event-params = "component-functionName-permissionName" id = "screen-permissiondenied"></div>
+<div block-type = "component_event" component-selector = "Screen" event-selector = "PermissionDenied" id = "screen-permissiondenied"></div>
 
 Event to handle when the app user has denied a needed permission.
 
@@ -224,7 +230,7 @@ Event to handle when the app user has denied a needed permission.
 
 ### PermissionGranted
 
-<div block-type = "component_event" component-selector = "Screen" event-selector = "PermissionGranted" event-params = "permissionName" id = "screen-permissiongranted"></div>
+<div block-type = "component_event" component-selector = "Screen" event-selector = "PermissionGranted" id = "screen-permissiongranted"></div>
 
 Event to handle when the app user has granted a needed permission. This event is only run when permission is granted in response to the AskForPermission method.
 
@@ -234,7 +240,7 @@ Event to handle when the app user has granted a needed permission. This event is
 
 ### ScreenOrientationChanged
 
-<div block-type = "component_event" component-selector = "Screen" event-selector = "ScreenOrientationChanged" event-params = "" id = "screen-screenorientationchanged"></div>
+<div block-type = "component_event" component-selector = "Screen" event-selector = "ScreenOrientationChanged" id = "screen-screenorientationchanged"></div>
 
 Screen orientation changed
 
@@ -244,7 +250,7 @@ Screen orientation changed
 
 ### AskForPermission
 
-<div block-type = "component_method" component-selector = "Screen" method-selector = "AskForPermission" method-params = "permissionName" return-type = "undefined" id = "screen-askforpermission"></div>
+<div block-type = "component_method" component-selector = "Screen" method-selector = "AskForPermission" id = "screen-askforpermission"></div>
 
 Return Type : No Return Value
 
@@ -256,7 +262,7 @@ Ask the user to grant access to a dangerous permission.
 
 ### HideKeyboard
 
-<div block-type = "component_method" component-selector = "Screen" method-selector = "HideKeyboard" method-params = "" return-type = "undefined" id = "screen-hidekeyboard"></div>
+<div block-type = "component_method" component-selector = "Screen" method-selector = "HideKeyboard" id = "screen-hidekeyboard"></div>
 
 Return Type : No Return Value
 

@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Label
 
 A Label displays a piece of text, which is specified through the `Text` property. Other properties, all of which can be set in the Designer or Blocks Editor, control the appearance and placement of the text.

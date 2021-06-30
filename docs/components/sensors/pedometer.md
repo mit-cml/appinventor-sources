@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Pedometer
 
 A Component that acts like a Pedometer. It senses motion via the Accelerometer and attempts to determine if a step has been taken. Using a configurable stride length, it can estimate the distance traveled as well.
@@ -26,7 +32,7 @@ A Component that acts like a Pedometer. It senses motion via the Accelerometer a
 
 ### SimpleStep
 
-<div block-type = "component_event" component-selector = "Pedometer" event-selector = "SimpleStep" event-params = "simpleSteps-distance" id = "pedometer-simplestep"></div>
+<div block-type = "component_event" component-selector = "Pedometer" event-selector = "SimpleStep" id = "pedometer-simplestep"></div>
 
 This event is run when a raw step is detected.
 
@@ -37,7 +43,7 @@ This event is run when a raw step is detected.
 
 ### WalkStep
 
-<div block-type = "component_event" component-selector = "Pedometer" event-selector = "WalkStep" event-params = "walkSteps-distance" id = "pedometer-walkstep"></div>
+<div block-type = "component_event" component-selector = "Pedometer" event-selector = "WalkStep" id = "pedometer-walkstep"></div>
 
 This event is run when a walking step is detected. A walking step is a step that appears to be involved in forward motion.
 
@@ -52,7 +58,7 @@ This event is run when a walking step is detected. A walking step is a step that
 
 ### Reset
 
-<div block-type = "component_method" component-selector = "Pedometer" method-selector = "Reset" method-params = "" return-type = "undefined" id = "pedometer-reset"></div>
+<div block-type = "component_method" component-selector = "Pedometer" method-selector = "Reset" id = "pedometer-reset"></div>
 
 Return Type : No Return Value
 
@@ -60,7 +66,7 @@ Resets the step counter, distance measure and time running.
 
 ### Save
 
-<div block-type = "component_method" component-selector = "Pedometer" method-selector = "Save" method-params = "" return-type = "undefined" id = "pedometer-save"></div>
+<div block-type = "component_method" component-selector = "Pedometer" method-selector = "Save" id = "pedometer-save"></div>
 
 Return Type : No Return Value
 
@@ -68,7 +74,7 @@ Saves the pedometer state to the phone. Permits permits accumulation of steps an
 
 ### Start
 
-<div block-type = "component_method" component-selector = "Pedometer" method-selector = "Start" method-params = "" return-type = "undefined" id = "pedometer-start"></div>
+<div block-type = "component_method" component-selector = "Pedometer" method-selector = "Start" id = "pedometer-start"></div>
 
 Return Type : No Return Value
 
@@ -76,7 +82,7 @@ Start counting steps
 
 ### Stop
 
-<div block-type = "component_method" component-selector = "Pedometer" method-selector = "Stop" method-params = "" return-type = "undefined" id = "pedometer-stop"></div>
+<div block-type = "component_method" component-selector = "Pedometer" method-selector = "Stop" id = "pedometer-stop"></div>
 
 Return Type : No Return Value
 

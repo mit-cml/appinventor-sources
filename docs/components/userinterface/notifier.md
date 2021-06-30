@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Notifier
 
 The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods:
@@ -45,7 +51,7 @@ The Notifier component displays alert dialogs, messages, and temporary alerts, a
 
 ### AfterChoosing
 
-<div block-type = "component_event" component-selector = "Notifier" event-selector = "AfterChoosing" event-params = "choice" id = "notifier-afterchoosing"></div>
+<div block-type = "component_event" component-selector = "Notifier" event-selector = "AfterChoosing" id = "notifier-afterchoosing"></div>
 
 Event after the user has made a selection for ShowChooseDialog.
 
@@ -55,7 +61,7 @@ Event after the user has made a selection for ShowChooseDialog.
 
 ### AfterTextInput
 
-<div block-type = "component_event" component-selector = "Notifier" event-selector = "AfterTextInput" event-params = "response" id = "notifier-aftertextinput"></div>
+<div block-type = "component_event" component-selector = "Notifier" event-selector = "AfterTextInput" id = "notifier-aftertextinput"></div>
 
 Event raised after the user has responded to ShowTextDialog.
 
@@ -65,13 +71,13 @@ Event raised after the user has responded to ShowTextDialog.
 
 ### ChoosingCanceled
 
-<div block-type = "component_event" component-selector = "Notifier" event-selector = "ChoosingCanceled" event-params = "" id = "notifier-choosingcanceled"></div>
+<div block-type = "component_event" component-selector = "Notifier" event-selector = "ChoosingCanceled" id = "notifier-choosingcanceled"></div>
 
 Event raised when the user canceled ShowChooseDialog.
 
 ### TextInputCanceled
 
-<div block-type = "component_event" component-selector = "Notifier" event-selector = "TextInputCanceled" event-params = "" id = "notifier-textinputcanceled"></div>
+<div block-type = "component_event" component-selector = "Notifier" event-selector = "TextInputCanceled" id = "notifier-textinputcanceled"></div>
 
 Event raised when the user canceled ShowTextDialog.
 
@@ -81,7 +87,7 @@ Event raised when the user canceled ShowTextDialog.
 
 ### DismissProgressDialog
 
-<div block-type = "component_method" component-selector = "Notifier" method-selector = "DismissProgressDialog" method-params = "" return-type = "undefined" id = "notifier-dismissprogressdialog"></div>
+<div block-type = "component_method" component-selector = "Notifier" method-selector = "DismissProgressDialog" id = "notifier-dismissprogressdialog"></div>
 
 Return Type : No Return Value
 
@@ -89,7 +95,7 @@ Dismiss a previously displayed ProgressDialog box
 
 ### LogError
 
-<div block-type = "component_method" component-selector = "Notifier" method-selector = "LogError" method-params = "message" return-type = "undefined" id = "notifier-logerror"></div>
+<div block-type = "component_method" component-selector = "Notifier" method-selector = "LogError" id = "notifier-logerror"></div>
 
 Return Type : No Return Value
 
@@ -101,7 +107,7 @@ Writes an error message to the Android system log. See the Google Android docume
 
 ### LogInfo
 
-<div block-type = "component_method" component-selector = "Notifier" method-selector = "LogInfo" method-params = "message" return-type = "undefined" id = "notifier-loginfo"></div>
+<div block-type = "component_method" component-selector = "Notifier" method-selector = "LogInfo" id = "notifier-loginfo"></div>
 
 Return Type : No Return Value
 
@@ -113,7 +119,7 @@ Writes an information message to the Android log.
 
 ### LogWarning
 
-<div block-type = "component_method" component-selector = "Notifier" method-selector = "LogWarning" method-params = "message" return-type = "undefined" id = "notifier-logwarning"></div>
+<div block-type = "component_method" component-selector = "Notifier" method-selector = "LogWarning" id = "notifier-logwarning"></div>
 
 Return Type : No Return Value
 
@@ -125,7 +131,7 @@ Writes a warning message to the Android log. See the Google Android documentatio
 
 ### ShowAlert
 
-<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowAlert" method-params = "notice" return-type = "undefined" id = "notifier-showalert"></div>
+<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowAlert" id = "notifier-showalert"></div>
 
 Return Type : No Return Value
 
@@ -137,7 +143,7 @@ Display a temporary notification.
 
 ### ShowChooseDialog
 
-<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowChooseDialog" method-params = "message-title-button1Text-button2Text-cancelable" return-type = "undefined" id = "notifier-showchoosedialog"></div>
+<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowChooseDialog" id = "notifier-showchoosedialog"></div>
 
 Return Type : No Return Value
 
@@ -153,7 +159,7 @@ Shows a dialog box with two buttons, from which the user can choose. If cancelab
 
 ### ShowMessageDialog
 
-<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowMessageDialog" method-params = "message-title-buttonText" return-type = "undefined" id = "notifier-showmessagedialog"></div>
+<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowMessageDialog" id = "notifier-showmessagedialog"></div>
 
 Return Type : No Return Value
 
@@ -167,7 +173,7 @@ Display an alert dialog with a single button that dismisses the alert.
 
 ### ShowPasswordDialog
 
-<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowPasswordDialog" method-params = "message-title-cancelable" return-type = "undefined" id = "notifier-showpassworddialog"></div>
+<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowPasswordDialog" id = "notifier-showpassworddialog"></div>
 
 Return Type : No Return Value
 
@@ -181,7 +187,7 @@ Shows a dialog box where the user can enter password (input is masked), after wh
 
 ### ShowProgressDialog
 
-<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowProgressDialog" method-params = "message-title" return-type = "undefined" id = "notifier-showprogressdialog"></div>
+<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowProgressDialog" id = "notifier-showprogressdialog"></div>
 
 Return Type : No Return Value
 
@@ -194,7 +200,7 @@ Shows a dialog box with an optional title and message (use empty strings if they
 
 ### ShowTextDialog
 
-<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowTextDialog" method-params = "message-title-cancelable" return-type = "undefined" id = "notifier-showtextdialog"></div>
+<div block-type = "component_method" component-selector = "Notifier" method-selector = "ShowTextDialog" id = "notifier-showtextdialog"></div>
 
 Return Type : No Return Value
 

@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # PhoneNumberPicker
 
 A button that, when clicked on, displays a list of the contacts' phone numbers to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact:
@@ -101,37 +107,37 @@ The PhoneNumberPicker component may not work on all Android devices. For example
 
 ### AfterPicking
 
-<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "AfterPicking" event-params = "" id = "phonenumberpicker-afterpicking"></div>
+<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "AfterPicking" id = "phonenumberpicker-afterpicking"></div>
 
 Event to be raised after the \`ContactPicker\` activity returns its result and the properties have been filled in.
 
 ### BeforePicking
 
-<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "BeforePicking" event-params = "" id = "phonenumberpicker-beforepicking"></div>
+<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "BeforePicking" id = "phonenumberpicker-beforepicking"></div>
 
 Event to raise when the \`ContactPicker\` is clicked or the picker is shown using the
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "GotFocus" event-params = "" id = "phonenumberpicker-gotfocus"></div>
+<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "GotFocus" id = "phonenumberpicker-gotfocus"></div>
 
 Indicates the cursor moved over the ContactPicker so it is now possible to click it.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "LostFocus" event-params = "" id = "phonenumberpicker-lostfocus"></div>
+<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "LostFocus" id = "phonenumberpicker-lostfocus"></div>
 
 Indicates the cursor moved away from the ContactPicker so it is now no longer possible to click it.
 
 ### TouchDown
 
-<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "TouchDown" event-params = "" id = "phonenumberpicker-touchdown"></div>
+<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "TouchDown" id = "phonenumberpicker-touchdown"></div>
 
 Indicates that the ContactPicker was pressed down.
 
 ### TouchUp
 
-<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "TouchUp" event-params = "" id = "phonenumberpicker-touchup"></div>
+<div block-type = "component_event" component-selector = "PhoneNumberPicker" event-selector = "TouchUp" id = "phonenumberpicker-touchup"></div>
 
 Indicates that the ContactPicker has been released.
 
@@ -141,7 +147,7 @@ Indicates that the ContactPicker has been released.
 
 ### Open
 
-<div block-type = "component_method" component-selector = "PhoneNumberPicker" method-selector = "Open" method-params = "" return-type = "undefined" id = "phonenumberpicker-open"></div>
+<div block-type = "component_method" component-selector = "PhoneNumberPicker" method-selector = "Open" id = "phonenumberpicker-open"></div>
 
 Return Type : No Return Value
 
@@ -149,7 +155,7 @@ Opens the ContactPicker, as though the user clicked on it.
 
 ### ViewContact
 
-<div block-type = "component_method" component-selector = "PhoneNumberPicker" method-selector = "ViewContact" method-params = "uri" return-type = "undefined" id = "phonenumberpicker-viewcontact"></div>
+<div block-type = "component_method" component-selector = "PhoneNumberPicker" method-selector = "ViewContact" id = "phonenumberpicker-viewcontact"></div>
 
 Return Type : No Return Value
 

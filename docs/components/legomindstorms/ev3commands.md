@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Ev3Commands
 
 A component that provides a low-level interface to a LEGO MINDSTORMS EV3 robot, with functions to send system or direct commands to EV3 robots.
@@ -20,7 +26,7 @@ A component that provides a low-level interface to a LEGO MINDSTORMS EV3 robot, 
 
 ### GetBatteryCurrent
 
-<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetBatteryCurrent" method-params = "" return-type = "number" id = "ev3commands-getbatterycurrent"></div>
+<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetBatteryCurrent" id = "ev3commands-getbatterycurrent"></div>
 
 Return Type : number
 
@@ -28,7 +34,7 @@ Get the battery current.
 
 ### GetBatteryVoltage
 
-<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetBatteryVoltage" method-params = "" return-type = "number" id = "ev3commands-getbatteryvoltage"></div>
+<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetBatteryVoltage" id = "ev3commands-getbatteryvoltage"></div>
 
 Return Type : number
 
@@ -36,7 +42,7 @@ Get the battery voltage.
 
 ### GetFirmwareBuild
 
-<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetFirmwareBuild" method-params = "" return-type = "text" id = "ev3commands-getfirmwarebuild"></div>
+<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetFirmwareBuild" id = "ev3commands-getfirmwarebuild"></div>
 
 Return Type : text
 
@@ -44,7 +50,7 @@ Get the firmware build on EV3.
 
 ### GetFirmwareVersion
 
-<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetFirmwareVersion" method-params = "" return-type = "text" id = "ev3commands-getfirmwareversion"></div>
+<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetFirmwareVersion" id = "ev3commands-getfirmwareversion"></div>
 
 Return Type : text
 
@@ -52,7 +58,7 @@ Get the firmware version on EV3.
 
 ### GetHardwareVersion
 
-<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetHardwareVersion" method-params = "" return-type = "text" id = "ev3commands-gethardwareversion"></div>
+<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetHardwareVersion" id = "ev3commands-gethardwareversion"></div>
 
 Return Type : text
 
@@ -60,7 +66,7 @@ Get the hardware version of EV3.
 
 ### GetOSBuild
 
-<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetOSBuild" method-params = "" return-type = "text" id = "ev3commands-getosbuild"></div>
+<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetOSBuild" id = "ev3commands-getosbuild"></div>
 
 Return Type : text
 
@@ -68,7 +74,7 @@ Get the OS build on EV3.
 
 ### GetOSVersion
 
-<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetOSVersion" method-params = "" return-type = "text" id = "ev3commands-getosversion"></div>
+<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "GetOSVersion" id = "ev3commands-getosversion"></div>
 
 Return Type : text
 
@@ -76,7 +82,7 @@ Get the OS version on EV3.
 
 ### KeepAlive
 
-<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "KeepAlive" method-params = "minutes" return-type = "undefined" id = "ev3commands-keepalive"></div>
+<div block-type = "component_method" component-selector = "Ev3Commands" method-selector = "KeepAlive" id = "ev3commands-keepalive"></div>
 
 Return Type : No Return Value
 

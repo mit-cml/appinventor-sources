@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # SoundRecorder
 
 Multimedia component that records audio.
@@ -20,7 +26,7 @@ Multimedia component that records audio.
 
 ### AfterSoundRecorded
 
-<div block-type = "component_event" component-selector = "SoundRecorder" event-selector = "AfterSoundRecorded" event-params = "sound" id = "soundrecorder-aftersoundrecorded"></div>
+<div block-type = "component_event" component-selector = "SoundRecorder" event-selector = "AfterSoundRecorded" id = "soundrecorder-aftersoundrecorded"></div>
 
 Provides the location of the newly created sound.
 
@@ -30,13 +36,13 @@ Provides the location of the newly created sound.
 
 ### StartedRecording
 
-<div block-type = "component_event" component-selector = "SoundRecorder" event-selector = "StartedRecording" event-params = "" id = "soundrecorder-startedrecording"></div>
+<div block-type = "component_event" component-selector = "SoundRecorder" event-selector = "StartedRecording" id = "soundrecorder-startedrecording"></div>
 
 Indicates that the recorder has started, and can be stopped.
 
 ### StoppedRecording
 
-<div block-type = "component_event" component-selector = "SoundRecorder" event-selector = "StoppedRecording" event-params = "" id = "soundrecorder-stoppedrecording"></div>
+<div block-type = "component_event" component-selector = "SoundRecorder" event-selector = "StoppedRecording" id = "soundrecorder-stoppedrecording"></div>
 
 Indicates that the recorder has stopped, and can be started again.
 
@@ -46,7 +52,7 @@ Indicates that the recorder has stopped, and can be started again.
 
 ### Start
 
-<div block-type = "component_method" component-selector = "SoundRecorder" method-selector = "Start" method-params = "" return-type = "undefined" id = "soundrecorder-start"></div>
+<div block-type = "component_method" component-selector = "SoundRecorder" method-selector = "Start" id = "soundrecorder-start"></div>
 
 Return Type : No Return Value
 
@@ -54,7 +60,7 @@ Starts recording.
 
 ### Stop
 
-<div block-type = "component_method" component-selector = "SoundRecorder" method-selector = "Stop" method-params = "" return-type = "undefined" id = "soundrecorder-stop"></div>
+<div block-type = "component_method" component-selector = "SoundRecorder" method-selector = "Stop" id = "soundrecorder-stop"></div>
 
 Return Type : No Return Value
 

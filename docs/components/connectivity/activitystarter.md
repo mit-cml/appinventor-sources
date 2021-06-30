@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # ActivityStarter
 
 A component that can launch an activity using the `StartActivity` method.
@@ -72,13 +78,13 @@ You can also launch activities that return text data. See the documentation on u
 
 ### ActivityCanceled
 
-<div block-type = "component_event" component-selector = "ActivityStarter" event-selector = "ActivityCanceled" event-params = "" id = "activitystarter-activitycanceled"></div>
+<div block-type = "component_event" component-selector = "ActivityStarter" event-selector = "ActivityCanceled" id = "activitystarter-activitycanceled"></div>
 
 Event raised if this ActivityStarter returns because the activity was canceled.
 
 ### ActivityError
 
-<div block-type = "component_event" component-selector = "ActivityStarter" event-selector = "ActivityError" event-params = "message" id = "activitystarter-activityerror"></div>
+<div block-type = "component_event" component-selector = "ActivityStarter" event-selector = "ActivityError" id = "activitystarter-activityerror"></div>
 
 The ActivityError event is no longer used. Please use the Screen.ErrorOccurred event instead.
 
@@ -88,7 +94,7 @@ The ActivityError event is no longer used. Please use the Screen.ErrorOccurred e
 
 ### AfterActivity
 
-<div block-type = "component_event" component-selector = "ActivityStarter" event-selector = "AfterActivity" event-params = "result" id = "activitystarter-afteractivity"></div>
+<div block-type = "component_event" component-selector = "ActivityStarter" event-selector = "AfterActivity" id = "activitystarter-afteractivity"></div>
 
 Event raised after this ActivityStarter returns.
 
@@ -102,7 +108,7 @@ Event raised after this ActivityStarter returns.
 
 ### ResolveActivity
 
-<div block-type = "component_method" component-selector = "ActivityStarter" method-selector = "ResolveActivity" method-params = "" return-type = "text" id = "activitystarter-resolveactivity"></div>
+<div block-type = "component_method" component-selector = "ActivityStarter" method-selector = "ResolveActivity" id = "activitystarter-resolveactivity"></div>
 
 Return Type : text
 
@@ -110,7 +116,7 @@ Returns the name of the activity that corresponds to this ActivityStarter, or an
 
 ### StartActivity
 
-<div block-type = "component_method" component-selector = "ActivityStarter" method-selector = "StartActivity" method-params = "" return-type = "undefined" id = "activitystarter-startactivity"></div>
+<div block-type = "component_method" component-selector = "ActivityStarter" method-selector = "StartActivity" id = "activitystarter-startactivity"></div>
 
 Return Type : No Return Value
 

@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Ev3UltrasonicSensor
 
 A component that provides a high-level interface to an ultrasonic sensor on a LEGO MINDSTORMS EV3 robot.
@@ -62,19 +68,19 @@ A component that provides a high-level interface to an ultrasonic sensor on a LE
 
 ### AboveRange
 
-<div block-type = "component_event" component-selector = "Ev3UltrasonicSensor" event-selector = "AboveRange" event-params = "" id = "ev3ultrasonicsensor-aboverange"></div>
+<div block-type = "component_event" component-selector = "Ev3UltrasonicSensor" event-selector = "AboveRange" id = "ev3ultrasonicsensor-aboverange"></div>
 
 Called when the detected distance has gone above the range.
 
 ### BelowRange
 
-<div block-type = "component_event" component-selector = "Ev3UltrasonicSensor" event-selector = "BelowRange" event-params = "" id = "ev3ultrasonicsensor-belowrange"></div>
+<div block-type = "component_event" component-selector = "Ev3UltrasonicSensor" event-selector = "BelowRange" id = "ev3ultrasonicsensor-belowrange"></div>
 
 Called when the detected distance has gone below the range.
 
 ### WithinRange
 
-<div block-type = "component_event" component-selector = "Ev3UltrasonicSensor" event-selector = "WithinRange" event-params = "" id = "ev3ultrasonicsensor-withinrange"></div>
+<div block-type = "component_event" component-selector = "Ev3UltrasonicSensor" event-selector = "WithinRange" id = "ev3ultrasonicsensor-withinrange"></div>
 
 Called when the detected distance has gone within the range.
 
@@ -84,7 +90,7 @@ Called when the detected distance has gone within the range.
 
 ### GetDistance
 
-<div block-type = "component_method" component-selector = "Ev3UltrasonicSensor" method-selector = "GetDistance" method-params = "" return-type = "number" id = "ev3ultrasonicsensor-getdistance"></div>
+<div block-type = "component_method" component-selector = "Ev3UltrasonicSensor" method-selector = "GetDistance" id = "ev3ultrasonicsensor-getdistance"></div>
 
 Return Type : number
 

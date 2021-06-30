@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Image
 
 Component for displaying images. The picture to display, and other aspects of the Image's appearance, can be specified in the Designer or in the Blocks Editor.
@@ -50,7 +56,7 @@ Component for displaying images. The picture to display, and other aspects of th
 
 ### Click
 
-<div block-type = "component_event" component-selector = "Image" event-selector = "Click" event-params = "" id = "image-click"></div>
+<div block-type = "component_event" component-selector = "Image" event-selector = "Click" id = "image-click"></div>
 
 An event that occurs when an image is clicked.
 

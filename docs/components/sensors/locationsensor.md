@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # LocationSensor
 
 Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), speed (if supported by the device), and address. This can also perform "geocoding", converting a given address (not necessarily the current one) to a latitude (with the `LatitudeFromAddress` method) and a longitude (with the `LongitudeFromAddress` method).
@@ -36,7 +42,7 @@ Location information might not be immediately available when an app starts. You'
 
 ### LocationChanged
 
-<div block-type = "component_event" component-selector = "LocationSensor" event-selector = "LocationChanged" event-params = "latitude-longitude-altitude-speed" id = "locationsensor-locationchanged"></div>
+<div block-type = "component_event" component-selector = "LocationSensor" event-selector = "LocationChanged" id = "locationsensor-locationchanged"></div>
 
 Indicates that a new location has been detected.
 
@@ -49,7 +55,7 @@ Indicates that a new location has been detected.
 
 ### StatusChanged
 
-<div block-type = "component_event" component-selector = "LocationSensor" event-selector = "StatusChanged" event-params = "provider-status" id = "locationsensor-statuschanged"></div>
+<div block-type = "component_event" component-selector = "LocationSensor" event-selector = "StatusChanged" id = "locationsensor-statuschanged"></div>
 
 Indicates that the status of the location provider service has changed, such as when a provider is lost or a new provider starts being used.
 
@@ -64,7 +70,7 @@ Indicates that the status of the location provider service has changed, such as 
 
 ### LatitudeFromAddress
 
-<div block-type = "component_method" component-selector = "LocationSensor" method-selector = "LatitudeFromAddress" method-params = "locationName" return-type = "number" id = "locationsensor-latitudefromaddress"></div>
+<div block-type = "component_method" component-selector = "LocationSensor" method-selector = "LatitudeFromAddress" id = "locationsensor-latitudefromaddress"></div>
 
 Return Type : number
 
@@ -76,7 +82,7 @@ Derives latitude of given address
 
 ### LongitudeFromAddress
 
-<div block-type = "component_method" component-selector = "LocationSensor" method-selector = "LongitudeFromAddress" method-params = "locationName" return-type = "number" id = "locationsensor-longitudefromaddress"></div>
+<div block-type = "component_method" component-selector = "LocationSensor" method-selector = "LongitudeFromAddress" id = "locationsensor-longitudefromaddress"></div>
 
 Return Type : number
 

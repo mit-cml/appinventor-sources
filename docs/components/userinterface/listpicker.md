@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # ListPicker
 
 A button that, when clicked on, displays a list of texts for the user to choose among. The texts can be specified through the Designer or Blocks Editor by setting the `ElementsFromString` property to their string-separated concatenation (for example, _choice 1, choice 2, choice 3_) or by setting the `Elements` property to a List in the Blocks editor.
@@ -130,37 +136,37 @@ Setting property ShowFilterBar to true, will make the list searchable. Other pro
 
 ### AfterPicking
 
-<div block-type = "component_event" component-selector = "ListPicker" event-selector = "AfterPicking" event-params = "" id = "listpicker-afterpicking"></div>
+<div block-type = "component_event" component-selector = "ListPicker" event-selector = "AfterPicking" id = "listpicker-afterpicking"></div>
 
 Event to be raised after the \`ListPicker\` activity returns its result and the properties have been filled in.
 
 ### BeforePicking
 
-<div block-type = "component_event" component-selector = "ListPicker" event-selector = "BeforePicking" event-params = "" id = "listpicker-beforepicking"></div>
+<div block-type = "component_event" component-selector = "ListPicker" event-selector = "BeforePicking" id = "listpicker-beforepicking"></div>
 
 Event to raise when the \`ListPicker\` is clicked or the picker is shown using the
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "ListPicker" event-selector = "GotFocus" event-params = "" id = "listpicker-gotfocus"></div>
+<div block-type = "component_event" component-selector = "ListPicker" event-selector = "GotFocus" id = "listpicker-gotfocus"></div>
 
 Indicates the cursor moved over the ListPicker so it is now possible to click it.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "ListPicker" event-selector = "LostFocus" event-params = "" id = "listpicker-lostfocus"></div>
+<div block-type = "component_event" component-selector = "ListPicker" event-selector = "LostFocus" id = "listpicker-lostfocus"></div>
 
 Indicates the cursor moved away from the ListPicker so it is now no longer possible to click it.
 
 ### TouchDown
 
-<div block-type = "component_event" component-selector = "ListPicker" event-selector = "TouchDown" event-params = "" id = "listpicker-touchdown"></div>
+<div block-type = "component_event" component-selector = "ListPicker" event-selector = "TouchDown" id = "listpicker-touchdown"></div>
 
 Indicates that the ListPicker was pressed down.
 
 ### TouchUp
 
-<div block-type = "component_event" component-selector = "ListPicker" event-selector = "TouchUp" event-params = "" id = "listpicker-touchup"></div>
+<div block-type = "component_event" component-selector = "ListPicker" event-selector = "TouchUp" id = "listpicker-touchup"></div>
 
 Indicates that the ListPicker has been released.
 
@@ -170,7 +176,7 @@ Indicates that the ListPicker has been released.
 
 ### Open
 
-<div block-type = "component_method" component-selector = "ListPicker" method-selector = "Open" method-params = "" return-type = "undefined" id = "listpicker-open"></div>
+<div block-type = "component_method" component-selector = "ListPicker" method-selector = "Open" id = "listpicker-open"></div>
 
 Return Type : No Return Value
 

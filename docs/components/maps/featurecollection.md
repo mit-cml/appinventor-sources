@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # FeatureCollection
 
 A FeatureCollection contains one or more map features as a group. Any events fired on a feature in the collection will also trigger the corresponding event on the collection object. FeatureCollections can be loaded from external resources as a means of populating a Map with content.
@@ -32,7 +38,7 @@ A FeatureCollection contains one or more map features as a group. Any events fir
 
 ### FeatureClick
 
-<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "FeatureClick" event-params = "feature" id = "featurecollection-featureclick"></div>
+<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "FeatureClick" id = "featurecollection-featureclick"></div>
 
 The user clicked on a map feature.
 
@@ -42,7 +48,7 @@ The user clicked on a map feature.
 
 ### FeatureDrag
 
-<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "FeatureDrag" event-params = "feature" id = "featurecollection-featuredrag"></div>
+<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "FeatureDrag" id = "featurecollection-featuredrag"></div>
 
 The user dragged a map feature.
 
@@ -52,7 +58,7 @@ The user dragged a map feature.
 
 ### FeatureLongClick
 
-<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "FeatureLongClick" event-params = "feature" id = "featurecollection-featurelongclick"></div>
+<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "FeatureLongClick" id = "featurecollection-featurelongclick"></div>
 
 The user long-pressed on a map feature.
 
@@ -62,7 +68,7 @@ The user long-pressed on a map feature.
 
 ### FeatureStartDrag
 
-<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "FeatureStartDrag" event-params = "feature" id = "featurecollection-featurestartdrag"></div>
+<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "FeatureStartDrag" id = "featurecollection-featurestartdrag"></div>
 
 The user started dragging a map feature.
 
@@ -72,7 +78,7 @@ The user started dragging a map feature.
 
 ### FeatureStopDrag
 
-<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "FeatureStopDrag" event-params = "feature" id = "featurecollection-featurestopdrag"></div>
+<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "FeatureStopDrag" id = "featurecollection-featurestopdrag"></div>
 
 The user stopped dragging a map feature.
 
@@ -82,7 +88,7 @@ The user stopped dragging a map feature.
 
 ### GotFeatures
 
-<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "GotFeatures" event-params = "url-features" id = "featurecollection-gotfeatures"></div>
+<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "GotFeatures" id = "featurecollection-gotfeatures"></div>
 
 A GeoJSON document was successfully read from url. The features specified in the document are provided as a list in features.
 
@@ -93,7 +99,7 @@ A GeoJSON document was successfully read from url. The features specified in the
 
 ### LoadError
 
-<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "LoadError" event-params = "url-responseCode-errorMessage" id = "featurecollection-loaderror"></div>
+<div block-type = "component_event" component-selector = "FeatureCollection" event-selector = "LoadError" id = "featurecollection-loaderror"></div>
 
 An error was encountered while processing a GeoJSON document at the given url. The responseCode parameter will contain an HTTP status code and the errorMessage parameter will contain a detailed error message.
 
@@ -109,7 +115,7 @@ An error was encountered while processing a GeoJSON document at the given url. T
 
 ### FeatureFromDescription
 
-<div block-type = "component_method" component-selector = "FeatureCollection" method-selector = "FeatureFromDescription" method-params = "description" return-type = "any" id = "featurecollection-featurefromdescription"></div>
+<div block-type = "component_method" component-selector = "FeatureCollection" method-selector = "FeatureFromDescription" id = "featurecollection-featurefromdescription"></div>
 
 Return Type : any
 
@@ -121,7 +127,7 @@ Converts a feature description into an App Inventor map feature. Points are conv
 
 ### LoadFromURL
 
-<div block-type = "component_method" component-selector = "FeatureCollection" method-selector = "LoadFromURL" method-params = "url" return-type = "undefined" id = "featurecollection-loadfromurl"></div>
+<div block-type = "component_method" component-selector = "FeatureCollection" method-selector = "LoadFromURL" id = "featurecollection-loadfromurl"></div>
 
 Return Type : No Return Value
 

@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Thermometer
 
 A sensor component that can measure the ambient (external) temperature. Most Android devices do not have this sensor.
@@ -26,7 +32,7 @@ A sensor component that can measure the ambient (external) temperature. Most And
 
 ### TemperatureChanged
 
-<div block-type = "component_event" component-selector = "Thermometer" event-selector = "TemperatureChanged" event-params = "temperature" id = "thermometer-temperaturechanged"></div>
+<div block-type = "component_event" component-selector = "Thermometer" event-selector = "TemperatureChanged" id = "thermometer-temperaturechanged"></div>
 
 Called when a change is detected in the temperature (in degrees Celsius).
 

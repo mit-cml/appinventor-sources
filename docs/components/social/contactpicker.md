@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # ContactPicker
 
 A button that, when clicked on, displays a list of the contacts to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact:
@@ -104,37 +110,37 @@ The ContactPicker component might not work on all phones. For example, on Androi
 
 ### AfterPicking
 
-<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "AfterPicking" event-params = "" id = "contactpicker-afterpicking"></div>
+<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "AfterPicking" id = "contactpicker-afterpicking"></div>
 
 Event to be raised after the \`ContactPicker\` activity returns its result and the properties have been filled in.
 
 ### BeforePicking
 
-<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "BeforePicking" event-params = "" id = "contactpicker-beforepicking"></div>
+<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "BeforePicking" id = "contactpicker-beforepicking"></div>
 
 Event to raise when the \`ContactPicker\` is clicked or the picker is shown using the
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "GotFocus" event-params = "" id = "contactpicker-gotfocus"></div>
+<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "GotFocus" id = "contactpicker-gotfocus"></div>
 
 Indicates the cursor moved over the ContactPicker so it is now possible to click it.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "LostFocus" event-params = "" id = "contactpicker-lostfocus"></div>
+<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "LostFocus" id = "contactpicker-lostfocus"></div>
 
 Indicates the cursor moved away from the ContactPicker so it is now no longer possible to click it.
 
 ### TouchDown
 
-<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "TouchDown" event-params = "" id = "contactpicker-touchdown"></div>
+<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "TouchDown" id = "contactpicker-touchdown"></div>
 
 Indicates that the ContactPicker was pressed down.
 
 ### TouchUp
 
-<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "TouchUp" event-params = "" id = "contactpicker-touchup"></div>
+<div block-type = "component_event" component-selector = "ContactPicker" event-selector = "TouchUp" id = "contactpicker-touchup"></div>
 
 Indicates that the ContactPicker has been released.
 
@@ -144,7 +150,7 @@ Indicates that the ContactPicker has been released.
 
 ### Open
 
-<div block-type = "component_method" component-selector = "ContactPicker" method-selector = "Open" method-params = "" return-type = "undefined" id = "contactpicker-open"></div>
+<div block-type = "component_method" component-selector = "ContactPicker" method-selector = "Open" id = "contactpicker-open"></div>
 
 Return Type : No Return Value
 
@@ -152,7 +158,7 @@ Opens the ContactPicker, as though the user clicked on it.
 
 ### ViewContact
 
-<div block-type = "component_method" component-selector = "ContactPicker" method-selector = "ViewContact" method-params = "uri" return-type = "undefined" id = "contactpicker-viewcontact"></div>
+<div block-type = "component_method" component-selector = "ContactPicker" method-selector = "ViewContact" id = "contactpicker-viewcontact"></div>
 
 Return Type : No Return Value
 

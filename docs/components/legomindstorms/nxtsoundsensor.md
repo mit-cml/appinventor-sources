@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # NxtSoundSensor
 
 A component that provides a high-level interface to a sound sensor on a LEGO MINDSTORMS NXT robot.
@@ -56,19 +62,19 @@ A component that provides a high-level interface to a sound sensor on a LEGO MIN
 
 ### AboveRange
 
-<div block-type = "component_event" component-selector = "NxtSoundSensor" event-selector = "AboveRange" event-params = "" id = "nxtsoundsensor-aboverange"></div>
+<div block-type = "component_event" component-selector = "NxtSoundSensor" event-selector = "AboveRange" id = "nxtsoundsensor-aboverange"></div>
 
 Sound level has gone above the range.
 
 ### BelowRange
 
-<div block-type = "component_event" component-selector = "NxtSoundSensor" event-selector = "BelowRange" event-params = "" id = "nxtsoundsensor-belowrange"></div>
+<div block-type = "component_event" component-selector = "NxtSoundSensor" event-selector = "BelowRange" id = "nxtsoundsensor-belowrange"></div>
 
 Sound level has gone below the range.
 
 ### WithinRange
 
-<div block-type = "component_event" component-selector = "NxtSoundSensor" event-selector = "WithinRange" event-params = "" id = "nxtsoundsensor-withinrange"></div>
+<div block-type = "component_event" component-selector = "NxtSoundSensor" event-selector = "WithinRange" id = "nxtsoundsensor-withinrange"></div>
 
 Sound level has gone within the range.
 
@@ -78,7 +84,7 @@ Sound level has gone within the range.
 
 ### GetSoundLevel
 
-<div block-type = "component_method" component-selector = "NxtSoundSensor" method-selector = "GetSoundLevel" method-params = "" return-type = "number" id = "nxtsoundsensor-getsoundlevel"></div>
+<div block-type = "component_method" component-selector = "NxtSoundSensor" method-selector = "GetSoundLevel" id = "nxtsoundsensor-getsoundlevel"></div>
 
 Return Type : number
 

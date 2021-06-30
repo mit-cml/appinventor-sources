@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Ev3UI
 
 A component that provides a high-level interface to a LEGO MINDSTORMS EV3 robot, with functions to draw graphs on EV3 screen.
@@ -20,7 +26,7 @@ A component that provides a high-level interface to a LEGO MINDSTORMS EV3 robot,
 
 ### DrawCircle
 
-<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "DrawCircle" method-params = "color-x-y-radius-fill" return-type = "undefined" id = "ev3ui-drawcircle"></div>
+<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "DrawCircle" id = "ev3ui-drawcircle"></div>
 
 Return Type : No Return Value
 
@@ -36,7 +42,7 @@ Draw a circle on the screen.
 
 ### DrawIcon
 
-<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "DrawIcon" method-params = "color-x-y-type-no" return-type = "undefined" id = "ev3ui-drawicon"></div>
+<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "DrawIcon" id = "ev3ui-drawicon"></div>
 
 Return Type : No Return Value
 
@@ -52,7 +58,7 @@ Draw a built-in icon on screen.
 
 ### DrawLine
 
-<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "DrawLine" method-params = "color-x1-y1-x2-y2" return-type = "undefined" id = "ev3ui-drawline"></div>
+<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "DrawLine" id = "ev3ui-drawline"></div>
 
 Return Type : No Return Value
 
@@ -68,7 +74,7 @@ Draw a line on the screen.
 
 ### DrawPoint
 
-<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "DrawPoint" method-params = "color-x-y" return-type = "undefined" id = "ev3ui-drawpoint"></div>
+<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "DrawPoint" id = "ev3ui-drawpoint"></div>
 
 Return Type : No Return Value
 
@@ -82,7 +88,7 @@ Draw a point on the screen.
 
 ### DrawRect
 
-<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "DrawRect" method-params = "color-x-y-width-height-fill" return-type = "undefined" id = "ev3ui-drawrect"></div>
+<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "DrawRect" id = "ev3ui-drawrect"></div>
 
 Return Type : No Return Value
 
@@ -99,7 +105,7 @@ Draw a rectangle on the screen.
 
 ### FillScreen
 
-<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "FillScreen" method-params = "color" return-type = "undefined" id = "ev3ui-fillscreen"></div>
+<div block-type = "component_method" component-selector = "Ev3UI" method-selector = "FillScreen" id = "ev3ui-fillscreen"></div>
 
 Return Type : No Return Value
 

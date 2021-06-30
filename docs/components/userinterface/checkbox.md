@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # CheckBox
 
 Checkbox that raises an event when the user clicks on it. There are many properties affecting its appearance that can be set in the Designer or Blocks Editor.
@@ -74,19 +80,19 @@ Checkbox that raises an event when the user clicks on it. There are many propert
 
 ### Changed
 
-<div block-type = "component_event" component-selector = "CheckBox" event-selector = "Changed" event-params = "" id = "checkbox-changed"></div>
+<div block-type = "component_event" component-selector = "CheckBox" event-selector = "Changed" id = "checkbox-changed"></div>
 
 User tapped and released the CheckBox.
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "CheckBox" event-selector = "GotFocus" event-params = "" id = "checkbox-gotfocus"></div>
+<div block-type = "component_event" component-selector = "CheckBox" event-selector = "GotFocus" id = "checkbox-gotfocus"></div>
 
 CheckBox became the focused component.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "CheckBox" event-selector = "LostFocus" event-params = "" id = "checkbox-lostfocus"></div>
+<div block-type = "component_event" component-selector = "CheckBox" event-selector = "LostFocus" id = "checkbox-lostfocus"></div>
 
 CheckBox stopped being the focused component.
 

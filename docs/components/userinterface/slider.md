@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Slider
 
 A Slider is a progress bar that adds a draggable thumb. You can touch the thumb and drag left or right to set the slider thumb position. As the Slider thumb is dragged, it will trigger the PositionChanged event, reporting the position of the Slider thumb. The reported position of the Slider thumb can be used to dynamically update another component attribute, such as the font size of a TextBox or the radius of a Ball.
@@ -56,7 +62,7 @@ A Slider is a progress bar that adds a draggable thumb. You can touch the thumb 
 
 ### PositionChanged
 
-<div block-type = "component_event" component-selector = "Slider" event-selector = "PositionChanged" event-params = "thumbPosition" id = "slider-positionchanged"></div>
+<div block-type = "component_event" component-selector = "Slider" event-selector = "PositionChanged" id = "slider-positionchanged"></div>
 
 Indicates that position of the slider thumb has changed.
 

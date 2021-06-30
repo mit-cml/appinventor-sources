@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # ImagePicker
 
 A special-purpose button. When the user taps an image picker, the device's image gallery appears, and the user can choose an image. After an image is picked, it is saved, and the `Selected` property will be the name of the file where the image is stored. In order to not fill up storage, a maximum of 10 images will be stored. Picking more images will delete previous images, in order from oldest to newest.
@@ -92,37 +98,37 @@ A special-purpose button. When the user taps an image picker, the device's image
 
 ### AfterPicking
 
-<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "AfterPicking" event-params = "" id = "imagepicker-afterpicking"></div>
+<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "AfterPicking" id = "imagepicker-afterpicking"></div>
 
 Event to be raised after the \`ImagePicker\` activity returns its result and the properties have been filled in.
 
 ### BeforePicking
 
-<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "BeforePicking" event-params = "" id = "imagepicker-beforepicking"></div>
+<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "BeforePicking" id = "imagepicker-beforepicking"></div>
 
 Event to raise when the \`ImagePicker\` is clicked or the picker is shown using the
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "GotFocus" event-params = "" id = "imagepicker-gotfocus"></div>
+<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "GotFocus" id = "imagepicker-gotfocus"></div>
 
 Indicates the cursor moved over the ImagePicker so it is now possible to click it.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "LostFocus" event-params = "" id = "imagepicker-lostfocus"></div>
+<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "LostFocus" id = "imagepicker-lostfocus"></div>
 
 Indicates the cursor moved away from the ImagePicker so it is now no longer possible to click it.
 
 ### TouchDown
 
-<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "TouchDown" event-params = "" id = "imagepicker-touchdown"></div>
+<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "TouchDown" id = "imagepicker-touchdown"></div>
 
 Indicates that the ImagePicker was pressed down.
 
 ### TouchUp
 
-<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "TouchUp" event-params = "" id = "imagepicker-touchup"></div>
+<div block-type = "component_event" component-selector = "ImagePicker" event-selector = "TouchUp" id = "imagepicker-touchup"></div>
 
 Indicates that the ImagePicker has been released.
 
@@ -132,7 +138,7 @@ Indicates that the ImagePicker has been released.
 
 ### Open
 
-<div block-type = "component_method" component-selector = "ImagePicker" method-selector = "Open" method-params = "" return-type = "undefined" id = "imagepicker-open"></div>
+<div block-type = "component_method" component-selector = "ImagePicker" method-selector = "Open" id = "imagepicker-open"></div>
 
 Return Type : No Return Value
 

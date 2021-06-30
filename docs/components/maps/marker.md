@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Marker
 
 An icon positioned at a point to indicate information on a map. Markers can be used to provide an info window, custom fill and stroke colors, and custom images to convey information to the user.
@@ -104,31 +110,31 @@ An icon positioned at a point to indicate information on a map. Markers can be u
 
 ### Click
 
-<div block-type = "component_event" component-selector = "Marker" event-selector = "Click" event-params = "" id = "marker-click"></div>
+<div block-type = "component_event" component-selector = "Marker" event-selector = "Click" id = "marker-click"></div>
 
 The user clicked on the Marker.
 
 ### Drag
 
-<div block-type = "component_event" component-selector = "Marker" event-selector = "Drag" event-params = "" id = "marker-drag"></div>
+<div block-type = "component_event" component-selector = "Marker" event-selector = "Drag" id = "marker-drag"></div>
 
 The user dragged the Marker.
 
 ### LongClick
 
-<div block-type = "component_event" component-selector = "Marker" event-selector = "LongClick" event-params = "" id = "marker-longclick"></div>
+<div block-type = "component_event" component-selector = "Marker" event-selector = "LongClick" id = "marker-longclick"></div>
 
 The user long-pressed on the Marker. This event will only trigger if Draggable is false.
 
 ### StartDrag
 
-<div block-type = "component_event" component-selector = "Marker" event-selector = "StartDrag" event-params = "" id = "marker-startdrag"></div>
+<div block-type = "component_event" component-selector = "Marker" event-selector = "StartDrag" id = "marker-startdrag"></div>
 
 The user started a drag operation.
 
 ### StopDrag
 
-<div block-type = "component_event" component-selector = "Marker" event-selector = "StopDrag" event-params = "" id = "marker-stopdrag"></div>
+<div block-type = "component_event" component-selector = "Marker" event-selector = "StopDrag" id = "marker-stopdrag"></div>
 
 The user stopped a drag operation.
 
@@ -138,7 +144,7 @@ The user stopped a drag operation.
 
 ### BearingToFeature
 
-<div block-type = "component_method" component-selector = "Marker" method-selector = "BearingToFeature" method-params = "mapFeature-centroids" return-type = "number" id = "marker-bearingtofeature"></div>
+<div block-type = "component_method" component-selector = "Marker" method-selector = "BearingToFeature" id = "marker-bearingtofeature"></div>
 
 Return Type : number
 
@@ -151,7 +157,7 @@ Returns the bearing from the Marker to the given map feature, in degrees from du
 
 ### BearingToPoint
 
-<div block-type = "component_method" component-selector = "Marker" method-selector = "BearingToPoint" method-params = "latitude-longitude" return-type = "number" id = "marker-bearingtopoint"></div>
+<div block-type = "component_method" component-selector = "Marker" method-selector = "BearingToPoint" id = "marker-bearingtopoint"></div>
 
 Return Type : number
 
@@ -164,7 +170,7 @@ Returns the bearing from the Marker to the given latitude and longitude, in degr
 
 ### DistanceToFeature
 
-<div block-type = "component_method" component-selector = "Marker" method-selector = "DistanceToFeature" method-params = "mapFeature-centroids" return-type = "number" id = "marker-distancetofeature"></div>
+<div block-type = "component_method" component-selector = "Marker" method-selector = "DistanceToFeature" id = "marker-distancetofeature"></div>
 
 Return Type : number
 
@@ -177,7 +183,7 @@ Compute the distance, in meters, between two map features.
 
 ### DistanceToPoint
 
-<div block-type = "component_method" component-selector = "Marker" method-selector = "DistanceToPoint" method-params = "latitude-longitude" return-type = "number" id = "marker-distancetopoint"></div>
+<div block-type = "component_method" component-selector = "Marker" method-selector = "DistanceToPoint" id = "marker-distancetopoint"></div>
 
 Return Type : number
 
@@ -190,7 +196,7 @@ Compute the distance, in meters, between a Marker and a latitude, longitude poin
 
 ### HideInfobox
 
-<div block-type = "component_method" component-selector = "Marker" method-selector = "HideInfobox" method-params = "" return-type = "undefined" id = "marker-hideinfobox"></div>
+<div block-type = "component_method" component-selector = "Marker" method-selector = "HideInfobox" id = "marker-hideinfobox"></div>
 
 Return Type : No Return Value
 
@@ -198,7 +204,7 @@ Hide the infobox if it is shown. If the infobox is not visible this function has
 
 ### SetLocation
 
-<div block-type = "component_method" component-selector = "Marker" method-selector = "SetLocation" method-params = "latitude-longitude" return-type = "undefined" id = "marker-setlocation"></div>
+<div block-type = "component_method" component-selector = "Marker" method-selector = "SetLocation" id = "marker-setlocation"></div>
 
 Return Type : No Return Value
 
@@ -211,7 +217,7 @@ Set the location of the marker.
 
 ### ShowInfobox
 
-<div block-type = "component_method" component-selector = "Marker" method-selector = "ShowInfobox" method-params = "" return-type = "undefined" id = "marker-showinfobox"></div>
+<div block-type = "component_method" component-selector = "Marker" method-selector = "ShowInfobox" id = "marker-showinfobox"></div>
 
 Return Type : No Return Value
 

@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Ball
 
 A round 'sprite' that can be placed on a `Canvas`, where it can react to touches and drags, interact with other sprites (`ImageSprite`s and other `Ball`s) and the edge of the Canvas, and move according to its property values.
@@ -84,7 +90,7 @@ The difference between a `Ball` and an `ImageSprite` is that the latter can get 
 
 ### CollidedWith
 
-<div block-type = "component_event" component-selector = "Ball" event-selector = "CollidedWith" event-params = "other" id = "ball-collidedwith"></div>
+<div block-type = "component_event" component-selector = "Ball" event-selector = "CollidedWith" id = "ball-collidedwith"></div>
 
 Event handler called when two enabled sprites (
 
@@ -94,7 +100,7 @@ Event handler called when two enabled sprites (
 
 ### Dragged
 
-<div block-type = "component_event" component-selector = "Ball" event-selector = "Dragged" event-params = "startX-startY-prevX-prevY-currentX-currentY" id = "ball-dragged"></div>
+<div block-type = "component_event" component-selector = "Ball" event-selector = "Dragged" id = "ball-dragged"></div>
 
 Event handler called when a Ball is dragged. On all calls, the starting coordinates are where the screen was first touched, and the "current" coordinates describe the endpoint of the current line segment. On the first call within a given drag, the "previous" coordinates are the same as the starting coordinates; subsequently, they are the "current" coordinates from the prior call. Note that the Ball won't actually move anywhere in response to the Dragged event unless MoveTo is explicitly called. For smooth movement, each of its coordinates should be set to the sum of its initial value and the difference between its current and previous values.
 
@@ -109,7 +115,7 @@ Event handler called when a Ball is dragged. On all calls, the starting coordina
 
 ### EdgeReached
 
-<div block-type = "component_event" component-selector = "Ball" event-selector = "EdgeReached" event-params = "edge" id = "ball-edgereached"></div>
+<div block-type = "component_event" component-selector = "Ball" event-selector = "EdgeReached" id = "ball-edgereached"></div>
 
 Event handler called when the Ball reaches an edge of the screen. If Bounce is then called with that edge, the Ball will appear to bounce off of the edge it reached. Edge here is represented as an integer that indicates one of eight directions north (1), northeast (2), east (3), southeast (4), south (-1), southwest (-2), west (-3), and northwest (-4).
 
@@ -119,7 +125,7 @@ Event handler called when the Ball reaches an edge of the screen. If Bounce is t
 
 ### Flung
 
-<div block-type = "component_event" component-selector = "Ball" event-selector = "Flung" event-params = "x-y-speed-heading-xvel-yvel" id = "ball-flung"></div>
+<div block-type = "component_event" component-selector = "Ball" event-selector = "Flung" id = "ball-flung"></div>
 
 Event handler called when a fling gesture (quick swipe) is made on an enabled Ball. This provides the x and y coordinates of the start of the fling (relative to the upper left of the canvas), the speed (pixels per millisecond), the heading (0-360 degrees), and the x and y velocity components of the fling's vector.
 
@@ -134,7 +140,7 @@ Event handler called when a fling gesture (quick swipe) is made on an enabled Ba
 
 ### NoLongerCollidingWith
 
-<div block-type = "component_event" component-selector = "Ball" event-selector = "NoLongerCollidingWith" event-params = "other" id = "ball-nolongercollidingwith"></div>
+<div block-type = "component_event" component-selector = "Ball" event-selector = "NoLongerCollidingWith" id = "ball-nolongercollidingwith"></div>
 
 Event handler called when a pair of sprites (Balls and ImageSprites) are no longer colliding.
 
@@ -144,7 +150,7 @@ Event handler called when a pair of sprites (Balls and ImageSprites) are no long
 
 ### TouchDown
 
-<div block-type = "component_event" component-selector = "Ball" event-selector = "TouchDown" event-params = "x-y" id = "ball-touchdown"></div>
+<div block-type = "component_event" component-selector = "Ball" event-selector = "TouchDown" id = "ball-touchdown"></div>
 
 Event handler called when the user begins touching an enabled Ball (placing their finger on a Ball and leaving it there). This provides the x and y coordinates of the touch, relative to the upper left of the canvas.
 
@@ -155,7 +161,7 @@ Event handler called when the user begins touching an enabled Ball (placing thei
 
 ### TouchUp
 
-<div block-type = "component_event" component-selector = "Ball" event-selector = "TouchUp" event-params = "x-y" id = "ball-touchup"></div>
+<div block-type = "component_event" component-selector = "Ball" event-selector = "TouchUp" id = "ball-touchup"></div>
 
 Event handler called when the user stops touching an enabled Ball (lifting their finger after a TouchDown event). This provides the x and y coordinates of the touch, relative to the upper left of the canvas.
 
@@ -166,7 +172,7 @@ Event handler called when the user stops touching an enabled Ball (lifting their
 
 ### Touched
 
-<div block-type = "component_event" component-selector = "Ball" event-selector = "Touched" event-params = "x-y" id = "ball-touched"></div>
+<div block-type = "component_event" component-selector = "Ball" event-selector = "Touched" id = "ball-touched"></div>
 
 Event handler called when the user touches an enabled Ball and then immediately lifts their finger. The provided x and y coordinates are relative to the upper left of the canvas.
 
@@ -181,7 +187,7 @@ Event handler called when the user touches an enabled Ball and then immediately 
 
 ### Bounce
 
-<div block-type = "component_method" component-selector = "Ball" method-selector = "Bounce" method-params = "edge" return-type = "undefined" id = "ball-bounce"></div>
+<div block-type = "component_method" component-selector = "Ball" method-selector = "Bounce" id = "ball-bounce"></div>
 
 Return Type : No Return Value
 
@@ -193,7 +199,7 @@ Makes the Ball bounce, as if off a wall. For normal bouncing, the edge argument 
 
 ### CollidingWith
 
-<div block-type = "component_method" component-selector = "Ball" method-selector = "CollidingWith" method-params = "other" return-type = "boolean" id = "ball-collidingwith"></div>
+<div block-type = "component_method" component-selector = "Ball" method-selector = "CollidingWith" id = "ball-collidingwith"></div>
 
 Return Type : boolean
 
@@ -205,7 +211,7 @@ Indicates whether a collision has been registered between this Ball and the pass
 
 ### MoveIntoBounds
 
-<div block-type = "component_method" component-selector = "Ball" method-selector = "MoveIntoBounds" method-params = "" return-type = "undefined" id = "ball-moveintobounds"></div>
+<div block-type = "component_method" component-selector = "Ball" method-selector = "MoveIntoBounds" id = "ball-moveintobounds"></div>
 
 Return Type : No Return Value
 
@@ -213,7 +219,7 @@ Moves the Ball back in bounds if part of it extends out of bounds, having no eff
 
 ### MoveTo
 
-<div block-type = "component_method" component-selector = "Ball" method-selector = "MoveTo" method-params = "x-y" return-type = "undefined" id = "ball-moveto"></div>
+<div block-type = "component_method" component-selector = "Ball" method-selector = "MoveTo" id = "ball-moveto"></div>
 
 Return Type : No Return Value
 
@@ -226,7 +232,7 @@ Sets the x and y coordinates of the Ball. If CenterAtOrigin is true, the center 
 
 ### MoveToPoint
 
-<div block-type = "component_method" component-selector = "Ball" method-selector = "MoveToPoint" method-params = "coordinates" return-type = "undefined" id = "ball-movetopoint"></div>
+<div block-type = "component_method" component-selector = "Ball" method-selector = "MoveToPoint" id = "ball-movetopoint"></div>
 
 Return Type : No Return Value
 
@@ -238,7 +244,7 @@ Moves the origin of Ball to the position of the cooordinates given by the list f
 
 ### PointInDirection
 
-<div block-type = "component_method" component-selector = "Ball" method-selector = "PointInDirection" method-params = "x-y" return-type = "undefined" id = "ball-pointindirection"></div>
+<div block-type = "component_method" component-selector = "Ball" method-selector = "PointInDirection" id = "ball-pointindirection"></div>
 
 Return Type : No Return Value
 
@@ -251,7 +257,7 @@ Sets the heading of the Ball toward the point with the coordinates (x, y).
 
 ### PointTowards
 
-<div block-type = "component_method" component-selector = "Ball" method-selector = "PointTowards" method-params = "target" return-type = "undefined" id = "ball-pointtowards"></div>
+<div block-type = "component_method" component-selector = "Ball" method-selector = "PointTowards" id = "ball-pointtowards"></div>
 
 Return Type : No Return Value
 

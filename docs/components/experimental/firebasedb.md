@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # FirebaseDB
 
 Non-visible component that communicates with a Firebase to store and retrieve information.
@@ -50,7 +56,7 @@ Non-visible component that communicates with a Firebase to store and retrieve in
 
 ### DataChanged
 
-<div block-type = "component_event" component-selector = "FirebaseDB" event-selector = "DataChanged" event-params = "tag-value" id = "firebasedb-datachanged"></div>
+<div block-type = "component_event" component-selector = "FirebaseDB" event-selector = "DataChanged" id = "firebasedb-datachanged"></div>
 
 Indicates that the data in the Firebase has changed. Launches an event with the tag and value that have been updated.
 
@@ -61,7 +67,7 @@ Indicates that the data in the Firebase has changed. Launches an event with the 
 
 ### FirebaseError
 
-<div block-type = "component_event" component-selector = "FirebaseDB" event-selector = "FirebaseError" event-params = "message" id = "firebasedb-firebaseerror"></div>
+<div block-type = "component_event" component-selector = "FirebaseDB" event-selector = "FirebaseError" id = "firebasedb-firebaseerror"></div>
 
 Indicates that the communication with the Firebase signaled an error.
 
@@ -71,7 +77,7 @@ Indicates that the communication with the Firebase signaled an error.
 
 ### FirstRemoved
 
-<div block-type = "component_event" component-selector = "FirebaseDB" event-selector = "FirstRemoved" event-params = "value" id = "firebasedb-firstremoved"></div>
+<div block-type = "component_event" component-selector = "FirebaseDB" event-selector = "FirstRemoved" id = "firebasedb-firstremoved"></div>
 
 Event triggered by the "RemoveFirst" function. The argument "value" is the object that was the first in the list, and which is now removed.
 
@@ -81,7 +87,7 @@ Event triggered by the "RemoveFirst" function. The argument "value" is the objec
 
 ### GotValue
 
-<div block-type = "component_event" component-selector = "FirebaseDB" event-selector = "GotValue" event-params = "tag-value" id = "firebasedb-gotvalue"></div>
+<div block-type = "component_event" component-selector = "FirebaseDB" event-selector = "GotValue" id = "firebasedb-gotvalue"></div>
 
 Indicates that a GetValue request has succeeded.
 
@@ -92,7 +98,7 @@ Indicates that a GetValue request has succeeded.
 
 ### TagList
 
-<div block-type = "component_event" component-selector = "FirebaseDB" event-selector = "TagList" event-params = "value" id = "firebasedb-taglist"></div>
+<div block-type = "component_event" component-selector = "FirebaseDB" event-selector = "TagList" id = "firebasedb-taglist"></div>
 
 Event triggered when we have received the list of known tags. Used with the "GetTagList" Function.
 
@@ -106,7 +112,7 @@ Event triggered when we have received the list of known tags. Used with the "Get
 
 ### AppendValue
 
-<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "AppendValue" method-params = "tag-valueToAdd" return-type = "undefined" id = "firebasedb-appendvalue"></div>
+<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "AppendValue" id = "firebasedb-appendvalue"></div>
 
 Return Type : No Return Value
 
@@ -119,7 +125,7 @@ Append a value to the end of a list atomically. If two devices use this function
 
 ### ClearTag
 
-<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "ClearTag" method-params = "tag" return-type = "undefined" id = "firebasedb-cleartag"></div>
+<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "ClearTag" id = "firebasedb-cleartag"></div>
 
 Return Type : No Return Value
 
@@ -131,7 +137,7 @@ Remove the tag from Firebase
 
 ### GetTagList
 
-<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "GetTagList" method-params = "" return-type = "undefined" id = "firebasedb-gettaglist"></div>
+<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "GetTagList" id = "firebasedb-gettaglist"></div>
 
 Return Type : No Return Value
 
@@ -139,7 +145,7 @@ Get the list of tags for this application. When complete a "TagList" event will 
 
 ### GetValue
 
-<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "GetValue" method-params = "tag-valueIfTagNotThere" return-type = "undefined" id = "firebasedb-getvalue"></div>
+<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "GetValue" id = "firebasedb-getvalue"></div>
 
 Return Type : No Return Value
 
@@ -152,7 +158,7 @@ GetValue asks Firebase to get the value stored under the given tag. It will pass
 
 ### RemoveFirst
 
-<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "RemoveFirst" method-params = "tag" return-type = "undefined" id = "firebasedb-removefirst"></div>
+<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "RemoveFirst" id = "firebasedb-removefirst"></div>
 
 Return Type : No Return Value
 
@@ -164,7 +170,7 @@ Return the first element of a list and atomically remove it. If two devices use 
 
 ### StoreValue
 
-<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "StoreValue" method-params = "tag-valueToStore" return-type = "undefined" id = "firebasedb-storevalue"></div>
+<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "StoreValue" id = "firebasedb-storevalue"></div>
 
 Return Type : No Return Value
 
@@ -177,7 +183,7 @@ Asks Firebase to store the given value under the given tag.
 
 ### Unauthenticate
 
-<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "Unauthenticate" method-params = "" return-type = "undefined" id = "firebasedb-unauthenticate"></div>
+<div block-type = "component_method" component-selector = "FirebaseDB" method-selector = "Unauthenticate" id = "firebasedb-unauthenticate"></div>
 
 Return Type : No Return Value
 

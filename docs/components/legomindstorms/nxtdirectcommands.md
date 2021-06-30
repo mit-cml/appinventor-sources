@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # NxtDirectCommands
 
 A component that provides a low-level interface to a LEGO MINDSTORMS NXT robot, with functions to send NXT Direct Commands.
@@ -20,7 +26,7 @@ A component that provides a low-level interface to a LEGO MINDSTORMS NXT robot, 
 
 ### DeleteFile
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "DeleteFile" method-params = "fileName" return-type = "undefined" id = "nxtdirectcommands-deletefile"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "DeleteFile" id = "nxtdirectcommands-deletefile"></div>
 
 Return Type : No Return Value
 
@@ -32,7 +38,7 @@ Delete a file on the robot.
 
 ### DownloadFile
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "DownloadFile" method-params = "source-destination" return-type = "undefined" id = "nxtdirectcommands-downloadfile"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "DownloadFile" id = "nxtdirectcommands-downloadfile"></div>
 
 Return Type : No Return Value
 
@@ -45,7 +51,7 @@ Download a file to the robot.
 
 ### GetBatteryLevel
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetBatteryLevel" method-params = "" return-type = "number" id = "nxtdirectcommands-getbatterylevel"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetBatteryLevel" id = "nxtdirectcommands-getbatterylevel"></div>
 
 Return Type : number
 
@@ -53,7 +59,7 @@ Get the battery level for the robot. Returns the voltage in millivolts.
 
 ### GetBrickName
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetBrickName" method-params = "" return-type = "text" id = "nxtdirectcommands-getbrickname"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetBrickName" id = "nxtdirectcommands-getbrickname"></div>
 
 Return Type : text
 
@@ -61,7 +67,7 @@ Get the brick name of the robot.
 
 ### GetCurrentProgramName
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetCurrentProgramName" method-params = "" return-type = "text" id = "nxtdirectcommands-getcurrentprogramname"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetCurrentProgramName" id = "nxtdirectcommands-getcurrentprogramname"></div>
 
 Return Type : text
 
@@ -69,7 +75,7 @@ Get the name of currently running program on the robot.
 
 ### GetFirmwareVersion
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetFirmwareVersion" method-params = "" return-type = "list" id = "nxtdirectcommands-getfirmwareversion"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetFirmwareVersion" id = "nxtdirectcommands-getfirmwareversion"></div>
 
 Return Type : list
 
@@ -77,7 +83,7 @@ Get the firmware and protocol version numbers for the robot as a list where the 
 
 ### GetInputValues
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetInputValues" method-params = "sensorPortLetter" return-type = "list" id = "nxtdirectcommands-getinputvalues"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetInputValues" id = "nxtdirectcommands-getinputvalues"></div>
 
 Return Type : list
 
@@ -89,7 +95,7 @@ Reads the values of an input sensor on the robot. Assumes sensor type has been c
 
 ### GetOutputState
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetOutputState" method-params = "motorPortLetter" return-type = "list" id = "nxtdirectcommands-getoutputstate"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "GetOutputState" id = "nxtdirectcommands-getoutputstate"></div>
 
 Return Type : list
 
@@ -101,7 +107,7 @@ Reads the output state of a motor on the robot.
 
 ### KeepAlive
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "KeepAlive" method-params = "" return-type = "number" id = "nxtdirectcommands-keepalive"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "KeepAlive" id = "nxtdirectcommands-keepalive"></div>
 
 Return Type : number
 
@@ -109,7 +115,7 @@ Keep Alive. Returns the current sleep time limit in milliseconds.
 
 ### ListFiles
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "ListFiles" method-params = "wildcard" return-type = "list" id = "nxtdirectcommands-listfiles"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "ListFiles" id = "nxtdirectcommands-listfiles"></div>
 
 Return Type : list
 
@@ -121,7 +127,7 @@ Returns a list containing the names of matching files found on the robot.
 
 ### LsGetStatus
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "LsGetStatus" method-params = "sensorPortLetter" return-type = "number" id = "nxtdirectcommands-lsgetstatus"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "LsGetStatus" id = "nxtdirectcommands-lsgetstatus"></div>
 
 Return Type : number
 
@@ -133,7 +139,7 @@ Returns the count of available bytes to read.
 
 ### LsRead
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "LsRead" method-params = "sensorPortLetter" return-type = "list" id = "nxtdirectcommands-lsread"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "LsRead" id = "nxtdirectcommands-lsread"></div>
 
 Return Type : list
 
@@ -145,7 +151,7 @@ Reads unsigned low speed data from an input sensor on the robot. Assumes sensor 
 
 ### LsWrite
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "LsWrite" method-params = "sensorPortLetter-list-rxDataLength" return-type = "undefined" id = "nxtdirectcommands-lswrite"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "LsWrite" id = "nxtdirectcommands-lswrite"></div>
 
 Return Type : No Return Value
 
@@ -159,7 +165,7 @@ Writes low speed data to an input sensor on the robot. Assumes sensor type has b
 
 ### MessageRead
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "MessageRead" method-params = "mailbox" return-type = "text" id = "nxtdirectcommands-messageread"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "MessageRead" id = "nxtdirectcommands-messageread"></div>
 
 Return Type : text
 
@@ -171,7 +177,7 @@ Read a message from a mailbox (1-10) on the robot.
 
 ### MessageWrite
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "MessageWrite" method-params = "mailbox-message" return-type = "undefined" id = "nxtdirectcommands-messagewrite"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "MessageWrite" id = "nxtdirectcommands-messagewrite"></div>
 
 Return Type : No Return Value
 
@@ -184,7 +190,7 @@ Write a message to a mailbox (1-10) on the robot.
 
 ### PlaySoundFile
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "PlaySoundFile" method-params = "fileName" return-type = "undefined" id = "nxtdirectcommands-playsoundfile"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "PlaySoundFile" id = "nxtdirectcommands-playsoundfile"></div>
 
 Return Type : No Return Value
 
@@ -196,7 +202,7 @@ Play a sound file on the robot.
 
 ### PlayTone
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "PlayTone" method-params = "frequencyHz-durationMs" return-type = "undefined" id = "nxtdirectcommands-playtone"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "PlayTone" id = "nxtdirectcommands-playtone"></div>
 
 Return Type : No Return Value
 
@@ -209,7 +215,7 @@ Make the robot play a tone.
 
 ### ResetInputScaledValue
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "ResetInputScaledValue" method-params = "sensorPortLetter" return-type = "undefined" id = "nxtdirectcommands-resetinputscaledvalue"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "ResetInputScaledValue" id = "nxtdirectcommands-resetinputscaledvalue"></div>
 
 Return Type : No Return Value
 
@@ -221,7 +227,7 @@ Reset the scaled value of an input sensor on the robot.
 
 ### ResetMotorPosition
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "ResetMotorPosition" method-params = "motorPortLetter-relative" return-type = "undefined" id = "nxtdirectcommands-resetmotorposition"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "ResetMotorPosition" id = "nxtdirectcommands-resetmotorposition"></div>
 
 Return Type : No Return Value
 
@@ -234,7 +240,7 @@ Reset motor position.
 
 ### SetBrickName
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "SetBrickName" method-params = "name" return-type = "undefined" id = "nxtdirectcommands-setbrickname"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "SetBrickName" id = "nxtdirectcommands-setbrickname"></div>
 
 Return Type : No Return Value
 
@@ -246,7 +252,7 @@ Set the brick name of the robot.
 
 ### SetInputMode
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "SetInputMode" method-params = "sensorPortLetter-sensorType-sensorMode" return-type = "undefined" id = "nxtdirectcommands-setinputmode"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "SetInputMode" id = "nxtdirectcommands-setinputmode"></div>
 
 Return Type : No Return Value
 
@@ -260,7 +266,7 @@ Configure an input sensor on the robot.
 
 ### SetOutputState
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "SetOutputState" method-params = "motorPortLetter-power-mode-regulationMode-turnRatio-runState-tachoLimit" return-type = "undefined" id = "nxtdirectcommands-setoutputstate"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "SetOutputState" id = "nxtdirectcommands-setoutputstate"></div>
 
 Return Type : No Return Value
 
@@ -278,7 +284,7 @@ Sets the output state of a motor on the robot.
 
 ### StartProgram
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "StartProgram" method-params = "programName" return-type = "undefined" id = "nxtdirectcommands-startprogram"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "StartProgram" id = "nxtdirectcommands-startprogram"></div>
 
 Return Type : No Return Value
 
@@ -290,7 +296,7 @@ Start execution of a previously downloaded program on the robot.
 
 ### StopProgram
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "StopProgram" method-params = "" return-type = "undefined" id = "nxtdirectcommands-stopprogram"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "StopProgram" id = "nxtdirectcommands-stopprogram"></div>
 
 Return Type : No Return Value
 
@@ -298,7 +304,7 @@ Stop execution of the currently running program on the robot.
 
 ### StopSoundPlayback
 
-<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "StopSoundPlayback" method-params = "" return-type = "undefined" id = "nxtdirectcommands-stopsoundplayback"></div>
+<div block-type = "component_method" component-selector = "NxtDirectCommands" method-selector = "StopSoundPlayback" id = "nxtdirectcommands-stopsoundplayback"></div>
 
 Return Type : No Return Value
 

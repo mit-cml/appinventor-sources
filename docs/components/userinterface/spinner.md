@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Spinner
 
 A spinner component that displays a pop-up with a list of elements. These elements can be set in the Designer or Blocks Editor by setting the`ElementsFromString` property to a string-separated concatenation (for example, _choice 1, choice 2, choice 3_) or by setting the `Elements` property to a List in the Blocks editor. Spinners are created with the first item already selected. So selecting it does not generate an After Picking event. Consequently it's useful to make the first Spinner item be a non-choice like "Select from below...".
@@ -38,7 +44,7 @@ A spinner component that displays a pop-up with a list of elements. These elemen
 
 ### AfterSelecting
 
-<div block-type = "component_event" component-selector = "Spinner" event-selector = "AfterSelecting" event-params = "selection" id = "spinner-afterselecting"></div>
+<div block-type = "component_event" component-selector = "Spinner" event-selector = "AfterSelecting" id = "spinner-afterselecting"></div>
 
 Event called after the user selects an item from the dropdown list.
 
@@ -52,7 +58,7 @@ Event called after the user selects an item from the dropdown list.
 
 ### DisplayDropdown
 
-<div block-type = "component_method" component-selector = "Spinner" method-selector = "DisplayDropdown" method-params = "" return-type = "undefined" id = "spinner-displaydropdown"></div>
+<div block-type = "component_method" component-selector = "Spinner" method-selector = "DisplayDropdown" id = "spinner-displaydropdown"></div>
 
 Return Type : No Return Value
 

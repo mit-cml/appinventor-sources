@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Rectangle
 
 Rectangle
@@ -98,31 +104,31 @@ Rectangle
 
 ### Click
 
-<div block-type = "component_event" component-selector = "Rectangle" event-selector = "Click" event-params = "" id = "rectangle-click"></div>
+<div block-type = "component_event" component-selector = "Rectangle" event-selector = "Click" id = "rectangle-click"></div>
 
 The user clicked on the Rectangle.
 
 ### Drag
 
-<div block-type = "component_event" component-selector = "Rectangle" event-selector = "Drag" event-params = "" id = "rectangle-drag"></div>
+<div block-type = "component_event" component-selector = "Rectangle" event-selector = "Drag" id = "rectangle-drag"></div>
 
 The user dragged the Rectangle.
 
 ### LongClick
 
-<div block-type = "component_event" component-selector = "Rectangle" event-selector = "LongClick" event-params = "" id = "rectangle-longclick"></div>
+<div block-type = "component_event" component-selector = "Rectangle" event-selector = "LongClick" id = "rectangle-longclick"></div>
 
 The user long-pressed on the Rectangle. This event will only trigger if Draggable is false.
 
 ### StartDrag
 
-<div block-type = "component_event" component-selector = "Rectangle" event-selector = "StartDrag" event-params = "" id = "rectangle-startdrag"></div>
+<div block-type = "component_event" component-selector = "Rectangle" event-selector = "StartDrag" id = "rectangle-startdrag"></div>
 
 The user started a drag operation.
 
 ### StopDrag
 
-<div block-type = "component_event" component-selector = "Rectangle" event-selector = "StopDrag" event-params = "" id = "rectangle-stopdrag"></div>
+<div block-type = "component_event" component-selector = "Rectangle" event-selector = "StopDrag" id = "rectangle-stopdrag"></div>
 
 The user stopped a drag operation.
 
@@ -132,7 +138,7 @@ The user stopped a drag operation.
 
 ### Bounds
 
-<div block-type = "component_method" component-selector = "Rectangle" method-selector = "Bounds" method-params = "" return-type = "list" id = "rectangle-bounds"></div>
+<div block-type = "component_method" component-selector = "Rectangle" method-selector = "Bounds" id = "rectangle-bounds"></div>
 
 Return Type : list
 
@@ -140,7 +146,7 @@ Returns the bounding box of the Rectangle in the format ((North West) (South Eas
 
 ### Center
 
-<div block-type = "component_method" component-selector = "Rectangle" method-selector = "Center" method-params = "" return-type = "list" id = "rectangle-center"></div>
+<div block-type = "component_method" component-selector = "Rectangle" method-selector = "Center" id = "rectangle-center"></div>
 
 Return Type : list
 
@@ -148,7 +154,7 @@ Returns the center of the Rectangle as a list of the form (Latitude Longitude).
 
 ### DistanceToFeature
 
-<div block-type = "component_method" component-selector = "Rectangle" method-selector = "DistanceToFeature" method-params = "mapFeature-centroids" return-type = "number" id = "rectangle-distancetofeature"></div>
+<div block-type = "component_method" component-selector = "Rectangle" method-selector = "DistanceToFeature" id = "rectangle-distancetofeature"></div>
 
 Return Type : number
 
@@ -161,7 +167,7 @@ Compute the distance, in meters, between two map features.
 
 ### DistanceToPoint
 
-<div block-type = "component_method" component-selector = "Rectangle" method-selector = "DistanceToPoint" method-params = "latitude-longitude-centroid" return-type = "number" id = "rectangle-distancetopoint"></div>
+<div block-type = "component_method" component-selector = "Rectangle" method-selector = "DistanceToPoint" id = "rectangle-distancetopoint"></div>
 
 Return Type : number
 
@@ -175,7 +181,7 @@ Compute the distance, in meters, between a Rectangle and a latitude, longitude p
 
 ### HideInfobox
 
-<div block-type = "component_method" component-selector = "Rectangle" method-selector = "HideInfobox" method-params = "" return-type = "undefined" id = "rectangle-hideinfobox"></div>
+<div block-type = "component_method" component-selector = "Rectangle" method-selector = "HideInfobox" id = "rectangle-hideinfobox"></div>
 
 Return Type : No Return Value
 
@@ -183,7 +189,7 @@ Hide the infobox if it is shown. If the infobox is not visible this function has
 
 ### SetCenter
 
-<div block-type = "component_method" component-selector = "Rectangle" method-selector = "SetCenter" method-params = "latitude-longitude" return-type = "undefined" id = "rectangle-setcenter"></div>
+<div block-type = "component_method" component-selector = "Rectangle" method-selector = "SetCenter" id = "rectangle-setcenter"></div>
 
 Return Type : No Return Value
 
@@ -196,7 +202,7 @@ Moves the Rectangle so that it is centered on the given latitude and longitude w
 
 ### ShowInfobox
 
-<div block-type = "component_method" component-selector = "Rectangle" method-selector = "ShowInfobox" method-params = "" return-type = "undefined" id = "rectangle-showinfobox"></div>
+<div block-type = "component_method" component-selector = "Rectangle" method-selector = "ShowInfobox" id = "rectangle-showinfobox"></div>
 
 Return Type : No Return Value
 

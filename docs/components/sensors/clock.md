@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Clock
 
 Non-visible component that provides the instant in time using the internal clock on the phone. It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions.
@@ -34,7 +40,7 @@ Methods to convert an instant to text are also available. Acceptable patterns ar
 
 ### Timer
 
-<div block-type = "component_event" component-selector = "Clock" event-selector = "Timer" event-params = "" id = "clock-timer"></div>
+<div block-type = "component_event" component-selector = "Clock" event-selector = "Timer" id = "clock-timer"></div>
 
 The Timer event runs when the timer has gone off.
 
@@ -44,7 +50,7 @@ The Timer event runs when the timer has gone off.
 
 ### AddDays
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "AddDays" method-params = "instant-quantity" return-type = "InstantInTime" id = "clock-adddays"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "AddDays" id = "clock-adddays"></div>
 
 Return Type : InstantInTime
 
@@ -57,7 +63,7 @@ Returns an instant in time some days after the given instant.
 
 ### AddDuration
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "AddDuration" method-params = "instant-quantity" return-type = "InstantInTime" id = "clock-addduration"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "AddDuration" id = "clock-addduration"></div>
 
 Return Type : InstantInTime
 
@@ -70,7 +76,7 @@ Returns an instant in time some duration after the argument
 
 ### AddHours
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "AddHours" method-params = "instant-quantity" return-type = "InstantInTime" id = "clock-addhours"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "AddHours" id = "clock-addhours"></div>
 
 Return Type : InstantInTime
 
@@ -83,7 +89,7 @@ Returns an instant in time some hours after the given instant.
 
 ### AddMinutes
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "AddMinutes" method-params = "instant-quantity" return-type = "InstantInTime" id = "clock-addminutes"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "AddMinutes" id = "clock-addminutes"></div>
 
 Return Type : InstantInTime
 
@@ -96,7 +102,7 @@ Returns an instant in time some minutes after the given instant.
 
 ### AddMonths
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "AddMonths" method-params = "instant-quantity" return-type = "InstantInTime" id = "clock-addmonths"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "AddMonths" id = "clock-addmonths"></div>
 
 Return Type : InstantInTime
 
@@ -109,7 +115,7 @@ Returns an instant in time some months after the given instant.
 
 ### AddSeconds
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "AddSeconds" method-params = "instant-quantity" return-type = "InstantInTime" id = "clock-addseconds"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "AddSeconds" id = "clock-addseconds"></div>
 
 Return Type : InstantInTime
 
@@ -122,7 +128,7 @@ Returns an instant in time some seconds after the given instant.
 
 ### AddWeeks
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "AddWeeks" method-params = "instant-quantity" return-type = "InstantInTime" id = "clock-addweeks"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "AddWeeks" id = "clock-addweeks"></div>
 
 Return Type : InstantInTime
 
@@ -135,7 +141,7 @@ Returns An instant in time some weeks after the given instant.
 
 ### AddYears
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "AddYears" method-params = "instant-quantity" return-type = "InstantInTime" id = "clock-addyears"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "AddYears" id = "clock-addyears"></div>
 
 Return Type : InstantInTime
 
@@ -148,7 +154,7 @@ Returns an instant in time some years after the given instant.
 
 ### DayOfMonth
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "DayOfMonth" method-params = "instant" return-type = "number" id = "clock-dayofmonth"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "DayOfMonth" id = "clock-dayofmonth"></div>
 
 Return Type : number
 
@@ -160,7 +166,7 @@ Returns the day of the month (1-31) from the instant.
 
 ### Duration
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "Duration" method-params = "start-end" return-type = "number" id = "clock-duration"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "Duration" id = "clock-duration"></div>
 
 Return Type : number
 
@@ -173,7 +179,7 @@ Returns duration, which is milliseconds elapsed between instants.
 
 ### DurationToDays
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "DurationToDays" method-params = "duration" return-type = "number" id = "clock-durationtodays"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "DurationToDays" id = "clock-durationtodays"></div>
 
 Return Type : number
 
@@ -185,7 +191,7 @@ Converts the duration to the number of days.
 
 ### DurationToHours
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "DurationToHours" method-params = "duration" return-type = "number" id = "clock-durationtohours"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "DurationToHours" id = "clock-durationtohours"></div>
 
 Return Type : number
 
@@ -197,7 +203,7 @@ Converts the duration to the number of hours.
 
 ### DurationToMinutes
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "DurationToMinutes" method-params = "duration" return-type = "number" id = "clock-durationtominutes"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "DurationToMinutes" id = "clock-durationtominutes"></div>
 
 Return Type : number
 
@@ -209,7 +215,7 @@ Converts the duration to the number of minutes.
 
 ### DurationToSeconds
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "DurationToSeconds" method-params = "duration" return-type = "number" id = "clock-durationtoseconds"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "DurationToSeconds" id = "clock-durationtoseconds"></div>
 
 Return Type : number
 
@@ -221,7 +227,7 @@ Converts the duration to the number of seconds.
 
 ### DurationToWeeks
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "DurationToWeeks" method-params = "duration" return-type = "number" id = "clock-durationtoweeks"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "DurationToWeeks" id = "clock-durationtoweeks"></div>
 
 Return Type : number
 
@@ -233,7 +239,7 @@ Converts the duration to the number of weeks.
 
 ### FormatDate
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "FormatDate" method-params = "instant-pattern" return-type = "text" id = "clock-formatdate"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "FormatDate" id = "clock-formatdate"></div>
 
 Return Type : text
 
@@ -246,7 +252,7 @@ Text representing the date of an instant in the specified pattern
 
 ### FormatDateTime
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "FormatDateTime" method-params = "instant-pattern" return-type = "text" id = "clock-formatdatetime"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "FormatDateTime" id = "clock-formatdatetime"></div>
 
 Return Type : text
 
@@ -259,7 +265,7 @@ Returns text representing the date and time of an instant in the specified patte
 
 ### FormatTime
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "FormatTime" method-params = "instant" return-type = "text" id = "clock-formattime"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "FormatTime" id = "clock-formattime"></div>
 
 Return Type : text
 
@@ -271,7 +277,7 @@ Text representing the time of an instant
 
 ### GetMillis
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "GetMillis" method-params = "instant" return-type = "number" id = "clock-getmillis"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "GetMillis" id = "clock-getmillis"></div>
 
 Return Type : number
 
@@ -283,7 +289,7 @@ Returns the instant in time measured as milliseconds since 1970.
 
 ### Hour
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "Hour" method-params = "instant" return-type = "number" id = "clock-hour"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "Hour" id = "clock-hour"></div>
 
 Return Type : number
 
@@ -295,7 +301,7 @@ Returns the hour of the day (0-23) from the instant.
 
 ### MakeDate
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "MakeDate" method-params = "year-month-day" return-type = "InstantInTime" id = "clock-makedate"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "MakeDate" id = "clock-makedate"></div>
 
 Return Type : InstantInTime
 
@@ -309,7 +315,7 @@ Returns an instant in time specified by year, month, date in UTC. Valid values f
 
 ### MakeInstant
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "MakeInstant" method-params = "from" return-type = "InstantInTime" id = "clock-makeinstant"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "MakeInstant" id = "clock-makeinstant"></div>
 
 Return Type : InstantInTime
 
@@ -321,7 +327,7 @@ Returns an instant in time specified by MM/dd/YYYY hh:mm:ss or MM/dd/YYYY or hh:
 
 ### MakeInstantFromMillis
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "MakeInstantFromMillis" method-params = "millis" return-type = "InstantInTime" id = "clock-makeinstantfrommillis"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "MakeInstantFromMillis" id = "clock-makeinstantfrommillis"></div>
 
 Return Type : InstantInTime
 
@@ -333,7 +339,7 @@ Returns an instant in time specified by the milliseconds since 1970 in UTC.
 
 ### MakeInstantFromParts
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "MakeInstantFromParts" method-params = "year-month-day-hour-minute-second" return-type = "InstantInTime" id = "clock-makeinstantfromparts"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "MakeInstantFromParts" id = "clock-makeinstantfromparts"></div>
 
 Return Type : InstantInTime
 
@@ -350,7 +356,7 @@ Returns an instant in time specified by year, month, date, hour, minute, second 
 
 ### MakeTime
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "MakeTime" method-params = "hour-minute-second" return-type = "InstantInTime" id = "clock-maketime"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "MakeTime" id = "clock-maketime"></div>
 
 Return Type : InstantInTime
 
@@ -364,7 +370,7 @@ Returns an instant in time specified by hour, minute, second in UTC.
 
 ### Minute
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "Minute" method-params = "instant" return-type = "number" id = "clock-minute"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "Minute" id = "clock-minute"></div>
 
 Return Type : number
 
@@ -376,7 +382,7 @@ Returns the minute of the hour (0-59) from the instant.
 
 ### Month
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "Month" method-params = "instant" return-type = "number" id = "clock-month"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "Month" id = "clock-month"></div>
 
 Return Type : number
 
@@ -388,7 +394,7 @@ Returns the month of the year represented as a number from 1 to 12).
 
 ### MonthName
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "MonthName" method-params = "instant" return-type = "text" id = "clock-monthname"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "MonthName" id = "clock-monthname"></div>
 
 Return Type : text
 
@@ -400,7 +406,7 @@ Returns the name of the month from the instant, e.g., January, February, March..
 
 ### Now
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "Now" method-params = "" return-type = "InstantInTime" id = "clock-now"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "Now" id = "clock-now"></div>
 
 Return Type : InstantInTime
 
@@ -408,7 +414,7 @@ Returns the current instant in time read from phone's clock.
 
 ### Second
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "Second" method-params = "instant" return-type = "number" id = "clock-second"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "Second" id = "clock-second"></div>
 
 Return Type : number
 
@@ -420,7 +426,7 @@ Returns the second of the minute (0-59) from the instant.
 
 ### SystemTime
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "SystemTime" method-params = "" return-type = "number" id = "clock-systemtime"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "SystemTime" id = "clock-systemtime"></div>
 
 Return Type : number
 
@@ -428,7 +434,7 @@ Returns the phone's internal time.
 
 ### Weekday
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "Weekday" method-params = "instant" return-type = "number" id = "clock-weekday"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "Weekday" id = "clock-weekday"></div>
 
 Return Type : number
 
@@ -440,7 +446,7 @@ Returns the day of the week represented as a number from 1 (Sunday) to 7 (Saturd
 
 ### WeekdayName
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "WeekdayName" method-params = "instant" return-type = "text" id = "clock-weekdayname"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "WeekdayName" id = "clock-weekdayname"></div>
 
 Return Type : text
 
@@ -452,7 +458,7 @@ Returns the name of the day of the week from the instant.
 
 ### Year
 
-<div block-type = "component_method" component-selector = "Clock" method-selector = "Year" method-params = "instant" return-type = "number" id = "clock-year"></div>
+<div block-type = "component_method" component-selector = "Clock" method-selector = "Year" id = "clock-year"></div>
 
 Return Type : number
 

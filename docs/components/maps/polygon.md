@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Polygon
 
 Polygon
@@ -86,31 +92,31 @@ Polygon
 
 ### Click
 
-<div block-type = "component_event" component-selector = "Polygon" event-selector = "Click" event-params = "" id = "polygon-click"></div>
+<div block-type = "component_event" component-selector = "Polygon" event-selector = "Click" id = "polygon-click"></div>
 
 The user clicked on the Polygon.
 
 ### Drag
 
-<div block-type = "component_event" component-selector = "Polygon" event-selector = "Drag" event-params = "" id = "polygon-drag"></div>
+<div block-type = "component_event" component-selector = "Polygon" event-selector = "Drag" id = "polygon-drag"></div>
 
 The user dragged the Polygon.
 
 ### LongClick
 
-<div block-type = "component_event" component-selector = "Polygon" event-selector = "LongClick" event-params = "" id = "polygon-longclick"></div>
+<div block-type = "component_event" component-selector = "Polygon" event-selector = "LongClick" id = "polygon-longclick"></div>
 
 The user long-pressed on the Polygon. This event will only trigger if Draggable is false.
 
 ### StartDrag
 
-<div block-type = "component_event" component-selector = "Polygon" event-selector = "StartDrag" event-params = "" id = "polygon-startdrag"></div>
+<div block-type = "component_event" component-selector = "Polygon" event-selector = "StartDrag" id = "polygon-startdrag"></div>
 
 The user started a drag operation.
 
 ### StopDrag
 
-<div block-type = "component_event" component-selector = "Polygon" event-selector = "StopDrag" event-params = "" id = "polygon-stopdrag"></div>
+<div block-type = "component_event" component-selector = "Polygon" event-selector = "StopDrag" id = "polygon-stopdrag"></div>
 
 The user stopped a drag operation.
 
@@ -120,7 +126,7 @@ The user stopped a drag operation.
 
 ### Centroid
 
-<div block-type = "component_method" component-selector = "Polygon" method-selector = "Centroid" method-params = "" return-type = "list" id = "polygon-centroid"></div>
+<div block-type = "component_method" component-selector = "Polygon" method-selector = "Centroid" id = "polygon-centroid"></div>
 
 Return Type : list
 
@@ -128,7 +134,7 @@ Returns the centroid of the Polygon as a (latitude, longitude) pair.
 
 ### DistanceToFeature
 
-<div block-type = "component_method" component-selector = "Polygon" method-selector = "DistanceToFeature" method-params = "mapFeature-centroids" return-type = "number" id = "polygon-distancetofeature"></div>
+<div block-type = "component_method" component-selector = "Polygon" method-selector = "DistanceToFeature" id = "polygon-distancetofeature"></div>
 
 Return Type : number
 
@@ -141,7 +147,7 @@ Compute the distance, in meters, between two map features.
 
 ### DistanceToPoint
 
-<div block-type = "component_method" component-selector = "Polygon" method-selector = "DistanceToPoint" method-params = "latitude-longitude-centroid" return-type = "number" id = "polygon-distancetopoint"></div>
+<div block-type = "component_method" component-selector = "Polygon" method-selector = "DistanceToPoint" id = "polygon-distancetopoint"></div>
 
 Return Type : number
 
@@ -155,7 +161,7 @@ Compute the distance, in meters, between a Polygon and a latitude, longitude poi
 
 ### HideInfobox
 
-<div block-type = "component_method" component-selector = "Polygon" method-selector = "HideInfobox" method-params = "" return-type = "undefined" id = "polygon-hideinfobox"></div>
+<div block-type = "component_method" component-selector = "Polygon" method-selector = "HideInfobox" id = "polygon-hideinfobox"></div>
 
 Return Type : No Return Value
 
@@ -163,7 +169,7 @@ Hide the infobox if it is shown. If the infobox is not visible this function has
 
 ### ShowInfobox
 
-<div block-type = "component_method" component-selector = "Polygon" method-selector = "ShowInfobox" method-params = "" return-type = "undefined" id = "polygon-showinfobox"></div>
+<div block-type = "component_method" component-selector = "Polygon" method-selector = "ShowInfobox" id = "polygon-showinfobox"></div>
 
 Return Type : No Return Value
 

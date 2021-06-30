@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # OrientationSensor
 
 Non-visible component providing information about the device's physical orientation in three dimensions:
@@ -26,7 +32,7 @@ These measurements assume that the device itself is not moving.
 
 ### OrientationChanged
 
-<div block-type = "component_event" component-selector = "OrientationSensor" event-selector = "OrientationChanged" event-params = "azimuth-pitch-roll" id = "orientationsensor-orientationchanged"></div>
+<div block-type = "component_event" component-selector = "OrientationSensor" event-selector = "OrientationChanged" id = "orientationsensor-orientationchanged"></div>
 
 Called when the orientation has changed.
 

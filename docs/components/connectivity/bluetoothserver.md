@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # BluetoothServer
 
 Bluetooth server component
@@ -38,7 +44,7 @@ Bluetooth server component
 
 ### BluetoothError
 
-<div block-type = "component_event" component-selector = "BluetoothServer" event-selector = "BluetoothError" event-params = "functionName-message" id = "bluetoothserver-bluetootherror"></div>
+<div block-type = "component_event" component-selector = "BluetoothServer" event-selector = "BluetoothError" id = "bluetoothserver-bluetootherror"></div>
 
 The BluetoothError event is no longer used. Please use the Screen.ErrorOccurred event instead.
 
@@ -49,7 +55,7 @@ The BluetoothError event is no longer used. Please use the Screen.ErrorOccurred 
 
 ### ConnectionAccepted
 
-<div block-type = "component_event" component-selector = "BluetoothServer" event-selector = "ConnectionAccepted" event-params = "" id = "bluetoothserver-connectionaccepted"></div>
+<div block-type = "component_event" component-selector = "BluetoothServer" event-selector = "ConnectionAccepted" id = "bluetoothserver-connectionaccepted"></div>
 
 Indicates that a bluetooth connection has been accepted.
 
@@ -59,7 +65,7 @@ Indicates that a bluetooth connection has been accepted.
 
 ### AcceptConnection
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "AcceptConnection" method-params = "serviceName" return-type = "undefined" id = "bluetoothserver-acceptconnection"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "AcceptConnection" id = "bluetoothserver-acceptconnection"></div>
 
 Return Type : No Return Value
 
@@ -71,7 +77,7 @@ Accept an incoming connection with the Serial Port Profile (SPP).
 
 ### AcceptConnectionWithUUID
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "AcceptConnectionWithUUID" method-params = "serviceName-uuid" return-type = "undefined" id = "bluetoothserver-acceptconnectionwithuuid"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "AcceptConnectionWithUUID" id = "bluetoothserver-acceptconnectionwithuuid"></div>
 
 Return Type : No Return Value
 
@@ -84,7 +90,7 @@ Accept an incoming connection with a specific UUID.
 
 ### BytesAvailableToReceive
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "BytesAvailableToReceive" method-params = "" return-type = "number" id = "bluetoothserver-bytesavailabletoreceive"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "BytesAvailableToReceive" id = "bluetoothserver-bytesavailabletoreceive"></div>
 
 Return Type : number
 
@@ -92,7 +98,7 @@ Returns an estimate of the number of bytes that can be received without blocking
 
 ### Disconnect
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "Disconnect" method-params = "" return-type = "undefined" id = "bluetoothserver-disconnect"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "Disconnect" id = "bluetoothserver-disconnect"></div>
 
 Return Type : No Return Value
 
@@ -100,7 +106,7 @@ Disconnect from the connected Bluetooth device.
 
 ### ReceiveSigned1ByteNumber
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveSigned1ByteNumber" method-params = "" return-type = "number" id = "bluetoothserver-receivesigned1bytenumber"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveSigned1ByteNumber" id = "bluetoothserver-receivesigned1bytenumber"></div>
 
 Return Type : number
 
@@ -108,7 +114,7 @@ Receive a signed 1-byte number from the connected Bluetooth device.
 
 ### ReceiveSigned2ByteNumber
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveSigned2ByteNumber" method-params = "" return-type = "number" id = "bluetoothserver-receivesigned2bytenumber"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveSigned2ByteNumber" id = "bluetoothserver-receivesigned2bytenumber"></div>
 
 Return Type : number
 
@@ -116,7 +122,7 @@ Receive a signed 2-byte number from the connected Bluetooth device.
 
 ### ReceiveSigned4ByteNumber
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveSigned4ByteNumber" method-params = "" return-type = "number" id = "bluetoothserver-receivesigned4bytenumber"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveSigned4ByteNumber" id = "bluetoothserver-receivesigned4bytenumber"></div>
 
 Return Type : number
 
@@ -124,7 +130,7 @@ Receive a signed 4-byte number from the connected Bluetooth device.
 
 ### ReceiveSignedBytes
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveSignedBytes" method-params = "numberOfBytes" return-type = "list" id = "bluetoothserver-receivesignedbytes"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveSignedBytes" id = "bluetoothserver-receivesignedbytes"></div>
 
 Return Type : list
 
@@ -136,7 +142,7 @@ Receive multiple signed byte values from the connected Bluetooth device. If numb
 
 ### ReceiveText
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveText" method-params = "numberOfBytes" return-type = "text" id = "bluetoothserver-receivetext"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveText" id = "bluetoothserver-receivetext"></div>
 
 Return Type : text
 
@@ -148,7 +154,7 @@ Receive text from the connected Bluetooth device. If numberOfBytes is less than 
 
 ### ReceiveUnsigned1ByteNumber
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveUnsigned1ByteNumber" method-params = "" return-type = "number" id = "bluetoothserver-receiveunsigned1bytenumber"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveUnsigned1ByteNumber" id = "bluetoothserver-receiveunsigned1bytenumber"></div>
 
 Return Type : number
 
@@ -156,7 +162,7 @@ Receive an unsigned 1-byte number from the connected Bluetooth device.
 
 ### ReceiveUnsigned2ByteNumber
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveUnsigned2ByteNumber" method-params = "" return-type = "number" id = "bluetoothserver-receiveunsigned2bytenumber"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveUnsigned2ByteNumber" id = "bluetoothserver-receiveunsigned2bytenumber"></div>
 
 Return Type : number
 
@@ -164,7 +170,7 @@ Receive a unsigned 2-byte number from the connected Bluetooth device.
 
 ### ReceiveUnsigned4ByteNumber
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveUnsigned4ByteNumber" method-params = "" return-type = "number" id = "bluetoothserver-receiveunsigned4bytenumber"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveUnsigned4ByteNumber" id = "bluetoothserver-receiveunsigned4bytenumber"></div>
 
 Return Type : number
 
@@ -172,7 +178,7 @@ Receive a unsigned 4-byte number from the connected Bluetooth device.
 
 ### ReceiveUnsignedBytes
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveUnsignedBytes" method-params = "numberOfBytes" return-type = "list" id = "bluetoothserver-receiveunsignedbytes"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "ReceiveUnsignedBytes" id = "bluetoothserver-receiveunsignedbytes"></div>
 
 Return Type : list
 
@@ -184,7 +190,7 @@ Receive multiple unsigned byte values from the connected Bluetooth device. If nu
 
 ### Send1ByteNumber
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "Send1ByteNumber" method-params = "number" return-type = "undefined" id = "bluetoothserver-send1bytenumber"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "Send1ByteNumber" id = "bluetoothserver-send1bytenumber"></div>
 
 Return Type : No Return Value
 
@@ -196,7 +202,7 @@ Send a 1-byte number to the connected Bluetooth device.
 
 ### Send2ByteNumber
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "Send2ByteNumber" method-params = "number" return-type = "undefined" id = "bluetoothserver-send2bytenumber"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "Send2ByteNumber" id = "bluetoothserver-send2bytenumber"></div>
 
 Return Type : No Return Value
 
@@ -208,7 +214,7 @@ Send a 2-byte number to the connected Bluetooth device.
 
 ### Send4ByteNumber
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "Send4ByteNumber" method-params = "number" return-type = "undefined" id = "bluetoothserver-send4bytenumber"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "Send4ByteNumber" id = "bluetoothserver-send4bytenumber"></div>
 
 Return Type : No Return Value
 
@@ -220,7 +226,7 @@ Send a 4-byte number to the connected Bluetooth device.
 
 ### SendBytes
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "SendBytes" method-params = "list" return-type = "undefined" id = "bluetoothserver-sendbytes"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "SendBytes" id = "bluetoothserver-sendbytes"></div>
 
 Return Type : No Return Value
 
@@ -232,7 +238,7 @@ Send a list of byte values to the connected Bluetooth device.
 
 ### SendText
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "SendText" method-params = "text" return-type = "undefined" id = "bluetoothserver-sendtext"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "SendText" id = "bluetoothserver-sendtext"></div>
 
 Return Type : No Return Value
 
@@ -244,7 +250,7 @@ Send text to the connected Bluetooth device.
 
 ### StopAccepting
 
-<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "StopAccepting" method-params = "" return-type = "undefined" id = "bluetoothserver-stopaccepting"></div>
+<div block-type = "component_method" component-selector = "BluetoothServer" method-selector = "StopAccepting" id = "bluetoothserver-stopaccepting"></div>
 
 Return Type : No Return Value
 

@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Button
 
 Button with the ability to detect clicks. Many aspects of its appearance can be changed, as well as whether it is clickable (`Enabled`), can be changed in the Designer or in the Blocks Editor.
@@ -92,37 +98,37 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 
 ### Click
 
-<div block-type = "component_event" component-selector = "Button" event-selector = "Click" event-params = "" id = "button-click"></div>
+<div block-type = "component_event" component-selector = "Button" event-selector = "Click" id = "button-click"></div>
 
 User tapped and released the button.
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "Button" event-selector = "GotFocus" event-params = "" id = "button-gotfocus"></div>
+<div block-type = "component_event" component-selector = "Button" event-selector = "GotFocus" id = "button-gotfocus"></div>
 
 Indicates the cursor moved over the Button so it is now possible to click it.
 
 ### LongClick
 
-<div block-type = "component_event" component-selector = "Button" event-selector = "LongClick" event-params = "" id = "button-longclick"></div>
+<div block-type = "component_event" component-selector = "Button" event-selector = "LongClick" id = "button-longclick"></div>
 
 User held the button down.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "Button" event-selector = "LostFocus" event-params = "" id = "button-lostfocus"></div>
+<div block-type = "component_event" component-selector = "Button" event-selector = "LostFocus" id = "button-lostfocus"></div>
 
 Indicates the cursor moved away from the Button so it is now no longer possible to click it.
 
 ### TouchDown
 
-<div block-type = "component_event" component-selector = "Button" event-selector = "TouchDown" event-params = "" id = "button-touchdown"></div>
+<div block-type = "component_event" component-selector = "Button" event-selector = "TouchDown" id = "button-touchdown"></div>
 
 Indicates that the Button was pressed down.
 
 ### TouchUp
 
-<div block-type = "component_event" component-selector = "Button" event-selector = "TouchUp" event-params = "" id = "button-touchup"></div>
+<div block-type = "component_event" component-selector = "Button" event-selector = "TouchUp" id = "button-touchup"></div>
 
 Indicates that the Button has been released.
 

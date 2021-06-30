@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Sharing
 
 Sharing is a non-visible component that enables sharing files and/or messages between your app and other apps installed on a device. The component will display a list of the installed apps that can handle the information provided, and will allow the user to choose one to share the content with, for instance a mail app, a social network app, a texting app, and so on.  
@@ -14,7 +20,7 @@ or*   `"/storage/Appinventor/assets/arrow.gif"`
 
 ### ShareFile
 
-<div block-type = "component_method" component-selector = "Sharing" method-selector = "ShareFile" method-params = "file" return-type = "undefined" id = "sharing-sharefile"></div>
+<div block-type = "component_method" component-selector = "Sharing" method-selector = "ShareFile" id = "sharing-sharefile"></div>
 
 Return Type : No Return Value
 
@@ -26,7 +32,7 @@ Shares a file through any capable application installed on the phone by displayi
 
 ### ShareFileWithMessage
 
-<div block-type = "component_method" component-selector = "Sharing" method-selector = "ShareFileWithMessage" method-params = "file-message" return-type = "undefined" id = "sharing-sharefilewithmessage"></div>
+<div block-type = "component_method" component-selector = "Sharing" method-selector = "ShareFileWithMessage" id = "sharing-sharefilewithmessage"></div>
 
 Return Type : No Return Value
 
@@ -39,7 +45,7 @@ Shares both a file and a message through any capable application installed on th
 
 ### ShareMessage
 
-<div block-type = "component_method" component-selector = "Sharing" method-selector = "ShareMessage" method-params = "message" return-type = "undefined" id = "sharing-sharemessage"></div>
+<div block-type = "component_method" component-selector = "Sharing" method-selector = "ShareMessage" id = "sharing-sharemessage"></div>
 
 Return Type : No Return Value
 

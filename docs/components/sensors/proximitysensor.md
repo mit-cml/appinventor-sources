@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # ProximitySensor
 
 Non-visible component that can measures the proximity of an object in cm relative to the view screen of a device. This sensor is typically used to determine whether a handset is being held up to a persons ear; i.e. lets you determine how far away an object is from a device. Many devices return the absolute distance, in cm, but some return only near and far values. In this case, the sensor usually reports its maximum range value in the far state and a lesser value in the near state.
@@ -26,7 +32,7 @@ Non-visible component that can measures the proximity of an object in cm relativ
 
 ### ProximityChanged
 
-<div block-type = "component_event" component-selector = "ProximitySensor" event-selector = "ProximityChanged" event-params = "distance" id = "proximitysensor-proximitychanged"></div>
+<div block-type = "component_event" component-selector = "ProximitySensor" event-selector = "ProximityChanged" id = "proximitysensor-proximitychanged"></div>
 
 Triggered when distance (in cm) of the object to the device changes.
 

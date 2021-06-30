@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # Ev3GyroSensor
 
 A component that provides a high-level interface to a gyro sensor on a LEGO MINDSTORMS EV3 robot.
@@ -38,7 +44,7 @@ A component that provides a high-level interface to a gyro sensor on a LEGO MIND
 
 ### SensorValueChanged
 
-<div block-type = "component_event" component-selector = "Ev3GyroSensor" event-selector = "SensorValueChanged" event-params = "sensorValue" id = "ev3gyrosensor-sensorvaluechanged"></div>
+<div block-type = "component_event" component-selector = "Ev3GyroSensor" event-selector = "SensorValueChanged" id = "ev3gyrosensor-sensorvaluechanged"></div>
 
 Called then the sensor value changed.
 
@@ -52,7 +58,7 @@ Called then the sensor value changed.
 
 ### GetSensorValue
 
-<div block-type = "component_method" component-selector = "Ev3GyroSensor" method-selector = "GetSensorValue" method-params = "" return-type = "number" id = "ev3gyrosensor-getsensorvalue"></div>
+<div block-type = "component_method" component-selector = "Ev3GyroSensor" method-selector = "GetSensorValue" id = "ev3gyrosensor-getsensorvalue"></div>
 
 Return Type : number
 

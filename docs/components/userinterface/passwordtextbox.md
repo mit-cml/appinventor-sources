@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # PasswordTextBox
 
 A box for entering passwords. This is the same as the ordinary `TextBox` component except this does not display the characters typed by the user.
@@ -90,13 +96,13 @@ Text boxes are usually used with the `Button` component, with the user clicking 
 
 ### GotFocus
 
-<div block-type = "component_event" component-selector = "PasswordTextBox" event-selector = "GotFocus" event-params = "" id = "passwordtextbox-gotfocus"></div>
+<div block-type = "component_event" component-selector = "PasswordTextBox" event-selector = "GotFocus" id = "passwordtextbox-gotfocus"></div>
 
 Event raised when the PasswordTextBox is selected for input, such as by the user touching it.
 
 ### LostFocus
 
-<div block-type = "component_event" component-selector = "PasswordTextBox" event-selector = "LostFocus" event-params = "" id = "passwordtextbox-lostfocus"></div>
+<div block-type = "component_event" component-selector = "PasswordTextBox" event-selector = "LostFocus" id = "passwordtextbox-lostfocus"></div>
 
 Event raised when the PasswordTextBox is no longer selected for input, such as if the user touches a different text box.
 
@@ -106,7 +112,7 @@ Event raised when the PasswordTextBox is no longer selected for input, such as i
 
 ### RequestFocus
 
-<div block-type = "component_method" component-selector = "PasswordTextBox" method-selector = "RequestFocus" method-params = "" return-type = "undefined" id = "passwordtextbox-requestfocus"></div>
+<div block-type = "component_method" component-selector = "PasswordTextBox" method-selector = "RequestFocus" id = "passwordtextbox-requestfocus"></div>
 
 Return Type : No Return Value
 

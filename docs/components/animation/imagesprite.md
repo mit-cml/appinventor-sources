@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # ImageSprite
 
 A 'sprite' that can be placed on a `Canvas`, where it can react to touches and drags, interact with other sprites (`Ball`s and other `ImageSprite`s) and the edge of the Canvas, and move according to its property values. Its appearance is that of the image specified in its `Picture` property (unless its `Visible` property is `False`).
@@ -76,7 +82,7 @@ To have an `ImageSprite` move 10 pixels to the left every 1000 milliseconds (one
 
 ### CollidedWith
 
-<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "CollidedWith" event-params = "other" id = "imagesprite-collidedwith"></div>
+<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "CollidedWith" id = "imagesprite-collidedwith"></div>
 
 Event handler called when two enabled sprites (
 
@@ -86,7 +92,7 @@ Event handler called when two enabled sprites (
 
 ### Dragged
 
-<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "Dragged" event-params = "startX-startY-prevX-prevY-currentX-currentY" id = "imagesprite-dragged"></div>
+<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "Dragged" id = "imagesprite-dragged"></div>
 
 Event handler called when a ImageSprite is dragged. On all calls, the starting coordinates are where the screen was first touched, and the "current" coordinates describe the endpoint of the current line segment. On the first call within a given drag, the "previous" coordinates are the same as the starting coordinates; subsequently, they are the "current" coordinates from the prior call. Note that the ImageSprite won't actually move anywhere in response to the Dragged event unless MoveTo is explicitly called. For smooth movement, each of its coordinates should be set to the sum of its initial value and the difference between its current and previous values.
 
@@ -101,7 +107,7 @@ Event handler called when a ImageSprite is dragged. On all calls, the starting c
 
 ### EdgeReached
 
-<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "EdgeReached" event-params = "edge" id = "imagesprite-edgereached"></div>
+<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "EdgeReached" id = "imagesprite-edgereached"></div>
 
 Event handler called when the ImageSprite reaches an edge of the screen. If Bounce is then called with that edge, the ImageSprite will appear to bounce off of the edge it reached. Edge here is represented as an integer that indicates one of eight directions north (1), northeast (2), east (3), southeast (4), south (-1), southwest (-2), west (-3), and northwest (-4).
 
@@ -111,7 +117,7 @@ Event handler called when the ImageSprite reaches an edge of the screen. If Boun
 
 ### Flung
 
-<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "Flung" event-params = "x-y-speed-heading-xvel-yvel" id = "imagesprite-flung"></div>
+<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "Flung" id = "imagesprite-flung"></div>
 
 Event handler called when a fling gesture (quick swipe) is made on an enabled ImageSprite. This provides the x and y coordinates of the start of the fling (relative to the upper left of the canvas), the speed (pixels per millisecond), the heading (0-360 degrees), and the x and y velocity components of the fling's vector.
 
@@ -126,7 +132,7 @@ Event handler called when a fling gesture (quick swipe) is made on an enabled Im
 
 ### NoLongerCollidingWith
 
-<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "NoLongerCollidingWith" event-params = "other" id = "imagesprite-nolongercollidingwith"></div>
+<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "NoLongerCollidingWith" id = "imagesprite-nolongercollidingwith"></div>
 
 Event handler called when a pair of sprites (Balls and ImageSprites) are no longer colliding.
 
@@ -136,7 +142,7 @@ Event handler called when a pair of sprites (Balls and ImageSprites) are no long
 
 ### TouchDown
 
-<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "TouchDown" event-params = "x-y" id = "imagesprite-touchdown"></div>
+<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "TouchDown" id = "imagesprite-touchdown"></div>
 
 Event handler called when the user begins touching an enabled ImageSprite (placing their finger on a ImageSprite and leaving it there). This provides the x and y coordinates of the touch, relative to the upper left of the canvas.
 
@@ -147,7 +153,7 @@ Event handler called when the user begins touching an enabled ImageSprite (placi
 
 ### TouchUp
 
-<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "TouchUp" event-params = "x-y" id = "imagesprite-touchup"></div>
+<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "TouchUp" id = "imagesprite-touchup"></div>
 
 Event handler called when the user stops touching an enabled ImageSprite (lifting their finger after a TouchDown event). This provides the x and y coordinates of the touch, relative to the upper left of the canvas.
 
@@ -158,7 +164,7 @@ Event handler called when the user stops touching an enabled ImageSprite (liftin
 
 ### Touched
 
-<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "Touched" event-params = "x-y" id = "imagesprite-touched"></div>
+<div block-type = "component_event" component-selector = "ImageSprite" event-selector = "Touched" id = "imagesprite-touched"></div>
 
 Event handler called when the user touches an enabled ImageSprite and then immediately lifts their finger. The provided x and y coordinates are relative to the upper left of the canvas.
 
@@ -173,7 +179,7 @@ Event handler called when the user touches an enabled ImageSprite and then immed
 
 ### Bounce
 
-<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "Bounce" method-params = "edge" return-type = "undefined" id = "imagesprite-bounce"></div>
+<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "Bounce" id = "imagesprite-bounce"></div>
 
 Return Type : No Return Value
 
@@ -185,7 +191,7 @@ Makes the ImageSprite bounce, as if off a wall. For normal bouncing, the edge ar
 
 ### CollidingWith
 
-<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "CollidingWith" method-params = "other" return-type = "boolean" id = "imagesprite-collidingwith"></div>
+<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "CollidingWith" id = "imagesprite-collidingwith"></div>
 
 Return Type : boolean
 
@@ -197,7 +203,7 @@ Indicates whether a collision has been registered between this ImageSprite and t
 
 ### MoveIntoBounds
 
-<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "MoveIntoBounds" method-params = "" return-type = "undefined" id = "imagesprite-moveintobounds"></div>
+<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "MoveIntoBounds" id = "imagesprite-moveintobounds"></div>
 
 Return Type : No Return Value
 
@@ -205,7 +211,7 @@ Moves the ImageSprite back in bounds if part of it extends out of bounds, having
 
 ### MoveTo
 
-<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "MoveTo" method-params = "x-y" return-type = "undefined" id = "imagesprite-moveto"></div>
+<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "MoveTo" id = "imagesprite-moveto"></div>
 
 Return Type : No Return Value
 
@@ -218,7 +224,7 @@ Moves the ImageSprite so that its left top corner is at the specified x and y co
 
 ### MoveToPoint
 
-<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "MoveToPoint" method-params = "coordinates" return-type = "undefined" id = "imagesprite-movetopoint"></div>
+<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "MoveToPoint" id = "imagesprite-movetopoint"></div>
 
 Return Type : No Return Value
 
@@ -230,7 +236,7 @@ Moves the origin of ImageSprite to the position of the cooordinates given by the
 
 ### PointInDirection
 
-<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "PointInDirection" method-params = "x-y" return-type = "undefined" id = "imagesprite-pointindirection"></div>
+<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "PointInDirection" id = "imagesprite-pointindirection"></div>
 
 Return Type : No Return Value
 
@@ -243,7 +249,7 @@ Sets the heading of the ImageSprite toward the point with the coordinates (x, y)
 
 ### PointTowards
 
-<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "PointTowards" method-params = "target" return-type = "undefined" id = "imagesprite-pointtowards"></div>
+<div block-type = "component_method" component-selector = "ImageSprite" method-selector = "PointTowards" id = "imagesprite-pointtowards"></div>
 
 Return Type : No Return Value
 

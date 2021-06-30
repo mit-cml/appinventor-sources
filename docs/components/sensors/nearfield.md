@@ -1,3 +1,9 @@
+<!--
+  Copyright © 2013-2021 MIT, All rights reserved
+  Released under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 # NearField
 
 Non-visible component to provide NFC capabilities. For now this component supports the reading and writing of text tags only (if supported by the device)
@@ -24,7 +30,7 @@ In order to read and write text tags, the component must have its `ReadMode` pro
 
 ### TagRead
 
-<div block-type = "component_event" component-selector = "NearField" event-selector = "TagRead" event-params = "message" id = "nearfield-tagread"></div>
+<div block-type = "component_event" component-selector = "NearField" event-selector = "TagRead" id = "nearfield-tagread"></div>
 
 Indicates that a new tag has been detected. Currently this is only a plain text tag, as specified in the manifest.
 
@@ -34,7 +40,7 @@ Indicates that a new tag has been detected. Currently this is only a plain text 
 
 ### TagWritten
 
-<div block-type = "component_event" component-selector = "NearField" event-selector = "TagWritten" event-params = "" id = "nearfield-tagwritten"></div>
+<div block-type = "component_event" component-selector = "NearField" event-selector = "TagWritten" id = "nearfield-tagwritten"></div>
 
 Indicates that a tag has come into range of the NFC sensor and has been written.
 
