@@ -48,6 +48,7 @@ import com.google.appinventor.client.editor.simple.components.MockTableArrangeme
 import com.google.appinventor.client.editor.simple.components.MockTextBox;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockVerticalRadioGroup;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
 
@@ -140,6 +141,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/phoneip.png", images.phonestatusComponent());
     bundledImages.put("images/phoneCall.png", images.phonecall());
     bundledImages.put("images/player.png", images.player());
+    bundledImages.put("images/radiobutton.png", images.radiobutton());
     bundledImages.put("images/soundEffect.png", images.soundeffect());
     bundledImages.put("images/soundRecorder.png", images.soundRecorder());
     bundledImages.put("images/speechRecognizer.png", images.speechRecognizer());
@@ -464,6 +466,8 @@ public final class SimpleComponentDescriptor {
       return new MockVerticalArrangement(editor);
     } else if (name.equals(MockScrollVerticalArrangement.TYPE)) {
       return new MockScrollVerticalArrangement(editor);
+    } else if (name.equals(MockVerticalRadioGroup.TYPE)) {
+      return new MockVerticalRadioGroup(editor);
     } else if (name.equals(MockTableArrangement.TYPE)) {
       return new MockTableArrangement(editor);
     } else if (name.equals(MockImageSprite.TYPE)) {

@@ -227,7 +227,7 @@ public interface Images extends Resources {
   ImageResource checkbox();
 
   /**
-   * Designer palette item: checkbox component
+   * Designer palette item: switch component
    */
   @Source("com/google/appinventor/images/switch.png")
   ImageResource toggleswitch();
@@ -497,6 +497,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/vertical.png")
   ImageResource vertical();
+
+  /**
+   * Designer palette item: vertical radio group component
+   */
+  @Source("com/google/appinventor/images/vertical.png")
+  ImageResource verticalRadioGroup();
 
   /**
    * Designer palette item: VotingComponent
