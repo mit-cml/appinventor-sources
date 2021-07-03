@@ -18,6 +18,7 @@ import java.util.List;
 /**
  * Mock RadioButton component.
  *
+ * @author thamihardik8@gmail.com (Modified setCheckedProperty for MockRadioGroup)
  */
 public final class MockRadioButton extends MockVisibleComponent {
 
@@ -25,9 +26,6 @@ public final class MockRadioButton extends MockVisibleComponent {
    * Component type name.
    */
   public static final String TYPE = "RadioButton";
-
-  // Property names
-  private static final String PROPERTY_NAME_GROUP = "Group";
 
   // GWT radioButton widget used to mock a Simple RadioButton
   private final RadioButton radioButtonWidget;
@@ -41,17 +39,20 @@ public final class MockRadioButton extends MockVisibleComponent {
     super(editor, TYPE, images.radiobutton());
 
     Random random = new Random();   
-    // Generates random integers 0 to 999999 
-    int x = random.nextInt(1000000);
-    String randomName = "RadioButton" + String.valueOf(x);
+    int x = random.nextInt(1000000000);
 
-    // Initialize mock radioButton UI
-
-    // Note : GWT RadioButton is not really a radiobutton! It's exactly like 
-    // a radiogroup when given the same randomName. Read it's docs!
-    // WHY CALL IT A RADIOBUTTON THEN !???
+    // Note: GWT RadioButton is not really a radiobutton! why call
+    // it a radiobutton then !??? It's exactly like a radiogroup
+    // when given the same group name. Read it's docs!
     
-    radioButtonWidget = new RadioButton(randomName);
+    radioButtonWidget = new RadioButton(String.valueOf(x)) {
+      @Override
+      public void onLoad() {
+        super.onLoad();
+        refreshForm();
+      }
+    };
+
     radioButtonWidget.setStylePrimaryName("ode-SimpleMockComponent");
     initComponent(radioButtonWidget);
   }
@@ -62,12 +63,15 @@ public final class MockRadioButton extends MockVisibleComponent {
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
   }
 
+  /*
+   * Returns the RadioButton's Checked Property.
+   */
   public Boolean isChecked() {
     return radioButtonWidget.getValue();
   }
 
   /*
-   * Sets the radioButton's BackgroundColor property to a new value.
+   * Sets the RadioButton's BackgroundColor Property to a new value.
    */
   private void setBackgroundColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
@@ -77,49 +81,49 @@ public final class MockRadioButton extends MockVisibleComponent {
   }
 
   /*
-   * Sets the radioButton's Enabled property to a new value.
+   * Sets the RadioButton's Enabled Property to a new value.
    */
   private void setEnabledProperty(String text) {
     MockComponentsUtil.setEnabled(this, text);
   }
 
   /*
-   * Sets the radioButton's FontBold property to a new value.
+   * Sets the RadioButton's FontBold Property to a new value.
    */
   private void setFontBoldProperty(String text) {
     MockComponentsUtil.setWidgetFontBold(radioButtonWidget, text);
   }
 
   /*
-   * Sets the radioButton's FontItalic property to a new value.
+   * Sets the RadioButton's FontItalic Property to a new value.
    */
   private void setFontItalicProperty(String text) {
     MockComponentsUtil.setWidgetFontItalic(radioButtonWidget, text);
   }
 
   /*
-   * Sets the radioButton's FontSize property to a new value.
+   * Sets the RadioButton's FontSize Property to a new value.
    */
   private void setFontSizeProperty(String text) {
     MockComponentsUtil.setWidgetFontSize(radioButtonWidget, text);
   }
 
   /*
-   * Sets the radioButton's FontTypeface property to a new value.
+   * Sets the RadioButton's FontTypeface Property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
     MockComponentsUtil.setWidgetFontTypeface(radioButtonWidget, text);
   }
 
   /*
-   * Sets the radioButton's Text property to a new value.
+   * Sets the RadioButton's Text Property to a new value.
    */
   private void setTextProperty(String text) {
     radioButtonWidget.setText(text);
   }
 
   /*
-   * Sets the radioButton's TextColor property to a new value.
+   * Sets the RadioButton's TextColor Property to a new value.
    */
   private void setTextColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
@@ -129,7 +133,10 @@ public final class MockRadioButton extends MockVisibleComponent {
   }
 
   /*
-   * Sets the radioButton's Checked property to a new value.
+   * Sets the RadioButton's Checked Property to a new value
+   * and if nested in a MockRadioGroup sets other RadioButton's
+   * in that MockRadioGroup to unchecked.
+   * 
    */
   private void setCheckedProperty(String text) {
     Boolean value = Boolean.parseBoolean(text);
@@ -141,7 +148,8 @@ public final class MockRadioButton extends MockVisibleComponent {
         for (MockComponent child : parent.getChildren()) {
           if (child instanceof MockRadioButton) {
             button = (MockRadioButton) child;
-            if (button != this && button.isChecked()){
+            if (button != this && button.isChecked()) {
+              consoleLog("2");
               changeCheckedInPropertyPanel(child, !value);
             }
           }
@@ -155,14 +163,24 @@ public final class MockRadioButton extends MockVisibleComponent {
     }
   }
 
+  /**
+   * Changes the Checked Property in Properties Panel for MockRadioButton.
+   * To be used only when component has CHECKED Property otherwise 
+   * removeProperty will throw an error.
+   * 
+   * @param child component whose value is being changed.
+   * @param value new value of checked property.
+   */
   private void changeCheckedInPropertyPanel(MockComponent child, Boolean value) {
     // Spellings for true and false values 
     String trueValue = "true", falseValue = "false";
 
     child.removeProperty(PROPERTY_NAME_CHECKED);
-    if (value){
-      child.addProperty(PROPERTY_NAME_CHECKED, trueValue, PROPERTY_NAME_CHECKED, 
-        new BooleanPropertyEditor(trueValue, falseValue));
+    if (value) {
+      // Currently, there is no need for true clause. 
+
+      // child.addProperty(PROPERTY_NAME_CHECKED, trueValue, PROPERTY_NAME_CHECKED, 
+      //  new BooleanPropertyEditor(trueValue, falseValue));
     } else {
       child.addProperty(PROPERTY_NAME_CHECKED, falseValue, PROPERTY_NAME_CHECKED, 
         new BooleanPropertyEditor(trueValue, falseValue));
@@ -197,6 +215,7 @@ public final class MockRadioButton extends MockVisibleComponent {
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
+      consoleLog("1");
       setCheckedProperty(newValue);
       refreshForm();
     }
