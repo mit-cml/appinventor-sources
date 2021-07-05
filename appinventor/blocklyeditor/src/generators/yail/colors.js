@@ -84,6 +84,22 @@ Blockly.Yail['color_make_color'] = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
+Blockly.Yail['color_make_color_string'] = function() {
+  var blankString = "#000000ff";
+  console.log(Blockly.Yail.valueToCode(this, 'COLORHEX', Blockly.Yail.ORDER_NONE));
+  var argument0 = Blockly.Yail.valueToCode(this, 'COLORHEX', Blockly.Yail.ORDER_NONE) || blankString;
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-color-string" + Blockly.Yail.YAIL_SPACER;
+  code += Blockly.Yail.YAIL_OPEN_COMBINATION
+      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
+      + argument0 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + "text"
+      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code += Blockly.Yail.YAIL_DOUBLE_QUOTE + "make-color-string"
+      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
 Blockly.Yail['color_split_color'] = function() {
   var argument0 = Blockly.Yail.valueToCode(this, 'COLOR', Blockly.Yail.ORDER_NONE) || -1;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "split-color" + Blockly.Yail.YAIL_SPACER;

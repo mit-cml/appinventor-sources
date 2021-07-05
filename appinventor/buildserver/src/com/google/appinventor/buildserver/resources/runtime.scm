@@ -2760,6 +2760,17 @@ Dictionary implementation.
                                     *color-green-position*)
      (bitwise-arithmetic-shift-left (bitwise-and blue *max-color-component*)
                                     *color-blue-position*))))
+(define (ret-hex color-string-fin)
+   (math-convert-hex-dec (string-append (substring color-string-fin 7 9) (substring color-string-fin 1 7))))
+
+(define (make-color-string color-string)
+   (cond
+       ((not (string=? (substring color-string 0 1) "#")) 4278190080)
+       ((= (string-length color-string) 7) (ret-hex (string-append color-string "ff" )))
+       ((= (string-length color-string) 9) (ret-hex color-string) )
+       ( else 4278190080 )
+   )
+)
 
 (define (split-color color)
   (let ((intcolor (make-exact-yail-integer color)))
