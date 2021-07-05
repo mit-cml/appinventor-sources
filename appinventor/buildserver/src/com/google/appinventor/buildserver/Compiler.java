@@ -955,6 +955,7 @@ public final class Compiler {
       BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(paths), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<paths xmlns:android=\"http://schemas.android.com/apk/res/android\">\n");
+      out.write("   <files-path name=\"internal_files\" path=\".\"/>\n");
       out.write("   <external-path name=\"external_files\" path=\".\"/>\n");
       out.write("</paths>\n");
       out.close();
