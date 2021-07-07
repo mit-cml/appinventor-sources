@@ -7,6 +7,7 @@ import com.google.appinventor.client.OdeMessages;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -18,6 +19,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import com.google.appinventor.client.explorer.project.Project;
+
+import java.util.Date;
 
 public class ListItem extends Composite {
   interface ListItemUiBinder extends UiBinder<FlowPanel, ListItem> {}
@@ -46,9 +49,15 @@ public class ListItem extends Composite {
 
   public ListItem(Project project, ItemSelectionChangeHandler changeHandler) {
     this();
+
+    DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
+
+    Date dateCreated = new Date(project.getDateCreated());
+    Date dateModified = new Date(project.getDateModified());
+
     nameLabel.setText(project.getProjectName());
-    dateModifiedLabel.setText("dateModified");
-    dateCreatedLabel.setText("dateCreated");
+    dateModifiedLabel.setText(dateTimeFormat.format(dateModified));
+    dateCreatedLabel.setText(dateTimeFormat.format(dateCreated));
     this.project = project;
     this.changeHandler = changeHandler;
   }
