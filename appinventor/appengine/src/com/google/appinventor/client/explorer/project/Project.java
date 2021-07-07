@@ -136,6 +136,23 @@ public final class Project {
   }
 
   /**
+   * Returns the date of when the project was last exported as an apk/aab/other.
+   *
+   * @return  date modified in milliseconds
+   */
+  public long getDateBuilt() {
+    return projectInfo.getDateBuilt();
+  }
+
+  /**
+   * Sets the date of when the project was last exported.
+   *
+   */
+  public void setDateBuilt(long date) {
+    projectInfo.setDateBuilt(date);
+  }
+
+  /**
    * Returns the project specific settings, or null if the settings haven't
    * been loaded.
    *

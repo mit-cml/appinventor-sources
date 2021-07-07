@@ -503,6 +503,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           pd.id = null;  // let Objectify auto-generate the project id
           pd.dateCreated = date;
           pd.dateModified = date;
+          pd.dateBuilt = 0;
           pd.history = project.getProjectHistory();
           pd.name = project.getProjectName();
           pd.settings = projectSettings;
@@ -806,7 +807,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     } else {
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
-          projectData.t.dateModified, projectData.t.projectMovedToTrashFlag);
+          projectData.t.dateModified, projectData.t.dateBuilt, projectData.t.projectMovedToTrashFlag);
     }
   }
 
@@ -838,7 +839,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       for (ProjectData projectData : projectDatas.t.values()) {
         uProjects.add(new UserProject(projectData.id, projectData.name,
             projectData.type, projectData.dateCreated,
-            projectData.dateModified, projectData.projectMovedToTrashFlag));
+            projectData.dateModified, projectData.dateBuilt, projectData.projectMovedToTrashFlag));
       }
       return uProjects;
     }
