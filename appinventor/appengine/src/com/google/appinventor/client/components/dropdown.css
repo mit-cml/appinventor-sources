@@ -1,0 +1,26 @@
+.buttonIcon {
+  color: c-text-button;
+  font-size: 18px;
+}
+
+.dropdown {
+  padding: 0;
+  margin: 0;
+  border-radius: l-border-radius-md;
+  border: 1px solid #DDD;
+}
+
+.dropdown > div > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownItem {
+  margin: 0;
+  padding: 10px 60px;
+  text-align: center;
+}
+
+.dropdownItemWithDivider {
+  border-bottom: 1px solid #DDD;
+}
