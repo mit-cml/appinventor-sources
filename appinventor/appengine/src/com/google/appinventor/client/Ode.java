@@ -990,7 +990,7 @@ public class Ode implements EntryPoint {
 
     Box palletebox = PaletteBox.getPaletteBox();
     palletebox.setWidth("240px");
-    pallettebox.addStyleName("pallettebox");
+    //pallettebox.addStyleName("pallettebox");
     workColumns.add(palletebox);
 
     Box viewerbox = ViewerBox.getViewerBox();
@@ -1010,7 +1010,7 @@ public class Ode implements EntryPoint {
 
     Box propertiesbox = PropertiesBox.getPropertiesBox();
     propertiesbox.setWidth("280px");
-    propertiesbox.addStyleName("propertyboxscrollable");
+    //propertiesbox.addStyleName("propertyboxscrollable");
     workColumns.add(propertiesbox);
     //switchToBlocksButton.setHeight("650px");
     //workColumns.add(switchToBlocksButton);
