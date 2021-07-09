@@ -347,7 +347,7 @@
     "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS": "포함",
     "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_TEXT": "텍스트",
     "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE": "조각",
-    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "%1 텍스트 %2 %3 %4",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "포함하는가 텍스트 %1 조각 %2",
     "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP": "텍스트에 해당 조각이 있는지 검사해요.",
     "Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT": "텍스트",
     "Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT": "구분자",
