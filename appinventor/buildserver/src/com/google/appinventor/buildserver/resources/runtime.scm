@@ -103,6 +103,7 @@
          (SimplePropertyUtil:copyComponentProperties existing-component component-to-add))))))
 
 (define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
+(define-alias TypeUtil <com.google.appinventor.components.runtime.util.TypeUtil>)
 
 (define (call-Initialize-of-components . component-names)
   ;; Do any inherent/implied initializations
@@ -1374,14 +1375,18 @@
   (instance? arg com.google.appinventor.components.common.OptionList))
 
 (define (coerce-to-enum arg type)
+  (android-log "coerce-to-enum")
   (if (and (enum? arg)
         ;; We have to trick the Kawa compiler into not open-coding "instance?"
         ;; or else we get a ClassCastException here.
         ;; This check is necessary to make sure we treat each enum type separately.
         ;; Eg a HorizontalAlignment is different from a VerticalAlignment.
         (apply instance? (list arg (string->symbol (string-replace-all (symbol->string type) "Enum" "")))))
-      arg 
-      *non-coercible-value*))
+      arg
+      (let ((coerced (TypeUtil:castToEnum arg type)))
+        (if (eq? coerced #!null)
+            *non-coercible-value*
+            coerced))))
 
 ;;; We can coerce *the-null-value* to a string for printing in error messages
 ;;; but we don't consider it to be a Yail text for use in
