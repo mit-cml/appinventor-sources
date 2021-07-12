@@ -147,5 +147,9 @@
     "Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM": "प्रत्येकको लागी",
     "Blockly.Msg.LANG_CONTROLS_FOR_TOOLTIP": "सुरू नम्बरबाट अन्त्य संख्यामा गणना गर्नुहोस्।\nप्रत्येक गणनाको लागि, वर्तमान गणना संख्या सेट गर्नुहोस् \nचल '% 1', र त्यसपछि केहि कथनहरू गर्नुहोस्।",
     "Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP": "सुरूबाट अन्त सम्म दायरामा प्रत्येक संख्यात्मक मानको लागि 'do' सेक्सनमा ब्लकहरू चालु गर्दछ, प्रत्येक पटक मानमा चरणबद्ध। हालको मानको सन्दर्भमा दिइएको चरको नाम प्रयोग गर्नुहोस्।",
-    "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX": " दायरामा"
+    "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX": " दायरामा",
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP": "यसले अनुप्रयोगको नयाँ स्क्रीन खोल्छ",
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME": "स्क्रिनको नाम",
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT": "स्क्रीन खोल्नुहोस्",
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE": "अर्को स्क्रिन खोल्नुहोस्"
 }
