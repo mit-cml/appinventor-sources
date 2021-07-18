@@ -151,6 +151,7 @@ public final class MockRadioButton extends MockVisibleComponent {
             if (button != this && button.isChecked()) {
               consoleLog("2");
               changeCheckedInPropertyPanel(child, !value);
+              break;
             }
           }
         }

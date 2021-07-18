@@ -47,9 +47,9 @@ public class MockRadioGroup extends MockContainer {
   private YoungAndroidHorizontalAlignmentChoicePropertyEditor myHAlignmentPropertyEditor;
   private YoungAndroidVerticalAlignmentChoicePropertyEditor myVAlignmentPropertyEditor;
 
+  private MockRadioButton checkedRadioButton;
   private boolean scrollAble;
   private int orientation;
-  private int mCheckedId;
 
   /**
    * Creates a new MockRadioGroup component.
@@ -67,7 +67,8 @@ public class MockRadioGroup extends MockContainer {
     // future problems if we ever have threads creating arrangements in parallel.
     myLayout = MockRadioGroupHelper.getLayout();
     scrollAble = scrollable;
-    mCheckedId = -1;
+    checkedRadioButton = null;
+    
     this.orientation = orientation;
 
     if (orientation != ComponentConstants.LAYOUT_ORIENTATION_VERTICAL &&
