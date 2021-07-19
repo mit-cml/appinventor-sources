@@ -13,7 +13,7 @@ Blockly.Yail['helpers_dropdown'] = function() {
   });
 
   // See https://www.gnu.org/software/kawa/Enumerations.html
-  var enumValue = optionList.className + ":" + enumConstantName;
+  var enumValue = '(static-field ' + optionList.className + ' "' + enumConstantName + '")';
 
   var concreteValue = option.value;
   if (optionList.underlyingType == "java.lang.String") {

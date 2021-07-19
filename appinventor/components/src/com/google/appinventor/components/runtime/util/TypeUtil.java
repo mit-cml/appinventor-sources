@@ -46,6 +46,11 @@ public final class TypeUtil {
     String classNameStr = stripEnumSuffix(className.getName());
     try {
       Class<?> clazz = Class.forName(classNameStr);
+      if (!OptionList.class.isAssignableFrom(clazz)) {
+        // In theory the code generator should never do this, but just in case...
+        throw new IllegalArgumentException(classNameStr
+            + " does not identify an OptionList type.");
+      }
       for (Method m : clazz.getMethods()) {
         if ("fromUnderlyingValue".equals(m.getName())) {
           return (OptionList<T>) m.invoke(clazz, value);
