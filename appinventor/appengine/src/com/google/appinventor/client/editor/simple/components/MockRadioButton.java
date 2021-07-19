@@ -141,10 +141,35 @@ public final class MockRadioButton extends MockVisibleComponent {
   private void setCheckedProperty(String text) {
     Boolean value = Boolean.parseBoolean(text);
     MockContainer parent = getContainer();
-    MockRadioButton button;
+    MockRadioGroup radioGroupParent;
     
     try {
-      if (value && parent instanceof MockRadioGroup) {
+      if (parent instanceof MockRadioGroup) {
+        radioGroupParent = (MockRadioGroup) parent;
+        MockRadioButton checkedbutton = radioGroupParent.getCheckedRadioButton();
+        if (checkedbutton != null) {
+          consoleLog("not null");
+          if (checkedbutton != this) {
+            consoleLog("not same");
+            if (value) {
+              consoleLog("value is true");
+              this.changeCheckedInPropertyPanel(checkedbutton, !value);
+              radioGroupParent.setCheckedRadioButton(this);
+            }
+          } else {
+            consoleLog("same");
+            if (!value) {
+              radioGroupParent.setCheckedRadioButton(null);
+            }
+          }
+        } else {
+          consoleLog("null");
+          if (value) {
+            radioGroupParent.setCheckedRadioButton(this);
+          }
+        }
+      }
+      /**if (value && parent instanceof MockRadioGroup) {
         for (MockComponent child : parent.getChildren()) {
           if (child instanceof MockRadioButton) {
             button = (MockRadioButton) child;
@@ -155,12 +180,17 @@ public final class MockRadioButton extends MockVisibleComponent {
             }
           }
         }
-      }
+      }**/
     } catch (JavaScriptException e) {
       consoleError(e);
-      //throw e;
+      // throw e;
     } finally {
       radioButtonWidget.setValue(value);
+      /**if (value) {
+        radioGroupParent.setCheckedRadioButton(this);
+      } else {
+        radioGroupParent.setCheckedRadioButton(null);
+      }**/
     }
   }
 
@@ -172,7 +202,7 @@ public final class MockRadioButton extends MockVisibleComponent {
    * @param child component whose value is being changed.
    * @param value new value of checked property.
    */
-  private void changeCheckedInPropertyPanel(MockComponent child, Boolean value) {
+  private void changeCheckedInPropertyPanel(MockRadioButton child, Boolean value) {
     // Spellings for true and false values 
     String trueValue = "true", falseValue = "false";
 

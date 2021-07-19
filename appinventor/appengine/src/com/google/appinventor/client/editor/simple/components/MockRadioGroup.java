@@ -65,9 +65,9 @@ public class MockRadioGroup extends MockContainer {
     // Note(hal): There better not be any calls to MockRadioGroupHelper before the
     // next instruction.  Note that the Helper methods are synchronized to avoid possible
     // future problems if we ever have threads creating arrangements in parallel.
-    myLayout = MockRadioGroupHelper.getLayout();
-    scrollAble = scrollable;
-    checkedRadioButton = null;
+    this.myLayout = MockRadioGroupHelper.getLayout();
+    this.scrollAble = scrollable;
+    this.checkedRadioButton = null;
     
     this.orientation = orientation;
 
@@ -127,6 +127,20 @@ public class MockRadioGroup extends MockContainer {
       myVAlignmentPropertyEditor.enable();
       myHAlignmentPropertyEditor.enable();
     }
+  }
+
+  /**
+  * Sets the MockRadioButton that is checked in this MockRadioGroup.
+  */
+  public void setCheckedRadioButton(MockRadioButton button){
+    this.checkedRadioButton = button;
+  }
+
+  /**
+  * Returns the MockRadioButton that is checked in this MockRadioGroup.
+  */
+  public MockRadioButton getCheckedRadioButton(){
+    return this.checkedRadioButton;
   }
 
   /**
