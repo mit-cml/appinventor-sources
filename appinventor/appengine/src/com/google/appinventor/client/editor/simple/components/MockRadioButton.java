@@ -141,56 +141,28 @@ public final class MockRadioButton extends MockVisibleComponent {
   private void setCheckedProperty(String text) {
     Boolean value = Boolean.parseBoolean(text);
     MockContainer parent = getContainer();
-    MockRadioGroup radioGroupParent;
+    MockRadioGroup radioGroupParent = null;
     
     try {
       if (parent instanceof MockRadioGroup) {
         radioGroupParent = (MockRadioGroup) parent;
         MockRadioButton checkedbutton = radioGroupParent.getCheckedRadioButton();
-        if (checkedbutton != null) {
-          consoleLog("not null");
-          if (checkedbutton != this) {
-            consoleLog("not same");
-            if (value) {
-              consoleLog("value is true");
-              this.changeCheckedInPropertyPanel(checkedbutton, !value);
-              radioGroupParent.setCheckedRadioButton(this);
-            }
-          } else {
-            consoleLog("same");
-            if (!value) {
-              radioGroupParent.setCheckedRadioButton(null);
-            }
-          }
-        } else {
-          consoleLog("null");
-          if (value) {
-            radioGroupParent.setCheckedRadioButton(this);
-          }
+        if (checkedbutton != null && checkedbutton != this && value) {
+          this.changeCheckedInPropertyPanel(checkedbutton, !value);
         }
       }
-      /**if (value && parent instanceof MockRadioGroup) {
-        for (MockComponent child : parent.getChildren()) {
-          if (child instanceof MockRadioButton) {
-            button = (MockRadioButton) child;
-            if (button != this && button.isChecked()) {
-              consoleLog("2");
-              changeCheckedInPropertyPanel(child, !value);
-              break;
-            }
-          }
-        }
-      }**/
-    } catch (JavaScriptException e) {
-      consoleError(e);
-      // throw e;
+    } catch (JavaScriptException exception) {
+      consoleError(exception);
+      // throw exception;
     } finally {
       radioButtonWidget.setValue(value);
-      /**if (value) {
-        radioGroupParent.setCheckedRadioButton(this);
-      } else {
-        radioGroupParent.setCheckedRadioButton(null);
-      }**/
+      if (radioGroupParent != null){
+        if (value) {
+          radioGroupParent.setCheckedRadioButton(this);
+        } else {
+          radioGroupParent.setCheckedRadioButton(null);
+        }
+      }
     }
   }
 
@@ -246,7 +218,6 @@ public final class MockRadioButton extends MockVisibleComponent {
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
-      consoleLog("1");
       setCheckedProperty(newValue);
       refreshForm();
     }
