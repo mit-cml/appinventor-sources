@@ -891,6 +891,17 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // AccessMode was added.
+      // LegacyMode was removed.
+      // If LegacyMode was set, AccessMode should be set to "2", which is Legacy.
+      if (componentProperties.containsKey("LegacyMode")) {
+        componentProperties.remove("LegacyMode");
+        // LegacyMode maps to AccessMode 2 (Legacy)
+        componentProperties.put("DefaultScope", new ClientJsonString("Legacy"));
+      }
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -1101,6 +1112,10 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       // Adds Permission dropdown block.
       srcCompVersion = 29;
+    }
+    if (srcCompVersion < 30) {
+      // The DefaultFileScope property was added.
+      srcCompVersion = 30;
     }
 
     return srcCompVersion;

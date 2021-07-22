@@ -48,6 +48,7 @@ public class YoungAndroidSettingsBuilder {
   private String primaryColor = "0";
   private String primaryColorDark = "0";
   private String accentColor = "0";
+  private String defaultFileScope = "App";
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -86,6 +87,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK));
     accentColor = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
+    defaultFileScope = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE));
   }
 
   /**
@@ -110,6 +113,7 @@ public class YoungAndroidSettingsBuilder {
     primaryColor = properties.getProperty("color.primary", "");
     primaryColorDark = properties.getProperty("color.primary.dark", "");
     accentColor = properties.getProperty("color.accent", "");
+    defaultFileScope = properties.getProperty("defaultfilescope", "");
   }
 
   public YoungAndroidSettingsBuilder setProjectName(String projectName) {
@@ -192,6 +196,11 @@ public class YoungAndroidSettingsBuilder {
     return this;
   }
 
+  public YoungAndroidSettingsBuilder setDefaultFileScope(String defaultFileScope) {
+    this.defaultFileScope = defaultFileScope;
+    return this;
+  }
+
   /**
    * Convert the internal settings into a JSON structure.
    *
@@ -213,6 +222,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR, primaryColor);
     object.put(YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, primaryColorDark);
     object.put(YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, accentColor);
+    object.put(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
     JSONObject wrapper = new JSONObject();
     wrapper.put(PROJECT_YOUNG_ANDROID_SETTINGS, object);
     return wrapper.toString();
@@ -244,6 +254,7 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, "color.primary", primaryColor);
     addPropertyIfSet(result, "color.primary.dark", primaryColorDark);
     addPropertyIfSet(result, "color.accent", accentColor);
+    addPropertyIfSet(result, "defaultfilescope", defaultFileScope);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       result.store(out, "");
@@ -287,6 +298,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.primaryColor.equals(primaryColor);
       result &= other.primaryColorDark.equals(primaryColorDark);
       result &= other.accentColor.equals(accentColor);
+      result &= other.defaultFileScope.equals(defaultFileScope);
       return result;
     }
     return false;

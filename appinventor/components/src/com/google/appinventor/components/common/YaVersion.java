@@ -549,6 +549,8 @@ public class YaVersion {
   // - VIDEOPLAYER_COMPONENT_VERSION incremented to 7
   // For YOUNG_ANDROID_VERSION 213 (ListView layouts)
   // - LISTVIEW_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 214:
+  // - FILE_COMPONENT_VERSION was incremented to 4
   public static final int YOUNG_ANDROID_VERSION = 213;
 
   // ............................... Blocks Language Version Number ...............................
@@ -874,7 +876,12 @@ public class YaVersion {
   // - The AfterFileSaved event was added.
   // For FILE_COMPONENT_VERSION 3:
   // - The LegacyMode property was added.
-  public static final int FILE_COMPONENT_VERSION = 3;
+  // For FILE_COMPONENT_VERSION 4:
+  // - The DefaultScope property was added.
+  // - The ReadPermission property was added.
+  // - The WritePermission property was added.
+  // - The LegacyMode property was removed. Use DefaultScope instead.
+  public static final int FILE_COMPONENT_VERSION = 4;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -946,7 +953,9 @@ public class YaVersion {
   // - Adds dropdown block for ScreenOrientation.
   // - Assets helper block was added.
   // - Adds Permission dropdown block.
-  public static final int FORM_COMPONENT_VERSION = 29;
+  // For FORM_COMPONENT_VERSION 30:
+  // - Add DefaultFileScope designer property.
+  public static final int FORM_COMPONENT_VERSION = 30;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

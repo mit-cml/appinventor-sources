@@ -1690,9 +1690,6 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       return saveFile(file, format, "SaveAs");
     } catch (PermissionException e) {
       container.$form().dispatchPermissionDeniedEvent(this, "SaveAs", e);
-    } catch (IOException e) {
-      container.$form().dispatchErrorOccurredEvent(this, "SaveAs",
-          ErrorMessages.ERROR_MEDIA_FILE_ERROR, e.getMessage());
     } catch (FileUtil.FileException e) {
       container.$form().dispatchErrorOccurredEvent(this, "SaveAs",
           e.getErrorMessageNumber());

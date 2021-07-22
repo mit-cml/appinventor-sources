@@ -77,6 +77,11 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_COMPONENT = "component";
 
   /**
+   * File scope constants.
+   */
+  public static final String PROPERTY_TYPE_FILESCOPE = "file_scope";
+
+  /**
    * Floating-point values.
    * @see com.google.appinventor.client.widgets.properties.FloatPropertyEditor
    */
