@@ -562,6 +562,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void SelectionColor(int argb) {
     selectionColor = argb;
+    setAdapterData();
   }
 
   /**
