@@ -1449,7 +1449,7 @@
    ((string? arg) (coerce-to-string arg))
    ((enum? arg) arg)
    ((instance? arg com.google.appinventor.components.runtime.Component) arg)
-    (else *non-coercible-value*)))
+   (else *non-coercible-value*)))
 
 (define-syntax use-json-format
   (syntax-rules ()
@@ -2575,8 +2575,6 @@ Dictionary implementation.
   (*:remove (as YailDictionary yail-dictionary) key))
 
 (define (yail-dictionary-lookup key yail-dictionary default)
-  (android-log
-   (format #f "Dictionary lookup key is  ~A and table is ~A" key yail-dictionary))
   (let ((result
     (cond ((instance? yail-dictionary YailList)
             (yail-alist-lookup key yail-dictionary default))
@@ -2615,8 +2613,6 @@ Dictionary implementation.
   (*:size (as YailDictionary yail-dictionary)))
 
 (define (yail-dictionary-alist-to-dict alist)
-  (android-log
-   (format #f "List alist table is ~A" alist))
   (let loop ((pairs-to-check (yail-list-contents alist)))
     (cond ((null? pairs-to-check) "The list of pairs has a null pair")
           ((not (pair-ok? (car pairs-to-check)))
