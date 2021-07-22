@@ -40,7 +40,11 @@ Blockly.Yail.YAIL_BEGIN = "(begin ";
 // foreach macro, forrange and while macros
 Blockly.Yail.YAIL_BREAK = "*yail-break*";
 Blockly.Yail.YAIL_CALL_COMPONENT_METHOD = "(call-component-method ";
+Blockly.Yail.YAIL_CALL_COMPONENT_METHOD_BLOCKING = "(call-component-method-with-blocking-continuation ";
+Blockly.Yail.YAIL_CALL_COMPONENT_METHOD_CONTINUATION = "(call-component-method-with-continuation ";
 Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD = "(call-component-type-method ";
+Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD_BLOCKING = "(call-component-type-method-with-blocking-continuation ";
+Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD_CONTINUATION = "(call-component-type-method-with-continuation ";
 Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE = "(call-yail-primitive ";
 Blockly.Yail.YAIL_CLEAR_FORM = "(clear-current-form)";
 // The lines below are complicated because we want to support versions of the

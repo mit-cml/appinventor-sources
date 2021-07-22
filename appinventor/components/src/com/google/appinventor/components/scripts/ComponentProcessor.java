@@ -79,10 +79,19 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ErrorType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.NoType;
+import javax.lang.model.type.NullType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.UnionType;
+import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.AbstractTypeVisitor7;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor7;
 import javax.lang.model.util.Types;
@@ -239,7 +248,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   /**
    * Represents a parameter consisting of a name and a type.
    */
-  protected final class Parameter implements Cloneable {
+  protected class Parameter implements Cloneable {
     /**
      * The parameter name
      */
@@ -300,6 +309,78 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       Parameter param = new Parameter(name, type, color);
       param.helper = helper;
       return param;
+    }
+  }
+
+  protected class Continuation extends Parameter {
+    protected final TypeMirror underlyingType;
+
+    protected Continuation(String name, final TypeMirror type) {
+      this(name, type, false);
+    }
+
+    protected Continuation(String name, TypeMirror type, boolean color) {
+      super(name, type, color);
+      underlyingType = type.accept(new AbstractTypeVisitor7<TypeMirror, Void>() {
+        @Override
+        public TypeMirror visitPrimitive(PrimitiveType t, Void unused) {
+          return null;
+        }
+
+        @Override
+        public TypeMirror visitNull(NullType t, Void unused) {
+          return null;
+        }
+
+        @Override
+        public TypeMirror visitArray(ArrayType t, Void unused) {
+          return null;
+        }
+
+        @Override
+        public TypeMirror visitDeclared(DeclaredType t, Void unused) {
+          List<? extends TypeMirror> arglist = t.getTypeArguments();
+          if (arglist.isEmpty()) {
+            messager.printMessage(Kind.ERROR, "Continuation should be specialized with type.",
+                t.asElement());
+          }
+          return arglist.get(0);
+        }
+
+        @Override
+        public TypeMirror visitError(ErrorType t, Void unused) {
+          return null;
+        }
+
+        @Override
+        public TypeMirror visitTypeVariable(TypeVariable t, Void unused) {
+          return null;
+        }
+
+        @Override
+        public TypeMirror visitWildcard(WildcardType t, Void unused) {
+          return null;
+        }
+
+        @Override
+        public TypeMirror visitExecutable(ExecutableType t, Void unused) {
+          return null;
+        }
+
+        @Override
+        public TypeMirror visitNoType(NoType t, Void unused) {
+          return null;
+        }
+
+        @Override
+        public TypeMirror visitUnion(UnionType t, Void unused) {
+          return null;
+        }
+      }, null);
+    }
+
+    protected String getContinuationType() {
+      return javaTypeToYailType(underlyingType, true);
     }
   }
 
@@ -539,6 +620,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     private boolean color;
 
+    /**
+     * Indicate whether the method's return should be re-written into a continuation.
+     */
+    private boolean continuation;
+
     protected Method(String name, String description, String longDescription, boolean userVisible,
         boolean deprecated) {
       super(name, description, longDescription, "Method", userVisible, deprecated);
@@ -560,7 +646,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * @return the method's Yail return type.
      */
     protected String getYailReturnType() {
-      return javaTypeToYailType(returnType);
+      return javaTypeToYailType(returnType, continuation);
     }
 
     /**
@@ -580,6 +666,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected boolean isColor() {
       return color;
+    }
+
+    protected boolean isContinuation() {
+      return continuation;
     }
 
     @Override
@@ -2070,10 +2160,19 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * @return the parameter constructed from the variable element.
    */
   private Parameter varElemToParameter(VariableElement varElem) {
-    Parameter param = new Parameter(varElem.getSimpleName().toString(), varElem.asType(),
-        varElem.getAnnotation(IsColor.class) != null);
-    param.helper = elementToHelperKey(varElem, varElem.asType());
-    return param;
+    TypeMirror type = varElem.asType();
+    if (type instanceof DeclaredType && ((DeclaredType) type).asElement().toString()
+        .equals("com.google.appinventor.components.runtime.util.Continuation")) {
+      Continuation continuation = new Continuation(varElem.getSimpleName().toString(), type,
+          varElem.getAnnotation(IsColor.class) != null);
+      continuation.helper = elementToHelperKey(varElem, varElem.asType());
+      return continuation;
+    } else {
+      Parameter param = new Parameter(varElem.getSimpleName().toString(), type,
+          varElem.getAnnotation(IsColor.class) != null);
+      param.helper = elementToHelperKey(varElem, varElem.asType());
+      return param;
+    }
   }
 
   // Transform an @ActivityElement into an XML element String for use later
@@ -2474,8 +2573,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
   }
 
-  private void processMethods(ComponentInfo componentInfo,
-                                Element componentElement) {
+  private void processMethods(ComponentInfo componentInfo, Element componentElement) {
     for (Element element : componentElement.getEnclosedElements()) {
       if (!isPublicMethod(element)) {
         continue;
@@ -2520,19 +2618,39 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         ExecutableElement e = (ExecutableElement) element;
 
         // Extract the parameters.
+        Continuation continuation = null;
         for (VariableElement ve : e.getParameters()) {
-          method.addParameter(varElemToParameter(ve));
+          Parameter p = varElemToParameter(ve);
+          if (p instanceof Continuation) {
+            if (continuation != null) {
+              messager.printMessage(Kind.ERROR, "A method can have at most one continuation",
+                  element);
+            } else {
+              continuation = (Continuation) p;
+            }
+          } else {
+            method.addParameter(p);
+          }
           updateComponentTypes(ve.asType());
         }
 
         // Extract the return type.
         if (e.getReturnType().getKind() != TypeKind.VOID) {
+          if (continuation != null) {
+            messager.printMessage(Kind.ERROR, "Methods with a continuation must be void.",
+                element);
+          }
           method.returnType = e.getReturnType();
           method.returnHelperKey = elementToHelperKey(e, method.returnType);
           if (e.getAnnotation(IsColor.class) != null) {
             method.color = true;
           }
           updateComponentTypes(e.getReturnType());
+        } else if (continuation != null) {
+          method.continuation = true;
+          if (!((DeclaredType) continuation.underlyingType).toString().equals("java.lang.Void")) {
+            method.returnType = continuation.underlyingType;
+          }
         }
       }
     }
@@ -2615,9 +2733,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    *         legal return values
    */
   protected final String javaTypeToYailType(TypeMirror type) {
-    if (BOXED_TYPES.containsKey(type)) {
+    return javaTypeToYailType(type, false);
+  }
+
+  protected final String javaTypeToYailType(TypeMirror type, boolean allowBoxed) {
+    if (!allowBoxed && BOXED_TYPES.containsKey(type.toString())) {
       throw new IllegalArgumentException(String.format(BOXED_TYPE_ERROR, type,
-          BOXED_TYPES.get(type)));
+          BOXED_TYPES.get(type.toString())));
+    } else if (allowBoxed && BOXED_TYPES.containsKey(type.toString())) {
+      return BOXED_TYPES.get(type.toString());
     }
 
     // Handle enums
@@ -2665,6 +2789,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     if (typeString.equals("java.lang.Object")) {
       return "any";
+    }
+
+    if (typeString.startsWith("com.google.appinventor.components.runtime.util.Continuation")) {
+      return "continuation";
     }
 
     if (typeString.equals("com.google.appinventor.components.runtime.Component")) {
