@@ -60,44 +60,6 @@ public class MediaUtil {
   // tempFileMap maps cached media (assets, etc) to their respective temp files.
   private static final Map<String, File> tempFileMap = new HashMap<String, File>();
 
-  // this class is used by getBitmapDrawable so it can call the asynchronous version
-  // (getBitMapDrawableAsync) and await the result (blocking the UI Thread :-()
-  private static class Synchronizer<T> {
-    private volatile boolean finished = false;
-    private T result;
-    private String error;
-
-    public synchronized void waitfor() {
-      while (!finished) {
-        try {
-          wait();
-        } catch (InterruptedException e) {
-        }
-      }
-    }
-
-    public synchronized void wakeup(T result) {
-      finished = true;
-      this.result = result;
-      notifyAll();
-    }
-
-    public synchronized void error(String error) {
-      finished = true;
-      this.error = error;
-      notifyAll();
-    }
-
-    public T getResult() {
-      return result;
-    }
-
-    public String getError() {
-      return error;
-    }
-
-  }
-
   private MediaUtil() {
   }
 
@@ -422,7 +384,7 @@ public class MediaUtil {
     if (mediaPath == null || mediaPath.length() == 0) {
       return null;
     }
-    final Synchronizer syncer = new Synchronizer<BitmapDrawable>();
+    final Synchronizer<BitmapDrawable> syncer = new Synchronizer<>();
     final AsyncCallbackPair<BitmapDrawable> continuation = new AsyncCallbackPair<BitmapDrawable>() {
         @Override
         public void onFailure(String message) {
@@ -435,7 +397,7 @@ public class MediaUtil {
       };
     getBitmapDrawableAsync(form, mediaPath, continuation);
     syncer.waitfor();
-    BitmapDrawable result = (BitmapDrawable) syncer.getResult();
+    BitmapDrawable result = syncer.getResult();
     if (result == null) {
       String error = syncer.getError();
       if (error.startsWith("PERMISSION_DENIED:")) {
