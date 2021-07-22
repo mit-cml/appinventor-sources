@@ -4,7 +4,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
  * @license
- * @fileoverview Dictionaries blocks for Blockly, modified for MIT App Inventor.
+ * @fileoverview Dictionaries blocks for 1lockly, modified for MIT App Inventor.
  * @author data1013@mit.edu (Danny Tang)
  */
 
@@ -158,7 +158,8 @@ Blockly.Blocks['dictionaries_create_with'] = {
       { translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TITLE,
         mutatorAttributes: { items: 2 } },
       { translatedName: Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE,
-        mutatorAttributes: { items: 0 } }]
+        mutatorAttributes: { items: 0 } }],
+  errors: [{name: 'buildDuplicateDictKeysMap'}]
 };
 
 Blockly.Blocks['dictionaries_mutator_pair'] = {
@@ -189,7 +190,9 @@ Blockly.Blocks['pair'] = {
     this.setTooltip(Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP);
     this.setInputsInline(true);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE }],
+  //add a warning here. 
+  errors: [{name: 'checkIfIAmADuplicateKey'}]
 };
 
 Blockly.Blocks['dictionaries_lookup'] = {

@@ -5,6 +5,7 @@
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
+	"Blockly.Msg.DUPLICATE_KEY_BLOCK_WARNINGS": "This is a duplicate key - the current value has been overwritten ",
 	"Blockly.Msg.UNDO": "Undo",
 	"Blockly.Msg.REDO": "Redo",
 	"Blockly.Msg.CLEAN_UP": "Clean up Blocks",
@@ -1242,5 +1243,5 @@
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL": "",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_LONGEST_STRING_FIRST": "/reference/blocks/text.html#replaceallmappingslongeststring",
 	"Blockly.Msg.LANG_MATH_NUMBER_RADIX_HELPURL": "/reference/blocks/math.html#number-radix",
-	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL": "/reference/blocks/control.html#foreachdict",
+	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL": "/reference/blocks/control.html#foreachdict"
 }
