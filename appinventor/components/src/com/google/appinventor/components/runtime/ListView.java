@@ -58,9 +58,10 @@ import java.util.List;
  */
 
 @DesignerComponent(version = YaVersion.LISTVIEW_COMPONENT_VERSION,
-    description = "<p>This is a visible component that displays a list of text elements." +
-        " <br> The list can be set using the ElementsFromString property" +
-        " or using the Elements block in the blocks editor. </p>",
+    description = "<p>This is a visible component that displays a list of text and image elements.</p>" +
+        " <p>Simple lists of strings may be set using the ElementsFromString property." +
+        " More complex lists of elements containing multiple strings and/or images can be created using " +
+        "the ListData and ListViewLayout properties. </p>",
     category = ComponentCategory.USERINTERFACE,
     nonVisible = false,
     iconName = "images/listView.png")
@@ -268,7 +269,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    *
    * @param itemsList a YailList containing the strings to be added to the ListView
    */
-  @SimpleProperty(description = "List of elements to show in the ListView. Depending on the ListView, this may be a list of strings or a list of 3-element sub-lists containing Text, Description, and Image file name of a list with layout.",
+  @SimpleProperty(description = "List of elements to show in the ListView. Depending on the ListView, this may be a list of strings or a list of 3-element sub-lists containing Text, Description, and Image file name.",
           category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
     dictItems.clear();
