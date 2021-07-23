@@ -73,7 +73,6 @@ public class ImageSprite extends Sprite {
   private String picturePath = "";  // Picture property
   private boolean rotates;
 
-
   /**
    * Constructor for ImageSprite.
    *
@@ -304,6 +303,22 @@ public class ImageSprite extends Sprite {
           defaultValue = DEFAULT_V + "")
   @SimpleProperty
   public void OriginY(double v) {
+    super.V(v);
+  }
+
+  /**
+   * Mark the origin of %type% using a draggable marker.
+   * @param originCoordinates The unit coordinates of the origin
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ORIGIN,
+          defaultValue = DEFAULT_ORIGIN)
+  @SimpleProperty(description = "Mark the origin of the image sprite using a draggable marker")
+  public void MarkOrigin(String originCoordinates) {
+    // parse u and v with originCoordinates interpreted in "(u, v)" format
+    double u = Double.parseDouble(originCoordinates.substring(1, originCoordinates.indexOf(",")));
+    double v = Double.parseDouble(originCoordinates.substring(
+            originCoordinates.indexOf(",") + 2, originCoordinates.length() - 1));
+    super.U(u);
     super.V(v);
   }
 

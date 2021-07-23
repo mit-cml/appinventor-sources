@@ -49,6 +49,7 @@ public abstract class Sprite extends VisibleComponent
   protected static final boolean DEFAULT_ORIGIN_AT_CENTER = false;
   protected static final double DEFAULT_U = 0.0;
   protected static final double DEFAULT_V = 0.0;
+  protected static final String DEFAULT_ORIGIN = "(0.0, 0.0)";
 
   protected final Canvas canvas;              // enclosing Canvas
   private final TimerInternal timerInternal;  // timer to control movement

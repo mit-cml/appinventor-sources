@@ -371,6 +371,9 @@ A 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react to to
  `Interval` is 50 and the [`Speed`](#ImageSprite.Speed) is 10, then the `ImageSprite` will move 10 pixels
  every 50 milliseconds.
 
+{:id="ImageSprite.MarkOrigin" .text .wo} *MarkOrigin*
+: Mark the origin of ImageSprite using a draggable marker.
+
 {:id="ImageSprite.OriginX" .number} *OriginX*
 : Horizontal unit coordinate of the origin with respect to left edge. Permitted values in [0, 1].
  A value of 0.0 means the origin lies on the left edge, 0.5 means the origin lies in the middle

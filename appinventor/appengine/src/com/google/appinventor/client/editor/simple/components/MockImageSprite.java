@@ -9,6 +9,7 @@ package com.google.appinventor.client.editor.simple.components;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
+
 import java.lang.Integer;
 
 /**
@@ -24,6 +25,7 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
 
   public static final String PROPERTY_NAME_U = "OriginX";
   public static final String PROPERTY_NAME_V = "OriginY";
+  public static final String PROPERTY_NAME_MARKORIGIN = "MarkOrigin";
 
   // The x-y coordinates of the origin of the image sprite
   int xOrigin;
@@ -91,6 +93,20 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
     refreshCanvas();
   }
 
+  private String getUFromOrigin(String text) {
+    return text.substring(1, text.indexOf(","));
+  }
+
+  private String getVFromOrigin(String text) {
+    return text.substring(text.indexOf(",") + 2, text.length() - 1);
+  }
+
+  private void setOriginProperty(double u, double v) {
+    // format as string of type (u, v)
+    String s = "(" + Double.toString(u) + ", " + Double.toString(v) + ")";
+    changeProperty(PROPERTY_NAME_MARKORIGIN, s);
+  }
+
   private void refreshCanvas() {
     MockCanvas mockCanvas = (MockCanvas) getContainer();
     // mockCanvas will be null for the MockImageSprite on the palette
@@ -110,8 +126,13 @@ public final class MockImageSprite extends MockImageBase implements MockSprite {
       setYProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_U)) {
       setUProperty(newValue);
+      setOriginProperty(u, v);
     } else if (propertyName.equals(PROPERTY_NAME_V)) {
       setVProperty(newValue);
+      setOriginProperty(u, v);
+    } else if (propertyName.equals(PROPERTY_NAME_MARKORIGIN)) {
+      changeProperty(PROPERTY_NAME_U, getUFromOrigin(newValue));
+      changeProperty(PROPERTY_NAME_V, getVFromOrigin(newValue));
     }
   }
 

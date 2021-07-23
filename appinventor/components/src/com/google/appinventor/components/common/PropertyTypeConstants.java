@@ -333,4 +333,10 @@ public class PropertyTypeConstants {
    * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFloatRangePropertyEditor}
    */
   public static final String PROPERTY_TYPE_UNIT_COORDINATE =  "unit_coordinate";
+
+  /**
+   * The unit coordinates of the origin with respect to the top - left edge.
+   * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSpriteOriginPropertyEditor}
+   */
+  public static final String PROPERTY_TYPE_ORIGIN = "origin";
 }

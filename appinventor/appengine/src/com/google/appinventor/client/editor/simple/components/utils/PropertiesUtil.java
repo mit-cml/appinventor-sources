@@ -39,6 +39,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSensorDistIntervalChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSensorTimeIntervalChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSizingChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSpriteOriginPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor;
@@ -277,6 +278,8 @@ public class PropertiesUtil {
       return new YoungAndroidDefaultURLPropertyEditor("DEFAULT");
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_UNIT_COORDINATE)) {
       return new YoungAndroidFloatRangePropertyEditor(0, 1);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_ORIGIN)) {
+      return new YoungAndroidSpriteOriginPropertyEditor(editor);
     } else if (editorType.startsWith(PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":")) {
       String type = editorType.substring(PropertyTypeConstants.PROPERTY_TYPE_COMPONENT.length() + 2);
       type = type.substring(type.lastIndexOf('.') + 1);

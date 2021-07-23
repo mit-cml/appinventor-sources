@@ -198,4 +198,7 @@ public final class EditableProperty extends Property {
     this.type = aType;
   }
 
+  public EditableProperties getEditableProperties() {
+    return properties;
+  }
 }
