@@ -68,10 +68,19 @@ public class ListItem extends Composite {
 
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
+    if(selected) {
+      container.addStyleName(style.selected());
+    } else {
+      container.removeStyleName(style.selected());
+    }
   }
 
-  public void addClickHandler(ClickHandler handler) {
+  public void setClickHandler(ClickHandler handler) {
     this.clickHandler = handler;
+  }
+
+  public Project getProject() {
+    return project;
   }
 
   @UiFactory
@@ -81,17 +90,15 @@ public class ListItem extends Composite {
 
   @UiHandler("checkBox")
   void toggleItemSelection(ClickEvent e) {
-    changeHandler.onSelectionChange(isSelected());
-    if(isSelected()) {
-      container.addStyleName(style.selected());
-    } else {
-      container.removeStyleName(style.selected());
-    }
+    setSelected(checkBox.getValue());
+    changeHandler.onSelectionChange(checkBox.getValue());
   }
 
   @UiHandler("nameLabel")
   void itemClicked(ClickEvent e) {
-    clickHandler.onClick(e);
+    if (clickHandler != null) {
+      clickHandler.onClick(e);
+    }
   }
 
   public static abstract class ItemSelectionChangeHandler {
