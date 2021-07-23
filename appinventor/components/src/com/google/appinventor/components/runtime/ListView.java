@@ -44,9 +44,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a visible component that allows to place a list of text elements in your {@link Form} to
- * display. The list can be set using the {@link #ElementsFromString(String)} property or using the
- * {@link #Elements(YailList)} block in the blocks editor.
+ * This is a visible component that displays a list of text and image elements in your {@link Form} to
+ * display. Simple lists of strings may be set using the {@link #ElementsFromString(String)} property.
+ * More complex lists of elements containing multiple strings and/or images can be created using the
+ * {@link #ListData(String)} and {@link #ListViewLayout(int)} properties.
+ *
+ * [Information on Layouts](../other/advanced-listview.html)
  *
  *   Warning: This component will not work correctly on Screens that are scrollable if its
  * {@link #Height(int)} is set to Fill Parent.
@@ -316,7 +319,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Set the list of choices from a string of comma-separated values.
+   * Set the list of choices specified as a string with the elements separated by commas
+   * such as: Cheese,Fruit,Bacon,Radish.
    *
    * @param itemstring a string containing a comma-separated list of the strings to be picked from
    */
@@ -834,9 +838,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Specifies the style the button. This does not check that the argument is a legal value.
+   * Specifies the layout's orientation. This may be: `Vertical`, which displays elements
+   * in rows one after the other; or `Horizontal`, which displays one element at a time and
+   * allows the user to swipe left or right to brows the elements.
    *
-   * @param shape one of {@link Component#VERTICAL_ORIENTATION},
+   * @param orientation one of {@link Component#VERTICAL_ORIENTATION},
    *              {@link Component#HORISONTAL_ORIENTATION},
    * @throws IllegalArgumentException if orientation is not a legal value.
    */
@@ -859,7 +865,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Specifies data to be displayed in the ListView rows as an ArrayList of JsonObjects. Designer only property.
+   * Specifies data to be displayed in the ListView elements. This property sets the
+   * elements specified in {@link #ListViewLayout(int)}. For example, if the chosen
+   * layout is `Image,MainText` this property will allow any number of elements to be
+   * defined, each containing a filename for Image and a string for MainText.
+   * Designer only property.
    *
    * @param propertyValue string representation of row data (JsonArray of JsonObjects)
    */

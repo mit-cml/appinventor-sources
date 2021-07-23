@@ -653,8 +653,10 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 
 ## ListView  {#ListView}
 
-This is a visible component that allows to place a list of text elements in your [`Screen`](#Screen) to
- display. The list can be set using the [`ElementsFromString`](#ListView.ElementsFromString) property or using the
+This is a visible component that displays a list of text and image elements in your [`Screen`](#Screen) to
+ display. Simple lists of strings may be set using the [`ElementsFromString`](#ListView.ElementsFromString) property.
+ More complex lists of elements containing multiple strings and/or images can be created using the
+ [`ListData`](#ListView.ListData) and [`ListViewLayout`](#ListView.ListViewLayout) properties.  or using the
  [`Elements`](#ListView.Elements) block in the blocks editor.
 
    Warning: This component will not work correctly on Screens that are scrollable if its
@@ -709,7 +711,7 @@ This is a visible component that allows to place a list of text elements in your
 : Specifies type of layout for ListView row. Designer only property.
 
 {:id="ListView.Orientation" .number} *Orientation*
-: Specifies the style the button. This does not check that the argument is a legal value.
+: Specifies the layout's orientation (vertical, horisontal)
 
 {:id="ListView.Selection" .text} *Selection*
 : Returns the text in the `ListView` at the position of [`SelectionIndex`](#ListView.SelectionIndex).
@@ -735,12 +737,6 @@ This is a visible component that allows to place a list of text elements in your
 
 {:id="ListView.TextColorDetail" .color} *TextColorDetail*
 : Specifies the color of the secondary text in a ListView layout
-
-{:id="ListView.TextSize" .number} *TextSize*
-: Specifies the `ListView` item's text font size
-
-{:id="ListView.TextSizeDetail" .number} *TextSizeDetail*
-: Specifies the ListView item's secondary-text font size
 
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
