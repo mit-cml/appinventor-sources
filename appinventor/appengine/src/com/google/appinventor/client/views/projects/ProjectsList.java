@@ -20,7 +20,6 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventListene
 
 import java.util.ArrayList;
 import java.util.List;
-import com.google.gwt.user.client.Window;
 
 public class ProjectsList extends Composite implements ProjectsFolder,
       ProjectManagerEventListener {
@@ -33,12 +32,15 @@ public class ProjectsList extends Composite implements ProjectsFolder,
 
   private List<Project> projects;
   private List<Project> selectedProjects;
+  private List<ListItem> listItems;
   private boolean firstLoadInProgress;
   private SelectionChangeHandler selectionChangeHandler;
+  private boolean trashList;
 
   public ProjectsList() {
     projects = new ArrayList<Project>();
     selectedProjects = new ArrayList<Project>();
+    listItems = new ArrayList<ListItem>();
     firstLoadInProgress = true;
     initWidget(UI_BINDER.createAndBindUi(this));
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
@@ -48,6 +50,22 @@ public class ProjectsList extends Composite implements ProjectsFolder,
     this.selectionChangeHandler = handler;
   }
 
+  public void setForTrash(boolean forTrash) {
+    trashList = forTrash;
+    reloadProjects();
+  }
+
+  private void reloadProjects() {
+    selectedProjects.clear();
+    projects.clear();
+    for(Project project : Ode.getInstance().getProjectManager().getProjects("")) {
+      if((project.isInTrash() && trashList) || (!project.isInTrash() && !trashList) ) {
+        projects.add(project);
+      }
+    }
+    refresh();
+  }
+
   @UiFactory
   public OdeMessages getMessages() {
     return MESSAGES;
@@ -55,14 +73,16 @@ public class ProjectsList extends Composite implements ProjectsFolder,
 
   @UiHandler("checkBox")
   void toggleItemSelection(ClickEvent e) {
-    setSelectionOfAll(checkBox.getValue());
+    setSelected(checkBox.getValue());
   }
 
   //  ProjectManagerEventListener implementation
 
   @Override
   public void onProjectAdded(Project project) {
-    projects.add(project);
+    if((project.isInTrash() && trashList) || (!project.isInTrash() && !trashList) ) {
+      projects.add(project);
+    }
     if(!firstLoadInProgress) {
       refresh();
     }
@@ -70,23 +90,33 @@ public class ProjectsList extends Composite implements ProjectsFolder,
 
   @Override
   public void onTrashProjectRestored(Project project) {
+    if(!trashList) {
+      projects.add(project);
+    } else {
+      projects.remove(project);
+    }
     refresh();
   }
 
   @Override
   public void onProjectTrashed(Project project) {
+    if(trashList) {
+      projects.add(project);
+    } else {
+      projects.remove(project);
+    }
     refresh();
   }
 
   @Override
   public void onProjectDeleted(Project project) {
+    projects.remove(project);
     refresh();
   }
 
   @Override
   public void onProjectsLoaded() {
-    projects = Ode.getInstance().getProjectManager().getProjects("");
-    refresh();
+    reloadProjects();
     firstLoadInProgress = false;
   }
 
@@ -101,18 +131,26 @@ public class ProjectsList extends Composite implements ProjectsFolder,
   public void refresh() {
     container.clear();
     container.add(header);
+    listItems.clear();
 
     for(final Project project : projects) {
-      if(project.isInTrash()) {
-        continue;
-      }
-      container.add(createListItem(project));
+      ListItem item = createListItem(project);
+      listItems.add(item);
+      container.add(item);
     }
   }
 
   @Override
-  public void setSelectionOfAll(boolean selectionState) {
-
+  public void setSelected(boolean selectionState) {
+    checkBox.setValue(selectionState);
+    selectedProjects.clear();
+    for(ListItem item : listItems) {
+      item.setSelected(selectionState);
+      if(selectionState) {
+        selectedProjects.add(item.getProject());
+      }
+    }
+    if(selectionChangeHandler != null) selectionChangeHandler.onSelectionChange(selectedProjects.size());
   }
 
   public abstract static class SelectionChangeHandler {
@@ -120,7 +158,7 @@ public class ProjectsList extends Composite implements ProjectsFolder,
   }
 
   private ListItem createListItem(final Project project) {
-    ListItem projectListItem = new ListItem(project, new ListItem.ItemSelectionChangeHandler() {
+    ListItem projectListItem = new ListItem(project, trashList, new ListItem.ItemSelectionChangeHandler() {
       @Override
       public void onSelectionChange(boolean selected) {
         if(selected) {
@@ -136,13 +174,16 @@ public class ProjectsList extends Composite implements ProjectsFolder,
       }
     });
 
-    projectListItem.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent e) {
-        if(!project.isInTrash())
-          Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-      }
-    });
+    if(!trashList) {
+      projectListItem.setClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent e) {
+          if(!project.isInTrash())
+            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+        }
+      });
+    }
+
     return projectListItem;
   }
 }
