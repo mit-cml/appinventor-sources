@@ -26,6 +26,8 @@ public class ListItem extends Composite {
   interface ListItemUiBinder extends UiBinder<FlowPanel, ListItem> {}
   private static final ListItemUiBinder UI_BINDER = GWT.create(ListItemUiBinder.class);
 
+  private boolean isInTrash;
+
   interface Style extends CssResource {
     String selected();
   }
@@ -47,7 +49,7 @@ public class ListItem extends Composite {
     initWidget(UI_BINDER.createAndBindUi(this));
   }
 
-  public ListItem(Project project, ItemSelectionChangeHandler changeHandler) {
+  public ListItem(Project project, boolean isInTrash, ItemSelectionChangeHandler changeHandler) {
     this();
 
     DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
@@ -60,6 +62,7 @@ public class ListItem extends Composite {
     dateCreatedLabel.setText(dateTimeFormat.format(dateCreated));
     this.project = project;
     this.changeHandler = changeHandler;
+    this.isInTrash = isInTrash;
   }
 
   public boolean isSelected() {
