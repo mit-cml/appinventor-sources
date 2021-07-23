@@ -51,11 +51,6 @@ public class Button extends com.google.gwt.user.client.ui.Button {
     setAppearance();
   }
 
-  @Override
-  public void setStyleName(String styleName) {
-    addStyleName(styleName);
-  }
-
   protected String makeText() {
     String text = "";
     if(icon != null) {
