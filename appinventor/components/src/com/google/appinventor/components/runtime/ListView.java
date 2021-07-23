@@ -848,7 +848,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION,
           defaultValue = Component.VERTICAL_ORIENTATION + "")
-  @SimpleProperty(description = "Specifies the layout's orientation (vertical, horisontal). ")
+  @SimpleProperty(description = "Specifies the layout's orientation (vertical, horizontal). ")
   public void Orientation(int orientation) {
     this.orientation = orientation;
     setAdapterData();
@@ -908,7 +908,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param imageName    File name of an image that has been uploaded to media.
    *
    */
-  @SimpleFunction(description = "Create a ListView entry.")
+  @SimpleFunction(description = "Create a ListView entry. MainText is required. DetailText and ImageName are optional.")
   public YailDictionary CreateElement(final String mainText, final String detailText, final String imageName) {
     YailDictionary dictItem = new YailDictionary();
     dictItem.put(Component.LISTVIEW_KEY_MAIN_TEXT, mainText);
@@ -927,7 +927,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     return listElement.get("Text2").toString();
   }
 
-  @SimpleFunction(description = "Get the name of the image of a ListView element.")
+  @SimpleFunction(description = "Get the filename of the image of a ListView element that has been uploaded to Media.")
   public String GetImageName(final YailDictionary listElement) {
     return listElement.get("Image").toString();
   }
