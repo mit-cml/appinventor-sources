@@ -9,5 +9,5 @@ public interface ProjectsFolder {
 
   public void refresh();
 
-  public void setSelectionOfAll(boolean selectionState);
+  public void setSelected(boolean selectionState);
 }
