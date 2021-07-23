@@ -23,6 +23,10 @@
       z-index: 1;
     }
 
+    .trashActions {
+      grid-template-columns: 1fr auto;
+    }
+
     .viewTitle {
       font-family: f-h3;
       font-weight: 500;
@@ -37,7 +41,7 @@
       display: none;
     }
 
-    @if com.google.appinventor.client.Ode.isMobile() {
+    @if (com.google.appinventor.client.Ode.isMobile()) {
       .actionGroup {
         display: none;
       }
@@ -57,12 +61,12 @@
   <g:FlowPanel styleName='{style.container}'>
     <ai:TitleBar />
 
-    <g:FlowPanel styleName='{style.projectActions}'>
+    <g:FlowPanel ui:field='projectsViewActions' styleName='{style.projectActions}'>
       <g:Label styleName='{style.viewTitle}'>My Projects</g:Label>
       <g:FlowPanel styleName='{style.actionGroup} {style.newProjectActions}'>
         <ai:Button ui:field='newProjectButton' text='{messages.newProjectMenuItem}' icon='add' groupPosition='LEFT' type='PRIMARY' raised='true' title='{messages.newProjectMenuItem}' />
-        <ai:Button icon='file_upload' groupPosition='CENTER' type='PRIMARY' raised='true' title='{messages.importProjectMenuItem}' />
-        <ai:Button icon='cloud_upload' groupPosition='RIGHT' type='PRIMARY' raised='true' title='{messages.importTemplateButton}' />
+        <ai:Button ui:field='importProjectButton' icon='file_upload' groupPosition='CENTER' type='PRIMARY' raised='true' title='{messages.importProjectMenuItem}' />
+        <ai:Button ui:field='importFromTemplateButton' icon='cloud_upload' groupPosition='RIGHT' type='PRIMARY' raised='true' title='{messages.importTemplateButton}' />
       </g:FlowPanel>
 
       <g:FlowPanel styleName='{style.actionGroup}'>
@@ -78,11 +82,13 @@
 
       <g:FlowPanel styleName='{style.actionGroup}'>
         <ai:Button text='Move' icon='drive_file_move' groupPosition='LEFT' raised='true' enabled='false' />
-        <ai:Button text='View trash' groupPosition='CENTER' raised='true' enabled='false' />
-        <ai:Button ui:field='deleteButton' text='Delete' icon='delete' type='DANGER' groupPosition='RIGHT' raised='true' enabled='false' />
+        <ai:Button ui:field='viewTrashButton' text='View trash' groupPosition='CENTER' raised='true' />
+        <ai:Button ui:field='trashButton' text='Trash' icon='delete' type='DANGER' groupPosition='RIGHT' raised='true' enabled='false' />
       </g:FlowPanel>
 
-      <ai:Button ui:field='mobileOverflowButton' styleName='{style.overflowButton}' icon='more_vert' groupPosition='NONE' raised='true' />
+      <g:FlowPanel styleName='{style.actionGroup} {style.overflowButton}'>
+        <ai:Button ui:field='mobileOverflowButton' icon='more_vert' groupPosition='NONE' raised='true' />
+      </g:FlowPanel>
       <g:FlowPanel ui:field='mobileDropdownContainer'>
         <ai:DropdownItem text='Export' hasDivider='true' />
         <ai:DropdownItem text='Build APK' />
@@ -90,12 +96,22 @@
         <ai:DropdownItem text='Publish' hasDivider='true' />
         <ai:DropdownItem text='Move' />
         <ai:DropdownItem text='View trash' />
-        <ai:DropdownItem text='Delete' />
+        <ai:DropdownItem text='Trash' />
+      </g:FlowPanel>
+    </g:FlowPanel>
+
+    <g:FlowPanel ui:field='trashViewActions' styleName='{style.projectActions} {style.trashActions}'>
+      <g:Label styleName='{style.viewTitle}'>Trash</g:Label>
+
+      <g:FlowPanel styleName='{style.actionGroup}'>
+        <ai:Button ui:field='restoreButton' text='Restore' icon='restore' groupPosition='LEFT' raised='true' enabled='false' />
+        <ai:Button ui:field='viewProjectsButton' text='View projects' groupPosition='CENTER' raised='true' />
+        <ai:Button ui:field='deleteButton' text='Delete' type='DANGER' icon='delete_forever' groupPosition='RIGHT' raised='true' enabled='false' />
       </g:FlowPanel>
     </g:FlowPanel>
 
     <aiv:ProjectsList ui:field='projectsList' />
-    <!-- <g:Label>My Projects</g:Label> -->
+    <aiv:ProjectsList ui:field='trashList' forTrash='true' />
 
   </g:FlowPanel>
 </ui:UiBinder>
