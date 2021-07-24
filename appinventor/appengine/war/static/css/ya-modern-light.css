@@ -70,13 +70,13 @@ body {
  */
 
 .ode-ContextMenu {
-  background-color: #4a4d5d;
+  background-color: #dde2cf;
 }
 
 .ode-ContextMenuItem,
 .ode-CurrentColor {
   cursor: pointer;
-  background: #4a4d5d;
+  background: #dde2cf;
   padding-top: 3px;
   padding-left: 9px;
   padding-bottom: 3px;
@@ -86,6 +86,7 @@ body {
 .ode-ContextMenuItem {
   min-width: 50px;
   border: 0;
+  color: #737373;
   font-family: 'Poppins';
   padding: 10px 10px 10px 10px;
   -o-transition:color .1s ease-out, background .1s ease-in;
@@ -103,9 +104,9 @@ body {
   margin: 9px 1px;
   *
   margin: -5px 0 5px;
-  border-bottom: 1px solid #4a4d5d;
-  background-color: #4a4d5d;
-  border-bottom: 1px solid #4a4d5d;
+  border-bottom: 1px solid #cdb998;
+  background-color: #dde2cf;
+  border-bottom: 1px solid #dde2cf;
 }
 
 .ode-CurrentColor {
@@ -1530,7 +1531,7 @@ a.ode-ExtensionAnchor:hover {
   padding: 5px 0;
   margin: 2px 0 0;
   list-style: none;
-  background-color: #4a4d5d;
+  background-color: #dde2cf;
   
   *
   border-right-width: 2px;
