@@ -88,8 +88,8 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     }
 
     static String getHtmlDescription(String rgbString, String name) {
-      return "<span style=\"background:#" + rgbString + "; border:1px solid black; " +
-          "width:1em; height:1em\">&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;" + name;
+      return "<span style=\"background:#" + rgbString + "; display: inline-block; " +
+          "width:15px; height:15px; border-radius:200px; vertical-align: middle\">&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;" + name;
     }
   }
 
