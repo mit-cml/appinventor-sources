@@ -100,7 +100,7 @@ public class Lottie extends AndroidNonvisibleComponent {
         } else {
             try {
             InputStream inputStream = context.getAssets().open(file);
-            byte[] lottieJson = new byte[input.available()];
+            byte[] lottieJson = new byte[inputStream.available()];
             inputStream.read(lottieJson);
             inputStream.close();
             String json = new String(lottieJson, "UTF-8");
