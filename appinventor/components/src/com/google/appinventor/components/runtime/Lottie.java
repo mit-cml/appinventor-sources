@@ -1,4 +1,4 @@
-package com.kab.Lottie;
+package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,11 +16,9 @@ import android.animation.Animator;
 import android.content.Context;
 import android.view.View;
 import com.airbnb.lottie.LottieAnimationView;
-import android.view.View.OnClickListener;
 import java.io.InputStream;
 import java.io.IOException;
-import com.google.appinventor.components.annotations.*;
-import com.google.appinventor.components.common.*;
+
 @DesignerComponent(
         version = 1,
         description = "A component to use Lottie animations in your apps",
