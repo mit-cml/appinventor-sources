@@ -114,7 +114,8 @@ body {
 }
 
 .ode-ContextMenuItem-selected {
-  background-color: #242836;
+  background-color: #deecb3;
+  color: #000;
 }
 
 .ode-ContextMenuItem-disabled {
