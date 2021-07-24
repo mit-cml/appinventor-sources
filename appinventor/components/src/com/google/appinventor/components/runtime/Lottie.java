@@ -30,7 +30,7 @@ import java.io.IOException;
 @UsesLibraries(libraries = "lottie.jar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET, android.permission.READ_EXTERNAL_STORAGE")
 
-public class Lottie extends AndroidNonvisibleComponent {
+public class LottieAnimation extends AndroidNonvisibleComponent {
 
     //Activity and Context
     private Context context;
@@ -38,7 +38,7 @@ public class Lottie extends AndroidNonvisibleComponent {
     private FrameLayout lottieanimview;
     private LottieAnimationView lottieAnimationView;
 
-    public Lottie(ComponentContainer container){
+    public LottieAnimation(ComponentContainer container){
         super(container.$form());
         this.activity = container.$context();
         this.context = container.$context();
