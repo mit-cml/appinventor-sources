@@ -144,7 +144,7 @@ public final class AnimationUtil {
    */
   public static void ApplyCloseScreenAnimation(Activity activity, String animType) {
     ScreenAnimation anim = ScreenAnimation.fromUnderlyingValue(animType);
-    AnimationUtil.ApplyCloseScreenAnimation(activity, animType);
+    AnimationUtil.ApplyCloseScreenAnimation(activity, anim);
   }
 
   /**
