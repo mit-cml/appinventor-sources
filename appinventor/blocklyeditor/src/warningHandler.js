@@ -788,6 +788,7 @@ Blockly.WarningHandler.prototype['checkReplErrors'] = function(block) {
   return false;
 };
 
+//get field is not a function, is the special key map wrong?
 Blockly.WarningHandler.SPECIAL_KEY_MAP = {
   'text': 'TEXT',
   'math_number': 'NUM',
