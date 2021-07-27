@@ -7,57 +7,7 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <ui:style src='../../resources/theme.css'>
-    .container {
-      display: grid;
-      grid-template-rows: auto 50px 1fr auto;
-      background-color: c-background;
-    }
-
-    .projectActions {
-      display: grid;
-      grid-template-columns: auto auto 1fr auto;
-      align-items: center;
-      padding: 0 20px;
-      grid-gap: 30px;
-      z-index: 1;
-    }
-
-    .trashActions {
-      grid-template-columns: 1fr auto;
-    }
-
-    .viewTitle {
-      font-family: f-h3;
-      font-weight: 500;
-      font-size: 1.25em;
-    }
-
-    .actionGroup {
-      display: flex;
-    }
-
-    .overflowButton {
-      display: none;
-    }
-
-    @if (com.google.appinventor.client.Ode.isMobile()) {
-      .actionGroup {
-        display: none;
-      }
-
-      .overflowButton,
-      .newProjectActions {
-        display: flex;
-        align-items: center;
-      }
-
-      .projectActions {
-        grid-template-columns: 1fr auto auto;
-        grid-gap: 10px;
-      }
-    }
-  </ui:style>
+  <ui:with field="style" />
   <g:FlowPanel styleName='{style.container}'>
     <ai:TitleBar />
 
@@ -70,7 +20,8 @@
       </g:FlowPanel>
 
       <g:FlowPanel styleName='{style.actionGroup}'>
-        <ai:Button ui:field='downloadButton' text='Export' icon='file_download' groupPosition='LEFT' raised='true' enabled='false' />
+        <ai:Button ui:field='renameButton' text='Rename' icon='edit' groupPosition='LEFT' raised='true' enabled='false' />
+        <ai:Button ui:field='downloadButton' text='Export' icon='file_download' groupPosition='CENTER' raised='true' enabled='false' />
         <ai:DropdownButton ui:field='exportButton' text='Build' icon='system_security_update' groupPosition='CENTER' raised='true' enabled='false' />
         <ai:Button ui:field='publishButton' text='Publish' icon='public' groupPosition='RIGHT' raised='true' enabled='false' />
       </g:FlowPanel>
@@ -112,6 +63,5 @@
 
     <aiv:ProjectsList ui:field='projectsList' />
     <aiv:ProjectsList ui:field='trashList' forTrash='true' />
-
   </g:FlowPanel>
 </ui:UiBinder>

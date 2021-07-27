@@ -1,0 +1,49 @@
+.container {
+  display: grid;
+  grid-template-rows: 50px 50px 1fr auto;
+  background-color: c-background;
+}
+
+.projectActions {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  padding: 0 20px;
+  grid-gap: 30px;
+  z-index: 1;
+}
+
+.trashActions {
+  grid-template-columns: 1fr auto;
+}
+
+.viewTitle {
+  font-family: f-h3;
+  font-weight: 500;
+  font-size: 1.25em;
+}
+
+.actionGroup {
+  display: flex;
+}
+
+.overflowButton {
+  display: none;
+}
+
+@if (com.google.appinventor.client.Ode.isMobile()) {
+  .actionGroup {
+    display: none;
+  }
+
+  .overflowButton,
+  .newProjectActions {
+    display: flex;
+    align-items: center;
+  }
+
+  .projectActions {
+    grid-template-columns: 1fr auto auto;
+    grid-gap: 10px;
+  }
+}

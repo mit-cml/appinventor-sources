@@ -2,6 +2,7 @@ package com.google.appinventor.client.views.projects;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 
 import com.google.gwt.core.client.GWT;
@@ -28,17 +29,15 @@ public class ListItem extends Composite {
 
   private boolean isInTrash;
 
-  interface Style extends CssResource {
-    String selected();
-  }
-
-  @UiField Style style;
-
   @UiField FlowPanel container;
   @UiField Label nameLabel;
   @UiField Label dateModifiedLabel;
   @UiField Label dateCreatedLabel;
   @UiField CheckBox checkBox;
+
+  @UiField(provided=true)
+  Resources.ListItemStyle style = Ode.getUserDarkThemeEnabled() ?
+      Resources.INSTANCE.listItemStyleDark() : Resources.INSTANCE.listItemStyleLight();
 
   private ProjectsFolder parentFolder;
   private Project project;
@@ -46,6 +45,7 @@ public class ListItem extends Composite {
   private ClickHandler clickHandler;
 
   public ListItem() {
+    style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
   }
 

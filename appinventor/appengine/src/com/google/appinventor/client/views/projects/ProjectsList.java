@@ -30,6 +30,10 @@ public class ProjectsList extends Composite implements ProjectsFolder,
   @UiField FlowPanel header;
   @UiField CheckBox checkBox;
 
+  @UiField(provided=true)
+  Resources.ProjectsListStyle style = Ode.getUserDarkThemeEnabled() ?
+      Resources.INSTANCE.projectsListStyleDark() : Resources.INSTANCE.projectsListStyleLight();
+
   private List<Project> projects;
   private List<Project> selectedProjects;
   private List<ListItem> listItems;
@@ -42,6 +46,7 @@ public class ProjectsList extends Composite implements ProjectsFolder,
     selectedProjects = new ArrayList<Project>();
     listItems = new ArrayList<ListItem>();
     firstLoadInProgress = true;
+    style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
   }

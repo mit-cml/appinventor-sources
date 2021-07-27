@@ -17,15 +17,19 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.components.Button;
+import com.google.appinventor.client.components.Dialog;
 import com.google.appinventor.client.components.Dropdown;
+import com.google.appinventor.client.explorer.commands.RenameProjectsCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
+import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectsExplorer extends Composite {
@@ -39,6 +43,7 @@ public class ProjectsExplorer extends Composite {
   @UiField Button importProjectButton;
   @UiField Button importFromTemplateButton;
 
+  @UiField Button renameButton;
   @UiField Button downloadButton;
   @UiField Button exportButton;
   @UiField Button publishButton;
@@ -58,7 +63,12 @@ public class ProjectsExplorer extends Composite {
   @UiField ProjectsList projectsList;
   @UiField ProjectsList trashList;
 
+  @UiField(provided=true)
+  Resources.ProjectsExplorerStyle style = Ode.getUserDarkThemeEnabled() ?
+      Resources.INSTANCE.projectsExplorerStyleDark() : Resources.INSTANCE.projectsExplorerStyleLight();
+
   public ProjectsExplorer() {
+    style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
     switchToProjects();
     if(Ode.isMobile()) {
@@ -69,9 +79,11 @@ public class ProjectsExplorer extends Composite {
       public void onSelectionChange(int selectedItemCount) {
         if(selectedItemCount == 0) {
           downloadButton.setEnabled(false);
+          renameButton.setEnabled(false);
           trashButton.setEnabled(false);
         } else {
           downloadButton.setEnabled(true);
+          renameButton.setEnabled(true);
           trashButton.setEnabled(true);
         }
 
