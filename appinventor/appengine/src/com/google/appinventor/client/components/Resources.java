@@ -35,6 +35,7 @@ public interface Resources extends ClientBundle {
 
     String primary();
     String danger();
+    String inline();
     String action();
 
     String raised();

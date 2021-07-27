@@ -74,6 +74,7 @@ public class Button extends com.google.gwt.user.client.ui.Button {
     switch(type) {
       case PRIMARY: addStyleName(style.primary()); break;
       case DANGER: addStyleName(style.danger()); break;
+      case INLINE: addStyleName(style.inline()); break;
       default: addStyleName(style.action()); break;
     }
 
@@ -92,6 +93,7 @@ public class Button extends com.google.gwt.user.client.ui.Button {
   public static enum Type {
     PRIMARY,
     DANGER,
+    INLINE,
     DEFAULT
   }
 }
