@@ -63,4 +63,41 @@ public interface Resources extends ClientBundle {
     String dropdownItem();
     String dropdownItemWithDivider();
   }
+
+  @Source({
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/light.css",
+    "com/google/appinventor/client/components/titleBar.css"
+  })
+  TitleBarStyle titleBarStyleLight();
+
+  @Source({
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/dark.css",
+    "com/google/appinventor/client/components/titleBar.css"
+  })
+  TitleBarStyle titleBarStyleDark();
+
+  public interface TitleBarStyle extends CssResource {
+    String container();
+    String logo();
+  }
+
+  @Source({
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/light.css",
+    "com/google/appinventor/client/components/dialog.css"
+  })
+  DialogStyle dialogStyleLight();
+
+  @Source({
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/dark.css",
+    "com/google/appinventor/client/components/dialog.css"
+  })
+  DialogStyle dialogStyleDark();
+
+  public interface DialogStyle extends CssResource {
+    String dialog();
+  }
 }
