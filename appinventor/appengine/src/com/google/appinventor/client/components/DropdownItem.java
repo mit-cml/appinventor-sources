@@ -4,9 +4,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Label;
 
+import com.google.appinventor.client.Ode;
+
 public class DropdownItem extends Label {
 
-  private static Resources.DropdownStyle style = Resources.INSTANCE.dropdownStyle();
+  private static Resources.DropdownStyle style = Ode.getUserDarkThemeEnabled() ?
+      Resources.INSTANCE.dropdownStyleDark() : Resources.INSTANCE.dropdownStyleLight();
 
   public DropdownItem() {
     super();

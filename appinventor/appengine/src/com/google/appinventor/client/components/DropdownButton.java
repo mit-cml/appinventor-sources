@@ -1,8 +1,11 @@
 package com.google.appinventor.client.components;
 
+import com.google.appinventor.client.Ode;
+
 public class DropdownButton extends Button {
 
-  private static Resources.DropdownStyle style = Resources.INSTANCE.dropdownStyle();
+  private static Resources.DropdownStyle style = Ode.getUserDarkThemeEnabled() ?
+      Resources.INSTANCE.dropdownStyleDark() : Resources.INSTANCE.dropdownStyleLight();
 
   public DropdownButton() {
     super();

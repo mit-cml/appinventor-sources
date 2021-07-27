@@ -1493,6 +1493,39 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Returns the dark theme setting.
+   *
+   * @return true if the user has opted to use a dark theme, false otherwise
+   */
+  public static boolean getUserDarkThemeEnabled() {
+    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
+    return Boolean.parseBoolean(value);
+  }
+
+  /**
+   * Set user dark theme setting.
+   *
+   * @param enabled new value for the user's UI preference
+   */
+  public static void setUserDarkThemeEnabled(boolean enabled) {
+    userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+            changePropertyValue(SettingsConstants.DARK_THEME_ENABLED,
+                    "" + enabled);
+    userSettings.saveSettings(new Command() {
+        @Override
+        public void execute() {
+          // Reload for the UI preferences to take effect. We
+          // do this here because we need to make sure that
+          // the user settings were saved before we terminate
+          // this browsing session. This is particularly important
+          // for Firefox
+          Window.Location.reload();
+        }
+      });
+  }
+
+  /**
    * Checks whether the user has autoloading enabled in their settings.
    *
    * @return true if autoloading is enabled, otherwise false.

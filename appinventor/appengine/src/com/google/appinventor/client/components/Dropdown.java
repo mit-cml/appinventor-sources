@@ -5,9 +5,12 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 
+import com.google.appinventor.client.Ode;
+
 public class Dropdown extends PopupPanel {
 
-  private static Resources.DropdownStyle style = Resources.INSTANCE.dropdownStyle();
+  private static Resources.DropdownStyle style = Ode.getUserDarkThemeEnabled() ?
+      Resources.INSTANCE.dropdownStyleDark() : Resources.INSTANCE.dropdownStyleLight();
 
   private Button dropdownButton;
   private boolean center;

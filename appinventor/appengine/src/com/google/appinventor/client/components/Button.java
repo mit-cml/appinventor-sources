@@ -9,7 +9,8 @@ public class Button extends com.google.gwt.user.client.ui.Button {
   private boolean raised;
   private Icon icon;
 
-  private static Resources.ButtonStyle style = Resources.INSTANCE.buttonStyle();
+  private static Resources.ButtonStyle style = Ode.getUserDarkThemeEnabled() ?
+      Resources.INSTANCE.buttonStyleDark() : Resources.INSTANCE.buttonStyleLight();
 
   public Button() {
     style.ensureInjected();

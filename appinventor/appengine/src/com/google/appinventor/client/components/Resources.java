@@ -12,10 +12,18 @@ public interface Resources extends ClientBundle {
   public static final Resources INSTANCE =  GWT.create(Resources.class);
 
   @Source({
-    "com/google/appinventor/client/resources/theme.css",
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/light.css",
     "com/google/appinventor/client/components/button.css"
   })
-  ButtonStyle buttonStyle();
+  ButtonStyle buttonStyleLight();
+
+  @Source({
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/dark.css",
+    "com/google/appinventor/client/components/button.css"
+  })
+  ButtonStyle buttonStyleDark();
 
   public interface ButtonStyle extends CssResource {
     String base();
@@ -33,16 +41,24 @@ public interface Resources extends ClientBundle {
   }
 
   @Source({
-    "com/google/appinventor/client/resources/theme.css",
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/light.css",
     "com/google/appinventor/client/components/dropdown.css"
   })
-  DropdownStyle dropdownStyle();
+  DropdownStyle dropdownStyleLight();
+
+  @Source({
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/dark.css",
+    "com/google/appinventor/client/components/dropdown.css"
+  })
+  DropdownStyle dropdownStyleDark();
 
   public interface DropdownStyle extends CssResource {
     String buttonIcon();
 
     String dropdown();
-    
+
     String dropdownItem();
     String dropdownItemWithDivider();
   }
