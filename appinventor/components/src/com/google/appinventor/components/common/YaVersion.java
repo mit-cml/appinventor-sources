@@ -976,6 +976,8 @@ public class YaVersion {
   // - Assets helper block was added.
   public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
 
+  public static final int HORIZONTALRADIOGROUP_COMPONENT_VERSION = 1;
+
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
   // For IMAGE_COMPONENT_VERSION 3:

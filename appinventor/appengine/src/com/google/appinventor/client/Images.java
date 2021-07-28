@@ -492,10 +492,10 @@ public interface Images extends Resources {
   ImageResource vertical();
 
   /**
-   * Designer palette item: vertical radio group component
+   * Designer palette item: radio group component
    */
-  @Source("com/google/appinventor/images/vertical.png")
-  ImageResource verticalRadioGroup();
+  @Source("com/google/appinventor/images/radioGroup.png")
+  ImageResource radioGroup();
 
   /**
    * Designer palette item: VotingComponent

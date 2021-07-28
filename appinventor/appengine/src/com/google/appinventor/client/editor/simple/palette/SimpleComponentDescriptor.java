@@ -25,6 +25,7 @@ import com.google.appinventor.client.editor.simple.components.MockFeatureCollect
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockHorizontalRadioGroup;
 import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
 import com.google.appinventor.client.editor.simple.components.MockImageSprite;
@@ -459,6 +460,8 @@ public final class SimpleComponentDescriptor {
       return new MockHorizontalArrangement(editor);
     } else if (name.equals(MockScrollHorizontalArrangement.TYPE)) {
       return new MockScrollHorizontalArrangement(editor);
+    } else if (name.equals(MockHorizontalRadioGroup.TYPE)) {
+      return new MockHorizontalRadioGroup(editor);
     } else if (name.equals(MockVerticalArrangement.TYPE)) {
       return new MockVerticalArrangement(editor);
     } else if (name.equals(MockScrollVerticalArrangement.TYPE)) {
