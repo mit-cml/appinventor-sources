@@ -12,7 +12,6 @@ import com.google.appinventor.components.common.ComponentConstants;
 /**
  * Mock VerticalRadioGroup component.
  *
- * @author sharon@google.com (Sharon Perl)
  * @author thamihardik8@gmail.com (Hardik Thami)
  */
 public final class MockVerticalRadioGroup extends MockRadioGroup {
@@ -28,7 +27,7 @@ public final class MockVerticalRadioGroup extends MockRadioGroup {
    * @param editor  editor of source file the component belongs to
    */
   public MockVerticalRadioGroup(SimpleEditor editor) {
-    super(editor, TYPE, images.verticalRadioGroup(),
+    super(editor, TYPE, images.radioGroup(),
       ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
       ComponentConstants.SCROLLABLE_ARRANGEMENT);
   }

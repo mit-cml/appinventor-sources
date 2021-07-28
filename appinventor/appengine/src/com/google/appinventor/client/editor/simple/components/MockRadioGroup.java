@@ -6,127 +6,34 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
-
-import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
-import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
-
-import com.google.appinventor.client.output.OdeLog;
-
-import com.google.appinventor.client.properties.BadPropertyEditorException;
-
-import com.google.appinventor.components.common.ComponentConstants;
-
 import com.google.gwt.resources.client.ImageResource;
-
-import com.google.gwt.user.client.ui.AbsolutePanel;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.gwt.core.client.JavaScriptException;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
 
 /**
  * Superclass for RadioGroup based mock components
  *
- * @author markf@google.com (Mark Friedman)
- * @author sharon@google.com (Sharon Perl)
- * @author hal@mit.edu (Hal Abelson) (added adjust alignment dropdowns)
- * @author kkashi01@gmail.com (Hossein Amerkashi) (added Image and BackgroundColors)
+ * @author thamihardik8@gmail.com (Hardik Thami)
  */
-public class MockRadioGroup extends MockContainer {
-  // Form UI components
-  protected final AbsolutePanel layoutWidget;
+public class MockRadioGroup extends MockHVArrangement {
 
-  // Property names
-  private static final String PROPERTY_NAME_HORIZONTAL_ALIGNMENT = "AlignHorizontal";
-  private static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = "AlignVertical";
-
-  private String backgroundColor;
-
-  private MockHVLayout myLayout;
-
-  private YoungAndroidHorizontalAlignmentChoicePropertyEditor myHAlignmentPropertyEditor;
-  private YoungAndroidVerticalAlignmentChoicePropertyEditor myVAlignmentPropertyEditor;
-
+  /** 
+  * Instance of MockRadioButton that is checked
+  */ 
   private MockRadioButton checkedRadioButton;
-  private boolean scrollAble;
-  private int orientation;
 
   /**
    * Creates a new MockRadioGroup component.
    */
   public MockRadioGroup(SimpleEditor editor, String type, ImageResource icon, int orientation,
     boolean scrollable) {
-    // Note(Hal): This helper thing is a kludge because I really want to write:
-    // myLayout = new MockHVLayout(orientation);
-    // super(editor, type, icon, myLayout);
-    // but Java won't let me do that.
-
-    super(editor, type, icon, MockRadioGroupHelper.makeLayout(orientation));
-    // Note(hal): There better not be any calls to MockRadioGroupHelper before the
-    // next instruction.  Note that the Helper methods are synchronized to avoid possible
-    // future problems if we ever have threads creating arrangements in parallel.
-    this.myLayout = MockRadioGroupHelper.getLayout();
-    this.scrollAble = scrollable;
+    super(editor, type, icon, orientation, scrollable);
     this.checkedRadioButton = null;
-    
-    this.orientation = orientation;
-
-    if (orientation != ComponentConstants.LAYOUT_ORIENTATION_VERTICAL &&
-        orientation != ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
-      throw new IllegalArgumentException("Illegal orientation: " + orientation);
-    }
-
-    rootPanel.setHeight("100%");
-
-    layoutWidget = new AbsolutePanel();
-    layoutWidget.setStylePrimaryName("ode-SimpleMockContainer");
-    layoutWidget.add(rootPanel);
-
-    initComponent(layoutWidget);
-    try {
-      myHAlignmentPropertyEditor = PropertiesUtil.getHAlignmentEditor(properties);
-      myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
-    } catch (BadPropertyEditorException e) {
-      OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
-      return;
-    }
-    adjustAlignmentDropdowns();
   }
 
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
-    if  (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {
-      myLayout.setHAlignmentFlags(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_VERTICAL_ALIGNMENT)) {
-      myLayout.setVAlignmentFlags(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
-      setBackgroundColorProperty(newValue);
-    } else {
-      if (propertyName.equals(PROPERTY_NAME_WIDTH) || propertyName.equals(PROPERTY_NAME_HEIGHT)) {
-        refreshForm();
-      }
-    }
-  }
-
-  private void adjustAlignmentDropdowns() {
-    if (scrollAble) {
-      if (orientation == ComponentConstants.LAYOUT_ORIENTATION_VERTICAL) {
-        myLayout.setVAlignmentFlags(ComponentConstants.GRAVITY_TOP + "");
-        changeProperty(PROPERTY_NAME_VERTICAL_ALIGNMENT, ComponentConstants.GRAVITY_TOP + "");
-        myVAlignmentPropertyEditor.disable();
-      } else {
-        myLayout.setHAlignmentFlags(ComponentConstants.GRAVITY_LEFT + "");
-        changeProperty(PROPERTY_NAME_HORIZONTAL_ALIGNMENT, ComponentConstants.GRAVITY_LEFT+ "");
-        myHAlignmentPropertyEditor.disable();
-      }
-      refreshForm();
-    } else {
-      myVAlignmentPropertyEditor.enable();
-      myHAlignmentPropertyEditor.enable();
-    }
   }
 
   /**
@@ -143,16 +50,15 @@ public class MockRadioGroup extends MockContainer {
     return this.checkedRadioButton;
   }
 
-  /**
-  * Sets the button's BackgroundColor property to a new value.
-  */
-  private void setBackgroundColorProperty(String text) {
-    backgroundColor = text;
+  /** 
+  * For Testing Purposes
+  */ 
+  private static native void consoleLog(String name) /*-{
+    console.log(name)
+  }-*/;
 
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      // CSS background-color for ode-SimpleMockButton (copied from Ya.css)
-      text = "&HFFE8E8E8";
-    }
-    MockComponentsUtil.setWidgetBackgroundColor(layoutWidget, text);
-  }
+  private static native void consoleError(JavaScriptException ex) /*-{
+    console.error(ex)
+  }-*/;
+
 }

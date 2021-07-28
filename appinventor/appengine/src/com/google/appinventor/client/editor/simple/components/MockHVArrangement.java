@@ -67,7 +67,7 @@ public class MockHVArrangement extends MockContainer {
   private int orientation;
 
 
- /**
+  /**
    * Creates a new MockHVArrangement component.
    */
   MockHVArrangement(SimpleEditor editor, String type, ImageResource icon, int orientation,
@@ -187,8 +187,8 @@ public class MockHVArrangement extends MockContainer {
   }
 
   /*
-* Sets the button's BackgroundColor property to a new value.
-*/
+  * Sets the button's BackgroundColor property to a new value.
+  */
   private void setBackgroundColorProperty(String text) {
     backgroundColor = text;
     // Android Buttons do not show a background color if they have an image.
