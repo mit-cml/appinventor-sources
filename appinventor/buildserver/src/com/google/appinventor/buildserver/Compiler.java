@@ -648,7 +648,7 @@ public final class Compiler {
       n += activityMetadataNeeded.get(type).size();
     }
 
-    System.out.println("Component metadata needed, n = " + n);
+    System.out.println("Component activity metadata needed, n = " + n);
   }
 
   /*
