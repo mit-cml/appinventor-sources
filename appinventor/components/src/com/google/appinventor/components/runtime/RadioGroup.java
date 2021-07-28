@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.drawable.Drawable;
 import android.app.Activity;
 import android.os.Handler;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.HorizontalAlignment;
 import com.google.appinventor.components.common.VerticalAlignment;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -30,11 +32,20 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * A RadioGroup is used for set of radio buttons. If we check one 
+ * radio button that belongs to a radio group, it automatically unchecks any
+ * previously checked radio button within the same group.
+ *
+ * @author thamihardik8@gmail.com (Hardik Thami)
+ */
 
 @SimpleObject
 public class RadioGroup extends AndroidViewComponent implements Component, ComponentContainer {
@@ -45,8 +56,16 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
   private final android.widget.RadioGroup layoutManager;
   private ViewGroup frameContainer;
   private boolean scrollable = true;
-
+  
+  // Backing for background color
   private int backgroundColor;
+
+  // This is the Drawable corresponding to the Image property.
+  // If an Image has never been set or if the most recent Image could not be loaded, this is null.
+  private Drawable backgroundImageDrawable;
+
+  // Image path
+  private String imagePath = "";
 
   // Alignment
   private AlignmentUtil alignmentSetter = new AlignmentUtil();
@@ -55,6 +74,8 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
 
   // List of component children
   private List<Component> allChildren = new ArrayList<>();
+
+  private Drawable defaultButtonDrawable;
 
   private final Handler androidUIHandler = new Handler();
 
@@ -140,6 +161,9 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
 
+    // Save the default values in case the user wants them back later.
+    defaultButtonDrawable = getView().getBackground();
+    
     container.$add(this);
     BackgroundColor(Component.COLOR_DEFAULT);
   }
@@ -271,7 +295,7 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
    */
   @SuppressWarnings("RegularMethodName")
   public void AlignHorizontalAbstract(HorizontalAlignment alignment) {
-    alignmentSetter.setHorizontalAlignment(alignment);
+    setHorizontalGravity(alignmentSetter.getHorizontalAlignment(alignment));
     horizontalAlignment = alignment;
   }
 
@@ -325,7 +349,7 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
    */
   @SuppressWarnings("RegularMethodName")
   public void AlignVerticalAbstract(VerticalAlignment alignment) {
-    alignmentSetter.setVerticalAlignment(alignment);
+    setVerticalGravity(alignmentSetter.getVerticalAlignment(alignment));
     verticalAlignment = alignment;
   }
 
@@ -370,10 +394,80 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
           defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
-  @SimpleProperty(description = "Specifies the background color of the %type%. ")
+  @SimpleProperty(description = "Specifies the background color of the %type%. " +
+          "The background color will not be visible if an Image is being displayed.")
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
-    getView().setBackgroundColor(argb);
+    // getView().setBackgroundColor(argb);
+    updateAppearance();
   }
 
+  /**
+   * Returns the path of the background image of the `%type%`.
+   *
+   * @return  the path of the background image
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public String Image() {
+    return imagePath;
+  }
+
+  /**
+   * Specifies the path of the background image of the `%type%`.
+   *
+   * @internaldoc
+   * <p/>See {@link com.google.appinventor.components.runtime.util.MediaUtil#determineMediaSource} for information about what
+   * a path can be.
+   *
+   * @param path the path of the background image
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+  @SimpleProperty(description = "Specifies the path of the background image for the %type%.  " +
+          "If there is both an Image and a BackgroundColor, only the Image will be visible.")
+  public void Image(@Asset String path) {
+    // If it's the same as on the prior call and the prior load was successful,
+    // do nothing.
+    if (path.equals(imagePath) && backgroundImageDrawable != null) {
+      return;
+    }
+
+    imagePath = (path == null) ? "" : path;
+
+    // Clear the prior background image.
+    backgroundImageDrawable = null;
+
+    // Load image from file.
+    if (imagePath.length() > 0) {
+      try {
+        backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+      } catch (IOException ioe) {
+        // Fall through with a value of null for backgroundImageDrawable.
+      }
+    }
+
+    // Update the appearance based on the new value of backgroundImageDrawable.
+    updateAppearance();
+  }
+
+
+  // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
+  // Images take precedence over background colors.
+  private void updateAppearance() {
+    // If there is no background image,
+    // the appearance depends solely on the background color and shape.
+    if (backgroundImageDrawable == null) {
+      if (backgroundColor == Component.COLOR_DEFAULT) {
+        // If there is no background image and color is default,
+        // restore original 3D bevel appearance.
+        ViewUtil.setBackgroundDrawable(layoutManager, defaultButtonDrawable);
+      } else {
+        // Clear the background image.
+        ViewUtil.setBackgroundDrawable(layoutManager, null);
+        layoutManager.setBackgroundColor(backgroundColor);
+      }
+    } else {
+      // If there is a background image
+      ViewUtil.setBackgroundImage(layoutManager, backgroundImageDrawable);
+    }
+  }
 }
