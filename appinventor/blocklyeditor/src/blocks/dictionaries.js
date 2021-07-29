@@ -4,7 +4,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
  * @license
- * @fileoverview Dictionaries blocks for 1lockly, modified for MIT App Inventor.
+ * @fileoverview Dictionaries blocks for Blockly, modified for MIT App Inventor.
  * @author data1013@mit.edu (Danny Tang)
  */
 
