@@ -796,64 +796,66 @@ Blockly.WarningHandler.SPECIAL_KEY_MAP = {
   'helpers_dropdown': 'OPTION'
 };
 
-Blockly.WarningHandler.keyCacheHelper = function(block){
-	var prefix = {'text':'str:','math_number':'num:','component_component_block':'com:','helpers_dropdown':'dropdown:'};
-	var value = prefix[block.type] + block.getFieldValue(Blockly.WarningHandler.SPECIAL_KEY_MAP[block.type]);
-	return value; 
-}
+Blockly.WarningHandler.keyCacheHelper = function(block) {
+  var prefix = {'text':'str:','math_number':'num:','component_component_block':'com:','helpers_dropdown':'dropdown:'};
+  var value = prefix[block.type] + block.getFieldValue(Blockly.WarningHandler.SPECIAL_KEY_MAP[block.type]);
+  return value;
+};
 
 Blockly.WarningHandler.prototype['buildDuplicateDictKeysMap'] = function(block) {
   // Assuming block is a dictionaries_create_with block
-	/**
-	 * Maps unique keys to last block ID seen in the dictionary
-	 * @type{{str: str}}
-	 */
-  /* 
+  /**
+   * Maps unique keys to last block ID seen in the dictionary
+   * @type{{str: str}}
+   */
+  /*
    * {
    *   'str:a': '89awy50b-ugayat47g'
    * }
    */
-	var keyValues = new Object(null);
-	var keyBlocks = block.inputList.map(function(input) {
-	  var target = input.connection.targetBlock();
-	  if (target) {
-	    return target.getInput('KEY').connection.targetBlock();
-	  }
-	});
-	for (var i = keyBlocks.length - 1; i >= 0; i--) {
-	  var block = keyBlocks[i];
-	  // 4 blocks:
-	  // 1. text
-	  // 2. math_number
-	  // 3. component_component_block
-	  // 4. helpers_dropdown
-		var value = Blockly.WarningHandler.keyCacheHelper(block.type);
-		if (!(value in keyValues)) {
-	        keyValues[value] = block.id;
-		}
-	}
-	block.keyCache = keyValues;
+  var keyValues = new Object(null);
+  var keyBlocks = block.inputList.map(function(input) {
+    var pair = input.connection.targetBlock();
+    if (pair) {
+      return pair.getInput('KEY').connection.targetBlock();
+    }
+  });
+  for (var i = keyBlocks.length - 1; i >= 0; i--) {
+    var keyBlock = keyBlocks[i];
+    if (!keyBlock) {
+      continue;  // some pair blocks may not have keys yet
+    }
+    // 4 blocks:
+    // 1. text
+    // 2. math_number
+    // 3. component_component_block
+    // 4. helpers_dropdown
+    var value = Blockly.WarningHandler.keyCacheHelper(keyBlock);
+    if (!(value in keyValues)) {
+      keyValues[value] = keyBlock.id;
+    }
+  }
+  block.keyCache = keyValues;
 };
 
 
 Blockly.WarningHandler.prototype['checkIfIAmADuplicateKey'] = function(block) {
-  var parentblock = block.getParent();
-	var blockkey = block.getInput('KEY').connection.targetBlock();
-  if (!blockkey) return; //if key is empty 
-  var fieldName = Blockly.WarningHandler.SPECIAL_KEY_MAP[blockkey.type];
+  var parentBlock = block.getParent();
+  var keyBlock = block.getInput('KEY').connection.targetBlock();
+  if (!keyBlock) return; //if key is empty
+  var fieldName = Blockly.WarningHandler.SPECIAL_KEY_MAP[keyBlock.type];
   if (!fieldName) return; //if not one of the four we are checking
-  var fieldValue = blockkey.getFieldValue(fieldName);
-	var lookupKey = Blockly.WarningHandler.keyCacheHelper(blockkey);
-	
-	if (parentblock){
-		if (parentblock.keyCache && block.id != parentblock.keyCache[lookupKey]) {
-			var warningMessage = Blockly.Msg.DUPLICATE_KEY_BLOCK_WARNINGS;
-	    block.setWarningText(warningMessage);
-	    return true;
-	  } else {
-	    return false;
+  var lookupKey = Blockly.WarningHandler.keyCacheHelper(keyBlock);
+
+  if (parentBlock){
+    if (parentBlock.keyCache && keyBlock.id != parentBlock.keyCache[lookupKey]) {
+      var warningMessage = Blockly.Msg.DUPLICATE_KEY_BLOCK_WARNINGS;
+      block.setWarningText(warningMessage);
+      return true;
+    } else {
+      return false;
     }
-	}
-	return false; 
+  }
+  return false;
 };
 

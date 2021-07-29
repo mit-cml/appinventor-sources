@@ -159,7 +159,7 @@ Blockly.Blocks['dictionaries_create_with'] = {
         mutatorAttributes: { items: 2 } },
       { translatedName: Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE,
         mutatorAttributes: { items: 0 } }],
-  errors: [{name: 'buildDuplicateDictKeysMap'}]
+  warnings: [{name: 'buildDuplicateDictKeysMap'}]
 };
 
 Blockly.Blocks['dictionaries_mutator_pair'] = {
@@ -192,7 +192,7 @@ Blockly.Blocks['pair'] = {
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE }],
   //add a warning here. 
-  errors: [{name: 'checkIfIAmADuplicateKey'}]
+  warnings: [{name: 'checkIfIAmADuplicateKey'}]
 };
 
 Blockly.Blocks['dictionaries_lookup'] = {
