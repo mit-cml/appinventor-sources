@@ -97,8 +97,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   private float fontSizeMain;
   private float fontSizeDetail;
-  private int fontTypeface;
-  private int fontTypeDetail;
+  private String fontTypeface;
+  private String fontTypeDetail;
 
   private int imageWidth;
   private int imageHeight;
@@ -692,7 +692,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
           category = PropertyCategory.APPEARANCE,
           userVisible = false)
-  public int FontTypeface() {
+  public String FontTypeface() {
     return fontTypeface;
   }
 
@@ -709,7 +709,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
           userVisible = false)
-  public void FontTypeface(int typeface) {
+  public void FontTypeface(String typeface) {
     fontTypeface = typeface;
     setAdapterData();
   }
@@ -726,7 +726,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
           category = PropertyCategory.APPEARANCE,
           userVisible = false)
-  public int FontTypefaceDetail() {
+  public String FontTypefaceDetail() {
     return fontTypeDetail;
   }
 
@@ -743,7 +743,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
           userVisible = false)
-  public void FontTypefaceDetail(int typeface) {
+  public void FontTypefaceDetail(String typeface) {
     fontTypeDetail = typeface;
     setAdapterData();
   }

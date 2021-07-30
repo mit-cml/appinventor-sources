@@ -42,8 +42,8 @@ import com.google.appinventor.components.runtime.util.YailList;
   private float textMainSize;
   private int textDetailColor;
   private float textDetailSize;
-  private int textMainFont;
-  private int textDetailFont;
+  private String textMainFont;
+  private String textDetailFont;
 
   private int layoutType;
   private int backgroundColor;
@@ -59,7 +59,7 @@ import com.google.appinventor.components.runtime.util.YailList;
   public boolean isSelected = false;
 
   private int idFirst = -1, idSecond = -1, idImages = -1, idCard = 1;
-  public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, float textMainSize, float textDetailSize, int textMainFont, int textDetailFont, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
+  public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, float textMainSize, float textDetailSize, String textMainFont, String textDetailFont, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
     this.items = items;
     this.container = container;
     this.textMainSize = textMainSize;
@@ -82,7 +82,7 @@ import com.google.appinventor.components.runtime.util.YailList;
     Arrays.fill(isVisible, Boolean.TRUE);
   }
 
-  public ListAdapterWithRecyclerView(ComponentContainer container, YailList stringItems, int textMainColor, float textMainSize, int textMainFont, int backgroundColor, int selectionColor) {
+  public ListAdapterWithRecyclerView(ComponentContainer container, YailList stringItems, int textMainColor, float textMainSize, String textMainFont, int backgroundColor, int selectionColor) {
     // Legacy Support
     this.container = container;
     this.textMainSize = textMainSize;
@@ -90,7 +90,7 @@ import com.google.appinventor.components.runtime.util.YailList;
     this.textMainFont = textMainFont;
     this.textDetailColor = textMainColor;
     this.textDetailSize = 0;
-    this.textDetailFont = 0;
+    this.textDetailFont = Component.TYPEFACE_DEFAULT;
     this.layoutType = Component.LISTVIEW_LAYOUT_SINGLE_TEXT;
     this.backgroundColor = backgroundColor;
     this.selectionColor = selectionColor;
@@ -183,7 +183,7 @@ import com.google.appinventor.components.runtime.util.YailList;
     textViewFirst.setLayoutParams(layoutParams1);
     textViewFirst.setTextSize(textMainSize);
     textViewFirst.setTextColor(textMainColor);
-    TextViewUtil.setFontTypeface(textViewFirst, textMainFont, false, false);
+    TextViewUtil.setFontTypeface(container.$form(), textViewFirst, textMainFont, false, false);
     LinearLayout linearLayout1 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     linearLayout1.setLayoutParams(layoutParamslinear1);
@@ -209,7 +209,7 @@ import com.google.appinventor.components.runtime.util.YailList;
       textViewSecond.setId(idSecond);
       LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
       textViewSecond.setTextSize(textDetailSize);
-      TextViewUtil.setFontTypeface(textViewSecond, textDetailFont, false, false);
+      TextViewUtil.setFontTypeface(container.$form(), textViewSecond, textDetailFont, false, false);
       textViewSecond.setTextColor(textDetailColor);
       if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT || layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
         layoutParams2.topMargin = 10;
