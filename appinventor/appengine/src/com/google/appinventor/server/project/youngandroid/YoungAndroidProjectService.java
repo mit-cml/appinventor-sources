@@ -165,22 +165,26 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     primaryColor = Strings.nullToEmpty(primaryColor);
     primaryColorDark = Strings.nullToEmpty(primaryColorDark);
     accentColor = Strings.nullToEmpty(accentColor);
-    return "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":{" +
-        "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" + icon +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"" + vCode +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"" + vName +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"" + useslocation +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"" + aName +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"" + sizing +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON + "\":\"" + showListsAsJson +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL + "\":\"" + tutorialURL +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET + "\":\"" + subsetJSON +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR + "\":\"" + actionBar +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME + "\":\"" + theme +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR + "\":\"" + primaryColor +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK + "\":\"" + primaryColorDark +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR + "\":\"" + accentColor +
-        "\"}}";
+
+    JSONObject settingsJson = new JSONObject();
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON, icon);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE, vCode);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME, vName);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION, useslocation);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME, aName);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING, sizing);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON, showListsAsJson);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL, tutorialURL);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, subsetJSON);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR, actionBar);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME, theme);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR, primaryColor);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, primaryColorDark);
+    settingsJson.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, accentColor);
+
+    JSONObject projectSettingsJson = new JSONObject();
+    projectSettingsJson.put(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, settingsJson);
+    return projectSettingsJson.toString();
   }
 
   /**
@@ -197,54 +201,57 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String icon, String vcode, String vname, String useslocation, String aname,
     String sizing, String showListsAsJson, String tutorialURL, String subsetJSON, String actionBar, String theme,
     String primaryColor, String primaryColorDark, String accentColor) {
-    String contents = "main=" + qualifiedName + "\n" +
-        "name=" + projectName + '\n' +
-        "assets=../" + ASSETS_FOLDER + "\n" +
-        "source=../" + SRC_FOLDER + "\n" +
-        "build=../build\n";
-    if (icon != null && !icon.isEmpty()) {
-      contents += "icon=" + icon + "\n";
+
+    Properties projectProperties = new Properties();
+    projectProperties.setProperty("main", qualifiedName);
+    projectProperties.setProperty("name", projectName);
+    projectProperties.setProperty("assets", "../" + ASSETS_FOLDER);
+    projectProperties.setProperty("source", "../" + SRC_FOLDER);
+    projectProperties.setProperty("build", "../build");
+
+    if (Strings.isNullOrEmpty(icon)) {
+      projectProperties.setProperty("icon", icon);
     }
-    if (vcode != null && !vcode.isEmpty()) {
-      contents += "versioncode=" + vcode + "\n";
+    if (Strings.isNullOrEmpty(vcode)) {
+      projectProperties.setProperty("versioncode", vcode);
     }
-    if (vname != null && !vname.isEmpty()) {
-      contents += "versionname=" + vname + "\n";
+    if (Strings.isNullOrEmpty(vname)) {
+      projectProperties.setProperty("versionname", vname);
     }
-    if (useslocation != null && !useslocation.isEmpty()) {
-      contents += "useslocation=" + useslocation + "\n";
+    if (Strings.isNullOrEmpty(useslocation)) {
+      projectProperties.setProperty("useslocation", useslocation);
     }
-    if (aname != null) {
-      contents += "aname=" + aname + "\n";
+    if (Strings.isNullOrEmpty(aname)) {
+      projectProperties.setProperty("aname", aname);
     }
-    if (sizing != null && !sizing.isEmpty()) {
-      contents += "sizing=" + sizing + "\n";
+    if (Strings.isNullOrEmpty(sizing)) {
+      projectProperties.setProperty("sizing", sizing);
     }
-    if (showListsAsJson != null && !showListsAsJson.isEmpty()) {
-      contents += "showlistsasjson=" + showListsAsJson + "\n";
+    if (Strings.isNullOrEmpty(showListsAsJson)) {
+      projectProperties.setProperty("showlistsasjson", showListsAsJson);
     }
-    if (tutorialURL != null && !tutorialURL.isEmpty()) {
-      contents += "tutorialurl=" + tutorialURL + "\n";
+    if (Strings.isNullOrEmpty(tutorialURL)) {
+      projectProperties.setProperty("tutorialurl", tutorialURL);
     }
-    if (subsetJSON != null && !subsetJSON.isEmpty()) {
-      contents += "subsetjson=" + subsetJSON + "\n";
+    if (Strings.isNullOrEmpty(subsetJSON)) {
+      projectProperties.setProperty("subsetjson", subsetJSON);
     }
-    if (actionBar != null && !actionBar.isEmpty()) {
-      contents += "actionbar=" + actionBar + "\n";
+    if (Strings.isNullOrEmpty(actionBar)) {
+      projectProperties.setProperty("actionbar", actionBar);
     }
-    if (theme != null && !theme.isEmpty()) {
-      contents += "theme=" + theme + "\n";
+    if (Strings.isNullOrEmpty(theme)) {
+      projectProperties.setProperty("theme", theme);
     }
-    if (primaryColor != null && !primaryColor.isEmpty()) {
-      contents += "color.primary=" + primaryColor + "\n";
+    if (Strings.isNullOrEmpty(primaryColor)) {
+      projectProperties.setProperty("color.primary", primaryColor);
     }
-    if (primaryColorDark != null && !primaryColorDark.isEmpty()) {
-      contents += "color.primary.dark=" + primaryColorDark + "\n";
+    if (Strings.isNullOrEmpty(primaryColorDark)) {
+      projectProperties.setProperty("color.primary.dark", primaryColorDark);
     }
-    if (accentColor != null && !accentColor.isEmpty()) {
-      contents += "color.accent=" + accentColor + "\n";
+    if (Strings.isNullOrEmpty(accentColor)) {
+      projectProperties.setProperty("color.accent", accentColor);
     }
-    return contents;
+    return projectProperties.toString();
   }
 
   /**
