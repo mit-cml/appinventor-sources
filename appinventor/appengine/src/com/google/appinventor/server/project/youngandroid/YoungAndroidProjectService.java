@@ -209,46 +209,46 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     projectProperties.setProperty("source", "../" + SRC_FOLDER);
     projectProperties.setProperty("build", "../build");
 
-    if (Strings.isNullOrEmpty(icon)) {
+    if (!Strings.isNullOrEmpty(icon)) {
       projectProperties.setProperty("icon", icon);
     }
-    if (Strings.isNullOrEmpty(vcode)) {
+    if (!Strings.isNullOrEmpty(vcode)) {
       projectProperties.setProperty("versioncode", vcode);
     }
-    if (Strings.isNullOrEmpty(vname)) {
+    if (!Strings.isNullOrEmpty(vname)) {
       projectProperties.setProperty("versionname", vname);
     }
-    if (Strings.isNullOrEmpty(useslocation)) {
+    if (!Strings.isNullOrEmpty(useslocation)) {
       projectProperties.setProperty("useslocation", useslocation);
     }
-    if (Strings.isNullOrEmpty(aname)) {
+    if (!Strings.isNullOrEmpty(aname)) {
       projectProperties.setProperty("aname", aname);
     }
-    if (Strings.isNullOrEmpty(sizing)) {
+    if (!Strings.isNullOrEmpty(sizing)) {
       projectProperties.setProperty("sizing", sizing);
     }
-    if (Strings.isNullOrEmpty(showListsAsJson)) {
+    if (!Strings.isNullOrEmpty(showListsAsJson)) {
       projectProperties.setProperty("showlistsasjson", showListsAsJson);
     }
-    if (Strings.isNullOrEmpty(tutorialURL)) {
+    if (!Strings.isNullOrEmpty(tutorialURL)) {
       projectProperties.setProperty("tutorialurl", tutorialURL);
     }
-    if (Strings.isNullOrEmpty(subsetJSON)) {
+    if (!Strings.isNullOrEmpty(subsetJSON)) {
       projectProperties.setProperty("subsetjson", subsetJSON);
     }
-    if (Strings.isNullOrEmpty(actionBar)) {
+    if (!Strings.isNullOrEmpty(actionBar)) {
       projectProperties.setProperty("actionbar", actionBar);
     }
-    if (Strings.isNullOrEmpty(theme)) {
+    if (!Strings.isNullOrEmpty(theme)) {
       projectProperties.setProperty("theme", theme);
     }
-    if (Strings.isNullOrEmpty(primaryColor)) {
+    if (!Strings.isNullOrEmpty(primaryColor)) {
       projectProperties.setProperty("color.primary", primaryColor);
     }
-    if (Strings.isNullOrEmpty(primaryColorDark)) {
+    if (!Strings.isNullOrEmpty(primaryColorDark)) {
       projectProperties.setProperty("color.primary.dark", primaryColorDark);
     }
-    if (Strings.isNullOrEmpty(accentColor)) {
+    if (!Strings.isNullOrEmpty(accentColor)) {
       projectProperties.setProperty("color.accent", accentColor);
     }
     return projectProperties.toString();
