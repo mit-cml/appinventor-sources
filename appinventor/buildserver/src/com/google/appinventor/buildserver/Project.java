@@ -96,6 +96,16 @@ public final class Project {
   private static final String COLOR_PRIMARY_DARKTAG = "color.primary.dark";
   private static final String COLOR_ACCENTTAG = "color.accent";
 
+  private static final String DEFAULT_APP_NAME = "AI2 App"; // Do not leave it empty because even though it compiles
+                                                            // alright but Android OS can't install it!
+  private static final String DEFAULT_VERSION_CODE = "1";
+  private static final String DEFAULT_VERSION_NAME = "1.0";
+  private static final String DEFAULT_MIN_SDK = "7";
+  private static final String DEFAULT_COLOR_PRIMARY = "#A5CF47";
+  private static final String DEFAULT_COLOR_PRIMARY_DARK = "#41521C";
+  private static final String DEFAULT_COLOR_ACCENT = "#00728A";
+  private static final String DEFAULT_COLOR_THEME = "Classic";
+
   // Table containing project properties
   private Properties properties;
 
@@ -214,7 +224,7 @@ public final class Project {
    * @return  version code
    */
   public String getVCode() {
-    return properties.getProperty(VCODETAG);
+    return properties.getProperty(VCODETAG, DEFAULT_VERSION_CODE);
   }
 
   /**
@@ -232,7 +242,7 @@ public final class Project {
    * @return  version name
    */
   public String getVName() {
-    return properties.getProperty(VNAMETAG);
+    return properties.getProperty(VNAMETAG, DEFAULT_VERSION_NAME);
   }
 
   /**
@@ -263,7 +273,7 @@ public final class Project {
    */
   public String getAName() {
     //The non-English character set can't be shown properly and need special encoding.
-    String appName = properties.getProperty(ANAMETAG);
+    String appName = properties.getProperty(ANAMETAG, DEFAULT_APP_NAME);
     try {
       appName = new String(appName.getBytes("ISO-8859-1"), "UTF-8");
     } catch (UnsupportedEncodingException e) {
@@ -287,7 +297,7 @@ public final class Project {
    * @return  the minimum Android sdk
    */
   public String getMinSdk() {
-    return properties.getProperty(ANDROID_MIN_SDK_TAG, "7");
+    return properties.getProperty(ANDROID_MIN_SDK_TAG, DEFAULT_MIN_SDK);
   }
 
   /**
@@ -305,7 +315,7 @@ public final class Project {
    * @return  primary color, or null if the default is requested
    */
   public String getPrimaryColor() {
-    return properties.getProperty(COLOR_PRIMARYTAG);
+    return properties.getProperty(COLOR_PRIMARYTAG, DEFAULT_COLOR_PRIMARY);
   }
 
   /**
@@ -314,7 +324,7 @@ public final class Project {
    * @return  dark primary color, or null if the default is requested
    */
   public String getPrimaryColorDark() {
-    return properties.getProperty(COLOR_PRIMARY_DARKTAG);
+    return properties.getProperty(COLOR_PRIMARY_DARKTAG, DEFAULT_COLOR_PRIMARY_DARK);
   }
 
   /**
@@ -323,7 +333,7 @@ public final class Project {
    * @return  accent color, or null if the default is requested
    */
   public String getAccentColor() {
-    return properties.getProperty(COLOR_ACCENTTAG);
+    return properties.getProperty(COLOR_ACCENTTAG, DEFAULT_COLOR_ACCENT);
   }
 
   /**
@@ -332,7 +342,7 @@ public final class Project {
    * @return  theme, or null if the default is requested
    */
   public String getTheme() {
-    return properties.getProperty(COLOR_THEMETAG);
+    return properties.getProperty(COLOR_THEMETAG, DEFAULT_COLOR_THEME);
   }
 
   /**

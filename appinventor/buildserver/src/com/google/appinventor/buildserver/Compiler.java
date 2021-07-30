@@ -112,12 +112,7 @@ public final class Compiler {
   private static final String ASSET_DIR_NAME = "assets";
   private static final String EXT_COMPS_DIR_NAME = "external_comps";
 
-  private static final String DEFAULT_APP_NAME = "";
   private static final String DEFAULT_ICON = RUNTIME_FILES_DIR + "ya.png";
-  private static final String DEFAULT_VERSION_CODE = "1";
-  private static final String DEFAULT_VERSION_NAME = "1.0";
-  private static final String DEFAULT_MIN_SDK = "7";
-  private static final String DEFAULT_THEME = "AppTheme.Light.DarkActionBar";
 
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
@@ -846,10 +841,10 @@ public final class Compiler {
    * Create the default color and styling for the app.
    */
   private boolean createValuesXml(File valuesDir, String suffix) {
-    String colorPrimary = project.getPrimaryColor() == null ? "#A5CF47" : project.getPrimaryColor();
-    String colorPrimaryDark = project.getPrimaryColorDark() == null ? "#41521C" : project.getPrimaryColorDark();
-    String colorAccent = project.getAccentColor() == null ? "#00728A" : project.getAccentColor();
-    String theme = project.getTheme() == null ? "Classic" : project.getTheme();
+    String colorPrimary = project.getPrimaryColor();
+    String colorPrimaryDark = project.getPrimaryColorDark();
+    String colorAccent = project.getAccentColor();
+    String theme = project.getTheme();
     String actionbar = project.getActionBar();
     String parentTheme;
     boolean isClassicTheme = "Classic".equals(theme) || suffix.isEmpty();  // Default to classic theme prior to SDK 11
@@ -1010,14 +1005,14 @@ public final class Compiler {
     String packageName = Signatures.getPackageName(mainClass);
     String className = Signatures.getClassName(mainClass);
     String projectName = project.getProjectName();
-    String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
-    String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanName(project.getVName());
+    String vCode = project.getVCode();
+    String vName = cleanName(project.getVName());
     if (includeDangerousPermissions) {
       vName += "u";
     }
-    String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
-    LOG.log(Level.INFO, "VCode: " + project.getVCode());
-    LOG.log(Level.INFO, "VName: " + project.getVName());
+    String aName = cleanName(project.getAName());
+    LOG.log(Level.INFO, "VCode: " + vCode);
+    LOG.log(Level.INFO, "VName: " + vName);
 
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
@@ -1056,7 +1051,7 @@ public final class Compiler {
         }
       }
 
-      int minSdk = Integer.parseInt((project.getMinSdk() == null) ? DEFAULT_MIN_SDK : project.getMinSdk());
+      int minSdk = Integer.parseInt(project.getMinSdk());
       if (!isForCompanion) {
         for (Set<String> minSdks : minSdksNeeded.values()) {
           for (String sdk : minSdks) {
