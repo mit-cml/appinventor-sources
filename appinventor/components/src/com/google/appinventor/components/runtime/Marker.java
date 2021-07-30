@@ -5,6 +5,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.Asset;
@@ -87,6 +90,10 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * Height of the marker
    */
   private int height = LENGTH_PREFERRED;
+
+  private volatile boolean pendingUpdate = false;
+
+  private final Handler handler = new Handler(Looper.getMainLooper());
 
   private static final MapFeatureVisitor<Double> distanceComputation = new MapFeatureVisitor<Double>() {
     @Override
@@ -424,7 +431,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @SimpleProperty
   public void Width(int width) {
     this.width = width;
-    map.getController().updateFeatureSize(this);
+    setNeedsUpdate();
   }
 
   /**
@@ -451,7 +458,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void WidthPercent(int pCent) {
     this.width = LENGTH_PERCENT_TAG - pCent;
-    map.getController().updateFeatureSize(this);
+    setNeedsUpdate();
   }
 
   /**
@@ -463,7 +470,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @SimpleProperty
   public void Height(int height) {
     this.height = height;
-    map.getController().updateFeatureSize(this);
+    setNeedsUpdate();
   }
 
   /**
@@ -490,7 +497,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void HeightPercent(int pCent) {
     this.height = LENGTH_PERCENT_TAG - pCent;
-    map.getController().updateFeatureSize(this);
+    setNeedsUpdate();
   }
 
   /**
@@ -591,5 +598,23 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @Override
   protected Geometry computeGeometry() {
     return GeometryUtil.createGeometry(location);
+  }
+
+  private void setNeedsUpdate() {
+    synchronized (this) {
+      if (pendingUpdate) {
+        return;
+      }
+      pendingUpdate = true;
+      handler.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          map.getController().updateFeatureImage(Marker.this);
+          synchronized (Marker.this) {
+            pendingUpdate = false;
+          }
+        }
+      }, 1);
+    }
   }
 }

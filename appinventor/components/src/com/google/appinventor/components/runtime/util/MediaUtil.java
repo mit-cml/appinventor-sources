@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -448,17 +449,35 @@ public class MediaUtil {
   }
 
   /**
+   * Loads the image specified by mediaPath and returns a {@link Drawable}.
+   *
+   * <p/>If mediaPath is null or empty, null is returned.
+   *
+   * @param form the Form
+   * @param mediaPath the path to the media
+   * @param continuation An AsyncCallbackPair that will receive a BitmapDrawable on success.
+   *                     On exception or failure the appropriate handler will be triggered.
+   */
+  public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
+       final AsyncCallbackPair<BitmapDrawable> continuation) {
+    getBitmapDrawableAsync(form, mediaPath, -1, -1, continuation);
+  }
+
+  /**
    * Loads the image specified by mediaPath and returns a Drawable.
    *
    * <p/>If mediaPath is null or empty, null is returned.
    *
    * @param form the Form
    * @param mediaPath the path to the media
-   * @param continuation An AsyncCallbackPair that will receive a
-   * BitmapDrawable on success. On exception or failure the appropriate
-   * handler will be triggered.
+   * @param desiredWidth the desired width of the image
+   * @param desiredHeight the desired height of the image
+   * @param continuation An AsyncCallbackPair that will receive a BitmapDrawable on success.
+   *                     On exception or failure the appropriate handler will be triggered.
    */
-  public static void getBitmapDrawableAsync(final Form form, final String mediaPath, final AsyncCallbackPair<BitmapDrawable> continuation) {
+  public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
+      final int desiredWidth, final int desiredHeight,
+      final AsyncCallbackPair<BitmapDrawable> continuation) {
     if (mediaPath == null || mediaPath.length() == 0) {
       continuation.onSuccess(null);
       return;
@@ -540,12 +559,15 @@ public class MediaUtil {
           //   5. set the density in the scaled bitmap.
 
           originalBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
-          if ((options.inSampleSize != 1) || (form.deviceDensity() == 1.0f)) {
+          boolean needsResize = desiredWidth > 0 && desiredHeight >= 0;
+          if (!needsResize && (options.inSampleSize != 1 || form.deviceDensity() == 1.0f)) {
             continuation.onSuccess(originalBitmapDrawable);
             return;
           }
-          int scaledWidth = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicWidth());
-          int scaledHeight = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicHeight());
+          int scaledWidth = (int) (form.deviceDensity()
+              * (desiredWidth > 0 ? desiredWidth : originalBitmapDrawable.getIntrinsicWidth()));
+          int scaledHeight = (int) (form.deviceDensity()
+              * (desiredHeight > 0 ? desiredHeight : originalBitmapDrawable.getIntrinsicHeight()));
           Log.d(LOG_TAG, "form.deviceDensity() = " + form.deviceDensity());
           Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicWidth() = " + originalBitmapDrawable.getIntrinsicWidth());
           Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicHeight() = " + originalBitmapDrawable.getIntrinsicHeight());
