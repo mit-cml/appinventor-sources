@@ -508,7 +508,7 @@ public class MediaUtil {
         } catch (PermissionException e) {
           continuation.onFailure("PERMISSION_DENIED:" + e.getPermissionNeeded());
           return;
-        } catch(IOException e) {
+        } catch (IOException e) {
           if (mediaSource == MediaSource.CONTACT_URI) {
             // There's no photo for this contact, return a placeholder image.
             BitmapDrawable drawable = new BitmapDrawable(form.getResources(),
@@ -524,7 +524,7 @@ public class MediaUtil {
           if (is != null) {
             try {
               is.close();
-            } catch(IOException e) {
+            } catch (IOException e) {
               // suppress error on close
               Log.w(LOG_TAG, "Unexpected error on close", e);
             }
@@ -532,7 +532,7 @@ public class MediaUtil {
           is = null;
           try {
             bos.close();
-          } catch(IOException e) {
+          } catch (IOException e) {
             // Should never fail to close a ByteArrayOutputStream
           }
           bos = null;
@@ -544,7 +544,8 @@ public class MediaUtil {
           bis.mark(read);
           BitmapFactory.Options options = getBitmapOptions(form, bis, mediaPath);
           bis.reset();
-          BitmapDrawable originalBitmapDrawable = new BitmapDrawable(form.getResources(), decodeStream(bis, null, options));
+          BitmapDrawable originalBitmapDrawable = new BitmapDrawable(form.getResources(),
+              decodeStream(bis, null, options));
           // If options.inSampleSize == 1, then the image was not unreasonably large and may represent
           // the actual size the user intended for the image. However we still have to scale it by
           // the device density.
@@ -569,23 +570,26 @@ public class MediaUtil {
           int scaledHeight = (int) (form.deviceDensity()
               * (desiredHeight > 0 ? desiredHeight : originalBitmapDrawable.getIntrinsicHeight()));
           Log.d(LOG_TAG, "form.deviceDensity() = " + form.deviceDensity());
-          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicWidth() = " + originalBitmapDrawable.getIntrinsicWidth());
-          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicHeight() = " + originalBitmapDrawable.getIntrinsicHeight());
+          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicWidth() = "
+              + originalBitmapDrawable.getIntrinsicWidth());
+          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicHeight() = "
+              + originalBitmapDrawable.getIntrinsicHeight());
           Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmapDrawable.getBitmap(),
               scaledWidth, scaledHeight, false);
-          BitmapDrawable scaledBitmapDrawable = new BitmapDrawable(form.getResources(), scaledBitmap);
+          BitmapDrawable scaledBitmapDrawable =
+              new BitmapDrawable(form.getResources(), scaledBitmap);
           scaledBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
           originalBitmapDrawable = null; // So it will get GC'd on the next line
           System.gc();                   // We likely used a lot of memory, so gc now.
           continuation.onSuccess(scaledBitmapDrawable);
-        } catch(Exception e) {
+        } catch (Exception e) {
           Log.w(LOG_TAG, "Exception while loading media.", e);
           continuation.onFailure(e.getMessage());
         } finally {
           if (bis != null) {
             try {
               bis.close();
-            } catch(IOException e) {
+            } catch (IOException e) {
               // suppress error on close
               Log.w(LOG_TAG, "Unexpected error on close", e);
             }

@@ -52,9 +52,9 @@ import org.osmdroid.util.GeoPoint;
  */
 @DesignerComponent(version = YaVersion.MARKER_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
-    description = "<p>An icon positioned at a point to indicate information on a map. Markers " +
-        "can be used to provide an info window, custom fill and stroke colors, and custom " +
-        "images to convey information to the user.</p>")
+    description = "<p>An icon positioned at a point to indicate information on a map. Markers "
+        + "can be used to provide an info window, custom fill and stroke colors, and custom "
+        + "images to convey information to the user.</p>")
 @SimpleObject
 @UsesLibraries(libraries = "osmdroid.aar, androidsvg.jar")
 public class Marker extends MapFeatureBaseWithFill implements MapMarker {
@@ -235,7 +235,8 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   public void Latitude(double latitude) {
     Log.d(TAG, "Latitude");
     if (latitude < -90 || latitude > 90) {
-      container.$form().dispatchErrorOccurredEvent(this, "Latitude", ErrorMessages.ERROR_INVALID_LATITUDE, latitude);
+      container.$form().dispatchErrorOccurredEvent(this, "Latitude",
+          ErrorMessages.ERROR_INVALID_LATITUDE, latitude);
     } else {
       location.setLatitude(latitude);
       clearGeometry();
@@ -265,7 +266,8 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   public void Longitude(double longitude) {
     Log.d(TAG, "Longitude");
     if (longitude < -180 || longitude > 180) {
-      container.$form().dispatchErrorOccurredEvent(this, "Longitude", ErrorMessages.ERROR_INVALID_LONGITUDE, longitude);
+      container.$form().dispatchErrorOccurredEvent(this, "Longitude",
+          ErrorMessages.ERROR_INVALID_LONGITUDE, longitude);
     } else {
       location.setLongitude(longitude);
       clearGeometry();
@@ -292,15 +294,15 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   public void ImageAsset(@Asset String path) {
     Log.d(TAG, "ImageAsset");
     this.imagePath = path;
-    map.getController().updateFeatureImage(this);
+    setNeedsUpdate();
   }
 
   /**
    * Specifies the image shown for the `Marker`. If set to the empty string "", then the default
    * marker icon will be used.
    */
-  @SimpleProperty(description = "The ImageAsset property is used to provide an alternative image " +
-      "for the Marker.")
+  @SimpleProperty(description = "The ImageAsset property is used to provide an alternative image "
+      + "for the Marker.")
   public String ImageAsset() {
     return imagePath;
   }
@@ -443,7 +445,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     if (this.width == LENGTH_FILL_PARENT) {
       return map.getView().getWidth();
     } else if (this.width < LENGTH_PERCENT_TAG) {
-      return (int)(((double) -this.width + LENGTH_PERCENT_TAG)/100.0 * map.getView().getWidth());
+      return (int)(((double) -this.width + LENGTH_PERCENT_TAG) / 100.0 * map.getView().getWidth());
     }
     return this.width;
   }
@@ -482,7 +484,8 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
     if (this.height == LENGTH_FILL_PARENT) {
       return map.getView().getHeight();
     } else if (this.height < LENGTH_PERCENT_TAG) {
-      return (int)(((double) -this.height + LENGTH_PERCENT_TAG)/100.0 * map.getView().getHeight());
+      return (int)(((double) -this.height + LENGTH_PERCENT_TAG) / 100.0
+          * map.getView().getHeight());
     }
     return this.height;
   }
@@ -537,8 +540,8 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * @return
    */
   @SuppressWarnings("squid:S00100")
-  @SimpleFunction(description = "Compute the distance, in meters, between a Marker and a " +
-      "latitude, longitude point.")
+  @SimpleFunction(description = "Compute the distance, in meters, between a Marker and a "
+      + "latitude, longitude point.")
   public double DistanceToPoint(double latitude, double longitude) {
     return GeometryUtil.distanceBetween(this, new GeoPoint(latitude, longitude));
   }
@@ -552,9 +555,8 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * @return
    */
   @SuppressWarnings("squid:S00100")
-  @SimpleFunction(description = "Returns the bearing from the Marker to the given latitude and " +
-      "longitude, in degrees " +
-      "from due north.")
+  @SimpleFunction(description = "Returns the bearing from the Marker to the given latitude and "
+      + "longitude, in degrees from due north.")
   public double BearingToPoint(double latitude, double longitude) {
     return location.bearingTo(new GeoPoint(latitude, longitude));
   }
@@ -571,10 +573,10 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * @return The bearing in degrees east of due north
    */
   @SuppressWarnings("squid:S00100")
-  @SimpleFunction(description = "Returns the bearing from the Marker to the given map feature, " +
-      "in degrees from due north. If the centroids parameter is true, the bearing will be to the " +
-      "center of the map feature. Otherwise, the bearing will be computed to the point in the " +
-      "feature nearest the Marker.")
+  @SimpleFunction(description = "Returns the bearing from the Marker to the given map feature, "
+      + "in degrees from due north. If the centroids parameter is true, the bearing will be to the "
+      + "center of the map feature. Otherwise, the bearing will be computed to the point in the "
+      + "feature nearest the Marker.")
   public double BearingToFeature(MapFactory.MapFeature mapFeature, final boolean centroids) {
     return mapFeature == null ? -1 : mapFeature.accept(bearingComputation, this, centroids);
   }
