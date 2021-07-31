@@ -179,6 +179,10 @@ public class RadioGroup extends AndroidViewComponent implements Component, Compo
   public void setBaselineAligned(boolean baselineAligned) { 
     layoutManager.setBaselineAligned(baselineAligned); 
   }
+
+  public ComponentContainer container() {
+    return this.container;
+  }
   
   // ComponentContainer Implementation
 
