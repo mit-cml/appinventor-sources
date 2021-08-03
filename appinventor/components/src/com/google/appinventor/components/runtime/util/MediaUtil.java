@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -448,17 +449,35 @@ public class MediaUtil {
   }
 
   /**
+   * Loads the image specified by mediaPath and returns a {@link Drawable}.
+   *
+   * <p/>If mediaPath is null or empty, null is returned.
+   *
+   * @param form the Form
+   * @param mediaPath the path to the media
+   * @param continuation An AsyncCallbackPair that will receive a BitmapDrawable on success.
+   *                     On exception or failure the appropriate handler will be triggered.
+   */
+  public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
+       final AsyncCallbackPair<BitmapDrawable> continuation) {
+    getBitmapDrawableAsync(form, mediaPath, -1, -1, continuation);
+  }
+
+  /**
    * Loads the image specified by mediaPath and returns a Drawable.
    *
    * <p/>If mediaPath is null or empty, null is returned.
    *
    * @param form the Form
    * @param mediaPath the path to the media
-   * @param continuation An AsyncCallbackPair that will receive a
-   * BitmapDrawable on success. On exception or failure the appropriate
-   * handler will be triggered.
+   * @param desiredWidth the desired width of the image
+   * @param desiredHeight the desired height of the image
+   * @param continuation An AsyncCallbackPair that will receive a BitmapDrawable on success.
+   *                     On exception or failure the appropriate handler will be triggered.
    */
-  public static void getBitmapDrawableAsync(final Form form, final String mediaPath, final AsyncCallbackPair<BitmapDrawable> continuation) {
+  public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
+      final int desiredWidth, final int desiredHeight,
+      final AsyncCallbackPair<BitmapDrawable> continuation) {
     if (mediaPath == null || mediaPath.length() == 0) {
       continuation.onSuccess(null);
       return;
@@ -489,7 +508,7 @@ public class MediaUtil {
         } catch (PermissionException e) {
           continuation.onFailure("PERMISSION_DENIED:" + e.getPermissionNeeded());
           return;
-        } catch(IOException e) {
+        } catch (IOException e) {
           if (mediaSource == MediaSource.CONTACT_URI) {
             // There's no photo for this contact, return a placeholder image.
             BitmapDrawable drawable = new BitmapDrawable(form.getResources(),
@@ -505,7 +524,7 @@ public class MediaUtil {
           if (is != null) {
             try {
               is.close();
-            } catch(IOException e) {
+            } catch (IOException e) {
               // suppress error on close
               Log.w(LOG_TAG, "Unexpected error on close", e);
             }
@@ -513,7 +532,7 @@ public class MediaUtil {
           is = null;
           try {
             bos.close();
-          } catch(IOException e) {
+          } catch (IOException e) {
             // Should never fail to close a ByteArrayOutputStream
           }
           bos = null;
@@ -525,7 +544,8 @@ public class MediaUtil {
           bis.mark(read);
           BitmapFactory.Options options = getBitmapOptions(form, bis, mediaPath);
           bis.reset();
-          BitmapDrawable originalBitmapDrawable = new BitmapDrawable(form.getResources(), decodeStream(bis, null, options));
+          BitmapDrawable originalBitmapDrawable = new BitmapDrawable(form.getResources(),
+              decodeStream(bis, null, options));
           // If options.inSampleSize == 1, then the image was not unreasonably large and may represent
           // the actual size the user intended for the image. However we still have to scale it by
           // the device density.
@@ -540,30 +560,36 @@ public class MediaUtil {
           //   5. set the density in the scaled bitmap.
 
           originalBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
-          if ((options.inSampleSize != 1) || (form.deviceDensity() == 1.0f)) {
+          boolean needsResize = desiredWidth > 0 && desiredHeight >= 0;
+          if (!needsResize && (options.inSampleSize != 1 || form.deviceDensity() == 1.0f)) {
             continuation.onSuccess(originalBitmapDrawable);
             return;
           }
-          int scaledWidth = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicWidth());
-          int scaledHeight = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicHeight());
+          int scaledWidth = (int) (form.deviceDensity()
+              * (desiredWidth > 0 ? desiredWidth : originalBitmapDrawable.getIntrinsicWidth()));
+          int scaledHeight = (int) (form.deviceDensity()
+              * (desiredHeight > 0 ? desiredHeight : originalBitmapDrawable.getIntrinsicHeight()));
           Log.d(LOG_TAG, "form.deviceDensity() = " + form.deviceDensity());
-          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicWidth() = " + originalBitmapDrawable.getIntrinsicWidth());
-          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicHeight() = " + originalBitmapDrawable.getIntrinsicHeight());
+          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicWidth() = "
+              + originalBitmapDrawable.getIntrinsicWidth());
+          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicHeight() = "
+              + originalBitmapDrawable.getIntrinsicHeight());
           Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmapDrawable.getBitmap(),
               scaledWidth, scaledHeight, false);
-          BitmapDrawable scaledBitmapDrawable = new BitmapDrawable(form.getResources(), scaledBitmap);
+          BitmapDrawable scaledBitmapDrawable =
+              new BitmapDrawable(form.getResources(), scaledBitmap);
           scaledBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
           originalBitmapDrawable = null; // So it will get GC'd on the next line
           System.gc();                   // We likely used a lot of memory, so gc now.
           continuation.onSuccess(scaledBitmapDrawable);
-        } catch(Exception e) {
+        } catch (Exception e) {
           Log.w(LOG_TAG, "Exception while loading media.", e);
           continuation.onFailure(e.getMessage());
         } finally {
           if (bis != null) {
             try {
               bis.close();
-            } catch(IOException e) {
+            } catch (IOException e) {
               // suppress error on close
               Log.w(LOG_TAG, "Unexpected error on close", e);
             }
