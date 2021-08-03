@@ -89,10 +89,10 @@ public final class YoungAndroidFontTypefaceChoicePropertyEditor extends Addition
       }
     });
     
-    choices.addItem(MESSAGES.defaultFontTypeface());
-    choices.addItem(MESSAGES.sansSerifFontTypeface());
-    choices.addItem(MESSAGES.serifFontTypeface());
-    choices.addItem(MESSAGES.monospaceFontTypeface());
+    choices.addItem("0", MESSAGES.defaultFontTypeface());
+    choices.addItem("1", MESSAGES.sansSerifFontTypeface());
+    choices.addItem( "2", MESSAGES.serifFontTypeface());
+    choices.addItem("3", MESSAGES.monospaceFontTypeface());
     
     // Fill choices with the assets.
     if (assetsFolder != null) {

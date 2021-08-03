@@ -111,10 +111,10 @@ public interface Component {
   /*
    * Typeface constants.
    */
-  static final String TYPEFACE_DEFAULT = "default";
-  static final String TYPEFACE_SANSSERIF = "sans serif";
-  static final String TYPEFACE_SERIF = "serif";
-  static final String TYPEFACE_MONOSPACE = "monospace";
+  static final String TYPEFACE_DEFAULT = "0";
+  static final String TYPEFACE_SANSSERIF = "1";
+  static final String TYPEFACE_SERIF = "2";
+  static final String TYPEFACE_MONOSPACE = "3";
 
   /*
    * Length constants (for width and height).

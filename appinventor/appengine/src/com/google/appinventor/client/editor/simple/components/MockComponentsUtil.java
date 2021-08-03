@@ -245,11 +245,11 @@ public final class MockComponentsUtil {
    */
   static void setWidgetFontTypeface(SimpleEditor editor, Widget widget, String typeface) {
     String fontFamily = "";
-    if (typeface.equals(MESSAGES.defaultFontTypeface()) || typeface.equals(MESSAGES.sansSerifFontTypeface())){
+    if (typeface.equals("0") || typeface.equals("1")){
       fontFamily = "sans-serif";
-    } else if (typeface.equals(MESSAGES.serifFontTypeface())) {
+    } else if (typeface.equals("2")) {
       fontFamily = "serif";
-    } else if (typeface.equals(MESSAGES.monospaceFontTypeface())) {
+    } else if (typeface.equals("3")) {
       fontFamily = "monospace";
     } else {
       fontFamily = typeface.substring(0, typeface.lastIndexOf("."));
