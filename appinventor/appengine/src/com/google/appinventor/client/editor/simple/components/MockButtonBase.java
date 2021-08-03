@@ -222,6 +222,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
     } else {
       MockComponentsUtil.setWidgetFontSize(buttonWidget, text);
     }
+    updatePreferredSizeOfButton();
   }
 
   /*
