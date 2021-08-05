@@ -8,7 +8,10 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.InlineHTML;
 
 /**
@@ -104,11 +107,19 @@ public final class MockLabel extends MockVisibleComponent {
       if (sanitizedText != null) {
         sanitizedText = sanitizedText.replaceAll("\\\\n", " ");
       }
-      labelWidget.setHTML(sanitizedText);
+      if (getPropertyValue(PROPERTY_NAME_ENABLEDMARQUEE).equals("True"))  {
+        labelWidget.getElement().getFirstChildElement().setInnerHTML(sanitizedText);
+      } else {
+        labelWidget.setHTML(sanitizedText);
+      }
     } else {
-      labelWidget.setHTML(text.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;").replaceAll("\\\\n", "<br>")
-      );
+      String finalText = text.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+                           .replaceAll(">", "&gt;").replaceAll("\\\\n", "<br>");
+      if (getPropertyValue(PROPERTY_NAME_ENABLEDMARQUEE).equals("True"))  {
+        labelWidget.getElement().getFirstChildElement().setInnerHTML(finalText);
+      } else {
+        labelWidget.setHTML(finalText);
+      }
     }
   }
 
@@ -120,6 +131,26 @@ public final class MockLabel extends MockVisibleComponent {
       text = "&HFF000000";  // black
     }
     MockComponentsUtil.setWidgetTextColor(labelWidget, text);
+  }
+  
+  /*
+   * Sets the label's EnabledMarquee property to a new value.
+   */
+  private void setEnabledMarqueeProperty(String enabled) {
+    String text = labelWidget.getElement().getInnerText();
+    if (enabled.equals("True")) {
+      labelWidget.getElement().getStyle().setOverflow(Style.Overflow.HIDDEN);
+      Element marqueeElement = DOM.createSpan();
+      marqueeElement.addClassName("mock-component--marquee-effect");
+      labelWidget.getElement().setInnerText("");
+      marqueeElement.setInnerText(text);
+      labelWidget.getElement().appendChild(marqueeElement);
+    } else {
+      if (labelWidget.getElement().hasChildNodes()) {
+        labelWidget.getElement().getFirstChildElement().removeFromParent();
+        labelWidget.getElement().setInnerText(text);
+      }
+    }
   }
 
   // PropertyChangeListener implementation
@@ -154,6 +185,9 @@ public final class MockLabel extends MockVisibleComponent {
       // Just need to re-set the saved text so it is displayed
       // either as HTML or text as appropriate
       setTextProperty(savedText);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_ENABLEDMARQUEE)) {
+      setEnabledMarqueeProperty(newValue);
       refreshForm();
     }
   }

@@ -2732,3 +2732,21 @@ div.dropdiv p {
     left: 50%;
     display: block;
 }
+
+.mock-component--marquee-effect {
+    animation-name: marquee-effect;
+    animation-timing-function: linear;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    display: inline-block;
+    width: max-content;
+}
+
+@keyframes marquee-effect {
+    0%{
+        transform:translateX(100%)
+    }
+    100%{
+        transform:translateX(-100%)
+    }
+}
