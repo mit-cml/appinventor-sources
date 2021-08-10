@@ -20,7 +20,6 @@ import com.google.appinventor.client.components.Button;
 import com.google.appinventor.client.components.Dialog;
 import com.google.appinventor.client.components.Dropdown;
 import com.google.appinventor.client.explorer.commands.AddFolderCommand;
-import com.google.appinventor.client.explorer.commands.RenameProjectsCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
