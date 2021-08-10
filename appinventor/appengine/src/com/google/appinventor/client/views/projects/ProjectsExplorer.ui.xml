@@ -16,7 +16,8 @@
       <g:FlowPanel styleName='{style.actionGroup} {style.newProjectActions}'>
         <ai:Button ui:field='newProjectButton' text='{messages.newProjectMenuItem}' icon='add' groupPosition='LEFT' type='PRIMARY' raised='true' title='{messages.newProjectMenuItem}' />
         <ai:Button ui:field='importProjectButton' icon='file_upload' groupPosition='CENTER' type='PRIMARY' raised='true' title='{messages.importProjectMenuItem}' />
-        <ai:Button ui:field='importFromTemplateButton' icon='cloud_upload' groupPosition='RIGHT' type='PRIMARY' raised='true' title='{messages.importTemplateButton}' />
+        <ai:Button ui:field='importFromTemplateButton' icon='cloud_upload' groupPosition='CENTER' type='PRIMARY' raised='true' title='{messages.importTemplateButton}' />
+        <ai:Button ui:field='newFolderButton' icon='create_new_folder' groupPosition='RIGHT' type='PRIMARY' raised='true' />
       </g:FlowPanel>
 
       <g:FlowPanel styleName='{style.actionGroup}'>

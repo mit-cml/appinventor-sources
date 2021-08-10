@@ -26,11 +26,11 @@ public interface Resources extends ClientBundle {
   ListItemStyle listItemStyleDark();
 
   public interface ListItemStyle extends CssResource {
-      String listItem();
-      String selected();
-      String field();
-      String projectName();
-      String selection();
+    String listItem();
+    String selected();
+    String field();
+    String projectName();
+    String selection();
   }
 
   @Source({
@@ -48,15 +48,14 @@ public interface Resources extends ClientBundle {
   ProjectsExplorerStyle projectsExplorerStyleDark();
 
   public interface ProjectsExplorerStyle extends CssResource {
-      String container();
-      String projectActions();
-      String trashActions();
-      String viewTitle();
-      String actionGroup();
-      String overflowButton();
-      String newProjectActions();
+    String container();
+    String projectActions();
+    String trashActions();
+    String viewTitle();
+    String actionGroup();
+    String overflowButton();
+    String newProjectActions();
   }
-
 
   @Source({
     "com/google/appinventor/client/resources/base.css",
@@ -73,12 +72,38 @@ public interface Resources extends ClientBundle {
   ProjectsListStyle projectsListStyleDark();
 
   public interface ProjectsListStyle extends CssResource {
-      String container();
-      String sticky();
-      String listHeader();
-      String headerItem();
-      String headerItemText();
-      String sortIndicator();
-      String selection();
+    String container();
+    String sticky();
+    String listHeader();
+    String headerItem();
+    String headerItemText();
+    String sortIndicator();
+    String selection();
+  }
+
+  @Source({
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/light.css",
+    "com/google/appinventor/client/views/projects/projectsFolder.css"
+  })
+  ProjectsFolderStyle projectsFolderStyleLight();
+
+  @Source({
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/dark.css",
+    "com/google/appinventor/client/views/projects/projectsFolder.css"
+  })
+  ProjectsFolderStyle projectsFolderStyleDark();
+
+  public interface ProjectsFolderStyle extends CssResource {
+    String folderContainer();
+    String projectsFolder();
+    String selected();
+    String field();
+    String folderName();
+    String selection();
+    String selectionHidden();
+    String childrenContainer();
+    String childrenContainerExpanded();
   }
 }

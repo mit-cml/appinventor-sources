@@ -19,6 +19,7 @@ import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.components.Button;
 import com.google.appinventor.client.components.Dialog;
 import com.google.appinventor.client.components.Dropdown;
+import com.google.appinventor.client.explorer.commands.AddFolderCommand;
 import com.google.appinventor.client.explorer.commands.RenameProjectsCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.utils.Downloader;
@@ -42,6 +43,7 @@ public class ProjectsExplorer extends Composite {
   @UiField Button newProjectButton;
   @UiField Button importProjectButton;
   @UiField Button importFromTemplateButton;
+  @UiField Button newFolderButton;
 
   @UiField Button renameButton;
   @UiField Button downloadButton;
@@ -76,8 +78,8 @@ public class ProjectsExplorer extends Composite {
     }
     projectsList.setSelectionChangeHandler(new ProjectsList.SelectionChangeHandler() {
       @Override
-      public void onSelectionChange(int selectedItemCount) {
-        if(selectedItemCount == 0) {
+      public void onSelectionChange(int selectedProjects, int selectedFolders) {
+        if(selectedProjects == 0) {
           downloadButton.setEnabled(false);
           renameButton.setEnabled(false);
           trashButton.setEnabled(false);
@@ -87,7 +89,7 @@ public class ProjectsExplorer extends Composite {
           trashButton.setEnabled(true);
         }
 
-        if(selectedItemCount == 1) {
+        if(selectedProjects == 1) {
           publishButton.setEnabled(true);
           exportButton.setEnabled(true);
         } else {
@@ -99,8 +101,8 @@ public class ProjectsExplorer extends Composite {
 
     trashList.setSelectionChangeHandler(new ProjectsList.SelectionChangeHandler() {
       @Override
-      public void onSelectionChange(int selectedItemCount) {
-        if(selectedItemCount == 0) {
+      public void onSelectionChange(int selectedProjects, int selectedFolders) {
+        if(selectedProjects == 0) {
           restoreButton.setEnabled(false);
           deleteButton.setEnabled(false);
         } else {
@@ -152,6 +154,11 @@ public class ProjectsExplorer extends Composite {
   @UiHandler("importFromTemplateButton")
   void importFromTemplate(ClickEvent e) {
     new TemplateUploadWizard().center();
+  }
+
+  @UiHandler("newFolderButton")
+  void newFolder(ClickEvent e) {
+    new AddFolderCommand().execute();
   }
 
   @UiHandler("downloadButton")

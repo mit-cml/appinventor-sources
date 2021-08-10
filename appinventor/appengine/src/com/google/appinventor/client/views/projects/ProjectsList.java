@@ -15,14 +15,16 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
+import com.google.appinventor.client.explorer.folder.Folder;
+import com.google.appinventor.client.explorer.folder.FolderManagerEventListener;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+import com.google.appinventor.client.output.OdeLog;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectsList extends Composite implements ProjectsFolder,
-      ProjectManagerEventListener {
+      FolderManagerEventListener {
   interface ProjectsListUiBinder extends UiBinder<FlowPanel, ProjectsList> {}
   private static final ProjectsListUiBinder UI_BINDER = GWT.create(ProjectsListUiBinder.class);
 
@@ -34,21 +36,23 @@ public class ProjectsList extends Composite implements ProjectsFolder,
   Resources.ProjectsListStyle style = Ode.getUserDarkThemeEnabled() ?
       Resources.INSTANCE.projectsListStyleDark() : Resources.INSTANCE.projectsListStyleLight();
 
-  private List<Project> projects;
+  private List<ProjectsFolder> folderListItems;
+  private List<ListItem> projectListItems;
+  private List<Folder> selectedFolders;
   private List<Project> selectedProjects;
-  private List<ListItem> listItems;
-  private boolean firstLoadInProgress;
-  private SelectionChangeHandler selectionChangeHandler;
+  private Folder rootFolder;
   private boolean trashList;
 
+  private SelectionChangeHandler selectionChangeHandler;
+
   public ProjectsList() {
-    projects = new ArrayList<Project>();
+    folderListItems = new ArrayList<ProjectsFolder>();
+    projectListItems = new ArrayList<ListItem>();
+    selectedFolders = new ArrayList<Folder>();
     selectedProjects = new ArrayList<Project>();
-    listItems = new ArrayList<ListItem>();
-    firstLoadInProgress = true;
     style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
-    Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
+    Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
   }
 
   public void setSelectionChangeHandler(SelectionChangeHandler handler) {
@@ -57,18 +61,14 @@ public class ProjectsList extends Composite implements ProjectsFolder,
 
   public void setForTrash(boolean forTrash) {
     trashList = forTrash;
-    reloadProjects();
-  }
-
-  private void reloadProjects() {
-    selectedProjects.clear();
-    projects.clear();
-    for(Project project : Ode.getInstance().getProjectManager().getProjects("")) {
-      if((project.isInTrash() && trashList) || (!project.isInTrash() && !trashList) ) {
-        projects.add(project);
-      }
+    if (trashList) {
+      setFolder(Ode.getInstance().getFolderManager().getTrashFolder());
+    } else {
+      setFolder(Ode.getInstance().getFolderManager().getGlobalFolder());
     }
-    refresh();
+    if (rootFolder != null) {
+      refresh();
+    }
   }
 
   @UiFactory
@@ -81,51 +81,39 @@ public class ProjectsList extends Composite implements ProjectsFolder,
     setSelected(checkBox.getValue());
   }
 
-  //  ProjectManagerEventListener implementation
-
+  // FolderManagerEventListener implementation
   @Override
-  public void onProjectAdded(Project project) {
-    if((project.isInTrash() && trashList) || (!project.isInTrash() && !trashList) ) {
-      projects.add(project);
-    }
-    if(!firstLoadInProgress) {
-      refresh();
-    }
-  }
-
-  @Override
-  public void onTrashProjectRestored(Project project) {
-    if(!trashList) {
-      projects.add(project);
-    } else {
-      projects.remove(project);
-    }
+  public void onFolderAdded(Folder folder) {
     refresh();
   }
 
   @Override
-  public void onProjectTrashed(Project project) {
-    if(trashList) {
-      projects.add(project);
-    } else {
-      projects.remove(project);
-    }
+  public void onFolderRemoved(Folder folder) {
     refresh();
   }
 
   @Override
-  public void onProjectDeleted(Project project) {
-    projects.remove(project);
+  public void onFolderRenamed(Folder folder) {
     refresh();
   }
 
   @Override
-  public void onProjectsLoaded() {
-    reloadProjects();
-    firstLoadInProgress = false;
+  public void onFoldersLoaded() {
+    setForTrash(trashList);
   }
 
   // ProjectsFolder implementation
+
+  @Override
+  public void setFolder(Folder root) {
+    rootFolder = root;
+    refresh();
+  }
+
+  @Override
+  public Folder getFolder() {
+    return rootFolder;
+  }
 
   @Override
   public List<Project> getSelectedProjects() {
@@ -133,14 +121,28 @@ public class ProjectsList extends Composite implements ProjectsFolder,
   }
 
   @Override
+  public List<Folder> getSelectedFolders() {
+    return selectedFolders;
+  }
+
+  @Override
   public void refresh() {
+    OdeLog.log("Got call to refresh");
     container.clear();
     container.add(header);
-    listItems.clear();
+    projectListItems.clear();
+    folderListItems.clear();
 
-    for(final Project project : projects) {
+    for (final Folder folder : rootFolder.getChildFolders()) {
+      if ("*trash*".equals(folder.getName())) continue;
+      ProjectsFolderImpl item = createProjectsFolder(folder);
+      folderListItems.add(item);
+      container.add(item);
+    }
+
+    for(final Project project : rootFolder.getProjects()) {
       ListItem item = createListItem(project);
-      listItems.add(item);
+      projectListItems.add(item);
       container.add(item);
     }
   }
@@ -149,21 +151,28 @@ public class ProjectsList extends Composite implements ProjectsFolder,
   public void setSelected(boolean selectionState) {
     checkBox.setValue(selectionState);
     selectedProjects.clear();
-    for(ListItem item : listItems) {
+    selectedFolders.clear();
+    for(ListItem item : projectListItems) {
       item.setSelected(selectionState);
       if(selectionState) {
         selectedProjects.add(item.getProject());
       }
     }
-    if(selectionChangeHandler != null) selectionChangeHandler.onSelectionChange(selectedProjects.size());
+    for(ProjectsFolder item : folderListItems) {
+      item.setSelected(selectionState);
+      if(selectionState) {
+        selectedFolders.add(item.getFolder());
+      }
+    }
+    if(selectionChangeHandler != null) selectionChangeHandler.onSelectionChange(selectedProjects.size(), selectedFolders.size());
   }
 
   public abstract static class SelectionChangeHandler {
-    public abstract void onSelectionChange(int selectedItemCount);
+    public abstract void onSelectionChange(int selectedProjects, int selectedFoders);
   }
 
   private ListItem createListItem(final Project project) {
-    ListItem projectListItem = new ListItem(project, trashList, new ListItem.ItemSelectionChangeHandler() {
+    ListItem projectListItem = new ListItem(project, trashList, 0, new ListItem.ItemSelectionChangeHandler() {
       @Override
       public void onSelectionChange(boolean selected) {
         if(selected) {
@@ -172,10 +181,10 @@ public class ProjectsList extends Composite implements ProjectsFolder,
           selectedProjects.remove(project);
         }
         checkBox.setValue(false);
-        if(selectedProjects.size() == projects.size()) {
-          checkBox.setValue(true);
-        }
-        if(selectionChangeHandler != null) selectionChangeHandler.onSelectionChange(selectedProjects.size());
+        // if(selectedProjects.size() == projects.size()) {
+        //   checkBox.setValue(true);
+        // }
+        if(selectionChangeHandler != null) selectionChangeHandler.onSelectionChange(selectedProjects.size(), selectedFolders.size());
       }
     });
 
@@ -190,5 +199,13 @@ public class ProjectsList extends Composite implements ProjectsFolder,
     }
 
     return projectListItem;
+  }
+
+  private ProjectsFolderImpl createProjectsFolder(final Folder folder) {
+    ProjectsFolderImpl projectsFolder = new ProjectsFolderImpl(folder, trashList, 0, new ProjectsFolderImpl.ItemSelectionChangeHandler() {
+      @Override
+      public void onSelectionChange(boolean selected) {}
+    });
+    return projectsFolder;
   }
 }
