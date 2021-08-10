@@ -100,4 +100,22 @@ public interface Resources extends ClientBundle {
   public interface DialogStyle extends CssResource {
     String dialog();
   }
+
+  @Source({
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/light.css",
+    "com/google/appinventor/client/components/folderTreeItem.css"
+  })
+  FolderTreeItemStyle folderTreeItemStyleLight();
+
+  @Source({
+    "com/google/appinventor/client/resources/base.css",
+    "com/google/appinventor/client/resources/dark.css",
+    "com/google/appinventor/client/components/folderTreeItem.css"
+  })
+  FolderTreeItemStyle folderTreeItemStyleDark();
+
+  public interface FolderTreeItemStyle extends CssResource {
+    String item();
+  }
 }
