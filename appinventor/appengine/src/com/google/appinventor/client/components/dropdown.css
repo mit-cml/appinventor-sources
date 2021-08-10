@@ -4,7 +4,7 @@
 }
 
 .dropdown {
-  padding: 0;
+  padding: 10px 0;
   margin: 0;
   border-radius: l-border-radius-md;
   border: 1px solid #DDD;
@@ -16,9 +16,19 @@
 }
 
 .dropdownItem {
-  margin: 0;
-  padding: 10px 60px;
-  text-align: center;
+  padding: 7px 15px;
+  font-size: 14px;
+  min-width: 120px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  background: #FFF;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.dropdownItem:hover {
+  background-color: #EEE;
 }
 
 .dropdownItemWithDivider {

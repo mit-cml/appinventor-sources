@@ -1,11 +1,12 @@
 @external Caption;
 
 .dialog {
-  border-radius: 5px;
+  border-radius: 10px;
   z-index: 1000;
   background-color: #FFF;
   width: 400px;
-  overflow: hidden;
+  box-shadow: 4px 4px 20px 7px rgba(0, 0, 0, 0.1);
+  overflow: hidden !important;
 }
 
 .dialog table {
