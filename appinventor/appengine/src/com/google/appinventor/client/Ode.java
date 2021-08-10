@@ -25,6 +25,7 @@ import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.folder.FolderManager;
 import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
@@ -41,8 +42,6 @@ import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
-
-import com.google.appinventor.client.views.projects.ProjectsExplorer;
 
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 import com.google.appinventor.client.widgets.boxes.Box;
@@ -193,6 +192,9 @@ public class Ode implements EntryPoint {
 
   // Collection of editors
   private EditorManager editorManager;
+
+  // Collection of folders
+  private FolderManager folderManager;
 
   // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or null.
   private FileEditor currentFileEditor;
@@ -773,11 +775,14 @@ public class Ode implements EntryPoint {
 
             // Initialize project and editor managers
             // The project manager loads the user's projects asynchronously
+            folderManager = new FolderManager();
             projectManager = new ProjectManager();
             projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
               @Override
               public void onProjectsLoaded() {
                 projectManager.removeProjectManagerEventListener(this);
+                // Set up the folder manager after all projects are loaded
+                folderManager.loadFolders();
                 // This handles any built-in templates stored in /war
                 // Retrieve template data stored in war/templates folder and
                 // and save it for later use in TemplateUploadWizard
@@ -1190,6 +1195,15 @@ public class Ode implements EntryPoint {
    */
   public ProjectManager getProjectManager() {
     return projectManager;
+  }
+
+  /**
+   * Returns the folder manager.
+   *
+   * @return  {@link FolderManager}
+   */
+  public FolderManager getFolderManager() {
+    return folderManager;
   }
 
   /**
