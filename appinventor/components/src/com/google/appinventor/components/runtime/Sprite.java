@@ -1,4 +1,4 @@
-// -*- mode: java; c-basic-offset: 2; -*-
+ // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
@@ -20,9 +20,12 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.TimerInternal;
+import com.google.appinventor.components.runtime.util.Vector2D;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -1032,25 +1035,67 @@ public abstract class Sprite extends VisibleComponent
    * @return {@code true} if they are in collision, {@code false} otherwise
    */
   public static boolean colliding(Sprite sprite1, Sprite sprite2) {
-    // If the bounding boxes don't intersect, there can be no collision.
-    BoundingBox rect1 = sprite1.getBoundingBox(1);
-    BoundingBox rect2 = sprite2.getBoundingBox(1);
-    if (!rect1.intersectDestructively(rect2)) {
-      return false;
-    }
-
-    // If we get here, rect1 has been mutated to hold the intersection of the
-    // two bounding boxes.  Now check every point in the intersection to see if
-    // both sprites contain that point.
-    // TODO(user): Handling abutting sprites properly
-    for (double x = rect1.getLeft(); x <= rect1.getRight(); x++) {
-      for (double y = rect1.getTop(); y <= rect1.getBottom(); y++) {
-        if (sprite1.containsPoint(x, y) && sprite2.containsPoint(x, y)) {
-          return true;
-        }
+    if (sprite1 instanceof Ball && sprite2 instanceof Ball) {
+      return collidingBalls((Ball) sprite1, (Ball) sprite2);
+    } else if (sprite1 instanceof ImageSprite && sprite2 instanceof ImageSprite) {
+      return collidingImageSprites((ImageSprite) sprite1, (ImageSprite) sprite2);
+    } else {
+      if (sprite1 instanceof Ball) {
+        return collidingBallAndImageSprite((Ball) sprite1, (ImageSprite) sprite2);
+      } else {
+        return collidingBallAndImageSprite((Ball) sprite2, (ImageSprite) sprite1);
       }
     }
-    return false;
+  }
+
+  // balls collide when the distance between their centers is less than the sum of their radius
+  // to avoid errors introduced by Math.sqrt just compare the squared values
+  private static boolean collidingBalls(Ball ball1, Ball ball2) {
+    double xCenter1 = ball1.xLeft + ball1.Width() / 2;
+    double yCenter1 = ball1.yTop + ball1.Height() / 2;
+
+    double xCenter2 = ball2.xLeft + ball2.Width() / 2;
+    double yCenter2 = ball2.yTop + ball2.Height() / 2;
+
+    double centerToCenterDistanceSquared = (xCenter1 - xCenter2) * (xCenter1 - xCenter2) +
+            (yCenter1 - yCenter2) * (yCenter1 - yCenter2);
+    return centerToCenterDistanceSquared
+              <= Math.pow((ball1.Radius() + ball2.Radius()), 2) ;
+  }
+
+  private static boolean collidingImageSprites(ImageSprite sprite1, ImageSprite sprite2) {
+
+    java.util.List<Vector2D> axes = sprite1.getNormalAxes();
+    axes.addAll(sprite2.getNormalAxes());
+
+    for (Vector2D a : axes) {
+      double minA = sprite1.getMinProjection(a);
+      double maxA = sprite1.getMaxProjection(a);
+      double minB = sprite2.getMinProjection(a);
+      double maxB = sprite2.getMaxProjection(a);
+      if (maxA < minB || maxB < minA) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private static boolean collidingBallAndImageSprite(Ball ball, ImageSprite imageSprite) {
+    Vector2D imageCenter = imageSprite.getCenterVector();
+    Vector2D ballCenter = ball.getCenterVector();
+
+    Vector2D ballToImage = Vector2D.difference(imageCenter, ballCenter);
+
+    double spriteMaxProjection = imageSprite.getMaxProjection(imageCenter, ballToImage.unitVector());
+    double ballMaxProjection = ball.Radius();
+
+    if (ballToImage.magnitude() > 0 &&
+            spriteMaxProjection + ballMaxProjection < ballToImage.magnitude()) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   /**

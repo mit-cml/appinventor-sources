@@ -42,6 +42,10 @@ public class MarkOriginWizard extends Wizard {
   private double u;
   private double v;
 
+  // The height and width of the marker
+  private final int markerHeight = 30;
+  private final int markerWidth = 30;
+
   /**
    * Creates a new mark origin wizard.
    * @param imageUrl the URL to the image of the image sprite
@@ -67,6 +71,8 @@ public class MarkOriginWizard extends Wizard {
     spriteImagePanel.getElement().getStyle().setProperty("display", "flex");
     spriteImagePanel.getElement().getStyle().setProperty("justifyContent", "center");
     spriteImagePanel.getElement().getStyle().setProperty("alignItems", "center");
+    spriteImagePanel.getElement().getStyle().setProperty("padding", "" + markerHeight + "px "+
+                    markerWidth / 2 + "px 0px " + markerWidth / 2  + "px");
 
     // allow spriteImage to get as big as possible but not bigger
     spriteImage.getElement().getStyle().setProperty("maxWidth", "100%");
@@ -81,8 +87,8 @@ public class MarkOriginWizard extends Wizard {
         int topY = (spriteImagePanel.getOffsetHeight() - spriteImage.getHeight()) / 2;
 
         // coordinates of the top - left corner of the marker
-        int xMarker = marker.getLeftX(leftX + (int) (u * spriteImage.getWidth()));
-        int yMarker = marker.getTopY(topY + (int) (v * spriteImage.getHeight()));
+        int xMarker = leftX + (int) (u * spriteImage.getWidth());
+        int yMarker = topY + (int) (v * spriteImage.getHeight());
 
         imageContainer.setWidgetPosition(marker, xMarker, yMarker);
 
@@ -100,7 +106,7 @@ public class MarkOriginWizard extends Wizard {
         // top - most y coordinate of spriteImage
         int topY = (spriteImagePanel.getOffsetHeight() - spriteImage.getHeight()) / 2;
 
-        u = ((double) (marker.getOriginX(x) - leftX)) / spriteImage.getWidth();
+        u = ((double) (x - leftX)) / spriteImage.getWidth();
         // make sure u is in the correct range
         if (u < 0) {
           u = 0;
@@ -108,7 +114,7 @@ public class MarkOriginWizard extends Wizard {
           u = 1;
         }
 
-        v = ((double) (marker.getOriginY(y) - topY)) / spriteImage.getHeight();
+        v = ((double) (y - topY)) / spriteImage.getHeight();
         // make sure v is in the correct range
         if (v < 0) {
           v = 0;
@@ -119,11 +125,15 @@ public class MarkOriginWizard extends Wizard {
     };
 
     imageContainer = new DragPanel(onDropCallback);
+
     Image markerImg = new Image(Ode.getImageBundle().marker());
     markerImg.setSize("30px", "30px");
 
+    markerImg.getElement().getStyle().setProperty("marginTop", "-" + markerHeight + "px");
+    markerImg.getElement().getStyle().setProperty("marginLeft", "-" + markerWidth / 2 + "px");
+
     // for marker u = 0.5 and v = 1.0 as the marker's pointer is the middle of the bottom edge
-    marker = new DragImage(markerImg, imageContainer, 0.5, 1.0);
+    marker = new DragImage(markerImg, imageContainer);
 
     imageContainer.add(spriteImagePanel);
     imageContainer.add(marker);
@@ -170,8 +180,8 @@ public class MarkOriginWizard extends Wizard {
       /**
        * Will be invoked after a drag widget is dropped in the panel.
        *
-       * @param x x - coordinate of the dropped widget
-       * @param y y - coordinate of the dropped widget
+       * @param x x - coordinate of the dropped widget's top left corner
+       * @param y y - coordinate of the dropped widget's top left corner
        */
       void onDrop(int x, int y);
     }
@@ -210,45 +220,29 @@ public class MarkOriginWizard extends Wizard {
   }
 
   /**
-   *  A draggable image.
+   *  A draggable image that can be dragged on panels that implement {@code DropTarget}.
    *
    */
   public static class DragImage extends DragSourcePanel {
 
     DropTarget target;
 
-    // The unit coordinates for the origin of the image
-    double u;
-    double v;
-
     // width and height of the image
     int width;
     int height;
 
     /**
-     * Create a drag image with the specified image and drop target.
+     * Create a drag image with the specified image and drop target. The origin of the image is
+     * at the unit coordinates {@code u} and {@code v}.
      * @param image The image which is made draggable
      * @param target The possible drop target for this drag source
      */
     public DragImage(Image image, DropTarget target) {
-      this(image, target, 0, 0);
-    }
-
-    /**
-     * Create a drag image with the specified image and drop target.
-     * @param image The image which is made draggable
-     * @param target The possible drop target for this drag source
-     * @param u The x unit coordinate of the origin of the image
-     * @param v The y unit coordinate of the origin of the image
-     */
-    public DragImage(Image image, DropTarget target, double u, double v) {
       super();
       this.add(image);
       width = image.getWidth();
       height = image.getHeight();
       this.target = target;
-      this.u = u;
-      this.v = v;
     }
 
     @Override
@@ -276,22 +270,6 @@ public class MarkOriginWizard extends Wizard {
     @Override
     public void onDragEnd() {
       setVisible(true);
-    }
-
-    public int getLeftX(int xOrigin) {
-      return xOrigin - (int) (width * u);
-    }
-
-    public int getTopY(int yOrigin) {
-      return yOrigin - (int) (height * v);
-    }
-
-    public int getOriginX(int xLeft) {
-      return xLeft + (int) (width * u);
-    }
-
-    public int getOriginY(int yTop) {
-      return yTop + (int) (height * v);
     }
   }
 }
