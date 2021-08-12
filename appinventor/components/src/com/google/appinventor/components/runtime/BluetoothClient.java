@@ -16,7 +16,6 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.BluetoothReflection;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -155,8 +154,9 @@ public final class BluetoothClient extends BluetoothConnectionBase {
       return false;
     }
 
-    Object bluetoothDevice = BluetoothReflection.getRemoteDevice(bluetoothAdapter, address);
-    return BluetoothReflection.isBonded(bluetoothDevice);
+    Object bluetoothDevice = ((BluetoothAdapter) bluetoothAdapter).getRemoteDevice(address);
+    int BOND_BONDED = 0xC;
+    return ((BluetoothDevice) bluetoothDevice).getBondState() == BOND_BONDED;
   }
 
   /**
@@ -276,8 +276,9 @@ public final class BluetoothClient extends BluetoothConnectionBase {
       return false;
     }
 
-    Object bluetoothDevice = BluetoothReflection.getRemoteDevice(bluetoothAdapter, address);
-    if (!BluetoothReflection.isBonded(bluetoothDevice)) {
+    Object bluetoothDevice = ((BluetoothAdapter) bluetoothAdapter).getRemoteDevice(address);
+    int BOND_BONDED = 0xC;
+    if (!(((BluetoothDevice) bluetoothDevice).getBondState() == BOND_BONDED)) {
       form.dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_BLUETOOTH_NOT_PAIRED_DEVICE);
       return false;
