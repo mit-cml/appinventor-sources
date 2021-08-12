@@ -122,20 +122,19 @@ public class ImageSprite extends Sprite {
     double yCenter = yTop + Height() / 2;
 
     Vector2D center = new Vector2D(xCenter, yCenter);
-    Vector2D origin = new Vector2D(xOrigin, yOrigin);
 
-    return getVectorRotated(origin, center, headingRadians);
+    return getVectorRotated(center);
   }
 
   // Get all non - parallel axes normal to the edges of the sprite. We need to consider only two
   // axes as the other two would be parallel to these.
   protected java.util.List<Vector2D> getNormalAxes() {
-    Vector2D[] corners = getExtremityVectors();
+    java.util.List<Vector2D> corners = getExtremityVectors();
 
     java.util.List<Vector2D> normalAxes = new ArrayList<>();
 
-    Vector2D leftRightEdge = Vector2D.difference(corners[0], corners[1]);
-    Vector2D topDownEdge = Vector2D.difference(corners[1], corners[2]);
+    Vector2D leftRightEdge = Vector2D.difference(corners.get(0), corners.get(1));
+    Vector2D topDownEdge = Vector2D.difference(corners.get(1), corners.get(2));
 
     Vector2D leftRightNormal = leftRightEdge.getNormalVector();
     Vector2D topDownNormal = topDownEdge.getNormalVector();
@@ -146,45 +145,37 @@ public class ImageSprite extends Sprite {
     return normalAxes;
   }
 
+  // The minimum projection will be that of one of the corners. Note this is the minimum dot product
+  // i.e. the axis is not guaranteed to be a unit vector. As we only do comparisons on these values,
+  // calculating the unit vector is a waster of time.
   protected double getMinProjection(Vector2D axis) {
-    Vector2D[] corners = getExtremityVectors();
-    double minimum = Vector2D.dotProduct(axis, corners[0]);
+    java.util.List<Vector2D> corners = getExtremityVectors();
+    double minimum = Vector2D.dotProduct(axis, corners.get(0));
+
     for (Vector2D point : corners) {
       double projectionMagnitude = Vector2D.dotProduct(axis, point);
       if (projectionMagnitude < minimum) {
         minimum = projectionMagnitude;
       }
     }
+
     return minimum;
   }
 
+  // The maximum projection will be that of one of the corners. Note this is the maximum dot product
+  // i.e. the axis is not guaranteed to be a unit vector. As we only do comparisons on these values,
+  // calculating the unit vector is a waster of time.
   protected double getMaxProjection(Vector2D axis) {
-    Vector2D[] corners = getExtremityVectors();
-    double maximum = Vector2D.dotProduct(axis, corners[0]);
+    java.util.List<Vector2D> corners = getExtremityVectors();
+    double maximum = Vector2D.dotProduct(axis, corners.get(0));
+
     for (Vector2D point : corners) {
       double projectionMagnitude = Vector2D.dotProduct(axis, point);
       if (projectionMagnitude > maximum) {
         maximum = projectionMagnitude;
       }
     }
-    return maximum;
-  }
 
-  // get the max projection of the image sprite about axis. All vectors are considered from origin.
-  protected double getMaxProjection(Vector2D origin, Vector2D axis) {
-    Vector2D[] corners = getExtremityVectors();
-
-    for (int i = 0; i < corners.length; i++) {
-      corners[i] = Vector2D.difference(corners[i], origin);
-    }
-
-    double maximum = Vector2D.dotProduct(axis, corners[0]);
-    for (Vector2D point : corners) {
-      double projectionMagnitude = Vector2D.dotProduct(axis, point);
-      if (projectionMagnitude > maximum) {
-        maximum = projectionMagnitude;
-      }
-    }
     return maximum;
   }
 
@@ -194,36 +185,35 @@ public class ImageSprite extends Sprite {
   // Let u be the vector for some corner. After rotation u changes as follows:
   // v - u is the vector from origin to the corner. Rotate v - u by Heading() degrees and say it
   // becomes w. Then the vector for the corner after rotation will be v + w.
-  private Vector2D[] getExtremityVectors() {
-    // as there are 4 corners of a rectangle
-    Vector2D[] corners = new Vector2D[4];
-
-    Vector2D origin = new Vector2D(xOrigin, yOrigin);
+  protected java.util.List<Vector2D> getExtremityVectors() {
+    java.util.List<Vector2D> corners = new ArrayList<>();
 
     // [u, v] values of the four corners, taken in clockwise direction starting from top - left
     final int[][] delta = new int[][] {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
 
-    // add all corners to the corners[] array
-    int i = 0;
+    // add all corners to corners
     for (int[] d : delta) {
       double dx = d[0] * Width();
       double dy = d[1] * Height();
       Vector2D corner = new Vector2D(xLeft + dx, yTop + dy);
-      // rotate the vector about the origin to get position of corner after rotation
-      corners[i++] = getVectorRotated(origin, corner, headingRadians);
+      corners.add(getVectorRotated(corner));
     }
 
     return corners;
   }
 
-  // Rotate the vector toRotate by angle radians in the coordinate system where origin is the center
-  // Return result in the original system.
-  private Vector2D getVectorRotated(Vector2D origin, Vector2D toRotate, double angle) {
-    Vector2D originToPoint = Vector2D.difference(toRotate, origin);
-    originToPoint.rotate(angle);
-    return Vector2D.addition(origin, originToPoint);
+  // If the image is rotated return the vector toRotate after rotation
+  private Vector2D getVectorRotated(Vector2D toRotate) {
+    if (rotates) {
+      Vector2D origin = new Vector2D(xOrigin, yOrigin);
+      Vector2D originToPoint = Vector2D.difference(toRotate, origin);
+      originToPoint.rotate(headingRadians);
+      return Vector2D.addition(origin, originToPoint);
+    } else {
+      return toRotate;
+    }
   }
- 
+
   /**
    * Returns the path of the sprite's picture
    *

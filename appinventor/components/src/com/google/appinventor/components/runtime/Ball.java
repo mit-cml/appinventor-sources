@@ -22,8 +22,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import com.google.appinventor.components.runtime.util.Vector2D;
 
-import java.util.Collections;
-
 /**
  * A round 'sprite' that can be placed on a {@link Canvas}, where it can react to touches and drags,
  * interact with other sprites ({@link ImageSprite}s and other `Ball`s) and the edge of the
@@ -85,12 +83,25 @@ public final class Ball extends Sprite {
     }
   }
 
-  // get the vector to the center of the circle
+  // Get the vector to the center of the circle
   protected Vector2D getCenterVector() {
     double xCenter = xLeft + Width() / 2;
     double yCenter = yTop + Height() / 2;
     return new Vector2D(xCenter, yCenter);
   }
+
+  // The min projection is the projection of the center minus the radius. We consider dot product
+  // values as the projection so the radius needs to be multiplied by the axis's magnitude.
+  protected double getMinProjection(Vector2D axis) {
+    return Vector2D.dotProduct(getCenterVector(), axis) - Radius() * axis.magnitude();
+  }
+
+  // The max projection is the projection of the center plus the radius. We consider dot product
+  // values as the projection so the radius needs to be multiplied by the axis's magnitude.
+  protected double getMaxProjection(Vector2D axis) {
+    return Vector2D.dotProduct(getCenterVector(), axis) + Radius() * axis.magnitude();
+  }
+
   // The following four methods are required by abstract superclass
   // VisibleComponent.  Because we don't want to expose them to the Simple
   // programmer, we omit the SimpleProperty and DesignerProperty pragmas.

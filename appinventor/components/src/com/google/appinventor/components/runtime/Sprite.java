@@ -1,4 +1,4 @@
- // -*- mode: java; c-basic-offset: 2; -*-
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
@@ -23,9 +23,7 @@ import com.google.appinventor.components.runtime.util.TimerInternal;
 import com.google.appinventor.components.runtime.util.Vector2D;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -1026,9 +1024,7 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Determines whether two sprites are in collision.  Note that we cannot
-   * merely see whether the rectangular regions around each intersect, since
-   * some types of sprite, such as BallSprite, are not rectangular.
+   * Determines whether two sprites are in collision.
    *
    * @param sprite1 one sprite
    * @param sprite2 another sprite
@@ -1048,8 +1044,8 @@ public abstract class Sprite extends VisibleComponent
     }
   }
 
-  // balls collide when the distance between their centers is less than the sum of their radius
-  // to avoid errors introduced by Math.sqrt just compare the squared values
+  // Balls collide when the distance between their centers is less than the sum of their radius.
+  // To avoid inaccuracies introduced by Math.sqrt just compare the squared values.
   private static boolean collidingBalls(Ball ball1, Ball ball2) {
     double xCenter1 = ball1.xLeft + ball1.Width() / 2;
     double yCenter1 = ball1.yTop + ball1.Height() / 2;
@@ -1057,14 +1053,18 @@ public abstract class Sprite extends VisibleComponent
     double xCenter2 = ball2.xLeft + ball2.Width() / 2;
     double yCenter2 = ball2.yTop + ball2.Height() / 2;
 
-    double centerToCenterDistanceSquared = (xCenter1 - xCenter2) * (xCenter1 - xCenter2) +
-            (yCenter1 - yCenter2) * (yCenter1 - yCenter2);
+    double centerToCenterDistanceSquared = (xCenter1 - xCenter2) * (xCenter1 - xCenter2)
+            + (yCenter1 - yCenter2) * (yCenter1 - yCenter2);
     return centerToCenterDistanceSquared
-              <= Math.pow((ball1.Radius() + ball2.Radius()), 2) ;
+              <= Math.pow((ball1.Radius() + ball2.Radius()), 2);
   }
 
+  // Use the SAT collision detection algorithm for checking collisions between two image sprites.
+  // Get the normal axes for both of the sprites and after that check the projections of the sprites
+  // on those axes.
   private static boolean collidingImageSprites(ImageSprite sprite1, ImageSprite sprite2) {
 
+    // axes to project the sprites on
     java.util.List<Vector2D> axes = sprite1.getNormalAxes();
     axes.addAll(sprite2.getNormalAxes());
 
@@ -1081,21 +1081,31 @@ public abstract class Sprite extends VisibleComponent
     return true;
   }
 
+  // Use the SAT collision detection algorithm for checking collisions between an image sprite and a
+  // ball. The axes to project the sprites onto are the vectors normal to the image sprites and the
+  // vector that connects the center of the ball to the closest vertex of the image sprite.
   private static boolean collidingBallAndImageSprite(Ball ball, ImageSprite imageSprite) {
-    Vector2D imageCenter = imageSprite.getCenterVector();
+    java.util.List<Vector2D> axes = imageSprite.getNormalAxes();
+
+    java.util.List<Vector2D> imageCorners = imageSprite.getExtremityVectors();
+
     Vector2D ballCenter = ball.getCenterVector();
 
-    Vector2D ballToImage = Vector2D.difference(imageCenter, ballCenter);
+    Vector2D closestCorner = ballCenter.getClosestVector(imageCorners);
+    Vector2D ballCenterToClosestCorner = Vector2D.difference(closestCorner, ballCenter);
+    axes.add(ballCenterToClosestCorner);
 
-    double spriteMaxProjection = imageSprite.getMaxProjection(imageCenter, ballToImage.unitVector());
-    double ballMaxProjection = ball.Radius();
-
-    if (ballToImage.magnitude() > 0 &&
-            spriteMaxProjection + ballMaxProjection < ballToImage.magnitude()) {
-      return false;
-    } else {
-      return true;
+    for (Vector2D a : axes) {
+      double minA = imageSprite.getMinProjection(a);
+      double maxA = imageSprite.getMaxProjection(a);
+      double minB = ball.getMinProjection(a);
+      double maxB = ball.getMaxProjection(a);
+      if (maxA < minB || maxB < minA) {
+        return false;
+      }
     }
+
+    return true;
   }
 
   /**

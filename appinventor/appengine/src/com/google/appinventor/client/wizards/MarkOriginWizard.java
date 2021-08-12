@@ -71,8 +71,8 @@ public class MarkOriginWizard extends Wizard {
     spriteImagePanel.getElement().getStyle().setProperty("display", "flex");
     spriteImagePanel.getElement().getStyle().setProperty("justifyContent", "center");
     spriteImagePanel.getElement().getStyle().setProperty("alignItems", "center");
-    spriteImagePanel.getElement().getStyle().setProperty("padding", "" + markerHeight + "px "+
-                    markerWidth / 2 + "px 0px " + markerWidth / 2  + "px");
+    spriteImagePanel.getElement().getStyle().setProperty("padding", "" + markerHeight + "px "
+                    + markerWidth / 2 + "px 0px " + markerWidth / 2  + "px");
 
     // allow spriteImage to get as big as possible but not bigger
     spriteImage.getElement().getStyle().setProperty("maxWidth", "100%");
