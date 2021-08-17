@@ -843,7 +843,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * allows the user to swipe left or right to brows the elements.
    *
    * @param orientation one of {@link Component#VERTICAL_ORIENTATION},
-   *              {@link Component#HORISONTAL_ORIENTATION},
+   *              {@link Component#HORIZONTAL_ORIENTATION},
    * @throws IllegalArgumentException if orientation is not a legal value.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION,
