@@ -999,19 +999,19 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   private void getMarkerDrawableRaster(final MapMarker aiMarker,
       final AsyncCallbackPair<Drawable> callback) {
-    MediaUtil.getBitmapDrawableAsync(form, aiMarker.ImageAsset(),
-        new AsyncCallbackPair<BitmapDrawable>() {
-      @Override
-      public void onFailure(String message) {
-        callback.onSuccess(getDefaultMarkerDrawable(aiMarker));
-      }
+    MediaUtil.getBitmapDrawableAsync(form, aiMarker.ImageAsset(), aiMarker.Width(),
+        aiMarker.Height(), new AsyncCallbackPair<BitmapDrawable>() {
+          @Override
+          public void onFailure(String message) {
+            callback.onSuccess(getDefaultMarkerDrawable(aiMarker));
+          }
 
-      @Override
-      public void onSuccess(BitmapDrawable result) {
-        result.setAlpha((int) Math.round(aiMarker.FillOpacity() * 255.0f));
-        callback.onSuccess(result);
-      }
-    });
+          @Override
+          public void onSuccess(BitmapDrawable result) {
+            result.setAlpha((int) Math.round(aiMarker.FillOpacity() * 255.0f));
+            callback.onSuccess(result);
+          }
+        });
   }
 
   private Drawable getDefaultMarkerDrawable(MapMarker aiMarker) {

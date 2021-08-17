@@ -679,9 +679,6 @@ This is a visible component that displays a list of text and image elements in y
 : Set the list of choices specified as a string with the elements separated by commas
  such as: Cheese,Fruit,Bacon,Radish.
 
-{:id="ListView.FontSize" .number} *FontSize*
-: Specifies the `ListView` item's text font size
-
 {:id="ListView.FontSizeDetail" .number} *FontSizeDetail*
 : Specifies the `ListView` item's text font size
 

@@ -57,7 +57,7 @@ public class TableArrangement extends AndroidViewComponent
   // Layout
   private final TableLayout viewLayout;
 
-  private List<Component> allChildren;
+  private List<Component> allChildren = new ArrayList<>();
 
   /**
    * Creates a new TableArrangement component.
@@ -137,7 +137,7 @@ public class TableArrangement extends AndroidViewComponent
 
   @Override
   public List<? extends Component> getChildren(){
-    return allChildren = new ArrayList<>();
+    return allChildren;
   }
 
   @Override

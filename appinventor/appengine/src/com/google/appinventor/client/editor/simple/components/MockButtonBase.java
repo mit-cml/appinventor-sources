@@ -212,16 +212,14 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
    */
   private void setFontSizeProperty(String text) {
     float convertedText = Float.parseFloat(text);
-    if (convertedText == 14.0 || convertedText == 24.0) {
-      MockForm form = ((YaFormEditor) editor).getForm();
-      if (form != null && form.getPropertyValue("BigDefaultText").equals("True")) {
-        MockComponentsUtil.setWidgetFontSize(buttonWidget, "24");
-      } else {
-        MockComponentsUtil.setWidgetFontSize(buttonWidget, "14");
-      }
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (convertedText == FONT_DEFAULT_SIZE && form != null
+        && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(buttonWidget, "24");
     } else {
       MockComponentsUtil.setWidgetFontSize(buttonWidget, text);
     }
+    updatePreferredSizeOfButton();
   }
 
   /*

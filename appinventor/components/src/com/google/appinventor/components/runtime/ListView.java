@@ -104,6 +104,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int fontTypeface;
   private int fontTypeDetail;
 
+  /* for backward compatibility */
+  private static final int DEFAULT_TEXT_SIZE = 22;
+
   private int imageWidth;
   private int imageHeight;
   private static final int DEFAULT_IMAGE_WIDTH = 200;
@@ -179,7 +182,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     // need to have the textColor set first, since they reset the
     // adapter
 
-    Width(Component.LENGTH_FILL_PARENT);
     BackgroundColor(Component.COLOR_BLACK);
     SelectionColor(Component.COLOR_LTGRAY);
     TextColor(Component.COLOR_WHITE);
@@ -198,6 +200,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     linearLayout.addView(recyclerView);
     linearLayout.requestLayout();
     container.$add(this);
+    Width(Component.LENGTH_FILL_PARENT);
     ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
   }
 
@@ -567,6 +570,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void SelectionColor(int argb) {
     selectionColor = argb;
+    setAdapterData();
   }
 
   /**
@@ -631,11 +635,43 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Returns the listview's text font Size
    *
+   * This property is provided for backwards compatibility
+   * it takes and returns an integer, but in reality it just
+   * updates the FontSize property, which works with floats
+   *
+   * @return text size as an integer
+   */
+  @SimpleProperty(
+      description = "The text size of the listview items.",
+      category = PropertyCategory.APPEARANCE)
+  public int TextSize() {
+    return Math.round(fontSizeMain);
+  }
+
+  /**
+   * Specifies the `ListView` item's text font size
+   *
+   * @param integer value for font size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_TEXT_SIZE + "")
+  @SimpleProperty
+  public void TextSize(int textSize) {
+    if (textSize >1000) {
+        textSize = 999;
+    }
+    FontSize(Float.valueOf(textSize));
+  }
+
+  /**
+   * Returns the listview's text font Size
+   *
    * @return text size as an float
    */
   @SimpleProperty(
           description = "The text size of the listview stringItems.",
-          category = PropertyCategory.APPEARANCE)
+          category = PropertyCategory.APPEARANCE,
+          userVisible = false)
   public float FontSize() {
     return fontSizeMain;
   }
@@ -646,8 +682,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param integer value for font size
    */
   @SuppressWarnings("JavadocReference")
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-          defaultValue = "22.0")
+  // Temporarily removed until Companion with support is more prevalent
+  // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  //         defaultValue = "22.0")
   @SimpleProperty
   public void FontSize(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
