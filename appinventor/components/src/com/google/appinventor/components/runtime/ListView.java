@@ -44,9 +44,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a visible component that allows to place a list of text elements in your {@link Form} to
- * display. The list can be set using the {@link #ElementsFromString(String)} property or using the
- * {@link #Elements(YailList)} block in the blocks editor.
+ * This is a visible component that displays a list of text and image elements in your {@link Form} to
+ * display. Simple lists of strings may be set using the {@link #ElementsFromString(String)} property.
+ * More complex lists of elements containing multiple strings and/or images can be created using the
+ * {@link #ListData(String)} and {@link #ListViewLayout(int)} properties.
+ *
+ * [Information on Layouts](../other/advanced-listview.html)
  *
  *   Warning: This component will not work correctly on Screens that are scrollable if its
  * {@link #Height(int)} is set to Fill Parent.
@@ -58,9 +61,10 @@ import java.util.List;
  */
 
 @DesignerComponent(version = YaVersion.LISTVIEW_COMPONENT_VERSION,
-    description = "<p>This is a visible component that displays a list of text elements." +
-        " <br> The list can be set using the ElementsFromString property" +
-        " or using the Elements block in the blocks editor. </p>",
+    description = "<p>This is a visible component that displays a list of text and image elements.</p>" +
+        " <p>Simple lists of strings may be set using the ElementsFromString property." +
+        " More complex lists of elements containing multiple strings and/or images can be created using " +
+        "the ListData and ListViewLayout properties. </p>",
     category = ComponentCategory.USERINTERFACE,
     nonVisible = false,
     iconName = "images/listView.png")
@@ -271,7 +275,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    *
    * @param itemsList a YailList containing the strings to be added to the ListView
    */
-  @SimpleProperty(description = "List of elements to show in the ListView. Depending on the ListView, this may be a list of strings or a list of 3-element sub-lists containing Text, Description, and Image file name of a list with layout.",
+  @SimpleProperty(description = "List of elements to show in the ListView. Depending on the ListView, this may be a list of strings or a list of 3-element sub-lists containing Text, Description, and Image file name.",
           category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
     dictItems.clear();
@@ -318,7 +322,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Set the list of choices from a string of comma-separated values.
+   * Set the list of choices specified as a string with the elements separated by commas
+   * such as: Cheese,Fruit,Bacon,Radish.
    *
    * @param itemstring a string containing a comma-separated list of the strings to be picked from
    */
@@ -870,15 +875,17 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Specifies the style the button. This does not check that the argument is a legal value.
+   * Specifies the layout's orientation. This may be: `Vertical`, which displays elements
+   * in rows one after the other; or `Horizontal`, which displays one element at a time and
+   * allows the user to swipe left or right to brows the elements.
    *
-   * @param shape one of {@link Component#VERTICAL_ORIENTATION},
-   *              {@link Component#HORISONTAL_ORIENTATION},
+   * @param orientation one of {@link Component#VERTICAL_ORIENTATION},
+   *              {@link Component#HORIZONTAL_ORIENTATION},
    * @throws IllegalArgumentException if orientation is not a legal value.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION,
           defaultValue = Component.VERTICAL_ORIENTATION + "")
-  @SimpleProperty(description = "Specifies the layout's orientation (vertical, horisontal). ")
+  @SimpleProperty(description = "Specifies the layout's orientation (vertical, horizontal). ")
   public void Orientation(int orientation) {
     this.orientation = orientation;
     setAdapterData();
@@ -895,7 +902,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Specifies data to be displayed in the ListView rows as an ArrayList of JsonObjects. Designer only property.
+   * Specifies data to be displayed in the ListView elements. This property sets the
+   * elements specified in {@link #ListViewLayout(int)}. For example, if the chosen
+   * layout is `Image,MainText` this property will allow any number of elements to be
+   * defined, each containing a filename for Image and a string for MainText.
+   * Designer only property.
    *
    * @param propertyValue string representation of row data (JsonArray of JsonObjects)
    */
@@ -934,7 +945,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param imageName    File name of an image that has been uploaded to media.
    *
    */
-  @SimpleFunction(description = "Create a ListView entry.")
+  @SimpleFunction(description = "Create a ListView entry. MainText is required. DetailText and ImageName are optional.")
   public YailDictionary CreateElement(final String mainText, final String detailText, final String imageName) {
     YailDictionary dictItem = new YailDictionary();
     dictItem.put(Component.LISTVIEW_KEY_MAIN_TEXT, mainText);
@@ -953,7 +964,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     return listElement.get("Text2").toString();
   }
 
-  @SimpleFunction(description = "Get the name of the image of a ListView element.")
+  @SimpleFunction(description = "Get the filename of the image of a ListView element that has been uploaded to Media.")
   public String GetImageName(final YailDictionary listElement) {
     return listElement.get("Image").toString();
   }

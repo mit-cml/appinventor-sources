@@ -653,9 +653,12 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 
 ## ListView  {#ListView}
 
-This is a visible component that allows to place a list of text elements in your [`Screen`](#Screen) to
- display. The list can be set using the [`ElementsFromString`](#ListView.ElementsFromString) property or using the
- [`Elements`](#ListView.Elements) block in the blocks editor.
+This is a visible component that displays a list of text and image elements in your [`Screen`](#Screen) to
+ display. Simple lists of strings may be set using the [`ElementsFromString`](#ListView.ElementsFromString) property.
+ More complex lists of elements containing multiple strings and/or images can be created using the
+ [`ListData`](#ListView.ListData) and [`ListViewLayout`](#ListView.ListViewLayout) properties.
+
+ [Information on Layouts](../other/advanced-listview.html)
 
    Warning: This component will not work correctly on Screens that are scrollable if its
  [`Height`](#ListView.Height) is set to Fill Parent.
@@ -673,7 +676,8 @@ This is a visible component that allows to place a list of text elements in your
 : Specifies the list of choices to display.
 
 {:id="ListView.ElementsFromString" .text .wo} *ElementsFromString*
-: Set the list of choices from a string of comma-separated values.
+: Set the list of choices specified as a string with the elements separated by commas
+ such as: Cheese,Fruit,Bacon,Radish.
 
 {:id="ListView.FontSizeDetail" .number} *FontSizeDetail*
 : Specifies the `ListView` item's text font size
@@ -700,13 +704,19 @@ This is a visible component that allows to place a list of text elements in your
 : Specifies the image width of ListView layouts containing images
 
 {:id="ListView.ListData" .text .do} *ListData*
-: Specifies data to be displayed in the ListView rows as an ArrayList of JsonObjects. Designer only property.
+: Specifies data to be displayed in the ListView elements. This property sets the
+ elements specified in [`ListViewLayout`](#ListView.ListViewLayout). For example, if the chosen
+ layout is `Image,MainText` this property will allow any number of elements to be
+ defined, each containing a filename for Image and a string for MainText.
+ Designer only property.
 
 {:id="ListView.ListViewLayout" .number .do} *ListViewLayout*
 : Specifies type of layout for ListView row. Designer only property.
 
 {:id="ListView.Orientation" .number} *Orientation*
-: Specifies the style the button. This does not check that the argument is a legal value.
+: Specifies the layout's orientation. This may be: `Vertical`, which displays elements
+ in rows one after the other; or `Horizontal`, which displays one element at a time and
+ allows the user to swipe left or right to brows the elements.
 
 {:id="ListView.Selection" .text} *Selection*
 : Returns the text in the `ListView` at the position of [`SelectionIndex`](#ListView.SelectionIndex).
@@ -732,9 +742,6 @@ This is a visible component that allows to place a list of text elements in your
 
 {:id="ListView.TextColorDetail" .color} *TextColorDetail*
 : Specifies the color of the secondary text in a ListView layout
-
-{:id="ListView.TextSize" .number} *TextSize*
-: Specifies the `ListView` item's text font size
 
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -766,7 +773,7 @@ This is a visible component that allows to place a list of text elements in your
 : Get the Detail Text of a ListView element.
 
 {:id="ListView.GetImageName" class="method returns text"} <i/> GetImageName(*listElement*{:.dictionary})
-: Get the name of the image of a ListView element.
+: Get the filename of the image of a ListView element that has been uploaded to Media.
 
 {:id="ListView.GetMainText" class="method returns text"} <i/> GetMainText(*listElement*{:.dictionary})
 : Get the Main Text of a ListView element.
