@@ -24,31 +24,13 @@ public class Dropdown extends PopupPanel {
 
   public Dropdown(boolean center) {
     this();
-    setCenter(center);
+    setCentered(center);
   }
 
-  public void setDropdownButton(Button button) {
-    dropdownButton = button;
-    button.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent e) {
-        open();
-      }
-    });
-  }
-
-  public void setCenter(boolean center) {
+  public void setCentered(boolean center) {
     this.center = center;
     setGlassEnabled(center);
     setAnimationEnabled(center);
     setAnimationType(AnimationType.CENTER);
-  }
-
-  public void open() {
-    if(center) {
-      center();
-    } else {
-      showRelativeTo(dropdownButton);
-    }
   }
 }

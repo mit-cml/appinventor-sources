@@ -22,14 +22,9 @@
 
       <g:FlowPanel styleName='{style.actionGroup}'>
         <ai:Button ui:field='renameButton' text='Rename' icon='edit' groupPosition='LEFT' raised='true' enabled='false' />
-        <ai:Button ui:field='downloadButton' text='Export' icon='file_download' groupPosition='CENTER' raised='true' enabled='false' />
-        <ai:DropdownButton ui:field='exportButton' text='Build' icon='system_security_update' groupPosition='CENTER' raised='true' enabled='false' />
+        <ai:Button ui:field='exportButton' text='Export' icon='file_download' groupPosition='CENTER' raised='true' enabled='false' />
+        <ai:DropdownButton ui:field='buildButton' text='Build' icon='system_security_update' groupPosition='CENTER' raised='true' enabled='false' />
         <ai:Button ui:field='publishButton' text='Publish' icon='public' groupPosition='RIGHT' raised='true' enabled='false' />
-      </g:FlowPanel>
-
-      <g:FlowPanel ui:field='exportDropdownContainer'>
-        <ai:DropdownItem text='Build APK' />
-        <ai:DropdownItem text='Build AAB' />
       </g:FlowPanel>
 
       <g:FlowPanel styleName='{style.actionGroup}'>
@@ -40,15 +35,6 @@
 
       <g:FlowPanel styleName='{style.actionGroup} {style.overflowButton}'>
         <ai:Button ui:field='mobileOverflowButton' icon='more_vert' groupPosition='NONE' raised='true' />
-      </g:FlowPanel>
-      <g:FlowPanel ui:field='mobileDropdownContainer'>
-        <ai:DropdownItem text='Export' hasDivider='true' />
-        <ai:DropdownItem text='Build APK' />
-        <ai:DropdownItem text='Build AAB' />
-        <ai:DropdownItem text='Publish' hasDivider='true' />
-        <ai:DropdownItem text='Move' />
-        <ai:DropdownItem text='View trash' />
-        <ai:DropdownItem text='Trash' />
       </g:FlowPanel>
     </g:FlowPanel>
 

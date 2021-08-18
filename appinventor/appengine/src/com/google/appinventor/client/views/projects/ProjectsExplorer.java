@@ -8,9 +8,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.Window;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -19,10 +20,21 @@ import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.components.Button;
 import com.google.appinventor.client.components.Dialog;
 import com.google.appinventor.client.components.Dropdown;
+import com.google.appinventor.client.components.DropdownItem;
 import com.google.appinventor.client.explorer.commands.AddFolderCommand;
+import com.google.appinventor.client.explorer.commands.BuildCommand;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
+import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
+import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
+import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
+import com.google.appinventor.client.explorer.commands.WarningDialogCommand;
 import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
@@ -30,6 +42,8 @@ import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProject
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +61,8 @@ public class ProjectsExplorer extends Composite {
   @UiField Button newFolderButton;
 
   @UiField Button renameButton;
-  @UiField Button downloadButton;
   @UiField Button exportButton;
+  @UiField Button buildButton;
   @UiField Button publishButton;
 
   @UiField Button trashButton;
@@ -57,12 +71,7 @@ public class ProjectsExplorer extends Composite {
   @UiField Button restoreButton;
   @UiField Button deleteButton;
 
-  @UiField FlowPanel exportDropdownContainer;
-  Dropdown exportDropdown = new Dropdown();
-
   @UiField Button mobileOverflowButton;
-  @UiField FlowPanel mobileDropdownContainer;
-  Dropdown mobileDropdown = new Dropdown(true);
 
   @UiField ProjectsList projectsList;
   @UiField ProjectsList trashList;
@@ -72,9 +81,14 @@ public class ProjectsExplorer extends Composite {
       Resources.INSTANCE.projectsExplorerStyleDark() :
       Resources.INSTANCE.projectsExplorerStyleLight();
 
+  private BuildOptions buildOptions;
+  private MobileOptions mobileOptions;
+
   public ProjectsExplorer() {
     style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
+    buildOptions = new BuildOptions(this);
+    mobileOptions = new MobileOptions(this);
     switchToProjects();
     if (Ode.isMobile()) {
       newProjectButton.setText("");
@@ -89,18 +103,18 @@ public class ProjectsExplorer extends Composite {
         int projectCount = selectedProjects.size();
         int folderCount = selectedFolders.size();
         int totalSelected = projectCount + folderCount;
-        downloadButton.setEnabled(false);
         exportButton.setEnabled(false);
+        buildButton.setEnabled(false);
         moveButton.setEnabled(false);
         publishButton.setEnabled(false);
         renameButton.setEnabled(false);
         trashButton.setEnabled(false);
         if (projectCount > 0 && folderCount == 0) {
-          downloadButton.setEnabled(true);
+          exportButton.setEnabled(true);
         }
         if (projectCount == 1 && folderCount == 0) {
           publishButton.setEnabled(true);
-          exportButton.setEnabled(true);
+          buildButton.setEnabled(true);
         }
         if (totalSelected > 0) {
           renameButton.setEnabled(true);
@@ -127,11 +141,6 @@ public class ProjectsExplorer extends Composite {
         }
       }
     });
-
-    mobileDropdown.setDropdownButton(mobileOverflowButton);
-    mobileDropdown.setWidget(mobileDropdownContainer);
-    exportDropdown.setDropdownButton(exportButton);
-    exportDropdown.setWidget(exportDropdownContainer);
   }
 
   public void switchToTrash() {
@@ -183,8 +192,8 @@ public class ProjectsExplorer extends Composite {
     projectsList.setSelected(false);
   }
 
-  @UiHandler("downloadButton")
-  void downloadSelectedProjects(ClickEvent e) {
+  @UiHandler("exportButton")
+  void exportSelectedProjects(ClickEvent e) {
     String selectedProjPath = ServerLayout.DOWNLOAD_SERVLET_BASE;
 
     if(projectsList.getSelectedProjects().size() == 1) {
@@ -199,6 +208,11 @@ public class ProjectsExplorer extends Composite {
 
     Downloader.getInstance().download(selectedProjPath);
     projectsList.setSelected(false);
+  }
+
+  @UiHandler("buildButton")
+  void openExportOptionsDropdown(ClickEvent e) {
+    buildOptions.dropdown.showRelativeTo(buildButton);
   }
 
   @UiHandler("publishButton")
@@ -239,7 +253,7 @@ public class ProjectsExplorer extends Composite {
 
   @UiHandler("restoreButton")
   void restoreSelectedProjects(ClickEvent e) {
-    for(Project project : trashList.getSelectedProjects()) {
+    for (Project project : trashList.getSelectedProjects()) {
       project.restoreFromTrash();
     }
     projectsList.setSelected(false);
@@ -248,7 +262,7 @@ public class ProjectsExplorer extends Composite {
 
   @UiHandler("deleteButton")
   void deleteSelectedProjects(ClickEvent e) {
-    for(Project project : trashList.getSelectedProjects()) {
+    for (Project project : trashList.getSelectedProjects()) {
       project.deleteFromTrash();
     }
     projectsList.setSelected(false);
@@ -263,6 +277,11 @@ public class ProjectsExplorer extends Composite {
   @UiHandler("viewProjectsButton")
   void viewProjects(ClickEvent e) {
     switchToProjects();
+  }
+
+  @UiHandler("mobileOverflowButton")
+  void viewMobileOptions(ClickEvent e) {
+    mobileOptions.dropdown.center();
   }
 
   private boolean confirmDelete(List<Project> projects) {
@@ -280,5 +299,119 @@ public class ProjectsExplorer extends Composite {
       message = MESSAGES.confirmMoveToTrash(projectNames);
     }
     return Window.confirm(message);
+  }
+
+  private void buildProject(final boolean isAab) {
+    projectsList.setSelected(false);
+    Project project = projectsList.getSelectedProjects().get(0);
+    ProjectRootNode projectRootNode = project.getRootNode();
+    if (projectRootNode != null) {
+      startBuildCommand(isAab, projectRootNode);
+    } else {
+      project.addProjectChangeListener(new ProjectChangeAdapter() {
+        @Override
+        public void onProjectLoaded(Project project) {
+          project.removeProjectChangeListener(this);
+          startBuildCommand(isAab, project.getRootNode());
+        }
+      });
+      project.loadProjectNodes();
+    }
+  }
+
+  private void startBuildCommand(boolean isAab, ProjectRootNode projectRootNode) {
+    boolean secondBuildserver = false;
+    String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
+    ChainableCommand cmd = new SaveAllEditorsCommand(
+        new GenerateYailCommand(
+            new BuildCommand(target, secondBuildserver, isAab,
+              new ShowProgressBarCommand(target,
+                new WaitForBuildResultCommand(target,
+                  new ShowBarcodeCommand(target, isAab)), "BarcodeAction"),
+              new ShowBarcodeCommand(target, isAab))));
+    if (!Ode.getInstance().getWarnBuild(secondBuildserver)) {
+      cmd = new WarningDialogCommand(target, secondBuildserver, cmd);
+      Ode.getInstance().setWarnBuild(secondBuildserver, true);
+    }
+    cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
+        new Command() {
+          @Override
+          public void execute() {
+          }
+        });
+  }
+
+  public static class BuildOptions {
+    interface BuildOptionsUiBinder extends UiBinder<Dropdown, BuildOptions> {}
+    private static final BuildOptionsUiBinder UI_BINDER =
+        GWT.create(BuildOptionsUiBinder.class);
+
+    @UiField Dropdown dropdown;
+    @UiField DropdownItem apkDropdownItem;
+    @UiField DropdownItem aabDropdownItem;
+
+    private ProjectsExplorer explorer;
+
+    public BuildOptions(ProjectsExplorer explorer) {
+      this.explorer = explorer;
+      UI_BINDER.createAndBindUi(this);
+    }
+
+    @UiHandler("apkDropdownItem")
+    void buildProjectAsApk(ClickEvent e) {
+      explorer.buildProject(false);
+    }
+
+    @UiHandler("aabDropdownItem")
+    void buildProjectAsAab(ClickEvent e) {
+      explorer.buildProject(true);
+    }
+  }
+
+  public static class MobileOptions {
+    interface MobileOptionsUiBinder extends UiBinder<Dropdown, MobileOptions> {}
+    private static final MobileOptionsUiBinder UI_BINDER =
+        GWT.create(MobileOptionsUiBinder.class);
+
+    @UiField Dropdown dropdown;
+    @UiField DropdownItem exportButton;
+    @UiField DropdownItem apkButton;
+    @UiField DropdownItem aabButton;
+    @UiField DropdownItem publishButton;
+    @UiField DropdownItem moveButton;
+    @UiField DropdownItem viewTrashButton;
+    @UiField DropdownItem trashButton;
+
+    private ProjectsExplorer explorer;
+
+    public MobileOptions(ProjectsExplorer explorer) {
+      this.explorer = explorer;
+      UI_BINDER.createAndBindUi(this);
+    }
+
+    @UiHandler("apkButton")
+    void buildProjectAsApk(ClickEvent e) {
+      explorer.buildProject(false);
+    }
+
+    @UiHandler("aabButton")
+    void buildProjectAsAab(ClickEvent e) {
+      explorer.buildProject(true);
+    }
+
+    @UiHandler("exportButton")
+    void exportSelectedProjects(ClickEvent e) {
+      explorer.exportSelectedProjects(e);
+    }
+
+    @UiHandler("publishButton")
+    void publishProject(ClickEvent e) {
+      explorer.publishProject(e);
+    }
+
+    @UiHandler("viewTrashButton")
+    void viewTrash(ClickEvent e) {
+      explorer.viewTrash(e);
+    }
   }
 }
