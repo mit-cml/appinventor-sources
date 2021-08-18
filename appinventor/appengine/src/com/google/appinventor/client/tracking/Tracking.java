@@ -35,6 +35,8 @@ public class Tracking {
       "PreviewFile-YA";
   public static final String PROJECT_ACTION_BUILD_BARCODE_YA = PROJECT_ACTION_PREFIX +
       "BuildBarcode-YA";
+  public static final String PROJECT_ACTION_DOWNLOAD_CACHED_BUILD = PROJECT_ACTION_PREFIX +
+      "DownloadCachedBuild-YA";
   public static final String PROJECT_ACTION_BUILD_DOWNLOAD_YA = PROJECT_ACTION_PREFIX +
       "BuildDownload-YA";
   public static final String PROJECT_ACTION_BUILD_YAIL_YA = PROJECT_ACTION_PREFIX +

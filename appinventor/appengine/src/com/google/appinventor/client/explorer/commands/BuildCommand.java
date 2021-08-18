@@ -18,6 +18,7 @@ import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Command;
 
 import java.util.Date;
 
@@ -32,6 +33,9 @@ public class BuildCommand extends ChainableCommand {
   // Whether or not to use the second buildserver
   private boolean secondBuildserver = false;
   private boolean isAab;
+
+  // The next chainable command to be executed if a cached version of the build exists.
+  private final ChainableCommand nextCommandIfCacheHit;
 
   /**
    * Creates a new build command.
@@ -50,10 +54,26 @@ public class BuildCommand extends ChainableCommand {
    * @param nextCommand the command to execute after the build has finished
    */
   public BuildCommand(String target, boolean secondBuildserver, boolean isAab, ChainableCommand nextCommand) {
+    this(target, secondBuildserver, isAab, nextCommand, null);
+  }
+
+  /**
+   * Creates a new build command, with additional behavior provided by
+   * two ChainableCommands, one which executes if a fresh build was started, and
+   * another if a cached build exists.
+   *
+   * @param target the build target
+   * @param nextCommand the command to execute after the build has finished
+   * @param nextCommandIfCacheHit the command to execute if an up-to-date version
+   *        of the build already exists
+   */
+  public BuildCommand(String target, boolean secondBuildserver, boolean isAab,
+      ChainableCommand nextCommand, ChainableCommand nextCommandIfCacheHit) {
     super(nextCommand);
     this.isAab = isAab;
     this.target = target;
     this.secondBuildserver = secondBuildserver;
+    this.nextCommandIfCacheHit = nextCommandIfCacheHit;
   }
 
   @Override
@@ -108,6 +128,20 @@ public class BuildCommand extends ChainableCommand {
               double appSize = info.get("aiaSize").asNumber().getDouble();
               ErrorReporter.reportError(MESSAGES.buildProjectTooLargeError(maxSize, appSize));
               break;
+            case -2:
+              // A cached version of the build output exists and no request to the buildserver
+              // was made.
+              // Skip build process and execute the cache hit command
+              if (nextCommandIfCacheHit != null) {
+                nextCommandIfCacheHit.startExecuteChain(Tracking.PROJECT_ACTION_DOWNLOAD_CACHED_BUILD, node,
+                  new Command() {
+                    @Override
+                    public void execute() {
+                    }
+                });
+              }
+              return;
+
             default:
               String errorMsg = result.getError();
               // This is not an internal App Inventor bug. The error is reported as info so that
