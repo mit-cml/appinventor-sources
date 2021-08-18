@@ -74,6 +74,13 @@ public final class FolderManager {
     return folder;
   }
 
+  public void renameFolders(List<String> folderNames, List<Folder> foldersToRename) {
+    for (int i = 0; i < foldersToRename.size(); ++i) {
+      foldersToRename.get(i).setName(folderNames.get(i));
+    }
+    saveAllFolders();
+  }
+
   // relative to *global*
   public Folder createFolder(String path) {
     return null;
