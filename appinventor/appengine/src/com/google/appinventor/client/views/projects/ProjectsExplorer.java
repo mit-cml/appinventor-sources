@@ -25,6 +25,7 @@ import com.google.appinventor.client.explorer.commands.AddFolderCommand;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
+import com.google.appinventor.client.explorer.commands.RenameProjectsCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
 import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
@@ -188,7 +189,7 @@ public class ProjectsExplorer extends Composite {
 
   @UiHandler("renameButton")
   void renameSelectedProjects(ClickEvent e) {
-    new RenameProjectsCommand().execute(null);
+    new RenameProjectsCommand(projectsList.getSelectedProjects(), projectsList.getSelectedFolders()).execute();
     projectsList.setSelected(false);
   }
 
