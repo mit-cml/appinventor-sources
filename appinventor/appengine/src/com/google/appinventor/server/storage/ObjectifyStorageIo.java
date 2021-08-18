@@ -868,6 +868,25 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
+  public void setProjectName(final String userId, final long projectId, final String name) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            pd.name = name;
+						datastore.put(pd);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectId), e);
+    }
+  }
+
+  @Override
   public long getProjectDateModified(final String userId, final long projectId) {
     final Result<Long> modDate = new Result<Long>();
     try {
