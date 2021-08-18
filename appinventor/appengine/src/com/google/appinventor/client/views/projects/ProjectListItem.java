@@ -23,9 +23,9 @@ import com.google.appinventor.client.explorer.project.Project;
 
 import java.util.Date;
 
-public class ListItem extends Composite {
-  interface ListItemUiBinder extends UiBinder<FlowPanel, ListItem> {}
-  private static final ListItemUiBinder UI_BINDER = GWT.create(ListItemUiBinder.class);
+public class ProjectListItem extends Composite {
+  interface ProjectListItemUiBinder extends UiBinder<FlowPanel, ProjectListItem> {}
+  private static final ProjectListItemUiBinder UI_BINDER = GWT.create(ProjectListItemUiBinder.class);
 
   private boolean isInTrash;
   private int depth;
@@ -37,22 +37,17 @@ public class ListItem extends Composite {
   @UiField CheckBox checkBox;
 
   @UiField(provided=true)
-  Resources.ListItemStyle style = Ode.getUserDarkThemeEnabled() ?
+  Resources.ProjectListItemStyle style = Ode.getUserDarkThemeEnabled() ?
       Resources.INSTANCE.listItemStyleDark() : Resources.INSTANCE.listItemStyleLight();
 
   private ProjectsFolder parentFolder;
   private Project project;
-  private ItemSelectionChangeHandler changeHandler;
+  private ProjectSelectionChangeHandler changeHandler;
   private ClickHandler clickHandler;
 
-  public ListItem() {
+  public ProjectListItem(Project project, int depth, boolean isInTrash) {
     style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
-  }
-
-  public ListItem(Project project, boolean isInTrash, int depth, ItemSelectionChangeHandler changeHandler) {
-    this();
-
     DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
 
     Date dateCreated = new Date(project.getDateCreated());
@@ -66,6 +61,10 @@ public class ListItem extends Composite {
     this.isInTrash = isInTrash;
     this.depth = depth;
     checkBox.getElement().setAttribute("style", "margin-right: " + (depth * 10) + "px");
+  }
+
+  public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
+    this.changeHandler = changeHandler;
   }
 
   public boolean isSelected() {
@@ -105,9 +104,5 @@ public class ListItem extends Composite {
     if (clickHandler != null) {
       clickHandler.onClick(e);
     }
-  }
-
-  public static abstract class ItemSelectionChangeHandler {
-    public abstract void onSelectionChange(boolean selected);
   }
 }

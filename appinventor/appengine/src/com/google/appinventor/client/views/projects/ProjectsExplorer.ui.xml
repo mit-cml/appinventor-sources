@@ -33,7 +33,7 @@
       </g:FlowPanel>
 
       <g:FlowPanel styleName='{style.actionGroup}'>
-        <ai:Button text='Move' icon='drive_file_move' groupPosition='LEFT' raised='true' enabled='false' />
+        <ai:Button ui:field='moveButton' text='Move' icon='drive_file_move' groupPosition='LEFT' raised='true' enabled='false' />
         <ai:Button ui:field='viewTrashButton' text='View trash' groupPosition='CENTER' raised='true' />
         <ai:Button ui:field='trashButton' text='Trash' icon='delete' type='DANGER' groupPosition='RIGHT' raised='true' enabled='false' />
       </g:FlowPanel>
@@ -63,6 +63,6 @@
     </g:FlowPanel>
 
     <aiv:ProjectsList ui:field='projectsList' />
-    <aiv:ProjectsList ui:field='trashList' forTrash='true' />
+    <aiv:ProjectsList ui:field='trashList' isTrash='true' />
   </g:FlowPanel>
 </ui:UiBinder>

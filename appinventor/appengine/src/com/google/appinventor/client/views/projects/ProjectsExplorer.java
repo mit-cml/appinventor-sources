@@ -20,7 +20,9 @@ import com.google.appinventor.client.components.Button;
 import com.google.appinventor.client.components.Dialog;
 import com.google.appinventor.client.components.Dropdown;
 import com.google.appinventor.client.explorer.commands.AddFolderCommand;
+import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
@@ -50,6 +52,7 @@ public class ProjectsExplorer extends Composite {
   @UiField Button publishButton;
 
   @UiField Button trashButton;
+  @UiField Button moveButton;
 
   @UiField Button restoreButton;
   @UiField Button deleteButton;
@@ -66,45 +69,59 @@ public class ProjectsExplorer extends Composite {
 
   @UiField(provided=true)
   Resources.ProjectsExplorerStyle style = Ode.getUserDarkThemeEnabled() ?
-      Resources.INSTANCE.projectsExplorerStyleDark() : Resources.INSTANCE.projectsExplorerStyleLight();
+      Resources.INSTANCE.projectsExplorerStyleDark() :
+      Resources.INSTANCE.projectsExplorerStyleLight();
 
   public ProjectsExplorer() {
     style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
     switchToProjects();
-    if(Ode.isMobile()) {
+    if (Ode.isMobile()) {
       newProjectButton.setText("");
     }
-    projectsList.setSelectionChangeHandler(new ProjectsList.SelectionChangeHandler() {
+    projectsList.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
       @Override
-      public void onSelectionChange(int selectedProjects, int selectedFolders) {
-        if(selectedProjects == 0) {
-          downloadButton.setEnabled(false);
-          renameButton.setEnabled(false);
-          trashButton.setEnabled(false);
-        } else {
+      public void onSelectionChange(boolean selected) {
+        List<Project> selectedProjects = projectsList.getSelectedProjects();
+        List<Folder> selectedFolders = projectsList.getSelectedFolders();
+        OdeLog.log("Projects list selection change raised for " + selectedFolders.size() +
+            " folders and " + selectedProjects.size() + " projects");
+        int projectCount = selectedProjects.size();
+        int folderCount = selectedFolders.size();
+        int totalSelected = projectCount + folderCount;
+        downloadButton.setEnabled(false);
+        exportButton.setEnabled(false);
+        moveButton.setEnabled(false);
+        publishButton.setEnabled(false);
+        renameButton.setEnabled(false);
+        trashButton.setEnabled(false);
+        if (projectCount > 0 && folderCount == 0) {
           downloadButton.setEnabled(true);
-          renameButton.setEnabled(true);
-          trashButton.setEnabled(true);
         }
-
-        if(selectedProjects == 1) {
+        if (projectCount == 1 && folderCount == 0) {
           publishButton.setEnabled(true);
           exportButton.setEnabled(true);
-        } else {
-          publishButton.setEnabled(false);
-          exportButton.setEnabled(false);
+        }
+        if (totalSelected > 0) {
+          renameButton.setEnabled(true);
+          trashButton.setEnabled(true);
+          moveButton.setEnabled(true);
         }
       }
     });
 
-    trashList.setSelectionChangeHandler(new ProjectsList.SelectionChangeHandler() {
+    trashList.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
       @Override
-      public void onSelectionChange(int selectedProjects, int selectedFolders) {
-        if(selectedProjects == 0) {
-          restoreButton.setEnabled(false);
-          deleteButton.setEnabled(false);
-        } else {
+      public void onSelectionChange(boolean selected) {
+        List<Project> selectedProjects = trashList.getSelectedProjects();
+        List<Folder> selectedFolders = trashList.getSelectedFolders();
+        OdeLog.log("Trash list selection change raised for " + selectedFolders.size() +
+            " folders and " + selectedProjects.size() + " projects");
+        int projectCount = selectedProjects.size();
+        int folderCount = selectedFolders.size();
+        deleteButton.setEnabled(false);
+        restoreButton.setEnabled(false);
+        if (projectCount + folderCount > 0) {
           restoreButton.setEnabled(true);
           deleteButton.setEnabled(true);
         }
@@ -160,6 +177,12 @@ public class ProjectsExplorer extends Composite {
     new AddFolderCommand().execute();
   }
 
+  @UiHandler("renameButton")
+  void renameSelectedProjects(ClickEvent e) {
+    new RenameProjectsCommand().execute(null);
+    projectsList.setSelected(false);
+  }
+
   @UiHandler("downloadButton")
   void downloadSelectedProjects(ClickEvent e) {
     String selectedProjPath = ServerLayout.DOWNLOAD_SERVLET_BASE;
@@ -203,9 +226,12 @@ public class ProjectsExplorer extends Composite {
   @UiHandler("trashButton")
   void trashSelectedProjects(ClickEvent e) {
     if (confirmDelete(projectsList.getSelectedProjects())) {
-      for(Project project : projectsList.getSelectedProjects()) {
+      for (Project project : projectsList.getSelectedProjects()) {
         project.moveToTrash();
       }
+      // for (Folder folder : projectsList.getSelectedFolders()) {
+      //   Ode.getInstance().getFolderManager().moveToTrash(folder);
+      // }
       projectsList.setSelected(false);
       trashList.setSelected(false);
     }

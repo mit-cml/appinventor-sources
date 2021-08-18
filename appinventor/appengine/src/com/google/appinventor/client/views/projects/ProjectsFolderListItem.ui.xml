@@ -1,4 +1,4 @@
-<!-- ProjectsFolderImpl.ui.xml -->
+<!-- ProjectsFolderListItem.ui.xml -->
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ai="urn:import:com.google.appinventor.client.components"

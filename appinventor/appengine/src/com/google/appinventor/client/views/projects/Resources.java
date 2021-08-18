@@ -14,18 +14,18 @@ public interface Resources extends ClientBundle {
   @Source({
     "com/google/appinventor/client/resources/base.css",
     "com/google/appinventor/client/resources/light.css",
-    "com/google/appinventor/client/views/projects/listItem.css"
+    "com/google/appinventor/client/views/projects/projectListItem.css"
   })
-  ListItemStyle listItemStyleLight();
+  ProjectListItemStyle listItemStyleLight();
 
   @Source({
     "com/google/appinventor/client/resources/base.css",
     "com/google/appinventor/client/resources/dark.css",
-    "com/google/appinventor/client/views/projects/listItem.css"
+    "com/google/appinventor/client/views/projects/projectListItem.css"
   })
-  ListItemStyle listItemStyleDark();
+  ProjectListItemStyle listItemStyleDark();
 
-  public interface ListItemStyle extends CssResource {
+  public interface ProjectListItemStyle extends CssResource {
     String listItem();
     String selected();
     String field();
