@@ -692,10 +692,26 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // Store the userId and projectId based on the nonce
 
     storageIo.storeNonce(nonce, userId, projectId);
+    List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
+    if (storageIo.getProjectDateBuilt(userId, projectId) > storageIo.getProjectDateModified(userId, projectId)) {
+      boolean isAabOutput = false;
+      for (String buildOutputFile : buildOutputFiles) {
+        if (buildOutputFile.endsWith(".aab")) {
+          isAabOutput = true;
+          break;
+        }
+      }
+
+      if (isAabOutput && isAab || !isAabOutput && !isAab) {
+        LOG.info("Cache hit for project " + projectId);
+        return new RpcResult(-2, "Cache hit for project " + projectId, "");
+      }
+    }
+    LOG.info("Cache expired for project " + projectId);
+    storageIo.updateProjectBuiltDate(userId, projectId, 0);
 
     // Delete the existing build output files, if any, so that future attempts to get it won't get
     // old versions.
-    List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
     for (String buildOutputFile : buildOutputFiles) {
       storageIo.deleteFile(userId, projectId, buildOutputFile);
     }
@@ -1034,6 +1050,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
                                       buildResultJsonObj.getString("output"),
                                       buildResultJsonObj.getString("error"),
                                       outputStr);
+          if (buildResultJsonObj.getInt("result") == 0) {
+            storageIo.updateProjectBuiltDate(userId, projectId, System.currentTimeMillis());
+          }
         } catch (JSONException e) {
           buildResult = new RpcResult(1, "", "");
         }
