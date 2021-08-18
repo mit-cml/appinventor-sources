@@ -2765,10 +2765,10 @@ Dictionary implementation.
 
 (define (make-color-string color-string)
    (cond
-       ((not (string=? (substring color-string 0 1) "#")) 4278190080)
+       ((not (string=? (substring color-string 0 1) "#")) (signal-runtime-error "Color must start with # symbol" "Invalid Color Input"))
        ((= (string-length color-string) 7) (ret-hex (string-append color-string "ff" )))
        ((= (string-length color-string) 9) (ret-hex color-string) )
-       ( else 4278190080 )
+       ( else (signal-runtime-error "Input String must be of length 7 or 9 characters" "Invalid Color Input"))
    )
 )
 
