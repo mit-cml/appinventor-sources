@@ -1,0 +1,17 @@
+.text {
+  padding: 4px 20px;
+  font-size: 14px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 44px;
+}
+
+.input {
+  padding: 5px 10px !important;
+  margin: 10px 20px !important;
+  width: literal("calc(100% - 60px)");
+  font-size: 14px;
+}
