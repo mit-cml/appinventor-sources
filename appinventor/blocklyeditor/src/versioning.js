@@ -1847,7 +1847,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The LegacyMode property was added.
     // No blocks need to be modified to upgrade to version 3.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: The LegacyMode property was deprecated.
+    // AI2: The DefaultScope and Scope properties were added.
+    4: "noUpgrade"
 
   }, // End File upgraders
 
@@ -2841,7 +2845,11 @@ Blockly.Versioning.AllUpgradeMaps =
          Blockly.Versioning.makeSetterUseHelper(
             'Form', 'BackgroundImage', Blockly.Versioning.tryReplaceBlockWithAssets),
          Blockly.Versioning.makeMethodUseHelper(
-            'Form', 'AskForPermission', 0, Blockly.Versioning.tryReplaceBlockWithPermissions)]
+            'Form', 'AskForPermission', 0, Blockly.Versioning.tryReplaceBlockWithPermissions)],
+
+    // For FORM_COMPONENT_VERSION 30:
+    // - DefaultFileScope designer property was added
+    30: "noUpgrade"
 
   }, // End Screen
 

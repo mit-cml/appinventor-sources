@@ -26,6 +26,7 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.VideoView;
 
+import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.errors.PermissionException;
@@ -59,44 +60,6 @@ public class MediaUtil {
 
   // tempFileMap maps cached media (assets, etc) to their respective temp files.
   private static final Map<String, File> tempFileMap = new HashMap<String, File>();
-
-  // this class is used by getBitmapDrawable so it can call the asynchronous version
-  // (getBitMapDrawableAsync) and await the result (blocking the UI Thread :-()
-  private static class Synchronizer<T> {
-    private volatile boolean finished = false;
-    private T result;
-    private String error;
-
-    public synchronized void waitfor() {
-      while (!finished) {
-        try {
-          wait();
-        } catch (InterruptedException e) {
-        }
-      }
-    }
-
-    public synchronized void wakeup(T result) {
-      finished = true;
-      this.result = result;
-      notifyAll();
-    }
-
-    public synchronized void error(String error) {
-      finished = true;
-      this.error = error;
-      notifyAll();
-    }
-
-    public T getResult() {
-      return result;
-    }
-
-    public String getError() {
-      return error;
-    }
-
-  }
 
   private MediaUtil() {
   }
@@ -303,15 +266,22 @@ public class MediaUtil {
         return getAssetsIgnoreCaseInputStream(form,mediaPath);
 
       case REPL_ASSET:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          // App specific storage does not need read permission
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
         return new FileInputStream(new java.io.File(URI.create(form.getAssetPath(mediaPath))));
 
       case SDCARD:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          // App specific storage does not need read permission
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
         return new FileInputStream(mediaPath);
 
       case FILE_URL:
-        if (isExternalFileUrl(form, mediaPath)) {
+        if (isExternalFileUrl(form, mediaPath)
+            && RUtil.needsFilePermission(form, mediaPath, null)) {
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
       case URL:
@@ -422,7 +392,7 @@ public class MediaUtil {
     if (mediaPath == null || mediaPath.length() == 0) {
       return null;
     }
-    final Synchronizer syncer = new Synchronizer<BitmapDrawable>();
+    final Synchronizer<BitmapDrawable> syncer = new Synchronizer<>();
     final AsyncCallbackPair<BitmapDrawable> continuation = new AsyncCallbackPair<BitmapDrawable>() {
         @Override
         public void onFailure(String message) {
@@ -435,7 +405,7 @@ public class MediaUtil {
       };
     getBitmapDrawableAsync(form, mediaPath, continuation);
     syncer.waitfor();
-    BitmapDrawable result = (BitmapDrawable) syncer.getResult();
+    BitmapDrawable result = syncer.getResult();
     if (result == null) {
       String error = syncer.getError();
       if (error.startsWith("PERMISSION_DENIED:")) {
@@ -717,15 +687,20 @@ public class MediaUtil {
         return soundPool.load(getAssetsIgnoreCaseAfd(form,mediaPath), 1);
 
       case REPL_ASSET:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
-        return soundPool.load(QUtil.getReplAssetPath(form) + mediaPath, 1);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
+        return soundPool.load(fileUrlToFilePath(form.getAssetPath(mediaPath)), 1);
 
       case SDCARD:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
         return soundPool.load(mediaPath, 1);
 
       case FILE_URL:
-        if (isExternalFileUrl(form, mediaPath)) {
+        if (isExternalFileUrl(form, mediaPath)
+            || RUtil.needsFilePermission(form, mediaPath, null)) {
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
         return soundPool.load(fileUrlToFilePath(mediaPath), 1);
@@ -770,17 +745,22 @@ public class MediaUtil {
 
 
       case REPL_ASSET:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
-        mediaPlayer.setDataSource(form.getAssetPath(mediaPath));
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
+        mediaPlayer.setDataSource(fileUrlToFilePath(form.getAssetPath(mediaPath)));
         return;
 
       case SDCARD:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
         mediaPlayer.setDataSource(mediaPath);
         return;
 
       case FILE_URL:
-        if (isExternalFileUrl(form, mediaPath)) {
+        if (isExternalFileUrl(form, mediaPath)
+            || RUtil.needsFilePermission(form, mediaPath, null)) {
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
         mediaPlayer.setDataSource(fileUrlToFilePath(mediaPath));
@@ -827,17 +807,22 @@ public class MediaUtil {
         return;
 
       case REPL_ASSET:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
-        videoView.setVideoPath(form.getAssetPath(mediaPath));
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
+        videoView.setVideoPath(fileUrlToFilePath(form.getAssetPath(mediaPath)));
         return;
 
       case SDCARD:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
         videoView.setVideoPath(mediaPath);
         return;
 
       case FILE_URL:
-        if (isExternalFileUrl(form, mediaPath)) {
+        if (isExternalFileUrl(form, mediaPath)
+            || RUtil.needsFilePermission(form, mediaPath, null)) {
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
         videoView.setVideoPath(fileUrlToFilePath(mediaPath));

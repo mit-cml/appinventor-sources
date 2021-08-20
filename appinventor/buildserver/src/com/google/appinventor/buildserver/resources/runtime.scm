@@ -103,6 +103,7 @@
          (SimplePropertyUtil:copyComponentProperties existing-component component-to-add))))))
 
 (define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
+(define-alias TypeUtil <com.google.appinventor.components.runtime.util.TypeUtil>)
 
 (define (call-Initialize-of-components . component-names)
   ;; Do any inherent/implied initializations
@@ -441,6 +442,8 @@
                                  (begin
                                    (apply handler (gnu.lists.LList:makeList args 0))
                                    #t)
+                                 (exception com.google.appinventor.components.runtime.errors.StopBlocksExecution
+                                   #f)
                                  ;; PermissionException should be caught by a permissions-aware component and
                                  ;; handled correctly at the point it is caught. However, older extensions
                                  ;; might not be updated yet for SDK 23's dangerous permissions model, so if
@@ -496,6 +499,8 @@
                 (begin
                   (apply handler (cons componentObject (cons notAlreadyHandled (gnu.lists.LList:makeList args 0))))
                   #t)
+                (exception com.google.appinventor.components.runtime.errors.StopBlocksExecution
+                  #f)
                 (exception com.google.appinventor.components.runtime.errors.PermissionException
                  (begin
                    (exception:printStackTrace)
@@ -966,7 +971,6 @@
 (module-name com.google.youngandroid.runtime)
 (module-static #t)
 
-(define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
 (define-alias Double <java.lang.Double>)
 (define-alias Float <java.lang.Float>)
 (define-alias Integer <java.lang.Integer>)
@@ -975,12 +979,15 @@
 (define-alias Short <java.lang.Short>)
 (define-alias String <java.lang.String>)
 (define-alias Pattern <java.util.regex.Pattern>)
+(define-alias ContinuationUtil <com.google.appinventor.components.runtime.util.ContinuationUtil>)
+(define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
+(define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
+(define-alias StopBlocksExecution <com.google.appinventor.components.runtime.errors.StopBlocksExecution>)
+(define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
+(define-alias JavaStringUtils <com.google.appinventor.components.runtime.util.JavaStringUtils>)
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailDictionary <com.google.appinventor.components.runtime.util.YailDictionary>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
-(define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
-(define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
-(define-alias JavaStringUtils <com.google.appinventor.components.runtime.util.JavaStringUtils>)
 
 (define-alias JavaCollection <java.util.Collection>)
 (define-alias JavaIterator <java.util.Iterator>)
@@ -1060,6 +1067,41 @@
       ;; TODO(markf): this should probably be generalized but for now this is OK, I think
       (sanitize-return-value component method-name result))))
 
+
+
+;;; CALL-COMPONENT-METHOD-WITH-CONTINUATION
+;;;
+
+(define (call-component-method-with-continuation component-name method-name arglist typelist k)
+  (let* ((coerced-args (coerce-args method-name arglist typelist))
+         (component (lookup-in-current-form-environment component-name))
+         (continuation (ContinuationUtil:wrap
+                        (lambda (v) (k (sanitize-return-value component method-name v)))
+                        Object:class)))
+    (if (all-coercible? coerced-args)
+        (try-catch
+         (apply invoke
+                `(,component
+                  ,method-name
+                  ,@coerced-args
+                  ,continuation))
+         (exception PermissionException
+           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
+      (generate-runtime-type-error method-name arglist))))
+
+
+
+;;; CALL-COMPONENT-METHOD-WITH-BLOCKING-CONTINUATION
+;;;
+
+(define (call-component-method-with-blocking-continuation component-name method-name arglist typelist)
+  (let ((result #f))
+    (call-component-method-with-continuation component-name method-name arglist typelist
+      (lambda (v) (set! result v)))
+    result))
+
+
+
 ;;; CALL-COMPONENT-TYPE-METHOD
 ;;; Call the component method for the given component object with the given list of args,
 ;;; coercing to the given types.
@@ -1087,6 +1129,36 @@
                    (generate-runtime-type-error method-name arglist))))
           ;; TODO(markf): this should probably be generalized but for now this is OK, I think
           (sanitize-return-value component-value method-name result)))))
+
+
+
+;;; CALL-COMPONENT-TYPE-METHOD-WITH-CONTINUATION
+;;;
+
+(define (call-component-type-method-with-continuation component-type method-name arglist typelist k)
+  (let* ((coerced-args (coerce-args method-name arglist (cdr typelist)))
+         (component-value (coerce-to-component-of-type possible-component component-type))
+         (continuation (ContinuationUtil:wrap
+                        (lambda (v) (k (sanitize-return-value component-value method-name v)))
+                        Object:class)))
+    (if (all-coercible? coerced-args)
+        (try-catch
+         (apply invoke `(,component-value ,method-name ,@coerced-args ,continuation))
+         (exception PermissionException
+           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
+      (generate-runtime-type-error method-name arglist))))
+
+
+
+;;; CALL-COMPONENT-TYPE-METHOD-WITH-BLOCKING-CONTINUATION
+;;;
+
+(define (call-component-type-method-with-blocking-continuation component-type method-name arglist typelist)
+  (let ((result #f))
+    (call-component-type-method-with-continuation component-type method-name arglist typelist
+      (lambda (v) (set! result v)))
+    result))
+
 
 
 ;;; CALL-USER-PROCEDURE
@@ -1374,14 +1446,18 @@
   (instance? arg com.google.appinventor.components.common.OptionList))
 
 (define (coerce-to-enum arg type)
+  (android-log "coerce-to-enum")
   (if (and (enum? arg)
         ;; We have to trick the Kawa compiler into not open-coding "instance?"
         ;; or else we get a ClassCastException here.
         ;; This check is necessary to make sure we treat each enum type separately.
         ;; Eg a HorizontalAlignment is different from a VerticalAlignment.
         (apply instance? (list arg (string->symbol (string-replace-all (symbol->string type) "Enum" "")))))
-      arg 
-      *non-coercible-value*))
+      arg
+      (let ((coerced (TypeUtil:castToEnum arg type)))
+        (if (eq? coerced #!null)
+            *non-coercible-value*
+            coerced))))
 
 ;;; We can coerce *the-null-value* to a string for printing in error messages
 ;;; but we don't consider it to be a Yail text for use in
@@ -2987,6 +3063,8 @@ Dictionary implementation.
                  (try-catch
                   (list "OK"
                         (get-display-representation (force promise)))
+                  (exception StopBlocksExecution
+                             (list "OK" #f))
                   (exception PermissionException
                              (exception:printStackTrace)
                              (list "NOK"

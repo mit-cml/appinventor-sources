@@ -146,108 +146,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
   /**
-   * Returns project settings that can be used when creating a new project.
-   */
-  public static String getProjectSettings(String icon, String vCode, String vName,
-    String useslocation, String aName, String sizing, String showListsAsJson, String tutorialURL, String subsetJSON,
-    String actionBar, String theme, String primaryColor, String primaryColorDark, String accentColor) {
-    icon = Strings.nullToEmpty(icon);
-    vCode = Strings.nullToEmpty(vCode);
-    vName = Strings.nullToEmpty(vName);
-    useslocation = Strings.nullToEmpty(useslocation);
-    sizing = Strings.nullToEmpty(sizing);
-    aName = Strings.nullToEmpty(aName);
-    showListsAsJson = Strings.nullToEmpty(showListsAsJson);
-    tutorialURL = Strings.nullToEmpty(tutorialURL);
-    subsetJSON = Strings.nullToEmpty(subsetJSON);
-    actionBar = Strings.nullToEmpty(actionBar);
-    theme = Strings.nullToEmpty(theme);
-    primaryColor = Strings.nullToEmpty(primaryColor);
-    primaryColorDark = Strings.nullToEmpty(primaryColorDark);
-    accentColor = Strings.nullToEmpty(accentColor);
-    return "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":{" +
-        "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" + icon +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"" + vCode +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"" + vName +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"" + useslocation +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"" + aName +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"" + sizing +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON + "\":\"" + showListsAsJson +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL + "\":\"" + tutorialURL +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET + "\":\"" + subsetJSON +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR + "\":\"" + actionBar +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME + "\":\"" + theme +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR + "\":\"" + primaryColor +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK + "\":\"" + primaryColorDark +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR + "\":\"" + accentColor +
-        "\"}}";
-  }
-
-  /**
-   * Returns the contents of the project properties file for a new Young Android
-   * project.
-   *
-   * @param projectName the name of the project
-   * @param qualifiedName the qualified name of Screen1 in the project
-   * @param icon the name of the asset to use as the application icon
-   * @param vcode the version code
-   * @param vname the version name
-   */
-  public static String getProjectPropertiesFileContents(String projectName, String qualifiedName,
-    String icon, String vcode, String vname, String useslocation, String aname,
-    String sizing, String showListsAsJson, String tutorialURL, String subsetJSON, String actionBar, String theme,
-    String primaryColor, String primaryColorDark, String accentColor) {
-    String contents = "main=" + qualifiedName + "\n" +
-        "name=" + projectName + '\n' +
-        "assets=../" + ASSETS_FOLDER + "\n" +
-        "source=../" + SRC_FOLDER + "\n" +
-        "build=../build\n";
-    if (icon != null && !icon.isEmpty()) {
-      contents += "icon=" + icon + "\n";
-    }
-    if (vcode != null && !vcode.isEmpty()) {
-      contents += "versioncode=" + vcode + "\n";
-    }
-    if (vname != null && !vname.isEmpty()) {
-      contents += "versionname=" + vname + "\n";
-    }
-    if (useslocation != null && !useslocation.isEmpty()) {
-      contents += "useslocation=" + useslocation + "\n";
-    }
-    if (aname != null) {
-      contents += "aname=" + aname + "\n";
-    }
-    if (sizing != null && !sizing.isEmpty()) {
-      contents += "sizing=" + sizing + "\n";
-    }
-    if (showListsAsJson != null && !showListsAsJson.isEmpty()) {
-      contents += "showlistsasjson=" + showListsAsJson + "\n";
-    }
-    if (tutorialURL != null && !tutorialURL.isEmpty()) {
-      contents += "tutorialurl=" + tutorialURL + "\n";
-    }
-    if (subsetJSON != null && !subsetJSON.isEmpty()) {
-      contents += "subsetjson=" + subsetJSON + "\n";
-    }
-    if (actionBar != null && !actionBar.isEmpty()) {
-      contents += "actionbar=" + actionBar + "\n";
-    }
-    if (theme != null && !theme.isEmpty()) {
-      contents += "theme=" + theme + "\n";
-    }
-    if (primaryColor != null && !primaryColor.isEmpty()) {
-      contents += "color.primary=" + primaryColor + "\n";
-    }
-    if (primaryColorDark != null && !primaryColorDark.isEmpty()) {
-      contents += "color.primary.dark=" + primaryColorDark + "\n";
-    }
-    if (accentColor != null && !accentColor.isEmpty()) {
-      contents += "color.accent=" + accentColor + "\n";
-    }
-    return contents;
-  }
-
-  /**
    * Returns the contents of a new Young Android form file.
    * @param qualifiedName the qualified name of the form.
    * @return the contents of a new Young Android form file.
@@ -295,48 +193,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // If the icon has been changed, update the project properties file.
     // Extract the new icon from the projectSettings parameter.
     Settings settings = new Settings(JSON_PARSER, projectSettings);
-    String newIcon = Strings.nullToEmpty(settings.getSetting(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON));
-    String newVCode = Strings.nullToEmpty(settings.getSetting(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE));
-    String newVName = Strings.nullToEmpty(settings.getSetting(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME));
-    String newUsesLocation = Strings.nullToEmpty(settings.getSetting(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION));
-    String newSizing = Strings.nullToEmpty(settings.getSetting(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
-    String newShowListsAsJson = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON));
-    String newTutorialURL = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
-    String newSubsetJSON = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET));
-    String newAName = Strings.nullToEmpty(settings.getSetting(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME));
-    String newActionBar = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR));
-    String newTheme = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME));
-    String newPrimaryColor = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR));
-    String newPrimaryColorDark = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK));
-    String newAccentColor = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
+    YoungAndroidSettingsBuilder newProperties = new YoungAndroidSettingsBuilder(settings);
 
     // Extract the old icon from the project.properties file from storageIo.
     String projectProperties = storageIo.downloadFile(userId, projectId,
@@ -349,34 +206,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       e.printStackTrace();
       return;
     }
-    String oldIcon = Strings.nullToEmpty(properties.getProperty("icon"));
-    String oldVCode = Strings.nullToEmpty(properties.getProperty("versioncode"));
-    String oldVName = Strings.nullToEmpty(properties.getProperty("versionname"));
-    String oldUsesLocation = Strings.nullToEmpty(properties.getProperty("useslocation"));
-    String oldSizing = Strings.nullToEmpty(properties.getProperty("sizing"));
-    String oldAName = Strings.nullToEmpty(properties.getProperty("aname"));
-    String oldShowListsAsJson = Strings.nullToEmpty(properties.getProperty("showlistsasjson"));
-    String oldTutorialURL = Strings.nullToEmpty(properties.getProperty("tutorialurl"));
-    String oldSubsetJSON = Strings.nullToEmpty(properties.getProperty("subsetjson"));
-    String oldActionBar = Strings.nullToEmpty(properties.getProperty("actionbar"));
-    String oldTheme = Strings.nullToEmpty(properties.getProperty("theme"));
-    String oldPrimaryColor = Strings.nullToEmpty(properties.getProperty("color.primary"));
-    String oldPrimaryColorDark = Strings.nullToEmpty(properties.getProperty("color.primary.dark"));
-    String oldAccentColor = Strings.nullToEmpty(properties.getProperty("color.accent"));
+    YoungAndroidSettingsBuilder oldProperties = new YoungAndroidSettingsBuilder(properties);
 
-    if (!newIcon.equals(oldIcon) || !newVCode.equals(oldVCode) || !newVName.equals(oldVName)
-      || !newUsesLocation.equals(oldUsesLocation) ||
-         !newAName.equals(oldAName) || !newSizing.equals(oldSizing) ||
-      !newShowListsAsJson.equals(oldShowListsAsJson) ||
-        !newTutorialURL.equals(oldTutorialURL) || !newSubsetJSON.equals(oldSubsetJSON) || !newActionBar.equals(oldActionBar) ||
-        !newTheme.equals(oldTheme) || !newPrimaryColor.equals(oldPrimaryColor) ||
-        !newPrimaryColorDark.equals(oldPrimaryColorDark) || !newAccentColor.equals(oldAccentColor)) {
+
+    if (!oldProperties.equals(newProperties)) {
       // Recreate the project.properties and upload it to storageIo.
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
-      String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon,
-        newVCode, newVName, newUsesLocation, newAName, newSizing, newShowListsAsJson, newTutorialURL, newSubsetJSON,
-        newActionBar, newTheme, newPrimaryColor, newPrimaryColorDark, newAccentColor);
+      String newContent = newProperties.setProjectName(projectName)
+          .setQualifiedFormName(qualifiedName).toProperties();
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
@@ -393,10 +231,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     NewYoungAndroidProjectParameters youngAndroidParams = (NewYoungAndroidProjectParameters) params;
     String qualifiedFormName = youngAndroidParams.getQualifiedFormName();
 
-    String propertiesFileName = PROJECT_PROPERTIES_FILE_NAME;
-    String propertiesFileContents = getProjectPropertiesFileContents(projectName,
-      qualifiedFormName, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null);
+    YoungAndroidSettingsBuilder builder = new YoungAndroidSettingsBuilder()
+        .setProjectName(projectName)
+        .setQualifiedFormName(qualifiedFormName);
+    String propertiesFileContents = builder.toProperties();
 
     String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
@@ -410,14 +248,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     Project project = new Project(projectName);
     project.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
     // Project history not supported in legacy ode new project wizard
-    project.addTextFile(new TextFile(propertiesFileName, propertiesFileContents));
+    project.addTextFile(new TextFile(PROJECT_PROPERTIES_FILE_NAME, propertiesFileContents));
     project.addTextFile(new TextFile(formFileName, formFileContents));
     project.addTextFile(new TextFile(blocklyFileName, blocklyFileContents));
     project.addTextFile(new TextFile(yailFileName, yailFileContents));
 
     // Create new project
-    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false",
-        projectName, "Fixed", "false", "", "", "false", "AppTheme.Light.DarkActionBar","0", "0", "0"));
+    return storageIo.createProject(userId, project, builder.build());
   }
 
   @Override
@@ -425,49 +262,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldName = storageIo.getProjectName(userId, oldProjectId);
     String oldProjectSettings = storageIo.loadProjectSettings(userId, oldProjectId);
     String oldProjectHistory = storageIo.getProjectHistory(userId, oldProjectId);
-    Settings oldSettings = new Settings(JSON_PARSER, oldProjectSettings);
-    String icon = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON);
-    String vcode = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE);
-    String vname = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME);
-    String useslocation = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION);
-    String aname = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME);
-    String sizing = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING);
-    String showListsAsJson = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON);
-    String tutorialURL = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
-    String subsetJSON = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET);
-    String actionBar = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR);
-    String theme = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME);
-    String primaryColor = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR);
-    String primaryColorDark = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK);
-    String accentColor = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
+    YoungAndroidSettingsBuilder builder = new YoungAndroidSettingsBuilder(
+        new Settings(JSON_PARSER, oldProjectSettings));
 
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
@@ -486,9 +282,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         // name and qualified name.
         String qualifiedFormName = StringUtils.getQualifiedFormName(
             storageIo.getUser(userId).getUserEmail(), newName);
-        newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode,
-          vname, useslocation, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar,
-          theme, primaryColor, primaryColorDark, accentColor);
+        builder.setProjectName(newName).setQualifiedFormName(qualifiedFormName);
+        newContents = builder.toProperties();
       } else {
         // This is some file other than the project properties file.
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
@@ -511,9 +306,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
 
     // Create the new project and return the new project's id.
-    return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname,
-        useslocation, aname, sizing, showListsAsJson, tutorialURL, subsetJSON, actionBar, theme, primaryColor,
-        primaryColorDark, accentColor));
+    return storageIo.createProject(userId, newProject, builder.build());
   }
 
   @Override

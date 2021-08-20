@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -19,6 +19,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDefaultURLPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFileScopePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFloatRangePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidGeoJSONPropertyEditor;
@@ -201,6 +202,8 @@ public class PropertiesUtil {
       return new YoungAndroidColorChoicePropertyEditor(defaultValue);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_COMPONENT)) {
       return new YoungAndroidComponentSelectorPropertyEditor(editor);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FILESCOPE)) {
+      return new YoungAndroidFileScopePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FLOAT)) {
       return new FloatPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_GEOGRAPHIC_POINT)) {

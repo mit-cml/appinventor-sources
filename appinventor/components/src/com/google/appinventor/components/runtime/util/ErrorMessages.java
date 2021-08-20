@@ -185,6 +185,13 @@ public final class ErrorMessages {
   public static final int ERROR_CANNOT_WRITE_TO_FILE = 2104;
   public static final int ERROR_CANNOT_DELETE_ASSET = 2105;
   public static final int ERROR_CANNOT_WRITE_ASSET = 2106;
+  public static final int ERROR_CANNOT_DELETE_FILE = 2107;
+  public static final int ERROR_CANNOT_MAKE_DIRECTORY = 2108;
+  public static final int ERROR_FILE_EXISTS_AT_PATH = 2109;
+  public static final int ERROR_DIRECTORY_DOES_NOT_EXIST = 2110;
+  public static final int ERROR_NOT_A_DIRECTORY = 2111;
+  public static final int ERROR_CANNOT_LIST_DIRECTORY = 2112;
+  public static final int ERROR_CANNOT_REMOVE_DIRECTORY = 2113;
 
   // Yandex.Translate errors
   public static final int ERROR_TRANSLATE_NO_KEY_FOUND = 2201;
@@ -591,6 +598,13 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_CANNOT_WRITE_TO_FILE, "Cannot write to file %s");
     errorMessages.put(ERROR_CANNOT_DELETE_ASSET, "Cannot delete asset file at %s");
     errorMessages.put(ERROR_CANNOT_WRITE_ASSET, "Cannot write asset file at %s");
+    errorMessages.put(ERROR_CANNOT_DELETE_FILE, "Cannot delete file at %s");
+    errorMessages.put(ERROR_CANNOT_MAKE_DIRECTORY, "Cannot create directory at %s");
+    errorMessages.put(ERROR_FILE_EXISTS_AT_PATH, "File already exists at %s");
+    errorMessages.put(ERROR_DIRECTORY_DOES_NOT_EXIST, "The directory %s could not be found");
+    errorMessages.put(ERROR_NOT_A_DIRECTORY, "The path at %s is not a directory");
+    errorMessages.put(ERROR_CANNOT_LIST_DIRECTORY, "Cannot list directory at %s");
+    errorMessages.put(ERROR_CANNOT_REMOVE_DIRECTORY, "Cannot remove directory at %s");
     //Yandex.Translate translate Errors
     errorMessages.put(ERROR_TRANSLATE_NO_KEY_FOUND, "Missing API key for the Yandex.Translate " +
         "service.");

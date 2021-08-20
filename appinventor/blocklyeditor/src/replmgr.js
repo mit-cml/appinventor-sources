@@ -1188,6 +1188,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     } else {
         message = Blockly.Msg.REPL_STARTING_EMULATOR;
     }
+    top.ReplState.android = true;  // Only Android uses ADB
     progdialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECTING, message, Blockly.Msg.REPL_CANCEL, false, null, 0, function() {
         progdialog.hide();
         clearInterval(interval);

@@ -9,6 +9,7 @@ package com.google.appinventor.server;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
+import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -101,9 +102,10 @@ public final class FileImporterImpl implements FileImporter {
             // The content for the youngandroidproject/project.properties file must be regenerated
             // so that it contains the correct entries for "main" and "name", which are dependent on
             // the projectName and qualifiedFormName.
-            String content = YoungAndroidProjectService.getProjectPropertiesFileContents(
-              projectName, qualifiedFormName, null, null, null, null, null, null, null, null,
-              null, null, null, null, null, null);
+            String content = new YoungAndroidSettingsBuilder()
+                .setProjectName(projectName)
+                .setQualifiedFormName(qualifiedFormName)
+                .toProperties();
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
 
@@ -150,8 +152,7 @@ public final class FileImporterImpl implements FileImporter {
     if (projectHistory != null) {
       project.setProjectHistory(projectHistory);
     }
-    String settings = YoungAndroidProjectService.getProjectSettings(null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null);
+    String settings = new YoungAndroidSettingsBuilder().build();
     long projectId = storageIo.createProject(userId, project, settings);
     return storageIo.getUserProject(userId, projectId);
   }

@@ -389,6 +389,9 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       sb.append(method.getYailReturnType());
       sb.append("\"");
     }
+    if (method.isContinuation()) {
+      sb.append(", \"continuation\": true");
+    }
     outputHelper(method.getReturnHelperKey(), sb);
     sb.append("}");
   }
