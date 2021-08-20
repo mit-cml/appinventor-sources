@@ -743,6 +743,9 @@ This is a visible component that displays a list of text and image elements in y
 {:id="ListView.TextColorDetail" .color} *TextColorDetail*
 : Specifies the color of the secondary text in a ListView layout
 
+{:id="ListView.TextSize" .number} *TextSize*
+: Specifies the `ListView` item's text font size
+
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
  if the `ListView` is showing and `false`{:.logic.block} if hidden.
