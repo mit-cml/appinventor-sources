@@ -7,12 +7,14 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.GyroSensorMode;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -37,16 +39,10 @@ import android.os.Handler;
 public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable {
   private static final int DELAY_MILLISECONDS = 50;
   private static final int SENSOR_TYPE = 32;
-  private static final int SENSOR_MODE_ANGLE = 0;
-  private static final int SENSOR_MODE_RATE = 1;
-  private static final String SENSOR_MODE_ANGLE_STRING = "angle";
-  private static final String SENSOR_MODE_RATE_STRING = "rate";
-  private static final String DEFAULT_SENSOR_MODE_STRING = SENSOR_MODE_ANGLE_STRING;
 
   private Handler eventHandler;
   private final Runnable sensorValueChecker;
-  private int mode = SENSOR_MODE_ANGLE;
-  private String modeString = SENSOR_MODE_ANGLE_STRING;
+  private GyroSensorMode mode = GyroSensorMode.Angle;
   private double previousValue = -1.0;
   private boolean sensorValueChangedEventEnabled = false;
 
@@ -71,10 +67,10 @@ public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable
           }
 
           // trigger events according to the conditions
-          if (mode == SENSOR_MODE_RATE && Math.abs(currentValue) >= 1.0)
+          if ((mode == GyroSensorMode.Rate && Math.abs(currentValue) >= 1.0)
+              || (mode == GyroSensorMode.Angle && Math.abs(currentValue - previousValue) >= 1.0)) {
             SensorValueChanged(currentValue);
-          else if (mode == SENSOR_MODE_ANGLE && Math.abs(currentValue - previousValue) >= 1.0)
-            SensorValueChanged(currentValue);
+          }
 
           previousValue = currentValue;
         }
@@ -84,7 +80,7 @@ public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable
     };
     eventHandler.post(sensorValueChecker);
 
-    Mode(DEFAULT_SENSOR_MODE_STRING);
+    ModeAbstract(GyroSensorMode.Angle);
     SensorValueChangedEventEnabled(false);
   }
 
@@ -103,15 +99,33 @@ public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable
    * Specifies the mode of the sensor.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LEGO_EV3_GYRO_SENSOR_MODE,
-                    defaultValue = DEFAULT_SENSOR_MODE_STRING)
+                    defaultValue = "angle")
   @SimpleProperty
-  public void Mode(String modeName) {
-    String functionName = "Mode";
-    try {
-      setMode(modeName);
-    } catch(IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, functionName, ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, functionName);
+  public void Mode(@Options(GyroSensorMode.class) String modeName) {
+    // Make sure modeName is a valid GyroSensorMode.
+    GyroSensorMode gyroMode = GyroSensorMode.fromUnderlyingValue(modeName);
+    if (gyroMode == null) {
+      form.dispatchErrorOccurredEvent(
+          this, "Mode", ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, modeName);
+      return;
     }
+    setMode(gyroMode);
+  }
+
+  /**
+   * Sets the sensing mode of this gyro sensor.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void ModeAbstract(GyroSensorMode mode) {
+    setMode(mode);
+  }
+
+  /**
+   * Returns the current sensing mode of this color sensor.
+   */
+  @SuppressWarnings({"RegularMethodName", "unused"})
+  public GyroSensorMode ModeAbstract() {
+    return mode;
   }
 
   /**
@@ -120,24 +134,26 @@ public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable
   @SimpleProperty(description = "The sensor mode can be a text constant of either \"rate\" or \"angle\", " +
                                 "which correspond to SetAngleMode or SetRateMode respectively.",
                   category = PropertyCategory.BEHAVIOR)
-  public String Mode() {
-    return modeString;
+  public @Options(GyroSensorMode.class) String Mode() {
+    return mode.toUnderlyingValue();
   }
 
   /**
    * Make the sensor read the angle.
    */
   @SimpleFunction(description = "Measures the orientation of the sensor.")
+  @Deprecated
   public void SetAngleMode() {
-    setMode(SENSOR_MODE_ANGLE_STRING);
+    setMode(GyroSensorMode.Angle);
   }
 
   /**
    * Make the sensor read the rotation rate.
    */
   @SimpleFunction(description = "Measures the angular velocity of the sensor.")
+  @Deprecated
   public void SetRateMode() {
-    setMode(SENSOR_MODE_RATE_STRING);
+    setMode(GyroSensorMode.Rate);
   }
 
   /**
@@ -172,18 +188,15 @@ public class Ev3GyroSensor extends LegoMindstormsEv3Sensor implements Deleteable
                        0,
                        sensorPortNumber,
                        SENSOR_TYPE,
-                       mode);
+                       mode.toInt());
   }
 
-  private void setMode(String newModeString) {
-    if (SENSOR_MODE_ANGLE_STRING.equals(newModeString))
-      mode = SENSOR_MODE_ANGLE;
-    else if (SENSOR_MODE_RATE_STRING.equals(newModeString))
-      mode = SENSOR_MODE_RATE;
-    else
-      throw new IllegalArgumentException();
+  private void setMode(GyroSensorMode newMode) {
+    if (newMode != mode) {
+      previousValue = -1;
+    }
 
-    this.modeString = newModeString;
+    mode = newMode;
   }
 
   // Deleteable implementation

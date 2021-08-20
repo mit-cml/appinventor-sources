@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.Manifest;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -88,6 +89,12 @@ public final class Image extends AndroidViewComponent {
     return view;
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "A written description of what the image looks like.")
+  public void AlternateText(String description){
+    view.setContentDescription(description);
+  }
+
   @SimpleEvent(description = "An event that occurs when an image is clicked.")
   public void Click() {
     EventDispatcher.dispatchEvent(this, "Click");
@@ -139,7 +146,7 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void Picture(final String path) {
+  public void Picture(@Asset final String path) {
     if (MediaUtil.isExternalFile(container.$context(), path)
         && container.$form().isDeniedPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
       container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,

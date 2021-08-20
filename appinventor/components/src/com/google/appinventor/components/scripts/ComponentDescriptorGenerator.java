@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
@@ -54,26 +55,60 @@ import javax.tools.FileObject;
  *     { "name": "PROPERTY-NAME",
  *        "description": "DESCRIPTION",
  *        "type": "YAIL-TYPE",
+ *        "helper": {
+ *          "type": HELPER-TYPE,
+ *          "data": { ARBITRARY-DATA } 
+ *        },
  *        "rw": "read-only"|"read-write"|"write-only"|"invisible"},*
  *   ],
  *   "events": [
  *     { "name": "EVENT-NAME",
  *       "description": "DESCRIPTION",
  *       "params": [
- *         { "name": "PARAM-NAME",
- *           "type": "YAIL-TYPE"},*
+ *         { 
+ *           "name": "PARAM-NAME",
+ *           "type": "YAIL-TYPE"
+ *           "helper": {
+ *             "type": HELPER-TYPE,
+ *             "data": { ARBITRARY-DATA } 
+ *           }
+ *         },*
  *       ]},+
  *   ],
  *   “methods”: [
  *     { "name": "METHOD-NAME",
  *       "description": "DESCRIPTION",
+ *       "returnType": "YAIL-TYPE",
+ *       "helper": {
+ *         "type": HELPER-TYPE,
+ *         "data": { ARBITRARY-DATA } 
+ *       },
  *       "params": [
- *         { "name": "PARAM-NAME",
- *       "type": "YAIL-TYPE"},*
+ *         {
+ *           "name": "PARAM-NAME",
+ *           "type": "YAIL-TYPE"
+ *           "helper": {
+ *             "type": HELPER-TYPE,
+ *             "data": { ARBITRARY-DATA } 
+ *           }
+ *         },*
  *     ]},+
  *   ],
  *   ("assets": ["FILENAME",*])?
  * }
+ * 
+ * <p>A note on helper "ARBITRARY-DATA". The structure given above outlines a system where helper
+ * data is duplicated every time that helper is used by a feature of a Component. Ideally this would
+ * not be necessary and helper data could be stored in some kind of dictionary structure. The issue
+ * is that this must export an array of objects to be compatible with extension .aia files which
+ * have already been released, and adding more dictionaries or arrays to this structure would
+ * require it to export an /object/ not an /array/. As such the simplest solution is to simply
+ * duplicate data related to the helpers.
+ * 
+ * <p>It may make sense in the future to revisit this choice, but making this decision now would
+ * only make it harder to support a more "lean" concept of data in the future, as we would still
+ * have to deal with .aia files that use this duplicated format. So it is probably best to continue
+ * duplicating data where necessary in the future.
  *
  * @author lizlooney@google.com (Liz Looney)
  * @author sharon@google.com (Sharon Perl) - added events, methods, non-designer
@@ -299,8 +334,10 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append("\", \"description\": ");
     sb.append(formatDescription(prop.getDescription()));
     sb.append(", \"type\": \"");
-    sb.append(javaTypeToYailType(prop.getType()));
-    sb.append("\", \"rw\": \"");
+    sb.append(prop.getYailType());
+    sb.append("\"");
+    outputHelper(prop.getHelperKey(), sb);
+    sb.append(", \"rw\": \"");
     sb.append(prop.isUserVisible() ? prop.getRwString() : "invisible");
     // [lyn, 2015/12/20] Added deprecated field to JSON.
     // If we want to save space in simple-components.json,
@@ -349,11 +386,14 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     outputParameters(method.parameters, sb);
     if (method.getReturnType() != null) {
       sb.append(", \"returnType\": \"");
-      sb.append(javaTypeToYailType(method.getReturnType()));
-      sb.append("\"}");
-    } else {
-      sb.append("}");
+      sb.append(method.getYailReturnType());
+      sb.append("\"");
     }
+    if (method.isContinuation()) {
+      sb.append(", \"continuation\": true");
+    }
+    outputHelper(method.getReturnHelperKey(), sb);
+    sb.append("}");
   }
 
   /*
@@ -367,11 +407,82 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       sb.append("{ \"name\": \"");
       sb.append(p.name);
       sb.append("\", \"type\": \"");
-      sb.append(javaTypeToYailType(p.type));
-      sb.append("\"}");
+      sb.append(p.getYailType());
+      sb.append("\"");
+      outputHelper(p.getHelperKey(), sb);
+      sb.append("}");
       separator = ",";
     }
     sb.append("]");
+  }
+
+  /**
+   * Outputs the json for the given helper key.
+   */
+  private void outputHelper(HelperKey helper, StringBuilder sb) {
+    if (helper == null) {
+      return;
+    }
+    sb.append(", \"helper\": {\n");
+    sb.append("    \"type\": \"");
+    sb.append(helper.getType());
+    sb.append("\",\n");
+    sb.append("    \"data\": {\n");
+    switch (helper.getType()) {
+      case OPTION_LIST:
+        outputOptionList((String)helper.getKey(), sb);
+        break;
+      case ASSET:
+        outputAsset((Integer)helper.getKey(), sb);
+        break;
+      default:
+        throw new UnsupportedOperationException();
+    }
+    sb.append("    }\n}");
+  }
+
+  /**
+   * Outputs the json for the OptionList associated with the given key.
+   */
+  private void outputOptionList(String key, StringBuilder sb) {
+    OptionList optList = optionLists.get(key);
+
+    StringJoiner optsJoiner = new StringJoiner(",\n", "[\n", "\n      ]\n");
+    for (Option opt : optList.asCollection()) {
+      StringJoiner optJoiner = new StringJoiner(", ", "       { ", " }");
+      optJoiner.add("\"name\": \"" +  opt.name + "\"")
+          .add("\"value\": \"" +  opt.getValue() + "\"")
+          .add("\"description\": " + formatDescription(opt.getDescription()))
+          .add("\"deprecated\": \"" + opt.isDeprecated() + "\"");
+      optsJoiner.add(optJoiner.toString());
+    }
+
+    StringJoiner sj = new StringJoiner(",\n      ", "      ", "");
+    sj.add("\"className\": \"" + optList.getClassName() + "\"")
+        .add("\"key\": \"" + key + "\"")
+        .add("\"tag\": \"" + optList.getTagName() + "\"")
+        .add("\"defaultOpt\": \"" + optList.getDefault() + "\"")
+        .add("\"underlyingType\": \"" + optList.getUnderlyingType().toString() + "\"")
+        .add("\"options\": " + optsJoiner.toString());
+
+    sb.append(sj.toString());
+  }
+
+  private void outputAsset(int key, StringBuilder sb) {
+    List<String> filter = filters.get(key);
+    if (filter == null || filter.size() == 0) {
+      return;
+    }
+    sb.append("      \"filter\": [ ");
+    String prefix = "";
+    for (String s : filter) {
+      sb.append(prefix);
+      sb.append("\"");
+      sb.append(s);
+      sb.append("\"");
+      prefix = ", ";
+    }
+    sb.append(" ]\n");
   }
 
   @Override

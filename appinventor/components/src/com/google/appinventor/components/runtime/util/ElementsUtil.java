@@ -1,12 +1,15 @@
 // -*- Mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Utilities for Components that display a number of options on Screen such as ListPicker,
@@ -51,8 +54,9 @@ public class ElementsUtil {
   }
 
   public static String setSelectionFromIndex(int index, YailList items){
-    if (index == 0)
+    if (index == 0 || index > items.size()) {
       return "";
+    }
     // YailLists are 0-based, but we want to be 1-based.
     return items.getString(index - 1);
   }
@@ -71,4 +75,8 @@ public class ElementsUtil {
     return 0;
   }
 
+  public static String toStringEmptyIfNull(Object o) {
+    String text = o.toString();
+    return text == null ? "" : text;
+  }
 }
