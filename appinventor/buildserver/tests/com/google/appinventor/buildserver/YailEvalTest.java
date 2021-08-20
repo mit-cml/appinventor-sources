@@ -1345,9 +1345,8 @@ public class YailEvalTest extends TestCase {
 
   public void testMakeColorStringCase(int color, String colorString) throws Throwable {
     assertEquals(color, ((IntNum) scheme.eval(
-        String.format("(call-yail-primitive make-color-string (*list-for-runtime* %s)" +
+        String.format("(call-yail-primitive make-color-string (*list-for-runtime* \"%s\")" +
               " '(text) \"make-color-string\")", colorString))).intValue());
-  //  assertEquals(color, ((IntNum) scheme.eval(String.format("(make-color-string %s)", colorString))).intValue());
   }
 
   public void testMakeColorString() throws Throwable {
