@@ -2611,7 +2611,10 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
 
     // PasswordVisible was added
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // NumbersOnly was added
+    5: "noUpgrade"
 
   }, // End PasswordTextBox upgraders
 
