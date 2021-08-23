@@ -92,6 +92,9 @@ Blockly.Yail['text_compare'] = function() {
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator2
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  if (mode == 'NEQ') {
+    code = '(not ' + code + ')';
+  }
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
@@ -99,7 +102,7 @@ Blockly.Yail['text_compare'].OPERATORS = {
   LT: ['string<?', 'text<', Blockly.Yail.ORDER_NONE],
   GT: ['string>?', 'text>', Blockly.Yail.ORDER_NONE],
   EQUAL: ['string=?', 'text=', Blockly.Yail.ORDER_NONE],
-  NEQ: ['yail-not-equal?', 'not =', Blockly.Yail.ORDER_NONE]
+  NEQ: ['string=?', 'not =', Blockly.Yail.ORDER_NONE]
 };
 
 Blockly.Yail['text_trim'] = function() {

@@ -53,7 +53,10 @@ public class DeleteFileCommand extends ChainableCommand {
   public void execute(final ProjectNode node) {
     if (node instanceof YoungAndroidSourceNode) {
       new DeleteFormDialog((YoungAndroidSourceNode) node).center();
-    } else if (deleteConfirmation()) {
+      return;
+    }
+
+    if (deleteConfirmation()) {
       // Asset files
       final Ode ode = Ode.getInstance();
       ode.getProjectService().deleteFile(ode.getSessionId(),
@@ -76,7 +79,6 @@ public class DeleteFileCommand extends ChainableCommand {
           });
     } else {
       executionFailedOrCanceled();
-      throw new IllegalArgumentException("node must be a YoungAndroidProjectNode");
     }
   }
 

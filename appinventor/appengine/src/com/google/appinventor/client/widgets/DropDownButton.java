@@ -241,6 +241,20 @@ public class DropDownButton extends TextButton {
     }
   }
 
+  public void setItemVisible(String itemName, boolean enabled) {
+    for (MenuItem item : items) {
+      if (item.getText().equals(itemName)) {
+        if (enabled == true) {
+    	  item.setVisible(true);
+        }
+        else{
+    	  item.setVisible(false);
+        }
+        break;
+      }
+    }
+  }
+
   public void replaceLastItem(DropDownItem item) {
     menu.removeItem(items.get(items.size()-1));
     items.remove(items.size()-1);

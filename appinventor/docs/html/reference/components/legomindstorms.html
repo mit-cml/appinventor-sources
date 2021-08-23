@@ -174,7 +174,10 @@
   <dd>Specifies whether the ColorChanged event should fire when the DetectColor
  property is set to True and the detected color changes</dd>
   <dt id="Ev3ColorSensor.Mode" class="text"><em>Mode</em></dt>
-  <dd>Returns the mode of the sensor.</dd>
+  <dd>The current mode of the sensor. One of:
+   Reflected: Senses the current light level including light reflected by the sensor.
+   Ambient: Senses the current light level <em>not</em> including light reflected by the sensor.
+   Color: Senses the color the sensor is pointing at.</dd>
   <dt id="Ev3ColorSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
   <dd>Specifies the sensor port that the sensor is connected to.
  <strong>Must be set in the Designer.</strong></dd>
@@ -208,12 +211,6 @@
   <dd>Returns the name of the detected color.</dd>
   <dt id="Ev3ColorSensor.GetLightLevel" class="method returns number"><i></i> GetLightLevel()</dt>
   <dd>It returns the light level in percentage.</dd>
-  <dt id="Ev3ColorSensor.SetAmbientMode" class="method"><i></i> SetAmbientMode()</dt>
-  <dd>Make the sensor read the light level without reflected light.</dd>
-  <dt id="Ev3ColorSensor.SetColorMode" class="method"><i></i> SetColorMode()</dt>
-  <dd>Enter the color detection mode.</dd>
-  <dt id="Ev3ColorSensor.SetReflectedMode" class="method"><i></i> SetReflectedMode()</dt>
-  <dd>Make the sensor read the light level with reflected light.</dd>
 </dl>
 
 <h2 id="Ev3Commands">Ev3Commands</h2>
@@ -291,10 +288,6 @@
   <dt id="Ev3GyroSensor.GetSensorValue" class="method returns number"><i></i> GetSensorValue()</dt>
   <dd>Returns the current angle or rotation speed based on current mode,
  or -1 if the value cannot be read from sensor.</dd>
-  <dt id="Ev3GyroSensor.SetAngleMode" class="method"><i></i> SetAngleMode()</dt>
-  <dd>Make the sensor read the angle.</dd>
-  <dt id="Ev3GyroSensor.SetRateMode" class="method"><i></i> SetRateMode()</dt>
-  <dd>Make the sensor read the rotation rate.</dd>
 </dl>
 
 <h2 id="Ev3Motors">Ev3Motors</h2>
@@ -515,10 +508,6 @@
 <dl class="methods">
   <dt id="Ev3UltrasonicSensor.GetDistance" class="method returns number"><i></i> GetDistance()</dt>
   <dd>Returns the current distance in centimeters as a value between 0 and 254, or -1 if the distance can not be read.</dd>
-  <dt id="Ev3UltrasonicSensor.SetCmUnit" class="method"><i></i> SetCmUnit()</dt>
-  <dd>Measure the distance in centimeters.</dd>
-  <dt id="Ev3UltrasonicSensor.SetInchUnit" class="method"><i></i> SetInchUnit()</dt>
-  <dd>Measure the distance in inches.</dd>
 </dl>
 
 <h2 id="NxtColorSensor">NxtColorSensor</h2>

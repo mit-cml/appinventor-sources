@@ -90,13 +90,13 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     invisibleFilePanel.show();
 
     List<DropDownButton.DropDownItem> items = Lists.newArrayList();
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", "All", new Command() {
+    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.allButton(), new Command() {
       @Override
       public void execute() {
         property.setValue("");
         updateValue();
       }}));
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", "Match Project", new Command() {
+    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.matchProjectButton(), new Command() {
       @Override
       public void execute() {
         matchProject();
@@ -109,7 +109,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         file.click();
       }}));
 
-    items.add(new DropDownButton.DropDownItem("Subset Property Editor", "View and Modify", new Command() {
+    items.add(new DropDownButton.DropDownItem("Subset Property Editor", MESSAGES.viewAndModifyButton(), new Command() {
       @Override
       public void execute() {
         showCustomSubsetPanel();
@@ -143,7 +143,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       blockPanel.add(new Label(MESSAGES.builtinBlocksLabel()));
       blockPanel.add(blockTree);
 
-      Button loadButton = new Button(MESSAGES.fileUploadWizardCaption()); // TODO: Need to internationalize
+      Button loadButton = new Button(MESSAGES.fileUploadWizardCaption());
       loadButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
@@ -158,7 +158,7 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
         }
       });
       Button clearButton = new Button(MESSAGES.clearButton());
-      Button initializeButton = new Button("Match Project"); // TODO: Internationalize
+      Button initializeButton = new Button(MESSAGES.matchProjectButton());
       clearButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {

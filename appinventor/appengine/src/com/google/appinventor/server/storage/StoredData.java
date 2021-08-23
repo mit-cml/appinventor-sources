@@ -96,10 +96,6 @@ public class StoredData {
     // The specially formatted project history
     String history;
 
-    long galleryId;  // this is the galleryId of this project (if published)
-    long attributionId;  // if this project was initiated from the gallery, this is
-       // the id of the gallery app that was copied for remix
-
     //adding a boolean variable to mark deleted project
     boolean projectMovedToTrashFlag;
   }
@@ -303,6 +299,19 @@ public class StoredData {
   public static final class Backpack {
     @Id public String id;
     public String content;
+  }
+
+  @Cached(expirationSeconds=120)
+  @Unindexed
+  static final class AllowedTutorialUrls {
+    // Unique Id - for now we expect there to be only 1 MotdData object.
+    @Id Long id;
+
+    // list of allowed Urls as JSON
+    // we use JSON here to make it easier to hand edit via
+    // datastore editing tools
+    String allowedUrls;
+
   }
 
 }

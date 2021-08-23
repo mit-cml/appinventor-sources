@@ -209,7 +209,7 @@
              dir="${basedir}"
              forkmode="once"
              haltonfailure="no"
-             maxmemory="925m"
+             maxmemory="2000m"
              showoutput="no">
         <jvmarg value="-XX:MaxPermSize=128m"/>
         <sysproperty key="gwt.args" value="-prod -gen ${local.build.dir}/gen -war ${local.build.dir}/build/war" if:true="@{aij-prod}"/>
@@ -288,6 +288,15 @@
   <target name="blocklyeditor_BlocklyCompile">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blocklyeditor"
          target="BlocklyCompile"/>
+  </target>
+
+  <!-- ====================================================================
+       blocklyeditor_BlocklyCompile builds:
+       - build/blockly-all.js
+       ==================================================================== -->
+  <target name="blocklyeditor_BlocklyTranslationGenerator">
+    <ant inheritall="false" usenativebasedir="true" dir="${appinventor.dir}/blocklyeditor"
+         target="BlocklyTranslationGenerator"/>
   </target>
 
   <!-- ====================================================================

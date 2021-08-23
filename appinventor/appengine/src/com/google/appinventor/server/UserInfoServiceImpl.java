@@ -14,6 +14,13 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.storage.StorageUtil;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
 /**
  * Implementation of the user information service.
  *
@@ -27,6 +34,11 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   private static final long serialVersionUID = -7316312435338169166L;
+
+  private static final Logger LOG = Logger.getLogger(UserInfoServiceImpl.class.getName());
+
+  @SuppressWarnings("SimpleDateFormat")
+  private static final DateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 
   /**
    * Returns System Config, including user information record
@@ -63,13 +75,33 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     config.setFirebaseURL(Flag.createFlag("firebase.url", "").get());
     config.setDefaultCloudDBserver(Flag.createFlag("clouddb.server", "").get());
     config.setNoop(Flag.createFlag("session.noop", 0).get());
+    config.setGalleryEnabled(Flag.createFlag("gallery.enabled", false).get());
+    config.setGalleryReadOnly(Flag.createFlag("gallery.readonly", false).get());
+    config.setGalleryLocation(Flag.createFlag("gallery.location", "").get());
 
     if (!Flag.createFlag("build2.server.host", "").get().isEmpty()) {
       config.setSecondBuildserver(true);
     }
 
+    String expirationDate = Flag.createFlag("service.expires.time", "").get();
+    if (!expirationDate.isEmpty()) {
+      try {
+        Date expires = ISO8601.parse(expirationDate);
+        if (expires.before(new Date())) {
+          config.setServerExpired(true);
+        }
+      } catch (ParseException e) {
+        throw CrashReport.createAndLogError(LOG, null, null, e);
+      }
+    }
+
     // Check to see if we need to upgrade this user's project to GCS
     storageIo.checkUpgrade(userInfoProvider.getUserId());
+
+    // Fetch list of allowed tutorial prefixes from the data store
+    List<String> urls = storageIo.getTutorialsUrlAllowed();
+    config.setTutorialUrlAllowed(urls);
+
     return config;
   }
 
@@ -109,16 +141,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   }
 
   /**
-   * Returns user information based on userId.
-   *
-   * @return  user information record
-   */
-  @Override
-  public User getUserInformationByUserId(String userId) {
-    return storageIo.getUser(userId);
-  }
-
-  /**
    * Retrieves the user's settings.
    *
    * @return  user's settings
@@ -145,33 +167,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void storeUserSettings(String settings) {
     storageIo.storeSettings(userInfoProvider.getUserId(), settings);
-  }
-
-  /**
-   * Stores the user's name.
-   * @param name  user's name
-   */
-  @Override
-  public void storeUserName(String name) {
-    storageIo.setUserName(userInfoProvider.getUserId(), name);
-  }
-
-  /**
-   * Stores the user's link.
-   * @param link  user's link
-   */
-  @Override
-  public void storeUserLink(String link) {
-    storageIo.setUserLink(userInfoProvider.getUserId(), link);
-  }
-
-  /**
-   * Stores the user's email notification frequency.
-   * @param emailFrequency  user's email frequency
-   */
-  @Override
-  public void storeUserEmailFrequency(int emailFrequency) {
-    storageIo.setUserEmailFrequency(userInfoProvider.getUserId(), emailFrequency);
   }
 
   /**

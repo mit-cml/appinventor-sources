@@ -28,6 +28,8 @@ import androidx.core.view.ViewCompat;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.MapType;
+import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.LocationSensor;
 import com.google.appinventor.components.runtime.util.MapFactory.HasFill;
@@ -42,7 +44,6 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
-import com.google.appinventor.components.runtime.util.MapFactory.MapType;
 import com.google.appinventor.components.runtime.view.ZoomControlView;
 import java.io.File;
 import java.io.IOException;
@@ -67,6 +68,7 @@ import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.MapView.OnTapListener;
+import org.osmdroid.views.overlay.CopyrightOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Marker.OnMarkerClickListener;
 import org.osmdroid.views.overlay.Marker.OnMarkerDragListener;
@@ -296,6 +298,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     defaultInfoWindow = new OverlayInfoWindow(view);
     view.setTilesScaledToDpi(true);
     view.setMapListener(this);
+    view.getOverlayManager().add(new CopyrightOverlay(form));
     view.getOverlayManager().add(touch);
     view.addOnTapListener(new OnTapListener() {
       @Override
@@ -372,28 +375,36 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   }
 
   @Override
-  public void setMapType(MapType type) {
+  public void setMapType(MapFactory.MapType type) {
+    MapType mapType = MapType.fromUnderlyingValue(type.ordinal());
+    if (mapType != null) {
+      setMapTypeAbstract(mapType);
+    }
+  }
+
+  @Override
+  public MapFactory.MapType getMapType() {
+    return MapFactory.MapType.values()[tileType.toUnderlyingValue()];
+  }
+
+  @Override
+  public void setMapTypeAbstract(MapType type) {
+    tileType = type;
     switch (type) {
-      case ROADS:
-        tileType = type;
+      case Road:
         view.setTileSource(TileSourceFactory.MAPNIK);
         break;
-      case AERIAL:
-        tileType = type;
+      case Aerial:
         view.setTileSource(TileSourceFactory.USGS_SAT);
         break;
-      case TERRAIN:
-        tileType = type;
+      case Terrain:
         view.setTileSource(TileSourceFactory.USGS_TOPO);
-        break;
-      case UNKNOWN:
-      default:
         break;
     }
   }
 
   @Override
-  public MapType getMapType() {
+  public MapType getMapTypeAbstract() {
     return tileType;
   }
 
@@ -988,19 +999,19 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   private void getMarkerDrawableRaster(final MapMarker aiMarker,
       final AsyncCallbackPair<Drawable> callback) {
-    MediaUtil.getBitmapDrawableAsync(form, aiMarker.ImageAsset(),
-        new AsyncCallbackPair<BitmapDrawable>() {
-      @Override
-      public void onFailure(String message) {
-        callback.onSuccess(getDefaultMarkerDrawable(aiMarker));
-      }
+    MediaUtil.getBitmapDrawableAsync(form, aiMarker.ImageAsset(), aiMarker.Width(),
+        aiMarker.Height(), new AsyncCallbackPair<BitmapDrawable>() {
+          @Override
+          public void onFailure(String message) {
+            callback.onSuccess(getDefaultMarkerDrawable(aiMarker));
+          }
 
-      @Override
-      public void onSuccess(BitmapDrawable result) {
-        result.setAlpha((int) Math.round(aiMarker.FillOpacity() * 255.0f));
-        callback.onSuccess(result);
-      }
-    });
+          @Override
+          public void onSuccess(BitmapDrawable result) {
+            result.setAlpha((int) Math.round(aiMarker.FillOpacity() * 255.0f));
+            callback.onSuccess(result);
+          }
+        });
   }
 
   private Drawable getDefaultMarkerDrawable(MapMarker aiMarker) {
@@ -1314,6 +1325,33 @@ class NativeOpenStreetMapController implements MapController, MapListener {
         return MapScaleUnits.IMPERIAL;
       case metric:
         return MapScaleUnits.METRIC;
+      default:
+        throw new IllegalStateException("Somehow we have an unallowed unit system");
+    }
+  }
+
+  @Override
+  public void setScaleUnitsAbstract(ScaleUnits units) {
+    switch (units) {
+      case Metric:
+        scaleBar.setUnitsOfMeasure(UnitsOfMeasure.metric);
+        break;
+      case Imperial:
+        scaleBar.setUnitsOfMeasure(UnitsOfMeasure.imperial);
+        break;
+      default:
+        break;
+    }
+    view.invalidate();
+  }
+
+  @Override
+  public ScaleUnits getScaleUnitsAbstract() {
+    switch (scaleBar.getUnitsOfMeasure()) {
+      case imperial:
+        return ScaleUnits.Imperial;
+      case metric:
+        return ScaleUnits.Metric;
       default:
         throw new IllegalStateException("Somehow we have an unallowed unit system");
     }

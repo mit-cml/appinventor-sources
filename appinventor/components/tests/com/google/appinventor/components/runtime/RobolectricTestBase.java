@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import android.view.View;
 import android.view.ViewGroup;
+import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.shadows.org.osmdroid.tileprovider.util.ShadowStorageUtils;
@@ -74,6 +75,7 @@ public class RobolectricTestBase {
     ActivityController<T> activityController = Robolectric.buildActivity(clazz)
         .create().start().resume().visible();
     form = activityController.get();
+    form.DefaultFileScope(FileScope.Legacy);
     // Unfortunately Robolectric won't handle laying out the view hierarchy and because of how
     // we use runOnUiThread in the Initialize() method, tests will enter an infinite loop. This
     // code simulates enough of the layout process so that we don't loop forever.
@@ -90,6 +92,11 @@ public class RobolectricTestBase {
 
   protected void runAllEvents() {
     ShadowLooper.getShadowMainLooper().getScheduler().advanceToLastPostedRunnable();
+  }
+
+  protected void runAllAsynchronousCommandsAndEvents() {
+    ShadowAsynchUtil.runAllPendingRunnables();
+    runAllEvents();
   }
 
   protected void advance(int millis) {

@@ -178,7 +178,6 @@ public final class MockComponentsUtil {
       default:
         // This should never happen
         throw new IllegalArgumentException("Typeface:" + typeface);
-
       case 0:
       case 1:
         typeface = "sans-serif";

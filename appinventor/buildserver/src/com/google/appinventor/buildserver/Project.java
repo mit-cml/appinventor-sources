@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.buildserver;
@@ -78,6 +78,7 @@ public final class Project {
    *    color.primary - the primary color for the theme
    *    color.primary.dark - the dark color for the theme (not yet applicable)
    *    color.accent - the accent color used in the app theme
+   *    defaultfilescope - the default file scope for the app
    */
   private static final String MAINTAG = "main";
   private static final String NAMETAG = "name";
@@ -95,6 +96,7 @@ public final class Project {
   private static final String COLOR_PRIMARYTAG = "color.primary";
   private static final String COLOR_PRIMARY_DARKTAG = "color.primary.dark";
   private static final String COLOR_ACCENTTAG = "color.accent";
+  private static final String DEFAULT_FILE_SCOPE = "defaultfilescope";
 
   // Table containing project properties
   private Properties properties;
@@ -333,6 +335,15 @@ public final class Project {
    */
   public String getTheme() {
     return properties.getProperty(COLOR_THEMETAG);
+  }
+
+  /**
+   * Returns the default file scope for the app.
+   *
+   * @return  file scope, or null if the default is requested
+   */
+  public String getDefaultFileScope() {
+    return properties.getProperty(DEFAULT_FILE_SCOPE);
   }
 
   /**
