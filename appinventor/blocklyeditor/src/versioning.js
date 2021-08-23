@@ -754,6 +754,10 @@ Blockly.Versioning.makeScreenNamesBeDropdowns = function (blocksRep, workspace) 
     if (block.getAttribute('type') == 'controls_openAnotherScreen' ||
         block.getAttribute('type') == 'controls_openAnotherScreenWithStartValue') {
       var value = Blockly.Versioning.firstChildWithTagName(block, 'value');
+      if (!value) {
+        // The socket is empty, so nothing to do.
+        continue;
+      }
       var name = value.getAttribute('name');
       if (name == 'SCREENNAME' || name == 'SCREEN') {
         Blockly.Versioning.tryReplaceBlockWithScreen(value);
