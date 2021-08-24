@@ -1,40 +1,42 @@
 package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.BitmapDrawable;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.core.view.ViewCompat;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.TextView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.graphics.drawable.Drawable;
-import java.io.IOException;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 import android.util.Log;
 
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.UsesPermissions;
+import android.view.View;
+import android.view.ViewGroup;
+
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.cardview.widget.CardView;
+
+import androidx.core.view.ViewCompat;
+
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.io.IOException;
 
-@SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-        "android.permission.READ_EXTERNAL_STORAGE")
- public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> implements Filterable {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class ListAdapterWithRecyclerView
+    extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> implements Filterable {
   private static final String LOG_TAG = "ListAdapterRecyclerView";
 
-  private static ClickListener clickListener;
+  private ClickListener clickListener;
 
   public Boolean[] selection;
   public Boolean[] isVisible;
@@ -58,7 +60,11 @@ import com.google.appinventor.components.runtime.util.YailList;
 
   public boolean isSelected = false;
 
-  private int idFirst = -1, idSecond = -1, idImages = -1, idCard = 1;
+  private int idFirst = -1;
+  private int idSecond = -1;
+  private int idImages = -1;
+  private int idCard = 1;
+
   public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, float textMainSize, float textDetailSize, int textMainFont, int textDetailFont, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
     this.items = items;
     this.container = container;
@@ -345,7 +351,7 @@ import com.google.appinventor.components.runtime.util.YailList;
   }
 
   public void setOnItemClickListener(ClickListener clickListener) {
-    ListAdapterWithRecyclerView.clickListener = clickListener;
+    this.clickListener = clickListener;
   }
 
   public interface ClickListener {
