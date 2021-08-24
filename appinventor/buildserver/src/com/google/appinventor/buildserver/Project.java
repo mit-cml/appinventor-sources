@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
@@ -145,11 +146,8 @@ public final class Project {
 
       // Load project file
       properties = new Properties();
-      FileInputStream in = new FileInputStream(file);
-      try {
+      try (InputStreamReader in = new InputStreamReader(new FileInputStream(file))) {
         properties.load(in);
-      } finally {
-        in.close();
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -264,14 +262,7 @@ public final class Project {
    * @return  app name
    */
   public String getAName() {
-    //The non-English character set can't be shown properly and need special encoding.
-    String appName = properties.getProperty(ANAMETAG);
-    try {
-      appName = new String(appName.getBytes("ISO-8859-1"), "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-    } catch (NullPointerException e) {
-    }
-    return appName;
+    return properties.getProperty(ANAMETAG, properties.getProperty(NAMETAG));
   }
 
   /**
