@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2021 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.BitmapDrawable;
@@ -57,6 +62,59 @@ public class ListAdapterWithRecyclerView
   private List<YailDictionary> items;
   private List<YailDictionary> filterItems;
   protected final ComponentContainer container;
+  protected final Filter filter = new Filter() {
+    @Override
+    protected FilterResults performFiltering(CharSequence charSequence) {
+      String filterQuery = charSequence.toString().toLowerCase();
+      FilterResults results = new FilterResults();
+      List<YailDictionary> filteredList = new ArrayList<>();
+
+      if (filterQuery == null || filterQuery.length() == 0) {
+        filteredList = new ArrayList<>(items);
+      } else {
+        for (YailDictionary itemDict : items) {
+          Object o = itemDict.get("Text2");
+          String filterString = itemDict.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
+          if (o != null) {
+            filterString += " " + o;
+          }
+          if (filterString.toLowerCase().contains(filterQuery)) {
+            filteredList.add(itemDict);
+          }
+        }
+      }
+      results.count = filteredList.size();
+      results.values = filteredList;
+      return results;
+    }
+
+    @Override
+    protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+      filterItems = (List<YailDictionary>) filterResults.values;
+      // Usually GUI objects take up no screen space when set to invisible, but setting a CardView object to invisible
+      // was displaying an empty object. Therefore, set the height to 0 as well.
+      // Setting visibility on individual entries will keep the selected index(ices) the same regardless of filter.
+      if (filterItems == null || filterItems.size() == 0) {
+        Arrays.fill(isVisible, Boolean.TRUE);
+      } else {
+        for (int i = 0; i < items.size(); ++i) {
+          if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
+            isVisible[i] = true;
+            if (itemViews[i] != null) {
+              itemViews[i].setVisibility(View.VISIBLE);
+              itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
+          } else {
+            isVisible[i] = false;
+            if (itemViews[i] != null) {
+              itemViews[i].setVisibility(View.GONE);
+              itemViews[i].getLayoutParams().height = 0;
+            }
+          }
+        }
+      }
+    }
+  };
 
   public boolean isSelected = false;
 
@@ -371,56 +429,6 @@ public class ListAdapterWithRecyclerView
 
   @Override
   public Filter getFilter() {
-    Filter filter = new Filter() {
-      @Override
-      protected FilterResults performFiltering(CharSequence charSequence) {
-        String filterQuery = charSequence.toString().toLowerCase();
-        FilterResults results = new FilterResults();
-        List<YailDictionary> filteredList = new ArrayList<>();
-
-        if(filterQuery == null || filterQuery.length() == 0) {
-          filteredList = new ArrayList<>(items);
-        } else {
-          for(int i = 0; i < items.size(); ++i) {
-            YailDictionary itemDict = items.get(i);
-            String filterString = itemDict.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString() + " " + itemDict.get("Text2").toString();
-            if (filterString.toLowerCase().contains(filterQuery)) {
-              filteredList.add(itemDict);
-            }
-          }
-        }
-        results.count = filteredList.size();
-        results.values = filteredList;
-        return results;
-      }
-
-      @Override
-      protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-        filterItems = (List<YailDictionary>) filterResults.values;
-        // Usually GUI objects take up no screen space when set to invisible, but setting a CardView object to invisible
-        // was displaying an empty object. Therefore, set the height to 0 as well.
-        // Setting visibility on individual entries will keep the selected index(ices) the same regardless of filter.
-        if (filterItems.size() == 0) {
-          Arrays.fill(isVisible, Boolean.TRUE);
-        } else {
-          for (int i = 0; i < items.size(); ++i) {
-            if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
-              isVisible[i] = true;
-              if (itemViews[i] != null) {
-                itemViews[i].setVisibility(View.VISIBLE);
-                itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-              }
-            } else {
-              isVisible[i] = false;
-              if (itemViews[i] != null) {
-                itemViews[i].setVisibility(View.GONE);
-                itemViews[i].getLayoutParams().height = 0;
-              }
-            }
-          }
-        }
-      }
-    };
     return filter;
   }
-};
+}
