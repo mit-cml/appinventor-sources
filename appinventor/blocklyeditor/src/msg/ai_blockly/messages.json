@@ -350,7 +350,7 @@
 	"Blockly.Msg.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY": "is empty",
 	"Blockly.Msg.LANG_TEXT_ISEMPTY_TOOLTIP": "Returns true if the length of the\n' + 'text is 0, false otherwise.",
 	"Blockly.Msg.LANG_TEXT_COMPARE_LT": " <",
-	"Blockly.Msg.LANG_TEXT_COMPARE_EQUAL": ":",
+	"Blockly.Msg.LANG_TEXT_COMPARE_EQUAL": "=",
 	"Blockly.Msg.LANG_TEXT_COMPARE_NEQ": " ≠",
 	"Blockly.Msg.LANG_TEXT_COMPARE_GT": " >",
 	"Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE": "compare texts",
