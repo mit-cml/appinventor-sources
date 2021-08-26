@@ -408,6 +408,7 @@ private void setLabelMargins(boolean hasMargins) {
    *         {@code false} lines that the label format is plain text
    */
   @SimpleProperty(
+      userVisible = false,
       category = PropertyCategory.APPEARANCE,
       description = "If true, then this label will show html text else it " +
       "will show plain text. Note: Not all HTML is supported.")

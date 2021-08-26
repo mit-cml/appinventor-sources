@@ -685,7 +685,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   // Temporarily removed until Companion with support is more prevalent
   // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
   //         defaultValue = "22.0")
-  @SimpleProperty
+  @SimpleProperty(userVisible = false)
   public void FontSize(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
       fontSizeMain = 999;
