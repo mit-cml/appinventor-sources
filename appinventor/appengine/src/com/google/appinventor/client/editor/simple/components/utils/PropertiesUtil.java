@@ -229,8 +229,7 @@ public class PropertiesUtil {
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT)) {
       return new YoungAndroidLegoNxtSensorPortChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_GENERATED_COLOR)) {
-      return new YoungAndroidColorChoicePropertyEditor(
-          YoungAndroidColorChoicePropertyEditor.NXT_GENERATED_COLORS, defaultValue);
+      return new YoungAndroidColorChoicePropertyEditor(YoungAndroidColorChoicePropertyEditor.NXT_GENERATED_COLORS, defaultValue);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LENGTH)) {
       return new YoungAndroidLengthPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LONGITUDE)) {
