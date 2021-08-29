@@ -178,17 +178,6 @@ public class ListAdapterWithRecyclerView
     }
   }
 
-  public void selectFromText(String text1) {
-    for (int i = 0; i < itemViews.length; i++) {
-      YailDictionary d = items.get(i);
-      if (d.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString() == text1) {
-        selection[i] = true;
-        itemViews[i].setBackgroundColor(selectionColor);
-        break;
-      }
-    }
-  }
-
   public void clearSelections() {
     Arrays.fill(selection, Boolean.FALSE);
     for (int i = 0; i < itemViews.length; i++) {
@@ -417,14 +406,17 @@ public class ListAdapterWithRecyclerView
   }
 
   public String getSelectedItems() {
-    String selectedItems = new String();
+    StringBuilder sb = new StringBuilder();
+    String sep = "";
     for (int i = 0; i < selection.length; ++i) {
       if (selection[i]) {
         YailDictionary dictItem = items.get(i);
-        selectedItems += "," + dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
+        sb.append(sep);
+        sb.append(dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString());
+        sep = ",";
       }
     }
-    return selectedItems.length() > 0 ? selectedItems.substring(1) : "";
+    return sb.toString();
   }
 
   @Override
