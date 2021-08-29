@@ -133,8 +133,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     layout = ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT;
 
     recyclerView = new RecyclerView(container.$context());
-    LayoutParams paramms = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-    recyclerView.setLayoutParams(paramms);
+    LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+    recyclerView.setLayoutParams(params);
     // initialize selectionIndex which also sets selection
     SelectionIndex(0);
 
