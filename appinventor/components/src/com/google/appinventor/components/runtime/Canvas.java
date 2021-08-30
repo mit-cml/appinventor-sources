@@ -19,6 +19,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -61,6 +62,7 @@ import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.File;
@@ -168,6 +170,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private static final int DEFAULT_TEXTALIGNMENT = Component.ALIGNMENT_CENTER;
   private static final int FLING_INTERVAL = 1000;  // ms
   private static final int DEFAULT_TAP_THRESHOLD = 15;
+  private static final String DEFAULT_FONT_TYPEFACE = Component.TYPEFACE_DEFAULT;
 
   // Keep track of enclosed sprites.  This list should always be
   // sorted by increasing sprite.Z().
@@ -768,6 +771,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     TextAlignment(DEFAULT_TEXTALIGNMENT);
     FontSize(Component.FONT_DEFAULT_SIZE);
     TapThreshold(DEFAULT_TAP_THRESHOLD);
+    FontTypeface(DEFAULT_FONT_TYPEFACE);
 
     sprites = new LinkedList<Sprite>();
     motionEventParser = new MotionEventParser();
@@ -1185,6 +1189,28 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     paint.setTextSize(size * scale);
   }
 
+  /**
+   * Specifies the typeface of paint object.
+   *
+   * @param typeface
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
+      defaultValue = Component.TYPEFACE_DEFAULT + "")
+  @SimpleProperty(userVisible = false)
+  public void FontTypeface(String typeface) {
+    Typeface fontTypeface = TextViewUtil.getTypeFace(this.$form(), typeface);
+    paint.setTypeface(fontTypeface);
+  }
+  
+  /**
+   * Returns the currently specified font typeface
+   * @return font typeface
+   */
+  @SimpleProperty(userVisible = false)
+  public Typeface FontTypeface()  {
+    return paint.getTypeface();
+  }
+  
   /**
    * Returns the currently specified stroke width
    * @return width
