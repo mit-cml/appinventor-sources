@@ -225,13 +225,16 @@
     <echo message="Using KeyczarTool to generate keystore"/>
     <mkdir dir="${build.war.dir}/WEB-INF/keystore"/>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="create --location=${build.war.dir}/WEB-INF/keystore --purpose=crypt"/>
+      <arg line="create --purpose=crypt"/>
+      <arg value="--location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="addkey --location=${build.war.dir}/WEB-INF/keystore"/>
+      <arg line="addkey"/>
+      <arg value="--location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="promote --location=${build.war.dir}/WEB-INF/keystore --version=1"/>
+      <arg line="promote --version=1"/>
+      <arg value="--location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
   </target>
 
@@ -606,10 +609,12 @@
       <jvmarg value="-Xmx2G"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <jvmarg value="-Dfile.encoding=UTF-8" />
-      <arg line="-war"/>
+      <arg value="-war"/>
       <arg value="${build.war.dir}"/>
-      <arg line="-logLevel INFO -extra ${build.extra.dir} ${client.flags}"/>
-      <arg value="${client.module}"/>
+      <arg line="-logLevel INFO"/>
+      <arg value="-extra"/>
+      <arg value="${build.extra.dir}"/>
+      <arg line="${client.flags} ${client.module}"/>
     </java>
   </target>
 
