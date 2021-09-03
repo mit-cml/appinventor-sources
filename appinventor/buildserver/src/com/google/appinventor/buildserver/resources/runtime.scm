@@ -103,6 +103,7 @@
          (SimplePropertyUtil:copyComponentProperties existing-component component-to-add))))))
 
 (define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
+(define-alias TypeUtil <com.google.appinventor.components.runtime.util.TypeUtil>)
 
 (define (call-Initialize-of-components . component-names)
   ;; Do any inherent/implied initializations
@@ -198,7 +199,7 @@
 ;;; (get-property 'Label1 'Text)
 (define (get-property component prop-name)
   (let ((component (coerce-to-component-and-verify component)))
-    (sanitize-component-data (invoke component prop-name))))
+    (sanitize-return-value component prop-name (invoke component prop-name))))
 
 (define (coerce-to-component-and-verify possible-component)
   (let ((component (coerce-to-component possible-component)))
@@ -217,7 +218,7 @@
                  component-type
                  (*:getSimpleName (*:getClass possible-component)))
          "Problem with application")
-        (sanitize-component-data (invoke component prop-name)))))
+        (sanitize-return-value component prop-name (invoke component prop-name)))))
 
 (define (set-and-coerce-property-and-check! possible-component comp-type prop-sym property-value property-type)
   (let ((component (coerce-to-component-of-type possible-component comp-type)))
@@ -441,6 +442,8 @@
                                  (begin
                                    (apply handler (gnu.lists.LList:makeList args 0))
                                    #t)
+                                 (exception com.google.appinventor.components.runtime.errors.StopBlocksExecution
+                                   #f)
                                  ;; PermissionException should be caught by a permissions-aware component and
                                  ;; handled correctly at the point it is caught. However, older extensions
                                  ;; might not be updated yet for SDK 23's dangerous permissions model, so if
@@ -496,6 +499,8 @@
                 (begin
                   (apply handler (cons componentObject (cons notAlreadyHandled (gnu.lists.LList:makeList args 0))))
                   #t)
+                (exception com.google.appinventor.components.runtime.errors.StopBlocksExecution
+                  #f)
                 (exception com.google.appinventor.components.runtime.errors.PermissionException
                  (begin
                    (exception:printStackTrace)
@@ -742,6 +747,7 @@
        #`(begin
            (define-event-helper ,(gen-generic-event-name #`component-type #`event-name) args body))))))
 
+
 ;;;; def
 
 ;;; Def here is putting things (1) in the form environment; (2) in a
@@ -965,7 +971,6 @@
 (module-name com.google.youngandroid.runtime)
 (module-static #t)
 
-(define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
 (define-alias Double <java.lang.Double>)
 (define-alias Float <java.lang.Float>)
 (define-alias Integer <java.lang.Integer>)
@@ -974,12 +979,15 @@
 (define-alias Short <java.lang.Short>)
 (define-alias String <java.lang.String>)
 (define-alias Pattern <java.util.regex.Pattern>)
+(define-alias ContinuationUtil <com.google.appinventor.components.runtime.util.ContinuationUtil>)
+(define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
+(define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
+(define-alias StopBlocksExecution <com.google.appinventor.components.runtime.errors.StopBlocksExecution>)
+(define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
+(define-alias JavaStringUtils <com.google.appinventor.components.runtime.util.JavaStringUtils>)
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailDictionary <com.google.appinventor.components.runtime.util.YailDictionary>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
-(define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
-(define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
-(define-alias JavaStringUtils <com.google.appinventor.components.runtime.util.JavaStringUtils>)
 
 (define-alias JavaCollection <java.util.Collection>)
 (define-alias JavaIterator <java.util.Iterator>)
@@ -1043,21 +1051,56 @@
 ;;; Be sure to check any components whose methods are type 'any' to make sure they can handle the
 ;;; values they will receive.
 
-
 (define (call-component-method component-name method-name arglist typelist)
-  (let ((coerced-args (coerce-args method-name arglist typelist)))
+  (let ((coerced-args (coerce-args method-name arglist typelist))
+        (component (lookup-in-current-form-environment component-name)))
     (let ((result
            (if (all-coercible? coerced-args)
                (try-catch
                 (apply invoke
-                       `(,(lookup-in-current-form-environment component-name)
+                       `(,component
                          ,method-name
                          ,@coerced-args))
                 (exception PermissionException
-                           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) (lookup-in-current-form-environment component-name) method-name exception)))
+                           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
                (generate-runtime-type-error method-name arglist))))
       ;; TODO(markf): this should probably be generalized but for now this is OK, I think
-      (sanitize-component-data result))))
+      (sanitize-return-value component method-name result))))
+
+
+
+;;; CALL-COMPONENT-METHOD-WITH-CONTINUATION
+;;;
+
+(define (call-component-method-with-continuation component-name method-name arglist typelist k)
+  (let* ((coerced-args (coerce-args method-name arglist typelist))
+         (component (lookup-in-current-form-environment component-name))
+         (continuation (ContinuationUtil:wrap
+                        (lambda (v) (k (sanitize-return-value component method-name v)))
+                        Object:class)))
+    (if (all-coercible? coerced-args)
+        (try-catch
+         (apply invoke
+                `(,component
+                  ,method-name
+                  ,@coerced-args
+                  ,continuation))
+         (exception PermissionException
+           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
+      (generate-runtime-type-error method-name arglist))))
+
+
+
+;;; CALL-COMPONENT-METHOD-WITH-BLOCKING-CONTINUATION
+;;;
+
+(define (call-component-method-with-blocking-continuation component-name method-name arglist typelist)
+  (let ((result #f))
+    (call-component-method-with-continuation component-name method-name arglist typelist
+      (lambda (v) (set! result v)))
+    result))
+
+
 
 ;;; CALL-COMPONENT-TYPE-METHOD
 ;;; Call the component method for the given component object with the given list of args,
@@ -1085,7 +1128,37 @@
                             ,@coerced-args))
                    (generate-runtime-type-error method-name arglist))))
           ;; TODO(markf): this should probably be generalized but for now this is OK, I think
-          (sanitize-component-data result)))))
+          (sanitize-return-value component-value method-name result)))))
+
+
+
+;;; CALL-COMPONENT-TYPE-METHOD-WITH-CONTINUATION
+;;;
+
+(define (call-component-type-method-with-continuation component-type method-name arglist typelist k)
+  (let* ((coerced-args (coerce-args method-name arglist (cdr typelist)))
+         (component-value (coerce-to-component-of-type possible-component component-type))
+         (continuation (ContinuationUtil:wrap
+                        (lambda (v) (k (sanitize-return-value component-value method-name v)))
+                        Object:class)))
+    (if (all-coercible? coerced-args)
+        (try-catch
+         (apply invoke `(,component-value ,method-name ,@coerced-args ,continuation))
+         (exception PermissionException
+           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
+      (generate-runtime-type-error method-name arglist))))
+
+
+
+;;; CALL-COMPONENT-TYPE-METHOD-WITH-BLOCKING-CONTINUATION
+;;;
+
+(define (call-component-type-method-with-blocking-continuation component-type method-name arglist typelist)
+  (let ((result #f))
+    (call-component-type-method-with-continuation component-type method-name arglist typelist
+      (lambda (v) (set! result v)))
+    result))
+
 
 
 ;;; CALL-USER-PROCEDURE
@@ -1182,6 +1255,15 @@
    ((list? data) (kawa-list->yail-list data))
    ((instance? data JavaCollection) (java-collection->yail-list data))
    (#t (sanitize-atomic data))))
+
+(define (sanitize-return-value component func-name value)
+  (define-alias OptionHelper com.google.appinventor.components.runtime.OptionHelper)
+  (if (enum? value)
+    value
+    (let ((value (OptionHelper:optionListFromValue component func-name value)))
+      (if (enum? value)
+        value
+        (sanitize-component-data value)))))
 
 ;;; If we are handed a collection that contains a yail list as an item,
 ;;; then the result of converting it to a kawa list will be a kawa list that
@@ -1354,7 +1436,28 @@
      ((equal? type 'key) (coerce-to-key arg))
      ((equal? type 'dictionary) (coerce-to-dictionary arg))
      ((equal? type 'any) arg)
+     ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
+
+(define (enum-type? type)
+  (string-contains (symbol->string type) "Enum"))
+
+(define (enum? arg)
+  (instance? arg com.google.appinventor.components.common.OptionList))
+
+(define (coerce-to-enum arg type)
+  (android-log "coerce-to-enum")
+  (if (and (enum? arg)
+        ;; We have to trick the Kawa compiler into not open-coding "instance?"
+        ;; or else we get a ClassCastException here.
+        ;; This check is necessary to make sure we treat each enum type separately.
+        ;; Eg a HorizontalAlignment is different from a VerticalAlignment.
+        (apply instance? (list arg (string->symbol (string-replace-all (symbol->string type) "Enum" "")))))
+      arg
+      (let ((coerced (TypeUtil:castToEnum arg type)))
+        (if (eq? coerced #!null)
+            *non-coercible-value*
+            coerced))))
 
 ;;; We can coerce *the-null-value* to a string for printing in error messages
 ;;; but we don't consider it to be a Yail text for use in
@@ -1406,12 +1509,21 @@
    ((number? arg) arg)
    ((string? arg)
     (or (padded-string->number arg) *non-coercible-value*))
+   ((enum? arg)
+    (let ((val (arg:toUnderlyingValue)))
+      (if (number? val)
+        val
+        *non-coercible-value*)))
    (else *non-coercible-value*)))
 
 (define (coerce-to-key arg)
   (cond
+   ;;; TODO: Beka and Lyn don't understand why these values have to be coerced.
+   ;;;   Eg if (number? arg) is true we just pass the arg to a procedure that returns
+   ;;;   arg if (number? arg) is true. So why don't we just return arg here?
    ((number? arg) (coerce-to-number arg))
    ((string? arg) (coerce-to-string arg))
+   ((enum? arg) arg)
    ((instance? arg com.google.appinventor.components.runtime.Component) arg)
    (else *non-coercible-value*)))
 
@@ -1433,6 +1545,11 @@
                (string-append "[" (join-strings pieces ", ") "]"))
              (let ((pieces (map coerce-to-string arg)))
                (call-with-output-string (lambda (port) (display pieces port))))))
+        ((enum? arg)
+          (let ((val (arg:toUnderlyingValue)))
+            (if (string? val)
+              val
+              *non-coercible-value*)))
         (else (call-with-output-string (lambda (port) (display arg port))))))
 
 ;;; This is very similar to coerce-to-string, but is intended for places where we
@@ -1655,6 +1772,9 @@
    ;; Uncomment these two lines to use string=? on strings
    ;; ((and (string? x1) (string? x2))
    ;;  (equal? x1 x2))
+
+   ((and (enum? x1) (not (enum? x2))) (equal? (x1:toUnderlyingValue) x2))
+   ((and (not (enum? x1)) (enum? x2)) (equal? x1 (x2:toUnderlyingValue)))
 
    ;; If the x1 and x2 are not equal?, try comparing coverting x1 and x2 to numbers
    ;; and comparing them numerically
@@ -2533,12 +2653,15 @@ Dictionary implementation.
 (define (yail-dictionary-lookup key yail-dictionary default)
   (let ((result
     (cond ((instance? yail-dictionary YailList)
-           (yail-alist-lookup key yail-dictionary default))
+            (yail-alist-lookup key yail-dictionary default))
           ((instance? yail-dictionary YailDictionary)
             (*:get (as YailDictionary yail-dictionary) key))
           (#t default))))
     (if (eq? result #!null)
-      default
+      ;; if we don't find anything associated with the abstract type, try the underlying type.
+      (if (enum? key)
+        (yail-dictionary-lookup (sanitize-component-data (key:toUnderlyingValue)) yail-dictionary default)
+        default)
       result)))
 
 (define (yail-dictionary-recursive-lookup keys yail-dictionary default)
@@ -2940,6 +3063,8 @@ Dictionary implementation.
                  (try-catch
                   (list "OK"
                         (get-display-representation (force promise)))
+                  (exception StopBlocksExecution
+                             (list "OK" #f))
                   (exception PermissionException
                              (exception:printStackTrace)
                              (list "NOK"

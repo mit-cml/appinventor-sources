@@ -410,6 +410,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <h3 id="Image-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="Image.AlternateText" class="text wo"><em>AlternateText</em></dt>
+  <dd>A written description of what the image looks like.</dd>
   <dt id="Image.Animation" class="text wo bo"><em>Animation</em></dt>
   <dd>This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are <code class="highlighter-rouge">ScrollRightSlow</code>, <code class="highlighter-rouge">ScrollRight</code>, <code class="highlighter-rouge">ScrollRightFast</code>,
@@ -635,9 +637,12 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <h2 id="ListView">ListView</h2>
 
-<p>This is a visible component that allows to place a list of text elements in your <a href="#Screen"><code class="highlighter-rouge">Screen</code></a> to
- display. The list can be set using the <a href="#ListView.ElementsFromString"><code class="highlighter-rouge">ElementsFromString</code></a> property or using the
- <a href="#ListView.Elements"><code class="highlighter-rouge">Elements</code></a> block in the blocks editor.</p>
+<p>This is a visible component that displays a list of text and image elements in your <a href="#Screen"><code class="highlighter-rouge">Screen</code></a> to
+ display. Simple lists of strings may be set using the <a href="#ListView.ElementsFromString"><code class="highlighter-rouge">ElementsFromString</code></a> property.
+ More complex lists of elements containing multiple strings and/or images can be created using the
+ <a href="#ListView.ListData"><code class="highlighter-rouge">ListData</code></a> and <a href="#ListView.ListViewLayout"><code class="highlighter-rouge">ListViewLayout</code></a> properties.</p>
+
+<p><a href="../other/advanced-listview.html">Information on Layouts</a></p>
 
 <p>Warning: This component will not work correctly on Screens that are scrollable if its
  <a href="#ListView.Height"><code class="highlighter-rouge">Height</code></a> is set to Fill Parent.</p>
@@ -650,16 +655,43 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="ListView.Elements" class="list bo"><em>Elements</em></dt>
   <dd>Specifies the list of choices to display.</dd>
   <dt id="ListView.ElementsFromString" class="text wo"><em>ElementsFromString</em></dt>
-  <dd>Set the list of choices from a string of comma-separated values.</dd>
+  <dd>Set the list of choices specified as a string with the elements separated by commas
+ such as: Cheese,Fruit,Bacon,Radish.</dd>
+  <dt id="ListView.FontSizeDetail" class="number"><em>FontSizeDetail</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ListView</code> item’s text font size</dd>
+  <dt id="ListView.FontTypeface" class="number do"><em>FontTypeface</em></dt>
+  <dd>Specifies the label’s text’s font face as default, serif, sans
+ serif, or monospace.</dd>
+  <dt id="ListView.FontTypefaceDetail" class="number do"><em>FontTypefaceDetail</em></dt>
+  <dd>Specifies the label’s text’s font face as default, serif, sans
+ serif, or monospace.</dd>
   <dt id="ListView.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">ListView</code>’s vertical height, measured in pixels.</dd>
   <dt id="ListView.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">ListView</code>’s vertical height as a percentage
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="ListView.ImageHeight" class="number"><em>ImageHeight</em></dt>
+  <dd>Specifies the image height of ListView layouts containing images</dd>
+  <dt id="ListView.ImageWidth" class="number"><em>ImageWidth</em></dt>
+  <dd>Specifies the image width of ListView layouts containing images</dd>
+  <dt id="ListView.ListData" class="text do"><em>ListData</em></dt>
+  <dd>Specifies data to be displayed in the ListView elements. This property sets the
+ elements specified in <a href="#ListView.ListViewLayout"><code class="highlighter-rouge">ListViewLayout</code></a>. For example, if the chosen
+ layout is <code class="highlighter-rouge">Image,MainText</code> this property will allow any number of elements to be
+ defined, each containing a filename for Image and a string for MainText.
+ Designer only property.</dd>
+  <dt id="ListView.ListViewLayout" class="number do"><em>ListViewLayout</em></dt>
+  <dd>Specifies type of layout for ListView row. Designer only property.</dd>
+  <dt id="ListView.Orientation" class="number"><em>Orientation</em></dt>
+  <dd>Specifies the layout’s orientation. This may be: <code class="highlighter-rouge">Vertical</code>, which displays elements
+ in rows one after the other; or <code class="highlighter-rouge">Horizontal</code>, which displays one element at a time and
+ allows the user to swipe left or right to brows the elements.</dd>
   <dt id="ListView.Selection" class="text"><em>Selection</em></dt>
   <dd>Returns the text in the <code class="highlighter-rouge">ListView</code> at the position of <a href="#ListView.SelectionIndex"><code class="highlighter-rouge">SelectionIndex</code></a>.</dd>
   <dt id="ListView.SelectionColor" class="color"><em>SelectionColor</em></dt>
   <dd>The color of the item when it is selected.</dd>
+  <dt id="ListView.SelectionDetailText" class="text ro bo"><em>SelectionDetailText</em></dt>
+  <dd>Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex</dd>
   <dt id="ListView.SelectionIndex" class="number bo"><em>SelectionIndex</em></dt>
   <dd>The index of the currently selected item, starting at <code class="highlighter-rouge">1</code>. If no item is selected, the value
  will be <code class="highlighter-rouge">0</code>. If an attempt is made to set this to a number less than <code class="highlighter-rouge">1</code> or greater than the
@@ -670,6 +702,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  <code class="logic block highlighter-rouge">false</code> will hide it.</dd>
   <dt id="ListView.TextColor" class="color"><em>TextColor</em></dt>
   <dd>The text color of the <code class="highlighter-rouge">ListView</code> items.</dd>
+  <dt id="ListView.TextColorDetail" class="color"><em>TextColorDetail</em></dt>
+  <dd>Specifies the color of the secondary text in a ListView layout</dd>
   <dt id="ListView.TextSize" class="number"><em>TextSize</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">ListView</code> item’s text font size</dd>
   <dt id="ListView.Visible" class="boolean"><em>Visible</em></dt>
@@ -692,7 +726,18 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <h3 id="ListView-Methods">Methods</h3>
 
-<p class="methods">None</p>
+<dl class="methods">
+  <dt id="ListView.CreateElement" class="method returns dictionary"><i></i> CreateElement(<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
+  <dd>Creates a</dd>
+  <dt id="ListView.GetDetailText" class="method returns text"><i></i> GetDetailText(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the Detail Text of a ListView element.</dd>
+  <dt id="ListView.GetImageName" class="method returns text"><i></i> GetImageName(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the filename of the image of a ListView element that has been uploaded to Media.</dd>
+  <dt id="ListView.GetMainText" class="method returns text"><i></i> GetMainText(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the Main Text of a ListView element.</dd>
+  <dt id="ListView.Refresh" class="method"><i></i> Refresh()</dt>
+  <dd>Reload the ListView to reflect any changes in the data.</dd>
+</dl>
 
 <h2 id="Notifier">Notifier</h2>
 
@@ -877,7 +922,7 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  <a href="#Notifier"><code class="highlighter-rouge">Notifier</code></a>, the <a href="#DatePicker"><code class="highlighter-rouge">DatePicker</code></a>, and others.</dd>
   <dt id="Screen.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
   <dd>A number that encodes how contents of the screen are aligned horizontally. The choices are:
- <code class="highlighter-rouge">1</code> (left aligned), <code class="highlighter-rouge">2</code> (horizontally centered), <code class="highlighter-rouge">3</code> (right aligned).</dd>
+ <code class="highlighter-rouge">1</code> (left aligned), <code class="highlighter-rouge">3</code> (horizontally centered), <code class="highlighter-rouge">2</code> (right aligned).</dd>
   <dt id="Screen.AlignVertical" class="number"><em>AlignVertical</em></dt>
   <dd>A number that encodes how the contents of the arrangement are aligned vertically. The choices
  are: <code class="highlighter-rouge">1</code> (aligned at the top), <code class="highlighter-rouge">2</code> (vertically centered), <code class="highlighter-rouge">3</code> (aligned at the bottom). Vertical
@@ -892,20 +937,26 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="Screen.BackgroundImage" class="text"><em>BackgroundImage</em></dt>
   <dd>Specifies the path of the <code class="highlighter-rouge">Screen</code>’s background image. If there is both an <code class="highlighter-rouge">BackgroundImage</code>
  and a <a href="#Screen.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">BackgroundImage</code> will be visible.</dd>
+  <dt id="Screen.BigDefaultText" class="boolean"><em>BigDefaultText</em></dt>
+  <dd>When checked, all default size text will be increased in size.</dd>
   <dt id="Screen.BlocksToolkit" class="text wo do"><em>BlocksToolkit</em></dt>
   <dd>A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project.</dd>
   <dt id="Screen.CloseScreenAnimation" class="text"><em>CloseScreenAnimation</em></dt>
   <dd>Sets the animation type for the transition of this form closing and returning
  to a form behind it in the activity stack.</dd>
+  <dt id="Screen.DefaultFileScope" class="com google appinventor components common FileScopeEnum wo do"><em>DefaultFileScope</em></dt>
+  <dd>Specifies the default scope used when components access files. Note that the <a href="#File"><code class="highlighter-rouge">File</code></a>
+ component has its own property for controlling file scopes.</dd>
   <dt id="Screen.Height" class="number ro bo"><em>Height</em></dt>
   <dd>Returns the Screen height in pixels (y-size).</dd>
+  <dt id="Screen.HighContrast" class="boolean"><em>HighContrast</em></dt>
+  <dd>When checked, there will be high contrast mode turned on.</dd>
   <dt id="Screen.Icon" class="text wo do"><em>Icon</em></dt>
   <dd>The image used for your App’s display icon should be a square png or jpeg image with dimensions
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
  The build server will generate images of standard dimensions for Android devices.</dd>
   <dt id="Screen.OpenScreenAnimation" class="text"><em>OpenScreenAnimation</em></dt>
-  <dd>The animation for switching to another screen. Valid options are <code class="highlighter-rouge">default</code>, <code class="highlighter-rouge">fade</code>, <code class="highlighter-rouge">zoom</code>,
- <code class="highlighter-rouge">slidehorizontal</code>, <code class="highlighter-rouge">slidevertical</code>, and <code class="highlighter-rouge">none</code>.</dd>
+  <dd>Sets the animation type for the transition of this form opening.</dd>
   <dt id="Screen.Platform" class="text ro bo"><em>Platform</em></dt>
   <dd>Gets the name of the underlying platform running the app. Currently, this is the text
  “Android”. Other platforms may be supported in the future.</dd>

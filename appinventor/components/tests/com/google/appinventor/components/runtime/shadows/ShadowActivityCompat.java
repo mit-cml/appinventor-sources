@@ -22,7 +22,7 @@ import org.robolectric.annotation.Implements;
 public class ShadowActivityCompat {
 
   private static Activity activity;
-  private static String[] permissions;
+  private static String[] permissions = null;
   private static int requestCode;
 
   @Implementation
@@ -47,6 +47,9 @@ public class ShadowActivityCompat {
    * Denies the last set of permissions requested by the app.
    */
   public static void denyLastRequestedPermissions() {
+    if (permissions == null) {
+      return;
+    }
     int[] result = new int[permissions.length];
     for (int i = 0; i < result.length; i++) {
       result[i] = PackageManager.PERMISSION_DENIED;

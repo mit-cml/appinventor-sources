@@ -23,8 +23,9 @@ public class ComponentConstants {
   /**
    * Layout constants.
    */
-  public static final int LAYOUT_ORIENTATION_HORIZONTAL = 0;
-  public static final int LAYOUT_ORIENTATION_VERTICAL = 1;
+  public static final int LAYOUT_ORIENTATION_HORIZONTAL = 1;
+  public static final int LAYOUT_ORIENTATION_VERTICAL = 0;
+  public static final int LAYOUT_ORIENTATION_GRID = 2;
 
   public static final int DEFAULT_ROW_COLUMN = -1;
 
@@ -102,6 +103,15 @@ public class ComponentConstants {
   public static final int POLYGON_PREFERRED_HEIGHT = 30;
   public static final int RECTANGLE_PREFERRED_WIDTH = 50;
   public static final int RECTANGLE_PREFERRED_HEIGHT = 30;
+
+  /*
+   * Constants for type of ListViewLayout
+   */
+  public static final int LISTVIEW_LAYOUT_SINGLE_TEXT = 0;
+  public static final int LISTVIEW_LAYOUT_TWO_TEXT = 1;
+  public static final int LISTVIEW_LAYOUT_TWO_TEXT_LINEAR = 2;
+  public static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
+  public static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
 
 }
 

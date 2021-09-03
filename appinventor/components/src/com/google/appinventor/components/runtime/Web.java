@@ -8,13 +8,9 @@ package com.google.appinventor.components.runtime;
 
 import android.Manifest;
 import android.app.Activity;
-
 import android.text.TextUtils;
-
 import android.util.Log;
-
 import androidx.annotation.VisibleForTesting;
-
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -36,9 +32,7 @@ import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.RequestTimeoutException;
-
 import com.google.appinventor.components.runtime.repackaged.org.json.XML;
-
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -50,7 +44,6 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.XmlParser;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -70,7 +63,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-
 import java.util.List;
 import java.util.Map;
 
@@ -514,6 +506,90 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       }
     });
   }
+  
+  /**
+   * Performs an HTTP PATCH request using the Url property and the specified text.
+   *
+   *   The characters of the text are encoded using UTF-8 encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The responseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
+   *
+   * @param text the text data for the PATCH request
+   */
+  @SimpleFunction(description = "Performs an HTTP PATCH request using the Url property and " +
+      "the specified text.<br>" +
+      "The characters of the text are encoded using UTF-8 encoding.<br>" +
+      "If the SaveResponse property is true, the response will be saved in a file and the " +
+      "GotFile event will be triggered. The responseFileName property can be used to specify " +
+      "the name of the file.<br>" +
+      "If the SaveResponse property is false, the GotText event will be triggered.")
+  public void PatchText(final String text) {
+    requestTextImpl(text, "UTF-8", "PatchText", "PATCH");
+  }
+
+  /**
+   * Performs an HTTP PATCH request using the Url property and the specified text.
+   *
+   *   The characters of the text are encoded using the given encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The ResponseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
+   *
+   * @param text the text data for the PATCH request
+   * @param encoding the character encoding to use when sending the text. If
+   *                 encoding is empty or null, UTF-8 encoding will be used.
+   */
+  @SimpleFunction(description = "Performs an HTTP PATCH request using the Url property and " +
+      "the specified text.<br>" +
+      "The characters of the text are encoded using the given encoding.<br>" +
+      "If the SaveResponse property is true, the response will be saved in a file and the " +
+      "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
+      "the name of the file.<br>" +
+      "If the SaveResponse property is false, the GotText event will be triggered.")
+  public void PatchTextWithEncoding(final String text, final String encoding) {
+    requestTextImpl(text, encoding, "PatchTextWithEncoding", "PATCH");
+  }
+
+  /**
+   * Performs an HTTP PATCH request using the Url property and data from the specified file.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a file
+   * and the GotFile event will be triggered. The ResponseFileName property can be
+   * used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
+   *
+   * @param path the path of the file for the PATCH request
+   */
+  @SimpleFunction(description = "Performs an HTTP PATCH request using the Url property and " +
+      "data from the specified file.<br>" +
+      "If the SaveResponse property is true, the response will be saved in a file and the " +
+      "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
+      "the name of the file.<br>" +
+      "If the SaveResponse property is false, the GotText event will be triggered.")
+  public void PatchFile(final String path) {
+    final String METHOD = "PatchFile";
+    // Capture property values before running asynchronously.
+    final CapturedProperties webProps = capturePropertyValues(METHOD);
+    if (webProps == null) {
+      // capturePropertyValues has already called form.dispatchErrorOccurredEvent
+      return;
+    }
+
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        performRequest(webProps, null, path, "PATCH", METHOD);
+      }
+    });
+  }
 
   /**
    * Performs an HTTP PUT request using the Url property and the specified text.
@@ -629,7 +705,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /*
-   * Performs an HTTP GET, POST, PUT or DELETE request using the Url property and the specified
+   * Performs an HTTP GET, POST, PATCH, PUT or DELETE request using the Url property and the specified
    * text, and retrieves the response asynchronously.<br>
    * The characters of the text are encoded using the given encoding.<br>
    * If the SaveResponse property is true, the response will be saved in a file
@@ -638,11 +714,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * If the SaveResponse property is false, the GotText event will be
    * triggered.
    *
-   * @param text the text data for the POST or PUT request
+   * @param text the text data for the POST, PATCH, or PUT request
    * @param encoding the character encoding to use when sending the text. If
    *                 encoding is empty or null, UTF-8 encoding will be used.
    * @param functionName the name of the function, used when dispatching errors
-   * @param httpVerb the HTTP operation to be performed: GET, POST, PUT or DELETE
+   * @param httpVerb the HTTP operation to be performed: GET, POST, PATCH, PUT or DELETE
    */
   private void requestTextImpl(final String text, final String encoding,
       final String functionName, final String httpVerb) {
@@ -1145,11 +1221,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       } else if (method.equals("Delete")) {
         message = ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE;
         args = new String[] { webProps.urlString };
-      } else if (method.equals("PostFile") || method.equals("PutFile")) {
-        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
+      } else if (method.equals("PostFile") || method.equals("PutFile") || method.equals("PatchFile")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE_FILE;
         args = new String[] { postFile, webProps.urlString };
       } else {
-        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT;
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE;
         String content = "";
         try {
           if (postData != null) {
@@ -1183,7 +1259,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     connection.setConnectTimeout(webProps.timeout);
     connection.setReadTimeout(webProps.timeout);
 
-    if (httpVerb.equals("PUT") || httpVerb.equals("DELETE")){
+    if (httpVerb.equals("PUT") || httpVerb.equals("PATCH") || httpVerb.equals("DELETE")){
       // Set the Request Method; GET is the default, and if it is a POST, it will be marked as such
       // with setDoOutput in writeRequestFile or writeRequestData
       connection.setRequestMethod(httpVerb);

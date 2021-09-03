@@ -1068,6 +1068,10 @@ public final class Compiler {
       for (Set<String> compPermissions : permissionsNeeded.values()) {
         permissions.addAll(compPermissions);
       }
+      if (usesLegacyFileAccess()) {
+        permissions.add("android.permission.READ_EXTERNAL_STORAGE");
+        permissions.add("android.permission.WRITE_EXTERNAL_STORAGE");
+      }
 
       // Remove Google's Forbidden Permissions
       // This code is crude because we had to do this on short notice
@@ -1089,10 +1093,21 @@ public final class Compiler {
       }
 
       for (String permission : permissions) {
-        out.write("  <uses-permission android:name=\"" +
-                  permission
-                    .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
-                  + "\" />\n");
+        if ("android.permission.WRITE_EXTERNAL_STORAGE".equals(permission)) {
+          out.write("  <uses-permission android:name=\"" + permission + "\"");
+
+          // we don't need these permissions post KitKat, but we do need them for the companion
+          if (!isForCompanion && !usesLegacyFileAccess() && minSdk < 29) {
+            out.write(" android:maxSdkVersion=\"29\"");
+          }
+
+          out.write(" />");
+        } else {
+          out.write("  <uses-permission android:name=\""
+              // replace %packageName% with the actual packageName
+              + permission.replace("%packageName%", packageName)
+              + "\" />\n");
+        }
       }
 
       if (isForCompanion) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
@@ -3013,6 +3028,10 @@ public final class Compiler {
       return candidate;
     }
     throw new IllegalStateException("Project lacks extension directory for " + type);
+  }
+
+  private boolean usesLegacyFileAccess() {
+    return "Legacy".equals(project.getDefaultFileScope());
   }
 
   private static String basename(String path) {

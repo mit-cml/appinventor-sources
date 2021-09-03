@@ -168,7 +168,7 @@
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE": "open another screen",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME": "screenName",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT": "open screen",
-	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP": "Opens a new screen in a multiple screen app.",
+	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP": "Opens a new screen in a multiple screen app. You should not use this block to return to Screen1. Use the close screen block instead.",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE": "open another screen with start value",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME": "screenName",
 	"Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_STARTVALUE": "startValue",
@@ -350,7 +350,7 @@
 	"Blockly.Msg.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY": "is empty",
 	"Blockly.Msg.LANG_TEXT_ISEMPTY_TOOLTIP": "Returns true if the length of the\n' + 'text is 0, false otherwise.",
 	"Blockly.Msg.LANG_TEXT_COMPARE_LT": " <",
-	"Blockly.Msg.LANG_TEXT_COMPARE_EQUAL": ":",
+	"Blockly.Msg.LANG_TEXT_COMPARE_EQUAL": "=",
 	"Blockly.Msg.LANG_TEXT_COMPARE_NEQ": " ≠",
 	"Blockly.Msg.LANG_TEXT_COMPARE_GT": " >",
 	"Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE": "compare texts",
@@ -539,7 +539,7 @@
 	"Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE": "make a pair",
 
 	"Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_INPUT": "set value for key %1 in dictionary %2 to %3",
-	"Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TITLE": "set dict pair",
+	"Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TITLE": "set value for key in dictionary to",
 	"Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TOOLTIP": "Set a pair in a dictionary.",
 	"Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_HELPURL": "/reference/blocks/dictionaries.html#set-value-for-key",
 
@@ -550,17 +550,17 @@
 
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_INPUT": "get value for key %1 in dictionary %2 or if not found %3",
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TOOLTIP": "Returns the value in the dictionary associated with the key.",
-	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TITLE": "look up in a dict",
+	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TITLE": "get value for key in dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_HELPURL": "/reference/blocks/dictionaries.html#get-value-for-key",
 
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_INPUT": "get value at key path %1 in dictionary %2 or if not found %3",
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TOOLTIP": "Returns the value in the nested dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE": "recursive look up in a dict",
+	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE": "get value for key path in dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_HELPURL": "/reference/blocks/dictionaries.html#get-value-at-key-path",
 
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_INPUT": "set value for key path %1 in dictionary %2 to %3",
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP": "Sets the value at a path in a tree starting from the given dictionary.",
-	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE": "set value at key path of dictionary",
+	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE": "set value for key path in dictionary to",
 	"Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_HELPURL": "/reference/blocks/dictionaries.html#set-value-for-key-path",
 
 	"Blockly.Msg.LANG_DICTIONARIES_GETTERS_TITLE": "get",
@@ -568,13 +568,13 @@
 	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT": "dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP": "Returns a list of all of the keys in the dictionary.",
 	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_HELPURL": "/reference/blocks/dictionaries.html#get-keys",
-	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TYPEBLOCK": "get keys",
+	"Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TYPEBLOCK": "get dictionary keys",
 
 	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TITLE": "values",
 	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_INPUT": "dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TOOLTIP": "Returns a list of all of the values in the dictionary.",
 	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_HELPURL": "/reference/blocks/dictionaries.html#get-values",
-	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK": "get values",
+	"Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK": "get dictionary values",
 
 	"Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_INPUT": "is key in dictionary? key %1 dictionary %2",
 	"Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_TOOLTIP": "Check if a key is in a dictionary.",
@@ -689,6 +689,8 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET": "set ",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO": " to",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT": "of component",
+	"Blockly.Msg.LANG_SCREENS_TITLE": "Screen Name: ",
+	"Blockly.Msg.LANG_NO_ASSETS": "No available assets",
 	"Blockly.Msg.SHOW_WARNINGS": "Show Warnings",
 	"Blockly.Msg.HIDE_WARNINGS": "Hide Warnings",
 	"Blockly.Msg.MISSING_SOCKETS_WARNINGS": "You should fill all of the sockets with blocks",
