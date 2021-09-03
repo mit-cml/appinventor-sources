@@ -76,6 +76,9 @@
       <fileset dir="${build.dir}/components/deps" />
     </copy>
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
+    <copy toFile="${classes.tools.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
+    <copy toFile="${classes.tools.dir}/bundletool.jar" file="${lib.dir}/android/tools/bundletool-all-1.7.1.jar" />
+    <copy toFile="${classes.tools.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt2" />

@@ -99,8 +99,8 @@ public final class Compiler {
   private static final String COLON = File.pathSeparator;
   private static final String ZIPSLASH = "/";
 
-  public static final String RUNTIME_FILES_DIR = "/" + "files" + "/";
-
+  public static final String RUNTIME_FILES_DIR = "/files/";
+  public static final String RUNTIME_TOOLS_DIR = "/tools/";
 
   // Native library directory names
   private static final String LIBS_DIR_NAME = "libs";
@@ -127,13 +127,13 @@ public final class Compiler {
   private static final String COMP_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
   private static final String DX_JAR =
-      RUNTIME_FILES_DIR + "dx.jar";
+      RUNTIME_TOOLS_DIR + "dx.jar";
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR =
       RUNTIME_FILES_DIR + "AndroidRuntime.jar";
   private static final String APKSIGNER_JAR =
-      RUNTIME_FILES_DIR + "apksigner.jar";
+      RUNTIME_TOOLS_DIR + "apksigner.jar";
 
   /*
    * Note for future updates: This list can be obtained from an Android Studio project running the
@@ -180,28 +180,28 @@ public final class Compiler {
       ));
 
   private static final String LINUX_AAPT_TOOL =
-      "/tools/linux/aapt";
+      RUNTIME_TOOLS_DIR + "linux/aapt";
   private static final String LINUX_ZIPALIGN_TOOL =
-      "/tools/linux/zipalign";
+      RUNTIME_TOOLS_DIR + "linux/zipalign";
   private static final String MAC_AAPT_TOOL =
-      "/tools/mac/aapt";
+      RUNTIME_TOOLS_DIR + "mac/aapt";
   private static final String MAC_ZIPALIGN_TOOL =
-      "/tools/mac/zipalign";
+      RUNTIME_TOOLS_DIR + "mac/zipalign";
   private static final String WINDOWS_AAPT_TOOL =
-      "/tools/windows/aapt";
+      RUNTIME_TOOLS_DIR + "windows/aapt";
   private static final String WINDOWS_PTHEAD_DLL =
-      "/tools/windows/libwinpthread-1.dll";
+      RUNTIME_TOOLS_DIR + "windows/libwinpthread-1.dll";
   private static final String WINDOWS_ZIPALIGN_TOOL =
-      "/tools/windows/zipalign";
+      RUNTIME_TOOLS_DIR + "windows/zipalign";
 
   private static final String LINUX_AAPT2_TOOL =
-      "/tools/linux/aapt2";
+      RUNTIME_TOOLS_DIR + "linux/aapt2";
   private static final String MAC_AAPT2_TOOL =
-      "/tools/mac/aapt2";
+      RUNTIME_TOOLS_DIR + "mac/aapt2";
   private static final String WINDOWS_AAPT2_TOOL =
-      "/tools/windows/aapt2";
+      RUNTIME_TOOLS_DIR + "windows/aapt2";
   private static final String BUNDLETOOL_JAR =
-      RUNTIME_FILES_DIR + "bundletool.jar";
+      RUNTIME_TOOLS_DIR + "bundletool.jar";
 
   @VisibleForTesting
   static final String YAIL_RUNTIME = RUNTIME_FILES_DIR + "runtime.scm";
@@ -2788,7 +2788,7 @@ public final class Compiler {
   private void libSetup() {
     String osName = System.getProperty("os.name");
     if (osName.equals("Linux")) {
-      ensureLib("/tmp/lib64", "libc++.so", "/tools/linux/lib64/libc++.so");
+      ensureLib("/tmp/lib64", "libc++.so", RUNTIME_TOOLS_DIR + "linux/lib64/libc++.so");
     } else if (osName.startsWith("Windows")) {
       ensureLib(System.getProperty("java.io.tmpdir"), "libwinpthread-1.dll", WINDOWS_PTHEAD_DLL);
     }
