@@ -21,12 +21,14 @@ import android.view.Surface;
 import android.view.WindowManager;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.Sensitivity;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -112,7 +114,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   private float zAccel;
 
   private int accuracy;
-  private int sensitivity;
+  private Sensitivity sensitivity;
   private volatile int deviceDefaultOrientation;
 
   private final SensorManager sensorManager;
@@ -155,7 +157,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     androidUIHandler = new Handler();
     startListening();
     MinimumInterval(400);
-    Sensitivity(Component.ACCELEROMETER_SENSITIVITY_MODERATE);
+    SensitivityAbstract(Sensitivity.Moderate);
   }
 
 
@@ -200,8 +202,24 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
       description = "A number that encodes how sensitive the accelerometer is. " +
               "The choices are: 1 = weak, 2 = moderate, " +
               " 3 = strong.")
-  public int Sensitivity() {
+  public @Options(Sensitivity.class) int Sensitivity() {
+    return sensitivity.toUnderlyingValue();
+  }
+
+  /**
+   * Returns the current sensitivity of this component.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public Sensitivity SensitivityAbstract() {
     return sensitivity;
+  }
+
+  /**
+   * Sets the sensitivity of this sensor.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void SensitivityAbstract(Sensitivity sensitivity) {
+    this.sensitivity = sensitivity;
   }
 
   /**
@@ -216,13 +234,15 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ACCELEROMETER_SENSITIVITY,
       defaultValue = Component.ACCELEROMETER_SENSITIVITY_MODERATE + "")
   @SimpleProperty
-  public void Sensitivity(int sensitivity) {
-    if ((sensitivity == 1) || (sensitivity == 2) || (sensitivity == 3)) {
-      this.sensitivity = sensitivity;
-    } else {
+  public void Sensitivity(@Options(Sensitivity.class) int sensitivity) {
+    // Make sure sensitivity is a valid Sensitivity.
+    Sensitivity level = Sensitivity.fromUnderlyingValue(sensitivity);
+    if (level == null) {
       form.dispatchErrorOccurredEvent(this, "Sensitivity",
           ErrorMessages.ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY, sensitivity);
+      return;
     }
+    SensitivityAbstract(level);
   }
 
   /**
@@ -412,17 +432,18 @@ public int getDeviceDefaultOrientation() {
     for (float value : cache) {
       average += value;
     }
-
     average /= cache.size();
+    float delta = Math.abs(average - currentValue);
 
-    if (Sensitivity() == 1) { //sensitivity is weak
-      return Math.abs(average - currentValue) > strongShakeThreshold;
-    } else if (Sensitivity() == 2) { //sensitivity is moderate
-      return ((Math.abs(average - currentValue) > moderateShakeThreshold)
-        && (Math.abs(average - currentValue) < strongShakeThreshold));
-    } else { //sensitivity is strong
-      return ((Math.abs(average - currentValue) > weakShakeThreshold)
-        && (Math.abs(average - currentValue) < moderateShakeThreshold));
+    switch (sensitivity) {
+      case Weak:
+        return delta > strongShakeThreshold;
+      case Moderate:
+        return delta > moderateShakeThreshold && delta < strongShakeThreshold;
+      case Strong:
+        return delta > weakShakeThreshold && delta < moderateShakeThreshold;
+      default:
+        return false;
     }
   }
 

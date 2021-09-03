@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -45,7 +46,7 @@ import java.io.IOException;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public abstract class ButtonBase extends AndroidViewComponent
-    implements OnClickListener, OnFocusChangeListener, OnLongClickListener, View.OnTouchListener {
+    implements OnClickListener, OnFocusChangeListener, OnLongClickListener, View.OnTouchListener, AccessibleComponent {
 
   private static final String LOG_TAG = "ButtonBase";
 
@@ -103,6 +104,12 @@ public abstract class ButtonBase extends AndroidViewComponent
   // could not be loaded, this is null.
   private Drawable backgroundImageDrawable;
 
+  //Whether or not the button is in high contrast mode
+  private boolean isHighContrast = false;
+
+  //Whether or not the button is in big text mode
+  private boolean isBigText = false;
+
   /**
    * The minimum width of a button for the current theme.
    *
@@ -158,6 +165,9 @@ public abstract class ButtonBase extends AndroidViewComponent
     Shape(Component.BUTTON_SHAPE_DEFAULT);
   }
 
+  public void Initialize(){
+    updateAppearance();
+  }
     /**
      * If a custom background images is specified for the button, then it will lose the pressed
      * and disabled image effects; no visual feedback.
@@ -332,7 +342,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(description = "Specifies the path of the image of the %type%.  " +
       "If there is both an Image and a BackgroundColor, only the Image will be " +
       "visible.")
-  public void Image(String path) {
+  public void Image(@Asset String path) {
     // If it's the same as on the prior call and the prior load was successful,
     // do nothing.
     if (path.equals(imagePath) && backgroundImageDrawable != null) {
@@ -343,7 +353,6 @@ public abstract class ButtonBase extends AndroidViewComponent
 
     // Clear the prior background image.
     backgroundImageDrawable = null;
-
     // Load image from file.
     if (imagePath.length() > 0) {
       try {
@@ -402,7 +411,15 @@ public abstract class ButtonBase extends AndroidViewComponent
         if (backgroundColor == Component.COLOR_DEFAULT) {
           // If there is no background image and color is default,
           // restore original 3D bevel appearance.
-          ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+          if (isHighContrast || container.$form().HighContrast()) {
+            ViewUtil.setBackgroundDrawable(view, null);
+            ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
+            view.getBackground().setColorFilter(Component.COLOR_BLACK, PorterDuff.Mode.SRC_ATOP);
+          }
+          else {
+            ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+          }
+
         } else if (backgroundColor == Component.COLOR_NONE) {
           // Clear the background image.
           ViewUtil.setBackgroundDrawable(view, null);
@@ -490,7 +507,11 @@ public abstract class ButtonBase extends AndroidViewComponent
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
     }
     else if (backgroundColor == Component.COLOR_DEFAULT) {
-      view.getBackground().setColorFilter(SHAPED_DEFAULT_BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
+      if (isHighContrast || container.$form().HighContrast()) {
+        view.getBackground().setColorFilter(Component.COLOR_BLACK, PorterDuff.Mode.SRC_ATOP);
+      } else {
+        view.getBackground().setColorFilter(SHAPED_DEFAULT_BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
+      }
     }
     else {
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
@@ -638,7 +659,11 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public void FontSize(float size) {
-    TextViewUtil.setFontSize(view, size);
+    if (size == FONT_DEFAULT_SIZE && container.$form().BigDefaultText()) {
+      TextViewUtil.setFontSize(view, 24);
+    } else {
+      TextViewUtil.setFontSize(view, size);
+    }
   }
 
   /**
@@ -729,7 +754,12 @@ public abstract class ButtonBase extends AndroidViewComponent
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setTextColor(view, argb);
     } else {
-      TextViewUtil.setTextColors(view, defaultColorStateList);
+      if (isHighContrast || container.$form().HighContrast()){
+        TextViewUtil.setTextColor(view, Color.WHITE);
+      }
+      else {
+        TextViewUtil.setTextColors(view, defaultColorStateList);
+      }
     }
   }
 
@@ -766,6 +796,50 @@ public abstract class ButtonBase extends AndroidViewComponent
   @Override
   public boolean onLongClick(View view) {
     return longClick();
+  }
+
+  @Override
+  public void setHighContrast(boolean isHighContrast) {
+    //background of button
+    if (backgroundImageDrawable == null && shape == Component.BUTTON_SHAPE_DEFAULT && backgroundColor == Component.COLOR_DEFAULT) {
+      if (isHighContrast) {
+        ViewUtil.setBackgroundDrawable(view, null);
+        ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
+        view.getBackground().setColorFilter(Component.COLOR_BLACK, PorterDuff.Mode.SRC_ATOP);
+      } else {
+        ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+      }
+    }
+
+    //color of text
+    if (textColor == Component.COLOR_DEFAULT) {
+      if (isHighContrast) {
+        TextViewUtil.setTextColor(view, Color.WHITE);
+      } else {
+        TextViewUtil.setTextColors(view, defaultColorStateList);
+      }
+    }
+  }
+
+  @Override
+  public boolean getHighContrast() {
+    return isHighContrast;
+  }
+
+  @Override
+  public void setLargeFont(boolean isLargeFont) {
+    if (TextViewUtil.getFontSize(view, container.$context()) == 24.0 || TextViewUtil.getFontSize(view, container.$context()) == Component.FONT_DEFAULT_SIZE) {
+      if (isLargeFont) {
+        TextViewUtil.setFontSize(view, 24);
+      } else {
+        TextViewUtil.setFontSize(view, Component.FONT_DEFAULT_SIZE);
+      }
+    }
+  }
+
+  @Override
+  public boolean getLargeFont() {
+    return isBigText;
   }
 
 }

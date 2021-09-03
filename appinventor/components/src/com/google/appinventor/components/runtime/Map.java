@@ -5,19 +5,12 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.runtime.LocationSensor.LocationSensorListener;
-import com.google.appinventor.components.runtime.util.AsynchUtil;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.GeoJSONUtil;
-import com.google.appinventor.components.runtime.util.GeometryUtil;
-import com.google.appinventor.components.runtime.util.MapFactory;
-import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
-import com.google.appinventor.components.runtime.util.YailList;
-import org.osmdroid.util.BoundingBox;
+import android.util.Log;
+import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -26,24 +19,35 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.MapType;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.common.YaVersion;
+
+import com.google.appinventor.components.runtime.LocationSensor.LocationSensorListener;
+import com.google.appinventor.components.runtime.util.AsynchUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.GeoJSONUtil;
+import com.google.appinventor.components.runtime.util.GeometryUtil;
+import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapController;
 import com.google.appinventor.components.runtime.util.MapFactory.MapEventListener;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
+import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
-import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
-
-import android.util.Log;
-import android.view.View;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.osmdroid.util.BoundingBox;
 
 /**
  * A two-dimensional container that renders map tiles in the background and allows for multiple
@@ -110,7 +114,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     ZoomLevel(13);
     EnableZoom(true);
     EnablePan(true);
-    MapType(1);
+    MapTypeAbstract(MapType.Road);
     ShowCompass(false);
     LocationSensor(new LocationSensor(container.$form(), false));
     ShowUser(false);
@@ -295,9 +299,11 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MAP_TYPE,
       defaultValue = "1")
   @SimpleProperty
-  public void MapType(int type) {
-    MapFactory.MapType newType = MapFactory.MapType.values()[type];
-    mapController.setMapType(newType);
+  public void MapType(@Options(MapType.class) int type) {
+    MapType mapType = MapType.fromUnderlyingValue(type);
+    if (mapType != null) {
+      MapTypeAbstract(mapType);
+    }
   }
 
   /**
@@ -316,8 +322,24 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The type of tile layer to use as the base of the map. Valid values " +
           "are: 1 (Roads), 2 (Aerial), 3 (Terrain)")
-  public int MapType() {
-    return mapController.getMapType().ordinal();
+  public @Options(MapType.class) int MapType() {
+    return MapTypeAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Sets the tile layer used to draw the Map background.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public MapType MapTypeAbstract() {
+    return mapController.getMapTypeAbstract();
+  }
+
+  /**
+   * Returns the current tile layer used to draw the Map background.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void MapTypeAbstract(MapType type) {
+    mapController.setMapTypeAbstract(type);
   }
 
   /**
@@ -511,25 +533,36 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MAP_UNIT_SYSTEM,
       defaultValue = "1")
   @SimpleProperty
-  public void ScaleUnits(int units) {
-    if (1 <= units && units < MapScaleUnits.values().length) {
-      mapController.setScaleUnits(MapScaleUnits.values()[units]);
-    } else {
+  public void ScaleUnits(@Options(ScaleUnits.class) int units) {
+    // Make sure units is a valid ScaleUnits.
+    ScaleUnits scaleUnits = ScaleUnits.fromUnderlyingValue(units);
+    if (scaleUnits == null) {
       $form().dispatchErrorOccurredEvent(this, "ScaleUnits",
           ErrorMessages.ERROR_INVALID_UNIT_SYSTEM, units);
+      return;
     }
+    ScaleUnitsAbstract(scaleUnits);
   }
 
   @SimpleProperty
-  public int ScaleUnits() {
-    switch (mapController.getScaleUnits()) {
-      case METRIC:
-        return 1;
-      case IMPERIAL:
-        return 2;
-      default:
-        return 0;
-    }
+  public @Options(ScaleUnits.class) int ScaleUnits() {
+    return ScaleUnitsAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Returns the system of measurement used by the map.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public ScaleUnits ScaleUnitsAbstract() {
+    return mapController.getScaleUnitsAbstract();
+  }
+
+  /**
+   * Sets the system of measurement used by the map.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void ScaleUnitsAbstract(ScaleUnits units) {
+    mapController.setScaleUnitsAbstract(units);
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
