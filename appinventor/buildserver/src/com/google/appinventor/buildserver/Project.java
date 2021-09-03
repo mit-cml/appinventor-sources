@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
@@ -78,6 +79,7 @@ public final class Project {
    *    color.primary - the primary color for the theme
    *    color.primary.dark - the dark color for the theme (not yet applicable)
    *    color.accent - the accent color used in the app theme
+   *    defaultfilescope - the default file scope for the app
    */
   private static final String MAINTAG = "main";
   private static final String NAMETAG = "name";
@@ -95,6 +97,7 @@ public final class Project {
   private static final String COLOR_PRIMARYTAG = "color.primary";
   private static final String COLOR_PRIMARY_DARKTAG = "color.primary.dark";
   private static final String COLOR_ACCENTTAG = "color.accent";
+  private static final String DEFAULT_FILE_SCOPE = "defaultfilescope";
 
   // Table containing project properties
   private Properties properties;
@@ -143,11 +146,8 @@ public final class Project {
 
       // Load project file
       properties = new Properties();
-      FileInputStream in = new FileInputStream(file);
-      try {
+      try (InputStreamReader in = new InputStreamReader(new FileInputStream(file))) {
         properties.load(in);
-      } finally {
-        in.close();
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -262,14 +262,7 @@ public final class Project {
    * @return  app name
    */
   public String getAName() {
-    //The non-English character set can't be shown properly and need special encoding.
-    String appName = properties.getProperty(ANAMETAG);
-    try {
-      appName = new String(appName.getBytes("ISO-8859-1"), "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-    } catch (NullPointerException e) {
-    }
-    return appName;
+    return properties.getProperty(ANAMETAG, properties.getProperty(NAMETAG));
   }
 
   /**
@@ -333,6 +326,15 @@ public final class Project {
    */
   public String getTheme() {
     return properties.getProperty(COLOR_THEMETAG);
+  }
+
+  /**
+   * Returns the default file scope for the app.
+   *
+   * @return  file scope, or null if the default is requested
+   */
+  public String getDefaultFileScope() {
+    return properties.getProperty(DEFAULT_FILE_SCOPE);
   }
 
   /**

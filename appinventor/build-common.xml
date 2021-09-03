@@ -209,7 +209,7 @@
              dir="${basedir}"
              forkmode="once"
              haltonfailure="no"
-             maxmemory="925m"
+             maxmemory="2000m"
              showoutput="no">
         <jvmarg value="-XX:MaxPermSize=128m"/>
         <sysproperty key="gwt.args" value="-prod -gen ${local.build.dir}/gen -war ${local.build.dir}/build/war" if:true="@{aij-prod}"/>

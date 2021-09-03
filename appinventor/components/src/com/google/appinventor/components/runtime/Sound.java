@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -174,7 +175,7 @@ public class Sound extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void Source(String path) {
+  public void Source(@Asset String path) {
     sourcePath = (path == null) ? "" : path;
 
     // Clear the previous sound.

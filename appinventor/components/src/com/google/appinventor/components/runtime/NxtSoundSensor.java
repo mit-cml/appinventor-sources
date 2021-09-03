@@ -14,6 +14,8 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.NxtSensorMode;
+import com.google.appinventor.components.common.NxtSensorType;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
@@ -102,7 +104,7 @@ public class NxtSoundSensor extends LegoMindstormsNxtSensor implements Deleteabl
   @Override
   protected void initializeSensor(String functionName) {
     // TODO(user) - support SENSOR_TYPE_SOUND_DBA by adding a DesignerProperty.
-    setInputMode(functionName, port, SENSOR_TYPE_SOUND_DB, SENSOR_MODE_RAWMODE);
+    setInputMode(functionName, port, NxtSensorType.SoundDB, NxtSensorMode.Raw);
   }
 
   /**

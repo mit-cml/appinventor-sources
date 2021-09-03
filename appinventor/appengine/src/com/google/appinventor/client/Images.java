@@ -372,6 +372,13 @@ public interface Images extends Resources {
   ImageResource listview();
 
   /**
+ * Designer palette item: ListView component
+ */
+
+ @Source("com/google/appinventor/images/recyclerView.png")
+ ImageResource recyclerview();
+
+  /**
    * Designer palette item: PhoneCall component
    */
   @Source("com/google/appinventor/images/phoneCall.png")

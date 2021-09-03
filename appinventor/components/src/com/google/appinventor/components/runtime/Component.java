@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -49,6 +49,12 @@ public interface Component {
   static final int BUTTON_SHAPE_OVAL = 3;
 
   /*
+   * ListView Orientation.
+   */
+  static final int VERTICAL_ORIENTATION = 0;
+  static final int HORISONTAL_ORIENTATION = 1;
+  
+  /*
    * Color constants.
    */
   static final int COLOR_NONE = 0x00FFFFFF;
@@ -93,6 +99,7 @@ public interface Component {
    */
   static final int LAYOUT_ORIENTATION_HORIZONTAL = ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL;
   static final int LAYOUT_ORIENTATION_VERTICAL = ComponentConstants.LAYOUT_ORIENTATION_VERTICAL;
+  static final int LAYOUT_ORIENTATION_GRID = ComponentConstants.LAYOUT_ORIENTATION_GRID;
 
   /*
    * Picture scaling constants.
@@ -153,4 +160,13 @@ public interface Component {
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY = "";
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE = "";
 
+  // constants for type of ListViewLayout
+  static final int LISTVIEW_LAYOUT_SINGLE_TEXT = 0;
+  static final int LISTVIEW_LAYOUT_TWO_TEXT = 1;
+  static final int LISTVIEW_LAYOUT_TWO_TEXT_LINEAR = 2;
+  static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
+  static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
+  static final String LISTVIEW_KEY_MAIN_TEXT = "Text1";
+  static final String LISTVIEW_KEY_DESCRIPTION = "Text2";
+  static final String LISTVIEW_KEY_IMAGE = "Image";
 }
