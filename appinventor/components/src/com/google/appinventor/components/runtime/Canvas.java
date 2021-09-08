@@ -636,7 +636,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
     private void setBackground() {
       Drawable setDraw;
-      if (!Objects.equals(backgroundImagePath, "") && backgroundDrawable != null) {
+      if (!backgroundImagePath.equals("") && backgroundDrawable != null) {
         setDraw = backgroundDrawable.getConstantState().newDrawable();
         setDraw.setColorFilter((backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE,
             PorterDuff.Mode.DST_OVER);
