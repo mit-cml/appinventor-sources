@@ -6,7 +6,20 @@
 
 package com.google.appinventor.components.runtime;
 
+
+import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.RECORD_AUDIO;
+
 import android.text.TextUtils;
+
+import android.content.Intent;
+
+import android.Manifest;
+
+import android.os.Build;
+
+import android.speech.RecognizerIntent;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -15,14 +28,14 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesQueries;
+
+import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
+import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-
-import android.content.Intent;
-import android.Manifest;
-import android.os.Build;
-import android.speech.RecognizerIntent;
 
 /**
  * ![SpeechRecognizer icon](images/speechrecognizer.png)
@@ -43,8 +56,7 @@ import android.speech.RecognizerIntent;
     iconName = "images/speechRecognizer.png")
 
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.RECORD_AUDIO," +
-        "android.permission.INTERNET")
+@UsesPermissions({RECORD_AUDIO, INTERNET})
 public class SpeechRecognizer extends AndroidNonvisibleComponent
     implements Component, OnClearListener, SpeechListener {
 
@@ -120,7 +132,7 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
       form.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          form.askPermission(Manifest.permission.RECORD_AUDIO,
+          form.askPermission(RECORD_AUDIO,
               new PermissionResultHandler() {
                 @Override
                 public void HandlePermissionResponse(String permission, boolean granted) {
@@ -128,7 +140,7 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
                     me.havePermission = true;
                     me.GetText();
                   } else {
-                    form.dispatchPermissionDeniedEvent(me, "GetText", Manifest.permission.RECORD_AUDIO);
+                    form.dispatchPermissionDeniedEvent(me, "GetText", RECORD_AUDIO);
                   }
                 }
           });
@@ -233,10 +245,15 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   @SimpleProperty(description = "If true, a separate dialog is used to recognize speech "
       + "(the default). If false, speech is recognized in the background and "
       + "partial results are also provided.")
+  @UsesQueries(intents = {
+      @IntentFilterElement(actionElements = {
+          @ActionElement(name = "android.speech.RecognitionService")
+      })
+  })
   public void UseLegacy(boolean useLegacy) {
     this.useLegacy = useLegacy;
     Stop();
-    if (useLegacy == true || Build.VERSION.SDK_INT<8) {
+    if (useLegacy || Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
       speechRecognizerController = new IntentBasedSpeechRecognizer(container, recognizerIntent);
     } else {
       speechRecognizerController = new ServiceBasedSpeechRecognizer(container, recognizerIntent);
