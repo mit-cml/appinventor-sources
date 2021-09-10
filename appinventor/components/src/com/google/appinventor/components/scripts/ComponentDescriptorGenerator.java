@@ -250,10 +250,11 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
    * @param sb The StringBuilder to receive the JSON descriptor.
    */
   private void outputConditionalAnnotations(ComponentInfo component, StringBuilder sb) {
-    if (component.conditionalPermissions.size() +
-        component.conditionalBroadcastReceivers.size() +
-        component.conditionalServices.size() +
-        component.conditionalContentProviders.size() == 0) {
+    if (component.conditionalBroadcastReceivers.size()
+        + component.conditionalContentProviders.size()
+        + component.conditionalPermissions.size()
+        + component.conditionalQueries.size()
+        + component.conditionalServices.size() == 0) {
       return;
     }
     sb.append(",\n  \"conditionals\":{\n    ");
@@ -267,6 +268,14 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       if (!first) sb.append(",\n    ");
       sb.append("\"broadcastReceivers\": ");
       outputMultimap(sb, "    ", component.conditionalBroadcastReceivers);
+      first = false;
+    }
+    if (component.conditionalQueries.size() > 0) {
+      if (!first) {
+        sb.append(",\n    ");
+      }
+      sb.append("\"queries\": ");
+      outputMultimap(sb, "    ", component.conditionalQueries);
       first = false;
     }
     if (component.conditionalServices.size() > 0) {
