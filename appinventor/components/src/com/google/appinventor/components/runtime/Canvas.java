@@ -76,7 +76,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -192,7 +191,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   private final Set<ExtensionGestureDetector> extensionGestureDetectors = Sets.newHashSet();
 
-  private final Form form = $form();
+  private Form form = $form();
 
   // Do we have storage permission?
   private boolean havePermission = false;
@@ -201,7 +200,6 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   public interface ExtensionGestureDetector {
     boolean onTouchEvent(MotionEvent event);
   };
-
 
   /**
    * Parser for Android {@link android.view.MotionEvent} sequences, which calls
@@ -627,7 +625,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       if (!TextUtils.isEmpty(backgroundImagePath)) {
         byte[] decodedString = Base64.decode(backgroundImagePath, Base64.DEFAULT);
         android.graphics.Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        backgroundDrawable = new BitmapDrawable(context.getResources(), decodedByte);
+        backgroundDrawable = new BitmapDrawable(decodedByte);
       }
 
       setBackground();
@@ -635,8 +633,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
 
     private void setBackground() {
-      Drawable setDraw;
-      if (!backgroundImagePath.equals("") && backgroundDrawable != null) {
+      Drawable setDraw = backgroundDrawable;
+      if (backgroundImagePath != "" && backgroundDrawable != null) {
         setDraw = backgroundDrawable.getConstantState().newDrawable();
         setDraw.setColorFilter((backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE,
             PorterDuff.Mode.DST_OVER);
@@ -711,7 +709,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       } catch (IllegalArgumentException e) {
         // This should never occur, since we have checked bounds.
         Log.e(LOG_TAG,
-                "Returning COLOR_NONE (exception) from getBackgroundPixelColor.");
+            String.format("Returning COLOR_NONE (exception) from getBackgroundPixelColor."));
         return Component.COLOR_NONE;
       }
     }
@@ -751,7 +749,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       } catch (IllegalArgumentException e) {
         // This should never occur, since we have checked bounds.
         Log.e(LOG_TAG,
-                "Returning COLOR_NONE (exception) from getPixelColor.");
+            String.format("Returning COLOR_NONE (exception) from getPixelColor."));
         return Component.COLOR_NONE;
       }
     }
@@ -790,6 +788,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   public View getView() {
     return view;
   }
+
+
 
   // For extension components to
   // access the bitmap of the canvas
