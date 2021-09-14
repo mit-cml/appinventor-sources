@@ -61,6 +61,16 @@ public class AsynchUtil {
     return Looper.getMainLooper().equals(Looper.myLooper());
   }
 
+  /**
+   * Pauses the currently running thread to await the result of another thread, which will be
+   * reported via the {@code result} synchronizer. The result will be passed to the given
+   * {@code continuation} on completion. If the process results in an error, a runtime exception
+   * is thrown instead.
+   *
+   * @param result the synchronizer receiving the result of an operation
+   * @param continuation the continuation to call with the result
+   * @param <T> the return type of the running operation
+   */
   public static <T> void finish(Synchronizer<T> result, Continuation<T> continuation) {
     Log.d(LOG_TAG, "Waiting for synchronizer result");
     result.waitfor();
@@ -73,7 +83,7 @@ public class AsynchUtil {
       if (e instanceof RuntimeException) {
         throw (RuntimeException) e;
       } else {
-        throw new YailRuntimeError(e.getMessage(), e.getClass().getSimpleName());
+        throw new YailRuntimeError(e.toString(), e.getClass().getSimpleName());
       }
     }
   }

@@ -2913,6 +2913,10 @@ public class Form extends AppInventorCompatActivity
     return "file://" + new java.io.File(getCacheDir(), cache).getAbsolutePath();
   }
 
+  public String getDefaultPath(String name) {
+    return FileUtil.resolveFileName(this, name, defaultFileScope);
+  }
+
   /**
    * Gets the path to an app-private data file identified by {@code fileName}.
    *

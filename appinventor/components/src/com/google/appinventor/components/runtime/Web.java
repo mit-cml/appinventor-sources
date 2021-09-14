@@ -1,16 +1,23 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import android.Manifest;
+import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 import android.app.Activity;
+
 import android.text.TextUtils;
+
 import android.util.Log;
+
 import androidx.annotation.VisibleForTesting;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -32,7 +39,9 @@ import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.RequestTimeoutException;
+
 import com.google.appinventor.components.runtime.repackaged.org.json.XML;
+
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -44,6 +53,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.XmlParser;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -63,6 +73,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -85,12 +97,8 @@ import org.xml.sax.InputSource;
     nonVisible = true,
     iconName = "images/web.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-  "android.permission.WRITE_EXTERNAL_STORAGE," +
-  "android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions({INTERNET})
 @UsesLibraries(libraries = "json.jar")
-
-
 public class Web extends AndroidNonvisibleComponent implements Component {
   /**
    * InvalidRequestHeadersException can be thrown from processRequestHeaders.
@@ -205,9 +213,10 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   private String responseFileName = "";
   private int timeout = 0;
 
-  // wether or not we have permission to manipulate external storage
-
-  private boolean havePermission = false;
+  // whether we have permission to manipulate external storage (read and write, separately)
+  // requests may need different combinations of permissions, so consider these independently.
+  private boolean haveReadPermission = false;
+  private boolean haveWritePermission = false;
 
 
 
@@ -1128,16 +1137,37 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @throws IOException
    */
   private void performRequest(final CapturedProperties webProps, final byte[] postData,
-    final String postFile, final String httpVerb, final String method) {
+      final String postFile, final String httpVerb, final String method) {
+
+    final List<String> neededPermissions = new ArrayList<>();
+
+    // Check if we need permission to read the postFile, if any
+    if (postFile != null && FileUtil.needsPermission(form, postFile) && !haveReadPermission) {
+      neededPermissions.add(READ_EXTERNAL_STORAGE);
+    }
+
+    // Check if we need permission to write to the response file
+    if (saveResponse) {
+      String target = FileUtil.resolveFileName(form, webProps.responseFileName,
+          form.DefaultFileScope());
+      if (FileUtil.needsPermission(form, target) && !haveWritePermission) {
+        neededPermissions.add(WRITE_EXTERNAL_STORAGE);
+      }
+    }
 
     // Make sure we have permissions we may need
-    if (saveResponse & !havePermission) {
+    if (neededPermissions.size() > 0 && !haveReadPermission) {
       final Web me = this;
-      form.askPermission(new BulkPermissionRequest(this, "Web",
-          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+      form.askPermission(new BulkPermissionRequest(this, method,
+          neededPermissions.toArray(new String[0])) {
           @Override
           public void onGranted() {
-            me.havePermission = true;
+            if (neededPermissions.contains(READ_EXTERNAL_STORAGE)) {
+              me.haveReadPermission = true;
+            }
+            if (neededPermissions.contains(WRITE_EXTERNAL_STORAGE)) {
+              me.haveWritePermission = true;
+            }
             // onGranted is running on the UI thread, and we are about to do network i/o, so
             // we have to run this asynchronously to get off the UI thread!
             AsynchUtil.runAsynchronously(new Runnable() {
