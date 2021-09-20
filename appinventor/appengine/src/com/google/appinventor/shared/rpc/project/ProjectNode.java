@@ -264,4 +264,14 @@ public abstract class ProjectNode implements Serializable, IsSerializable {
   public void setName(String newName) {
     name = newName;
   }
+
+  /**
+   * Used to rename a node id
+   * <p>Called when file is renamed on the storage system</p>
+   *
+   * @param newId new Id
+   */
+  public void setId(String newId) {
+    fileId = newId;
+  }
 }
