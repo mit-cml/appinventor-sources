@@ -10,8 +10,6 @@ import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
-import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -359,4 +357,9 @@ public interface ProjectService extends RemoteService {
    */
   void log(String message);
 
+  /**
+   * Rename a file in a given project
+   * @return
+   */
+  long renameFile(String sessionId, long projectId, String fileId, String newFileName) throws InvalidSessionException;
 }
