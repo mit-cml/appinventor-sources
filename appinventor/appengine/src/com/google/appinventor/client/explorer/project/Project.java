@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.explorer.project;
 
+
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -196,6 +197,17 @@ public final class Project {
       parent.removeChild(node);
     }
     fireProjectNodeRemoved(node);
+  }
+
+  /**
+   * Renames the given node from the project
+   *
+   * @param node node to be renamed
+   */
+  public void renameNode(ProjectNode node, String newName, String newFileId, String oldName) {
+    node.setName(newName);
+    node.setId(newFileId);
+    fireProjectNodeRenamed(node, oldName);
   }
 
   public void moveToTrash() {
