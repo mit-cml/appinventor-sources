@@ -431,6 +431,19 @@ Blockly.Workspace.prototype.removeAsset = function(name) {
 };
 
 /**
+ * Renames an asset in the list tracked by the workspace.
+ * @param {string} newName The new name of the asset.
+ * @param {string} oldName The previous name of the asset.
+ */
+Blockly.Workspace.prototype.renameAsset = function(newName, oldName) {
+  var index = this.assetList_.indexOf(oldName)
+  if (index != -1) {
+    this.assetList_.splice(index, 1, newName);
+    this.typeBlock_.needsReload.assets = true;
+  }
+};
+
+/**
  * Returns the list of asset names tracked by the workspace.
  * @return {!Array<string>} The list of asset names.
  */

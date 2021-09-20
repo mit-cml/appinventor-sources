@@ -725,6 +725,11 @@ public class BlocklyPanel extends HTMLPanel {
       .removeAsset(name);
   }-*/;
 
+  public native void renameAsset(String newName, String oldName)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .renameAsset(newName, oldName);
+  }-*/;
+
   /**
    * Add a component to the blocks workspace
    *
