@@ -239,4 +239,19 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
       choices.removeValue(assetName);
     }
   }
+
+  @Override
+  public void onProjectNodeRenamed(Project project, ProjectNode node, String oldName) {
+    if (node instanceof YoungAndroidAssetNode) {
+      String newAssetName = node.getName();
+      String propertyName = property.getValue();
+      int index = choices.indexOfValue(oldName);
+      // update 'choices' variable at index
+      choices.renameItem(index, newAssetName);
+      // update property value if renamed
+      if (!choices.containsValue(propertyName)) {
+        property.setValue(newAssetName);
+      }
+    }
+  }
 }

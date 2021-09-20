@@ -771,4 +771,9 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
   @Override
   public void onProjectNodeRemoved(Project project, ProjectNode node) {
   }
+
+  @Override
+  public void onProjectNodeRenamed(Project project, ProjectNode node, String oldName) {
+
+  }
 }

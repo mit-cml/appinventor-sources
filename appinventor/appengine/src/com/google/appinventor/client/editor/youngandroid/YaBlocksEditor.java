@@ -760,6 +760,14 @@ public final class YaBlocksEditor extends FileEditor
     }
   }
 
+  @Override
+  public void onProjectNodeRenamed(Project project, ProjectNode node, String oldName) {
+    if (node instanceof YoungAndroidAssetNode) {
+      blocksArea.renameAsset(((YoungAndroidAssetNode) node).getName(), oldName);
+    }
+  }
+
+
   private static native void set(JavaScriptObject jso, String key, String value)/*-{
     jso[key] = value;
   }-*/;

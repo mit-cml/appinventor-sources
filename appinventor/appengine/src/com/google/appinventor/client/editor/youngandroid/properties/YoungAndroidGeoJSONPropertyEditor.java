@@ -227,4 +227,22 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
     }
   }
 
+  // only can rename files that have been added in the current session
+  @Override
+  public void onProjectNodeRenamed(Project project, ProjectNode node, String oldName) {
+    if (node instanceof YoungAndroidAssetNode) {
+      if (choices.containsValue(oldName)) {
+        String newAssetName = node.getName();
+        String propertyName = property.getValue();
+        int index = choices.indexOfValue(oldName);
+
+        // update 'choices' variable at index
+        choices.renameItem(index, newAssetName);
+        // update property value if renamed
+        if (!choices.containsValue(propertyName)) {
+          property.setValue(newAssetName);
+        }
+      }
+    }
+  }
 }
