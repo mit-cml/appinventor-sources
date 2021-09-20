@@ -309,4 +309,13 @@ public final class Project {
       listener.onProjectNodeRemoved(this, node);
     }
   }
+
+  /*
+   * Triggers a 'project node renamed' event to be sent to the listener on the listener list
+   */
+  private void fireProjectNodeRenamed(ProjectNode node, String oldName) {
+    for (ProjectChangeListener listener : copyProjectChangeListeners()) {
+      listener.onProjectNodeRenamed(this, node, oldName);
+    }
+  }
 }
