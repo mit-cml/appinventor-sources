@@ -6,8 +6,6 @@
 
 package com.google.appinventor.client.editor.youngandroid.properties;
 
-import com.google.appinventor.client.Ode;
-
 import java.util.ArrayList;
 import java.util.List;
 

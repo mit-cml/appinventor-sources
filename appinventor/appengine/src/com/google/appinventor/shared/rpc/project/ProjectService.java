@@ -358,8 +358,13 @@ public interface ProjectService extends RemoteService {
   void log(String message);
 
   /**
-   * Rename a file in a given project
-   * @return
+   * Renames a file from the asset list
+   *
+   * @param sessionId  session id
+   * @param projectId  project id
+   * @param fileId  current file id
+   * @param newFileId new file id
+   * @return modification date for renamed file
    */
-  long renameFile(String sessionId, long projectId, String fileId, String newFileName) throws InvalidSessionException;
+  long renameFile(String sessionId, long projectId, String fileId, String newFileId) throws InvalidSessionException;
 }

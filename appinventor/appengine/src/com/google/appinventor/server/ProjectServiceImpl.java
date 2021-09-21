@@ -655,10 +655,10 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   @Override
-  public long renameFile(String sessionId, long projectId, String fileId, String newFileName) throws InvalidSessionException {
+  public long renameFile(String sessionId, long projectId, String fileId, String newFileId) throws InvalidSessionException {
     validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
-    return getProjectRpcImpl(userId, projectId).renameFile(userId, projectId, fileId, newFileName);
+    return getProjectRpcImpl(userId, projectId).renameFile(userId, projectId, fileId, newFileId);
   }
 
   private void validateSessionId(String sessionId) throws InvalidSessionException {
