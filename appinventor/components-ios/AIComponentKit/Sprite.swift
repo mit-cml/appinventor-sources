@@ -387,8 +387,9 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
    * Moves the sprite so that its left top corner is at the specfied x and y coordinates.
    */
   @objc open func MoveTo(_ x: Double, _ y: Double) {
-    X = x
-    Y = y
+    updateX(x: x)
+    updateY(y: y)
+    registerChanges()
   }
   
   /**
@@ -447,11 +448,14 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   // Notifies canvas of a sprite change and raises any EdgeReached events.
   @objc func registerChanges() {
     if _initialized {
-      let edge = hitEdge()
-      if edge != Direction.none {
-        EdgeReached(edge)
+      // Schedule the updates asynchronously, otherwise we can create a stack overflow situation
+      DispatchQueue.main.async {
+        let edge = self.hitEdge()
+        if edge != Direction.none {
+          self.EdgeReached(edge)
+        }
+        self._canvas.registerChange(self)
       }
-      _canvas.registerChange(self)
     }
   }
   
@@ -576,14 +580,21 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   @objc func updateHeight(){}
   
   @objc func animate() {
+    let oldX = CGFloat(X)
+    let oldY = CGFloat(Y)
     let headingCos = cos(_headingRadians)
     let headingSin = sin(_headingRadians)
-    let newX = CGFloat(X) + CGFloat(Speed) * headingCos
-    let newY = CGFloat(Y) + CGFloat(Speed) * headingSin
-    
+    let newX = oldX + CGFloat(Speed) * headingCos
+    let newY = oldY + CGFloat(Speed) * headingSin
+
+    if oldX == newX && oldY == newY {
+      // no changes
+      return
+    }
+
     // Update position.
-    X = Double(newX)
-    Y = Double(newY)
+    updateX(x: Double(newX))
+    updateY(y: Double(newY))
     registerChanges()
   }
 }
