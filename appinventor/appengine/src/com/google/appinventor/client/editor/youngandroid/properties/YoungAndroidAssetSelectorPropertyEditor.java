@@ -84,6 +84,11 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
       }
 
       @Override
+      public void renameItem(int index, String value) {
+        assetsList.setItemText(index, value);
+      }
+
+      @Override
       public void setSelectedIndex(int index) {
         assetsList.setSelectedIndex(index);
       }
