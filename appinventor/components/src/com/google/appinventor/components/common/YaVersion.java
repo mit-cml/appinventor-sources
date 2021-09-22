@@ -1038,8 +1038,10 @@ public class YaVersion {
   // - The HTML format is defined.
   // For LABEL_COMPONENT_VERSION 5:
   // - The HTMLContent property is defined.
+  // For LABEL_COMPONENT_VERSION 6:
+  // - The Click & LongClick events are added.
 
-  public static final int LABEL_COMPONENT_VERSION = 5;
+  public static final int LABEL_COMPONENT_VERSION = 6;
 
   // For LINESTRING_COMPONENT_VERSION 1:
   // - Initial LineString implementation for Maps
