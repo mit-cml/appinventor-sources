@@ -1402,6 +1402,10 @@ public final class YoungAndroidFormUpgrader {
       // Added NumbersOnly property
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Text Watcher events were added
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -1727,6 +1731,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // ReadOnly property was added
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // Text Watcher events were added
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }

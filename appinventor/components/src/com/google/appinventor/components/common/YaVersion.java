@@ -1191,7 +1191,9 @@ public class YaVersion {
   // - Added PasswordVisible property
   // For For PASSWORDTEXTBOX_COMPONENT_VERSION 5:
   // - Added NumbersOnly property
-  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 5;
+  // For For PASSWORDTEXTBOX_COMPONENT_VERSION 6:
+  // - Text Watcher events were added
+  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 6;
 
   // For PEDOMETER_COMPONENT_VERSION 2:
   // - The step sensing algorithm was updated to be more accurate.
@@ -1294,7 +1296,9 @@ public class YaVersion {
   // - RequestFocus method was added
   // For TEXTBOX_COMPONENT_VERSION 6:
   // - ReadOnly property was added
-  public static final int TEXTBOX_COMPONENT_VERSION = 6;
+  // For TEXTBOX_COMPONENT_VERSION 7:
+  // - Text Watcher events are added
+  public static final int TEXTBOX_COMPONENT_VERSION = 7;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
