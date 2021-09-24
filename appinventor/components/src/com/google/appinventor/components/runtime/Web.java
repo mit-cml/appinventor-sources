@@ -36,6 +36,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 
+import com.google.appinventor.components.runtime.errors.DispatchableError;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.RequestTimeoutException;
@@ -1238,6 +1239,8 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     } catch (FileUtil.FileException e) {
       form.dispatchErrorOccurredEvent(Web.this, method,
           e.getErrorMessageNumber());
+    } catch (DispatchableError e) {
+      form.dispatchErrorOccurredEvent(Web.this, method, e.getErrorCode(), e.getArguments());
     } catch (RequestTimeoutException e) {
       form.dispatchErrorOccurredEvent(Web.this, method,
           ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
@@ -1409,6 +1412,13 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   private String saveResponseContent(HttpURLConnection connection,
       String responseFileName, String responseType) throws IOException {
     File file = createFile(responseFileName, responseType);
+
+    // Ensure the parent directory exists
+    File parent = file.getParentFile();
+    if (!parent.exists() && !parent.mkdirs()) {
+      throw new DispatchableError(ErrorMessages.ERROR_CANNOT_MAKE_DIRECTORY,
+          parent.getAbsolutePath());
+    }
 
     BufferedInputStream in = new BufferedInputStream(getConnectionStream(connection), 0x1000);
     try {
