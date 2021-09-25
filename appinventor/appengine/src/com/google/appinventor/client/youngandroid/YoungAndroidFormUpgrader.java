@@ -1470,7 +1470,11 @@ public final class YoungAndroidFormUpgrader {
         // The OtherPlayerStarted event was added.
         // Properties related to this component have now been upgraded to version  6.
         srcCompVersion = 6;
-      }
+    }
+    if (srcCompVersion < 7) {
+      // - The PlaybackSpeed property was added.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 

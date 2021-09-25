@@ -1233,8 +1233,10 @@ public class YaVersion {
   // For PLAYER_COMPONENT_VERSION 6:
   // - The PlayInForeground property was added.
   // - The OtherPlayerStarted event was added.
+  // For PLAYER_COMPONENT_VERSION 7:
+  // - The PlaybackSpeed property was added.
 
-  public static final int PLAYER_COMPONENT_VERSION = 6;
+  public static final int PLAYER_COMPONENT_VERSION = 7;
 
   // For POLYGON_COMPONENT_VERSION 1:
   // - Initial Polygon implementation for Maps
