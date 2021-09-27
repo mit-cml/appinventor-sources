@@ -815,7 +815,9 @@ public class YaVersion {
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
-  public static final int CHECKBOX_COMPONENT_VERSION = 2;
+  // For CHECKBOX_COMPONENT_VERSION 3:
+  // - The CheckedColor, UnCheckedColor properties were added.
+  public static final int CHECKBOX_COMPONENT_VERSION = 3;
 
   // For CIRCLE_COMPONENT_VERSION 1:
   // - Initial implementation of Circle for Maps
