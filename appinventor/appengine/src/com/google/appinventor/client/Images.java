@@ -173,7 +173,14 @@ public interface Images extends Resources {
     */
    @Source("com/google/appinventor/images/barometer.png")
    ImageResource barometer();
-
+  
+   /**
+    * Designer palette item: saf component
+    * <p>
+    * Source: Ellen Spertus, released into public domain
+    */
+   @Source("com/google/appinventor/images/saf.png")
+   ImageResource saf();
    /**
     * Designer palette item: thermometer component
     * <p>
