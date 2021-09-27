@@ -23,7 +23,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@DesignerComponent(version = YaVersion.SAF_VERSION_CODE,
+@DesignerComponent(version = YaVersion.SAF_COMPONENT_VERSION,
         /*versionName = "1.1",*/
         description = "A non-visible component to access files using Storage Access Framework",
         category = ComponentCategory.STORAGE,
