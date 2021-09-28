@@ -263,6 +263,7 @@ static NSString *kMimeJson = @"application/json";
       [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
       [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
       [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+      [response setValue:@"true" forAdditionalHeader:@"Access-Control-Allow-Private-Network"];
       return response;
     }];
     [self addDefaultHandlerForMethod:@"PUT" requestClass:[GCDWebServerDataRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerDataRequest *request) {
