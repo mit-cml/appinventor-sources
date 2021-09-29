@@ -2,6 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.UriPermission;
@@ -12,14 +13,23 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.widget.ImageView;
-import com.google.appinventor.components.annotations.*;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +44,12 @@ import java.util.List;
 public class SAF extends AndroidNonvisibleComponent implements ActivityResultListener {
     private final Activity activity;
     private int intentReqCode = 0;
+    private final ContentResolver contentResolver;
 
     public SAF(ComponentContainer container) {
         super(container.$form());
         activity = container.$context();
+        contentResolver = activity.getContentResolver();
     }
 
     @SimpleProperty(description = "Returns mime type of document dir")
@@ -62,7 +74,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
 
     @SimpleFunction(description = "Convert uri to string")
     public String StringFromUriObject(Object uri) {
-        return ((Uri) uri).toString();
+        return uri.toString();
     }
 
     @SimpleFunction(description = "Converts string to uri")
@@ -71,7 +83,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     }
 
     @SimpleFunction(description = "Prompts user to select a document tree")
-    public void OpenDocumentTree(String title,String initialDir) {
+    public void OpenDocumentTree(String title, String initialDir) {
         if (intentReqCode == 0) {
             intentReqCode = form.registerForActivityResult(this);
         }
@@ -80,10 +92,11 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         if (!initialDir.isEmpty()) {
             intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse(initialDir));
         }
-        activity.startActivityForResult(Intent.createChooser(intent,title), intentReqCode);
+        activity.startActivityForResult(Intent.createChooser(intent, title), intentReqCode);
     }
+
     @SimpleFunction(description = "Prompts user to select a single file")
-    public void OpenSingleDocument(String title, String category, String type, YailList extraMimeTypes){
+    public void OpenSingleDocument(String title, String category, String type, YailList extraMimeTypes) {
         if (intentReqCode == 0) {
             intentReqCode = form.registerForActivityResult(this);
         }
@@ -96,9 +109,9 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         }
         intent.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         if (!extraMimeTypes.isEmpty()) {
-            intent.putExtra(Intent.EXTRA_MIME_TYPES,extraMimeTypes.toStringArray());
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, extraMimeTypes.toStringArray());
         }
-        activity.startActivityForResult(Intent.createChooser(intent,title), intentReqCode);
+        activity.startActivityForResult(Intent.createChooser(intent, title), intentReqCode);
     }
 
     @SimpleFunction(description = "Take a persistable URI permission grant that has been offered. Once taken, the permission grant will be remembered across device reboots.")
@@ -123,7 +136,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
                     Uri.parse(parentUri),
                     Uri.parse(childUri));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new YailRuntimeError(e.getMessage(), "SAF");
         }
     }
@@ -161,54 +174,37 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
             return e.getMessage();
         }
     }
-    @SimpleFunction()
-    public String IsCopySupported(final String documentUri){
-        try (Cursor cursor = activity.getContentResolver().query(Uri.parse(documentUri),
-                new String[]{String.valueOf(DocumentsContract.Document.FLAG_SUPPORTS_COPY)},
-                null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                return cursor.getString(0);
-            }
-            return "false";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+
+    @SimpleFunction(description = "Returns whether document can be copied or not")
+    public String IsCopySupported(final String documentUri) {
+        return isFlagTrue(Uri.parse(documentUri), DocumentsContract.Document.FLAG_SUPPORTS_COPY);
     }
-    @SimpleFunction()
-    public String IsMoveSupported(final String documentUri){
-        try (Cursor cursor = activity.getContentResolver().query(Uri.parse(documentUri),
-                new String[]{String.valueOf(DocumentsContract.Document.FLAG_SUPPORTS_MOVE)},
-                null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                return cursor.getString(0);
-            }
-            return "false";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+
+    @SimpleFunction(description = "Returns whether document is movable or not")
+    public String IsMoveSupported(final String documentUri) {
+        return isFlagTrue(Uri.parse(documentUri), DocumentsContract.Document.FLAG_SUPPORTS_MOVE);
     }
-    @SimpleFunction()
-    public String IsDeleteSupported(final String documentUri){
-        try (Cursor cursor = activity.getContentResolver().query(Uri.parse(documentUri),
-                new String[]{String.valueOf(DocumentsContract.Document.FLAG_SUPPORTS_DELETE)},
-                null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                return cursor.getString(0);
-            }
-            return "false";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+
+    @SimpleFunction(description = "Returns whether document is deletable or not")
+    public String IsDeleteSupported(final String documentUri) {
+        return isFlagTrue(Uri.parse(documentUri), DocumentsContract.Document.FLAG_SUPPORTS_DELETE);
     }
-    @SimpleFunction()
-    public String IsRenameSupported(final String documentUri){
-        try (Cursor cursor = activity.getContentResolver().query(Uri.parse(documentUri),
-                new String[]{String.valueOf(DocumentsContract.Document.FLAG_SUPPORTS_RENAME)},
-                null, null, null)) {
+
+    @SimpleFunction(description = "Returns whether document supports renaming")
+    public String IsRenameSupported(final String documentUri) {
+        return isFlagTrue(Uri.parse(documentUri), DocumentsContract.Document.FLAG_SUPPORTS_RENAME);
+    }
+
+    private String isFlagTrue(Uri uri, int flag) {
+        try (Cursor cursor = contentResolver.query(uri,
+                new String[]{DocumentsContract.Document.COLUMN_FLAGS},
+                null,
+                null,
+                null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                return cursor.getString(0);
+                return String.valueOf(cursor.getString(0).contains("" + flag));
             }
-            return "false";
+            return "False";
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -216,7 +212,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
 
     @SimpleFunction(description = "Returns display name of given document uri")
     public String GetDisplayName(final String documentUri) {
-        try (Cursor cursor = activity.getContentResolver().query(Uri.parse(documentUri),
+        try (Cursor cursor = contentResolver.query(Uri.parse(documentUri),
                 new String[]{DocumentsContract.Document.COLUMN_DISPLAY_NAME},
                 null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
@@ -230,7 +226,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
 
     @SimpleFunction(description = "Returns size (in bytes) of given document uri")
     public String GetSize(final String documentUri) {
-        try (Cursor cursor = activity.getContentResolver().query(Uri.parse(documentUri),
+        try (Cursor cursor = contentResolver.query(Uri.parse(documentUri),
                 new String[]{DocumentsContract.Document.COLUMN_SIZE},
                 null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
@@ -244,7 +240,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
 
     @SimpleFunction(description = "Returns last modified time (epoch) of given document uri")
     public String GetLastModifiedTime(final String documentUri) {
-        try (Cursor cursor = activity.getContentResolver().query(Uri.parse(documentUri),
+        try (Cursor cursor = contentResolver.query(Uri.parse(documentUri),
                 new String[]{DocumentsContract.Document.COLUMN_LAST_MODIFIED},
                 null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
@@ -262,10 +258,10 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
             @Override
             public void run() {
                 try {
-                    final String uri = DocumentsContract.createDocument(activity.getContentResolver(), Uri.parse(parentDocumentUri), mimeType, fileName).toString();
+                    final String uri = DocumentsContract.createDocument(contentResolver, Uri.parse(parentDocumentUri), mimeType, fileName).toString();
                     postCreateResult(uri);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     postCreateResult(e.getMessage());
                 }
             }
@@ -305,43 +301,60 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
                     pfd.close();
                     */
                     fileOutputStream =
-                            activity.getContentResolver().openOutputStream(Uri.parse(uriString));
-                    res = writeToOutputStream(fileOutputStream,content);
-                    res = res.isEmpty()?uriString:res;
+                            contentResolver.openOutputStream(Uri.parse(uriString));
+                    res = writeToOutputStream(fileOutputStream, content);
+                    res = res.isEmpty() ? uriString : res;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     res = e.getMessage();
                 }
                 postWriteResult(res);
             }
         });
     }
-    private String writeToOutputStream(OutputStream fileOutputStream,String content){
-        OutputStreamWriter writer = null;
-        try{
-            writer = new OutputStreamWriter(fileOutputStream);
 
+    private String writeToOutputStream(OutputStream fileOutputStream, String content) {
+        OutputStreamWriter writer = null;
+        try {
+            writer = new OutputStreamWriter(fileOutputStream);
             writer.write(content);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
-        }finally {
+        } finally {
             try {
                 if (writer != null) {
                     writer.flush();
                     writer.close();
                 }
-                /*
                 if (fileOutputStream != null) {
                     fileOutputStream.flush();
                     fileOutputStream.close();
                 }
-                */
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return "";
+    }
+
+    @SimpleFunction
+    public void WriteAsByteArray(final String uriString, final Object byteArray) {
+        AsynchUtil.runAsynchronously(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    OutputStream outputStream = contentResolver.openOutputStream(Uri.parse(uriString));
+                    ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+                    arrayOutputStream.write((byte[]) byteArray);
+                    arrayOutputStream.writeTo(outputStream);
+                    postWriteResult(uriString);
+                } catch (Exception e) {
+                    //e.printStackTrace();
+                    postWriteResult(e.getMessage());
+                }
+            }
+        });
     }
 
     private void postWriteResult(final String response) {
@@ -357,26 +370,27 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     public void GotWriteResult(String response) {
         EventDispatcher.dispatchEvent(this, "GotWriteResult", response);
     }
+
     @SimpleFunction()
-    public void SaveImageToDocumentUri(Image image,String uriString,String format,int quality){
+    public void SaveImageToDocumentUri(Image image, String uriString, String format, int quality) {
         AsynchUtil.runAsynchronously(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Bitmap bitmap = ((BitmapDrawable)((ImageView)image.getView()).getDrawable()).getBitmap();
+                    Bitmap bitmap = ((BitmapDrawable) ((ImageView) image.getView()).getDrawable()).getBitmap();
                     bitmap.compress(Bitmap.CompressFormat.valueOf(format.toUpperCase()),
                             quality,
-                            activity.getContentResolver().openOutputStream(Uri.parse(uriString)));
+                            contentResolver.openOutputStream(Uri.parse(uriString)));
                     postSaveImgResult(uriString);
-                }catch (Exception e){
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    //e.printStackTrace();
                     postSaveImgResult(e.getMessage());
                 }
             }
         });
     }
 
-    private void postSaveImgResult(final String res){
+    private void postSaveImgResult(final String res) {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -384,17 +398,17 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
             }
         });
     }
+
     @SimpleEvent()
-    public void GotSaveImageResult(String response){
-        EventDispatcher.dispatchEvent(this,"GotSaveImageResult",response);
+    public void GotSaveImageResult(String response) {
+        EventDispatcher.dispatchEvent(this, "GotSaveImageResult", response);
     }
 
     @SimpleFunction(description = "Tries to delete document from given uri and returns result")
     public boolean DeleteDocument(String uriString) {
         try {
-            return DocumentsContract.deleteDocument(activity.getContentResolver(), Uri.parse(uriString));
+            return DocumentsContract.deleteDocument(contentResolver, Uri.parse(uriString));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
             throw new YailRuntimeError(e.getMessage(), "SAF");
         }
     }
@@ -406,16 +420,16 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
             public void run() {
                 String res = "";
                 try {
-                    res = readFromInputStream(activity.getContentResolver().openInputStream(Uri.parse(uriString)));
+                    res = readFromInputStream(contentResolver.openInputStream(Uri.parse(uriString)));
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    res = e.getMessage();
                 }
                 postReadResult(res);
             }
         });
     }
 
-    private String readFromInputStream(InputStream fileInputStream){
+    private String readFromInputStream(InputStream fileInputStream) {
         InputStreamReader input = new InputStreamReader(fileInputStream);
         try {
             StringWriter output = new StringWriter();
@@ -428,27 +442,46 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
             }
             return normalizeNewLines(output.toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return e.getMessage();
-        }finally {
+        } finally {
             try {
                 input.close();
                 /*
                 fileInputStream.close();
                  */
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
     }
 
+    @SimpleFunction
+    public void ReadAsByteArray(final String uriString) {
+        AsynchUtil.runAsynchronously(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    InputStream inputStream = contentResolver.openInputStream(Uri.parse(uriString));
+                    byte[] byteArray = new byte[Integer.parseInt(GetSize(uriString))];
+                    inputStream.read(byteArray);
+                    inputStream.close();
+                    postReadResult(byteArray);
+                } catch (Exception e) {
+                    //e.printStackTrace();
+                    postReadResult(e.getMessage());
+                }
+            }
+        });
+    }
+
     @SimpleEvent(description = "Event invoked after reading from document.Returns content if operation was successful else returns error message")
-    public void GotReadResult(String result) {
+    public void GotReadResult(Object result) {
         EventDispatcher.dispatchEvent(this, "GotReadResult", result);
     }
 
-    private void postReadResult(final String r) {
+    private void postReadResult(final Object r) {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -463,7 +496,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
 
     @SimpleFunction(description = "Returns whether read is available for given uri")
     public boolean IsReadGranted(String uri) {
-        for (UriPermission uri1 : activity.getContentResolver().getPersistedUriPermissions()) {
+        for (UriPermission uri1 : contentResolver.getPersistedUriPermissions()) {
             String str = uri1.getUri().toString();
             if (uri.equalsIgnoreCase(str)) {
                 return uri1.isReadPermission();
@@ -474,12 +507,12 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
 
     @SimpleFunction(description = "Relinquish a persisted URI permission grant")
     public void ReleasePermission(String uri, int flags) {
-        activity.getContentResolver().releasePersistableUriPermission(Uri.parse(uri), flags);
+        contentResolver.releasePersistableUriPermission(Uri.parse(uri), flags);
     }
 
     @SimpleFunction(description = "Returns whether write is available for given uri")
     public boolean IsWriteGranted(String uri) {
-        for (UriPermission uri1 : activity.getContentResolver().getPersistedUriPermissions()) {
+        for (UriPermission uri1 : contentResolver.getPersistedUriPermissions()) {
             String str = uri1.getUri().toString();
             if (uri.equalsIgnoreCase(str)) {
                 return uri1.isWritePermission();
@@ -514,7 +547,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     private List<String> listFiles(Context context, Uri uriTree, String documentId) {
         List<String> uriList = new ArrayList<>();
         Uri uriFolder = DocumentsContract.buildChildDocumentsUriUsingTree(uriTree, documentId);
-        try (Cursor cursor = context.getContentResolver().query(uriFolder,
+        try (Cursor cursor = contentResolver.query(uriFolder,
                 new String[]{DocumentsContract.Document.COLUMN_DOCUMENT_ID},
                 null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
@@ -526,7 +559,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new YailRuntimeError(e.getMessage(), "SAF");
         }
         return uriList;
@@ -545,10 +578,10 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
                 boolean successful = false;
                 String response = targetParentUri;
                 try {
-                    DocumentsContract.copyDocument(activity.getContentResolver(), Uri.parse(sourceUri), Uri.parse(targetParentUri));
+                    DocumentsContract.copyDocument(contentResolver, Uri.parse(sourceUri), Uri.parse(targetParentUri));
                     successful = true;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     response = e.getMessage();
                 }
                 postCopyResult(successful, response);
@@ -578,9 +611,9 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
                 boolean successful = true;
                 String response = targetParentUri;
                 try {
-                    DocumentsContract.moveDocument(activity.getContentResolver(), Uri.parse(sourceUri), Uri.parse(sourceParentUri), Uri.parse(targetParentUri));
+                    DocumentsContract.moveDocument(contentResolver, Uri.parse(sourceUri), Uri.parse(sourceParentUri), Uri.parse(targetParentUri));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     successful = false;
                     response = e.getMessage();
                 }
@@ -606,9 +639,9 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     @SimpleFunction(description = "Tries to rename a document and returns updated uri")
     public String RenameDocument(final String documentUri, final String displayName) {
         try {
-            return DocumentsContract.renameDocument(activity.getContentResolver(), Uri.parse(documentUri), displayName).toString();
+            return DocumentsContract.renameDocument(contentResolver, Uri.parse(documentUri), displayName).toString();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return e.getMessage();
         }
     }
@@ -620,4 +653,3 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         }
     }
 }
-
