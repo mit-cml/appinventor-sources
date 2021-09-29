@@ -373,7 +373,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     }
 
     @SimpleFunction()
-    public void SaveImageToDocumentUri(Image image, String uriString, String format, int quality) {
+    public void SaveImageToDocumentUri(final Image image,final String uriString,final String format,final int quality) {
         AsynchUtil.runAsynchronously(new Runnable() {
             @Override
             public void run() {
