@@ -177,7 +177,7 @@ public interface Images extends Resources {
    /**
     * Designer palette item: saf component
     * <p>
-    * Source: Ellen Spertus, released into public domain
+    * Source: Material Icons, Google
     */
    @Source("com/google/appinventor/images/saf.png")
    ImageResource saf();
