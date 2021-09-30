@@ -409,7 +409,8 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     @SimpleFunction(description = "Tries to delete document from given uri and returns result")
     public boolean DeleteDocument(String uriString) {
         try {
-            return DocumentsContract.deleteDocument(contentResolver, Uri.parse(uriString));
+            return DocumentsContract.deleteDocument(contentResolver, 
+                Uri.parse(uriString));
         } catch (FileNotFoundException e) {
             throw new YailRuntimeError(e.getMessage(), "SAF");
         }
@@ -578,9 +579,11 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
             @Override
             public void run() {
                 boolean successful = false;
-                String response = targetParentUri;
+                String response = "";
                 try {
-                    DocumentsContract.copyDocument(contentResolver, Uri.parse(sourceUri), Uri.parse(targetParentUri));
+                    response = DocumentsContract.copyDocument(contentResolver, 
+                        Uri.parse(sourceUri), 
+                        Uri.parse(targetParentUri)).toString();
                     successful = true;
                 } catch (Exception e) {
                     //e.printStackTrace();
@@ -611,9 +614,12 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
             @Override
             public void run() {
                 boolean successful = true;
-                String response = targetParentUri;
+                String response = "";
                 try {
-                    DocumentsContract.moveDocument(contentResolver, Uri.parse(sourceUri), Uri.parse(sourceParentUri), Uri.parse(targetParentUri));
+                    response = DocumentsContract.moveDocument(contentResolver, 
+                        Uri.parse(sourceUri), 
+                        Uri.parse(sourceParentUri), 
+                        Uri.parse(targetParentUri)).toString();
                 } catch (Exception e) {
                     //e.printStackTrace();
                     successful = false;
@@ -641,7 +647,8 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     @SimpleFunction(description = "Tries to rename a document and returns updated uri")
     public String RenameDocument(final String documentUri, final String displayName) {
         try {
-            return DocumentsContract.renameDocument(contentResolver, Uri.parse(documentUri), displayName).toString();
+            return DocumentsContract.renameDocument(contentResolver, 
+                Uri.parse(documentUri), displayName).toString();
         } catch (FileNotFoundException e) {
             //e.printStackTrace();
             return e.getMessage();
