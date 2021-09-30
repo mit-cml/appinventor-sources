@@ -317,7 +317,6 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
                         res = writeToOutputStream(fileOutputStream, text);
                         res = res.isEmpty() ? documentUri : res;
                     } catch (Exception e) {
-                        //e.printStackTrace();
                         res = e.getMessage();
                     }
                     postWriteResult(res);
@@ -425,7 +424,8 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     @SimpleFunction(description = "Tries to delete document and returns result.")
     public boolean DeleteDocument(String documentUri) {
         try {
-            return DocumentsContract.deleteDocument(contentResolver, Uri.parse(documentUri));
+            return DocumentsContract.deleteDocument(contentResolver,
+                    Uri.parse(documentUri));
         } catch (Exception e) {
             postError("DeleteDocument",e.getMessage());
         }
@@ -666,7 +666,9 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     @SimpleFunction(description = "Tries to rename a document and returns updated uri.")
     public String RenameDocument(final String documentUri, final String displayName) {
         try {
-            return DocumentsContract.renameDocument(contentResolver, Uri.parse(documentUri), displayName).toString();
+            return DocumentsContract.renameDocument(contentResolver,
+                    Uri.parse(documentUri),
+                    displayName).toString();
         } catch (FileNotFoundException e) {
             postError("RenameDocument",e.getMessage());
             return "";
