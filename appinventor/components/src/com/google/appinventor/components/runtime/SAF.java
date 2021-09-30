@@ -372,7 +372,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     public void GotWriteResult(String response) {
         EventDispatcher.dispatchEvent(this, "GotWriteResult", response);
     }
-
+/*
     @SimpleFunction()
     public void SaveImageToDocumentUri(final Image image,final String uriString,final String format,final int quality) {
         AsynchUtil.runAsynchronously(new Runnable() {
@@ -405,7 +405,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     public void GotSaveImageResult(String response) {
         EventDispatcher.dispatchEvent(this, "GotSaveImageResult", response);
     }
-
+*/
     @SimpleFunction(description = "Tries to delete document from given uri and returns result")
     public boolean DeleteDocument(String uriString) {
         try {
