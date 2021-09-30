@@ -177,38 +177,39 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     }
 
     @SimpleFunction(description = "Returns whether document can be copied or not")
-    public String IsCopySupported(final String documentUri) {
+    public boolean IsCopySupported(final String documentUri) {
         return isFlagTrue(Uri.parse(documentUri), DocumentsContract.Document.FLAG_SUPPORTS_COPY);
     }
 
     @SimpleFunction(description = "Returns whether document is movable or not")
-    public String IsMoveSupported(final String documentUri) {
+    public boolean IsMoveSupported(final String documentUri) {
         return isFlagTrue(Uri.parse(documentUri), DocumentsContract.Document.FLAG_SUPPORTS_MOVE);
     }
 
     @SimpleFunction(description = "Returns whether document is deletable or not")
-    public String IsDeleteSupported(final String documentUri) {
+    public boolean IsDeleteSupported(final String documentUri) {
         return isFlagTrue(Uri.parse(documentUri), DocumentsContract.Document.FLAG_SUPPORTS_DELETE);
     }
 
     @SimpleFunction(description = "Returns whether document supports renaming")
-    public String IsRenameSupported(final String documentUri) {
+    public boolean IsRenameSupported(final String documentUri) {
         return isFlagTrue(Uri.parse(documentUri), DocumentsContract.Document.FLAG_SUPPORTS_RENAME);
     }
 
-    private String isFlagTrue(Uri uri, int flag) {
+    private boolean isFlagTrue(Uri uri, int flag) {
         try (Cursor cursor = contentResolver.query(uri,
                 new String[]{DocumentsContract.Document.COLUMN_FLAGS},
                 null,
                 null,
                 null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                return String.valueOf(cursor.getString(0).contains("" + flag));
+                return (flag & cursor.getInt(0)) != 0;
             }
-            return "False";
+            return false;
         } catch (Exception e) {
-            return e.getMessage();
+            e.printStackTrace();
         }
+        return false;
     }
 
     @SimpleFunction(description = "Returns display name of given document uri")
