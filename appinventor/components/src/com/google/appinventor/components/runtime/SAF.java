@@ -14,7 +14,6 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -28,8 +27,24 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+* Non-visible component to access files using Storage Access Framework.
+* Since it is getting difficult with newer Android versions to read and write files using java.io.File() so why not use the
+* not-so popular quite old method (completely) introduced in API 21 (Lollipop) named `Storage Access Framework` to escape
+* from the chaos increasing with time and newer Android versions.
+* Usually, `Application Specific Directory` and app's Private Dir is enough for normal apps which don't have to do much things
+* with files but with SAF we have following benefits -
+* - access phone storage
+* - access SD card
+* - read from/write to files created by other apps
+* - help user in protecting his/her data and restrict Storage consumed by apps
+* - get access to files and folders which are important to your app.
+*        In this way, you needn't ask for MANAGE_EXTERNAL_STORAGE permission.
+* - work with non-media files too, such as creating a CSV file of user's data or rendering a PDF file
+ */
+
 @DesignerComponent(version =  YaVersion.SAF_COMPONENT_VERSION,
-        description = "A non-visible component to access files using Storage Access Framework",
+        description = "Non-visible component to access files using Storage Access Framework.",
         category = ComponentCategory.STORAGE,
         nonVisible = true,
         androidMinSdk = 21,
@@ -45,11 +60,10 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         activity = container.$context();
         contentResolver = activity.getContentResolver();
     }
-
     @Override
     public void resultReturned(int requestCode, int resultCode, Intent intent) {
         if (intentReqCode == requestCode) {
-            GotUri(intent.getData(), intent.getData().toString());
+            GotUri(intent.getData(), String.valueOf(intent.getData()));
         }
     }
 
@@ -69,6 +83,11 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         });
     }
 
+    /*
+    * Event indicating an error or exception has occurred
+    * @param methodName name of the origin method
+    * @param errorMessage text representation of error
+     */
     @SimpleEvent(description = "Event indicating error/exception has occurred and returns origin method and error message.")
     public void ErrorOccurred(String methodName,String errorMessage){
         EventDispatcher.dispatchEvent(this,"ErrorOccurred",methodName,errorMessage);
@@ -87,22 +106,39 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     public int FlagGrantWritePermission() {
         return Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
     }
-
+    /*
+    * Returns resulting flag created from given two flags
+    * @param f1 the first flag
+    * @param f2 the second flag
+     */
     @SimpleFunction(description = "Combines two flags and returns resulting flag.")
-    public int CreateFlags(int f1, int f2) {
+    public int CreateFlag(int f1, int f2) {
         return f1 | f2;
     }
 
-    @SimpleFunction(description = "Convert uri to string.")
-    public String UriToString(Object uri) {
-        return uri.toString();
+    /*
+    * Returns text representation of URI
+    * @param uri the URI object
+     */
+    @SimpleFunction(description = "Converts uri to string.")
+    public String NormalizeUri(Object uri) {
+        return String.valueOf(uri);
     }
 
+    /*
+     * Parses uriString to create URI
+     * @param uriString the string to parse
+     */
     @SimpleFunction(description = "Creates Uri from string.")
-    public Object StringToUri(String uriString) {
+    public Object CreateUri(String uriString) {
         return Uri.parse(uriString);
     }
 
+    /*
+    * Prompts user to select a dir (document tree) which can be accessed later along with its children
+    * @param title optional title which will be shown to user
+    * @param initialDir optional dir which will be shown to user when file chooser is visible
+     */
     @SimpleFunction(description = "Prompts user to select a document tree.")
     public void OpenDocumentTree(String title, String initialDir) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -113,6 +149,12 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         activity.startActivityForResult(Intent.createChooser(intent, title), getIntentReqCode());
     }
 
+    /*
+    * Prompts user to select a single document
+    * @param title optional title which will be shown to user
+    * @param type parent mime type of acceptable files (such as `application/*`)
+    * @param extraMimeTypes optional list of acceptable mime types which are child of parent mime type (such as `application/pdf`)
+    */
     @SimpleFunction(description = "Prompts user to select a single document.")
     public void OpenSingleDocument(String title,String type, YailList extraMimeTypes) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -127,21 +169,40 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         activity.startActivityForResult(Intent.createChooser(intent, title), getIntentReqCode());
     }
 
+    /*
+    * Requests Document Providers to grant persistable URI permission to the uri so that application can access it whenever needed as
+    * long as file exists or permission is not invoked
+    * @param uri the URI object for which permission will be requested
+    * @param modeFlag the flag which will be persisted (such as read or write or maybe both)
+     */
     @SimpleFunction(description = "Take a persistable URI permission grant that has been offered. Once taken, the permission grant will be remembered across device reboots.")
-    public void TakePersistableUriPermission(Object uri, int flags) {
-        activity.getContentResolver().takePersistableUriPermission((Uri) uri, flags);
+    public void TakePersistableUriPermission(Object uri, int modeFlag) {
+        activity.getContentResolver().takePersistableUriPermission((Uri) uri, modeFlag);
     }
 
+    /*
+    * Returns whether provided uri is a tree uri or not
+    * @param uriString the uri string which will be checked
+     */
     @SimpleFunction(description = "Returns whether given uri is a tree uri.")
     public boolean IsTreeUri(String uriString) {
         return DocumentsContract.isTreeUri(Uri.parse(uriString));
     }
 
+    /*
+    * Returns whether provided uri is of a document or not
+    * @param uriString the uri string which will be checked
+     */
     @SimpleFunction(description = "Returns whether given uri is a document uri.")
     public boolean IsDocumentUri(String uriString) {
         return DocumentsContract.isDocumentUri(activity, Uri.parse(uriString));
     }
 
+    /*
+    * Returns whether provided second uri is child document/dir of first uri or not
+    * @param parentUri the parent's uri string
+    * @param childUri the child's uri string
+     */
     @SimpleFunction(description = "Returns whether second uri is child of first uri.")
     public boolean IsChildDocumentUri(String parentUri, String childUri) {
         try {
@@ -149,30 +210,49 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
                     Uri.parse(parentUri),
                     Uri.parse(childUri));
         } catch (FileNotFoundException e) {
-            //e.printStackTrace();
-            throw new YailRuntimeError(e.getMessage(), "SAF");
+            postError("IsChildDocumentUri",e.getMessage());
         }
+        return false;
     }
 
+    /*
+    * Returns document id of tree uri
+    * @param uriString the tree document's uri
+     */
     @SimpleFunction(description = "Returns document id of tree uri.")
     public String GetTreeDocumentId(String uriString) {
         return DocumentsContract.getTreeDocumentId(Uri.parse(uriString));
     }
 
+    /*
+    * Returns document id of an uri
+    * @param uriString the document's uri
+     */
     @SimpleFunction(description = "Returns document id of an uri.")
     public String GetDocumentId(String uriString) {
         return DocumentsContract.getDocumentId(Uri.parse(uriString));
     }
 
+    /*
+    * Build URI representing access to descendant documents of the given tree uri's document id
+    * @param treeUri the subtree to leverage to gain access to the target document. The target directory must be a descendant of this subtree.
+    * @param documentId the target document, which the caller may not have direct access to.
+     */
     @SimpleFunction(description = "Builds document uri using tree uri and document id.")
     public String BuildDocumentUriUsingTree(String treeUri, String documentId) {
         return DocumentsContract.buildDocumentUriUsingTree(Uri.parse(treeUri), documentId).toString();
     }
 
+    /*
+    * Build URI representing the children of the target directory in a document provider.
+    * @param treeUri the subtree to leverage to gain access to the target document. The target directory must be a descendant of this subtree.
+    * @param parentDocumentId the document to return children for, which the caller may not have direct access to, and which must be a directory.
+     */
     @SimpleFunction(description = "Builds child documents uri using tree (parent document) uri and its parent document's id.")
     public String BuildChildDocumentsUriUsingTree(String treeUri, String parentDocumentId) {
         return DocumentsContract.buildChildDocumentsUriUsingTree(Uri.parse(treeUri), parentDocumentId).toString();
     }
+
 
     @SimpleFunction(description = "Returns mime type of given document uri.")
     public String MimeType(final String documentUri) {
