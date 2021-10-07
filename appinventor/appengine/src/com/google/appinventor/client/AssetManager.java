@@ -26,6 +26,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.StatusCodeException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -205,6 +206,15 @@ public final class AssetManager implements ProjectChangeListener {
           }
         @Override
           public void onFailure(Throwable ex) {
+          // If the failure is due to the user session being stale (HTTP status 412)
+          // this call will never succeed and inform the users to reload the page
+          if (ex instanceof StatusCodeException) {
+            StatusCodeException e = (StatusCodeException) ex;
+            int statusCode = e.getStatusCode();
+            if (statusCode == 412) {
+              Ode.getInstance().sessionDead();
+            }
+          } else {
           if (retryCount > 0) {
             retryCount--;
             readIn(assetInfo);
