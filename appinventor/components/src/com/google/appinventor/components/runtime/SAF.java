@@ -7,23 +7,13 @@ import android.content.UriPermission;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.DocumentsContract;
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,8 +42,8 @@ import java.util.List;
 @SimpleObject
 public class SAF extends AndroidNonvisibleComponent implements ActivityResultListener {
     private final Activity activity;
-    private int intentReqCode = 0;
     private final ContentResolver contentResolver;
+    private int intentReqCode = 0;
 
     public SAF(ComponentContainer container) {
         super(container.$form());
@@ -251,8 +241,8 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     /**
      * Build URI representing access to descendant documents of the given tree uri's document id
      *
-     * @param treeUri    the subtree to leverage to gain access to the target document. The target directory must be a descendant of this subtree.
-     * @param documentId the target document, which the caller may not have direct access to.
+     * @param treeUri    the subtree to leverage to gain access to the target document. The target directory must be a descendant of this subtree
+     * @param documentId the target document, which the caller may not have direct access to
      */
     @SimpleFunction(description = "Builds document uri using tree uri and document id.")
     public String BuildDocumentUriUsingTree(String treeUri, String documentId) {
@@ -260,50 +250,70 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     }
 
     /**
-     * Build URI representing the children of the target directory in a document provider.
+     * Build URI representing the children of the target directory in a document provider
      *
-     * @param treeUri          the subtree to leverage to gain access to the target document. The target directory must be a descendant of this subtree.
-     * @param parentDocumentId the document to return children for, which the caller may not have direct access to, and which must be a directory.
+     * @param treeUri          the subtree to leverage to gain access to the target document. The target directory must be a descendant of this subtree
+     * @param parentDocumentId the document to return children for, which the caller may not have direct access to, and which must be a directory
      */
     @SimpleFunction(description = "Builds child documents uri using tree (parent document) uri and its parent document's id.")
     public String BuildChildDocumentsUriUsingTree(String treeUri, String parentDocumentId) {
         return DocumentsContract.buildChildDocumentsUriUsingTree(Uri.parse(treeUri), parentDocumentId).toString();
     }
 
+    /**
+     * Returns display name of given document
+     *
+     * @param uriString the document's uri
+     */
     @SimpleFunction(description = "Returns display name of given document uri.")
-    public String DisplayName(final String documentUri) {
+    public String DisplayName(final String uriString) {
         try {
-            return getStringValue(documentUri, DocumentsContract.Document.COLUMN_DISPLAY_NAME);
+            return getStringValue(uriString, DocumentsContract.Document.COLUMN_DISPLAY_NAME);
         } catch (Exception e) {
             postError("DisplayName", e.getMessage());
         }
         return "";
     }
 
+    /**
+     * Returns size (in bytes) of given document uri
+     *
+     * @param uriString the document's uri
+     */
     @SimpleFunction(description = "Returns size (in bytes) of given document uri.")
-    public String Size(final String documentUri) {
+    public String Size(final String uriString) {
         try {
-            return getStringValue(documentUri, DocumentsContract.Document.COLUMN_SIZE);
+            return getStringValue(uriString, DocumentsContract.Document.COLUMN_SIZE);
         } catch (Exception e) {
             postError("Size", e.getMessage());
         }
         return "";
     }
 
+    /**
+     * Returns last modified time/epoch timestamp of given document uri
+     *
+     * @param uriString the document's uri
+     */
     @SimpleFunction(description = "Returns last modified time/epoch timestamp of given document uri.")
-    public String LastModifiedTime(final String documentUri) {
+    public String LastModifiedTime(final String uriString) {
         try {
-            return getStringValue(documentUri, DocumentsContract.Document.COLUMN_LAST_MODIFIED);
+            return getStringValue(uriString, DocumentsContract.Document.COLUMN_LAST_MODIFIED);
         } catch (Exception e) {
             postError("LastModifiedTime", e.getMessage());
         }
         return "";
     }
 
+    /**
+     * Returns mime type of given document uri
+     *
+     * @param uriString the document's uri
+     */
     @SimpleFunction(description = "Returns mime type of given document uri.")
-    public String MimeType(final String documentUri) {
+    public String MimeType(final String uriString) {
         try {
-            return getStringValue(documentUri, DocumentsContract.Document.COLUMN_MIME_TYPE);
+            return getStringValue(uriString, DocumentsContract.Document.COLUMN_MIME_TYPE);
         } catch (Exception e) {
             postError("MimeType", e.getMessage());
         }
@@ -324,31 +334,51 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         return "";
     }
 
+    /**
+     * Returns whether document can be copied or not
+     *
+     * @param uriString the document's uri
+     */
     @SimpleFunction(description = "Returns whether document can be copied or not.")
-    public boolean IsCopySupported(final String documentUri) {
+    public boolean IsCopySupported(final String uriString) {
         return isFlagTrue("IsCopySupported",
-                Uri.parse(documentUri),
+                Uri.parse(uriString),
                 DocumentsContract.Document.FLAG_SUPPORTS_COPY);
     }
 
+    /**
+     * Returns whether document is movable or not
+     *
+     * @param uriString the document's uri
+     */
     @SimpleFunction(description = "Returns whether document is movable or not.")
-    public boolean IsMoveSupported(final String documentUri) {
+    public boolean IsMoveSupported(final String uriString) {
         return isFlagTrue("IsMoveSupported",
-                Uri.parse(documentUri),
+                Uri.parse(uriString),
                 DocumentsContract.Document.FLAG_SUPPORTS_MOVE);
     }
 
+    /**
+     * Returns whether document is deletable or not
+     *
+     * @param uriString the document's uri
+     */
     @SimpleFunction(description = "Returns whether document is deletable or not.")
-    public boolean IsDeleteSupported(final String documentUri) {
+    public boolean IsDeleteSupported(final String uriString) {
         return isFlagTrue("IsDeleteSupported",
-                Uri.parse(documentUri),
+                Uri.parse(uriString),
                 DocumentsContract.Document.FLAG_SUPPORTS_DELETE);
     }
 
+    /**
+     * Returns whether document supports renaming
+     *
+     * @param uriString the document's uri
+     */
     @SimpleFunction(description = "Returns whether document supports renaming.")
-    public boolean IsRenameSupported(final String documentUri) {
+    public boolean IsRenameSupported(final String uriString) {
         return isFlagTrue("IsRenameSupported",
-                Uri.parse(documentUri),
+                Uri.parse(uriString),
                 DocumentsContract.Document.FLAG_SUPPORTS_RENAME);
     }
 
@@ -372,7 +402,13 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         return false;
     }
 
-
+    /**
+     * Creates a new and empty document.If document already exists then an incremental value will be automatically suffixed
+     *
+     * @param parentDocumentUri the parent dir's uri
+     * @param fileName          the name of the file
+     * @param mimeType          the mime type of file to be created
+     */
     @SimpleFunction(description = "Creates a new and empty document.If document already exists then an incremental value will be automatically suffixed.")
     public void CreateDocument(final String parentDocumentUri, final String fileName, final String mimeType) {
         AsynchUtil.runAsynchronously(new Runnable() {
@@ -400,11 +436,22 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         });
     }
 
+    /**
+     * Event invoked after `CreateDocument` method
+     *
+     * @param uriString document's uri if operation was successful else returns error message
+     */
     @SimpleEvent(description = "Event invoked after creating document.Returns document's uri if operation was successful else returns error message.")
     public void DocumentCreated(String uriString) {
         EventDispatcher.dispatchEvent(this, "DocumentCreated", uriString);
     }
 
+    /**
+     * Writes text to given document
+     *
+     * @param documentUri the document's uri
+     * @param text        text to write
+     */
     @SimpleFunction(description = "Writes text to given document")
     public void WriteText(final String documentUri, final String text) {
         AsynchUtil.runAsynchronously(new Runnable() {
@@ -452,6 +499,12 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         return "";
     }
 
+    /**
+     * Writes bytes to given document
+     *
+     * @param documentUri the document's uri
+     * @param bytes       bytes to write
+     */
     @SimpleFunction(description = "Writes bytes to given document")
     public void WriteBytes(final String documentUri, final Object bytes) {
         AsynchUtil.runAsynchronously(new Runnable() {
@@ -483,11 +536,21 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         });
     }
 
+    /**
+     * Event invoked after writing document (`WriteText` and `WriteBytes` both methods trigger this event)
+     *
+     * @param response document's uri if operation was successful else returns error message
+     */
     @SimpleEvent(description = "Event invoked after writing to document.Returns document's uri if operation was successful else returns error message")
     public void GotWriteResult(String response) {
         EventDispatcher.dispatchEvent(this, "GotWriteResult", response);
     }
 
+    /**
+     * Tries to delete document and returns delete operation's result
+     *
+     * @param documentUri the document's uri
+     */
     @SimpleFunction(description = "Tries to delete document and returns result.")
     public boolean DeleteDocument(String documentUri) {
         try {
@@ -499,6 +562,11 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         return false;
     }
 
+    /**
+     * Reads from given document as text
+     *
+     * @param documentUri the document's uri
+     */
     @SimpleFunction(description = "Reads from given document as text")
     public void ReadText(final String documentUri) {
         AsynchUtil.runAsynchronously(new Runnable() {
@@ -543,6 +611,11 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
 
     }
 
+    /**
+     * Reads content of document as bytes
+     *
+     * @param documentUri the document's uri
+     */
     @SimpleFunction(description = "Reads content of document as bytes")
     public void ReadBytes(final String documentUri) {
         AsynchUtil.runAsynchronously(new Runnable() {
@@ -565,6 +638,11 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         });
     }
 
+    /**
+     * Event invoked after reading from document
+     *
+     * @param result returns content/text if operation was successful else returns error message
+     */
     @SimpleEvent(description = "Event invoked after reading from document.Returns content if operation was successful else returns error message.")
     public void GotReadResult(Object result) {
         EventDispatcher.dispatchEvent(this, "GotReadResult", result);
@@ -583,6 +661,11 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         return s.replaceAll("\r\n", "\n");
     }
 
+    /**
+     * Checks whether read is granted for given uri
+     *
+     * @param uri the uri to check against
+     */
     @SimpleFunction(description = "Returns whether read is granted for given uri.")
     public boolean IsReadGranted(String uri) {
         for (UriPermission uri1 : contentResolver.getPersistedUriPermissions()) {
@@ -594,11 +677,11 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         return false;
     }
 
-    @SimpleFunction(description = "Relinquish a persisted URI permission grant.")
-    public void ReleasePermission(String uri, int flags) {
-        contentResolver.releasePersistableUriPermission(Uri.parse(uri), flags);
-    }
-
+    /**
+     * Checks whether write is granted for given uri
+     *
+     * @param uri the uri to check against
+     */
     @SimpleFunction(description = "Returns whether write is granted for given uri.")
     public boolean IsWriteGranted(String uri) {
         for (UriPermission uri1 : contentResolver.getPersistedUriPermissions()) {
@@ -610,21 +693,44 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         return false;
     }
 
+    /**
+     * Relinquish a persisted URI permission granted previously
+     *
+     * @param uri   the document's uri
+     * @param flags the flags which will be released
+     */
+    @SimpleFunction(description = "Relinquish a persisted URI permission grant.")
+    public void ReleasePermission(String uri, int flags) {
+        contentResolver.releasePersistableUriPermission(Uri.parse(uri), flags);
+    }
+
+    /**
+     * Event invoked when user selects a document or tree from SAF file picker
+     *
+     * @param uri       the uri object of document picked
+     * @param uriString the string representation of uri
+     */
     @SimpleEvent(description = "Event invoked when user selects a document or tree from SAF file picker.")
     public void GotUri(Object uri, String uriString) {
         EventDispatcher.dispatchEvent(this, "GotUri", uri, uriString);
     }
 
+    /**
+     * Tries to list documents from given document dir
+     *
+     * @param dirUri        the dir's uri to list documents from
+     * @param dirDocumentId the document id of provided dir
+     */
     @SimpleFunction(description = "Tries to list files from given document dir.")
-    public void ListFiles(final String dirUri, final String dirDocumentId) {
+    public void ListDocuments(final String dirUri, final String dirDocumentId) {
         AsynchUtil.runAsynchronously(new Runnable() {
             @Override
             public void run() {
-                final List<String> list = listFiles(Uri.parse(dirUri), dirDocumentId);
+                final List<String> list = listDocuments(Uri.parse(dirUri), dirDocumentId);
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        GotFilesList(list);
+                        GotDocumentsList(list);
                     }
                 });
             }
@@ -632,7 +738,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     }
 
     // taken from https://stackoverflow.com/questions/41096332/issues-traversing-through-directory-hierarchy-with-android-storage-access-framew
-    private List<String> listFiles(Uri treeUri, String documentId) {
+    private List<String> listDocuments(Uri treeUri, String documentId) {
         List<String> uriList = new ArrayList<>();
         Uri uriFolder = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, documentId);
         try {
@@ -657,11 +763,22 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         return uriList;
     }
 
+    /**
+     * Event invoked after getting files list
+     *
+     * @param documentsList the list of documents
+     */
     @SimpleEvent(description = "Event invoked after getting files list.")
-    public void GotFilesList(List<String> filesList) {
-        EventDispatcher.dispatchEvent(this, "GotFilesList", filesList);
+    public void GotDocumentsList(List<String> documentsList) {
+        EventDispatcher.dispatchEvent(this, "GotDocumentsList", documentsList);
     }
 
+    /**
+     * Tries to copy document from source uri to target dir
+     *
+     * @param sourceUri       the source document's uri
+     * @param targetParentUri the target dir's uri
+     */
     @SimpleFunction(description = "Tries to copy document from source uri to target dir.")
     public void CopyDocument(final String sourceUri, final String targetParentUri) {
         AsynchUtil.runAsynchronously(new Runnable() {
@@ -691,11 +808,24 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         });
     }
 
-    @SimpleEvent(description = "Event invoked after getting copy document result.Response will be target document's uri if operation was successful else returns error message.")
+    /**
+     * Event invoked after getting copy operation's result
+     *
+     * @param successful returns whether operation was successful or not
+     * @param response   returns newly created document's uri if operation was successful else returns error message
+     */
+    @SimpleEvent(description = "Event invoked after getting copy document result.Response will be newly created document's uri if operation was successful else returns error message.")
     public void GotCopyResult(boolean successful, String response) {
         EventDispatcher.dispatchEvent(this, "GotCopyResult", successful, response);
     }
 
+    /**
+     * Tries to move document from source uri to target dir
+     *
+     * @param sourceUri       the source document's uri
+     * @param sourceParentUri the uri of source document's parent document
+     * @param targetParentUri the target dir's uri
+     */
     @SimpleFunction(description = "Tries to move document from source uri to target dir.")
     public void MoveDocument(final String sourceUri, final String sourceParentUri, final String targetParentUri) {
         AsynchUtil.runAsynchronously(new Runnable() {
@@ -726,11 +856,23 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
         });
     }
 
-    @SimpleEvent(description = "Event invoked after getting move document result.Response will be target document's uri if operation was successful else returns error message.")
+    /**
+     * Event invoked after getting move operation's result
+     *
+     * @param successful returns whether operation was successful or not
+     * @param response   returns newly created document's uri if operation was successful else returns error message
+     */
+    @SimpleEvent(description = "Event invoked after getting move document result.Response will be newly created document's uri if operation was successful else returns error message.")
     public void GotMoveResult(boolean successful, String response) {
         EventDispatcher.dispatchEvent(this, "GotMoveResult", successful, response);
     }
 
+    /**
+     * Tries to rename a document and returns updated uri
+     *
+     * @param documentUri the document's uri
+     * @param displayName the new display name of document
+     */
     @SimpleFunction(description = "Tries to rename a document and returns updated uri.")
     public String RenameDocument(final String documentUri, final String displayName) {
         try {
