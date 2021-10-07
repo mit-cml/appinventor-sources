@@ -222,7 +222,8 @@ public final class AssetManager implements ProjectChangeListener {
             OdeLog.elog("Failed to load asset.");
           }
         }
-      });
+      }
+    });
   }
 
   private void refreshAssets1(JavaScriptObject callback) {
