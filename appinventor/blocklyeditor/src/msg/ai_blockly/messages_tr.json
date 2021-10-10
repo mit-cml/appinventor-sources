@@ -659,5 +659,6 @@
     "Blockly.Msg.DIALOG_ENTER_VALUES": "Değerleri girin:",
     "Blockly.Msg.DIALOG_SECURE_ESTABLISHED": "30 Güvenli Bağlantı Kuruldu",
     "Blockly.Msg.DIALOG_SECURE_ESTABLISHING": "20 Güvenli Bağlantı Kuruluyor",
-    "Blockly.Msg.DIALOG_SUBMIT": "Gönder"
+    "Blockly.Msg.DIALOG_SUBMIT": "Gönder",
+    "Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND": "Bit düzeyini ve iki sayının değerini çevirin."
 }
