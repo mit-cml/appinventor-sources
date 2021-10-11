@@ -916,10 +916,10 @@ Blockly.Blocks.component_method = {
       componentDb.forMethodInType(typeName, function (_, methodName) {
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL +
-              componentDb.getInternationalizedComponentType(componentType) + '.' +
+              componentDb.getInternationalizedComponentType(typeName) + '.' +
               componentDb.getInternationalizedMethodName(methodName),
           mutatorAttributes: {
-            component_type: componentType,
+            component_type: typeName,
             method_name: methodName,
             is_generic: 'true'
           }
