@@ -376,6 +376,12 @@ None
 
 {:.properties}
 
+{:id="SpeechRecognizer.Language" .text .bo} *Language*
+: Suggests the language to use for recognizing speech. An empty string (the default) will
+ use the system's default language.
+
+     Language is specified using an IETF language tag, such as en-US or es-MX.
+
 {:id="SpeechRecognizer.Result" .text .ro .bo} *Result*
 : Returns the last text produced by the recognizer.
 

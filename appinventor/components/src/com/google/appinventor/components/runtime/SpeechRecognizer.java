@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.text.TextUtils;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -55,6 +56,8 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   private boolean havePermission = false;
   private boolean useLegacy = true;
 
+  private String language = "";
+
   /**
    * Creates a SpeechRecognizer component.
    *
@@ -69,6 +72,29 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
     recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
     recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
     UseLegacy(useLegacy);
+  }
+
+  /**
+   * Suggests the language to use for recognizing speech. An empty string (the default) will
+   * use the system's default language.
+   *
+   *     Language is specified using an IETF language tag, such as en-US or es-MX.
+   *
+   * @return the target language for recognition
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public String Language() {
+    return language;
+  }
+
+  @SimpleProperty
+  public void Language(String language) {
+    this.language = language;
+    if (TextUtils.isEmpty(language)) {
+      recognizerIntent.removeExtra(RecognizerIntent.EXTRA_LANGUAGE);
+    } else {
+      recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, language);
+    }
   }
 
   /**
