@@ -1504,6 +1504,9 @@ public class YaVersion {
   public static final int HYGROMETER_COMPONENT_VERSION = 1;
   public static final int LIGHTSENSOR_COMPONENT_VERSION = 1;
   public static final int THERMOMETER_COMPONENT_VERSION = 1;
+  
+  // - Initial version
+  public static final int SAF_COMPONENT_VERSION = 1;
 
   // Companion Versions and Update Information
 
