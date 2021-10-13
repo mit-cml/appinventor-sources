@@ -199,6 +199,8 @@
 	"Blockly.Msg.LANG_CONTROLS_BREAK_TITLE": "break",
 	"Blockly.Msg.LANG_CONTROLS_BREAK_INPUT_TEXT": "value",
 	"Blockly.Msg.LANG_CONTROLS_BREAK_COLLAPSED_TEXT": "break",
+	"Blockly.Msg.LANG_CONTROLS_FOREACH_ITEM_TYPEBLOCK" : "for each item in list",
+	"Blockly.Msg.LANG_CONTROLS_FOREACH_NUMBER_TYPEBLOCK" : "for each number from",
 	"Blockly.Msg.LANG_CATEGORY_LOGIC": "Logic",
 	"Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ": "Tests whether two things are equal. \nThe things being compared can be any things, not only numbers. \nNumbers are considered to be equal to their printed form as strings, \nfor example, the number 0 is equal to the text '0'.  Also, two strings \nthat represent numbers are equal if the numbers are equal, for example \n'1' is equal to '01'.",
 	"Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ": "Return true if both inputs are not equal to each other.",
