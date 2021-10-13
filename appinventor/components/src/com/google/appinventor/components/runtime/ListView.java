@@ -153,9 +153,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       @Override
       public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
         // When user changed the Text
-        if (cs.length() == 0) {
-          setAdapterData();
-        } else {
+        setAdapterData();
+        if (cs.length() > 0) {
           listAdapterWithRecyclerView.getFilter().filter(cs.toString());
         }
       }

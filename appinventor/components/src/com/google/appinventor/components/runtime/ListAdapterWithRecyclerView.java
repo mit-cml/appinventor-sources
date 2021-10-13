@@ -94,21 +94,21 @@ public class ListAdapterWithRecyclerView
       // Usually GUI objects take up no screen space when set to invisible, but setting a CardView object to invisible
       // was displaying an empty object. Therefore, set the height to 0 as well.
       // Setting visibility on individual entries will keep the selected index(ices) the same regardless of filter.
-        for (int i = 0; i < items.size(); ++i) {
-          if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
-            isVisible[i] = true;
-            if (itemViews[i] != null) {
-              itemViews[i].setVisibility(View.VISIBLE);
-              itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            }
-          } else {
-            isVisible[i] = false;
-            if (itemViews[i] != null) {
-              itemViews[i].setVisibility(View.GONE);
-              itemViews[i].getLayoutParams().height = 0;
-            }
+      for (int i = 0; i < items.size(); ++i) {
+        if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
+          isVisible[i] = true;
+          if (itemViews[i] != null) {
+            itemViews[i].setVisibility(View.VISIBLE);
+            itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+          }
+        } else {
+          isVisible[i] = false;
+          if (itemViews[i] != null) {
+            itemViews[i].setVisibility(View.GONE);
+            itemViews[i].getLayoutParams().height = 0;
           }
         }
+      }
     }
   };
 
