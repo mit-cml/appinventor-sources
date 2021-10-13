@@ -181,7 +181,15 @@ public interface Images extends Resources {
     */
    @Source("com/google/appinventor/images/thermometer.png")
    ImageResource thermometer();
-
+  
+  /**
+    * Designer palette item: saf component
+    * <p>
+    * Source: Material Icons
+    */
+   @Source("com/google/appinventor/images/saf.png")
+   ImageResource saf();
+  
   /**
     * Designer palette item: hygrometer component
     * <p>
