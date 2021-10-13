@@ -78,7 +78,7 @@ public class ListAdapterWithRecyclerView
           if (o != null) {
             filterString += " " + o;
           }
-          if (filterString.toLowerCase().contains(filterQuery)) {
+          if (filterString.toLowerCase().startsWith(filterQuery)) {
             filteredList.add(itemDict);
           }
         }
