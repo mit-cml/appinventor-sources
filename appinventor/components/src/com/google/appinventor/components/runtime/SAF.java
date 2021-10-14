@@ -64,7 +64,11 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
     @Override
     public void resultReturned(int requestCode, int resultCode, Intent intent) {
         if (intentReqCode == requestCode) {
-            GotUri(intent.getData(), String.valueOf(intent.getData()));
+            if (resultCode == Activity.RESULT_OK){
+                GotUri(intent.getData(),String.valueOf(intent.getData()));
+            }else if (resultCode == Activity.RESULT_CANCELED){
+                GotUri("","");
+            }
         }
     }
 
@@ -470,7 +474,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
                 if (!MimeType(documentUri).equals(DocumentDirMimeType())) {
                     String res;
                     try {
-                        OutputStream fileOutputStream = contentResolver.openOutputStream(Uri.parse(documentUri));
+                        OutputStream fileOutputStream = contentResolver.openOutputStream(Uri.parse(documentUri),"wt");
                         res = writeToOutputStream(fileOutputStream, text);
                         res = res.isEmpty() ? documentUri : res;
                     } catch (Exception e) {
@@ -522,7 +526,7 @@ public class SAF extends AndroidNonvisibleComponent implements ActivityResultLis
             public void run() {
                 if (!MimeType(documentUri).equals(DocumentDirMimeType())) {
                     try {
-                        OutputStream outputStream = contentResolver.openOutputStream(Uri.parse(documentUri));
+                        OutputStream outputStream = contentResolver.openOutputStream(Uri.parse(documentUri),"wt");
                         ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
                         arrayOutputStream.write((byte[]) bytes);
                         arrayOutputStream.writeTo(outputStream);
