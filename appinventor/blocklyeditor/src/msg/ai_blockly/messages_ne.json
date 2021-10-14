@@ -151,5 +151,7 @@
     "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP": "यसले अनुप्रयोगको नयाँ स्क्रीन खोल्छ",
     "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME": "स्क्रिनको नाम",
     "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT": "स्क्रीन खोल्नुहोस्",
-    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE": "अर्को स्क्रिन खोल्नुहोस्"
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE": "अर्को स्क्रिन खोल्नुहोस्",
+    "Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP": "कोड को जोडिएको ब्लक चलाउँछ र फिर्ता मान (यदि कुनै छ) लाई बेवास्ता गर्दछ। एक फिर्ता मूल्य संग एक प्रक्रिया कल गर्न को लागी उपयोगी हुन्छ तर मूल्य को आवश्यकता छैन।",
+    "Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP": "यदि परीक्षण गरीएको अवस्था सत्य हो, 'तब-फिर्ता' स्लट संग जोडिएको अभिव्यक्ति को मूल्यांकन को नतिजा फर्काउनुहोस्; अन्यथा 'अन्य-रिटर्न' स्लट संग जोडिएको अभिव्यक्ति को मूल्यांकन को परिणाम फर्काउनुहोस्; फिर्ता स्लट को एक मा अभिव्यक्ति मूल्यांकन गरिनेछ।"
 }
