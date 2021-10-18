@@ -1676,7 +1676,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       form.askPermission(WRITE_EXTERNAL_STORAGE, new PermissionResultHandler() {
         @Override
         public void HandlePermissionResponse(String permission, boolean granted) {
-          havePermission = true;
+          havePermission = granted;
         }
       });
       throw new StopBlocksExecution();
