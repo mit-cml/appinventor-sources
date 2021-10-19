@@ -767,7 +767,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     paint.setFlags(Paint.ANTI_ALIAS_FLAG);
 
     // Set default properties.
-    paint.setStrokeWidth(DEFAULT_LINE_WIDTH);
+    LineWidth(DEFAULT_LINE_WIDTH);
     PaintColor(DEFAULT_PAINT_COLOR);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
     TextAlignment(DEFAULT_TEXTALIGNMENT);
