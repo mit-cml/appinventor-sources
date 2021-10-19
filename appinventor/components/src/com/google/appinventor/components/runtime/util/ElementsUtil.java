@@ -76,6 +76,6 @@ public class ElementsUtil {
   }
 
   public static String toStringEmptyIfNull(Object o) {
-    return o == null ? null : o.toString();
+    return o == null ? "" : o.toString();
   }
 }
