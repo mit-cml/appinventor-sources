@@ -1269,7 +1269,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     for (Map.Entry<String, List<String>> header : webProps.requestHeaders.entrySet()) {
       String name = header.getKey();
       for (String value : header.getValue()) {
-        connection.addRequestProperty(name, value);
+        connection.setRequestProperty(name, value);
       }
     }
 
@@ -1278,7 +1278,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       for (Map.Entry<String, List<String>> cookie : webProps.cookies.entrySet()) {
         String name = cookie.getKey();
         for (String value : cookie.getValue()) {
-          connection.addRequestProperty(name, value);
+          connection.setRequestProperty(name, value);
         }
       }
     }
