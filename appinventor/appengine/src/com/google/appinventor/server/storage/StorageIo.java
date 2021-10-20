@@ -571,13 +571,6 @@ public interface StorageIo {
   // Cleanup expired nonces
   void cleanupNonces();
 
-  // Check to see if user needs projects upgraded (moved to GCS)
-  // if so, add task to task queue
-  void checkUpgrade(String userId);
-
-  // Called by the task queue to actually upgrade user's projects
-  void doUpgrade(String userId);
-
   // Retrieve the current Splash Screen Version
   SplashConfig getSplashConfig();
 
