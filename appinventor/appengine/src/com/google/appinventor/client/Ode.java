@@ -13,6 +13,7 @@ import com.google.appinventor.client.boxes.ViewerBox;
 
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
@@ -124,6 +125,8 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appinventor.client.boxes.PaletteBox;
+
 /**
  * Main entry point for Ode. Defines the startup UI elements in
  * {@link #onModuleLoad()}.
@@ -226,6 +229,7 @@ public class Ode implements EntryPoint {
   @UiField FlowPanel structureAndAssets;
   @UiField ProjectToolbar projectToolbar;
   @UiField DesignToolbar designToolbar;
+  @UiField PaletteBox paletteBox;
   @UiField FlowPanel projectPanel;
   private HorizontalPanel projectListPanel = new HorizontalPanel();
 
@@ -299,6 +303,18 @@ public class Ode implements EntryPoint {
    */
   public static Ode getInstance() {
     return instance;
+  }
+
+  public static Project getCurrentProject() {
+    return instance.projectManager.getProject(instance.getCurrentYoungAndroidProjectId());
+  }
+
+  public static long getCurrentProjectID() {
+    return instance.getCurrentYoungAndroidProjectId();
+  }
+
+  public static ProjectEditor getCurretProjectEditor() {
+    return instance.editorManager.getOpenProjectEditor(getCurrentProjectID());
   }
 
   /**
@@ -446,6 +462,7 @@ public class Ode implements EntryPoint {
     currentView = DESIGNER;
     getTopToolbar().updateFileMenuButtons(currentView);
     if (currentFileEditor != null) {
+      paletteBox.loadComponents();
       deckPanel.showWidget(designTabIndex);
     } else if (!editorManager.hasOpenEditor()) {  // is there a project editor pending visibility?
       LOG.warning("No current file editor to show in designer");

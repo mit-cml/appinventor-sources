@@ -51,6 +51,7 @@ import com.google.appinventor.client.editor.simple.components.MockVerticalArrang
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
 
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import com.google.common.collect.Maps;
@@ -203,6 +204,20 @@ public final class SimpleComponentDescriptor {
     this.nonVisible = nonVisible;
     this.external = external;
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
+  }
+
+  public SimpleComponentDescriptor(String name,
+                                   int version,
+                                   String versionName,
+                                   String dateBuilt,
+                                   String helpString,
+                                   String helpUrl,
+                                   String categoryDocUrlString,
+                                   boolean showOnPalette,
+                                   boolean nonVisible,
+                                   boolean external) {
+    this(name, (YaFormEditor)Ode.getInstance().getCurrentFileEditor(), version, versionName,
+    dateBuilt, helpString, helpUrl, categoryDocUrlString, showOnPalette, nonVisible, external);
   }
 
   /**

@@ -20,7 +20,7 @@
         <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
           <ed:DesignToolbar ui:field="designToolbar" />
           <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
-            <box:PaletteBox width="240px" />
+            <box:PaletteBox width="240px" ui:field="paletteBox"/>
             <box:ViewerBox />
             <g:FlowPanel ui:field="structureAndAssets">
               <box:SourceStructureBox />

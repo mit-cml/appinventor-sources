@@ -7,18 +7,23 @@
 package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.Ode.getCurrentProjectID;
 
 import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Image;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +47,8 @@ public final class PaletteBox extends Box {
   }
   private final StackPanel palettePanel;
   private Map<String, VerticalPanel> panelsByCat;
+  private Map<String, PaletteEntry> paletteItems = new HashMap<>();
+  DropTargetProvider dropTargetProvider;
   // Component database: information about components (including their properties and events)
   private final SimpleComponentDatabase COMPONENT_DATABASE;
 
@@ -60,6 +67,19 @@ public final class PaletteBox extends Box {
     palettePanel = new StackPanel();
     palettePanel.setWidth("100%");
     panelsByCat = new HashMap<>();
+    dropTargetProvider = new DropTargetProvider() {
+      @Override
+      public DropTarget[] getDropTargets() {
+        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
+        // getDropTargets() doesn't get called for each component.
+        // NOTE: These targets must be specified in depth-first order.
+        List<DropTarget> dropTargets = new ArrayList<>();
+//        form.getDropTargetsWithin();
+//        dropTargets.add(visibleComponentsPanel);
+//        dropTargets.add(nonVisibleComponentsPanel);
+        return dropTargets.toArray(new DropTarget[dropTargets.size()]);
+      }
+    };
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance();
     for (ComponentCategory cat: ComponentCategory.values()) {
       if (showCategory(cat)) {
@@ -69,9 +89,9 @@ public final class PaletteBox extends Box {
             ComponentsTranslation.getCategoryName(cat.getName()));
       }
     }
-
     setContent(palettePanel);
   }
+
   private static boolean showCategory(ComponentCategory category) {
     if (category == ComponentCategory.UNINITIALIZED) {
       return false;
@@ -83,44 +103,90 @@ public final class PaletteBox extends Box {
     return true;
   }
 
+  /*
+   * Adds a component entry to the palette.
+   */
+  private void addPaletteItem(PaletteEntry component, ComponentCategory category) {
+    panelsByCat.get(category).add(component);
+
+    // TODO: Determine function served by Helpers
+//    if (panel == null) {
+//      panel = addComponentCategory(category);
+//    }
+//    PaletteHelper paletteHelper = paletteHelpers.get(category);
+//    if (paletteHelper != null) {
+//      paletteHelper.addPaletteItem(panel, component);
+//    } else {
+//      panel.add(component);
+//    }
+  }
+
+  public void loadComponents() {
+    for (String component : COMPONENT_DATABASE.getComponentNames()) {
+      this.addComponent(component);
+    }
+  }
+
   /**
    *  Loads a single Component to Palette. Used for adding Components.
    */
-//  @Override
-//  public void addComponent(String componentTypeName) {
-//    if (simplePaletteItems.containsKey(componentTypeName)) { // We are upgrading
-//      removeComponent(componentTypeName);
-//    }
-//    int version = COMPONENT_DATABASE.getComponentVersion(componentTypeName);
-//    String versionName = COMPONENT_DATABASE.getComponentVersionName(componentTypeName);
-//    String dateBuilt = COMPONENT_DATABASE.getComponentBuildDate(componentTypeName);
-//    String helpString = COMPONENT_DATABASE.getHelpString(componentTypeName);
-//    String helpUrl = COMPONENT_DATABASE.getHelpUrl(componentTypeName);
-//    String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(componentTypeName);
-//    String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
-//    Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(componentTypeName);
-//    Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(componentTypeName);
-//    Boolean external = COMPONENT_DATABASE.getComponentExternal(componentTypeName);
-//    ComponentCategory category = ComponentCategory.valueOf(categoryString);
-//    if (showOnPalette && showCategory(category)) {
-//      SimplePaletteItem item = new SimplePaletteItem(
-//          new SimpleComponentDescriptor(componentTypeName, editor, version, versionName, dateBuilt, helpString, helpUrl,
-//              categoryDocUrlString, showOnPalette, nonVisible, external),
-//          dropTargetProvider);
-//      simplePaletteItems.put(componentTypeName, item);
-//      addPaletteItem(item, category);
-//
-//      // Make a second copy for the search mechanism
+
+  public void addComponent(String componentName) {
+    if (paletteItems.containsKey(componentName)) { // We are upgrading
+      removeComponent(componentName);
+    }
+    int version = COMPONENT_DATABASE.getComponentVersion(componentName);
+    String versionName = COMPONENT_DATABASE.getComponentVersionName(componentName);
+    String dateBuilt = COMPONENT_DATABASE.getComponentBuildDate(componentName);
+    String helpString = COMPONENT_DATABASE.getHelpString(componentName);
+    String helpUrl = COMPONENT_DATABASE.getHelpUrl(componentName);
+    String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(componentName);
+    String categoryString = COMPONENT_DATABASE.getCategoryString(componentName);
+    Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(componentName);
+    Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(componentName);
+    Boolean external = COMPONENT_DATABASE.getComponentExternal(componentName);
+    String iconName = COMPONENT_DATABASE.getIconName(componentName);
+    ComponentCategory category = ComponentCategory.valueOf(categoryString);
+    String componentType = COMPONENT_DATABASE.getComponentType(componentName);
+    if (showOnPalette && showCategory(category)) {
+      PaletteEntry entry = new PaletteEntry(componentName, componentType, iconName, nonVisible, dropTargetProvider);
+      paletteItems.put(componentName, entry);
+      addPaletteItem(entry, category);
+
+      // Make a second copy for the search mechanism
 //      item = new SimplePaletteItem(
-//          new SimpleComponentDescriptor(componentTypeName, editor, version, versionName, dateBuilt,
+//          new SimpleComponentDescriptor(componentTypeName, version, versionName, dateBuilt,
 //              helpString, helpUrl, categoryDocUrlString, showOnPalette, nonVisible, external),
 //          dropTargetProvider);
-//      // Handle extensions
+      // Handle extensions
 //      if (external) {
 //        translationMap.put(componentTypeName.toLowerCase(), componentTypeName);
 //        requestRebuildList();
 //      }
 //      searchSimplePaletteItems.put(componentTypeName, item);
+    }
+  }
+
+  public void removeComponent(String componentTypeName) {
+    String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
+    ComponentCategory category = ComponentCategory.valueOf(categoryString);
+    if (paletteItems.containsKey(componentTypeName)) {
+      removePaletteItem(paletteItems.get(componentTypeName), category);
+      paletteItems.remove(componentTypeName);
+    }
+//    if (category == ComponentCategory.EXTENSION) {
+//      searchSimplePaletteItems.remove(componentTypeName);
+//      translationMap.remove(componentTypeName);
+//      requestRebuildList();
 //    }
-//  }
+  }
+
+  private void removePaletteItem(PaletteEntry component, ComponentCategory category) {
+    VerticalPanel catPanel = panelsByCat.get(category);
+    catPanel.remove(component);
+    if (catPanel.getWidgetCount() < 1) {
+      palettePanel.remove(catPanel);
+      panelsByCat.remove(category);
+    }
+  }
 }
