@@ -73,10 +73,10 @@ public class ListAdapterWithRecyclerView
         filteredList = new ArrayList<>(items);
       } else {
         for (YailDictionary itemDict : items) {
-          Object o = itemDict.get("Text2");
+          Object o = itemDict.get(Component.LISTVIEW_KEY_DESCRIPTION);
           String filterString = itemDict.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
           if (o != null) {
-            filterString += " " + o;
+            filterString += " " + o.toString().toLowerCase();
           }
           if (filterString.toLowerCase().contains(filterQuery)) {
             filteredList.add(itemDict);
@@ -85,21 +85,26 @@ public class ListAdapterWithRecyclerView
       }
       results.count = filteredList.size();
       results.values = filteredList;
+      Log.e(LOG_TAG, "Perform filter size " + filteredList.size() + " count " + results.count);
       return results;
     }
 
     @Override
     protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
       filterItems = (List<YailDictionary>) filterResults.values;
+      Log.e(LOG_TAG, "Publish Results size " + filterItems.size() + " count " + filterResults.count);
       // Usually GUI objects take up no screen space when set to invisible, but setting a CardView object to invisible
       // was displaying an empty object. Therefore, set the height to 0 as well.
       // Setting visibility on individual entries will keep the selected index(ices) the same regardless of filter.
       for (int i = 0; i < items.size(); ++i) {
         if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
+          Log.e(LOG_TAG, "Filter matches item " + i);
           isVisible[i] = true;
           if (itemViews[i] != null) {
             itemViews[i].setVisibility(View.VISIBLE);
-            itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams)itemViews[i].getLayoutParams();
+            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            itemViews[i].setLayoutParams(layoutParams);
           }
         } else {
           isVisible[i] = false;
@@ -300,6 +305,7 @@ public class ListAdapterWithRecyclerView
       }
     });
 
+    Log.e(LOG_TAG, "onBindViewHolder for position " + position);
     YailDictionary dictItem = items.get(position);
     String first = dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
     String second = "";
