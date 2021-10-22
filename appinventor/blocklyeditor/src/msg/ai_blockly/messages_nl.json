@@ -347,7 +347,7 @@
     "Blockly.Msg.ARRANGE_S": "Rangschik blokken diagonaal",
     "Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST": "Component bestaat niet",
     "Blockly.Msg.LANG_MATH_COMPARE_LTE": "≤",
-    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "bevat  tekst %1 stuk %2",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "%1 tekst %2 %3 %4",
     "Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN": "min",
     "Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_INPUT": "Formatteer als decimaal getal  %1 plaatsen %2",
     "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST": "",
@@ -669,5 +669,6 @@
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "waarde",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "sleutel",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "doe",
-    "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "Dit tekstblok bevat geen geldig nummer"
+    "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "Dit tekstblok bevat geen geldig nummer",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX": "voorkeur"
 }
