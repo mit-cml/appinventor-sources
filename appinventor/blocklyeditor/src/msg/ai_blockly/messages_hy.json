@@ -36,7 +36,7 @@
     "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST": " ",
     "Blockly.Msg.LANG_TEXT_COMPARE_GT": " >",
     "Blockly.Msg.LANG_TEXT_COMPARE_NEQ": " ≠",
-    "Blockly.Msg.LANG_TEXT_COMPARE_EQUAL": " =",
+    "Blockly.Msg.LANG_TEXT_COMPARE_EQUAL": "=",
     "Blockly.Msg.LANG_TEXT_COMPARE_LT": " <",
     "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN": "ապա",
     "Blockly.Msg.LANG_CONTROLS_WHILE_COLLAPSED_TEXT": "քանի դեռ",
@@ -698,5 +698,9 @@
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_INPUT": "ստանալ արժեք %1 բանալիի համար %2 բառարանում, իսկ եթե բանալին գտնված չէ, ապա ստանալ %3-ի հավասար արժեք",
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE": "փոխարինել բոլոր արտապատկերումները",
     "Blockly.Msg.LANG_LISTS_IS_IN_TOOLTIP": "Վերադարձնում է ճշմարիտ, եթե այդ բանը ցուցակում հանդիպող տարր է, և կեղծ՝ հակառակ դեպքում:",
-    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE": "սահմանել արժեք բանալի ուղու վրա"
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE": "սահմանել արժեք բանալի ուղու վրա",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS": "պարունակում է",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "արժեք",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "բանալի",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "կատարել"
 }
