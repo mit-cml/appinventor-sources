@@ -789,6 +789,15 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     return view;
   }
 
+
+
+  // For extension components to
+  // access the bitmap of the canvas
+
+  public Bitmap getBitmap() {
+    return view.buildCache();
+  }
+
   public Activity getContext() {
     return context;
   }
