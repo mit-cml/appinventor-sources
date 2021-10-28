@@ -153,10 +153,14 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       @Override
       public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
         // When user changed the Text
-        if (cs.length() == 0) {
-          setAdapterData();
+        if (cs.length() > 0) {
+          if (!listAdapterWithRecyclerView.hasVisibleItems()) {
+            setAdapterData();
+          }
+          listAdapterWithRecyclerView.getFilter().filter(cs);
+          recyclerView.setAdapter(listAdapterWithRecyclerView);
         } else {
-          listAdapterWithRecyclerView.getFilter().filter(cs.toString());
+          setAdapterData();
         }
       }
 
@@ -634,7 +638,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Specifies the `ListView` item's text font size
    *
-   * @param integer value for font size
+   * @param textSize int value for font size
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_TEXT_SIZE + "")

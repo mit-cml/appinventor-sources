@@ -73,10 +73,10 @@ public class ListAdapterWithRecyclerView
         filteredList = new ArrayList<>(items);
       } else {
         for (YailDictionary itemDict : items) {
-          Object o = itemDict.get("Text2");
+          Object o = itemDict.get(Component.LISTVIEW_KEY_DESCRIPTION);
           String filterString = itemDict.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
           if (o != null) {
-            filterString += " " + o;
+            filterString += " " + o.toString().toLowerCase();
           }
           if (filterString.toLowerCase().contains(filterQuery)) {
             filteredList.add(itemDict);
@@ -94,22 +94,20 @@ public class ListAdapterWithRecyclerView
       // Usually GUI objects take up no screen space when set to invisible, but setting a CardView object to invisible
       // was displaying an empty object. Therefore, set the height to 0 as well.
       // Setting visibility on individual entries will keep the selected index(ices) the same regardless of filter.
-      if (filterItems == null || filterItems.size() == 0) {
-        Arrays.fill(isVisible, Boolean.TRUE);
-      } else {
-        for (int i = 0; i < items.size(); ++i) {
-          if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
-            isVisible[i] = true;
-            if (itemViews[i] != null) {
-              itemViews[i].setVisibility(View.VISIBLE);
-              itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            }
-          } else {
-            isVisible[i] = false;
-            if (itemViews[i] != null) {
-              itemViews[i].setVisibility(View.GONE);
-              itemViews[i].getLayoutParams().height = 0;
-            }
+      for (int i = 0; i < items.size(); ++i) {
+        if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
+          isVisible[i] = true;
+          if (itemViews[i] != null) {
+            itemViews[i].setVisibility(View.VISIBLE);
+            RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams)itemViews[i].getLayoutParams();
+            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            itemViews[i].setLayoutParams(layoutParams);
+          }
+        } else {
+          isVisible[i] = false;
+          if (itemViews[i] != null) {
+            itemViews[i].setVisibility(View.GONE);
+            itemViews[i].getLayoutParams().height = 0;
           }
         }
       }
@@ -206,6 +204,10 @@ public class ListAdapterWithRecyclerView
     } else {
       itemViews[pos].setBackgroundColor(backgroundColor);
     }
+  }
+
+  public boolean hasVisibleItems() {
+    return Arrays.asList(isVisible).contains(true);
   }
 
   @Override
