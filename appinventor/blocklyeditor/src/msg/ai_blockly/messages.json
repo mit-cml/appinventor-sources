@@ -70,6 +70,7 @@
 	"Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP": "The break block should be used only within loops",
 	"Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "This text block does not contain a valid number",
 	"Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT": "You need to provide a valid component to this block's \"%1\" socket.",
+	"Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE": "This block needs a value block connected to its socket.",
 	"Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP": "Click the square to pick a color.",
 	"Blockly.Msg.LANG_COLOUR_BLACK": "black",
 	"Blockly.Msg.LANG_COLOUR_WHITE": "white",
@@ -296,6 +297,7 @@
 	"Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_MODULO": "Return the modulo.",
 	"Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_REMAINDER": "Return the remainder.",
 	"Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_QUOTIENT": "Return the quotient.",
+	"Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_QUOTIENT": "/reference/blocks/math.html#quotient",
 	"Blockly.Msg.LANG_MATH_RANDOM_INT_TITLE_RANDOM": "random integer",
 	"Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_FROM": "from",
 	"Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO": "to",
@@ -419,6 +421,7 @@
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST": "longest string first",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER": "dictionary",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE": "replace all mappings",
+	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_DICTIONARY_ORDER": "Returns a new text obtained by replacing all occurrences\ndefined by the input dictionary keys with the values of the corresponding keys.\nIn case of a choice between replacing one key or the other, the element that occurs first \nin the dictionary is replaced first.",
 
 	"Blockly.Msg.LANG_TEXT_REVERSE_INPUT": "reverse",
 	"Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP": "Reverse the given text.",
@@ -669,6 +672,8 @@
 	"Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_COLLAPSED_PREFIX": "call ",
 	"Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TOOLTIP": "Call a procedure with no return value.",
 	"Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME": "call no return",
+	"Blockly.Msg.LANG_PROCEDURES_CALLRETURN_CALL": "call ",
+	"Blockly.Msg.LANG_PROCEDURES_CALLRETURN_PROCEDURE": "procedure",
 	"Blockly.Msg.LANG_PROCEDURES_CALLRETURN_COLLAPSED_PREFIX": "call ",
 	"Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP": "Call a procedure with a return value.",
 	"Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME": "call return",
@@ -690,6 +695,7 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET": "set ",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO": " to",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT": "of component",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_HELPURL": "",
 	"Blockly.Msg.LANG_SCREENS_TITLE": "Screen Name: ",
 	"Blockly.Msg.LANG_NO_ASSETS": "No available assets",
 	"Blockly.Msg.SHOW_WARNINGS": "Show Warnings",
@@ -751,6 +757,9 @@
 	"Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR": "Companion Connection Error",
 	"Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED": "The Companion has disconnected",
 	"Blockly.Msg.REPL_EMULATOR_ONLY": "You can only use this option to update the Emulator",
+	"Blockly.Msg.REPL_MORE_INFORMATION": "More Information",
+	"Blockly.Msg.REPL_NO_LEGACY": "Legacy Connection mode does not work when MIT App Inventor is loaded over https (secure).",
+	"Blockly.Msg.REPL_SECURE_CONNECTION": "<b>Note:</b> You are on a secure connection, legacy mode on the Companion will not work",
 	"Blockly.Msg.WARNING_DELETE_X_BLOCKS": "Are you sure you want to delete all %1 of these blocks?",
 	"Blockly.Msg.GENERATE_YAIL": "Generate Yail",
 	"Blockly.Msg.DO_IT": "Do It",
@@ -1072,6 +1081,7 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_FEATURECOLLECTION_HELPURL": "/reference/components/maps.html#FeatureCollection",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_LINESTRING_HELPURL": "/reference/components/maps.html#LineString",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_MARKER_HELPURL": "/reference/components/maps.html#Marker",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL": "/reference/components/maps.html#Navigation",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL": "/reference/components/maps.html#Polygon",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL": "/reference/components/maps.html#Rectangle",
 
@@ -1111,6 +1121,11 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_PEDOMETERSENSOR_HELPURL": "/reference/components/sensors.html#Pedometer",
 
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_PROXIMITYSENSOR_HELPURL": "/reference/components/sensors.html#ProximitySensor",
+
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_EVENTS_HELPURL": "/reference/components/connectivity.html#Serial",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_HELPURL": "/reference/components/connectivity.html#Serial",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_METHODS_HELPURL": "/reference/components/connectivity.html#Serial",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SERIAL_PROPERTIES_HELPURL": "/reference/components/connectivity.html#Serial",
 
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_THERMOMETER_HELPURL": "/reference/components/sensors.html#Thermometer",
 
@@ -1245,5 +1260,5 @@
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL": "",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_LONGEST_STRING_FIRST": "/reference/blocks/text.html#replaceallmappingslongeststring",
 	"Blockly.Msg.LANG_MATH_NUMBER_RADIX_HELPURL": "/reference/blocks/math.html#number-radix",
-	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL": "/reference/blocks/control.html#foreachdict",
+	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL": "/reference/blocks/control.html#foreachdict"
 }
