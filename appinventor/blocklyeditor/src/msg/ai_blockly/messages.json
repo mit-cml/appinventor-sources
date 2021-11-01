@@ -69,6 +69,7 @@
 	"Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED": "This block is not defined. Delete this block!",
 	"Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP": "The break block should be used only within loops",
 	"Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "This text block does not contain a valid number",
+	"Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT": "You need to provide a valid component to this block's \"%1\" socket.",
 	"Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP": "Click the square to pick a color.",
 	"Blockly.Msg.LANG_COLOUR_BLACK": "black",
 	"Blockly.Msg.LANG_COLOUR_WHITE": "white",
