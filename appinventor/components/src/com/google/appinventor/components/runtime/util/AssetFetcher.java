@@ -18,8 +18,11 @@ import java.io.IOException;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import android.content.Context;
+
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,6 +52,16 @@ import org.json.JSONException;
 
 public class AssetFetcher {
 
+  //question
+  private static Context context;
+  HashDatabase db = new HashDatabase(this.context);
+
+  public AssetFetcher(Context context){
+    this.context = context;
+  }
+  //did we intialize the database?
+
+
   private static final String LOG_TAG = AssetFetcher.class.getSimpleName();
 
   // We use a single threaded executor so we only load one asset at a time!
@@ -69,9 +82,20 @@ public class AssetFetcher {
           String fileName = uri + "/ode/download/file/" + projectId + "/" + asset;
           if (getFile(fileName, cookieValue, asset, 0) != null) {
             RetValManager.assetTransferred(asset);
+
           }
         }
       });
+  }
+
+
+  public static void storeHash(String fileName){
+    Date timeStamp = new Date();
+    File newFile = new File(fileName);
+    int hash = newFile.hashCode();
+    HashFile file = new HashFile(fileName,hash,timeStamp);
+    db.insertHashFile(file);
+
   }
 
   public static void upgradeCompanion(final String cookieValue, final String inputUri) {

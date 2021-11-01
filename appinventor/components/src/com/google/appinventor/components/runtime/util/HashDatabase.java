@@ -16,7 +16,7 @@ public final class HashDatabase extends SQLiteOpenHelper{
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     KEY_NAME + " TEXT," +
-                    KEY_HASH + " TEXT," +
+                    KEY_HASH + " INTEGER," +
                     KEY_TIMESTAMP + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
@@ -60,7 +60,7 @@ public final class HashDatabase extends SQLiteOpenHelper{
 
         HashFile hashFile = new HashFile();
         hashFile.setFileName(cursor.getString(0));
-        hashFile.setHash(cursor.getString(1));
+        hashFile.setHash(Integer.parseInt(cursor.getString(1)));
         hashFile.setTimestamp(cursor.getString(2));
 
         return hashFile;

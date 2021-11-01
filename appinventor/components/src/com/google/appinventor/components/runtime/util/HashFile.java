@@ -7,7 +7,7 @@ import java.util.Locale;
 public class HashFile {
 
     private String fileName;
-    private String hash;
+    private int hash;
     private String timestamp;
 
     public HashFile() {
@@ -16,7 +16,7 @@ public class HashFile {
     /**
      * Constructors for initialize HashFile object to be stored in the database
      */
-    public HashFile(String fileName, String hash, Date time) {
+    public HashFile(String fileName, int hash, Date time) {
         this.fileName = fileName;
         this.hash = hash;
         this.timestamp = formatTimestamp(time);
@@ -25,7 +25,7 @@ public class HashFile {
     /**
      * Constructors for initialize HashFile object which we get from the database
      */
-    public HashFile(String fileName, String hash, String timestamp) {
+    public HashFile(String fileName, int hash, String timestamp) {
         this.fileName = fileName;
         this.hash = hash;
         this.timestamp = timestamp;
@@ -48,14 +48,14 @@ public class HashFile {
     /**
      * Getter for hash
      */
-    public String getHash() {
+    public int getHash() {
         return hash;
     }
 
     /**
      * Setter for has
      */
-    public void setHash(String hash) {
+    public void setHash(int hash) {
         this.hash = hash;
     }
 
