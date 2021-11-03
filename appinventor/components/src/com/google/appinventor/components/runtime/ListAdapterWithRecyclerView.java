@@ -99,9 +99,7 @@ public class ListAdapterWithRecyclerView
           isVisible[i] = true;
           if (itemViews[i] != null) {
             itemViews[i].setVisibility(View.VISIBLE);
-            RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams)itemViews[i].getLayoutParams();
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            itemViews[i].setLayoutParams(layoutParams);
+           itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;;
           }
         } else {
           isVisible[i] = false;
@@ -310,7 +308,7 @@ public class ListAdapterWithRecyclerView
     String first = dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
     String second = "";
     if (dictItem.containsKey(Component.LISTVIEW_KEY_DESCRIPTION)) {
-      second = dictItem.get("Text2").toString();
+      second = dictItem.get(Component.LISTVIEW_KEY_DESCRIPTION).toString();
     }
     if (layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
       holder.textViewFirst.setText(first);
@@ -353,6 +351,9 @@ public class ListAdapterWithRecyclerView
     {
       holder.cardView.setVisibility(View.GONE);
       holder.cardView.getLayoutParams().height = 0;
+    } else {
+      holder.cardView.setVisibility(View.VISIBLE);
+      holder.cardView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
     }
     itemViews[position] = holder.cardView;
   }
