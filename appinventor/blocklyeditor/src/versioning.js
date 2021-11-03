@@ -2915,7 +2915,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
     // The Stop method was added. No blocks need to be changed.
     // The SpeechRecognizer.UseLegacy property was added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // The Language property was added.
+    3: "noUpgrade"
 
   }, // End SpeechRecognizer upgraders
 

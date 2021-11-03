@@ -17,7 +17,8 @@ import gnu.lists.FString;
 import gnu.math.IntFraction;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -400,7 +401,7 @@ public class JsonUtil {
    * @param value value to be serialized into JSON
    * @return JSON representation
    */
-  public static String getJsonRepresentationIfValueFileName(Context context, Object value) {
+  public static String getJsonRepresentationIfValueFileName(Form context, Object value) {
     try {
       List<String> valueList;
       if (value instanceof String) {
@@ -442,27 +443,40 @@ public class JsonUtil {
    * @param fileExtension three character file extension
    * @return the name of the created file
    */
-  private static String writeFile(Context context, String input, String fileExtension) {
-    FileOutputStream outStream = null;
+  private static String writeFile(Form context, final String input, String fileExtension) {
+    String fullDirName = context.getDefaultPath(BINFILE_DIR);
+    File destDirectory = new File(fullDirName);
+    final Synchronizer<Boolean> result = new Synchronizer<>();
+    File dest;
     try {
-      if (fileExtension.length() != 3 && fileExtension.length() != 4) {
-        throw new YailRuntimeError("File Extension must be three or four characters", "Write Error");
+      dest = File.createTempFile("BinFile", "." + fileExtension, destDirectory);
+      new FileWriteOperation(context, context, "Write",
+          dest.getAbsolutePath().replace(context.getDefaultPath(""), ""),
+          context.DefaultFileScope(), false, true) {
+        @Override
+        protected boolean process(OutputStream stream) throws IOException {
+          stream.write(Base64.decode(input, Base64.DEFAULT));
+          result.wakeup(true);
+          return true;
+        }
+      }.run();
+      result.waitfor();
+      if (result.getThrowable() != null) {
+        Throwable t = result.getThrowable();
+        Log.e(LOG_TAG, "Error writing content", t);
+        if (t instanceof RuntimeException) {
+          throw (RuntimeException) t;
+        } else if (t instanceof IOException) {
+          throw (IOException) t;
+        } else {
+          throw new YailRuntimeError(t.getMessage(), "Write");
+        }
       }
-      byte [] content = Base64.decode(input, Base64.DEFAULT);
-      String fullDirName = QUtil.getExternalStoragePath(context) + BINFILE_DIR;
-      File destDirectory = new File(fullDirName);
-      destDirectory.mkdirs();
-      File dest = File.createTempFile("BinFile", "." + fileExtension, destDirectory);
-      outStream = new FileOutputStream(dest);
-      outStream.write(content);
-      String retval = dest.toURI().toASCIIString();
-      trimDirectory(20, destDirectory);
-      return retval;
-    } catch (Exception e) {
+    } catch (IOException e) {
       throw new YailRuntimeError(e.getMessage(), "Write");
-    } finally {
-      IOUtils.closeQuietly(LOG_TAG, outStream);
     }
+    trimDirectory(20, destDirectory);
+    return dest.getAbsolutePath();
   }
 
   // keep only the last N files, where N = maxSavedFiles

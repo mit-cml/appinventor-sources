@@ -1,15 +1,26 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright © 2021 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import android.Manifest;
 import android.os.Environment;
 import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.RobolectricTestBase;
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowEnvironment;
 
 @RunWith(RobolectricTestRunner.class)
 public class FileUtilTest extends RobolectricTestBase {
@@ -81,5 +92,151 @@ public class FileUtilTest extends RobolectricTestBase {
         FileUtil.resolveFileName(getForm(), "test.txt", FileScope.App)));
     assertFalse(FileUtil.isAppSpecificExternalUri(getForm(),
         FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Private)));
+  }
+
+  @Test
+  public void testGetScopedPicture() {
+    ScopedFile result;
+
+    // Legacy mode puts images in /sdcard/My Documents/Pictures/
+    result = FileUtil.getScopedPictureFile(getForm(), "png");
+    assertEquals(FileScope.Legacy, result.getScope());
+    assertTrue(result.getFileName().startsWith("/My Documents/Pictures/"));
+    assertTrue(result.getFileName().endsWith(".png"));
+
+    // Asset mode gets switched to private mode for writing
+    getForm().DefaultFileScope(FileScope.Asset);
+    result = FileUtil.getScopedPictureFile(getForm(), "png");
+    assertEquals(FileScope.Private, result.getScope());
+    assertTrue(result.getFileName().startsWith("Pictures/"));
+    assertTrue(result.getFileName().endsWith(".png"));
+
+    // All other modes drop the "My Documents" folder
+    FileScope[] scopes = new FileScope[] {
+        FileScope.App, FileScope.Cache, FileScope.Private, FileScope.Shared
+    };
+    for (FileScope scope : scopes) {
+      getForm().DefaultFileScope(scope);
+      result = FileUtil.getScopedPictureFile(getForm(), "png");
+      assertEquals(scope, result.getScope());
+      assertTrue(result.getFileName().startsWith("Pictures/"));
+      assertTrue(result.getFileName().endsWith(".png"));
+    }
+  }
+
+  @Test
+  public void testGetExternalFile() {
+    getForm().DefaultFileScope(FileScope.Legacy);
+    ShadowEnvironment.setExternalStorageState(Environment.MEDIA_MOUNTED);
+
+    // getExternalFile will throw an error if the target is in the external storage but not in
+    // app-specific storage (e.g., Legacy mode) and the WRITE_EXTERNAL_STORAGE permission has not
+    // been granted by the user.
+    try {
+      FileUtil.getExternalFile(getForm(), "app.txt");
+      fail();
+    } catch (PermissionException e) {
+      assertEquals(Manifest.permission.WRITE_EXTERNAL_STORAGE, e.getPermissionNeeded());
+    }
+
+    // Grant permissions for the remainder of the test
+    Shadows.shadowOf(getForm()).grantPermissions(Manifest.permission.READ_EXTERNAL_STORAGE);
+    Shadows.shadowOf(getForm()).grantPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+    // When the external storage is available, everything should proceed normally when getting
+    // a reference to an external file.
+    try {
+      assertNotNull(FileUtil.getExternalFile(getForm(), "app.txt"));
+    } catch (FileUtil.FileException e) {
+      fail("Unexpected exception: " + e);
+    }
+
+    // When the default scope is Legacy, getExternalFile should resolve paths beginning with "/"
+    // the same as those without (both resolve to external files).
+    assertEquals(FileUtil.getExternalFile(getForm(), "app.txt"),
+        FileUtil.getExternalFile(getForm(), "/app.txt"));
+
+    // When the external storage is unmounted, getExternalFile should throw an error to indicate
+    // that external storage is unavailable.
+    ShadowEnvironment.setExternalStorageState(Environment.MEDIA_UNMOUNTED);
+    try {
+      FileUtil.getExternalFile(getForm(), "app.txt");
+      fail();
+    } catch (FileUtil.FileException e) {
+      assertEquals(ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_NOT_AVAILABLE,
+          e.getErrorMessageNumber());
+    }
+
+    // When the external storage is mounted, but read only, getExternalFile should throw an
+    // error to indicate that external storage is read only.
+    ShadowEnvironment.setExternalStorageState(Environment.MEDIA_MOUNTED_READ_ONLY);
+    try {
+      FileUtil.getExternalFile(getForm(), "app.txt");
+      fail();
+    } catch (FileUtil.FileException e) {
+      assertEquals(ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_READONLY, e.getErrorMessageNumber());
+    }
+
+    // Private files are always writeable
+    getForm().DefaultFileScope(FileScope.Private);
+    assertNotNull(FileUtil.getExternalFile(getForm(), "private.txt"));
+  }
+
+  @Test
+  public void testResolveFileNameScoped() {
+    final String baseAssetPath = getForm().getAssetPath("");
+    final String externPath = "file://" + QUtil.getExternalStoragePath(getForm());
+    final String privatePath = getForm().getPrivatePath("");
+
+    assertEquals(baseAssetPath + "asset.txt",
+        FileUtil.resolveFileName(getForm(), new ScopedFile(FileScope.Legacy, "//asset.txt")));
+    assertEquals(externPath + "/legacy.txt",
+        FileUtil.resolveFileName(getForm(), new ScopedFile(FileScope.Legacy, "/legacy.txt")));
+    assertEquals(privatePath + "/private.txt",
+        FileUtil.resolveFileName(getForm(), new ScopedFile(FileScope.Legacy, "private.txt")));
+  }
+
+  @Test
+  public void testNeedsReadPermission() {
+    assertFalse(FileUtil.needsReadPermission(new ScopedFile(FileScope.App, "test.txt")));
+    assertFalse(FileUtil.needsReadPermission(new ScopedFile(FileScope.Asset, "test.txt")));
+    assertFalse(FileUtil.needsReadPermission(new ScopedFile(FileScope.Cache, "test.txt")));
+    assertFalse(FileUtil.needsReadPermission(new ScopedFile(FileScope.Legacy, "test.txt")));
+    assertTrue(FileUtil.needsReadPermission(new ScopedFile(FileScope.Legacy, "/test.txt")));
+    assertFalse(FileUtil.needsReadPermission(new ScopedFile(FileScope.Legacy, "//test.txt")));
+    assertFalse(FileUtil.needsReadPermission(new ScopedFile(FileScope.Private, "test.txt")));
+    assertTrue(FileUtil.needsReadPermission(new ScopedFile(FileScope.Shared, "test.txt")));
+  }
+
+  @Test
+  public void testNeedsWritePermission() {
+    assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.App, "test.txt")));
+    assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Asset, "test.txt")));
+    assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Cache, "test.txt")));
+    assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Legacy, "test.txt")));
+    assertTrue(FileUtil.needsWritePermission(new ScopedFile(FileScope.Legacy, "/test.txt")));
+    assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Legacy, "//test.txt")));
+    assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Private, "test.txt")));
+    assertTrue(FileUtil.needsWritePermission(new ScopedFile(FileScope.Shared, "test.txt")));
+  }
+
+  @Test
+  public void testNeedsExternalStorage() {
+    assertTrue(FileUtil.needsExternalStorage(getForm(),
+        new ScopedFile(FileScope.App, "test.txt")));
+    assertFalse(FileUtil.needsExternalStorage(getForm(),
+        new ScopedFile(FileScope.Asset, "test.txt")));
+    assertFalse(FileUtil.needsExternalStorage(getForm(),
+        new ScopedFile(FileScope.Cache, "test.txt")));
+    assertFalse(FileUtil.needsExternalStorage(getForm(),
+        new ScopedFile(FileScope.Legacy, "test.txt")));
+    assertTrue(FileUtil.needsExternalStorage(getForm(),
+        new ScopedFile(FileScope.Legacy, "/test.txt")));
+    assertFalse(FileUtil.needsExternalStorage(getForm(),
+        new ScopedFile(FileScope.Legacy, "//test.txt")));
+    assertFalse(FileUtil.needsExternalStorage(getForm(),
+        new ScopedFile(FileScope.Private, "test.txt")));
+    assertTrue(FileUtil.needsExternalStorage(getForm(),
+        new ScopedFile(FileScope.Shared, "test.txt")));
   }
 }

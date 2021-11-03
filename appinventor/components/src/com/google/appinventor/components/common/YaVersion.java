@@ -1275,7 +1275,9 @@ public class YaVersion {
   // - The UseLegacy property was added which is set to True by default.
   // - The Stop method was added, which works only when UseLegacy
   //   property is set to False.
-  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 2;
+  // For SPEECHRECOGNIZER_COMPONENT_VERSION 3:
+  // - The Language property was added.
+  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 3;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version

@@ -99,7 +99,7 @@ public class ListAdapterWithRecyclerView
           isVisible[i] = true;
           if (itemViews[i] != null) {
             itemViews[i].setVisibility(View.VISIBLE);
-           itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;;
+            itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
           }
         } else {
           isVisible[i] = false;
