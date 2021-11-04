@@ -52,7 +52,7 @@ public interface Component {
    * ListView Orientation.
    */
   static final int VERTICAL_ORIENTATION = 0;
-  static final int HORISONTAL_ORIENTATION = 1;
+  static final int HORIZONTAL_ORIENTATION = 1;
   
   /*
    * Color constants.

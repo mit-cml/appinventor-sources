@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import android.widget.LinearLayout;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -33,7 +32,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -854,7 +852,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Returns the style of the button.
    *
    * @return one of {@link Component#VERTICAL_ORIENTATION},
-   * {@link Component#HORISONTAL_ORIENTATION},
+   * {@link Component#HORIZONTAL_ORIENTATION},
    */
   @SimpleProperty(
           category = PropertyCategory.APPEARANCE)
@@ -868,7 +866,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * allows the user to swipe left or right to brows the elements.
    *
    * @param orientation one of {@link Component#VERTICAL_ORIENTATION},
-   *              {@link Component#HORISONTAL_ORIENTATION},
+   *              {@link Component#HORIZONTAL_ORIENTATION},
    * @throws IllegalArgumentException if orientation is not a legal value.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION,
