@@ -851,8 +851,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Returns the style of the button.
    *
-   * @return one of {@link Component#VERTICAL_ORIENTATION},
-   * {@link Component#HORIZONTAL_ORIENTATION},
+   * @return one of {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL},
+   * {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL},
    */
   @SimpleProperty(
           category = PropertyCategory.APPEARANCE)
@@ -865,12 +865,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * in rows one after the other; or `Horizontal`, which displays one element at a time and
    * allows the user to swipe left or right to brows the elements.
    *
-   * @param orientation one of {@link Component#VERTICAL_ORIENTATION},
-   *              {@link Component#HORIZONTAL_ORIENTATION},
+   * @param orientation one of {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL},
+   *              {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL},
    * @throws IllegalArgumentException if orientation is not a legal value.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION,
-          defaultValue = Component.VERTICAL_ORIENTATION + "")
+          defaultValue = ComponentConstants.LAYOUT_ORIENTATION_VERTICAL + "")
   @SimpleProperty(description = "Specifies the layout's orientation (vertical, horizontal). ")
   public void Orientation(int orientation) {
     this.orientation = orientation;
