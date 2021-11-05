@@ -190,8 +190,10 @@ public class ListAdapterWithRecyclerView
         itemViews[i].setBackgroundColor(backgroundColor);
       }
     }
-    selection[pos] = true;
-    itemViews[pos].setBackgroundColor(selectionColor);
+    if (pos >= 0) {
+      selection[pos] = true;
+      itemViews[pos].setBackgroundColor(selectionColor);
+    }
   }
 
   public void changeSelections(int pos) {
