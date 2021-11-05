@@ -133,8 +133,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     recyclerView = new RecyclerView(container.$context());
     LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     recyclerView.setLayoutParams(params);
-    // initialize selectionIndex which also sets selection
-    SelectionIndex(0);
 
     txtSearchBox = new EditText(container.$context());
     txtSearchBox.setSingleLine(true);
@@ -204,6 +202,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     container.$add(this);
     Width(Component.LENGTH_FILL_PARENT);
     ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
+    // initialize selectionIndex which also sets selection
+    SelectionIndex(0);
   }
 
   @Override
@@ -406,12 +406,15 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     if (!dictItems.isEmpty()) {
       selectionIndex = ElementsUtil.selectionIndex(index, YailList.makeList(dictItems));
       selection = dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
-      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get("Text2").toString());
+      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_DESCRIPTION).toString());
     } else {
       selectionIndex = ElementsUtil.selectionIndex(index, stringItems);
       // Now, we need to change Selection to correspond to SelectionIndex.
       selection = ElementsUtil.setSelectionFromIndex(index, stringItems);
       selectionDetailText = "";
+    }
+    if (listAdapterWithRecyclerView != null) {
+      listAdapterWithRecyclerView.toggleSelection(selectionIndex - 1);
     }
   }
 
@@ -445,16 +448,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           break;
         }
         // Not found
-        selection = "";
         selectionIndex = 0;
-        selectionDetailText = "";
       }
     } else {
       selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, stringItems);
-      selectionDetailText = "";
     }
-    // selectionIndex is 1-indexed, but the listview items are 0-indexed
-    listAdapterWithRecyclerView.toggleSelection(selectionIndex - 1);
+    SelectionIndex(selectionIndex);
   }
 
   /**
