@@ -184,14 +184,16 @@ public class ListAdapterWithRecyclerView
   public void toggleSelection(int pos) {
     // With single select, clicked item becomes the only selected item
     Arrays.fill(selection, Boolean.FALSE);
-    for (int i = 0; i < itemViews.length; i++) {
-      // Views are created when they are displayed, so this list may not be fully populated.
-      if (itemViews[i] != null) {
-        itemViews[i].setBackgroundColor(backgroundColor);
+    if (pos > 0) {
+      for (int i = 0; i < itemViews.length; i++) {
+        // Views are created when they are displayed, so this list may not be fully populated.
+        if (itemViews[i] != null) {
+          itemViews[i].setBackgroundColor(backgroundColor);
+        }
       }
+      selection[pos] = true;
+      itemViews[pos].setBackgroundColor(selectionColor);
     }
-    selection[pos] = true;
-    itemViews[pos].setBackgroundColor(selectionColor);
   }
 
   public void changeSelections(int pos) {
