@@ -360,16 +360,29 @@
     <delete file="${tmp.dir}/authkey/meta"/>
     <delete file="${tmp.dir}/authkey/1"/>
   </target>
-
+  <!-- =====================================================================
+       Check to see if the war/WEB-INF directory already has an
+       authkey, which would mean it was copied over in WarLibs from
+       the source tree. In the master branch this will *not* be the
+       case, but it may be in a branding branch.
+       ===================================================================== -->
+  <target name="CheckBuildAuthKey"
+          depends="init,WarLibs">
+    <available file="${build.war.dir}/WEB-INF/authkey/meta"
+               property="authkey.inbuild" />
+  </target>
   <!-- =====================================================================
        Install the Authkey into the correct location
+       but only if we don't already have one copied over
+       from war/WEB-INF.
        ===================================================================== -->
   <target name="InstallAuthKey"
-          depends="init,CheckAuthKey,WarLibs">
+          depends="init,CheckAuthKey,WarLibs,CheckBuildAuthKey"
+          unless="${authkey.inbuild}">
     <fail message="You Must Create an Auth Key see misc/docs/authkey.md"
           unless="${authkey.exists}" />
     <unzip dest="${build.war.dir}/WEB-INF"
-      src="${user.home}/.appinventor/authkey.zip"/>
+           src="${user.home}/.appinventor/authkey.zip" />
   </target>
 
   <!-- =====================================================================
