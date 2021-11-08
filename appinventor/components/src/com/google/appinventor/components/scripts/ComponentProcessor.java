@@ -24,6 +24,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.annotations.UsesActivities;
 import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
 import com.google.appinventor.components.annotations.UsesContentProviders;
+import com.google.appinventor.components.annotations.UsesQueries;
 import com.google.appinventor.components.annotations.UsesServices;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
 import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
@@ -160,6 +161,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       "com.google.appinventor.components.annotations.UsesActivities",
       "com.google.appinventor.components.annotations.UsesBroadcastReceivers",
       "com.google.appinventor.components.annotations.UsesPermissions",
+      "com.google.appinventor.components.annotations.UsesQueries",
       "com.google.appinventor.components.annotations.UsesServices",
       "com.google.appinventor.components.annotations.UsesContentProviders");
 
@@ -1087,6 +1089,12 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Map<String, String[]> conditionalBroadcastReceivers;
 
     /**
+     * Mapping of component block names to queries that should be included
+     * if the block is used.
+     */
+    protected final Map<String, String[]> conditionalQueries;
+
+    /**
      * Mapping of component block names to services that should be
      * included if the block is used.
      */
@@ -1132,6 +1140,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * Broadcast receivers required by this component.
      */
     protected final Set<String> broadcastReceivers;
+
+    /**
+     * Queries required by this component.
+     */
+    protected final Set<String> queries;
 
     /**
      * Services required by this component.
@@ -1214,21 +1227,26 @@ public abstract class ComponentProcessor extends AbstractProcessor {
             "Component", false, elementUtils.isDeprecated(element));
       type = element.asType().toString();
       displayName = getDisplayNameForComponentType(name);
-      permissions = Sets.newHashSet();
-      conditionalPermissions = Maps.newTreeMap();
+
       conditionalBroadcastReceivers = Maps.newTreeMap();
-      conditionalServices = Maps.newTreeMap();
       conditionalContentProviders = Maps.newTreeMap();
-      libraries = Sets.newHashSet();
-      nativeLibraries = Sets.newHashSet();
+      conditionalPermissions = Maps.newTreeMap();
+      conditionalQueries = Maps.newTreeMap();
+      conditionalServices = Maps.newTreeMap();
+
       assets = Sets.newHashSet();
       activities = Sets.newHashSet();
-      metadata = Sets.newHashSet();
       activityMetadata = Sets.newHashSet();
       broadcastReceivers = Sets.newHashSet();
-      services = Sets.newHashSet();
-      contentProviders = Sets.newHashSet();
       classNameAndActionsBR = Sets.newHashSet();
+      contentProviders = Sets.newHashSet();
+      libraries = Sets.newHashSet();
+      metadata = Sets.newHashSet();
+      nativeLibraries = Sets.newHashSet();
+      permissions = Sets.newHashSet();
+      queries = Sets.newHashSet();
+      services = Sets.newHashSet();
+
       designerProperties = Maps.newTreeMap();
       properties = Maps.newTreeMap();
       methods = Maps.newTreeMap();
@@ -1587,6 +1605,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.metadata.addAll(parentComponent.metadata);
         componentInfo.activityMetadata.addAll(parentComponent.activityMetadata);
         componentInfo.broadcastReceivers.addAll(parentComponent.broadcastReceivers);
+        componentInfo.queries.addAll(parentComponent.queries);
         componentInfo.services.addAll(parentComponent.services);
         componentInfo.contentProviders.addAll(parentComponent.contentProviders);
         // TODO(Will): Remove the following call once the deprecated
@@ -1726,6 +1745,30 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       } catch (InvocationTargetException e) {
         messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
             "broadcast receiver attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      }
+    }
+
+    // Gather the required queries and build their element strings.
+    UsesQueries usesQueries = element.getAnnotation(UsesQueries.class);
+    if (usesQueries != null) {
+      try {
+        for (String packageName : usesQueries.packageNames()) {
+          componentInfo.queries.add("<package android:name=\"" + packageName + "\" />");
+        }
+        for (IntentFilterElement intent : usesQueries.intents()) {
+          updateWithNonEmptyValue(componentInfo.queries, intentFilterElementToIntentString(intent));
+        }
+        for (ProviderElement provider : usesQueries.providers()) {
+          updateWithNonEmptyValue(componentInfo.queries, providerElementToString(provider));
+        }
+      } catch (IllegalAccessException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering "
+            + "service attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering "
+            + "service attributes and subelements for component " + componentInfo.name);
         throw new RuntimeException(e);
       }
     }
@@ -2279,6 +2322,21 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     return elementString.append("    </intent-filter>\\n").toString();
   }
 
+  private static String intentFilterElementToIntentString(IntentFilterElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <intent-filter> element's opening tag including any
+    // receiver element attributes.
+    StringBuilder elementString = new StringBuilder("      <intent>\\n");
+
+    // Now, we collect any <intent-filter> subelements.
+    elementString.append(subelementsToString(element.actionElements()));
+    elementString.append(subelementsToString(element.categoryElements()));
+    elementString.append(subelementsToString(element.dataElements()));
+
+    // Finally, we close the <intent-filter> element and create its String.
+    return elementString.append("    </intent>\\n").toString();
+  }
+
   // Transform an @ActionElement into an XML element String for use later
   // in creating AndroidManifest.xml.
   private static String actionElementToString(ActionElement element)
@@ -2683,6 +2741,32 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.conditionalBroadcastReceivers.put(blockName, receivers.toArray(new String[0]));
       } catch (Exception e) {
         messager.printMessage(Kind.ERROR, "Unable to process broadcast receiver", element);
+      }
+    }
+
+    // Gather the required queries and build their element strings.
+    UsesQueries usesQueries = element.getAnnotation(UsesQueries.class);
+    if (usesQueries != null) {
+      try {
+        Set<String> queries = new HashSet<>();
+        for (String packageName : usesQueries.packageNames()) {
+          updateWithNonEmptyValue(queries, "<package android:name=\"" + packageName + "\" />");
+        }
+        for (IntentFilterElement intent : usesQueries.intents()) {
+          updateWithNonEmptyValue(queries, intentFilterElementToIntentString(intent));
+        }
+        for (ProviderElement provider : usesQueries.providers()) {
+          updateWithNonEmptyValue(queries, providerElementToString(provider));
+        }
+        componentInfo.conditionalQueries.put(blockName, queries.toArray(new String[0]));
+      } catch (IllegalAccessException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering "
+            + "service attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering "
+            + "service attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
       }
     }
 

@@ -5,6 +5,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.ACCESS_NETWORK_STATE;
+import static android.Manifest.permission.INTERNET;
+
 import android.Manifest;
 import android.app.Activity;
 
@@ -103,10 +106,7 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
     category = ComponentCategory.STORAGE,
     nonVisible = true,
     iconName = "images/cloudDB.png")
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-  "android.permission.ACCESS_NETWORK_STATE," +
-  "android.permission.READ_EXTERNAL_STORAGE," +
-  "android.permission.WRITE_EXTERNAL_STORAGE")
+@UsesPermissions({INTERNET, ACCESS_NETWORK_STATE})
 @UsesLibraries(libraries = "jedis.jar")
 public final class CloudDB extends AndroidNonvisibleComponent implements Component,
   OnClearListener, OnDestroyListener {
@@ -247,9 +247,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private final List<storedValue> storeQueue = Collections.synchronizedList(new ArrayList());
 
   private ConnectivityManager cm;
-
-  // Do we have storage permission yet
-  private boolean havePermission = false;
 
   private static class storedValue {
     private String tag;
@@ -582,18 +579,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   @SimpleFunction(description = "Store a value at a tag.")
   public void StoreValue(final String tag, final Object valueToStore) {
     checkProjectIDNotBlank();
-    if (!havePermission) {
-      final CloudDB me = this;
-      form.askPermission(new BulkPermissionRequest(this, "CloudDB",
-          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
-          @Override
-          public void onGranted() {
-            me.havePermission = true;
-            StoreValue(tag, valueToStore);
-          }
-        });
-      return;
-    }
     final String value;
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
     boolean isConnected = networkInfo != null && networkInfo.isConnected();
@@ -755,18 +740,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       Log.d(LOG_TAG, "getting value ... for tag: " + tag);
     }
     checkProjectIDNotBlank();
-    if (!havePermission) {
-      final CloudDB me = this;
-      form.askPermission(new BulkPermissionRequest(this, "CloudDB",
-          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
-          @Override
-          public void onGranted() {
-            me.havePermission = true;
-            GetValue(tag, valueIfTagNotThere);
-          }
-        });
-      return;
-    }
     final AtomicReference<Object> value = new AtomicReference<Object>();
     Cursor cursor = null;
     SQLiteDatabase db = null;

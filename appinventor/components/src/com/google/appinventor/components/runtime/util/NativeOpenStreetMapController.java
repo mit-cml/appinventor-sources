@@ -1228,7 +1228,15 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   @Override
   public void showInfobox(MapFeature feature) {
     OverlayWithIW overlay = featureOverlays.get(feature);
-    overlay.showInfoWindow();
+    if (overlay instanceof org.osmdroid.views.overlay.Marker) {
+      overlay.showInfoWindow();
+    } else if (overlay instanceof org.osmdroid.views.overlay.Polyline) {
+      org.osmdroid.views.overlay.Polyline polyOverlay =  (org.osmdroid.views.overlay.Polyline)overlay;
+      polyOverlay.showInfoWindow(feature.getCentroid());
+    } else {
+      org.osmdroid.views.overlay.Polygon polyOverlay =  (org.osmdroid.views.overlay.Polygon)overlay;
+      polyOverlay.showInfoWindow(feature.getCentroid());
+    }
   }
 
   @Override

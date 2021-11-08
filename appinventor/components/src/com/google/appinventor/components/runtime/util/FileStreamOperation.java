@@ -42,6 +42,22 @@ public class FileStreamOperation<T extends Closeable> extends SingleFileOperatio
     super(form, component, method, fileName, scope, accessMode, async);
   }
 
+  /**
+   * Create a new file operation.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param component the Component requesting the file operation
+   * @param method the method of {@code component} requesting the file operation
+   * @param file the ScopedFile to write to
+   * @param accessMode access mode for the file
+   * @param async true if the operation should be performed on a separate thread to prevent
+   *              blocking the UI thread
+   */
+  protected FileStreamOperation(Form form, Component component, String method, ScopedFile file,
+      FileAccessMode accessMode, boolean async) {
+    super(form, component, method, file, accessMode, async);
+  }
+
   @Override
   protected void processFile(ScopedFile file) {
     T stream = null;
