@@ -345,7 +345,6 @@ public final class Compiler {
 
   private File libsDir; // The directory that will contain any native libraries for packaging
   private String dexCacheDir;
-
   private JSONArray simpleCompsBuildInfo;
   private JSONArray extCompsBuildInfo;
   private Set<String> simpleCompTypes;  // types needed by the project
