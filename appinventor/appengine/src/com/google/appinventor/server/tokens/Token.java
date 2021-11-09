@@ -65,6 +65,19 @@ public class Token {
     }
   }
 
+  public static synchronized String makeAccountDeletionToken(String userId, String email) {
+    try {
+      TokenProto.token newToken = TokenProto.token.newBuilder()
+        .setCommand(TokenProto.token.CommandType.DELETEACCOUNT)
+        .setUuid(userId)
+        .setName(email)         // Yes, we are using the name field
+        .setTs(System.currentTimeMillis()).build();
+      return Base64Coder.encode(crypter.encrypt(newToken.toByteArray()));
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public static TokenProto.token verifyToken(String inToken) throws TokenException {
     try {
       byte [] decrypted = crypter.decrypt(Base64Coder.decode(inToken));
