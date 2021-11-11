@@ -52,15 +52,8 @@ import org.json.JSONException;
 
 public class AssetFetcher {
 
-  //question
-  private static Context context;
-  HashDatabase db = new HashDatabase(this.context);
-
-  public AssetFetcher(Context context){
-    this.context = context;
-  }
-  //did we intialize the database?
-
+  private static Context context = ReplForm.getActiveForm();
+  private static HashDatabase db = new HashDatabase(context);
 
   private static final String LOG_TAG = AssetFetcher.class.getSimpleName();
 
@@ -95,7 +88,6 @@ public class AssetFetcher {
     int hash = newFile.hashCode();
     HashFile file = new HashFile(fileName,hash,timeStamp);
     db.insertHashFile(file);
-
   }
 
   public static void upgradeCompanion(final String cookieValue, final String inputUri) {
