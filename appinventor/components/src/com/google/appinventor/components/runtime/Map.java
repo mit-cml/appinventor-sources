@@ -5,7 +5,11 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 import android.util.Log;
+
 import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -28,8 +32,11 @@ import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.LocationSensor.LocationSensorListener;
+
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.FileWriteOperation;
 import com.google.appinventor.components.runtime.util.GeoJSONUtil;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.MapFactory;
@@ -41,9 +48,12 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
+import com.google.appinventor.components.runtime.util.ScopedFile;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.IOException;
+
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,10 +90,7 @@ import org.osmdroid.util.BoundingBox;
     "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>")
 @SimpleObject
 @UsesAssets(fileNames = "location.png, marker.svg")
-@UsesPermissions(permissionNames = "android.permission.INTERNET, " + "android.permission.ACCESS_FINE_LOCATION, "
-  + "android.permission.ACCESS_COARSE_LOCATION, " + "android.permission.ACCESS_WIFI_STATE, "
-  + "android.permission.ACCESS_NETWORK_STATE, " + "android.permission.WRITE_EXTERNAL_STORAGE, "
-  + "android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions({ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION})
 @UsesLibraries(libraries = "osmdroid.aar, osmdroid.jar, androidsvg.jar, jts.jar")
 public class Map extends MapFeatureContainerBase implements MapEventListener {
   private static final String TAG = Map.class.getSimpleName();
@@ -604,23 +611,40 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   @SimpleFunction(description = "Save the contents of the Map to the specified path.")
   public void Save(final String path) {
     final List<MapFeature> featuresToSave = new ArrayList<MapFeature>(features);
-    AsynchUtil.runAsynchronously(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          GeoJSONUtil.writeFeaturesAsGeoJSON(featuresToSave, path);
-        } catch(final IOException e) {
-          final Form form = $form();
-          form.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              form.dispatchErrorOccurredEvent(Map.this, "Save",
-                  ErrorMessages.ERROR_EXCEPTION_DURING_MAP_SAVE, e.getMessage());
-            }
-          });
+    // Needed for backward compatibility prior to nb188
+    if (path.startsWith("/") || path.startsWith("file:/")) {
+      final java.io.File target = path.startsWith("file:") ? new java.io.File(URI.create(path))
+          : new java.io.File(path);
+      AsynchUtil.runAsynchronously(new Runnable() {
+        @Override
+        public void run() {
+          doSave(featuresToSave, target);
         }
-      }
-    });
+      });
+    } else {
+      new FileWriteOperation($form(), this, "Save", path, $form().DefaultFileScope(), false, true) {
+        @Override
+        protected void processFile(ScopedFile file) {
+          String uri = FileUtil.resolveFileName(form, file);
+          java.io.File target = new java.io.File(URI.create(uri));
+          doSave(featuresToSave, target);
+        }
+      }.run();
+    }
+  }
+
+  private void doSave(List<MapFeature> featuresToSave, java.io.File target) {
+    try {
+      GeoJSONUtil.writeFeaturesAsGeoJSON(featuresToSave, target.getAbsolutePath());
+    } catch (final IOException e) {
+      $form().runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          $form().dispatchErrorOccurredEvent(Map.this, "Save",
+              ErrorMessages.ERROR_EXCEPTION_DURING_MAP_SAVE, e.getMessage());
+        }
+      });
+    }
   }
 
   /**

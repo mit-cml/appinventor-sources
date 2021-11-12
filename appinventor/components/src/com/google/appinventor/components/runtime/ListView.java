@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import android.widget.LinearLayout;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -33,7 +32,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -133,10 +131,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     layout = ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT;
 
     recyclerView = new RecyclerView(container.$context());
-    LayoutParams paramms = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-    recyclerView.setLayoutParams(paramms);
-    // initialize selectionIndex which also sets selection
-    SelectionIndex(0);
+    LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+    recyclerView.setLayoutParams(params);
 
     txtSearchBox = new EditText(container.$context());
     txtSearchBox.setSingleLine(true);
@@ -153,10 +149,14 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       @Override
       public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
         // When user changed the Text
-        if (cs.length() == 0) {
-          setAdapterData();
+        if (cs.length() > 0) {
+          if (!listAdapterWithRecyclerView.hasVisibleItems()) {
+            setAdapterData();
+          }
+          listAdapterWithRecyclerView.getFilter().filter(cs);
+          recyclerView.setAdapter(listAdapterWithRecyclerView);
         } else {
-          listAdapterWithRecyclerView.getFilter().filter(cs.toString());
+          setAdapterData();
         }
       }
 
@@ -202,6 +202,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     container.$add(this);
     Width(Component.LENGTH_FILL_PARENT);
     ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
+    // initialize selectionIndex which also sets selection
+    SelectionIndex(0);
   }
 
   @Override
@@ -346,44 +348,27 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       // if the data is available in AddData property
       listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, dictItems, textColor, detailTextColor, fontSizeMain, fontSizeDetail, fontTypeface, fontTypeDetail, layout, backgroundColor, selectionColor, imageWidth, imageHeight, false);
 
-      listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
-        @Override
-        public void onItemClick(int position, View v) {
-          listAdapterWithRecyclerView.toggleSelection(position);
-          SelectionIndex(position + 1);
-          AfterPicking();
-        }
-      });
-      GridLayoutManager gridlayoutManager;
-
       if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
         layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManager);
       } else { // if (orientation == ComponentConstants.LAYOUT_ORIENTATION_VERTICAL) {
         layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-      } //else {
-//        gridlayoutManager = new GridLayoutManager(container.$context(), gridCount, GridLayoutManager.VERTICAL, false);
-//        recyclerView.setLayoutManager(gridlayoutManager);
-      // TODO: Grid Layout
-      //     }
-      recyclerView.setAdapter(listAdapterWithRecyclerView);
+      }
     } else {
       // Legacy Support: if the data is not available in AddData property but is available in ElementsFromString property
       listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, stringItems, textColor, fontSizeMain, fontTypeface, backgroundColor, selectionColor);
 
-      listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
-        @Override
-        public void onItemClick(int position, View v) {
-          listAdapterWithRecyclerView.toggleSelection(position);
-          SelectionIndex(position + 1);
-          AfterPicking();
-        }
-      });
       layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
-      recyclerView.setLayoutManager(layoutManager);
-      recyclerView.setAdapter(listAdapterWithRecyclerView);
     }
+    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
+      @Override
+      public void onItemClick(int position, View v) {
+        listAdapterWithRecyclerView.toggleSelection(position);
+        SelectionIndex(position + 1);
+        AfterPicking();
+      }
+    });
+    recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setAdapter(listAdapterWithRecyclerView);
   }
 
   /**
@@ -421,14 +406,16 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     if (!dictItems.isEmpty()) {
       selectionIndex = ElementsUtil.selectionIndex(index, YailList.makeList(dictItems));
       selection = dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
-      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get("Text2").toString());
+      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_DESCRIPTION).toString());
     } else {
       selectionIndex = ElementsUtil.selectionIndex(index, stringItems);
       // Now, we need to change Selection to correspond to SelectionIndex.
       selection = ElementsUtil.setSelectionFromIndex(index, stringItems);
       selectionDetailText = "";
     }
-
+    if (listAdapterWithRecyclerView != null) {
+      listAdapterWithRecyclerView.toggleSelection(selectionIndex - 1);
+    }
   }
 
   /**
@@ -461,14 +448,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           break;
         }
         // Not found
-        selection = "";
         selectionIndex = 0;
-        selectionDetailText = "";
       }
     } else {
       selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, stringItems);
-      selectionDetailText = "";
     }
+    SelectionIndex(selectionIndex);
   }
 
   /**
@@ -651,7 +636,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Specifies the `ListView` item's text font size
    *
-   * @param integer value for font size
+   * @param textSize int value for font size
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_TEXT_SIZE + "")
@@ -865,8 +850,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Returns the style of the button.
    *
-   * @return one of {@link Component#VERTICAL_ORIENTATION},
-   * {@link Component#HORISONTAL_ORIENTATION},
+   * @return one of {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL},
+   * {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL},
    */
   @SimpleProperty(
           category = PropertyCategory.APPEARANCE)
@@ -879,12 +864,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * in rows one after the other; or `Horizontal`, which displays one element at a time and
    * allows the user to swipe left or right to brows the elements.
    *
-   * @param orientation one of {@link Component#VERTICAL_ORIENTATION},
-   *              {@link Component#HORIZONTAL_ORIENTATION},
+   * @param orientation one of {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL},
+   *              {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL},
    * @throws IllegalArgumentException if orientation is not a legal value.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION,
-          defaultValue = Component.VERTICAL_ORIENTATION + "")
+          defaultValue = ComponentConstants.LAYOUT_ORIENTATION_VERTICAL + "")
   @SimpleProperty(description = "Specifies the layout's orientation (vertical, horizontal). ")
   public void Orientation(int orientation) {
     this.orientation = orientation;

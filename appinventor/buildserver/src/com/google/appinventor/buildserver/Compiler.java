@@ -99,8 +99,8 @@ public final class Compiler {
   private static final String COLON = File.pathSeparator;
   private static final String ZIPSLASH = "/";
 
-  public static final String RUNTIME_FILES_DIR = "/" + "files" + "/";
-
+  public static final String RUNTIME_FILES_DIR = "/files/";
+  public static final String RUNTIME_TOOLS_DIR = "/tools/";
 
   // Native library directory names
   private static final String LIBS_DIR_NAME = "libs";
@@ -112,12 +112,7 @@ public final class Compiler {
   private static final String ASSET_DIR_NAME = "assets";
   private static final String EXT_COMPS_DIR_NAME = "external_comps";
 
-  private static final String DEFAULT_APP_NAME = "";
   private static final String DEFAULT_ICON = RUNTIME_FILES_DIR + "ya.png";
-  private static final String DEFAULT_VERSION_CODE = "1";
-  private static final String DEFAULT_VERSION_NAME = "1.0";
-  private static final String DEFAULT_MIN_SDK = "7";
-  private static final String DEFAULT_THEME = "AppTheme.Light.DarkActionBar";
 
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
@@ -132,13 +127,13 @@ public final class Compiler {
   private static final String COMP_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
   private static final String DX_JAR =
-      RUNTIME_FILES_DIR + "dx.jar";
+      RUNTIME_TOOLS_DIR + "dx.jar";
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR =
       RUNTIME_FILES_DIR + "AndroidRuntime.jar";
   private static final String APKSIGNER_JAR =
-      RUNTIME_FILES_DIR + "apksigner.jar";
+      RUNTIME_TOOLS_DIR + "apksigner.jar";
 
   /*
    * Note for future updates: This list can be obtained from an Android Studio project running the
@@ -185,28 +180,28 @@ public final class Compiler {
       ));
 
   private static final String LINUX_AAPT_TOOL =
-      "/tools/linux/aapt";
+      RUNTIME_TOOLS_DIR + "linux/aapt";
   private static final String LINUX_ZIPALIGN_TOOL =
-      "/tools/linux/zipalign";
+      RUNTIME_TOOLS_DIR + "linux/zipalign";
   private static final String MAC_AAPT_TOOL =
-      "/tools/mac/aapt";
+      RUNTIME_TOOLS_DIR + "mac/aapt";
   private static final String MAC_ZIPALIGN_TOOL =
-      "/tools/mac/zipalign";
+      RUNTIME_TOOLS_DIR + "mac/zipalign";
   private static final String WINDOWS_AAPT_TOOL =
-      "/tools/windows/aapt";
+      RUNTIME_TOOLS_DIR + "windows/aapt";
   private static final String WINDOWS_PTHEAD_DLL =
-      "/tools/windows/libwinpthread-1.dll";
+      RUNTIME_TOOLS_DIR + "windows/libwinpthread-1.dll";
   private static final String WINDOWS_ZIPALIGN_TOOL =
-      "/tools/windows/zipalign";
+      RUNTIME_TOOLS_DIR + "windows/zipalign";
 
   private static final String LINUX_AAPT2_TOOL =
-      "/tools/linux/aapt2";
+      RUNTIME_TOOLS_DIR + "linux/aapt2";
   private static final String MAC_AAPT2_TOOL =
-      "/tools/mac/aapt2";
+      RUNTIME_TOOLS_DIR + "mac/aapt2";
   private static final String WINDOWS_AAPT2_TOOL =
-      "/tools/windows/aapt2";
+      RUNTIME_TOOLS_DIR + "windows/aapt2";
   private static final String BUNDLETOOL_JAR =
-      RUNTIME_FILES_DIR + "bundletool.jar";
+      RUNTIME_TOOLS_DIR + "bundletool.jar";
 
   @VisibleForTesting
   static final String YAIL_RUNTIME = RUNTIME_FILES_DIR + "runtime.scm";
@@ -221,6 +216,8 @@ public final class Compiler {
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> broadcastReceiversNeeded =
       new ConcurrentHashMap<String, Set<String>>();
+  private final ConcurrentMap<String, Set<String>> queriesNeeded =
+      new ConcurrentHashMap<>();
   private final ConcurrentMap<String, Set<String>> servicesNeeded =
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> contentProvidersNeeded =
@@ -480,6 +477,11 @@ public final class Compiler {
     return broadcastReceiversNeeded;
   }
 
+  @VisibleForTesting
+  Map<String, Set<String>> getQueries() {
+    return queriesNeeded;
+  }
+
   // Just used for testing
   @VisibleForTesting
   Map<String, Set<String>> getServices() {
@@ -648,7 +650,7 @@ public final class Compiler {
       n += activityMetadataNeeded.get(type).size();
     }
 
-    System.out.println("Component metadata needed, n = " + n);
+    System.out.println("Component activity metadata needed, n = " + n);
   }
 
   /*
@@ -670,6 +672,24 @@ public final class Compiler {
     }
 
     mergeConditionals(conditionals.get(ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET), broadcastReceiversNeeded);
+  }
+
+  /*
+   * Generate a set of conditionally included queries needed by this project.
+   */
+  @VisibleForTesting
+  void generateQueries() {
+    try {
+      loadJsonInfo(queriesNeeded, ComponentDescriptorConstants.QUERIES_TARGET);
+    } catch (IOException e) {
+      // This is fatal.
+      userErrors.print(String.format(ERROR_IN_STAGE, "Services"));
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      userErrors.print(String.format(ERROR_IN_STAGE, "Services"));
+    }
+
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.QUERIES_TARGET), queriesNeeded);
   }
 
   /*
@@ -846,10 +866,10 @@ public final class Compiler {
    * Create the default color and styling for the app.
    */
   private boolean createValuesXml(File valuesDir, String suffix) {
-    String colorPrimary = project.getPrimaryColor() == null ? "#A5CF47" : project.getPrimaryColor();
-    String colorPrimaryDark = project.getPrimaryColorDark() == null ? "#41521C" : project.getPrimaryColorDark();
-    String colorAccent = project.getAccentColor() == null ? "#00728A" : project.getAccentColor();
-    String theme = project.getTheme() == null ? "Classic" : project.getTheme();
+    String colorPrimary = project.getPrimaryColor();
+    String colorPrimaryDark = project.getPrimaryColorDark();
+    String colorAccent = project.getAccentColor();
+    String theme = project.getTheme();
     String actionbar = project.getActionBar();
     String parentTheme;
     boolean isClassicTheme = "Classic".equals(theme) || suffix.isEmpty();  // Default to classic theme prior to SDK 11
@@ -1010,14 +1030,14 @@ public final class Compiler {
     String packageName = Signatures.getPackageName(mainClass);
     String className = Signatures.getClassName(mainClass);
     String projectName = project.getProjectName();
-    String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
-    String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanName(project.getVName());
+    String vCode = project.getVCode();
+    String vName = cleanName(project.getVName());
     if (includeDangerousPermissions) {
       vName += "u";
     }
-    String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
-    LOG.log(Level.INFO, "VCode: " + project.getVCode());
-    LOG.log(Level.INFO, "VName: " + project.getVName());
+    String aName = cleanName(project.getAName());
+    LOG.log(Level.INFO, "VCode: " + vCode);
+    LOG.log(Level.INFO, "VName: " + vName);
 
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
@@ -1056,7 +1076,18 @@ public final class Compiler {
         }
       }
 
-      int minSdk = Integer.parseInt((project.getMinSdk() == null) ? DEFAULT_MIN_SDK : project.getMinSdk());
+      if (queriesNeeded.size() > 0) {
+        out.write("  <queries>\n");
+        for (Map.Entry<String, Set<String>> componentSubElSetPair : queriesNeeded.entrySet()) {
+          Set<String> subelementSet = componentSubElSetPair.getValue();
+          for (String subelement : subelementSet) {
+            // replace %packageName% with the actual packageName
+            out.write(subelement.replace("%packageName%", packageName));
+          }
+        }
+        out.write("  </queries>\n");
+      }
+      int minSdk = Integer.parseInt(project.getMinSdk());
       if (!isForCompanion) {
         for (Set<String> minSdks : minSdksNeeded.values()) {
           for (String sdk : minSdks) {
@@ -1390,28 +1421,30 @@ public final class Compiler {
         reporter.report(0);
       }
 
-      statReporter.nextStage(compiler, "generateAssets");
-      compiler.generateAssets();
       statReporter.nextStage(compiler, "generateActivities");
       compiler.generateActivities();
-      statReporter.nextStage(compiler, "generateMetadata");
-      compiler.generateMetadata();
       statReporter.nextStage(compiler, "generateActivityMetadata");
       compiler.generateActivityMetadata();
+      statReporter.nextStage(compiler, "generateAssets");
+      compiler.generateAssets();
       statReporter.nextStage(compiler, "generateBroadcastReceivers");
       compiler.generateBroadcastReceivers();
-      statReporter.nextStage(compiler, "generateServices");
-      compiler.generateServices();
       statReporter.nextStage(compiler, "generateContentProviders");
       compiler.generateContentProviders();
       statReporter.nextStage(compiler, "generateLibNames");
       compiler.generateLibNames();
+      statReporter.nextStage(compiler, "generateMetadata");
+      compiler.generateMetadata();
+      statReporter.nextStage(compiler, "generateMinSdks");
+      compiler.generateMinSdks();
       statReporter.nextStage(compiler, "generateNativeLibNames");
       compiler.generateNativeLibNames();
       statReporter.nextStage(compiler, "generatePermissions");
       compiler.generatePermissions();
-      statReporter.nextStage(compiler, "generateMinSdks");
-      compiler.generateMinSdks();
+      statReporter.nextStage(compiler, "generateQueries");
+      compiler.generateQueries();
+      statReporter.nextStage(compiler, "generateServices");
+      compiler.generateServices();
 
       // TODO(Will): Remove the following call once the deprecated
       //             @SimpleBroadcastReceiver annotation is removed. It should
@@ -2793,7 +2826,7 @@ public final class Compiler {
   private void libSetup() {
     String osName = System.getProperty("os.name");
     if (osName.equals("Linux")) {
-      ensureLib("/tmp/lib64", "libc++.so", "/tools/linux/lib64/libc++.so");
+      ensureLib("/tmp/lib64", "libc++.so", RUNTIME_TOOLS_DIR + "linux/lib64/libc++.so");
     } else if (osName.startsWith("Windows")) {
       ensureLib(System.getProperty("java.io.tmpdir"), "libwinpthread-1.dll", WINDOWS_PTHEAD_DLL);
     }

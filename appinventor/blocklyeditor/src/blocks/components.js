@@ -525,7 +525,8 @@ Blockly.Blocks.component_event = {
       componentDb.forEventInType(typeName, function(_, eventName) {
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE +
-            componentDb.getInternationalizedComponentType(typeName),
+            componentDb.getInternationalizedComponentType(typeName) +  '.' +
+            componentDb.getInternationalizedEventName(eventName),
           mutatorAttributes: {
             component_type: typeName,
             is_generic: true,
@@ -911,20 +912,21 @@ Blockly.Blocks.component_method = {
 
     delete typeNameDict['Form'];
 
-    goog.object.forEach(typeNameDict, function(componentType) {
-      componentDb.forMethodInType(componentType, function(_, methodName) {
+    Object.keys(typeNameDict).forEach(function (typeName) {
+      componentDb.forMethodInType(typeName, function (_, methodName) {
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL +
-          componentDb.getInternationalizedComponentType(componentType) + '.' +
-          componentDb.getInternationalizedMethodName(methodName),
+              componentDb.getInternationalizedComponentType(typeName) + '.' +
+              componentDb.getInternationalizedMethodName(methodName),
           mutatorAttributes: {
-            component_type: componentType,
+            component_type: typeName,
             method_name: methodName,
             is_generic: 'true'
           }
         });
       });
     });
+
     return tb;
   },
 
