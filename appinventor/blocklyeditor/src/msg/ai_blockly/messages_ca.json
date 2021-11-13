@@ -1,1 +1,18 @@
-{}
+{
+    "Blockly.Msg.DUPLICATE_BLOCK": "Duplicar",
+    "Blockly.Msg.SHOW": "Mostrar Controls de l'Espai de Treball",
+    "Blockly.Msg.HIDE": "Amagar Controls de l'Espai de Treball",
+    "Blockly.Msg.CLEAN_UP": "Netejar Blocs",
+    "Blockly.Msg.REDO": "Refés",
+    "Blockly.Msg.UNDO": "Desfer",
+    "Blockly.Msg.DELETE_X_BLOCKS": "Suprimir %1 Blocs",
+    "Blockly.Msg.DELETE_BLOCK": "Suprimir Bloc",
+    "Blockly.Msg.DELETE_ALL_BLOCKS": "Suprimir tots els blocs %1?",
+    "Blockly.Msg.CONFIRM_DELETE": "Confirmar la supressió",
+    "Blockly.Msg.VERTICAL_PARAMETERS": "Organitzar Paràmetres Verticalment",
+    "Blockly.Msg.HORIZONTAL_PARAMETERS": "Organitzar Paràmetres Horitzontalment",
+    "Blockly.Msg.INLINE_INPUTS": "Entrades En Línia",
+    "Blockly.Msg.EXTERNAL_INPUTS": "Entrades Externes",
+    "Blockly.Msg.ADD_COMMENT": "Afegir Comentari",
+    "Blockly.Msg.REMOVE_COMMENT": "Eliminar Comentari"
+}
