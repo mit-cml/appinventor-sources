@@ -424,7 +424,7 @@
     "Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY": "սկզբում բաժանել ցանկացած",
     "Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST": "սկզբում բաժանել",
     "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP": "Ստուգում է, թե արդյոք հատվածը պատկանում է տեքստին:",
-    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "պարունակում է %1 տեսքտի %2 հատված",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT": "%1 տեքստ %2 %3 %4",
     "Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_HEX": "Վերցնում է 10 համակարգում դրական ամբողջ թիվ ու վերադարձնում է տող, որը թիվը ներկայացնում է տասնվեցական տեսքով",
     "Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP": "Ստուգում է, թե ինչ-որ բան տասնվեցական համակարգի թիվ ներկայացնող տող է:",
     "Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_MODULO": "Վերադարձնել մնացքը:",
@@ -702,5 +702,17 @@
     "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS": "պարունակում է",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "արժեք",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "բանալի",
-    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "կատարել"
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "կատարել",
+    "Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE": "թվի հիմքը",
+    "Blockly.Msg.LANG_MATH_OCTAL_FORMAT": "ութական",
+    "Blockly.Msg.LANG_MATH_BINARY_FORMAT": "երկուական",
+    "Blockly.Msg.LANG_MATH_HEXADECIMAL_FORMAT": "տասնվեցական",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE": "յուրաքանչյուրի համար բառարանում",
+    "Blockly.Msg.LANG_SCREENS_TITLE": "Էկրանի անուն ",
+    "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "Այս տեքստային բլոկը չի պարունակում վավեր թիվ",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL": "պարունալում է բոլորը",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY": "պարունակում է ցանկացած",
+    "Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED": "Companion-ը անջատվեց",
+    "Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP": "Ավելացնել զույգը բառարանում։",
+    "Blockly.Msg.LANG_MATH_DECIMAL_FORMAT": "տասնորդական"
 }
