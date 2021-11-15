@@ -60,7 +60,8 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
         "so that collision checking will be inaccurate for tall narrow or short " +
         "wide sprites that are rotated.  Any of the sprite properties " +
         "can be changed at any time under program control.</p> ",
-    category = ComponentCategory.ANIMATION)
+    category = ComponentCategory.ANIMATION,
+    iconName = "images/imageSprite.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public class ImageSprite extends Sprite {

@@ -33,7 +33,8 @@ import org.json.JSONException;
     description = "A FeatureCollection contains one or more map features as a group. Any events " +
         "fired on a feature in the collection will also trigger the corresponding event on the " +
         "collection object. FeatureCollections can be loaded from external resources as a means " +
-        "of populating a Map with content.")
+        "of populating a Map with content.",
+    iconName = "images/featurecollection.png")
 @SimpleObject
 public class FeatureCollection extends MapFeatureContainerBase implements MapFeatureCollection {
   private String source = "";

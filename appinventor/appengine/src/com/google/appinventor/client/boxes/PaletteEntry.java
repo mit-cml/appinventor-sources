@@ -49,6 +49,8 @@ import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
+import com.google.appinventor.client.editor.simple.palette.ComponentHelpWidget;
+import com.google.appinventor.client.editor.simple.palette.ComponentRemoveWidget;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
@@ -90,13 +92,19 @@ public class PaletteEntry extends DragSourcePanel {
    * @param componentName String display name of palette entry
    * @param dropTargetProvider provider of targets that palette items can be dropped on
    */
-  public PaletteEntry(String componentName, String componentType, String iconName, Boolean nonVisible, DropTargetProvider dropTargetProvider) {
+  public PaletteEntry(String componentName, String componentType, String iconName, Boolean nonVisible,
+                      Boolean external, int version_p, String versionName, String datebuilt,
+                      String helpString_p, String helpURL_p, String catDocURL, Boolean external_p,
+                      String license_p, DropTargetProvider dropTargetProvider) {
     this.dropTargetProvider = dropTargetProvider;
     this.componentType = componentName;
-    this.image = new Image(Ode.getImageBundle().image());
+    editor = (YaFormEditor)Ode.getInstance().getCurrentFileEditor();
+    this.image = SimpleComponentDescriptor.getImageFromPath(iconName,
+        componentType.substring(0, componentType.lastIndexOf('.')),
+        editor.getProjectId());
     this.iconName = iconName;
     this.nonVisible = nonVisible;
-    editor = (YaFormEditor)Ode.getInstance().getCurrentFileEditor();
+
     // Initialize palette item UI
     HorizontalPanel panel = new HorizontalPanel();
     panel.setStylePrimaryName("ode-SimplePaletteItem");
@@ -111,26 +119,27 @@ public class PaletteEntry extends DragSourcePanel {
     label.addStyleName("ode-SimplePaletteItem-caption");
     panel.add(label);
 
-//    HorizontalPanel optPanel = new HorizontalPanel();
-//
-//    ComponentHelpWidget helpImage = new ComponentHelpWidget(scd);
-//    optPanel.add(helpImage);
-//    optPanel.setCellHorizontalAlignment(helpImage, HorizontalPanel.ALIGN_LEFT);
-//
-//    if (scd.getExternal()) {
-//      ComponentRemoveWidget deleteImage = new ComponentRemoveWidget(scd);
-//      optPanel.add(deleteImage);
-//      optPanel.setCellHorizontalAlignment(deleteImage, HorizontalPanel.ALIGN_RIGHT);
-//    }
-//
-//    panel.add(optPanel);
-//    panel.setCellHorizontalAlignment(optPanel, HorizontalPanel.ALIGN_RIGHT);
+    HorizontalPanel optPanel = new HorizontalPanel();
+
+    ComponentHelpWidget helpImage = new ComponentHelpWidget(componentName, helpString_p, helpURL_p,
+        external_p, version_p, versionName, datebuilt, license_p);
+    optPanel.add(helpImage);
+    optPanel.setCellHorizontalAlignment(helpImage, HorizontalPanel.ALIGN_LEFT);
+
+    if (external) {
+      ComponentRemoveWidget deleteImage = new ComponentRemoveWidget(componentName);
+      optPanel.add(deleteImage);
+      optPanel.setCellHorizontalAlignment(deleteImage, HorizontalPanel.ALIGN_RIGHT);
+    }
+
+    panel.add(optPanel);
+    panel.setCellHorizontalAlignment(optPanel, HorizontalPanel.ALIGN_RIGHT);
 
     panel.setWidth("100%");
     add(panel);
     setWidth("100%");
 
-    addHandlers();
+//    addHandlers();
   }
 
   /**

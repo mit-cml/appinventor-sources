@@ -108,7 +108,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
         "<br />And if the Web page contains Javascript that executes the command " +
         "<br /><em>window.AppInventor.setWebViewString(\"hello from Javascript\")</em>, " +
         "<br />then the value of the WebViewString property will be " +
-        "<br /><em>hello from Javascript</em>. ")
+        "<br /><em>hello from Javascript</em>. ",
+    iconName = "images/webviewer.png")
 
 // TODO(halabelson): Integrate control of the Back key, when we provide it
 

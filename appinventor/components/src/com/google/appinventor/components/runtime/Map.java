@@ -73,7 +73,8 @@ import java.util.List;
     "location. At this new location, the &quot;Set Initial Boundary&quot; button can be pressed " +
     "to save the current Map coordinates to its properties. Lastly, if the Map is moved to a " +
     "different location, for example to add Markers off-screen, then the &quot;Reset Map to " +
-    "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>")
+    "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>",
+    iconName = "images/map.png")
 @SimpleObject
 @UsesAssets(fileNames = "location.png, marker.svg")
 @UsesPermissions(permissionNames = "android.permission.INTERNET, " + "android.permission.ACCESS_FINE_LOCATION, "

@@ -7,21 +7,17 @@
 package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-import static com.google.appinventor.client.Ode.getCurrentProjectID;
 
 import com.google.appinventor.client.ComponentsTranslation;
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
-import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Image;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,12 +80,15 @@ public final class PaletteBox extends Box {
     for (ComponentCategory cat: ComponentCategory.values()) {
       if (showCategory(cat)) {
         VerticalPanel panel = new VerticalPanel();
+        panel.setWidth("100%");
         panelsByCat.put(cat.getName(), panel);
         palettePanel.add(panel,
             ComponentsTranslation.getCategoryName(cat.getName()));
       }
     }
+
     setContent(palettePanel);
+//    loadComponents();
   }
 
   private static boolean showCategory(ComponentCategory category) {
@@ -106,8 +105,8 @@ public final class PaletteBox extends Box {
   /*
    * Adds a component entry to the palette.
    */
-  private void addPaletteItem(PaletteEntry component, ComponentCategory category) {
-    panelsByCat.get(category).add(component);
+  private void addPaletteEntry(PaletteEntry component, ComponentCategory category) {
+    panelsByCat.get(category.getName()).add(component);
 
     // TODO: Determine function served by Helpers
 //    if (panel == null) {
@@ -149,13 +148,15 @@ public final class PaletteBox extends Box {
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
     String componentType = COMPONENT_DATABASE.getComponentType(componentName);
     if (showOnPalette && showCategory(category)) {
-      PaletteEntry entry = new PaletteEntry(componentName, componentType, iconName, nonVisible, dropTargetProvider);
+      PaletteEntry entry = new PaletteEntry(componentName, componentType, iconName, nonVisible,
+          external, version, versionName, dateBuilt, helpString, helpUrl, categoryDocUrlString,
+          external, "TODO-LicenseInfo", dropTargetProvider);
       paletteItems.put(componentName, entry);
-      addPaletteItem(entry, category);
+      addPaletteEntry(entry, category);
 
       // Make a second copy for the search mechanism
 //      item = new SimplePaletteItem(
-//          new SimpleComponentDescriptor(componentTypeName, version, versionName, dateBuilt,
+//          new SimpleComponentDescriptor(componentType, version, versionName, dateBuilt,
 //              helpString, helpUrl, categoryDocUrlString, showOnPalette, nonVisible, external),
 //          dropTargetProvider);
       // Handle extensions

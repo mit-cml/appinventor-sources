@@ -119,7 +119,9 @@ public final class SimpleComponentDescriptor {
   private static void initBundledImages() {
     bundledImages.put("images/accelerometersensor.png", images.accelerometersensor());
     bundledImages.put("images/lightsensor.png", images.lightsensor());
+    bundledImages.put("images/ball.png", images.ball());
     bundledImages.put("images/barometer.png", images.barometer());
+    bundledImages.put("images/button.png", images.button());
     bundledImages.put("images/thermometer.png", images.thermometer());
     bundledImages.put("images/hygrometer.png", images.hygrometer());
     bundledImages.put("images/gyroscopesensor.png", images.gyroscopesensor());
@@ -129,21 +131,39 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/bluetooth.png", images.bluetooth());
     bundledImages.put("images/camera.png", images.camera());
     bundledImages.put("images/camcorder.png", images.camcorder());
+    bundledImages.put("images/canvas.png", images.canvas());
+    bundledImages.put("images/checkbox.png", images.checkbox());
     bundledImages.put("images/clock.png", images.clock());
+    bundledImages.put("images/contactpicker.png", images.contactpicker());
+    bundledImages.put("images/datepicker.png", images.datePickerComponent());
+    bundledImages.put("images/emailPicker.png", images.emailpicker());
     bundledImages.put("images/fusiontables.png", images.fusiontables());
     bundledImages.put("images/gameClient.png", images.gameclient());
+    bundledImages.put("images/horizontal.png", images.horizontal());
+    bundledImages.put("images/image.png", images.image());
+    bundledImages.put("images/imagePicker.png", images.imagepicker());
+    bundledImages.put("images/imageSprite.png", images.imageSprite());
+    bundledImages.put("images/label.png", images.label());
+    bundledImages.put("images/listPicker.png", images.listpicker());
     bundledImages.put("images/locationSensor.png", images.locationSensor());
     bundledImages.put("images/notifier.png", images.notifier());
     bundledImages.put("images/legoMindstormsNxt.png", images.legoMindstormsNxt());
     bundledImages.put("images/legoMindstormsEv3.png", images.legoMindstormsEv3());
     bundledImages.put("images/orientationsensor.png", images.orientationsensor());
+    bundledImages.put("images/passwordTextBox.png", images.passwordtextbox());
     bundledImages.put("images/pedometer.png", images.pedometerComponent());
     bundledImages.put("images/phoneip.png", images.phonestatusComponent());
     bundledImages.put("images/phoneCall.png", images.phonecall());
+    bundledImages.put("images/phonNumberPicker.png", images.phonenumberpicker());
     bundledImages.put("images/player.png", images.player());
+    bundledImages.put("images/radiobutton.png", images.radiobutton());
+    bundledImages.put("images/slider.png", images.slider());
     bundledImages.put("images/soundEffect.png", images.soundeffect());
     bundledImages.put("images/soundRecorder.png", images.soundRecorder());
     bundledImages.put("images/speechRecognizer.png", images.speechRecognizer());
+    bundledImages.put("images/switch.png", images.toggleswitch());
+    bundledImages.put("images/table.png", images.table());
+    bundledImages.put("images/textbox.png", images.textbox());
     bundledImages.put("images/textToSpeech.png", images.textToSpeech());
     bundledImages.put("images/texting.png", images.texting());
     bundledImages.put("images/datePicker.png", images.datePickerComponent());
@@ -153,8 +173,12 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/tinyWebDB.png", images.tinyWebDB());
     bundledImages.put("images/firebaseDB.png", images.firebaseDB());
     bundledImages.put("images/twitter.png", images.twitterComponent());
+    bundledImages.put("images/vertical.png", images.vertical());
+    bundledImages.put("images/videoPlayer.png", images.videoplayer());
     bundledImages.put("images/voting.png", images.voting());
     bundledImages.put("images/web.png", images.web());
+    bundledImages.put("images/webviewer.png", images.webviewer());
+    bundledImages.put("images/webviewerbig.png", images.webviewerbig());
     bundledImages.put("images/mediastore.png", images.mediastore());
     bundledImages.put("images/sharing.png", images.sharingComponent());
     bundledImages.put("images/spinner.png", images.spinner());
@@ -216,8 +240,19 @@ public final class SimpleComponentDescriptor {
                                    boolean showOnPalette,
                                    boolean nonVisible,
                                    boolean external) {
-    this(name, (YaFormEditor)Ode.getInstance().getCurrentFileEditor(), version, versionName,
-    dateBuilt, helpString, helpUrl, categoryDocUrlString, showOnPalette, nonVisible, external);
+    // TODO: Remove editor and component database attributes
+    this.name = name;
+    this.editor = (YaFormEditor)Ode.getInstance().getCurrentFileEditor();
+    this.version = version;
+    this.versionName = versionName;
+    this.dateBuilt = dateBuilt;
+    this.helpString = helpString;
+    this.helpUrl = helpUrl;
+    this.categoryDocUrlString = categoryDocUrlString;
+    this.showOnPalette = showOnPalette;
+    this.nonVisible = nonVisible;
+    this.external = external;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
   }
 
   /**

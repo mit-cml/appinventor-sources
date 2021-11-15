@@ -126,6 +126,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
+import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -230,6 +232,9 @@ public class Ode implements EntryPoint {
   @UiField ProjectToolbar projectToolbar;
   @UiField DesignToolbar designToolbar;
   @UiField PaletteBox paletteBox;
+  @UiField SimpleVisibleComponentsPanel visibleComponentsPanel;
+  @UiField SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel;
+
   @UiField FlowPanel projectPanel;
   private HorizontalPanel projectListPanel = new HorizontalPanel();
 
@@ -577,6 +582,7 @@ public class Ode implements EntryPoint {
       // The project nodes have been loaded. Tell the viewer to open
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
+
       ViewerBox.getViewerBox().show(projectRootNode);
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which

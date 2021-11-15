@@ -48,7 +48,8 @@ import java.util.Comparator;
           "property will be the name of the file where the image is stored. In order to not " +
           "fill up storage, a maximum of 10 images will be stored.  Picking more images " +
           "will delete previous images, in order from oldest to newest.",
-    category = ComponentCategory.MEDIA)
+    category = ComponentCategory.MEDIA,
+    iconName = "images/imagePicker.png")
 
 @UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE")
 @SimpleObject

@@ -28,6 +28,14 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
   private static final ImageResource imageResource = Ode.getImageBundle().help();
+  String name;
+  String helpString;
+  String helpURL;
+  Boolean external;
+  int version;
+  String versionName;
+  String dateBuilt;
+  String license;
 
   // Keep track of the last time (in milliseconds) of the last closure
   // so we don't reopen a popup too soon after closing it.  Specifically,
@@ -40,16 +48,17 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
     private ComponentHelpPopup() {
       // Create popup panel.
       super(true);
+
       setStyleName("ode-ComponentHelpPopup");
-      setTitle(scd.getName());
+      setTitle(name);
 
       // Create title from component name.
-      Label titleBar = new Label(ComponentsTranslation.getComponentName(scd.getName()));
-      setTitle(scd.getName());
+      Label titleBar = new Label(ComponentsTranslation.getComponentName(name));
+      setTitle(name);
       titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
 
       // Create content from help string.
-      String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName();
+      String helpTextKey = external ? helpString : name;
       HTML helpText = new HTML(ComponentsTranslation.getComponentHelpString(helpTextKey));
       helpText.setStyleName("ode-ComponentHelpPopup-Body");
 
@@ -63,9 +72,8 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
       // GWT supported String.format.
       String referenceComponentsUrl = Ode.getSystemConfig().getReferenceComponentsUrl();
       String url = null;
-      int version = -1;
-      if (scd.getExternal()) {  // extensions will not have documentation hosted in ai2
-        url = scd.getHelpUrl().isEmpty() ? null : scd.getHelpUrl();
+      if (external) {  // extensions will not have documentation hosted in ai2
+        url = helpURL.isEmpty() ? null : helpURL;
         if (url != null) {
           if (!url.startsWith("http:") && !url.startsWith("https:")) {
             url = null;
@@ -76,19 +84,18 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
                 .replaceAll("\"", "%22");
           }
         }
-        version = scd.getVersion();
       } else if (!Strings.isNullOrEmpty(referenceComponentsUrl)) {
         if (!referenceComponentsUrl.endsWith("/")) {
           referenceComponentsUrl += "/";
         }
-        String categoryDocUrlString = scd.getCategoryDocUrlString();
+        String categoryDocUrlString = helpURL;
         url = (categoryDocUrlString == null)
             ? referenceComponentsUrl + "index.html"
-            : referenceComponentsUrl + categoryDocUrlString + ".html#" + scd.getName();
+            : referenceComponentsUrl + categoryDocUrlString + ".html#" + name;
       }
-      if (!scd.getVersionName().equals("")) {
+      if (!versionName.equals("")) {
         HTML html = new HTML("<b>" + MESSAGES.externalComponentVersion() + "</b> " +
-            scd.getVersionName());
+            versionName);
         html.setStyleName("ode-ComponentHelpPopup-Body");
         inner.add(html);
       } else if (version > 0) {
@@ -96,9 +103,10 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
         html.setStyleName("ode-ComponentHelpPopup-Body");
         inner.add(html);
       }
-      if (scd.getExternal() && scd.getDateBuilt() != null && !scd.getDateBuilt().equals("")) {
-        String date = scd.getDateBuilt().split("T")[0];
-        HTML dateCreatedHtml = new HTML("<b>" + MESSAGES.dateBuilt() + "</b> <time datetime=\"" + scd.getDateBuilt() + "\">" + date + "</time>");
+      if (external && dateBuilt != null && !dateBuilt.equals("")) {
+        String date = dateBuilt.split("T")[0];
+        HTML dateCreatedHtml = new HTML("<b>" + MESSAGES.dateBuilt() + "</b> <time datetime=\""
+            + dateBuilt + "\">" + date + "</time>");
         dateCreatedHtml.setStyleName("ode-ComponentHelpPopup-Body");
         inner.add(dateCreatedHtml);
       }
@@ -108,8 +116,7 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
         link.setStyleName("ode-ComponentHelpPopup-Link");
         inner.add(link);
       }
-      if (scd.getExternal() && !"".equals(scd.getLicense())) {
-        String license = scd.getLicense();
+      if (external && !"".equals(license)) {
         HTML viewLicenseHTML = new HTML("<a href=\"" + license + "\" target=\"_blank\">" +
             MESSAGES.viewLicense() + "</a>");
         viewLicenseHTML.setStyleName("ode-ComponentHelpPopup-Link");
@@ -155,6 +162,27 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
 
   public ComponentHelpWidget(final SimpleComponentDescriptor scd) {
     super(scd, imageResource);
+    name = scd.getName();
+    helpString = scd.getHelpString();
+    helpURL = scd.getHelpUrl();
+    external = scd.getExternal();
+    version = scd.getVersion();
+    versionName = scd.getVersionName();
+    dateBuilt = scd.getDateBuilt();
+    license = scd.getLicense();
+  }
+
+  public ComponentHelpWidget(String name_p, String helpString_p, String helpURL_p, Boolean external_p,
+                             int version_p, String versionName_p, String datebuilt_p, String license_p) {
+    super(imageResource);
+    name = name_p;
+    helpString = helpString_p;
+    helpURL = helpURL_p;
+    external = external_p;
+    version = version_p;
+    versionName = versionName_p;
+    dateBuilt = datebuilt_p;
+    license = license_p;
   }
 
   @Override
