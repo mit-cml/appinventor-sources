@@ -232,8 +232,7 @@ public class Ode implements EntryPoint {
   @UiField ProjectToolbar projectToolbar;
   @UiField DesignToolbar designToolbar;
   @UiField PaletteBox paletteBox;
-  @UiField SimpleVisibleComponentsPanel visibleComponentsPanel;
-  @UiField SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel;
+  @UiField ViewerBox bindViewerBox = ViewerBox.getViewerBox();
 
   @UiField FlowPanel projectPanel;
   private HorizontalPanel projectListPanel = new HorizontalPanel();
@@ -583,7 +582,8 @@ public class Ode implements EntryPoint {
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
 
-      ViewerBox.getViewerBox().show(projectRootNode);
+//      ViewerBox.getViewerBox().show(projectRootNode);
+      bindViewerBox.show(projectRootNode);
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
       // will get called at the appropriate time.

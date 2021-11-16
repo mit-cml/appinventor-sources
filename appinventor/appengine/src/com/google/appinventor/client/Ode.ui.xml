@@ -21,10 +21,7 @@
           <ed:DesignToolbar ui:field="designToolbar" />
           <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
             <box:PaletteBox width="240px" ui:field="paletteBox"/>
-            <g:FlowPanel ui:field="componentsPanel">
-              <ex:SimpleVisibleComponentsPanel ui:field="visibleComponentsPanel" />
-              <ex:SimpleNonVisibleComponentsPanel ui:field="nonVisibleComponentsPanel" />
-            </g:FlowPanel>
+            <box:ViewerBox ui:field="bindViewerBox" />
             <g:FlowPanel ui:field="structureAndAssets">
               <box:SourceStructureBox />
               <box:BlockSelectorBox />
