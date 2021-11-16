@@ -27,8 +27,11 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.google.appinventor.shared.storage.StorageUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -89,6 +92,7 @@ public class AssetFetcher {
     HashFile file = new HashFile(fileName,hash,timeStamp);
     db.insertHashFile(file);
   }
+
 
   public static void upgradeCompanion(final String cookieValue, final String inputUri) {
     // The code below is commented out because of issues with the Google Play Store
@@ -158,11 +162,11 @@ public class AssetFetcher {
         } else {
           inError = true;
           form.runOnUiThread(new Runnable() {
-              public void run() {
-                RuntimeErrorAlert.alert(Form.getActiveForm(), "Unable to load file: " + fileName,
-                  "Error!", "End Application");
-              }
-            });
+            public void run() {
+              RuntimeErrorAlert.alert(Form.getActiveForm(), "Unable to load file: " + fileName,
+                      "Error!", "End Application");
+            }
+          });
           return null;
         }
       }
@@ -176,9 +180,26 @@ public class AssetFetcher {
         connection.setRequestMethod("GET");
         connection.addRequestProperty("Cookie",  "AppInventor = " + cookieValue);
         int responseCode = connection.getResponseCode();
+        //        if (responseCode == 304){
+//          return null; //exist the procedure?
+//        }
+//        else if (responseCode == 200){
+//
+//        }
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);
         outFile = new File(QUtil.getReplAssetPath(form), asset.substring("assets/".length()));
         File parentOutFile = outFile.getParentFile();
+        //compare if parentOutFile -> the file in the database  match with the file stored locally in download servelet
+        boolean match = true;
+        HttpServletResponse response = null;
+        if (match) {
+          response.setStatus(304);
+        } else {
+          response.setStatus(200);
+          Date current_timestamp = new Date(parentOutFile.lastModified());
+          response.setHeader("Content-Type", "Date");
+          //get file hash as well. We want one response header only. Can we write both of these info in one
+        }
         if (!parentOutFile.exists() && !parentOutFile.mkdirs()) {
           throw new IOException("Unable to create assets directory " + parentOutFile);
         }
