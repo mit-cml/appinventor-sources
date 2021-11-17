@@ -46,6 +46,12 @@ Blockly.FieldEventFlydown.prototype.flydownBlocksXML_ = function() {
       '<mutation>' +
         '<eventparam name="' + this.param.name + '" />' +
       '</mutation>';
+  var helper = '';
+  if (this.param.helperKey) {
+    var xml = Blockly.Util.xml.valueWithHelperXML('VALUE', this.param.helperKey);
+    helper = Blockly.Xml.domToText(xml.firstChild);
+  }
+
   var getterSetterXML =
       '<xml>' +
         '<block type="lexical_variable_get">' +
@@ -59,6 +65,7 @@ Blockly.FieldEventFlydown.prototype.flydownBlocksXML_ = function() {
           '<field name="VAR">' +
             name +
           '</field>' +
+          helper +
         '</block>' +
       '</xml>';
   return getterSetterXML;

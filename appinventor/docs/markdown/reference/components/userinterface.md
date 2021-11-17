@@ -362,6 +362,9 @@ Component for displaying images and basic animations.
 
 {:.properties}
 
+{:id="Image.AlternateText" .text .wo} *AlternateText*
+: A written description of what the image looks like.
+
 {:id="Image.Animation" .text .wo .bo} *Animation*
 : This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
@@ -650,9 +653,12 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 
 ## ListView  {#ListView}
 
-This is a visible component that allows to place a list of text elements in your [`Screen`](#Screen) to
- display. The list can be set using the [`ElementsFromString`](#ListView.ElementsFromString) property or using the
- [`Elements`](#ListView.Elements) block in the blocks editor.
+This is a visible component that displays a list of text and image elements in your [`Screen`](#Screen) to
+ display. Simple lists of strings may be set using the [`ElementsFromString`](#ListView.ElementsFromString) property.
+ More complex lists of elements containing multiple strings and/or images can be created using the
+ [`ListData`](#ListView.ListData) and [`ListViewLayout`](#ListView.ListViewLayout) properties.
+
+ [Information on Layouts](../other/advanced-listview.html)
 
    Warning: This component will not work correctly on Screens that are scrollable if its
  [`Height`](#ListView.Height) is set to Fill Parent.
@@ -670,7 +676,19 @@ This is a visible component that allows to place a list of text elements in your
 : Specifies the list of choices to display.
 
 {:id="ListView.ElementsFromString" .text .wo} *ElementsFromString*
-: Set the list of choices from a string of comma-separated values.
+: Set the list of choices specified as a string with the elements separated by commas
+ such as: Cheese,Fruit,Bacon,Radish.
+
+{:id="ListView.FontSizeDetail" .number} *FontSizeDetail*
+: Specifies the `ListView` item's text font size
+
+{:id="ListView.FontTypeface" .number .do} *FontTypeface*
+: Specifies the label's text's font face as default, serif, sans
+ serif, or monospace.
+
+{:id="ListView.FontTypefaceDetail" .number .do} *FontTypefaceDetail*
+: Specifies the label's text's font face as default, serif, sans
+ serif, or monospace.
 
 {:id="ListView.Height" .number .bo} *Height*
 : Specifies the `ListView`'s vertical height, measured in pixels.
@@ -679,11 +697,35 @@ This is a visible component that allows to place a list of text elements in your
 : Specifies the `ListView`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="ListView.ImageHeight" .number} *ImageHeight*
+: Specifies the image height of ListView layouts containing images
+
+{:id="ListView.ImageWidth" .number} *ImageWidth*
+: Specifies the image width of ListView layouts containing images
+
+{:id="ListView.ListData" .text .do} *ListData*
+: Specifies data to be displayed in the ListView elements. This property sets the
+ elements specified in [`ListViewLayout`](#ListView.ListViewLayout). For example, if the chosen
+ layout is `Image,MainText` this property will allow any number of elements to be
+ defined, each containing a filename for Image and a string for MainText.
+ Designer only property.
+
+{:id="ListView.ListViewLayout" .number .do} *ListViewLayout*
+: Specifies type of layout for ListView row. Designer only property.
+
+{:id="ListView.Orientation" .number} *Orientation*
+: Specifies the layout's orientation. This may be: `Vertical`, which displays elements
+ in rows one after the other; or `Horizontal`, which displays one element at a time and
+ allows the user to swipe left or right to brows the elements.
+
 {:id="ListView.Selection" .text} *Selection*
 : Returns the text in the `ListView` at the position of [`SelectionIndex`](#ListView.SelectionIndex).
 
 {:id="ListView.SelectionColor" .color} *SelectionColor*
 : The color of the item when it is selected.
+
+{:id="ListView.SelectionDetailText" .text .ro .bo} *SelectionDetailText*
+: Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex
 
 {:id="ListView.SelectionIndex" .number .bo} *SelectionIndex*
 : The index of the currently selected item, starting at `1`. If no item is selected, the value
@@ -697,6 +739,9 @@ This is a visible component that allows to place a list of text elements in your
 
 {:id="ListView.TextColor" .color} *TextColor*
 : The text color of the `ListView` items.
+
+{:id="ListView.TextColorDetail" .color} *TextColorDetail*
+: Specifies the color of the secondary text in a ListView layout
 
 {:id="ListView.TextSize" .number} *TextSize*
 : Specifies the `ListView` item's text font size
@@ -723,8 +768,21 @@ This is a visible component that allows to place a list of text elements in your
 ### Methods  {#ListView-Methods}
 
 {:.methods}
-None
 
+{:id="ListView.CreateElement" class="method returns dictionary"} <i/> CreateElement(*mainText*{:.text},*detailText*{:.text},*imageName*{:.text})
+: Creates a
+
+{:id="ListView.GetDetailText" class="method returns text"} <i/> GetDetailText(*listElement*{:.dictionary})
+: Get the Detail Text of a ListView element.
+
+{:id="ListView.GetImageName" class="method returns text"} <i/> GetImageName(*listElement*{:.dictionary})
+: Get the filename of the image of a ListView element that has been uploaded to Media.
+
+{:id="ListView.GetMainText" class="method returns text"} <i/> GetMainText(*listElement*{:.dictionary})
+: Get the Main Text of a ListView element.
+
+{:id="ListView.Refresh" class="method"} <i/> Refresh()
+: Reload the ListView to reflect any changes in the data.
 
 ## Notifier  {#Notifier}
 
@@ -763,7 +821,6 @@ The Notifier component displays alert messages and creates Android log entries t
 
 {:id="Notifier.TextInputCanceled"} TextInputCanceled()
 : Event raised when the user cancels
- [`ShowChooseDialog`](#Notifier.ShowChooseDialog),
  [`ShowPasswordDialog`](#Notifier.ShowPasswordDialog), or
  [`ShowTextDialog`](#Notifier.ShowTextDialog).
 
@@ -874,6 +931,12 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.Hint" .text} *Hint*
 : `PasswordTextBox` hint for the user.
 
+{:id="PasswordTextBox.NumbersOnly" .boolean} *NumbersOnly*
+: If true, then this `PasswordTextBox`` accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if `NumbersOnly` is true, you can set the text to anything at all using the
+ [`Text`](#PasswordTextBox.Text) property.
+
 {:id="PasswordTextBox.PasswordVisible" .boolean .bo} *PasswordVisible*
 : Specifies whether the password is hidden (default) or shown.
 
@@ -943,7 +1006,7 @@ Top-level component containing all other components in the program.
 
 {:id="Screen.AlignHorizontal" .number} *AlignHorizontal*
 : A number that encodes how contents of the screen are aligned horizontally. The choices are:
- `1` (left aligned), `2` (horizontally centered), `3` (right aligned).
+ `1` (left aligned), `3` (horizontally centered), `2` (right aligned).
 
 {:id="Screen.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the arrangement are aligned vertically. The choices
@@ -963,6 +1026,9 @@ Top-level component containing all other components in the program.
 : Specifies the path of the `Screen`'s background image. If there is both an `BackgroundImage`
  and a [`BackgroundColor`](#Screen.BackgroundColor) specified, only the `BackgroundImage` will be visible.
 
+{:id="Screen.BigDefaultText" .boolean} *BigDefaultText*
+: When checked, all default size text will be increased in size.
+
 {:id="Screen.BlocksToolkit" .text .wo .do} *BlocksToolkit*
 : A JSON string representing the subset for the screen. Authors of template apps can use this to control what components, designer properties, and blocks are available in the project.
 
@@ -970,8 +1036,15 @@ Top-level component containing all other components in the program.
 : Sets the animation type for the transition of this form closing and returning
  to a form behind it in the activity stack.
 
+{:id="Screen.DefaultFileScope" .com.google.appinventor.components.common.FileScopeEnum .wo .do} *DefaultFileScope*
+: Specifies the default scope used when components access files. Note that the [`File`](#File)
+ component has its own property for controlling file scopes.
+
 {:id="Screen.Height" .number .ro .bo} *Height*
 : Returns the Screen height in pixels (y-size).
+
+{:id="Screen.HighContrast" .boolean} *HighContrast*
+: When checked, there will be high contrast mode turned on.
 
 {:id="Screen.Icon" .text .wo .do} *Icon*
 : The image used for your App's display icon should be a square png or jpeg image with dimensions
@@ -979,8 +1052,7 @@ Top-level component containing all other components in the program.
  The build server will generate images of standard dimensions for Android devices.
 
 {:id="Screen.OpenScreenAnimation" .text} *OpenScreenAnimation*
-: The animation for switching to another screen. Valid options are `default`, `fade`, `zoom`,
- `slidehorizontal`, `slidevertical`, and `none`.
+: Sets the animation type for the transition of this form opening.
 
 {:id="Screen.Platform" .text .ro .bo} *Platform*
 : Gets the name of the underlying platform running the app. Currently, this is the text

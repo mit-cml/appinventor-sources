@@ -16,15 +16,19 @@
 -->
 
 <CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="?attr/listPreferredItemHeightSmall"
-    android:textAppearance="?android:attr/textAppearanceMedium"
-    android:textColor="?attr/textColorAlertDialogListItem"
-    android:gravity="center_vertical"
-    android:paddingLeft="?attr/dialogPreferredPadding"
-    android:paddingRight="?attr/dialogPreferredPadding"
-    android:checkMark="?android:attr/listChoiceIndicatorSingle"
-    android:ellipsize="marquee" />
-<!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/lmp-mr1-supportlib-release/frameworks/support/v7/appcompat/res/layout/select_dialog_singlechoice_material.xml -->
+                 android:id="@android:id/text1"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:minHeight="?attr/listPreferredItemHeightSmall"
+                 android:textAppearance="?android:attr/textAppearanceMedium"
+                 android:textColor="?attr/textColorAlertDialogListItem"
+                 android:gravity="center_vertical"
+                 android:paddingLeft="@dimen/abc_select_dialog_padding_start_material"
+                 android:paddingRight="?attr/dialogPreferredPadding"
+                 android:paddingStart="@dimen/abc_select_dialog_padding_start_material"
+                 android:paddingEnd="?attr/dialogPreferredPadding"
+                 android:drawableLeft="?android:attr/listChoiceIndicatorSingle"
+                 android:drawableStart="?android:attr/listChoiceIndicatorSingle"
+                 android:drawablePadding="20dp"
+                 android:ellipsize="marquee" />
+<!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/layout/select_dialog_singlechoice_material.xml -->

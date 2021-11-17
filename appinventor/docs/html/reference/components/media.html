@@ -441,6 +441,14 @@
 <h3 id="SpeechRecognizer-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="SpeechRecognizer.Language" class="text bo"><em>Language</em></dt>
+  <dd>Suggests the language to use for recognizing speech. An empty string (the default) will
+ use the system’s default language.
+
+    <p>Language is specified using a <a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">language tag</a>
+   with an optional region suffix, such as en or es-MX. The set of supported languages will
+   vary by device.</p>
+  </dd>
   <dt id="SpeechRecognizer.Result" class="text ro bo"><em>Result</em></dt>
   <dd>Returns the last text produced by the recognizer.</dd>
   <dt id="SpeechRecognizer.UseLegacy" class="boolean"><em>UseLegacy</em></dt>

@@ -6,6 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -35,7 +37,7 @@ import android.widget.EditText;
 
 @SimpleObject
 public abstract class TextBoxBase extends AndroidViewComponent
-    implements OnFocusChangeListener {
+    implements OnFocusChangeListener, AccessibleComponent {
 
   protected final EditText view;
 
@@ -63,6 +65,15 @@ public abstract class TextBoxBase extends AndroidViewComponent
   // This is our handle on Android's nice 3-d default textbox.
   private Drawable defaultTextBoxDrawable;
 
+  //Whether or not the button is in high contrast mode
+  private boolean isHighContrast = false;
+
+  //Whether or not the button is in big text mode
+  private boolean isBigText = false;
+
+  //The default text color of the textbox hint, according to theme
+  private int hintColorDefault;
+
   /**
    * Creates a new TextBoxBase component
    *
@@ -72,6 +83,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   public TextBoxBase(ComponentContainer container, EditText textview) {
     super(container);
     view = textview;
+    hintColorDefault = view.getCurrentHintTextColor();
     // There appears to be an issue where, by default, Android 7+
     // wants to provide suggestions in text boxes. However, we do not
     // compile the necessary layouts for this to work correctly, which
@@ -104,14 +116,21 @@ public abstract class TextBoxBase extends AndroidViewComponent
     // only). Maybe we need another color value which would be 'SYSTEM_DEFAULT' which
     // will not attempt to explicitly initialize with any of the properties with any
     // particular value.
-    // BackgroundColor(Component.COLOR_NONE);
     Enabled(true);
     fontTypeface = Component.TYPEFACE_DEFAULT;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
     Hint("");
+    if (isHighContrast || container.$form().HighContrast()) {
+      view.setHintTextColor(COLOR_YELLOW);
+    }
+    else {
+      view.setHintTextColor(hintColorDefault);
+    }
+
     Text("");
     TextColor(Component.COLOR_DEFAULT);
+    BackgroundColor(Component.COLOR_DEFAULT);
   }
 
   @Override
@@ -220,7 +239,11 @@ public abstract class TextBoxBase extends AndroidViewComponent
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setBackgroundColor(view, argb);
     } else {
-      ViewUtil.setBackgroundDrawable(view, defaultTextBoxDrawable);
+      if (isHighContrast || container.$form().$form().HighContrast()) {
+        TextViewUtil.setBackgroundColor(view, Component.COLOR_BLACK);
+      } else {
+        ViewUtil.setBackgroundDrawable(view, defaultTextBoxDrawable);
+      }
     }
   }
 
@@ -335,7 +358,11 @@ public abstract class TextBoxBase extends AndroidViewComponent
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
   public void FontSize(float size) {
-    TextViewUtil.setFontSize(view, size);
+    if (size == FONT_DEFAULT_SIZE && container.$form().BigDefaultText()) {
+      TextViewUtil.setFontSize(view, 24);
+    } else {
+      TextViewUtil.setFontSize(view, size);
+    }
   }
 
   /**
@@ -456,14 +483,19 @@ public abstract class TextBoxBase extends AndroidViewComponent
    * @param argb  text RGB color with alpha
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
+      defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty
   public void TextColor(int argb) {
     textColor = argb;
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setTextColor(view, argb);
     } else {
-      TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? COLOR_WHITE : Component.COLOR_BLACK);
+      if (isHighContrast || container.$form().HighContrast()) {
+        TextViewUtil.setTextColor(view, COLOR_WHITE);
+      }
+      else {
+        TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? COLOR_WHITE : Component.COLOR_BLACK);
+      }
     }
   }
 
@@ -490,5 +522,53 @@ public abstract class TextBoxBase extends AndroidViewComponent
     } else {
       LostFocus();
     }
+  }
+
+  @Override
+  public void setHighContrast(boolean isHighContrast) {
+    //background of button
+    if (backgroundColor == Component.COLOR_DEFAULT) {
+      if (isHighContrast) {
+        TextViewUtil.setBackgroundColor(view, Component.COLOR_BLACK);
+      }
+      else {
+        ViewUtil.setBackgroundDrawable(view, defaultTextBoxDrawable);
+      }
+    }
+
+    //color of text
+    if (textColor == Component.COLOR_DEFAULT) {
+      if (isHighContrast) {
+        TextViewUtil.setTextColor(view, COLOR_WHITE);
+        view.setHintTextColor(COLOR_YELLOW);
+
+      }
+      else {
+        TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? COLOR_WHITE : Component.COLOR_BLACK);
+        view.setHintTextColor(hintColorDefault);
+
+      }
+    }
+  }
+
+  @Override
+  public boolean getHighContrast() {
+    return isHighContrast;
+  }
+
+  @Override
+  public void setLargeFont(boolean isLargeFont) {
+    if (TextViewUtil.getFontSize(view, container.$context()) == 24.0 || TextViewUtil.getFontSize(view, container.$context()) == Component.FONT_DEFAULT_SIZE) {
+      if (isLargeFont) {
+        TextViewUtil.setFontSize(view, 24);
+      } else {
+        TextViewUtil.setFontSize(view, Component.FONT_DEFAULT_SIZE);
+      }
+    }
+  }
+
+  @Override
+  public boolean getLargeFont() {
+    return isBigText;
   }
 }

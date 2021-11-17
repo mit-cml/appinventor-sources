@@ -6,3 +6,4 @@
           android:state_focused="true" />
     <item android:drawable="@drawable/moreinfo_arrow" />
 </selector>
+<!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/org.osmdroid.library/res/drawable/btn_moreinfo.xml -->

@@ -12,7 +12,7 @@
     App Inventor component libraries
   </description>
 
-  <property name="android.sdk.version" value="29"/>
+  <property name="android.sdk.version" value="30"/>
 
   <target name="all"
           depends="CommonConstants,AndroidRuntime">
@@ -54,6 +54,7 @@
     <mkdir dir="${CommonConstants-class.dir}" />
 
     <ai.javac destdir="${CommonConstants-class.dir}">
+      <include name="**/helpers/*.java" />
       <include name="${components.pkg}/common/*.java" />
       <exclude name="${components.pkg}/common/HtmlEntities.java" />
     </ai.javac>
@@ -166,9 +167,6 @@
     <copy toFile="${public.deps.dir}/http-legacy.jar" file="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
     <!-- END Android Support Libraries -->
     <copy toFile="${public.deps.dir}/android.jar" file="${android.lib}" />
-    <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
-    <copy toFile="${public.deps.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
-    <copy toFile="${public.deps.dir}/bundletool.jar" file="${lib.dir}/android/tools/bundletool-all-0.15.0.jar" />
     <copy toFile="${public.deps.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
 
     <!-- Add extension libraries here -->
@@ -218,6 +216,7 @@
       <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
       <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
       <exclude name="${components.pkg}/common/**/*.java" /> <!-- exclude components/common package -->
+      <exclude name="**/helpers/*.java" /> <!-- exclude helpers as they are compiled with CommonConstants -->
       <classpath>
         <path refid="AndroidRuntime.path" />
         <pathelement location="${local.build.dir}/AnnotationProcessors.jar" />

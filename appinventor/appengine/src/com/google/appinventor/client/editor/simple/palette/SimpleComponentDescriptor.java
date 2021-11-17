@@ -168,6 +168,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/linestring.png", images.linestring());
     bundledImages.put("images/polygon.png", images.polygon());
     bundledImages.put("images/featurecollection.png", images.featurecollection());
+    bundledImages.put("images/recyclerView.png", images.recyclerview());
     bundledImages.put("images/navigation.png", images.navigationComponent());
     bundledImages.put("images/arduino.png", images.arduino());
     bundledImages.put("images/magneticSensor.png", images.magneticSensor());
@@ -431,6 +432,8 @@ public final class SimpleComponentDescriptor {
       return new MockImage(editor);
     } else if (name.equals(MockLabel.TYPE)) {
       return new MockLabel(editor);
+    } else if (name.equals(MockListView.TYPE)) {
+      return new MockListView(editor);
     } else if (name.equals(MockListView.TYPE)) {
       return new MockListView(editor);
     } else if (name.equals(MockSlider.TYPE)) {

@@ -42,6 +42,7 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 
+import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
@@ -888,6 +889,10 @@ public class Ode implements EntryPoint {
 
     Window.setTitle(MESSAGES.titleYoungAndroid());
     Window.enableScrolling(true);
+
+    if (config.getServerExpired()) {
+      RootPanel.get().add(new ExpiredServiceOverlay());
+    }
 
     topPanel = new TopPanel();
     statusPanel = new StatusPanel();
@@ -2429,11 +2434,20 @@ public class Ode implements EntryPoint {
   }
 
   public void setTutorialURL(String newURL) {
-    boolean isUrlAllowed = !newURL.isEmpty()
-          && (newURL.startsWith("http://appinventor.mit.edu/")
-          || newURL.startsWith("https://appinventor.mit.edu/")
-          || newURL.startsWith("http://appinv.us/"));
-    
+    if (newURL.isEmpty()) {
+      designToolbar.setTutorialToggleVisible(false);
+      setTutorialVisible(false);
+      return;
+    }
+
+    boolean isUrlAllowed = false;
+    for (String candidate : config.getTutorialsUrlAllowed()) {
+      if (newURL.startsWith(candidate)) {
+        isUrlAllowed = true;
+        break;
+      }
+    }
+
     if (!isUrlAllowed) {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
@@ -2444,7 +2458,7 @@ public class Ode implements EntryPoint {
       if (locale != null) {
         newURL += (newURL.contains("?") ? "&" : "?") + "locale=" + locale;
       }
-      String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1]; 
+      String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1];
       tutorialPanel.setUrl(effectiveUrl);
       designToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);

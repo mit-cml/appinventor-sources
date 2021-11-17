@@ -171,7 +171,8 @@ public class AssetFetcher {
         connection.addRequestProperty("If-None-Match",db.getHashFile(fileName).getHash()); //get old_hash from database
         int responseCode = connection.getResponseCode();
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);
-        outFile = new File(QUtil.getReplAssetPath(form), asset.substring("assets/".length()));
+        outFile = new File(QUtil.getReplAssetPath(form, true), asset.substring("assets/".length()));
+        Log.d(LOG_TAG, "target file = " + outFile);
         File parentOutFile = outFile.getParentFile();
 
         if (responseCode == 200) {
