@@ -85,6 +85,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
     appendComponentInfo(sb, ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET, component.activityMetadata);
     appendComponentInfo(sb, ComponentDescriptorConstants.ANDROIDMINSDK_TARGET, Collections.singleton(Integer.toString(component.getAndroidMinSdk())));
     appendComponentInfo(sb, ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET, component.broadcastReceivers);
+    appendComponentInfo(sb, ComponentDescriptorConstants.QUERIES_TARGET, component.queries);
     appendComponentInfo(sb, ComponentDescriptorConstants.SERVICES_TARGET, component.services);
     appendComponentInfo(sb, ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET, component.contentProviders);
     appendConditionalComponentInfo(component, sb);
@@ -104,10 +105,11 @@ public final class ComponentListGenerator extends ComponentProcessor {
    * @param sb Target StringBuilder to receive the conditional description
    */
   private static void appendConditionalComponentInfo(ComponentInfo component, StringBuilder sb) {
-    if (component.conditionalPermissions.size() +
-        component.conditionalBroadcastReceivers.size() + 
-        component.conditionalServices.size() + 
-        component.conditionalContentProviders.size() == 0) {
+    if (component.conditionalBroadcastReceivers.size()
+        + component.conditionalContentProviders.size()
+        + component.conditionalPermissions.size()
+        + component.conditionalQueries.size()
+        + component.conditionalServices.size() == 0) {
       return;
     }
     sb.append(", \"" + ComponentDescriptorConstants.CONDITIONALS_TARGET + "\": { ");
@@ -115,6 +117,8 @@ public final class ComponentListGenerator extends ComponentProcessor {
     appendMap(sb, component.conditionalPermissions);
     sb.append(", \"" + ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET + "\": ");
     appendMap(sb, component.conditionalBroadcastReceivers);
+    sb.append(", \"" + ComponentDescriptorConstants.QUERIES_TARGET + "\": ");
+    appendMap(sb, component.conditionalQueries);
     sb.append(", \"" + ComponentDescriptorConstants.SERVICES_TARGET + "\": ");
     appendMap(sb, component.conditionalServices);
     sb.append(", \"" + ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET + "\": ");

@@ -651,4 +651,6 @@ public interface StorageIo {
    */
   void assertUserHasProject(String userId, long projectId);
 
+  List<String> getTutorialsUrlAllowed();
+
 }

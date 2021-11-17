@@ -171,7 +171,8 @@ public class AssetFetcher {
         String responseCode = connection.getHeaderField("cache-response-code");
         String fileHash = connection.getHeaderField("current-hash");
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);
-        outFile = new File(QUtil.getReplAssetPath(form), asset.substring("assets/".length()));
+        outFile = new File(QUtil.getReplAssetPath(form, true), asset.substring("assets/".length()));
+        Log.d(LOG_TAG, "target file = " + outFile);
         File parentOutFile = outFile.getParentFile();
 
         if (responseCode == "200") {

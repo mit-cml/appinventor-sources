@@ -5,6 +5,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.ACCESS_NETWORK_STATE;
+import static android.Manifest.permission.ACCESS_WIFI_STATE;
+
 import android.app.Activity;
 
 import android.content.Context;
@@ -18,8 +21,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 
-import android.os.Build;
-
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -32,18 +33,16 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesNativeLibraries;
 
+import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
-import com.google.appinventor.components.runtime.Form;
-import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
 
@@ -71,6 +70,7 @@ import java.util.Formatter;
 @UsesNativeLibraries(v7aLibraries = "libjingle_peerconnection_so.so",
   v8aLibraries = "libjingle_peerconnection_so.so",
   x86_64Libraries = "libjingle_peerconnection_so.so")
+@UsesPermissions({ACCESS_NETWORK_STATE, ACCESS_WIFI_STATE})
 public class PhoneStatus extends AndroidNonvisibleComponent implements Component {
 
   private static Activity activity;

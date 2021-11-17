@@ -19,4 +19,4 @@
     <size android:width="@dimen/abc_progress_bar_height_material"
           android:height="@dimen/abc_progress_bar_height_material"/>
     <solid android:color="@android:color/white"/>
-</shape>
+</shape><!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/drawable/abc_seekbar_tick_mark_material.xml -->

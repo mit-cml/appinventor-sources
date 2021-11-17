@@ -58,6 +58,8 @@ Blockly.Blocks.text.connectionCheck = function (myConnection, otherConnection, o
       }
     } else if (otherTypeArray[i] == "Key") {
       return true;
+    } else if (otherTypeArray[i] == "Key") {
+      return true;
     }
   }
   return false;

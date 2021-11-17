@@ -41,10 +41,15 @@ Blockly.TypeBlock = function( htmlConfig, workspace ){
    * Used as an optimisation trick to avoid reloading components and built-ins unless there is a real
    * need to do so. needsReload.components can be set to true when a component changes.
    * Defaults to true so that it loads the first time (set to null after loading in lazyLoadOfOptions_())
-   * @type {{components: boolean}}
+   * @type {{
+   *         components: boolean,
+   *         screens: boolean
+   *       }}
    */
   this.needsReload = {
-    components: true
+    components: true,
+    screens: true,
+    assets: true,
   };
   var frame = htmlConfig['frame'];
   this.typeBlockDiv_ = htmlConfig['typeBlockDiv'];
@@ -252,12 +257,16 @@ Blockly.TypeBlock.prototype.show = function(){
  * @private
  */
 Blockly.TypeBlock.prototype.lazyLoadOfOptions_ = function () {
-
   // Optimisation to avoid reloading all components and built-in objects unless it is needed.
   // needsReload.components is setup when adding/renaming/removing a component in components.js
-  if (this.needsReload.components){
+  if (this.needsReload.components ||
+      this.needsReload.screens ||
+      this.needsReload.assets
+  ){
     this.generateOptions();
-    this.needsReload.components = null;
+    this.needsReload.components = false;
+    this.needsReload.screens = false;
+    this.needsReload.assets = false;
   }
   this.loadGlobalVariables_();
   this.loadLocalVariables_();

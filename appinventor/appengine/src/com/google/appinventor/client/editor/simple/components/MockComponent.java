@@ -414,7 +414,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // TODO(user): Ensure this value is unique within the project using a list of
     // already used UUIDs
     // Set the component's UUID
-    // The default value here can be anything except 0, because YoungAndroidProjectServce
+    // The default value here can be anything except 0, because YoungAndroidProjectService
     // creates forms with an initial Uuid of 0, and Properties.java doesn't encode
     // default values when it generates JSON for a component.
     addProperty(PROPERTY_NAME_UUID, "-1", null, new TextPropertyEditor());
@@ -440,7 +440,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
   protected boolean isPropertyforYail(String propertyName) {
     // By default we use the same criterion as persistance
-    // This method can then be overriden by the invididual
+    // This method can then be overridden by the individual
     // component Mocks
     return isPropertyPersisted(propertyName);
   }
