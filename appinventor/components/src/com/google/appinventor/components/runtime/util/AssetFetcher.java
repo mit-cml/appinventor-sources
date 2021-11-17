@@ -20,14 +20,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import android.content.Context;
 
-
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.google.appinventor.shared.storage.StorageUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -83,16 +82,6 @@ public class AssetFetcher {
         }
       });
   }
-
-
-  public static void storeHash(String fileName){
-    Date timeStamp = new Date();
-    File newFile = new File(fileName);
-    int hash = newFile.hashCode();
-    HashFile file = new HashFile(fileName,hash,timeStamp);
-    db.insertHashFile(file);
-  }
-
 
   public static void upgradeCompanion(final String cookieValue, final String inputUri) {
     // The code below is commented out because of issues with the Google Play Store
@@ -179,27 +168,26 @@ public class AssetFetcher {
       if (connection != null) {
         connection.setRequestMethod("GET");
         connection.addRequestProperty("Cookie",  "AppInventor = " + cookieValue);
-        int responseCode = connection.getResponseCode();
-        //        if (responseCode == 304){
-//          return null; //exist the procedure?
-//        }
-//        else if (responseCode == 200){
-//
-//        }
+        String responseCode = connection.getHeaderField("cache-response-code");
+        String fileHash = connection.getHeaderField("current-hash");
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);
         outFile = new File(QUtil.getReplAssetPath(form), asset.substring("assets/".length()));
         File parentOutFile = outFile.getParentFile();
-        //compare if parentOutFile -> the file in the database  match with the file stored locally in download servelet
-        boolean match = true;
-        HttpServletResponse response = null;
-        if (match) {
-          response.setStatus(304);
-        } else {
-          response.setStatus(200);
-          Date current_timestamp = new Date(parentOutFile.lastModified());
-          response.setHeader("Content-Type", "Date");
-          //get file hash as well. We want one response header only. Can we write both of these info in one
+
+        if (responseCode == "200") {
+          Date timeStamp = new Date();
+          HashFile file = new HashFile(fileName,fileHash,timeStamp);
+
+          if (db.getHashFile(fileName) == null){
+            db.insertHashFile(file);
+
+          }else{
+            db.updateHashFile(file);
+          }
         }
+        //connection.set()
+        //timestamp, response code
+
         if (!parentOutFile.exists() && !parentOutFile.mkdirs()) {
           throw new IOException("Unable to create assets directory " + parentOutFile);
         }
@@ -234,4 +222,13 @@ public class AssetFetcher {
       return getFile(fileName, cookieValue, asset, depth + 1);
     }
   }
+  private static String byteArray2Hex(final byte[] hash) {
+    Formatter formatter = new Formatter();
+    for (byte b : hash) {
+      formatter.format("%02x", b);
+    }
+    return formatter.toString();
+  }
 }
+
+
