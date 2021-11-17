@@ -660,5 +660,7 @@
     "Blockly.Msg.DIALOG_SECURE_ESTABLISHED": "30 Güvenli Bağlantı Kuruldu",
     "Blockly.Msg.DIALOG_SECURE_ESTABLISHING": "20 Güvenli Bağlantı Kuruluyor",
     "Blockly.Msg.DIALOG_SUBMIT": "Gönder",
-    "Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND": "Bit düzeyini ve iki sayının değerini çevirin."
+    "Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND": "Bit düzeyini ve iki sayının değerini çevirin.",
+    "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "Bu metin bloğu geçerli bir sayı içermiyor.",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "değer"
 }
