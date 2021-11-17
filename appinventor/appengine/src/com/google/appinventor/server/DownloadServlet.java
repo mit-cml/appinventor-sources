@@ -205,12 +205,22 @@ public class DownloadServlet extends OdeServlet {
 
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_FILE)) {
         // Download a specific file.
-        uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
-        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
-        String filePath = (uriComponents.length > FILE_PATH_INDEX) ?
-            uriComponents[FILE_PATH_INDEX] : null;
-        downloadableFile = fileExporter.exportFile(userId, projectId, filePath);
-
+        // compute the hash and check if the hash matches the header coming in
+        // (HttpServerRequest req has the header)
+        byte[] fileContent = Files.readAllBytes(filePath);
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        fileHash = byteArray2Hex(md.digest(fileContent));
+        // if equal, return 304
+        if (fileHash.equals(req.getHeader("current-hash"))) {
+          cache_response_code = "304";
+        } else {
+          cache_response_code = "200";
+          uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
+          long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
+          String filePath = (uriComponents.length > FILE_PATH_INDEX) ?
+                  uriComponents[FILE_PATH_INDEX] : null;
+          downloadableFile = fileExporter.exportFile(userId, projectId, filePath);
+        }
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_USERFILE)) {
         // Download a specific user file, such as android.keystore
         uriComponents = uri.split("/", SPLIT_LIMIT_USERFILE);
@@ -244,6 +254,10 @@ public class DownloadServlet extends OdeServlet {
 
     // Set http response information
     resp.setStatus(HttpServletResponse.SC_OK);
+    resp.setStatus(HttpServletResponse.SC_OK);
+    resp.setHeader("cache-response-code", cache_response_code)
+    resp.setHeader("current-hash", fileHash)
+//    resp.setHeader("timestamp", newDate)
     resp.setHeader(
         "content-disposition",
         req.getParameter("inline") != null ? "inline" : "attachment" + "; filename=\"" + fileName + "\"");
@@ -254,5 +268,13 @@ public class DownloadServlet extends OdeServlet {
     ServletOutputStream out = resp.getOutputStream();
     out.write(content);
     out.close();
+  }
+
+  private static String byteArray2Hex(final byte[] hash) {
+    Formatter formatter = new Formatter();
+    for (byte b : hash) {
+      formatter.format("%02x", b);
+    }
+    return formatter.toString();
   }
 }
