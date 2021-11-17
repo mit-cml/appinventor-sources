@@ -168,19 +168,18 @@ public class AssetFetcher {
       if (connection != null) {
         connection.setRequestMethod("GET");
         connection.addRequestProperty("Cookie",  "AppInventor = " + cookieValue);
-        String responseCode = connection.getHeaderField("cache-response-code");
-        String fileHash = connection.getHeaderField("current-hash");
+        connection.addRequestProperty("If-None-Match",db.getHashFile(fileName).getHash()); //get old_hash from database
+        int responseCode = connection.getResponseCode();
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);
         outFile = new File(QUtil.getReplAssetPath(form), asset.substring("assets/".length()));
         File parentOutFile = outFile.getParentFile();
 
-        if (responseCode == "200") {
+        if (responseCode == 200) {
+          String fileHash = connection.getHeaderField("ETag"); //only save when status code is 200
           Date timeStamp = new Date();
           HashFile file = new HashFile(fileName,fileHash,timeStamp);
-
           if (db.getHashFile(fileName) == null){
             db.insertHashFile(file);
-
           }else{
             db.updateHashFile(file);
           }

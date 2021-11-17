@@ -19,8 +19,13 @@ import com.google.appinventor.shared.storage.StorageUtil;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
@@ -96,9 +101,11 @@ public class DownloadServlet extends OdeServlet {
     CACHE_HEADERS.setNotCacheable(resp);
     resp.setContentType(CONTENT_TYPE);
 
-    RawFile downloadableFile;
+    RawFile downloadableFile = null;
 
     String userId = null;
+
+    int status_code=HttpServletResponse.SC_OK;
 
     try {
       String uri = req.getRequestURI();
@@ -207,20 +214,22 @@ public class DownloadServlet extends OdeServlet {
         // Download a specific file.
         // compute the hash and check if the hash matches the header coming in
         // (HttpServerRequest req has the header)
-        byte[] fileContent = Files.readAllBytes(filePath);
+        String filePath = (uriComponents.length > FILE_PATH_INDEX) ?
+                uriComponents[FILE_PATH_INDEX] : null;
+        File newFile = new File(filePath);
+        byte[] fileContent = Files.readAllBytes(newFile.toPath());
         MessageDigest md = MessageDigest.getInstance("SHA-1");
-        fileHash = byteArray2Hex(md.digest(fileContent));
+        String fileHash = byteArray2Hex(md.digest(fileContent));
         // if equal, return 304
-        if (fileHash.equals(req.getHeader("current-hash"))) {
-          cache_response_code = "304";
+        if (fileHash.equals(req.getHeader("If-None-Match"))) {
+          status_code = HttpServletResponse.SC_NOT_MODIFIED;
         } else {
-          cache_response_code = "200";
           uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
           long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
-          String filePath = (uriComponents.length > FILE_PATH_INDEX) ?
-                  uriComponents[FILE_PATH_INDEX] : null;
+
           downloadableFile = fileExporter.exportFile(userId, projectId, filePath);
         }
+        resp.setHeader("ETag", fileHash);
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_USERFILE)) {
         // Download a specific user file, such as android.keystore
         uriComponents = uri.split("/", SPLIT_LIMIT_USERFILE);
@@ -247,17 +256,15 @@ public class DownloadServlet extends OdeServlet {
       out.write(message.getBytes());
       out.close();
       return;
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
     }
 
     String fileName = downloadableFile.getFileName();
     byte[] content = downloadableFile.getContent();
 
     // Set http response information
-    resp.setStatus(HttpServletResponse.SC_OK);
-    resp.setStatus(HttpServletResponse.SC_OK);
-    resp.setHeader("cache-response-code", cache_response_code)
-    resp.setHeader("current-hash", fileHash)
-//    resp.setHeader("timestamp", newDate)
+    resp.setStatus(status_code);
     resp.setHeader(
         "content-disposition",
         req.getParameter("inline") != null ? "inline" : "attachment" + "; filename=\"" + fileName + "\"");
