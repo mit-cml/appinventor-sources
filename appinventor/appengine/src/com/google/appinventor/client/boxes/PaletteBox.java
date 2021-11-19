@@ -12,6 +12,7 @@ import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
+import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.common.version.AppInventorFeatures;
@@ -32,6 +33,7 @@ public final class PaletteBox extends Box {
 
   // Singleton palette box instance
   private static final PaletteBox INSTANCE = new PaletteBox();
+  public boolean loaded = false;
 
   /**
    * Return the palette box.
@@ -43,7 +45,8 @@ public final class PaletteBox extends Box {
   }
   private final StackPanel palettePanel;
   private Map<String, VerticalPanel> panelsByCat;
-  private Map<String, PaletteEntry> paletteItems = new HashMap<>();
+//  private Map<String, PaletteEntry> paletteItems = new HashMap<>();
+  private Map<String, SimplePaletteItem> paletteItems = new HashMap<>();
   DropTargetProvider dropTargetProvider;
   // Component database: information about components (including their properties and events)
   private final SimpleComponentDatabase COMPONENT_DATABASE;
@@ -63,19 +66,7 @@ public final class PaletteBox extends Box {
     palettePanel = new StackPanel();
     palettePanel.setWidth("100%");
     panelsByCat = new HashMap<>();
-    dropTargetProvider = new DropTargetProvider() {
-      @Override
-      public DropTarget[] getDropTargets() {
-        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
-        // getDropTargets() doesn't get called for each component.
-        // NOTE: These targets must be specified in depth-first order.
-        List<DropTarget> dropTargets = new ArrayList<>();
-//        form.getDropTargetsWithin();
-//        dropTargets.add(visibleComponentsPanel);
-//        dropTargets.add(nonVisibleComponentsPanel);
-        return dropTargets.toArray(new DropTarget[dropTargets.size()]);
-      }
-    };
+
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance();
     for (ComponentCategory cat: ComponentCategory.values()) {
       if (showCategory(cat)) {
@@ -88,7 +79,6 @@ public final class PaletteBox extends Box {
     }
 
     setContent(palettePanel);
-//    loadComponents();
   }
 
   private static boolean showCategory(ComponentCategory category) {
@@ -105,7 +95,7 @@ public final class PaletteBox extends Box {
   /*
    * Adds a component entry to the palette.
    */
-  private void addPaletteEntry(PaletteEntry component, ComponentCategory category) {
+  private void addPaletteEntry(SimplePaletteItem component, ComponentCategory category) {
     panelsByCat.get(category.getName()).add(component);
 
     // TODO: Determine function served by Helpers
@@ -120,10 +110,12 @@ public final class PaletteBox extends Box {
 //    }
   }
 
-  public void loadComponents() {
+  public void loadComponents(DropTargetProvider dp) {
+    dropTargetProvider = dp;
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
       this.addComponent(component);
     }
+    loaded = true;
   }
 
   /**
@@ -148,11 +140,15 @@ public final class PaletteBox extends Box {
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
     String componentType = COMPONENT_DATABASE.getComponentType(componentName);
     if (showOnPalette && showCategory(category)) {
-      PaletteEntry entry = new PaletteEntry(componentName, componentType, iconName, nonVisible,
-          external, version, versionName, dateBuilt, helpString, helpUrl, categoryDocUrlString,
-          external, "TODO-LicenseInfo", dropTargetProvider);
-      paletteItems.put(componentName, entry);
-      addPaletteEntry(entry, category);
+//      PaletteEntry entry = new PaletteEntry(componentName, componentType, iconName, nonVisible,
+//          external, version, versionName, dateBuilt, helpString, helpUrl, categoryDocUrlString,
+//          external, "TODO-LicenseInfo", dropTargetProvider);
+      SimplePaletteItem item = new SimplePaletteItem(
+          new SimpleComponentDescriptor(componentName, version, versionName, dateBuilt, helpString, helpUrl,
+              categoryDocUrlString, showOnPalette, nonVisible, external),
+          dropTargetProvider);
+      paletteItems.put(componentName, item);
+      addPaletteEntry(item, category);
 
       // Make a second copy for the search mechanism
 //      item = new SimplePaletteItem(
@@ -182,7 +178,7 @@ public final class PaletteBox extends Box {
 //    }
   }
 
-  private void removePaletteItem(PaletteEntry component, ComponentCategory category) {
+  private void removePaletteItem(SimplePaletteItem component, ComponentCategory category) {
     VerticalPanel catPanel = panelsByCat.get(category);
     catPanel.remove(component);
     if (catPanel.getWidgetCount() < 1) {

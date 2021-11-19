@@ -23,11 +23,11 @@
             <box:PaletteBox width="240px" ui:field="paletteBox"/>
             <box:ViewerBox ui:field="bindViewerBox" />
             <g:FlowPanel ui:field="structureAndAssets">
-              <box:SourceStructureBox />
+              <box:SourceStructureBox ui:field="bindSourceStructureBox" />
               <box:BlockSelectorBox />
-              <box:AssetListBox />
+              <box:AssetListBox  ui:field="bindAssetListBox" />
             </g:FlowPanel>
-            <box:PropertiesBox width="222px" />
+            <box:PropertiesBox ui:field="bindPropertiesBox" width="222px" />
           </g:FlowPanel>
         </g:FlowPanel>
         <g:FlowPanel width="100%">

@@ -8,13 +8,18 @@ package com.google.appinventor.client;
 
 import com.google.appinventor.client.actions.DisableAutoloadAction;
 import com.google.appinventor.client.actions.EnableAutoloadAction;
+import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.boxes.PropertiesBox;
+import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
@@ -126,8 +131,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.appinventor.client.boxes.PaletteBox;
-import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
-import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -197,6 +200,8 @@ public class Ode implements EntryPoint {
 
   private AssetManager assetManager;
 
+  private DropTargetProvider dragDropTargets;
+
   // Remembers the current View
   public static final int DESIGNER = 0;
   public static final int PROJECTS = 1;
@@ -233,6 +238,9 @@ public class Ode implements EntryPoint {
   @UiField DesignToolbar designToolbar;
   @UiField PaletteBox paletteBox;
   @UiField ViewerBox bindViewerBox = ViewerBox.getViewerBox();
+  @UiField AssetListBox bindAssetListBox = AssetListBox.getAssetListBox();
+  @UiField SourceStructureBox bindSourceStructureBox;
+  @UiField PropertiesBox bindPropertiesBox = PropertiesBox.getPropertiesBox();
 
   @UiField FlowPanel projectPanel;
   private HorizontalPanel projectListPanel = new HorizontalPanel();
@@ -466,8 +474,13 @@ public class Ode implements EntryPoint {
     currentView = DESIGNER;
     getTopToolbar().updateFileMenuButtons(currentView);
     if (currentFileEditor != null) {
-      paletteBox.loadComponents();
+      if (!paletteBox.loaded) {
+        // Replacing code that clears and reloads the palette whenever a project
+        // is loaded. Do we want that? Possibly if we go to designer modules?
+        paletteBox.loadComponents(currentFileEditor.getDropTargetProvider());
+      }
       deckPanel.showWidget(designTabIndex);
+      bindPropertiesBox.show((YaFormEditor) currentFileEditor, true);
     } else if (!editorManager.hasOpenEditor()) {  // is there a project editor pending visibility?
       LOG.warning("No current file editor to show in designer");
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
@@ -576,7 +589,6 @@ public class Ode implements EntryPoint {
         }
       });
       project.loadProjectNodes();
-
     } else {
       // The project nodes have been loaded. Tell the viewer to open
       // the project. This will cause the projects source files to be fetched
@@ -596,6 +608,7 @@ public class Ode implements EntryPoint {
         assetManager = AssetManager.getInstance();
       }
       assetManager.loadAssets(project.getProjectId());
+      bindAssetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
     getTopToolbar().updateFileMenuButtons(1);
   }
@@ -1105,6 +1118,9 @@ public class Ode implements EntryPoint {
       return;
     }
     LOG.info("Ode: Setting current file editor to " + currentFileEditor.getFileId());
+    if (currentFileEditor instanceof YaFormEditor) {
+      bindSourceStructureBox.show((YaFormEditor) currentFileEditor);
+    }
     switchToDesignView();
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).

@@ -97,7 +97,7 @@ public class PaletteEntry extends DragSourcePanel {
                       String helpString_p, String helpURL_p, String catDocURL, Boolean external_p,
                       String license_p, DropTargetProvider dropTargetProvider) {
     this.dropTargetProvider = dropTargetProvider;
-    this.componentType = componentName;
+    this.componentType = componentType;
     editor = (YaFormEditor)Ode.getInstance().getCurrentFileEditor();
     this.image = SimpleComponentDescriptor.getImageFromPath(iconName,
         componentType.substring(0, componentType.lastIndexOf('.')),
@@ -139,7 +139,7 @@ public class PaletteEntry extends DragSourcePanel {
     add(panel);
     setWidth("100%");
 
-//    addHandlers();
+    addHandlers();
   }
 
   /**
@@ -178,8 +178,8 @@ public class PaletteEntry extends DragSourcePanel {
    * @return mock component
    */
   public MockComponent createMockComponent() {
-    return new MockCanvas(editor);
-//    return createMockComponentFromPalette();
+//    return new MockCanvas(editor);
+    return createMockComponentFromPalette();
   }
 
   /**

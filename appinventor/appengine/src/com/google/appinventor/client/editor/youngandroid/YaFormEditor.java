@@ -208,6 +208,22 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   // FileEditor methods
 
   @Override
+  public DropTargetProvider getDropTargetProvider() {
+    return new DropTargetProvider() {
+      @Override
+      public DropTarget[] getDropTargets() {
+        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
+        // getDropTargets() doesn't get called for each component.
+        // NOTE: These targets must be specified in depth-first order.
+        List<DropTarget> dropTargets = form.getDropTargetsWithin();
+        dropTargets.add(visibleComponentsPanel);
+        dropTargets.add(nonVisibleComponentsPanel);
+        return dropTargets.toArray(new DropTarget[dropTargets.size()]);
+      }
+    };
+  }
+
+  @Override
   public void loadFile(final Command afterFileLoaded) {
     final long projectId = getProjectId();
     final String fileId = getFileId();
@@ -245,6 +261,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       }
     };
     Ode.getInstance().getProjectService().load2(projectId, fileId, callback);
+  }
+
+  public SourceStructureExplorer getSourceStructureExplorer() {
+    return sourceStructureExplorer;
   }
 
   @Override
@@ -824,7 +844,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     }
   }
 
-  private void onFormStructureChange() {
+  public void onFormStructureChange() {
     Ode.getInstance().getEditorManager().scheduleAutoSave(this);
 
     // Update source structure panel

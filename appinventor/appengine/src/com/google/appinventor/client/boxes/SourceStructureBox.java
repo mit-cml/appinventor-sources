@@ -7,6 +7,8 @@
 package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.widgets.boxes.Box;
 
@@ -33,7 +35,7 @@ public final class SourceStructureBox extends Box {
   /**
    * Creates new source structure explorer box.
    */
-  private SourceStructureBox() {
+  public SourceStructureBox() {
     super(MESSAGES.sourceStructureBoxCaption(),
         300,    // height
         false,  // minimizable
@@ -52,4 +54,14 @@ public final class SourceStructureBox extends Box {
   public SourceStructureExplorer getSourceStructureExplorer() {
     return sourceStructureExplorer;
   }
+
+  public SourceStructureExplorer show(YaFormEditor form) {
+    sourceStructureExplorer.updateTree(form.getForm().buildComponentsTree(),
+        form.getForm().getLastSelectedComponent().getSourceStructureExplorerItem());
+    sourceStructureExplorer.setVisible(true);
+    this.setVisible(true);
+    setContent(sourceStructureExplorer);
+    return sourceStructureExplorer;
+  }
+
 }
