@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletResponse;
  *               Companion that we have all of the needed assets
  *
  *               This code is part of the implementation of webRTC
- *               communication between the Companion and the App
+ *               co mmunication between the Companion and the App
  *               Inventor client.
  */
 
