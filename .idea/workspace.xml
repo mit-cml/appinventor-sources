@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="00964115-5ab5-45e4-b6f4-332a79d25cb1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/appinventor/components/src/com/google/appinventor/components/runtime/util/AssetFetcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/appinventor/components/src/com/google/appinventor/components/runtime/util/AssetFetcher.java" afterDir="false" />
     </list>
     <list id="83f3dd70-d721-4e9b-8555-c483b3600307" name="Not Commit" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -52,6 +51,8 @@
       <workItem from="1637115865767" duration="480000" />
       <workItem from="1637167969875" duration="1433000" />
       <workItem from="1637170916663" duration="1009000" />
+      <workItem from="1637379531446" duration="765000" />
+      <workItem from="1637380835728" duration="278000" />
     </task>
     <servers />
   </component>
