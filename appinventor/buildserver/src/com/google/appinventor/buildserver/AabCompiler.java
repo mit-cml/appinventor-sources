@@ -15,11 +15,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.concurrent.Callable;
+
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * This Callable class will convert the compiled files into an Android App Bundle.
@@ -34,6 +42,45 @@ import java.util.zip.ZipInputStream;
  * - lib/
  */
 public class AabCompiler implements Callable<Boolean> {
+
+  // These regexes were taken from a project compiled via Android Studio
+  private static final String[] NONCOMPRESSIBLE_EXTS = new String[] {
+      "**.3[gG]2",
+      "**.3[gG][pP]",
+      "**.3[gG][pP][pP]",
+      "**.3[gG][pP][pP]2",
+      "**.[aA][aA][cC]",
+      "**.[aA][mM][rR]",
+      "**.[aA][wW][bB]",
+      "**.[gG][iI][fF]",
+      "**.[iI][mM][yY]",
+      "**.[jJ][eE][tT]",
+      "**.[jJ][pP][eE][gG]",
+      "**.[jJ][pP][gG]",
+      "**.[mM]4[aA]",
+      "**.[mM]4[vV]",
+      "**.[mM][iI][dD]",
+      "**.[mM][iI][dD][iI]",
+      "**.[mM][kK][vV]",
+      "**.[mM][pP]2",
+      "**.[mM][pP]3",
+      "**.[mM][pP]4",
+      "**.[mM][pP][eE][gG]",
+      "**.[mM][pP][gG]",
+      "**.[oO][gG][gG]",
+      "**.[oO][pP][uU][sS]",
+      "**.[pP][nN][gG]",
+      "**.[rR][tT][tT][tT][lL]",
+      "**.[sS][mM][fF]",
+      "**.[tT][fF][lL][iI][tT][eE]",
+      "**.[wW][aA][vV]",
+      "**.[wW][eE][bB][mM]",
+      "**.[wW][eE][bB][pP]",
+      "**.[wW][mM][aA]",
+      "**.[wW][mM][vV]",
+      "**.[xX][mM][fF]"
+  };
+
   private PrintStream out;
   private File buildDir;
   private int mx;
@@ -284,6 +331,27 @@ public class AabCompiler implements Callable<Boolean> {
   }
 
   private boolean bundletool() {
+    // Create the bundle configuration
+    File configFile;
+    try {
+      configFile = File.createTempFile("BundleConfig", ".pb.json");
+    } catch (IOException e) {
+      throw new RuntimeException("Unable to generate bundle config", e);
+    }
+    try (FileOutputStream out = new FileOutputStream(configFile)) {
+      JSONObject config = new JSONObject();
+      JSONObject compression = new JSONObject();
+      JSONArray uncompressedGlob = new JSONArray();
+      config.put("compression", compression);
+      compression.put("uncompressedGlob", uncompressedGlob);
+      for (String ext : NONCOMPRESSIBLE_EXTS) {
+        uncompressedGlob.put(ext);
+      }
+      out.write(config.toString().getBytes(StandardCharsets.UTF_8));
+    } catch (JSONException | IOException e) {
+      throw new RuntimeException("Unable to generate AAB", e);
+    }
+
     aab.setBase(new File(buildDir, "base.zip"));
 
     if (!AabZipper.zipBundle(aab.getRoot(), aab.getBase(), aab.getRoot().getName() + File.separator)) {
@@ -297,6 +365,7 @@ public class AabCompiler implements Callable<Boolean> {
     bundletoolCommandLine.add(bundletool);
     bundletoolCommandLine.add("build-bundle");
     bundletoolCommandLine.add("--modules=" + aab.getBase());
+    bundletoolCommandLine.add("--config=" + configFile.getAbsolutePath());
     bundletoolCommandLine.add("--output=" + deploy);
     String[] bundletoolBuildCommandLine = bundletoolCommandLine.toArray(new String[0]);
 

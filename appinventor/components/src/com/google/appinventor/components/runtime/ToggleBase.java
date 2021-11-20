@@ -27,7 +27,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  */
 @SimpleObject
 public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewComponent
-        implements OnCheckedChangeListener, OnFocusChangeListener {
+        implements OnCheckedChangeListener, OnFocusChangeListener, AccessibleComponent {
 
   protected T view;
 
@@ -45,6 +45,9 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
 
   // Backing for text color
   private int textColor;
+
+  // Whether the text is big or not
+  private boolean isBigText = false;
 
   /**
    * Creates a new ToggleBase component.
@@ -77,6 +80,33 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @Override
   public View getView() {
     return view;
+  }
+
+
+  @Override
+  public void setHighContrast(boolean isHighContrast) {
+
+  }
+
+  @Override
+  public boolean getHighContrast() {
+    return false;
+  }
+
+  @Override
+  public void setLargeFont(boolean isLargeFont) {
+    if (TextViewUtil.getFontSize(view, container.$context()) == 24.0 || TextViewUtil.getFontSize(view, container.$context()) == Component.FONT_DEFAULT_SIZE) {
+      if (isLargeFont) {
+        TextViewUtil.setFontSize(view, 24);
+      } else {
+        TextViewUtil.setFontSize(view, Component.FONT_DEFAULT_SIZE);
+      }
+    }
+  }
+
+  @Override
+  public boolean getLargeFont() {
+    return isBigText;
   }
 
   /**
@@ -231,7 +261,17 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @SimpleProperty(description = "Specifies the text font size of the %type% in scale-independent "
       + "pixels.")
   public void FontSize(float size) {
-    TextViewUtil.setFontSize(view, size);
+    if (Math.abs(size-Component.FONT_DEFAULT_SIZE)<.01 || Math.abs(size-24)<.01) {
+      if (isBigText || container.$form().BigDefaultText()) {
+        TextViewUtil.setFontSize(view, 24);
+      }
+      else {
+        TextViewUtil.setFontSize(view, Component.FONT_DEFAULT_SIZE);
+      }
+    }
+    else {
+      TextViewUtil.setFontSize(view, size);
+    }
   }
 
   /**

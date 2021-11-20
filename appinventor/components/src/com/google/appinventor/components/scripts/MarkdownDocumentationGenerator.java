@@ -100,7 +100,7 @@ public class MarkdownDocumentationGenerator extends ComponentProcessor {
   }
 
   private String getPropertyClass(ComponentInfo info, Property property) {
-    String cls = property.isColor() ? COLOR_TYPE : javaTypeToYailType(property.getType());
+    String cls = property.isColor() ? COLOR_TYPE : property.getYailType();
     if (!property.isWritable()) {
       cls += " .ro";
     }
@@ -142,7 +142,7 @@ public class MarkdownDocumentationGenerator extends ComponentProcessor {
       }
       String returnType = "";
       if (method.getReturnType() != null) {
-        returnType = method.isColor() ? COLOR_TYPE : javaTypeToYailType(method.getReturnType());
+        returnType = method.isColor() ? COLOR_TYPE : method.getYailReturnType();
         returnType = " returns " + returnType;
       }
       out.write(String.format("%n%n{:id=\"%s.%s\" class=\"method%s\"} <i/> %s(%s)%n: ", name,
@@ -161,7 +161,7 @@ public class MarkdownDocumentationGenerator extends ComponentProcessor {
     for (Parameter param : parameters) {
       sb.append(separator);
       sb.append(String.format("*%s*{:.%s}", param.name,
-          param.color ? COLOR_TYPE : javaTypeToYailType(param.type)));
+          param.color ? COLOR_TYPE : param.getYailType()));
       separator = ",";
     }
     return sb.toString();

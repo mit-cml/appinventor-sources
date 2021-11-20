@@ -234,8 +234,6 @@ $Source $Yail
 
 (set-and-coerce-property! 'CodeBox 'Hint "Six Character Code" 'text)
 
-(set-and-coerce-property! 'CodeBox 'MultiLine #t 'boolean)
-
 (set-and-coerce-property! 'CodeBox 'TextAlignment 1 'number)
 
 (set-and-coerce-property! 'CodeBox 'Width -2 'number)

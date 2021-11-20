@@ -6,12 +6,10 @@
 
 package com.google.appinventor.components.runtime;
 
-import java.io.IOException;
-
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -19,10 +17,14 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.util.MediaUtil;
+
+import java.io.IOException;
 
 /**
  * A 'sprite' that can be placed on a {@link Canvas}, where it can react to touches and drags,
@@ -137,7 +139,7 @@ public class ImageSprite extends Sprite {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void Picture(String path) {
+  public void Picture(@Asset String path) {
     picturePath = (path == null) ? "" : path;
     try {
       drawable = MediaUtil.getBitmapDrawable(form, picturePath);

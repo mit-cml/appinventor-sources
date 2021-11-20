@@ -2,7 +2,7 @@
   "de": "Deutsch",
   "en": "English",
   "zh_CN": "简体中文",
-  "zh_TW": "繁体中文",
+  "zh_TW": "正體中文",
   "es_ES": "Español",
   "fr_FR": "Français",
   "it_IT": "Italiano",
@@ -14,5 +14,6 @@
   "hu": "Magyar",
   "nl": "Nederlands",
   "pl": "Polski",
-  "lt": "Lietuvis"
+  "lt": "Lietuvis",
+  "hy": "հայերեն"
 }

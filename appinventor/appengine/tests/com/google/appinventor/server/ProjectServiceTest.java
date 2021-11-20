@@ -13,6 +13,8 @@ import static org.easymock.EasyMock.expectLastCall;
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.server.encryption.KeyczarEncryptor;
+import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
+import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
@@ -24,6 +26,7 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.settings.Settings;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
@@ -272,11 +275,10 @@ public class ProjectServiceTest {
     expectedYaFiles.put("src/com/domain/noname/Project1/Screen1.bky", "");
     expectedYaFiles.put("src/com/domain/noname/Project1/Screen1.yail", "");
     expectedYaFiles.put("youngandroidproject/project.properties",
-        "main=com.domain.noname.Project1.Screen1\n" +
-        "name=Project1\n" +
-        "assets=../assets\n" +
-        "source=../src\n" +
-        "build=../build\n");
+        new YoungAndroidSettingsBuilder()
+            .setProjectName("Project1")
+            .setQualifiedFormName("com.domain.noname.Project1.Screen1")
+            .toProperties());
     expectedYaFiles.put("src/com/domain/noname/Project1/Screen1.scm",
         "#|\n$JSON\n" +
         "{\"authURL\":[]," +
@@ -310,11 +312,10 @@ public class ProjectServiceTest {
     expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.bky", "");
     expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.yail", "");
     expectedYaFiles1.put("youngandroidproject/project.properties",
-        "main=com.domain.noname.Project1.Screen1\n" +
-        "name=Project1\n" +
-        "assets=../assets\n" +
-        "source=../src\n" +
-        "build=../build\n");
+        new YoungAndroidSettingsBuilder()
+            .setProjectName("Project1")
+            .setQualifiedFormName("com.domain.noname.Project1.Screen1")
+            .toProperties());
     expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.scm",
         YOUNG_ANDROID_PROJECT_SCM_SOURCE);
     assertEquals(expectedYaFiles1, getTextFiles(USER_ID_ONE, yaProject1));
@@ -334,22 +335,10 @@ public class ProjectServiceTest {
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.bky", "");
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.yail", "");
     expectedYaFiles2.put("youngandroidproject/project.properties",
-        "main=appinventor.ai_noname1.Project2.Screen1\n" +
-        "name=Project2\n" +
-        "assets=../assets\n" +
-        "source=../src\n" +
-        "build=../build\n" +
-        "versioncode=1\n" +
-        "versionname=1.0\n" +
-        "useslocation=false\n" +
-        "aname=Project1\n" +
-        "sizing=Fixed\n" +
-        "showlistsasjson=false\n" +
-        "actionbar=false\n" +
-        "theme=AppTheme.Light.DarkActionBar\n" +
-        "color.primary=0\n" +
-        "color.primary.dark=0\n" +
-        "color.accent=0\n");
+        new YoungAndroidSettingsBuilder()
+            .setProjectName("Project2")
+            .setQualifiedFormName("appinventor.ai_noname1.Project2.Screen1")
+            .toProperties());
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.scm",
         YOUNG_ANDROID_PROJECT_SCM_SOURCE);
     assertEquals(expectedYaFiles2, getTextFiles(USER_ID_ONE, yaProject2));
@@ -489,22 +478,10 @@ public class ProjectServiceTest {
         YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, PROJECT1_NAME, params).getProjectId();
 
     String loadedSettings = projectServiceImpl.loadProjectSettings(projectId);
-    assertEquals(
-        "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":" +
-        "{\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"1\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"1.0\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"false\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"Project1\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"Fixed\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON + "\":\"false\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL + "\":\"\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET + "\":\"\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR + "\":\"false\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME + "\":\"AppTheme.Light.DarkActionBar\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR + "\":\"0\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK + "\":\"0\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR + "\":\"0\"}}",
+    assertEquals(new YoungAndroidSettingsBuilder()
+            .setProjectName("Project1")
+            .setQualifiedFormName(PACKAGE_BASE + PROJECT1_NAME)
+            .build(),
         loadedSettings);
 
     String storedSettings =

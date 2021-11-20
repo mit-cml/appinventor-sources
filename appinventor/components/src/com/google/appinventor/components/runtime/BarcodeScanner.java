@@ -1,13 +1,15 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.Manifest;
+
 import android.app.Activity;
+
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -22,10 +24,16 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesActivities;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesQueries;
+
+import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
+import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -50,6 +58,11 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 })
 @UsesPermissions(permissionNames = "android.permission.CAMERA")
 @UsesLibraries(libraries = "Barcode.jar,QRGenerator.jar")
+@UsesQueries(intents = {
+    @IntentFilterElement(
+        actionElements = {@ActionElement(name = "com.google.zxing.client.android.SCAN")}
+    )
+})
 public class BarcodeScanner extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
 

@@ -139,6 +139,7 @@ public class BlocklyPanel extends HTMLPanel {
     getElement().addClassName("svg");
     getElement().setId(formName);
     this.formName = formName;
+
     /* Blockly initialization now occurs in three stages. This is due to the fact that certain
      * Blockly objects rely on SVG methods such as getScreenCTM(), which are not properly
      * initialized and/or null prior to the svg element being attached to the DOM. The first
@@ -151,6 +152,7 @@ public class BlocklyPanel extends HTMLPanel {
      * has been downloaded from the server.
      */
     initWorkspace(Long.toString(blocksEditor.getProjectId()), readOnly, LocaleInfo.getCurrentLocale().isRTL());
+
     OdeLog.log("Created BlocklyPanel for " + formName);
   }
 
@@ -701,6 +703,26 @@ public class BlocklyPanel extends HTMLPanel {
   public native String getBlocksContent() /*-{
     return this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
       .saveBlocksFile(@com.google.appinventor.common.version.AppInventorFeatures::doPrettifyXml()());
+  }-*/;
+
+  public native void addScreen(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .addScreen(name);
+  }-*/;
+
+  public native void removeScreen(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .removeScreen(name);
+  }-*/;
+
+  public native void addAsset(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .addAsset(name);
+  }-*/;
+
+  public native void removeAsset(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .removeAsset(name);
   }-*/;
 
   /**
