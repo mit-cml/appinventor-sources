@@ -95,6 +95,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int textColor;
   private int detailTextColor;
 
+  // variables for text alignments of main text and detail text
+  private int textAlignment;
+  private int detailTextAlignment;
+
   private int selectionColor;
 
   private float fontSizeMain;
@@ -188,6 +192,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     TextColorDetail(Component.COLOR_WHITE);
     FontSize(22.0f);  // This was the original size of ListView text.
     FontSizeDetail(Component.FONT_DEFAULT_SIZE);
+    TextAlignment(Component.ALIGNMENT_NORMAL);
+    TextAlignmentDetail(Component.ALIGNMENT_NORMAL);
     FontTypeface(Component.TYPEFACE_DEFAULT);
     FontTypefaceDetail(Component.TYPEFACE_DEFAULT);
     // initially assuming that the image is of square shape
@@ -346,7 +352,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     LinearLayoutManager layoutManager;
     if (!dictItems.isEmpty()) {
       // if the data is available in AddData property
-      listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, dictItems, textColor, detailTextColor, fontSizeMain, fontSizeDetail, fontTypeface, fontTypeDetail, layout, backgroundColor, selectionColor, imageWidth, imageHeight, false);
+      listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, dictItems, textColor, detailTextColor, fontSizeMain, fontSizeDetail, fontTypeface, fontTypeDetail, textAlignment, detailTextAlignment, layout, backgroundColor, selectionColor, imageWidth, imageHeight, false);
 
       if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
         layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.HORIZONTAL, false);
@@ -355,7 +361,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       }
     } else {
       // Legacy Support: if the data is not available in AddData property but is available in ElementsFromString property
-      listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, stringItems, textColor, fontSizeMain, fontTypeface, backgroundColor, selectionColor);
+      listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, stringItems, textColor, fontSizeMain, fontTypeface, backgroundColor, textAlignment, selectionColor);
 
       layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
     }
@@ -920,6 +926,68 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       }
     }
     setAdapterData();
+  }
+
+  /**
+   * Specifies the alignment of the main text's text: center, normal
+   * (e.g., left-justified if text is written left to right), or
+   * opposite (e.g., right-justified if text is written left to right).
+   *
+   * @param alignment  one of {@link Component#ALIGNMENT_NORMAL},
+   *                   {@link Component#ALIGNMENT_CENTER} or
+   *                   {@link Component#ALIGNMENT_OPPOSITE}
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
+          defaultValue = Component.ALIGNMENT_NORMAL + "")
+  @SimpleProperty(userVisible = false)
+  public void TextAlignment(int alignment)  {
+    this.textAlignment = alignment;
+    setAdapterData();
+  }
+
+  /**
+   * Returns the alignment of the main text's text: center, normal
+   * (e.g., left-justified if text is written left to right), or
+   * opposite (e.g., right-justified if text is written left to right).
+   *
+   * @return  one of {@link Component#ALIGNMENT_NORMAL},
+   *          {@link Component#ALIGNMENT_CENTER} or
+   *          {@link Component#ALIGNMENT_OPPOSITE}
+   */
+  @SimpleProperty(userVisible = false)
+  public int TextAlignment()  {
+    return this.textAlignment;
+  }
+
+  /**
+   * Specifies the alignment of the main text's text: center, normal
+   * (e.g., left-justified if text is written left to right), or
+   * opposite (e.g., right-justified if text is written left to right).
+   *
+   * @param alignment  one of {@link Component#ALIGNMENT_NORMAL},
+   *                   {@link Component#ALIGNMENT_CENTER} or
+   *                   {@link Component#ALIGNMENT_OPPOSITE}
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
+          defaultValue = Component.ALIGNMENT_NORMAL + "")
+  @SimpleProperty(userVisible = false)
+  public void TextAlignmentDetail(int alignment)  {
+    this.detailTextAlignment = alignment;
+    setAdapterData();
+  }
+
+  /**
+   * Returns the alignment of the detail text's text: center, normal
+   * (e.g., left-justified if text is written left to right), or
+   * opposite (e.g., right-justified if text is written left to right).
+   *
+   * @return  one of {@link Component#ALIGNMENT_NORMAL},
+   *          {@link Component#ALIGNMENT_CENTER} or
+   *          {@link Component#ALIGNMENT_OPPOSITE}
+   */
+  @SimpleProperty(userVisible = false)
+  public int TextAlignmentDetail()  {
+    return this.detailTextAlignment;
   }
 
   /**
