@@ -1355,6 +1355,10 @@ public final class YoungAndroidFormUpgrader {
       // Added ...
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // - Added HasSeparator, SeparatorColor, SeparatorSize Properties
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
