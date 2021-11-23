@@ -6,12 +6,14 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
@@ -46,18 +48,16 @@ import java.util.List;
  * display. Simple lists of strings may be set using the {@link #ElementsFromString(String)} property.
  * More complex lists of elements containing multiple strings and/or images can be created using the
  * {@link #ListData(String)} and {@link #ListViewLayout(int)} properties.
- *
+ * <p>
  * [Information on Layouts](../other/advanced-listview.html)
- *
- *   Warning: This component will not work correctly on Screens that are scrollable if its
+ * <p>
+ * Warning: This component will not work correctly on Screens that are scrollable if its
  * {@link #Height(int)} is set to Fill Parent.
  *
- * @internaldoc
- * TODO(hal): Think about generalizing this to include more than text.
- * @author halabelson@google.com (Hal Abelson)
- * @author osmidy@mit.edu (Olivier Midy)
+ * @author halabelson @google.com (Hal Abelson)
+ * @author osmidy @mit.edu (Olivier Midy)
+ * @internaldoc TODO(hal)  : Think about generalizing this to include more than text.
  */
-
 @DesignerComponent(version = YaVersion.LISTVIEW_COMPONENT_VERSION,
     description = "<p>This is a visible component that displays a list of text and image elements.</p>" +
         " <p>Simple lists of strings may be set using the ElementsFromString property." +
@@ -108,6 +108,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int imageWidth;
   private int imageHeight;
   private static final int DEFAULT_IMAGE_WIDTH = 200;
+
+  // variables for handling ListView separator
+  private boolean hasSeparator = false;
+  private int separatorSize = 1;
+  private int separatorColor = Component.COLOR_PINK;
 
   // variable for ListView layout types
   private int layout;
@@ -195,6 +200,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     ImageHeight(DEFAULT_IMAGE_WIDTH);
     ElementsFromString("");
     ListData("");
+    HasSeparator(true);
+    SeparatorColor(Component.COLOR_PINK);
+    SeparatorSize(1);
 
     linearLayout.addView(txtSearchBox);
     linearLayout.addView(recyclerView);
@@ -920,6 +928,91 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       }
     }
     setAdapterData();
+  }
+
+  /**
+   * Sets whether the ListView has line separator or not.
+   *
+   * @param hasSeparator boolean value to determine the ListView has separator or not
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty(userVisible = false)
+  public void HasSeparator(boolean hasSeparator)  {
+    this.hasSeparator = hasSeparator;
+    setSeparator();
+  }
+
+  /**
+   * Returns whether the ListView has line separator or not.
+   *
+   * @return the boolean value represent the ListView has separator or not
+   */
+  @SimpleProperty(userVisible = false)
+  public boolean HasSeparator() {
+    return this.hasSeparator;
+  }
+
+  /**
+   * Sets the color of the ListView's line separator if ListView has line separator.
+   *
+   * @param separatorColor the int value of line separator color
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_PINK)
+  @SimpleProperty(userVisible = false)
+  public void SeparatorColor(int separatorColor)  {
+    this.separatorColor = separatorColor;
+    setSeparator();
+  }
+
+  /**
+   * Returns the color of the ListView's line separator if ListView has line separator.
+   *
+   * @return the int value of line separator color
+   */
+  @SimpleProperty(userVisible = false)
+  public int SeparatorColor() {
+    return this.separatorColor;
+  }
+
+  /**
+   * Sets the size of the ListView's line separator it would be a height of the line separator
+   * in the case of vertical orientation and width of the line separator in the case of horizontal orientation.
+   *
+   * @param separatorSize the int value of line separator size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER, defaultValue = "1")
+  @SimpleProperty(userVisible = false)
+  public void SeparatorSize(int separatorSize)  {
+    this.separatorSize = separatorSize;
+    setSeparator();
+  }
+
+  /**
+   * Sets the size of the ListView's line separator it would be a height of the line separator
+   * in the case of vertical orientation and width of the line separator in the case of horizontal orientation.
+   *
+   * @return the int value of line separator size
+   */
+  @SimpleProperty(userVisible = false)
+  public int SeparatorSize()  {
+    return this.separatorSize;
+  }
+
+  private void setSeparator() {
+    if(hasSeparator)  {
+      GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{separatorColor, separatorColor});
+      DividerItemDecoration dividerItemDecoration;
+      if(orientation == ComponentConstants.LAYOUT_ORIENTATION_VERTICAL) {
+        gradientDrawable.setSize(recyclerView.getWidth(), Math.round(container.$form().deviceDensity() * separatorSize));
+        dividerItemDecoration = new DividerItemDecoration(container.$context(), DividerItemDecoration.VERTICAL);
+      } else {
+        gradientDrawable.setSize(Math.round(container.$form().deviceDensity() * separatorSize), recyclerView.getWidth());
+        dividerItemDecoration = new DividerItemDecoration(container.$context(), DividerItemDecoration.HORIZONTAL);
+      }
+      dividerItemDecoration.setDrawable(gradientDrawable);
+      recyclerView.addItemDecoration(dividerItemDecoration);
+      setAdapterData();
+    }
   }
 
   /**
