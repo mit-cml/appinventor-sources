@@ -2266,7 +2266,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
     // AI2:
     // - Added ...
-    6: "noUpgrade"
+    6: "noUpgrade",
+    // AI2:
+    // - Added TextAlignment Property
+    7: "noUpgrade"
 
   }, // End ListView upgraders
 
