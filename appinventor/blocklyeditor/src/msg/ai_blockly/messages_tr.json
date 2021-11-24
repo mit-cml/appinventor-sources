@@ -392,7 +392,7 @@
     "Blockly.Msg.LANG_PROCEDURES_CALLRETURN_PROCEDURE": "prosedür",
     "Blockly.Msg.REPL_UNABLE_TO_LOAD": "App Inventor sunucusundan güncelleme yüklenemiyor.",
     "Blockly.Msg.LANG_VARIABLES_VARIABLE": "Değişken",
-    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP": "Birden çok ekranlı uygulamada yeni bir ekran açar.",
+    "Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP": "Birden çok ekranlı uygulamada yeni bir ekran açar. Ekran1'e dönmek için bu bloğu kullanmamalısınız. Bunun yerine kapat ekran bloğunu kullanın.",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT": "Bileşen için",
     "Blockly.Msg.SORT_H": "Blokları Yüksekliğe Göre Sınıflandır",
     "Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_INPUT_TEXT": "Metin",
@@ -662,5 +662,7 @@
     "Blockly.Msg.DIALOG_SUBMIT": "Gönder",
     "Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_AND": "Bit düzeyini ve iki sayının değerini çevirin.",
     "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "Bu metin bloğu geçerli bir sayı içermiyor.",
-    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "değer"
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "Değer",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "Anahtar",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP": "Sözlükteki her bir anahtar-değer girişi için blokları 'yap' bölümünde çalıştırır. Geçerli sözlük öğesinin anahtarına/değerine başvurmak için verilen değişken adlarını kullanın."
 }
