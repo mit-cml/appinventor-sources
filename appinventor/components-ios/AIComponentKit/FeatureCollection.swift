@@ -20,16 +20,18 @@ import GEOSwift
   }
 
   // MARK: properties
-  @objc open var Features: [MapFeature] {
+  @objc open var Features: YailList<MapFeature> {
     get {
-      return _features
+      return YailList<MapFeature>(array: _features as [AnyObject])
     }
     set(features) {
       while _features.count > 0 {
         removeFeature(_features[0])
       }
       for feature in features {
-        addFeature(feature)
+        if let feature = feature as? MapFeature {
+          addFeature(feature)
+        }
       }
     }
   }
@@ -78,7 +80,7 @@ import GEOSwift
         for description in geoFeatures {
           try features.append(GeoJSONUtil.processGeoJSONFeature(container: self, description: description))
         }
-        Features = features
+        Features = YailList<MapFeature>(array: features)
       }
     } catch {
       LoadError("<string>", GeoJSONUtil.ERROR_CODE_JSON_PARSE_ERROR, GeoJSONUtil.ERROR_JSON_PARSE_ERROR)

@@ -32,7 +32,7 @@ import GEOSwift
 }
 
 @objc public protocol MapFeatureContainer: ComponentContainer {
-  var Features: [MapFeature] { get set }
+  var Features: YailList<MapFeature> { get set }
 
   func FeatureFromDescription(_ description: [Any]) -> Any
   func FeatureClick(_ feature: MapFeature)

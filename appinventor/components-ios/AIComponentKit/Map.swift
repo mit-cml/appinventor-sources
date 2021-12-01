@@ -498,16 +498,18 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     }
   }
 
-  @objc open var Features: [MapFeature] {
+  @objc open var Features: YailList<MapFeature> {
     get {
-      return _features
+      return YailList<MapFeature>(array: _features as [AnyObject])
     }
     set(features) {
       _features.removeAll()
       mapView.removeAnnotations(mapView.annotations)
       mapView.removeOverlays(mapView.overlays)
       for feature in features {
-        feature.copy(container: self)
+        if let feature = feature as? MapFeature {
+          feature.copy(container: self)
+        }
       }
     }
   }
