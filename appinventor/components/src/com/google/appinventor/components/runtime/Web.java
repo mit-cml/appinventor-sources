@@ -447,11 +447,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @param text the text data for the POST request
    */
   @SimpleFunction(description = "Performs an HTTP POST request using the Url property and " +
-      "the specified text.<br>" +
-      "The characters of the text are encoded using UTF-8 encoding.<br>" +
+      "the specified text.\n" +
+      "The characters of the text are encoded using UTF-8 encoding.\n" +
       "If the SaveResponse property is true, the response will be saved in a file and the " +
       "GotFile event will be triggered. The responseFileName property can be used to specify " +
-      "the name of the file.<br>" +
+      "the name of the file.\n" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
   public void PostText(final String text) {
     requestTextImpl(text, "UTF-8", "PostText", "POST");
@@ -473,11 +473,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    *                 encoding is empty or null, UTF-8 encoding will be used.
    */
   @SimpleFunction(description = "Performs an HTTP POST request using the Url property and " +
-      "the specified text.<br>" +
-      "The characters of the text are encoded using the given encoding.<br>" +
+      "the specified text.\n" +
+      "The characters of the text are encoded using the given encoding.\n" +
       "If the SaveResponse property is true, the response will be saved in a file and the " +
       "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
-      "the name of the file.<br>" +
+      "the name of the file.\n" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
   public void PostTextWithEncoding(final String text, final String encoding) {
     requestTextImpl(text, encoding, "PostTextWithEncoding", "POST");
@@ -495,10 +495,10 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @param path the path of the file for the POST request
    */
   @SimpleFunction(description = "Performs an HTTP POST request using the Url property and " +
-      "data from the specified file.<br>" +
+      "data from the specified file.\n" +
       "If the SaveResponse property is true, the response will be saved in a file and the " +
       "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
-      "the name of the file.<br>" +
+      "the name of the file.\n" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
   public void PostFile(final String path) {
     final String METHOD = "PostFile";
@@ -904,7 +904,10 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @param jsonText the JSON text to decode
    * @return the decoded text
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Decodes the given JSON encoded value to produce a corresponding AppInventor value.\n" +
+      "A JSON list `[x, y, z]` decodes to a list `(x y z)`,  A JSON object with key A and value B, " +
+      "(denoted as `{A:B}`) decodes to a list `((A B))`, that is, a list containing the two-element " +
+      "list `(A B)`.")
   // This returns an object, which in general will be a Java ArrayList, String, Boolean, Integer,
   // or Double.
   // The object will be sanitized to produce the corresponding Yail data by call-component-method.
@@ -931,7 +934,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @param jsonText The JSON text to decode.
    * @return The decoded value.
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Decodes the given JSON encoded value to produce a corresponding App Inventor value.\n" +
+      "A JSON list [x, y, z] decodes to a list (x y z). A JSON Object with name A and value B, " +
+      "denoted as {a: b} decodes to a dictionary with the key a and value b.")
   public Object JsonTextDecodeWithDictionaries(String jsonText) {
     try {
       return decodeJsonText(jsonText, true);
@@ -1102,8 +1107,8 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @return the decoded text
    */
   @SimpleFunction(description = "Decodes the given HTML text value. HTML character entities " +
-      "such as &amp;amp;, &amp;lt;, &amp;gt;, &amp;apos;, and &amp;quot; are changed to " +
-      "&amp;, &lt;, &gt;, &#39;, and &quot;. Entities such as &amp;#xhhhh, and &amp;#nnnn " +
+      "such as `&`, `<`, `>`, `'`, and `\"` are changed to " +
+      "&, <, >, ', and \". Entities such as &#xhhhh, and &#nnnn " +
       "are changed to the appropriate characters.")
   public String HtmlTextDecode(String htmlText) {
     try {
