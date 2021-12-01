@@ -423,7 +423,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       } else {
         // Throw out the first @ or { and everything after it,
         // in order to strip out @param, @author, {@link ...}, etc.
-        this.description = description.split("[@{]")[0].trim();
+        this.description = description.split("[@|{@]+(([a-zA-Z])*)+[(\\s)*]")[0].trim();
         defaultDescription = false;
       }
     }
