@@ -915,7 +915,7 @@
          (exact->inexact (/ n d)))))
 
 ;;; Trigonometric functions
-(define *pi* 3.14159265)
+(define *pi* 3.14159265358979323846)
 
 ;; Direct conversion from degrees to radians with no restrictions on range
 (define (degrees->radians-internal degrees)
@@ -930,7 +930,7 @@
 ;; Conversion from degrees to radians with result in range [-Pi, +Pi)
 (define (degrees->radians degrees)
   ;; Does someone know a more elegant way to ensure the range?  -- Ellen
-  (let ((rads (modulo (degrees->radians-internal degrees)
+  (let ((rads (yail:modulo (degrees->radians-internal degrees)
                       (* 2 *pi*))))
     (if (>= rads *pi*)
         (- rads (* 2 *pi*))
@@ -938,7 +938,7 @@
 
 ;; Conversion from radians to degrees with result in range [0, 360)
 (define (radians->degrees radians)
-  (modulo (radians->degrees-internal radians)
+  (yail:modulo (radians->degrees-internal radians)
           360))
 
 (define (sin-degrees degrees)

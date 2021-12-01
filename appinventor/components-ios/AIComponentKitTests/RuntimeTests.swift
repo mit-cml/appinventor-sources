@@ -146,6 +146,20 @@ class RuntimeTests: XCTestCase {
     XCTAssertEqual("#f", interpreter.evalForm("(is-binary? \"foobar\")"))
   }
 
+  func testDegreesToRadians() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("0.0", interpreter.evalForm("(degrees->radians 0)"))
+    XCTAssertEqual("-3.141592653589793", interpreter.evalForm("(degrees->radians 180)"))
+    XCTAssertEqual("0.0", interpreter.evalForm("(degrees->radians 360)"))
+  }
+
+  func testRadiansToDegrees() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("0.0", interpreter.evalForm("(radians->degrees 0)"))
+    XCTAssertEqual("180.0", interpreter.evalForm("(radians->degrees 3.141592653589793)"))
+    XCTAssertEqual("0.0", interpreter.evalForm("(radians->degrees 6.283185307179586)"))
+  }
+
   func testListsAsRetvals() throws {
     let interpreter = try getInterpreterForTesting()
     RetValManager.shared().fetch(false)  // clear any return values from other tests

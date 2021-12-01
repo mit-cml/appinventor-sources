@@ -1571,6 +1571,17 @@ yail_print_type(pic_state *pic) {
   return pic_undef_value(pic);
 }
 
+pic_value
+yail_modulo(pic_state *pic) {
+  double n, d, result;
+
+  pic_get_args(pic, "ff", &n, &d);
+
+  double remainder = fmod(n, d);
+
+  return pic_float_value(pic, remainder);
+}
+
 /// MARK: Initialization
 
 static void
@@ -1602,6 +1613,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:isa", yail_isa);
   pic_defun(pic, "yail:format-inexact", yail_format_inexact);
   pic_defun(pic, "yail:format-exact", yail_format_integer);
+  pic_defun(pic, "yail:modulo", yail_modulo);
   pic_defun(pic, "yail:perform-on-main-thread", yail_perform_on_main_thread);
   pic_defun(pic, "*:getClass", yail_get_class);
   pic_defun(pic, "*:getSimpleName", yail_get_simple_name);
