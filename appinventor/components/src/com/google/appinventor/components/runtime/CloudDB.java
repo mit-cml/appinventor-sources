@@ -1111,7 +1111,8 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
    * @param tag the tag that has changed.
    * @param value the new value of the tag.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Indicates that the data in the CloudDB project has changed. Launches an event with the " +
+      "`tag` that has been updated and the `value` it now has.")
   public void DataChanged(final String tag, final Object value) {
     Object tagValue = "";
     try {
