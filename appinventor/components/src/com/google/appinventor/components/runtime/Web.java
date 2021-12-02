@@ -904,10 +904,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @param jsonText the JSON text to decode
    * @return the decoded text
    */
-  @SimpleFunction(description = "Decodes the given JSON encoded value to produce a corresponding AppInventor value.\n" +
-      "A JSON list `[x, y, z]` decodes to a list `(x y z)`,  A JSON object with key A and value B, " +
-      "(denoted as `{A:B}`) decodes to a list `((A B))`, that is, a list containing the two-element " +
-      "list `(A B)`.")
+  @SimpleFunction
   // This returns an object, which in general will be a Java ArrayList, String, Boolean, Integer,
   // or Double.
   // The object will be sanitized to produce the corresponding Yail data by call-component-method.
@@ -934,9 +931,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @param jsonText The JSON text to decode.
    * @return The decoded value.
    */
-  @SimpleFunction(description = "Decodes the given JSON encoded value to produce a corresponding App Inventor value.\n" +
-      "A JSON list [x, y, z] decodes to a list (x y z). A JSON Object with name A and value B, " +
-      "denoted as {a: b} decodes to a dictionary with the key a and value b.")
+  @SimpleFunction
   public Object JsonTextDecodeWithDictionaries(String jsonText) {
     try {
       return decodeJsonText(jsonText, true);
