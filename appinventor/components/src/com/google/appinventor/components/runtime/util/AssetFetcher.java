@@ -30,9 +30,6 @@ import java.util.concurrent.Executors;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import javax.servlet.http.HttpServletResponse;
-
-
 /**
  * AssetFetcher: This module is used by the MIT AI2 Companion to fetch
  *               assets directly from the App Inventor Server.  Prior

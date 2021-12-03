@@ -22,12 +22,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -111,6 +110,7 @@ public class DownloadServlet extends OdeServlet {
       String uri = req.getRequestURI();
       // First, call split with no limit parameter.
       String[] uriComponents = uri.split("/");
+      System.out.println(Arrays.toString(uriComponents));
       String downloadKind = uriComponents[DOWNLOAD_KIND_INDEX];
 
       userId = userInfoProvider.getUserId();
@@ -214,14 +214,20 @@ public class DownloadServlet extends OdeServlet {
         // Download a specific file.
         // compute the hash and check if the hash matches the header coming in
         // (HttpServerRequest req has the header)
+        System.out.println("Start");
         String filePath = (uriComponents.length > FILE_PATH_INDEX) ?
                 uriComponents[FILE_PATH_INDEX] : null;
-        File newFile = new File(filePath);
-        byte[] fileContent = Files.readAllBytes(newFile.toPath());
+//        File newFile = new File(filePath);
+        System.out.println("1");
+        System.out.println(filePath);
+        Path path = Paths.get(uri);
+        byte[] fileContent = Files.readAllBytes(path);
         MessageDigest md = MessageDigest.getInstance("SHA-1");
         String fileHash = byteArray2Hex(md.digest(fileContent));
         // if equal, return 304
+        System.out.println("2");
         if (fileHash.equals(req.getHeader("If-None-Match"))) {
+          System.out.println("Not modify.");
           status_code = HttpServletResponse.SC_NOT_MODIFIED;
         } else {
           uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
@@ -229,6 +235,7 @@ public class DownloadServlet extends OdeServlet {
 
           downloadableFile = fileExporter.exportFile(userId, projectId, filePath);
         }
+        System.out.println("3");
         resp.setHeader("ETag", fileHash);
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_USERFILE)) {
         // Download a specific user file, such as android.keystore
