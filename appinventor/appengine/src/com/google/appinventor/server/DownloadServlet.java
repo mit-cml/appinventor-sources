@@ -218,10 +218,11 @@ public class DownloadServlet extends OdeServlet {
         String filePath = (uriComponents.length > FILE_PATH_INDEX) ?
                 uriComponents[FILE_PATH_INDEX] : null;
 //        File newFile = new File(filePath);
-        System.out.println("1");
-        System.out.println(filePath);
-        Path path = Paths.get(uri);
-        byte[] fileContent = Files.readAllBytes(path);
+
+        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
+        downloadableFile = fileExporter.exportFile(userId, projectId, filePath);
+        byte[] fileContent = downloadableFile.getContent();
+
         MessageDigest md = MessageDigest.getInstance("SHA-1");
         String fileHash = byteArray2Hex(md.digest(fileContent));
         // if equal, return 304
