@@ -215,11 +215,11 @@ public class DownloadServlet extends OdeServlet {
         // compute the hash and check if the hash matches the header coming in
         // (HttpServerRequest req has the header)
         System.out.println("Start");
+        uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
+        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         String filePath = (uriComponents.length > FILE_PATH_INDEX) ?
                 uriComponents[FILE_PATH_INDEX] : null;
-//        File newFile = new File(filePath);
-
-        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
+        StorageIoInstanceHolder.getInstance().assertUserHasProject(userId, projectId);
         downloadableFile = fileExporter.exportFile(userId, projectId, filePath);
         byte[] fileContent = downloadableFile.getContent();
 
@@ -232,9 +232,6 @@ public class DownloadServlet extends OdeServlet {
           status_code = HttpServletResponse.SC_NOT_MODIFIED;
         } else {
           uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
-          long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
-
-          downloadableFile = fileExporter.exportFile(userId, projectId, filePath);
         }
         System.out.println("3");
         resp.setHeader("ETag", fileHash);
