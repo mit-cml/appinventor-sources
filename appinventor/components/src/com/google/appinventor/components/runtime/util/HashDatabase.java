@@ -3,6 +3,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.*;
+import android.util.Log;
 
 public final class HashDatabase extends SQLiteOpenHelper{
 
@@ -45,6 +46,7 @@ public final class HashDatabase extends SQLiteOpenHelper{
     }
 
     public HashFile getHashFile(String fileName) {
+        Log.d("Database","getHashFile line 48");
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, // a. table
                 COLUMNS, // b. column names
@@ -55,6 +57,10 @@ public final class HashDatabase extends SQLiteOpenHelper{
                 null, // g. order by
                 null); // h. limit
 
+        if (cursor == null) {
+            return null;
+        }
+
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -62,7 +68,7 @@ public final class HashDatabase extends SQLiteOpenHelper{
         hashFile.setFileName(cursor.getString(0));
         hashFile.setHash(cursor.getString(1));
         hashFile.setTimestamp(cursor.getString(2));
-
+        Log.d("Database","end of getHashFile line 66");
         return hashFile;
     }
 

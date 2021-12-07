@@ -214,7 +214,6 @@ public class DownloadServlet extends OdeServlet {
         // Download a specific file.
         // compute the hash and check if the hash matches the header coming in
         // (HttpServerRequest req has the header)
-        System.out.println("Start");
         uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
         long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         String filePath = (uriComponents.length > FILE_PATH_INDEX) ?
@@ -226,14 +225,11 @@ public class DownloadServlet extends OdeServlet {
         MessageDigest md = MessageDigest.getInstance("SHA-1");
         String fileHash = byteArray2Hex(md.digest(fileContent));
         // if equal, return 304
-        System.out.println("2");
         if (fileHash.equals(req.getHeader("If-None-Match"))) {
-          System.out.println("Not modify.");
           status_code = HttpServletResponse.SC_NOT_MODIFIED;
         } else {
           uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
         }
-        System.out.println("3");
         resp.setHeader("ETag", fileHash);
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_USERFILE)) {
         // Download a specific user file, such as android.keystore
