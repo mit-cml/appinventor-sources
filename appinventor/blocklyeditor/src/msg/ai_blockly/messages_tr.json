@@ -665,9 +665,16 @@
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "Değer",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "Anahtar",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP": "Sözlükteki her bir anahtar-değer girişi için blokları 'yap' bölümünde çalıştırır. Geçerli sözlük öğesinin anahtarına/değerine başvurmak için verilen değişken adlarını kullanın.",
-    "Blockly.Msg.LANG_MATH_BINARY_FORMAT": "ikili",
+    "Blockly.Msg.LANG_MATH_BINARY_FORMAT": "çift",
     "Blockly.Msg.LANG_MATH_DECIMAL_FORMAT": "ondalık",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE": "her biri için sözlük",
-    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "hile",
-    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT": "%3 sözlüğünde %2 olan her %1 için"
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "yapmak",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT": "%3 sözlüğünde %2 olan her %1 için",
+    "Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TOOLTIP": "Sözlükte eş ayarlar.",
+    "Blockly.Msg.LANG_TEXT_REVERSE_TOOLTIP": "Verilen testi tersine çevirir.",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS": "Parçanın metinde yer alıp almadığını test eder.",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL": "hepsini içerir",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY": "herhangi birini içerir",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS": "içerir",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST": "parça listesi"
 }
