@@ -158,12 +158,10 @@ public class AssetFetcher {
       }
     }
     try {
-      Log.d(LOG_TAG,"begin getFile line 161");
       boolean error = false;
       File outFile = null;
       URL url = new URL(fileName);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      Log.d(LOG_TAG,"begin getFile line 165");
       if (connection != null) {
         connection.setRequestMethod("GET");
         connection.addRequestProperty("Cookie",  "AppInventor = " + cookieValue);
@@ -173,14 +171,12 @@ public class AssetFetcher {
           connection.addRequestProperty("If-None-Match", db.getHashFile(fileName).getHash()); //get old_hash from database
         }
         int responseCode = connection.getResponseCode();
-        Log.d(LOG_TAG,"line 171 response "+responseCode);
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);
         outFile = new File(QUtil.getReplAssetPath(form, true), asset.substring("assets/".length()));
         Log.d(LOG_TAG, "target file = " + outFile);
         File parentOutFile = outFile.getParentFile();
 
         if (responseCode == 200) {
-          Log.d(LOG_TAG,"I am 200, line 178 assetfetcher");
           String fileHash = connection.getHeaderField("ETag"); //only save when status code is 200
           Date timeStamp = new Date();
           HashFile file = new HashFile(fileName,fileHash,timeStamp);
@@ -189,6 +185,9 @@ public class AssetFetcher {
           }else{
             db.updateHashFile(file);
           }
+        }
+        else if (responseCode == 304){
+          return outFile;
         }
         //connection.set()
         //timestamp, response code

@@ -8,7 +8,6 @@ import com.google.appinventor.components.runtime.util.HashDbInitialize.hashTable
 
 public final class HashDatabase extends SQLiteOpenHelper{
 
-//    private static HashDbInitialize.hashTable hashTable;
     private static final String TABLE_NAME = hashTable.TABLE_NAME ;
     private static final String KEY_NAME = hashTable.COLUMN_1_NAME;
     private static final String KEY_HASH = hashTable.COLUMN_2_NAME;
@@ -47,9 +46,7 @@ public final class HashDatabase extends SQLiteOpenHelper{
     }
 
     public HashFile getHashFile(String fileName) {
-        Log.d("Database","getHashFile line 48");
         SQLiteDatabase db = this.getReadableDatabase();
-        Log.d("TABLE_NAME",TABLE_NAME);
         Cursor cursor = db.query(TABLE_NAME, // a. table
                 COLUMNS, // b. column names
                 " fileName = ?", // c. selections
@@ -59,11 +56,9 @@ public final class HashDatabase extends SQLiteOpenHelper{
                 null, // g. order by
                 null); // h. limit
         Log.d("Database",cursor.toString());
-        if (cursor == null  || cursor.getCount()==0) {
-            Log.d("NULLCURSOR","cursor is null");
+        if (cursor == null  || cursor.getCount()<1) {
             return null;
         }
-        Log.d("NULLCURSOR","cursor is NOT null");
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -71,7 +66,6 @@ public final class HashDatabase extends SQLiteOpenHelper{
         hashFile.setFileName(cursor.getString(0));
         hashFile.setHash(cursor.getString(1));
         hashFile.setTimestamp(cursor.getString(2));
-        Log.d("Database","end of getHashFile line 66");
         return hashFile;
     }
 
