@@ -1,1 +1,6 @@
-{}
+{
+    "Blockly.Msg.REMOVE_COMMENT": "கருத்தை அகற்று",
+    "Blockly.Msg.DUPLICATE_BLOCK": "நகல்எடுத்தல்",
+    "Blockly.Msg.SHOW": "பணியிடக் கட்டுப்பாடுகளைக் காட்டு",
+    "Blockly.Msg.REDO": "மீண்டும் செய்"
+}
