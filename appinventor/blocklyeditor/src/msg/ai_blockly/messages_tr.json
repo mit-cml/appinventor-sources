@@ -676,5 +676,19 @@
     "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ALL": "hepsini içerir",
     "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY": "herhangi birini içerir",
     "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS": "içerir",
-    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST": "parça listesi"
+    "Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE_LIST": "parça listesi",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_TITLE": "sözlükteki değeri al",
+    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TOOLTIP": "Anahtarı verilen sözlükteki bir çifti sil.",
+    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_TITLE": "sözlükten anahtar için girişi kaldır",
+    "Blockly.Msg.LANG_DICTIONARIES_DELETE_PAIR_INPUT": "%1 sözlüğünden %2 anahtarının girişini kaldır",
+    "Blockly.Msg.LANG_DICTIONARIES_SET_PAIR_TITLE": "sözlükte ipucu için değer ayarla",
+    "Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP": "Sözlüğe çift ekle.",
+    "Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TITLE_ADD": "dik",
+    "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TOOLTIP_LONGEST_STRING_FIRST": "Oluşumları değiştirerek yeni bir metine döndürür",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ALL": "Tüm parçaların metinde yer alıp almadığını test eder.",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS_ANY": "Parçalardan herhangisinin metinde yer alıp almadığını test eder.",
+    "Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE": "sayı tabanı",
+    "Blockly.Msg.LANG_MATH_NUMBER_RADIX_TOOLTIP": "Gösterilen sayıyı ondalık (taban-10) biçiminde bildirin.",
+    "Blockly.Msg.LANG_MATH_HEXADECIMAL_FORMAT": "onaltılık",
+    "Blockly.Msg.LANG_MATH_OCTAL_FORMAT": "sekizli"
 }
