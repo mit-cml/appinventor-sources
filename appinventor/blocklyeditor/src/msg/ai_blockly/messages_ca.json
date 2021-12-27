@@ -615,7 +615,7 @@
     "Blockly.Msg.REPL_APPROVE_UPDATE": " pantalla perquè se't demanarà permís per actualitzar.",
     "Blockly.Msg.REPL_NOT_NOW": "Ara no",
     "Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE": "",
-    "Blockly.Msg.LANG_PROCEDURES_DEFRETURN_PROCEDURE": "procediment",
+    "Blockly.Msg.LANG_PROCEDURES_DEFRETURN_PROCEDURE": "funció",
     "Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN": "resultat",
     "Blockly.Msg.LANG_PROCEDURES_DEFRETURN_COLLAPSED_PREFIX": "a ",
     "Blockly.Msg.LANG_PROCEDURES_DEFRETURN_TOOLTIP": "Un procediment que retorna un valor com a resultat.",
