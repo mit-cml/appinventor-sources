@@ -416,7 +416,7 @@
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP": "Returns a new text obtained by replacing all occurrences\nof the segment with the replacement.",
 	"Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE": "is a string?",
 	"Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING": "thing",
-	"Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP": "Returns true if <code>thing</code> is a string.",
+	"Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP": "Returns true if thing is a string.",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT": "in text",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER_PREFIX": "preferring",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_ORDER": "order",
