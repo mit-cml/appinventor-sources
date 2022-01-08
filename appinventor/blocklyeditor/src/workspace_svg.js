@@ -363,6 +363,9 @@ Blockly.WorkspaceSvg.prototype.render = function(blocks) {
  * @returns {!Blockly.ComponentDatabase}
  */
 Blockly.WorkspaceSvg.prototype.getComponentDatabase = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getComponentDatabase();
+  }
   return this.componentDb_;
 };
 
@@ -371,6 +374,9 @@ Blockly.WorkspaceSvg.prototype.getComponentDatabase = function() {
  * @returns {!Blockly.ProcedureDatabase}
  */
 Blockly.WorkspaceSvg.prototype.getProcedureDatabase = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getProcedureDatabase();
+  }
   return this.procedureDb_;
 };
 
@@ -380,6 +386,9 @@ Blockly.WorkspaceSvg.prototype.getProcedureDatabase = function() {
  * @param {string} name The name of the new screen.
  */
 Blockly.WorkspaceSvg.prototype.addScreen = function(name) {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.addScreen(name);
+  }
   if (this.screenList_.indexOf(name) == -1) {
     this.screenList_.push(name);
     this.typeBlock_.needsReload.screens = true;
@@ -392,6 +401,9 @@ Blockly.WorkspaceSvg.prototype.addScreen = function(name) {
  * @param {string} name The name of the screen to remove.
  */
 Blockly.WorkspaceSvg.prototype.removeScreen = function(name) {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.removeScreen(name);
+  }
   var index = this.screenList_.indexOf(name);
   if (index != -1) {
     this.screenList_.splice(index, 1);
@@ -404,6 +416,9 @@ Blockly.WorkspaceSvg.prototype.removeScreen = function(name) {
  * @return {!Array<string>} The list of screen names.
  */
 Blockly.WorkspaceSvg.prototype.getScreenList = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getScreenList();
+  }
   return this.screenList_;
 };
 
@@ -411,7 +426,10 @@ Blockly.WorkspaceSvg.prototype.getScreenList = function() {
  * Adds an asset name to the list tracked by the workspace.
  * @param {string} name The name of the new asset.
  */
-Blockly.Workspace.prototype.addAsset = function(name) {
+Blockly.WorkspaceSvg.prototype.addAsset = function(name) {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.addAsset(name);
+  }
   if (!this.assetList_.includes(name)) {
     this.assetList_.push(name);
     this.typeBlock_.needsReload.assets = true;
@@ -422,7 +440,10 @@ Blockly.Workspace.prototype.addAsset = function(name) {
  * Removes an asset name from the list tracked by the workspace.
  * @param {string} name The name of the asset to remove.
  */
-Blockly.Workspace.prototype.removeAsset = function(name) {
+Blockly.WorkspaceSvg.prototype.removeAsset = function(name) {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.removeAsset(name);
+  }
   var index = this.assetList_.indexOf(name);
   if (index != -1) {  // Make sure it is actually an asset.
     this.assetList_.splice(index, 1);
@@ -434,7 +455,10 @@ Blockly.Workspace.prototype.removeAsset = function(name) {
  * Returns the list of asset names tracked by the workspace.
  * @return {!Array<string>} The list of asset names.
  */
-Blockly.Workspace.prototype.getAssetList = function() {
+Blockly.WorkspaceSvg.prototype.getAssetList = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getAssetList();
+  }
   return this.assetList_;
 }
 
@@ -631,8 +655,20 @@ Blockly.WorkspaceSvg.prototype.hideChaff = function(opt_allowToolbox) {
   this.setScrollbarsVisible(true);
 };
 
-Blockly.WorkspaceSvg.prototype.activate = function() {
-  Blockly.mainWorkspace = this;
+/**
+ * Mark this workspace as the currently focused main workspace.
+ *
+ * This is the Blockly Core version extended to also reference targetWorkspace,
+ * which is used by App Inventor.
+ */
+Blockly.WorkspaceSvg.prototype.markFocused = function() {
+  if (this.options.parentWorkspace) {
+    this.options.parentWorkspace.markFocused();
+  } else if (this.targetWorkspace) {
+    this.targetWorkspace.markFocused();
+  } else {
+    Blockly.mainWorkspace = this;
+  }
 };
 
 Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, forRepl, compileUnattachedBlocks) {
