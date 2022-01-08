@@ -39,8 +39,11 @@ import java.security.spec.InvalidKeySpecException;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
+
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
@@ -80,6 +83,20 @@ public class LoginServlet extends HttpServlet {
   private static final UserService userService = UserServiceFactory.getUserService();
   private final PolicyFactory sanitizer = new HtmlPolicyBuilder().allowElements("p").toFactory();
   private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
+
+  private static final Set<LoginListener> loginListeners = new HashSet<>();
+
+  public interface LoginListener {
+    void onLogin(User user, TokenProto.token token);
+  }
+
+  public static void addLoginListener(LoginListener listener) {
+    loginListeners.add(listener);
+  }
+
+  public static void removeLoginListener(LoginListener listener) {
+    loginListeners.remove(listener);
+  }
 
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
@@ -303,6 +320,9 @@ public class LoginServlet extends HttpServlet {
         }
         User user = storageIo.getUser(uuid, email);
         userInfo.setUserId(user.getUserId());
+        for (LoginListener listener : loginListeners) {
+          listener.onLogin(user, token);
+        }
       }
 
       String newCookie = userInfo.buildCookie(false);
