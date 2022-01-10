@@ -75,6 +75,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     adapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
     view.setAdapter(adapter);
     view.setOnItemSelectedListener(this);
+    Enabled(true);
 
     container.$add(this);
 
