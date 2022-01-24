@@ -21,7 +21,7 @@ layout: documentation
 * [random set seed to](#randomseed)
 * [min](#min)
 * [max](#max)
-* [sqrt](#sqrt)
+* [square root](#squareroot)
 * [abs](#abs)
 * [neg](#neg)
 * [log](#log)
@@ -60,7 +60,7 @@ min, max
 
 ![](images/math/minmax.gif)
 
-sqrt, abs, -, log, e^, round, ceiling, floor
+square root, abs, -, log, e^, round, ceiling, floor
 
 ![](images/math/sqrt.gif)
 
@@ -202,7 +202,7 @@ Returns the smallest value of a set of numbers. If there are unplugged sockets i
 
 Returns the largest value of a set of numbers. If there are unplugged sockets in the block, max will also consider 0 in its set of numbers. This block is a [mutator](../concepts/mutators.html) and a dropdown.
 
-### sqrt   {#sqrt}
+### square root   {#squareroot}
 
 ![](images/math/sqrt.png)
 
