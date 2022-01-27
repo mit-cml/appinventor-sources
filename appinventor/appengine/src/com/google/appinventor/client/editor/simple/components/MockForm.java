@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.DOM;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +52,8 @@ import java.util.Map;
  * browser too. All UI elements should be scaled to DP for buckets other than 'normal'.
  */
 public final class MockForm extends MockContainer {
+
+  private boolean hasImage;
 
   /*
    * Widget for the mock form title bar.
@@ -786,9 +789,11 @@ public final class MockForm extends MockContainer {
    */
   private void setBackgroundImageProperty(String text) {
     String url = convertImagePropertyValueToUrl(text);
+    hasImage = true;
     if (url == null) {
       // text was not recognized as an asset.
       url = "";
+      hasImage = false;
     }
     MockComponentsUtil.setWidgetBackgroundImage(rootPanel, url);
   }
@@ -879,6 +884,33 @@ public final class MockForm extends MockContainer {
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME, vname);
     }
+  }
+
+  //Legal values for background repeat mode are defined in
+  // com.google.appinventor.components.runtime.Component.java.
+  private int backgroundRepeatMode;
+
+  /*
+  * Set's background repeat mode property to a new value
+  */
+  private void setBackgroundRepeatMode(String value) {
+    backgroundRepeatMode = Integer.parseInt(value);
+    //property is only applicable if image is set
+    if(!hasImage) return;
+    switch(backgroundRepeatMode) {
+      case 0:
+        DOM.setStyleAttribute(rootPanel.getElement(), "backgroundRepeat", "no-repeat");
+        DOM.setStyleAttribute(rootPanel.getElement(), "backgroundSize", "100% 100%");
+        break;
+      case 1:
+        DOM.setStyleAttribute(rootPanel.getElement(), "backgroundRepeat", "repeat");
+        DOM.setStyleAttribute(rootPanel.getElement(), "backgroundSize", "");
+        break;
+      default:
+        // This should never happen
+        throw new IllegalArgumentException("backgroundRepeatMode:" + backgroundRepeatMode);
+    }
+
   }
 
   private void setSizingProperty(String sizingProperty) {
@@ -1418,6 +1450,8 @@ public final class MockForm extends MockContainer {
     } else if (propertyName.equals(PROPERTY_NAME_TITLEVISIBLE)) {
       setTitleVisibleProperty(newValue);
       refreshForm();
+    } else if(propertyName.equals(PROPERTY_NAME_BACKGROUND_REPEAT_MODE)) {
+      setBackgroundRepeatMode(newValue);
     }
   }
 

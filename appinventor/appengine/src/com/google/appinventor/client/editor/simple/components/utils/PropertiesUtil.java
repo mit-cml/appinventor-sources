@@ -49,6 +49,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBackgroundImageRepeatModePropertyEditor;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.properties.Property;
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
@@ -293,7 +294,11 @@ public class PropertiesUtil {
       return new YoungAndroidComponentSelectorPropertyEditor(editor, Collections.singleton(type));
     }else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION)) {
       return new YoungAndroidRecyclerViewOrientationPropertyEditor(); 
-    }else {
+    }
+    else if(editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_BACKGROUND_REPEAT_MODE)) {
+      return new YoungAndroidBackgroundImageRepeatModePropertyEditor();
+    }
+    else {
       return new TextPropertyEditor();
     }
   }

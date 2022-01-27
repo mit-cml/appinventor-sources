@@ -42,6 +42,10 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
  integer.  If an [`Image`](#Button.Image) has been set, the color
  change will not be visible until the [`Image`](#Button.Image) is removed.
 
+{:id="Button.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+ value.
+
 {:id="Button.Enabled" .boolean} *Enabled*
 : Specifies whether the `Button` should be active and clickable.
 
@@ -236,6 +240,10 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
  integer.  If an [`Image`](#DatePicker.Image) has been set, the color
  change will not be visible until the [`Image`](#DatePicker.Image) is removed.
 
+{:id="DatePicker.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+ value.
+
 {:id="DatePicker.Day" .number .ro .bo} *Day*
 : Returns the Day of the month that was last picked using the DatePicker.
 
@@ -369,6 +377,10 @@ Component for displaying images and basic animations.
 : This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
  `ScrollLeftSlow`, `ScrollLeft`, `ScrollLeftFast`, and `Stop`.
+
+{:id="Image.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+ value.
 
 {:id="Image.Clickable" .boolean} *Clickable*
 : Specifies whether the image should be clickable or not.
@@ -528,6 +540,10 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 : Specifies the `ListPicker`'s background color as an alpha-red-green-blue
  integer.  If an [`Image`](#ListPicker.Image) has been set, the color
  change will not be visible until the [`Image`](#ListPicker.Image) is removed.
+
+{:id="ListPicker.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+ value.
 
 {:id="ListPicker.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
@@ -1025,6 +1041,10 @@ Top-level component containing all other components in the program.
 {:id="Screen.BackgroundImage" .text} *BackgroundImage*
 : Specifies the path of the `Screen`'s background image. If there is both an `BackgroundImage`
  and a [`BackgroundColor`](#Screen.BackgroundColor) specified, only the `BackgroundImage` will be visible.
+
+{:id="Screen.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+ value.
 
 {:id="Screen.BigDefaultText" .boolean} *BigDefaultText*
 : When checked, all default size text will be increased in size.
@@ -1573,6 +1593,10 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 : Specifies the `TimePicker`'s background color as an alpha-red-green-blue
  integer.  If an [`Image`](#TimePicker.Image) has been set, the color
  change will not be visible until the [`Image`](#TimePicker.Image) is removed.
+
+{:id="TimePicker.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+ value.
 
 {:id="TimePicker.Enabled" .boolean} *Enabled*
 : Specifies whether the `TimePicker` should be active and clickable.

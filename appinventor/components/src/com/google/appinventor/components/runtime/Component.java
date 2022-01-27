@@ -156,4 +156,8 @@ public interface Component {
   static final String LISTVIEW_KEY_MAIN_TEXT = "Text1";
   static final String LISTVIEW_KEY_DESCRIPTION = "Text2";
   static final String LISTVIEW_KEY_IMAGE = "Image";
+
+  //constants for type of Background Image Repeat Mode
+  static final int BACKGROUND_REPEAT_NONE = 0;
+  static final int BACKGROUND_REPEAT_XY = 1;
 }

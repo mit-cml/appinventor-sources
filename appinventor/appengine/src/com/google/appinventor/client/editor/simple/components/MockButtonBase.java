@@ -43,6 +43,10 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
   // com.google.appinventor.components.runtime.Component.java.
   private int shape;
 
+  //Legal values for background repeat mode are defined in
+  // com.google.appinventor.components.runtime.Component.java.
+  private int backgroundRepeatMode;
+
   /**
    * Creates a new MockButtonBase component.
    *
@@ -123,6 +127,29 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
    */
   private void setTextAlignmentProperty(String text) {
     MockComponentsUtil.setWidgetTextAlign(buttonWidget, text);
+  }
+
+  /*
+  * Set's background repeat mode property to a new value
+  */
+  private void setBackgroundRepeatMode(String value) {
+    backgroundRepeatMode = Integer.parseInt(value);
+    //property is only applicable if image is set
+    if(!hasImage) return;
+    switch(backgroundRepeatMode) {
+      case 0:
+        DOM.setStyleAttribute(buttonWidget.getElement(), "backgroundRepeat", "no-repeat");
+        DOM.setStyleAttribute(buttonWidget.getElement(), "backgroundSize", "100% 100%");
+        break;
+      case 1:
+        DOM.setStyleAttribute(buttonWidget.getElement(), "backgroundRepeat", "repeat");
+        DOM.setStyleAttribute(buttonWidget.getElement(), "backgroundSize", "");
+        break;
+      default:
+        // This should never happen
+        throw new IllegalArgumentException("backgroundRepeatMode:" + backgroundRepeatMode);
+    }
+
   }
 
   /*
@@ -241,6 +268,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       url = "";
       setBackgroundColorProperty(backgroundColor);
       setShapeProperty(Integer.toString(shape));
+      DOM.setStyleAttribute(buttonWidget.getElement(), "background-repeat", "no-repeat");
     } else {
       hasImage = true;
       // Android Buttons do not show a background color if they have an image.
@@ -250,9 +278,13 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       MockComponentsUtil.setWidgetBackgroundColor(buttonWidget,
           "&H" + COLOR_NONE);
       DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
+      
     }
     MockComponentsUtil.setWidgetBackgroundImage(buttonWidget, url);
     image.setUrl(url);
+    if(hasImage) {
+      setBackgroundRepeatMode(Integer.toString(backgroundRepeatMode));
+    }
   }
 
   /*
@@ -352,6 +384,8 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
     } else if (propertyName.equals(PROPERTY_NAME_BUTTONSHAPE)){
       setShapeProperty(newValue);
 
+    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUND_REPEAT_MODE)){
+      setBackgroundRepeatMode(newValue);
     }
   }
 

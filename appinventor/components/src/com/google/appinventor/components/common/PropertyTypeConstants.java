@@ -353,4 +353,11 @@ public class PropertyTypeConstants {
 
   public static final String PROPERTY_TYPE_NAVIGATION_METHOD = "navigation_method";
 
+  /** 
+  * Choices of Background Image Repeat modes
+  * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBackgroundImageRepeatModePropertyEditor}
+  */
+
+  public static final String PROPERTY_TYPE_BACKGROUND_REPEAT_MODE = "background_repeat_mode";
+
 }

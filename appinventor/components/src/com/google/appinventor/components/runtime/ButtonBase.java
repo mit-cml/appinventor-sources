@@ -36,6 +36,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
+import android.graphics.Shader;
+import	android.graphics.drawable.BitmapDrawable;
 
 import java.io.IOException;
 
@@ -63,6 +65,9 @@ public abstract class ButtonBase extends AndroidViewComponent
 
   // Constant background color for buttons with a Shape other than default
   private static final int SHAPED_DEFAULT_BACKGROUND_COLOR = Color.LTGRAY;
+
+  //Backing for background repeat mode
+  private int backgroundRepeatMode;
 
   // Backing for text alignment
   private int textAlignment;
@@ -163,6 +168,7 @@ public abstract class ButtonBase extends AndroidViewComponent
     Text("");
     TextColor(Component.COLOR_DEFAULT);
     Shape(Component.BUTTON_SHAPE_DEFAULT);
+    BackgroundRepeatMode(Component.BACKGROUND_REPEAT_NONE);
   }
 
   public void Initialize(){
@@ -239,6 +245,39 @@ public abstract class ButtonBase extends AndroidViewComponent
   public void LostFocus() {
     EventDispatcher.dispatchEvent(this, "LostFocus");
   }
+
+   /**
+   * Returns the repeat mode of the button background image.
+   *
+   * @return  one of {@link Component#BACKGROUND_REPEAT_MODE_NONE},
+   *          {@link Component#BACKGROUND_REPEAT_MODE_XY},
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false)
+  public int BackgroundRepeatMode() {
+    return backgroundRepeatMode;
+  }
+
+  /**
+   * Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+   * value.
+   *
+   * @param shape one of {@link Component#BACKGROUND_REPEAT_MODE_NONE},
+   *          {@link Component#BACKGROUND_REPEAT_MODE_XY},
+   *  
+   * @throws IllegalArgumentException if shape is not a legal value.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BACKGROUND_REPEAT_MODE,
+      defaultValue = Component.BACKGROUND_REPEAT_NONE + "")
+  @SimpleProperty(description = "Specified background image repeat mode (none, xy)"
+      , userVisible = false)
+  public void BackgroundRepeatMode(int mode) {
+    this.backgroundRepeatMode = mode;
+    updateAppearance();
+  }
+
+
 
   /**
    * Returns the alignment of the `%type%`'s text: center, normal
@@ -444,6 +483,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       // If there is a background image
       ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
       TextViewUtil.setMinSize(view, 0, 0);
+      setBackgroundImageRepeatMode();
     }
   }
 
@@ -475,6 +515,21 @@ public abstract class ButtonBase extends AndroidViewComponent
             Color.blue(enabled_color)) };
 
     return new ColorStateList(states, colors);
+  }
+
+  // Throw IllegalArgumentException if backgroundRepeatMode has illegal value.
+  private void setBackgroundImageRepeatMode() {
+    BitmapDrawable bd = (BitmapDrawable) backgroundImageDrawable;
+    switch(backgroundRepeatMode) {
+      case 0:
+        bd.setTileModeXY(null, null);
+        break;
+      case 1:
+        bd.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        break;
+      default:
+        throw new IllegalArgumentException();
+    }
   }
 
   // Throw IllegalArgumentException if shape has illegal value.

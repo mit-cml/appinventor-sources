@@ -98,6 +98,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import android.graphics.Shader;
+import	android.graphics.drawable.BitmapDrawable;
 
 import org.json.JSONException;
 
@@ -165,6 +167,9 @@ public class Form extends AppInventorCompatActivity
   protected final Handler androidUIHandler = new Handler();
 
   protected String formName;
+
+  //Backing for background repeat mode
+  private int backgroundRepeatMode;
 
   private boolean screenInitialized;
 
@@ -443,6 +448,7 @@ public class Form extends AppInventorCompatActivity
     OpenScreenAnimationAbstract(ScreenAnimation.Default);
     CloseScreenAnimationAbstract(ScreenAnimation.Default);
     DefaultFileScope(FileScope.App);
+    BackgroundRepeatMode(Component.BACKGROUND_REPEAT_NONE);
   }
 
   @Override
@@ -1362,6 +1368,37 @@ public class Form extends AppInventorCompatActivity
       Log.e(LOG_TAG, "Unable to load " + backgroundImagePath);
       backgroundDrawable = null;
     }
+    setBackground(frameLayout);
+  }
+
+  /**
+   * Returns the repeat mode of the button background image.
+   *
+   * @return  one of {@link Component#BACKGROUND_REPEAT_MODE_NONE},
+   *          {@link Component#BACKGROUND_REPEAT_MODE_XY},
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false)
+  public int BackgroundRepeatMode() {
+    return backgroundRepeatMode;
+  }
+
+  /**
+   * Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+   * value.
+   *
+   * @param shape one of {@link Component#BACKGROUND_REPEAT_MODE_NONE},
+   *          {@link Component#BACKGROUND_REPEAT_MODE_XY},
+   *  
+   * @throws IllegalArgumentException if shape is not a legal value.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BACKGROUND_REPEAT_MODE,
+      defaultValue = Component.BACKGROUND_REPEAT_NONE + "")
+  @SimpleProperty(description = "Specified background image repeat mode (none, xy)"
+      , userVisible = false)
+  public void BackgroundRepeatMode(int mode) {
+    this.backgroundRepeatMode = mode;
     setBackground(frameLayout);
   }
 
@@ -2711,7 +2748,25 @@ public class Form extends AppInventorCompatActivity
         (backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE);
     }
     ViewUtil.setBackgroundImage(bgview, setDraw);
+    if(backgroundDrawable!=null) {
+      setBackgroundImageRepeatMode();
+    }
     bgview.invalidate();
+  }
+
+  // Throw IllegalArgumentException if backgroundRepeatMode has illegal value.
+  private void setBackgroundImageRepeatMode() {
+    BitmapDrawable bd = (BitmapDrawable) backgroundDrawable;
+    switch(backgroundRepeatMode) {
+      case 0:
+        bd.setTileModeXY(null, null);
+        break;
+      case 1:
+        bd.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        break;
+      default:
+        throw new IllegalArgumentException();
+    }
   }
 
   public static boolean getCompatibilityMode() {

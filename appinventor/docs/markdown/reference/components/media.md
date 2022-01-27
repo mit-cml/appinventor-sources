@@ -105,6 +105,10 @@ A special-purpose button. When the user taps an `ImagePicker`, the device's imag
  integer.  If an [`Image`](#ImagePicker.Image) has been set, the color
  change will not be visible until the [`Image`](#ImagePicker.Image) is removed.
 
+{:id="ImagePicker.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+ value.
+
 {:id="ImagePicker.Enabled" .boolean} *Enabled*
 : Specifies whether the `ImagePicker` should be active and clickable.
 
