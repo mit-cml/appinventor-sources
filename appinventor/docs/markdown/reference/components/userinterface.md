@@ -378,10 +378,6 @@ Component for displaying images and basic animations.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
  `ScrollLeftSlow`, `ScrollLeft`, `ScrollLeftFast`, and `Stop`.
 
-{:id="Image.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
-: Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
- value.
-
 {:id="Image.Clickable" .boolean} *Clickable*
 : Specifies whether the image should be clickable or not.
 

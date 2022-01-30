@@ -41,6 +41,8 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import	android.graphics.drawable.BitmapDrawable;
+import android.graphics.Shader;
 
 /**
  * A container for components that arranges them linearly, either
@@ -68,6 +70,10 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   private VerticalAlignment verticalAlignment = VerticalAlignment.Top;
   // Backing for background color
   private int backgroundColor;
+
+  //Backing for background repeat mode
+  private int backgroundRepeatMode;
+
   // This is the Drawable corresponding to the Image property.
   // If an Image has never been set or if the most recent Image could not be loaded, this is null.
   private Drawable backgroundImageDrawable;
@@ -132,7 +138,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
     container.$add(this);
     BackgroundColor(Component.COLOR_DEFAULT);
-
+    BackgroundRepeatMode(Component.BACKGROUND_REPEAT_NONE);
   }
 
 
@@ -412,6 +418,38 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         updateAppearance();
     }
 
+  /**
+   * Returns the repeat mode of the HVArrangement background image.
+   *
+   * @return  one of {@link Component#BACKGROUND_REPEAT_MODE_NONE},
+   *          {@link Component#BACKGROUND_REPEAT_MODE_XY},
+   */
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          userVisible = false)
+  public int BackgroundRepeatMode() {
+    return backgroundRepeatMode;
+  }
+
+  /**
+   * Specifies the repeat mode for the HVArrangement background image. This does not check that the argument is a legal
+   * value.
+   *
+   * @param shape one of {@link Component#BACKGROUND_REPEAT_MODE_NONE},
+   *          {@link Component#BACKGROUND_REPEAT_MODE_XY},
+   *
+   * @throws IllegalArgumentException if shape is not a legal value.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BACKGROUND_REPEAT_MODE,
+          defaultValue = Component.BACKGROUND_REPEAT_NONE + "")
+  @SimpleProperty(description = "Specified background image repeat mode (none, xy)"
+          , userVisible = false)
+  public void BackgroundRepeatMode(int mode) {
+    this.backgroundRepeatMode = mode;
+    updateAppearance();
+  }
+
+
 
   // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
   // Images take precedence over background colors.
@@ -431,6 +469,22 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     } else {
       // If there is a background image
       ViewUtil.setBackgroundImage(viewLayout.getLayoutManager(), backgroundImageDrawable);
+      setBackgroundImageRepeatMode();
+    }
+  }
+
+  // Throw IllegalArgumentException if backgroundRepeatMode has illegal value.
+  private void setBackgroundImageRepeatMode() {
+    BitmapDrawable bd = (BitmapDrawable) backgroundImageDrawable;
+    switch(backgroundRepeatMode) {
+      case 0:
+        bd.setTileModeXY(null, null);
+        break;
+      case 1:
+        bd.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        break;
+      default:
+        throw new IllegalArgumentException();
     }
   }
 

@@ -66,6 +66,10 @@ Table of Contents:
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
 
+{:id="HorizontalArrangement.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the HVArrangement background image. This does not check that the argument is a legal
+ value.
+
 {:id="HorizontalArrangement.Height" .number .bo} *Height*
 : Specifies the `HorizontalArrangement`'s vertical height, measured in pixels.
 
@@ -127,6 +131,10 @@ A formatting element in which to place components that should be displayed from 
 : Specifies the background color of the HorizontalScrollArrangement as an alpha-red-green-blue
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
+
+{:id="HorizontalScrollArrangement.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the HVArrangement background image. This does not check that the argument is a legal
+ value.
 
 {:id="HorizontalScrollArrangement.Height" .number .bo} *Height*
 : Specifies the `HorizontalScrollArrangement`'s vertical height, measured in pixels.
@@ -278,6 +286,10 @@ None
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
 
+{:id="VerticalArrangement.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the HVArrangement background image. This does not check that the argument is a legal
+ value.
+
 {:id="VerticalArrangement.Height" .number .bo} *Height*
 : Specifies the `VerticalArrangement`'s vertical height, measured in pixels.
 
@@ -339,6 +351,10 @@ A formatting element in which to place components that should be displayed one b
 : Specifies the background color of the VerticalScrollArrangement as an alpha-red-green-blue
  integer.  If an Image has been set, the color change will not be visible
  until the Image is removed.
+
+{:id="VerticalScrollArrangement.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the HVArrangement background image. This does not check that the argument is a legal
+ value.
 
 {:id="VerticalScrollArrangement.Height" .number .bo} *Height*
 : Specifies the `VerticalScrollArrangement`'s vertical height, measured in pixels.
