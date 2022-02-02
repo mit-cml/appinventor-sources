@@ -765,7 +765,9 @@ public class YaVersion {
   // - FontSize, FontBold, FontItalic properties made visible in block editor
   // For BUTTON_COMPONENT_VERSION 7:
   // - Assets helper block was added.
-  public static final int BUTTON_COMPONENT_VERSION = 7;
+  // For BUTTON_COMPONENT_VERSION 8:
+  // - Background Image Repeat Property was added.
+  public static final int BUTTON_COMPONENT_VERSION = 8;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
@@ -955,7 +957,9 @@ public class YaVersion {
   // - Adds Permission dropdown block.
   // For FORM_COMPONENT_VERSION 30:
   // - Add DefaultFileScope designer property.
-  public static final int FORM_COMPONENT_VERSION = 30;
+  // For FORM_COMPONENT_VERSION 31:
+  // - Background Image Repeat Property was added.
+  public static final int FORM_COMPONENT_VERSION = 31;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -980,12 +984,16 @@ public class YaVersion {
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
   // - Assets helper block was added.
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 5:
+  // - Background Image Repeat Property was added.
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 5;
 
   // For HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
   // - Assets helper block was added.
-  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
+  // For HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION 3:
+  // - Background Image Repeat Property was added.
+  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 3;
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
@@ -1401,12 +1409,17 @@ public class YaVersion {
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 4:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
   // - Assets helper block was added.
-  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 4;
+  // For VERTICALARRANGEMENT_COMPONENT_VERSION 5:
+  // - Background Image Repeat Property was added.
+
+  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 5;
 
   // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
   // - Assets helper block was added.
-  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
+  // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 3:
+  // - Background Image Repeat Property was added.
+  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 3;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
   // - The VideoPlayer.VideoPlayerError event was added.

@@ -691,6 +691,10 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 7;
     }
+    if(srcCompVersion < 8) {
+      //added background image repeat feature
+      srcCompVersion = 8;
+    }
     return srcCompVersion;
   }
 
@@ -1117,6 +1121,10 @@ public final class YoungAndroidFormUpgrader {
       // The DefaultFileScope property was added.
       srcCompVersion = 30;
     }
+    if(srcCompVersion < 31) {
+      //added background image repeat feature
+      srcCompVersion = 31;
+    }
 
     return srcCompVersion;
   }
@@ -1159,6 +1167,10 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 4;
     }
+    if(srcCompVersion < 5) {
+      //added background image repeat feature
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
@@ -1169,6 +1181,10 @@ public final class YoungAndroidFormUpgrader {
       // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
       // Assets helper block was added.
       srcCompVersion = 2;
+    }
+    if(srcCompVersion < 3) {
+      //added background image repeat feature
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1574,6 +1590,11 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 4;
     }
+    if(srcCompVersion < 5) {
+      //added background image repeat feature
+      srcCompVersion = 5;
+    }
+    
     return srcCompVersion;
   }
 
@@ -1584,6 +1605,10 @@ public final class YoungAndroidFormUpgrader {
       // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
       // Assets helper block was added.
       srcCompVersion = 2;
+    }
+    if(srcCompVersion < 3) {
+      //added background image repeat feature
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
