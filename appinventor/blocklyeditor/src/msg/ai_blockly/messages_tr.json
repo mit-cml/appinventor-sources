@@ -234,7 +234,7 @@
     "Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_TITLE_FROM_CSV": "csv tablosundan liste",
     "Blockly.Msg.REPL_HELPER_Q": "Yardımcı?",
     "Blockly.Msg.BACKPACK_CONFIRM_EMPTY": "Sırt çantasını boşaltmak istediğinizden emin misiniz?",
-    "Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF": "Değilse eger",
+    "Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF": "değilse eğer",
     "Blockly.Msg.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT": "Değerlendir ancak görmezden gel",
     "Blockly.Msg.LANG_MATH_TRIG_ACOS": "acos",
     "Blockly.Msg.REPL_NOW_DOWNLOADING": "Güncellemeyi şimdi App Inventor Sunucusundan indiriyoruz, lütfen bekleyin.",
