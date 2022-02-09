@@ -1012,6 +1012,28 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   };
   menuOptions.push(enableAll);
 
+  // Clear unused blocks
+  var clearUnusedBlocks = {enabled: true};
+  clearUnusedBlocks.text = Blockly.Msg.REMOVE_UNUSED_BLOCKS;
+  clearUnusedBlocks.callback = function() {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      // block.setDisabled(false);
+      if(block.category == 'Procedures' && block.type.search('procedures_def') != -1) {
+        var name = block.getProcedureDef()[0];
+        //if this procedure is not called by any other block then remove it
+        if(Blockly.Procedures.getCallers(name, Blockly.mainWorkspace) == 0 && block.getChildren().length == 0 && block.getParent() == null) {
+          block.dispose(false);
+        }
+      } else {
+        if(block.getChildren().length == 0 && block.getParent() == null) {
+          block.dispose(false);
+        }
+      }
+    }
+  };
+  menuOptions.push(clearUnusedBlocks);
+
   // Disable all blocks
   var disableAll = {enabled: true};
   disableAll.text = Blockly.Msg.DISABLE_ALL_BLOCKS;
