@@ -1016,6 +1016,8 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var clearUnusedBlocks = {enabled: true};
   clearUnusedBlocks.text = Blockly.Msg.REMOVE_UNUSED_BLOCKS;
   clearUnusedBlocks.callback = function() {
+    var response = confirm(Blockly.Msg.CONFIRM_DELETE)
+    if(!response) return;
     var allBlocks = Blockly.mainWorkspace.getAllBlocks();
     for (var x = 0, block; block = allBlocks[x]; x++) {
       // block.setDisabled(false);
