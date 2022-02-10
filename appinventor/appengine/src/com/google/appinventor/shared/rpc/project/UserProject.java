@@ -197,7 +197,7 @@ public class UserProject implements IsSerializable {
 
   public static UserProject valueOf(String text) {
     String[] parts = text.split(DELIM);
-    if (parts.length != 5) {
+    if (parts.length < 5) {
       throw new IllegalArgumentException();
     }
     UserProject userProject = new UserProject();

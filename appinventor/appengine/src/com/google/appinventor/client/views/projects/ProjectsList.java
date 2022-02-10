@@ -2,6 +2,7 @@ package com.google.appinventor.client.views.projects;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -23,7 +24,9 @@ import com.google.appinventor.client.output.OdeLog;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectsList extends ProjectsFolder implements FolderManagerEventListener {
+public class ProjectsList extends ProjectsFolder implements FolderManagerEventListener,
+    ProjectManagerEventListener {
+
   interface ProjectsListUiBinder extends UiBinder<FlowPanel, ProjectsList> {}
   private static final ProjectsListUiBinder UI_BINDER = GWT.create(ProjectsListUiBinder.class);
 
@@ -39,6 +42,7 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
     style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
     Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
+    Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
     setDepth(0);
   }
 
@@ -126,4 +130,35 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
   public void onFoldersLoaded() {
     setIsTrash(isTrash);
   }
-}
+
+  @Override
+  public void onProjectAdded(Project project) {
+    OdeLog.log("Project Added to ProjectList: " + project.getProjectName());
+    folder.addProject(project);
+    refresh();
+  }
+
+  @Override
+  public void onTrashProjectRestored(Project project) {
+    Ode.getInstance().getFolderManager().getGlobalFolder().addProject(project);
+    Ode.getInstance().getFolderManager().getTrashFolder().removeProject(project);
+    refresh();
+  }
+
+  @Override
+  public void onProjectTrashed(Project project) {
+    // Project is already in the trash folder at this point
+    folder.removeProject(project);
+    refresh();
+  }
+
+  @Override
+  public void onProjectDeleted(Project project) {
+    folder.removeProject(project);
+    refresh();
+  }
+
+  @Override
+  public void onProjectsLoaded() {
+    refresh();
+  }}

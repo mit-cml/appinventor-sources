@@ -43,13 +43,23 @@ public final class FolderManager {
     String foldersAsString = Ode.getUserSettings()
         .getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
         .getPropertyValue(SettingsConstants.FOLDERS);
-    if ("".equals(foldersAsString)) {
+
+   if (foldersAsString.isEmpty()) {
+      OdeLog.log("Initialize folders");
       initializeFolders();
       fireFoldersLoaded();
       return;
     }
 
     JSONObject folderJSON = JSONParser.parse(foldersAsString).isObject();
+    if (folderJSON.get(FolderJSONKeys.PROJECTS).isArray().size()==0) {
+      OdeLog.log("Global folder is empty");
+      initializeFolders();
+      fireFoldersLoaded();
+      return;
+    }
+
+    OdeLog.log("Creating Global Folder");
     globalFolder = new Folder(folderJSON, null);
     trashFolder = globalFolder.getChildFolder(FolderJSONKeys.TRASH_FOLDER);
     OdeLog.log("Loaded folders from settings");
