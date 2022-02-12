@@ -1021,9 +1021,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     var removeList = []
     for (var x = 0, block; block = allBlocks[x]; x++) {
       if(block.previousConnection != null || (block.outputConnection && block.outputConnection != null)) {
-        // if(block.category != 'Procedures' && block.category != 'Variables' && !(block.category == 'Component' && block.blockType && block.blockType != 'event')) {
           removeList.push(block)
-        // }
       }
     }
     if(removeList.length == 0) {
