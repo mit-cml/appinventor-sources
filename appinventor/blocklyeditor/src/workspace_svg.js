@@ -1016,23 +1016,33 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var clearUnusedBlocks = {enabled: true};
   clearUnusedBlocks.text = Blockly.Msg.REMOVE_UNUSED_BLOCKS;
   clearUnusedBlocks.callback = function() {
-    var response = confirm(Blockly.Msg.CONFIRM_DELETE)
-    if(!response) return;
-    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    Blockly.Events.setGroup(true);
+    var allBlocks = Blockly.getMainWorkspace().getTopBlocks()
+    var removeList = []
     for (var x = 0, block; block = allBlocks[x]; x++) {
-      // block.setDisabled(false);
-      if(block.category == 'Procedures' && block.type.search('procedures_def') != -1) {
-        var name = block.getProcedureDef()[0];
-        //if this procedure is not called by any other block then remove it
-        if(Blockly.Procedures.getCallers(name, Blockly.mainWorkspace) == 0 && block.getChildren().length == 0 && block.getParent() == null) {
-          block.dispose(false);
-        }
-      } else {
-        if(block.getChildren().length == 0 && block.getParent() == null) {
-          block.dispose(false);
-        }
+      if(block.previousConnection != null || (block.outputConnection && block.outputConnection != null)) {
+        // if(block.category != 'Procedures' && block.category != 'Variables' && !(block.category == 'Component' && block.blockType && block.blockType != 'event')) {
+          removeList.push(block)
+        // }
       }
     }
+    if(removeList.length == 0) {
+      alert('No Orphaned Blocks');
+      return;
+    }
+    var msg = Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(removeList.length));
+    var cancelButton = top.BlocklyPanel_getOdeMessage('cancelButton');
+    var deleteButton = top.BlocklyPanel_getOdeMessage('deleteButton');
+    var dialog = new Blockly.Util.Dialog(Blockly.Msg.CONFIRM_DELETE, msg, deleteButton, true, cancelButton, 0, function(button) {
+        dialog.hide();
+        if (button == deleteButton) {
+          Blockly.mainWorkspace.playAudio('delete');
+          for(var x = 0;x < removeList.length;x++) {
+            removeList[x].dispose(false);
+          }
+        }
+        Blockly.Events.setGroup(false);
+    });
   };
   menuOptions.push(clearUnusedBlocks);
 
