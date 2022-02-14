@@ -1016,30 +1016,33 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var clearUnusedBlocks = {enabled: true};
   clearUnusedBlocks.text = Blockly.Msg.REMOVE_UNUSED_BLOCKS;
   clearUnusedBlocks.callback = function() {
-    Blockly.Events.setGroup(true);
     var allBlocks = Blockly.getMainWorkspace().getTopBlocks()
     var removeList = []
     for (var x = 0, block; block = allBlocks[x]; x++) {
-      if(block.previousConnection != null || (block.outputConnection && block.outputConnection != null)) {
+      if (block.previousConnection || block.outputConnection) {
           removeList.push(block)
       }
     }
-    if(removeList.length == 0) {
-      alert('No Orphaned Blocks');
+    if (removeList.length == 0) {
       return;
     }
     var msg = Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(removeList.length));
     var cancelButton = top.BlocklyPanel_getOdeMessage('cancelButton');
     var deleteButton = top.BlocklyPanel_getOdeMessage('deleteButton');
     var dialog = new Blockly.Util.Dialog(Blockly.Msg.CONFIRM_DELETE, msg, deleteButton, true, cancelButton, 0, function(button) {
-        dialog.hide();
-        if (button == deleteButton) {
+      dialog.hide();
+      if (button == deleteButton) {
+        try {
+          Blockly.Events.setGroup(true);
           Blockly.mainWorkspace.playAudio('delete');
-          for(var x = 0;x < removeList.length;x++) {
+          for (var x = 0; x < removeList.length; x++) {
             removeList[x].dispose(false);
           }
+        } catch (e) {
+        } finally {
+          Blockly.Events.setGroup(false);
         }
-        Blockly.Events.setGroup(false);
+      }
     });
   };
   menuOptions.push(clearUnusedBlocks);
