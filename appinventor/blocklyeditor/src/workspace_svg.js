@@ -1038,7 +1038,6 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
           for (var x = 0; x < removeList.length; x++) {
             removeList[x].dispose(false);
           }
-        } catch (e) {
         } finally {
           Blockly.Events.setGroup(false);
         }
