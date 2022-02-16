@@ -15,7 +15,7 @@ import java.util.List;
 
 public abstract class ProjectsFolder extends Composite {
   protected Folder folder;
-  protected boolean isTrash;
+  protected boolean isTrash = false;
   protected int depth;
   protected ProjectSelectionChangeHandler changeHandler;
 

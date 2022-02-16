@@ -47,7 +47,6 @@ public class ProjectsFolderListItem extends ProjectsFolder {
     initWidget(UI_BINDER.createAndBindUi(this));
     setFolder(folder);
     setDepth(depth);
-    setIsTrash(isTrash);
     refresh();
   }
 

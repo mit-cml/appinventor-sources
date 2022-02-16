@@ -75,7 +75,6 @@ public class ProjectsExplorer extends Composite {
   @UiField Button mobileOverflowButton;
 
   @UiField ProjectsList projectsList;
-  @UiField ProjectsList trashList;
 
   @UiField(provided=true)
   Resources.ProjectsExplorerStyle style = Ode.getUserDarkThemeEnabled() ?
@@ -94,6 +93,7 @@ public class ProjectsExplorer extends Composite {
     if (Ode.isMobile()) {
       newProjectButton.setText("");
     }
+
     projectsList.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
       @Override
       public void onSelectionChange(boolean selected) {
@@ -104,12 +104,22 @@ public class ProjectsExplorer extends Composite {
         int projectCount = selectedProjects.size();
         int folderCount = selectedFolders.size();
         int totalSelected = projectCount + folderCount;
-        exportButton.setEnabled(false);
-        buildButton.setEnabled(false);
-        moveButton.setEnabled(false);
-        publishButton.setEnabled(false);
-        renameButton.setEnabled(false);
-        trashButton.setEnabled(false);
+        if (projectsList.isTrash) {
+          if (projectCount + folderCount > 0) {
+            restoreButton.setEnabled(true);
+            deleteButton.setEnabled(true);
+          } else {
+            deleteButton.setEnabled(false);
+            restoreButton.setEnabled(false);
+          }
+        } else {
+          exportButton.setEnabled(false);
+          buildButton.setEnabled(false);
+          moveButton.setEnabled(false);
+          publishButton.setEnabled(false);
+          renameButton.setEnabled(false);
+          trashButton.setEnabled(false);
+        }
         if (projectCount > 0 && folderCount == 0) {
           exportButton.setEnabled(true);
         }
@@ -124,38 +134,20 @@ public class ProjectsExplorer extends Composite {
         }
       }
     });
-
-    trashList.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
-      @Override
-      public void onSelectionChange(boolean selected) {
-        List<Project> selectedProjects = trashList.getSelectedProjects();
-        List<Folder> selectedFolders = trashList.getSelectedFolders();
-        OdeLog.log("Trash list selection change raised for " + selectedFolders.size() +
-            " folders and " + selectedProjects.size() + " projects");
-        int projectCount = selectedProjects.size();
-        int folderCount = selectedFolders.size();
-        deleteButton.setEnabled(false);
-        restoreButton.setEnabled(false);
-        if (projectCount + folderCount > 0) {
-          restoreButton.setEnabled(true);
-          deleteButton.setEnabled(true);
-        }
-      }
-    });
   }
 
   public void switchToTrash() {
     projectsViewActions.setVisible(false);
-    projectsList.setVisible(false);
+    projectsList.setIsTrash(true);
     trashViewActions.setVisible(true);
-    trashList.setVisible(true);
+    projectsList.setIsTrash(true);
   }
 
   public void switchToProjects() {
     projectsViewActions.setVisible(true);
-    projectsList.setVisible(true);
+    projectsList.setIsTrash(false);
     trashViewActions.setVisible(false);
-    trashList.setVisible(false);
+    projectsList.setIsTrash(false);
   }
 
   @UiFactory
@@ -248,26 +240,28 @@ public class ProjectsExplorer extends Composite {
       //   Ode.getInstance().getFolderManager().moveToTrash(folder);
       // }
       projectsList.setSelected(false);
-      trashList.setSelected(false);
     }
   }
 
   @UiHandler("restoreButton")
   void restoreSelectedProjects(ClickEvent e) {
-    for (Project project : trashList.getSelectedProjects()) {
-      project.restoreFromTrash();
-    }
-    projectsList.setSelected(false);
-    trashList.setSelected(false);
+//    for (Project project : trashList.getSelectedProjects()) {
+//      project.restoreFromTrash();
+//    }
+//    projectsList.setSelected(false);
+//    trashList.setSelected(false);
   }
 
   @UiHandler("deleteButton")
   void deleteSelectedProjects(ClickEvent e) {
-    for (Project project : trashList.getSelectedProjects()) {
-      project.deleteFromTrash();
+    if (projectsList.isTrash) {
+      for (Project project : projectsList.getSelectedProjects()) {
+        project.deleteFromTrash();
+      }
+      projectsList.setSelected(false);
+    } else {
+      OdeLog.log("Attempted delete from trash when view is not Trash");
     }
-    projectsList.setSelected(false);
-    trashList.setSelected(false);
   }
 
   @UiHandler("viewTrashButton")

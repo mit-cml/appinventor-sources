@@ -49,6 +49,5 @@
     </g:FlowPanel>
 
     <aiv:ProjectsList ui:field='projectsList' />
-    <aiv:ProjectsList ui:field='trashList' isTrash='true' />
   </g:FlowPanel>
 </ui:UiBinder>

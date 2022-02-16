@@ -147,8 +147,8 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
 
   @Override
   public void onProjectTrashed(Project project) {
-    // Project is already in the trash folder at this point
     folder.removeProject(project);
+    Ode.getInstance().getFolderManager().getTrashFolder().addProject(project);
     refresh();
   }
 

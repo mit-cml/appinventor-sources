@@ -57,7 +57,6 @@ public class ProjectListItem extends Composite {
     dateModifiedLabel.setText(dateTimeFormat.format(dateModified));
     dateCreatedLabel.setText(dateTimeFormat.format(dateCreated));
     this.project = project;
-    this.changeHandler = changeHandler;
     this.isInTrash = isInTrash;
     this.depth = depth;
     checkBox.getElement().setAttribute("style", "margin-right: " + (depth * 10) + "px");
