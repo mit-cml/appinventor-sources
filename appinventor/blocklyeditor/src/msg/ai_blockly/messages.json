@@ -31,6 +31,7 @@
 	"Blockly.Msg.EXPAND_ALL": "Expand Blocks",
 	"Blockly.Msg.ARRANGE_H": "Arrange Blocks Horizontally",
 	"Blockly.Msg.ARRANGE_V": "Arrange Blocks Vertically",
+	"Blockly.Msg.REMOVE_UNUSED_BLOCKS": "Remove Unused Blocks",
 	"Blockly.Msg.ARRANGE_S": "Arrange Blocks Diagonally",
 	"Blockly.Msg.SORT_W": "Sort Blocks by Width",
 	"Blockly.Msg.SORT_H": "Sort Blocks by Height",
