@@ -27,7 +27,6 @@ public class ProjectListItem extends Composite {
   interface ProjectListItemUiBinder extends UiBinder<FlowPanel, ProjectListItem> {}
   private static final ProjectListItemUiBinder UI_BINDER = GWT.create(ProjectListItemUiBinder.class);
 
-  private boolean isInTrash;
   private int depth;
 
   @UiField FlowPanel container;
@@ -45,7 +44,7 @@ public class ProjectListItem extends Composite {
   private ProjectSelectionChangeHandler changeHandler;
   private ClickHandler clickHandler;
 
-  public ProjectListItem(Project project, int depth, boolean isInTrash) {
+  public ProjectListItem(Project project, int depth) {
     style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
     DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
@@ -57,7 +56,6 @@ public class ProjectListItem extends Composite {
     dateModifiedLabel.setText(dateTimeFormat.format(dateModified));
     dateCreatedLabel.setText(dateTimeFormat.format(dateCreated));
     this.project = project;
-    this.isInTrash = isInTrash;
     this.depth = depth;
     checkBox.getElement().setAttribute("style", "margin-right: " + (depth * 10) + "px");
   }

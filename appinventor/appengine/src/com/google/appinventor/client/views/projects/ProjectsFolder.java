@@ -1,6 +1,5 @@
 package com.google.appinventor.client.views.projects;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.ComplexPanel;
@@ -27,7 +26,6 @@ public abstract class ProjectsFolder extends Composite {
     projectsFolders = new ArrayList<ProjectsFolder>();
     projectListItems = new ArrayList<ProjectListItem>();
     selectedProjectListItems = new ArrayList<ProjectListItem>();
-    this.isTrash = isTrash;
   }
 
   public abstract void refresh();
@@ -94,7 +92,7 @@ public abstract class ProjectsFolder extends Composite {
   }
 
   protected void createProjectsFolder(final Folder folder, final ComplexPanel container) {
-    final ProjectsFolder projectsFolder = new ProjectsFolderListItem(folder, depth + 1, isTrash);
+    final ProjectsFolder projectsFolder = new ProjectsFolderListItem(folder, depth + 1);
     projectsFolder.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
       @Override
       public void onSelectionChange(boolean selected) {
@@ -106,7 +104,7 @@ public abstract class ProjectsFolder extends Composite {
   }
 
   protected void createProjectListItem(final Project project, final ComplexPanel container) {
-    final ProjectListItem projectListItem = new ProjectListItem(project, depth + 1, isTrash);
+    final ProjectListItem projectListItem = new ProjectListItem(project, depth + 1);
     projectListItem.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
       @Override
       public void onSelectionChange(boolean selected) {

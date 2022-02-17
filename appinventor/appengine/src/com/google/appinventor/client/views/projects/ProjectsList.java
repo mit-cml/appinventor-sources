@@ -1,7 +1,5 @@
 package com.google.appinventor.client.views.projects;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -133,8 +131,8 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
 
   @Override
   public void onProjectAdded(Project project) {
-    OdeLog.log("Project Added to ProjectList: " + project.getProjectName());
     folder.addProject(project);
+    Ode.getInstance().getFolderManager().saveAllFolders();
     refresh();
   }
 
@@ -142,6 +140,7 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
   public void onTrashProjectRestored(Project project) {
     Ode.getInstance().getFolderManager().getGlobalFolder().addProject(project);
     Ode.getInstance().getFolderManager().getTrashFolder().removeProject(project);
+    Ode.getInstance().getFolderManager().saveAllFolders();
     refresh();
   }
 
@@ -149,12 +148,14 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
   public void onProjectTrashed(Project project) {
     folder.removeProject(project);
     Ode.getInstance().getFolderManager().getTrashFolder().addProject(project);
+    Ode.getInstance().getFolderManager().saveAllFolders();
     refresh();
   }
 
   @Override
   public void onProjectDeleted(Project project) {
     folder.removeProject(project);
+    Ode.getInstance().getFolderManager().saveAllFolders();
     refresh();
   }
 

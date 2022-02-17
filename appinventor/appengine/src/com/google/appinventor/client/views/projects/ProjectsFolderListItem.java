@@ -42,7 +42,7 @@ public class ProjectsFolderListItem extends ProjectsFolder {
 
   private boolean isExpanded;
 
-  public ProjectsFolderListItem(Folder folder, int depth, boolean isTrash) {
+  public ProjectsFolderListItem(Folder folder, int depth) {
     style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
     setFolder(folder);

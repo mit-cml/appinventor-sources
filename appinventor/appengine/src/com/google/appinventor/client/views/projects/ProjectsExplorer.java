@@ -245,11 +245,14 @@ public class ProjectsExplorer extends Composite {
 
   @UiHandler("restoreButton")
   void restoreSelectedProjects(ClickEvent e) {
-//    for (Project project : trashList.getSelectedProjects()) {
-//      project.restoreFromTrash();
-//    }
-//    projectsList.setSelected(false);
-//    trashList.setSelected(false);
+    if (projectsList.isTrash) {
+    for (Project project : projectsList.getSelectedProjects()) {
+      project.restoreFromTrash();
+    }
+    projectsList.setSelected(false);
+    } else {
+      OdeLog.log("Attempted restore from trash when view is not Trash");
+    }
   }
 
   @UiHandler("deleteButton")
