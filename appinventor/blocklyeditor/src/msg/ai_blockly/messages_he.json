@@ -707,5 +707,10 @@
     "Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TOOLTIP": "ממיר רשימת זוגות מפתח-ערך למילון",
     "Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_INPUT": "זוגות",
     "Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TITLE": "רשימת זוגות מפתח-ערך למילון",
-    "Blockly.Msg.LANG_DICTIONARIES_LENGTH_TOOLTIP": "מחזיר את מספר זוגות מפתח-ערך במילון"
+    "Blockly.Msg.LANG_DICTIONARIES_LENGTH_TOOLTIP": "מחזיר את מספר זוגות מפתח-ערך במילון",
+    "Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TOOLTIP": "בודק האם משהו הוא מילון",
+    "Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TITLE": "האם זהו מילון? %1",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TOOLTIP": "בשימוש ברשימה ע״י מעבר על בלוק שביל מפתח, בודק כל צומת ברמה מסויימת במעבר",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE": "עבור על כולם ברמה",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TOOLTIP": "מתחיל מהמילון הנתון ועוקב אחרי המפתחות שלו ושל הילדים שלו בהתבסס על השביל הנתון, ומחזיר רשימת צמתים שנמצאו בסוף המעבר"
 }
