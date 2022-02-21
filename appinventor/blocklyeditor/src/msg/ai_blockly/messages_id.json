@@ -476,7 +476,7 @@
     "Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_DO": "lakukan",
     "Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST": "tes",
     "Blockly.Msg.LANG_CONTROLS_WHILE_TITLE": "ketika",
-    "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_WARNING": "Peringatan:\nBlok ini hanya boleh\ndigunakan dalam satu lingkaran.",
+    "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_WARNING": "Peringatan:\nBlok ini hanya boleh\ndigunakan dalam satu putaran.",
     "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE": "Lewati sisa putaran ini, dan\nlanjutkan dengan iterasi berikutnya.",
     "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE": "lanjutkan dengan iterasi berikutnya",
     "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_INPUT_OFLOOP": "dalam pengulangan",
@@ -517,7 +517,7 @@
     "Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE": "ketika",
     "Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_INPUT_DO": "lakukan",
     "Blockly.Msg.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT": "ulangi",
-    "Blockly.Msg.LANG_CONTROLS_IF_ELSE_TOOLTIP": "Tambahkan kondisi akhir, catch-all ke blok if.",
+    "Blockly.Msg.LANG_CONTROLS_IF_ELSE_TOOLTIP": "Tambahkan kondisi akhir, tangkap semua ke blok if.",
     "Blockly.Msg.LANG_CONTROLS_IF_ELSE_TITLE_ELSE": "sebaliknya",
     "Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TOOLTIP": "Tambahkan kondisi ke blok if.",
     "Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TITLE_ELSEIF": "sebaliknya jika",
@@ -712,5 +712,9 @@
     "Blockly.Msg.DUPLICATE_BLOCK": "Salin",
     "Blockly.Msg.CLEAN_UP": "Hapus Semua Blok",
     "Blockly.Msg.UNDO": "Membatalkan",
-    "Blockly.Msg.REDO": "Mengulang"
+    "Blockly.Msg.REDO": "Mengulang",
+    "Blockly.Msg.REPL_KEEP_TRYING": "Terus mencoba",
+    "Blockly.Msg.REPL_GIVE_UP": "Menyerah",
+    "Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME": "panggil tanpa kembali",
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE": "berjalan semua pada level"
 }
