@@ -1450,7 +1450,7 @@ public final class MockForm extends MockContainer {
     } else if (propertyName.equals(PROPERTY_NAME_TITLEVISIBLE)) {
       setTitleVisibleProperty(newValue);
       refreshForm();
-    } else if(propertyName.equals(PROPERTY_NAME_BACKGROUND_REPEAT_MODE)) {
+    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUND_REPEAT_MODE)) {
       setBackgroundRepeatMode(newValue);
     }
   }

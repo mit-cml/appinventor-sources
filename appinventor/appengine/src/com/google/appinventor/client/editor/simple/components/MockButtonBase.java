@@ -135,7 +135,9 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
   private void setBackgroundRepeatMode(String value) {
     backgroundRepeatMode = Integer.parseInt(value);
     //property is only applicable if image is set
-    if(!hasImage) return;
+    if (!hasImage) {
+      return;
+    }
     switch(backgroundRepeatMode) {
       case 0:
         DOM.setStyleAttribute(buttonWidget.getElement(), "backgroundRepeat", "no-repeat");
