@@ -277,8 +277,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       // The container's background color shows through any transparent
       // portions of the Image, an effect we can get in the browser by
       // setting the widget's background color to COLOR_NONE.
-      MockComponentsUtil.setWidgetBackgroundColor(buttonWidget,
-          "&H" + COLOR_NONE);
+      MockComponentsUtil.setWidgetBackgroundColor(buttonWidget, "&H" + COLOR_NONE);
       DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
       
     }
