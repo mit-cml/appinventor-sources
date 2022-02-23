@@ -28,6 +28,10 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -96,6 +100,7 @@ public final class YandexTranslate extends AndroidNonvisibleComponent {
     activity = container.$context();
   }
 
+
   /**
    * By providing a target language to translate to (for instance, 'es' for Spanish, 'en' for
    * English, or 'ru' for Russian), and a word or sentence to translate, this method will request
@@ -127,7 +132,13 @@ public final class YandexTranslate extends AndroidNonvisibleComponent {
       @Override
       public void run() {
         try {
-          performRequest(languageToTranslateTo, textToTranslate);
+          String code = this.LanguageNametoCode(languageToTranslateTo);
+          if (code == null) {
+            performRequest(languageToTranslateTo, textToTranslate);
+          }
+          else{
+            performRequest(code, textToTranslate);
+          }
         } catch (IOException e) {
           form.dispatchErrorOccurredEvent(YandexTranslate.this, "RequestTranslation",
               ErrorMessages.ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE);
@@ -135,6 +146,37 @@ public final class YandexTranslate extends AndroidNonvisibleComponent {
           form.dispatchErrorOccurredEvent(YandexTranslate.this, "RequestTranslation",
               ErrorMessages.ERROR_TRANSLATE_JSON_RESPONSE);
         }
+      }
+
+      private String LanguageNametoCode(String languageToTranslateTo) {
+        Dictionary<String, String> nameCodeHash = new Hashtable<String, String>();
+
+        nameCodeHash.put("Azerbaijani", "az"); nameCodeHash.put("Albanian", "sq"); nameCodeHash.put("Amharic", "am"); nameCodeHash.put("English", "en");
+        nameCodeHash.put("Arabic", "ar"); nameCodeHash.put("Armenian", "hy"); nameCodeHash.put("Afrikaans", "af"); nameCodeHash.put("Basque", "eu");
+        nameCodeHash.put("Bashkir", "ba"); nameCodeHash.put("Belarusian", "be"); nameCodeHash.put("Bengal", "bn"); nameCodeHash.put("Burmese", "my");
+        nameCodeHash.put("Bulgarian", "bg"); nameCodeHash.put("Bosnian", "bs"); nameCodeHash.put("Welsh", "cy"); nameCodeHash.put("Hungarian", "hu");
+        nameCodeHash.put("Vietnamese", "vi"); nameCodeHash.put("Haitian", "ht"); nameCodeHash.put("Galician", "gl"); nameCodeHash.put("Dutch", "nl");
+        nameCodeHash.put("Hill Mari", "mrj"); nameCodeHash.put("Greek", "el"); nameCodeHash.put("Georgian", "ka"); nameCodeHash.put("Gujarati", "gu");
+        nameCodeHash.put("Danish", "da"); nameCodeHash.put("Hebrew", "he"); nameCodeHash.put("Yiddish", "yi"); nameCodeHash.put("Indonesian", "id");
+        nameCodeHash.put("Irish", "ga"); nameCodeHash.put("Italian", "it"); nameCodeHash.put("Icelandic", "is"); nameCodeHash.put("Spanish", "es");
+        nameCodeHash.put("Kazakh", "kk"); nameCodeHash.put("Kannada", "kn"); nameCodeHash.put("Catalan", "ca"); nameCodeHash.put("Kirghiz", "ky");
+        nameCodeHash.put("Chinese", "zh"); nameCodeHash.put("Korean", "ko"); nameCodeHash.put("Xhosa", "xh"); nameCodeHash.put("Khmer", "km");
+        nameCodeHash.put("Luxembourg", "lb"); nameCodeHash.put("Malagasy", "mg"); nameCodeHash.put("Malay", "ms");
+        nameCodeHash.put("Laotian", "lo"); nameCodeHash.put("Latin", "la"); nameCodeHash.put("Latvian", "lv"); nameCodeHash.put("Lithuanian", "lt");
+        nameCodeHash.put("Malayalam", "ml"); nameCodeHash.put("Maltese", "mt"); nameCodeHash.put("Macedonian", "mk"); nameCodeHash.put("Maori", "mi");
+        nameCodeHash.put("Marathi", "mr"); nameCodeHash.put("Mari", "mhr"); nameCodeHash.put("Mongolian", "mn"); nameCodeHash.put("German", "de");
+        nameCodeHash.put("Nepalese", "ne"); nameCodeHash.put("Norwegian", "no"); nameCodeHash.put("Punjabi", "pa"); nameCodeHash.put("Papiamento", "pap");
+        nameCodeHash.put("Persian", "fa"); nameCodeHash.put("Polish", "pl"); nameCodeHash.put("Portuguese", "pt"); nameCodeHash.put("Romanian", "ro");
+        nameCodeHash.put("Russian", "ru"); nameCodeHash.put("Cebuano", "ceb"); nameCodeHash.put("Serbian", "sr"); nameCodeHash.put("Sinhalese", "si");
+        nameCodeHash.put("Slovak", "sk"); nameCodeHash.put("Slovenian", "sl"); nameCodeHash.put("Swahili", "sw"); nameCodeHash.put("Sundanese", "su");
+        nameCodeHash.put("Tajik", "tg"); nameCodeHash.put("Thai", "th"); nameCodeHash.put("Tagalog", "tl"); nameCodeHash.put("Tamil", "ta");
+        nameCodeHash.put("Tartar", "tt"); nameCodeHash.put("Telugu", "te"); nameCodeHash.put("Turkish", "tr"); nameCodeHash.put("Udmurt", "udm");
+        nameCodeHash.put("Uzbek", "uz"); nameCodeHash.put("Ukrainian", "uk"); nameCodeHash.put("Urdu", "ur"); nameCodeHash.put("Finnish", "fi");
+        nameCodeHash.put("French", "fr"); nameCodeHash.put("Hindi", "hi"); nameCodeHash.put("Croatian", "hr"); nameCodeHash.put("Czech", "cs");
+        nameCodeHash.put("Swedish", "sv"); nameCodeHash.put("Scottish", "gd"); nameCodeHash.put("Estonian", "et"); nameCodeHash.put("Esperanto", "eo");
+        nameCodeHash.put("Javanese", "jv"); nameCodeHash.put("Japanese", "ja");
+
+        return nameCodeHash.get(languageToTranslateTo);
       }
     });
   }
