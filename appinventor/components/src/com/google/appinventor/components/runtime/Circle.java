@@ -5,30 +5,31 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.MapFactory;
-import org.locationtech.jts.geom.Geometry;
-import org.osmdroid.util.GeoPoint;
+import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
+import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.MapFeature;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
+import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureVisitor;
 import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
-
-import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
-import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
+import org.locationtech.jts.geom.Geometry;
+import org.osmdroid.util.GeoPoint;
 
 /**
  * The `Circle` component visualizes a circle of a given {@link #Radius(double)}, in meters,
@@ -121,9 +122,19 @@ public class Circle extends PolygonBase implements MapCircle {
 
   @Override
   @SimpleProperty(description = "Returns the type of the feature. For Circles, "
-      + "this returns the text \"Circle\".")
-  public String Type() {
-    return MapFactory.MapFeatureType.TYPE_CIRCLE;
+      + "this returns MapFeature.Circle (\"Circle\").")
+  public @Options(MapFeature.class) String Type() {
+    return TypeAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Gets the type of the feature.
+   *
+   * @return the abstract MapFeature type of this feature. In this case MapFeature.Circle.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public MapFeature TypeAbstract() {
+    return MapFeature.Circle;
   }
 
   @Override

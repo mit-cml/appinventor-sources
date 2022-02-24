@@ -5,7 +5,11 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import com.google.appinventor.components.common.OptionList;
 import com.google.appinventor.components.runtime.errors.DispatchableError;
+import gnu.mapping.Symbol;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public final class TypeUtil {
 
@@ -27,5 +31,45 @@ public final class TypeUtil {
     } else {
       return cast(o, tClass, expected);
     }
+  }
+
+  /**
+   * Cast a raw value of a option block into its enumeration value.
+   *
+   * @param value the raw value of the block
+   * @param className the target enum for looking up the value
+   * @param <T> the underlying type of the OptionList
+   * @return the corresponding enum value, or null if the value isn't found
+   */
+  @SuppressWarnings("unused")  // called from runtime.scm
+  public static <T> OptionList<T> castToEnum(T value, Symbol className) {
+    String classNameStr = stripEnumSuffix(className.getName());
+    try {
+      Class<?> clazz = Class.forName(classNameStr);
+      if (!OptionList.class.isAssignableFrom(clazz)) {
+        // In theory the code generator should never do this, but just in case...
+        throw new IllegalArgumentException(classNameStr
+            + " does not identify an OptionList type.");
+      }
+      for (Method m : clazz.getMethods()) {
+        if ("fromUnderlyingValue".equals(m.getName())) {
+          return (OptionList<T>) m.invoke(clazz, value);
+        }
+      }
+      return null;
+    } catch (ClassNotFoundException e) {
+      return null;
+    } catch (InvocationTargetException e) {
+      return null;
+    } catch (IllegalAccessException e) {
+      return null;
+    }
+  }
+
+  private static String stripEnumSuffix(String className) {
+    if (className.endsWith("Enum")) {
+      return className.substring(0, className.length() - 4);
+    }
+    return className;
   }
 }

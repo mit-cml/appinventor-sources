@@ -21,7 +21,8 @@
               android:paddingLeft="16dip"
               android:paddingRight="16dip"
               android:minWidth="196dip"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              android:background="?attr/selectableItemBackground"  >
 
     <LinearLayout
             android:layout_width="wrap_content"
@@ -49,4 +50,4 @@
 
     </LinearLayout>
 
-</LinearLayout><!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/lmp-mr1-supportlib-release/frameworks/support/v7/appcompat/res/layout/abc_activity_chooser_view_list_item.xml -->
+</LinearLayout><!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/layout/abc_activity_chooser_view_list_item.xml -->

@@ -36,10 +36,14 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
   Resources.ProjectsListStyle style = Ode.getUserDarkThemeEnabled() ?
       Resources.INSTANCE.projectsListStyleDark() : Resources.INSTANCE.projectsListStyleLight();
 
+  boolean projectsLoaded = false;
+
   public ProjectsList() {
+    OdeLog.log("Creating Projects List");
     style.ensureInjected();
     initWidget(UI_BINDER.createAndBindUi(this));
     Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
+    OdeLog.log("Add project manager event listener");
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
     setDepth(0);
   }
@@ -80,6 +84,7 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
 
   @Override
   public void setIsTrash(boolean isTrash) {
+    OdeLog.log("setIsTrash " + isTrash);
     this.isTrash = isTrash;
     if (isTrash) {
       setFolder(Ode.getInstance().getFolderManager().getTrashFolder());
@@ -131,8 +136,17 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
 
   @Override
   public void onProjectAdded(Project project) {
-    folder.addProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
+    OdeLog.log("On project added " + project.getProjectName() + " projectsLoaded=" + projectsLoaded);
+    OdeLog.log("Folder is: ");
+    OdeLog.log(folder.getName());
+    if (folder == null) {
+      OdeLog.log("Folder is null ");
+    }
+
+    if (projectsLoaded) {
+      folder.addProject(project);
+      Ode.getInstance().getFolderManager().saveAllFolders();
+    }
     refresh();
   }
 
@@ -161,5 +175,6 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
 
   @Override
   public void onProjectsLoaded() {
+    projectsLoaded = true;
     refresh();
   }}

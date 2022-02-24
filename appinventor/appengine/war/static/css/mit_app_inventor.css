@@ -455,3 +455,8 @@ span.ro { background-color: #f88; color: black; }
 span.wo { background-color: #8f8; color: black; }
 span.bo { background-color: #88f; color: black; }
 span.do { background-color: #ff8; color: black; }
+dt.FileScopeEnum i:after,
+dt span.FileScopeEnum i:after,
+dt.FileScopeEnum em:after,
+em.FileScopeEnum:before
+{ background-color: #BF4343; content: "FileScope"; }

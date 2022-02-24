@@ -1,20 +1,28 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import android.Manifest;
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 import android.app.Activity;
+
 import android.content.ContentValues;
 import android.content.Intent;
+
 import android.net.Uri;
+
 import android.os.Build;
 import android.os.Environment;
+
 import android.provider.MediaStore;
+
 import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -22,14 +30,19 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.NougatUtil;
-import com.google.appinventor.components.runtime.util.QUtil;
+import com.google.appinventor.components.runtime.util.ScopedFile;
+
 import java.io.File;
-import java.util.Date;
+
+import java.net.URI;
 
 /**
  * ![Camera icon](images/camera.png)
@@ -52,8 +65,7 @@ import java.util.Date;
    nonVisible = true,
    iconName = "images/camera.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE," +
-                 "android.permission.CAMERA")
+@UsesPermissions({CAMERA})
 public class Camera extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
 
@@ -86,6 +98,16 @@ public class Camera extends AndroidNonvisibleComponent
 
     // Default property values
     UseFront(false);
+  }
+
+  /**
+   * Determine whether we have the right permissions during initialization.
+   */
+  public void Initialize() {
+    havePermission = !form.isDeniedPermission(CAMERA);
+    if (FileUtil.needsWritePermission(form.DefaultFileScope())) {
+      havePermission &= !form.isDeniedPermission(WRITE_EXTERNAL_STORAGE);
+    }
   }
 
   /**
@@ -123,57 +145,28 @@ public class Camera extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void TakePicture() {
+    final ScopedFile target = FileUtil.getScopedPictureFile(form, "png");
     if (!havePermission) {
-      final Camera me = this;
-      form.askPermission(new BulkPermissionRequest(this, "TakePicture",
-          Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+      String[] permissions;
+      if (FileUtil.needsWritePermission(target)) {
+        permissions = new String[] { CAMERA, WRITE_EXTERNAL_STORAGE };
+      } else {
+        permissions = new String[] { CAMERA };
+      }
+      form.askPermission(new BulkPermissionRequest(this, "TakePicture", permissions) {
         @Override
         public void onGranted() {
-          me.havePermission = true;
-          me.TakePicture();
+          havePermission = true;
+          Camera.this.TakePicture();
         }
       });
       return;
     }
+
     String state = Environment.getExternalStorageState();
-    if (Environment.MEDIA_MOUNTED.equals(state)) {
+    if (!FileUtil.needsExternalStorage(form, target) || Environment.MEDIA_MOUNTED.equals(state)) {
       Log.i("CameraComponent", "External storage is available and writable");
-
-      File directory = new File(QUtil.getExternalStorageDir(form), "Pictures/");
-      if (!directory.exists()) {
-        directory.mkdir();
-      }
-      File image = new File(QUtil.getExternalStorageDir(form),
-          "Pictures/app_inventor_" + new Date().getTime()
-              + ".jpg");
-      imageFile = Uri.fromFile(image);
-
-      ContentValues values = new ContentValues();
-      values.put(MediaStore.Images.Media.DATA, imageFile.getPath());
-      values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-      values.put(MediaStore.Images.Media.TITLE, imageFile.getLastPathSegment());
-
-      if (requestCode == 0) {
-        requestCode = form.registerForActivityResult(this);
-      }
-
-      Uri imageUri;
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-        imageUri = container.$context().getContentResolver().insert(
-            MediaStore.Images.Media.INTERNAL_CONTENT_URI, values);
-      } else {
-        imageUri = NougatUtil.getPackageUri(form, image);
-      }
-      Intent intent = new Intent(CAMERA_INTENT);
-      intent.putExtra(CAMERA_OUTPUT, imageUri);
-
-      // NOTE: This uses an undocumented, testing feature (CAMERA_FACING).
-      // It may not work in the future.
-      if (useFront) {
-        intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-      }
-
-      container.$context().startActivityForResult(intent, requestCode);
+      capturePicture(target);
     } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
       form.dispatchErrorOccurredEvent(this, "TakePicture",
           ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_READONLY);
@@ -181,6 +174,42 @@ public class Camera extends AndroidNonvisibleComponent
       form.dispatchErrorOccurredEvent(this, "TakePicture",
           ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_NOT_AVAILABLE);
     }
+  }
+
+  private void capturePicture(final ScopedFile target) {
+    File path = new File(URI.create(FileUtil.resolveFileName(form, target.getFileName(), target.getScope())));
+    File directory = path.getParentFile();
+    if (!directory.exists()) {
+      directory.mkdirs();
+    }
+    imageFile = Uri.fromFile(path);
+
+    ContentValues values = new ContentValues();
+    values.put(MediaStore.Images.Media.DATA, imageFile.getPath());
+    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+    values.put(MediaStore.Images.Media.TITLE, imageFile.getLastPathSegment());
+
+    if (requestCode == 0) {
+      requestCode = form.registerForActivityResult(this);
+    }
+
+    Uri imageUri;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+      imageUri = container.$context().getContentResolver().insert(
+          MediaStore.Images.Media.INTERNAL_CONTENT_URI, values);
+    } else {
+      imageUri = NougatUtil.getPackageUri(form, path);
+    }
+    Intent intent = new Intent(CAMERA_INTENT);
+    intent.putExtra(CAMERA_OUTPUT, imageUri);
+
+    // NOTE: This uses an undocumented, testing feature (CAMERA_FACING).
+    // It may not work in the future.
+    if (useFront) {
+      intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+    }
+
+    container.$context().startActivityForResult(intent, requestCode);
   }
 
   @Override

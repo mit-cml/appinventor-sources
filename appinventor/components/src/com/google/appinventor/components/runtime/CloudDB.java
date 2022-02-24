@@ -5,6 +5,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.ACCESS_NETWORK_STATE;
+import static android.Manifest.permission.INTERNET;
+
 import android.Manifest;
 import android.app.Activity;
 
@@ -67,6 +70,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisShardInfo;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.exceptions.JedisException;
@@ -102,10 +106,7 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
     category = ComponentCategory.STORAGE,
     nonVisible = true,
     iconName = "images/cloudDB.png")
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-  "android.permission.ACCESS_NETWORK_STATE," +
-  "android.permission.READ_EXTERNAL_STORAGE," +
-  "android.permission.WRITE_EXTERNAL_STORAGE")
+@UsesPermissions({INTERNET, ACCESS_NETWORK_STATE})
 @UsesLibraries(libraries = "jedis.jar")
 public final class CloudDB extends AndroidNonvisibleComponent implements Component,
   OnClearListener, OnDestroyListener {
@@ -246,9 +247,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private final List<storedValue> storeQueue = Collections.synchronizedList(new ArrayList());
 
   private ConnectivityManager cm;
-
-  // Do we have storage permission yet
-  private boolean havePermission = false;
 
   private static class storedValue {
     private String tag;
@@ -581,18 +579,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   @SimpleFunction(description = "Store a value at a tag.")
   public void StoreValue(final String tag, final Object valueToStore) {
     checkProjectIDNotBlank();
-    if (!havePermission) {
-      final CloudDB me = this;
-      form.askPermission(new BulkPermissionRequest(this, "CloudDB",
-          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
-          @Override
-          public void onGranted() {
-            me.havePermission = true;
-            StoreValue(tag, valueToStore);
-          }
-        });
-      return;
-    }
     final String value;
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
     boolean isConnected = networkInfo != null && networkInfo.isConnected();
@@ -679,6 +665,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                             Log.d(LOG_TAG, "Workqueue empty, sending pendingTag, valueListLength = " + pendingValueList.length());
                           }
                           jEval(SET_SUB_SCRIPT, SET_SUB_SCRIPT_SHA1, 1, pendingTag, pendingValue, jsonValueList, projectID);
+                          UpdateDone(pendingTag, "StoreValue");
                         }
                       } catch (JedisException e) {
                         CloudDBError(e.getMessage());
@@ -753,18 +740,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       Log.d(LOG_TAG, "getting value ... for tag: " + tag);
     }
     checkProjectIDNotBlank();
-    if (!havePermission) {
-      final CloudDB me = this;
-      form.askPermission(new BulkPermissionRequest(this, "CloudDB",
-          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
-          @Override
-          public void onGranted() {
-            me.havePermission = true;
-            GetValue(tag, valueIfTagNotThere);
-          }
-        });
-      return;
-    }
     final AtomicReference<Object> value = new AtomicReference<Object>();
     Cursor cursor = null;
     SQLiteDatabase db = null;
@@ -889,6 +864,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       "if (type(decodedValue) == 'table') then " +
       "  local removedValue = table.remove(decodedValue, 1);" +
       "  local newValue = cjson.encode(decodedValue);" +
+      "  if (newValue == \"{}\") then " +
+      "    newValue = \"[]\" " +
+      "  end " +
       "  redis.call('set', project .. \":\" .. key, newValue);" +
       "  table.insert(subTable, key);" +
       "  table.insert(subTable1, newValue);" +
@@ -899,7 +877,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       "  return error('You can only remove elements from a list');" +
       "end";
 
-  private static final String POP_FIRST_SCRIPT_SHA1 = "ed4cb4717d157f447848fe03524da24e461028e1";
+  private static final String POP_FIRST_SCRIPT_SHA1 = "68a7576e7dc283a8162d01e3e7c2d5c4ab3ff7a5";
 
   /**
    * Obtain the first element of a list and atomically remove it. If two devices use this function
@@ -981,6 +959,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           Jedis jedis = getJedis();
           try {
             jEval(APPEND_SCRIPT, APPEND_SCRIPT_SHA1, 1, key, item, projectID);
+            UpdateDone(key, "AppendValueToList");
           } catch(JedisException e) {
             CloudDBError(e.getMessage());
             flushJedis(true);
@@ -1040,6 +1019,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           try {
             Jedis jedis = getJedis();
             jedis.del(projectID + ":" + tag);
+            UpdateDone(tag, "ClearTag");
           } catch (Exception e) {
             CloudDBError(e.getMessage());
             flushJedis(true);
@@ -1047,6 +1027,26 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         }
       });
   }
+
+  /**
+   * Indicates that operations that store data to CloudDB have completed.
+   *
+   * @param tag The tag that was altered
+   * @param operation one of "ClearTag", "StoreValue" or "AppendValueToList"
+   */
+  @SimpleEvent
+  public void UpdateDone(final String tag, final String operation) {
+    if (DEBUG) {
+      Log.d(CloudDB.LOG_TAG, "UpdateDone: tag = " + tag + " operations = " + operation);
+    }
+    androidUIHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          EventDispatcher.dispatchEvent(CloudDB.this, "UpdateDone", tag, operation);
+        }
+      });
+  }
+
 
   /**
    * Asks `CloudDB` to retrieve all the tags belonging to this project. The
@@ -1111,7 +1111,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
    * @param tag the tag that has changed.
    * @param value the new value of the tag.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Event indicating that CloudDB data has changed for the given tag and value.")
   public void DataChanged(final String tag, final Object value) {
     Object tagValue = "";
     try {
@@ -1169,11 +1169,20 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   public Jedis getJedis(boolean createNew) {
-    Jedis jedis;
     if (dead) {                 // If we are dead, we are dead!
       return null;
     }
+    Jedis jedis;
     try {
+      String jToken;            // The token we actually send to CloudDB
+      // If the first character of the token is %, we toss it away
+      // it is used by MockCloudDB.java to determine if the token should
+      // be kept or fetched from the server when needed
+      if (token != null && !token.equals("") && token.substring(0, 1).equals("%")) {
+        jToken = token.substring(1);
+      } else {
+        jToken = token;
+      }
       if (DEBUG) {
         Log.d(LOG_TAG, "getJedis(true): Attempting a new connection (createNew = " +
           createNew + " redisServer = " + redisServer + " redisPort = " +
@@ -1184,20 +1193,18 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                                 // Root certificate because it isn't present in older
                                 // Android versions
         ensureSslSockFactory();
-        jedis = new Jedis(redisServer, redisPort, true, SslSockFactory, null, null);
+        JedisShardInfo jedisinfo = new JedisShardInfo(redisServer, redisPort,
+          20000 /* connection timeout */, true, SslSockFactory, null, null);
+        jedisinfo.setPassword(jToken);
+        jedis = new Jedis(jedisinfo);
       } else {
-        jedis = new Jedis(redisServer, redisPort, false);
+        JedisShardInfo jedisinfo = new JedisShardInfo(redisServer,
+          redisPort, 20000 /* connection timeout */);
+        jedisinfo.setPassword(jToken);
+        jedis = new Jedis(jedisinfo);
       }
       if (DEBUG) {
         Log.d(LOG_TAG, "getJedis(true): Have new connection.");
-      }
-      // If the first character of the token is %, we toss it away
-      // it is used by MockCloudDB.java to determine if the token should
-      // be kept or fetched from the server when needed
-      if (token.substring(0, 1).equals("%")) {
-        jedis.auth(token.substring(1));
-      } else {
-        jedis.auth(token);
       }
       if (DEBUG) {
         Log.d(LOG_TAG, "getJedis(true): Authentication complete.");

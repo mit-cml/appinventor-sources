@@ -181,6 +181,8 @@
   <dt id="CloudDB.TagList">TagList(<em class="list">value</em>)</dt>
   <dd>Event triggered when we have received the list of known tags. Run in response to a call to the
  <a href="#CloudDB.GetTagList"><code class="highlighter-rouge">GetTagList</code></a> function.</dd>
+  <dt id="CloudDB.UpdateDone">UpdateDone(<em class="text">tag</em>,<em class="text">operation</em>)</dt>
+  <dd>Indicates that operations that store data to CloudDB have completed.</dd>
 </dl>
 
 <h3 id="CloudDB-Methods">Methods</h3>
@@ -212,24 +214,64 @@
 <h2 id="File">File</h2>
 
 <p>Non-visible component for storing and retrieving files. Use this component to write or read files
- on the device. The default behavior is to write files to the private data directory associated
- with the app. The Companion writes files to <code class="highlighter-rouge">/sdcard/AppInventor/data</code> for easy debugging. If
- the file path starts with a slash (<code class="highlighter-rouge">/</code>), then the file is created relative to <code class="highlighter-rouge">/sdcard</code>.
- For example, writing a file to <code class="highlighter-rouge">/myFile.txt</code> will write the file in <code class="highlighter-rouge">/sdcard/myFile.txt</code>.</p>
+ on the device.</p>
+
+<p>The exact location where external files are placed is a function of the value of the
+ <a href="#File.Scope"><code class="highlighter-rouge">Scope</code></a> property, whether the app is running in the Companion or compiled,
+ and which version of Android the app is running on.</p>
+
+<p>Because newer versions of Android require files be stored in app-specific directories, the
+ <code class="highlighter-rouge">DefaultScope</code> is set to <code class="highlighter-rouge">App</code>. If you are using an older version of Android and need access to
+ the legacy public storage, change the <code class="highlighter-rouge">DefaultScope</code> property to <code class="highlighter-rouge">Legacy</code>. You can also change
+ the <code class="highlighter-rouge">Scope</code> using the blocks.</p>
+
+<p>Below we briefly describe each scope type:</p>
+
+<ul>
+  <li>App: Files will be read from and written to app-specific storage on Android 2.2 and
+higher. On earlier versions of Android, files will be written to legacy storage.</li>
+  <li>Asset: Files will be read from the app assets. It is an error to attempt to write to app
+assets as they are contained in read-only storage.</li>
+  <li>Cache: Files will be read from and written to the app’s cache directory. Cache is useful for
+temporary files that can be recreated as it allows the user to clear temporary files to get
+back storage space.</li>
+  <li>Legacy: Files will be read from and written to the file system using the App Inventor rules
+prior to release nb187. That is, file names starting with a single <code class="highlighter-rouge">/</code> will be read from and
+written to the root of the external storage directory, e.g., <code class="highlighter-rouge">/sdcard/</code>. Legacy functionality
+<strong><em>will not work</em></strong> on Android 11 or later.</li>
+  <li>Private: Files will be read from and written to the app’s private directory. Use this scope
+to store information that shouldn’t be visible to other applications, such as file
+management apps.</li>
+  <li>Shared: Files will be read from and written to the device’s shared media directories, such
+as <code class="highlighter-rouge">Pictures</code>.</li>
+</ul>
+
+<p>Note 1: In Legacy mode, file names can take one of three forms:</p>
+
+<ul>
+  <li>Private files have no leading <code class="highlighter-rouge">/</code> and are written to app private storage (e.g., “file.txt”)</li>
+  <li>External files have a single leading <code class="highlighter-rouge">/</code> and are written to public storage (e.g., “/file.txt”)</li>
+  <li>Bundled app assets have two leading <code class="highlighter-rouge">//</code> and can only be read (e.g., “//file.txt”)</li>
+</ul>
+
+<p>Note 2: In all scopes, a file name beginning with two slashes (<code class="highlighter-rouge">//</code>) will be interpreted as an
+ asset name.</p>
 
 <h3 id="File-Properties">Properties</h3>
 
 <dl class="properties">
-  <dt id="File.LegacyMode" class="boolean"><em>LegacyMode</em></dt>
-  <dd>Allows app to access files from the root of the external storage directory (legacy mode).
- Starting with Android 11, this will no longer be allowed and the behavior is strongly
- discouraged on Android 10. Starting with Android 10, App Inventor by default will attempt to
- store files relative to the app-specific private directory on external storage in accordance
- with this security change.
-
-    <p><strong>Note:</strong> Apps that enable this property will likely stop working after upgrading to
- Android 11, which strongly enforces that apps only write to app-private directories.</p>
-  </dd>
+  <dt id="File.DefaultScope" class="com google appinventor components common FileScopeEnum wo do"><em>DefaultScope</em></dt>
+  <dd>Specifies the default scope for files accessed using the File component. The App scope should
+ work for most apps. Legacy mode can be used for apps that predate the newer constraints in
+ Android on app file access.</dd>
+  <dt id="File.ReadPermission" class="boolean wo do"><em>ReadPermission</em></dt>
+  <dd>A designer-only property that can be used to enable read access to file storage outside of the
+ app-specific directories.</dd>
+  <dt id="File.Scope" class="com google appinventor components common FileScopeEnum bo"><em>Scope</em></dt>
+  <dd>Indicates the current scope for operations such as ReadFrom and SaveFile.</dd>
+  <dt id="File.WritePermission" class="boolean wo do"><em>WritePermission</em></dt>
+  <dd>A designer-only property that can be used to enable write access to file storage outside of the
+ app-specific directories.</dd>
 </dl>
 
 <h3 id="File-Events">Events</h3>
@@ -248,12 +290,28 @@
   <dd>Appends text to the end of a file. Creates the file if it does not already exist. See the help
  text under <a href="#File.SaveFile"><code class="highlighter-rouge">SaveFile</code></a> for information about where files are written.
  On success, the <a href="#File.AfterFileSaved"><code class="highlighter-rouge">AfterFileSaved</code></a> event will run.</dd>
+  <dt id="File.CopyFile" class="method returns boolean"><i></i> CopyFile(<em class="com google appinventor components common FileScopeEnum">fromScope</em>,<em class="text">fromFileName</em>,<em class="com google appinventor components common FileScopeEnum">toScope</em>,<em class="text">toFileName</em>)</dt>
+  <dd>Copy the contents from the first file to the second file.</dd>
   <dt id="File.Delete" class="method"><i></i> Delete(<em class="text">fileName</em>)</dt>
   <dd>Deletes a file from storage. Prefix the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">/</code> to delete a specific
  file in the SD card (for example, <code class="highlighter-rouge">/myFile.txt</code> will delete the file <code class="highlighter-rouge">/sdcard/myFile.txt</code>).
  If the <code class="text block highlighter-rouge">fileName</code> does not begin with a <code class="highlighter-rouge">/</code>, then the file located in the
  program’s private storage will be deleted. Starting the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">//</code> is
  an error because asset files cannot be deleted.</dd>
+  <dt id="File.Exists" class="method returns boolean"><i></i> Exists(<em class="com google appinventor components common FileScopeEnum">scope</em>,<em class="text">path</em>)</dt>
+  <dd>Tests whether the path exists in the given scope.</dd>
+  <dt id="File.IsDirectory" class="method returns boolean"><i></i> IsDirectory(<em class="com google appinventor components common FileScopeEnum">scope</em>,<em class="text">path</em>)</dt>
+  <dd>Tests whether the path named in the given scope is a directory.</dd>
+  <dt id="File.ListDirectory" class="method returns list"><i></i> ListDirectory(<em class="com google appinventor components common FileScopeEnum">scope</em>,<em class="text">directoryName</em>)</dt>
+  <dd>Get a list of files and directories in the given directory.</dd>
+  <dt id="File.MakeDirectory" class="method returns boolean"><i></i> MakeDirectory(<em class="com google appinventor components common FileScopeEnum">scope</em>,<em class="text">directoryName</em>)</dt>
+  <dd>Create a new directory for storing files. The semantics of this method are such that it will
+ return true if the directory exists at its completion. This can mean that the directory already
+ existed prior to the call.</dd>
+  <dt id="File.MakeFullPath" class="method returns text"><i></i> MakeFullPath(<em class="com google appinventor components common FileScopeEnum">scope</em>,<em class="text">path</em>)</dt>
+  <dd>Converts the scope and path into a single string for other components.</dd>
+  <dt id="File.MoveFile" class="method returns boolean"><i></i> MoveFile(<em class="com google appinventor components common FileScopeEnum">fromScope</em>,<em class="text">fromFileName</em>,<em class="com google appinventor components common FileScopeEnum">toScope</em>,<em class="text">toFileName</em>)</dt>
+  <dd>Move a file from one location to another.</dd>
   <dt id="File.ReadFrom" class="method"><i></i> ReadFrom(<em class="text">fileName</em>)</dt>
   <dd>Reads text from a file in storage. Prefix the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">/</code> to read from a
  specific file on the SD card (for example, <code class="highlighter-rouge">/myFile.txt</code> will read the file
@@ -261,6 +319,9 @@
  Companion) start the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">//</code> (two slashes). If a
  <code class="text block highlighter-rouge">fileName</code> does not start with a slash, it will be read from the application’s
  private storage (for packaged apps) and from <code class="highlighter-rouge">/sdcard/AppInventor/data</code> for the Companion.</dd>
+  <dt id="File.RemoveDirectory" class="method returns boolean"><i></i> RemoveDirectory(<em class="com google appinventor components common FileScopeEnum">scope</em>,<em class="text">directoryName</em>,<em class="boolean">recursive</em>)</dt>
+  <dd>Remove a directory from the file system. If recursive is true, then everything is removed. If
+ recursive is false, only the directory is removed and only if it is empty.</dd>
   <dt id="File.SaveFile" class="method"><i></i> SaveFile(<em class="text">text</em>,<em class="text">fileName</em>)</dt>
   <dd>Saves text to a file. If the <code class="text block highlighter-rouge">fileName</code> begins with a slash (<code class="highlighter-rouge">/</code>) the file is
  written to the sdcard (for example, writing to <code class="highlighter-rouge">/myFile.txt</code> will write the file to

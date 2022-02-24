@@ -490,7 +490,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     } else {
       try {
         container.$context().startActivityForResult(intent, requestCode);
-        String openAnim = container.$form().getOpenAnimType();
+        String openAnim = container.$form().OpenScreenAnimation();
         AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
       } catch (ActivityNotFoundException e) {
         form.dispatchErrorOccurredEvent(this, "StartActivity",

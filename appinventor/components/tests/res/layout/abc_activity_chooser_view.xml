@@ -17,7 +17,7 @@
 */
 -->
 <view xmlns:android="http://schemas.android.com/apk/res/android"
-    class="android.support.v7.internal.widget.ActivityChooserView$InnerLayout"
+    class="androidx.appcompat.widget.ActivityChooserView$InnerLayout"
     android:id="@+id/activity_chooser_view_content"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
@@ -31,16 +31,16 @@
         android:layout_gravity="center"
         android:focusable="true"
         android:addStatesFromChildren="true"
-        android:background="?attr/actionBarItemBackground">
+        android:background="?attr/actionBarItemBackground"
+        android:paddingTop="2dip"
+        android:paddingBottom="2dip"
+        android:paddingLeft="12dip"
+        android:paddingRight="12dip">
 
         <ImageView android:id="@+id/image"
             android:layout_width="32dip"
             android:layout_height="32dip"
             android:layout_gravity="center"
-            android:layout_marginTop="2dip"
-            android:layout_marginBottom="2dip"
-            android:layout_marginLeft="12dip"
-            android:layout_marginRight="12dip"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true" />
 
@@ -53,20 +53,20 @@
         android:layout_gravity="center"
         android:focusable="true"
         android:addStatesFromChildren="true"
-        android:background="?attr/actionBarItemBackground">
+        android:background="?attr/actionBarItemBackground"
+        android:paddingTop="2dip"
+        android:paddingBottom="2dip"
+        android:paddingLeft="12dip"
+        android:paddingRight="12dip">
 
-        <ImageView android:id="@+id/image"
+        <ImageView android:id="@id/image"
             android:layout_width="32dip"
             android:layout_height="32dip"
             android:layout_gravity="center"
-            android:layout_marginTop="2dip"
-            android:layout_marginBottom="2dip"
-            android:layout_marginLeft="12dip"
-            android:layout_marginRight="12dip"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true" />
 
     </FrameLayout>
 
 </view>
-<!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/lmp-mr1-supportlib-release/frameworks/support/v7/appcompat/res/layout/abc_activity_chooser_view.xml -->
+<!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/layout/abc_activity_chooser_view.xml -->

@@ -8,10 +8,12 @@ package com.google.appinventor.components.runtime;
 
 import android.Manifest;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -143,18 +145,21 @@ public final class WebViewer extends AndroidViewComponent {
    *
    * @param container  container the component will be placed in
    */
+  @androidx.annotation.RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
   public WebViewer(ComponentContainer container) {
     super(container);
 
     webview = new WebView(container.$context());
     resetWebViewClient();       // Set up the web view client
-    webview.getSettings().setJavaScriptEnabled(true);
+    final WebSettings settings = webview.getSettings();
+    settings.setJavaScriptEnabled(true);
+    settings.setAllowFileAccess(true);
     webview.setFocusable(true);
     // adds a way to send strings to the javascript
     wvInterface = new WebViewInterface();
     webview.addJavascriptInterface(wvInterface, "AppInventor");
     // enable pinch zooming and zoom controls
-    webview.getSettings().setBuiltInZoomControls(true);
+    settings.setBuiltInZoomControls(true);
 
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
       EclairUtil.setupWebViewGeoLoc(this, webview, container.$context());
