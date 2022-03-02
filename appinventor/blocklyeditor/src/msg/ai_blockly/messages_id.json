@@ -218,7 +218,7 @@
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL": "menggantikan semua",
     "Blockly.Msg.LANG_MATH_SINGLE_OP_EXP": "e^",
     "Blockly.Msg.LANG_MATH_SINGLE_OP_LN": "log",
-    "Blockly.Msg.LANG_MATH_SINGLE_OP_NEG": "neg",
+    "Blockly.Msg.LANG_MATH_SINGLE_OP_NEG": "negatif",
     "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK": "Keluar dari loop yang mengandung.",
     "Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK": "lanjutkan",
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT": "ganti semua teks %1 segmen %2 penggantian %3",
@@ -385,9 +385,9 @@
     "Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ROOT": "Mengembalikan akar kuadrat dari suatu angka.",
     "Blockly.Msg.LANG_MATH_SINGLE_OP_ABSOLUTE": "mutlak",
     "Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT": "akar pangkat 2",
-    "Blockly.Msg.LANG_MATH_BITWISE_XOR": "bitwise xor",
-    "Blockly.Msg.LANG_MATH_BITWISE_IOR": "bitwise or",
-    "Blockly.Msg.LANG_MATH_BITWISE_AND": "bitwise and",
+    "Blockly.Msg.LANG_MATH_BITWISE_XOR": "sedikit demi sedikit ekslusif atau",
+    "Blockly.Msg.LANG_MATH_BITWISE_IOR": "sedikit demi sedikit atau",
+    "Blockly.Msg.LANG_MATH_BITWISE_AND": "sedikit demi sedikit dan",
     "Blockly.Msg.LANG_MATH_ARITHMETIC_POWER": "^",
     "Blockly.Msg.LANG_MATH_ARITHMETIC_DIVIDE": "/",
     "Blockly.Msg.LANG_MATH_ARITHMETIC_MULTIPLY": "*",
@@ -716,5 +716,10 @@
     "Blockly.Msg.REPL_KEEP_TRYING": "Terus mencoba",
     "Blockly.Msg.REPL_GIVE_UP": "Menyerah",
     "Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME": "panggil tanpa kembali",
-    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE": "berjalan semua pada level"
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE": "berjalan semua pada level",
+    "Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TOOLTIP": " ",
+    "Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TOOLTIP": " ",
+    "Blockly.Msg.LANG_TEXT_JOIN_ITEM_TOOLTIP": " ",
+    "Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST": " ",
+    "Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TOOLTIP": " "
 }
