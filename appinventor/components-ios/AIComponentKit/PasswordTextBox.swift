@@ -6,6 +6,7 @@ import Foundation
 class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelegate {
   fileprivate let _field = UITextField(frame: CGRect.zero)
   private var _readOnly = false
+  private var _numbersOnly = false
   private weak var _base: TextBoxBase? = nil
 
   override init() {
@@ -40,6 +41,20 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
     }
   }
 
+  @objc var numbersOnly: Bool {
+    get {
+      return _numbersOnly
+    }
+    set(acceptsNumbersOnly) {
+      if acceptsNumbersOnly != _numbersOnly {
+        _numbersOnly = acceptsNumbersOnly
+        let keyboardType: UIKeyboardType = acceptsNumbersOnly ? .decimalPad : .default
+        _field.keyboardType = keyboardType
+        _field.reloadInputViews()
+      }
+    }
+  }
+  
   open var textColor: UIColor? {
     get {
       return _field.textColor
@@ -94,8 +109,18 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
     guard !_readOnly else {
       return false
     }
-    if let range = Range(range, in: textField.text ?? "") {
-      textField.text?.replaceSubrange(range, with: string)
+   
+    if _numbersOnly {
+      let decimalSeparator = Locale.current.decimalSeparator ?? "."
+      let escapedDecimalSeparator = decimalSeparator == "." ? "\\." : ","
+      var copyOfText = String(textField.text ?? "")
+      copyOfText = copyOfText.replacingCharacters(in: Range(range, in: copyOfText)!, with: string)
+      let express = try! NSRegularExpression(pattern: "^[-+]?([0-9]*\(escapedDecimalSeparator))?[0-9]*$", options: [])
+      return express.numberOfMatches(in: copyOfText, options: [], range: NSRange(0..<copyOfText.count)) == 1
+    } else {
+      if let range = Range(range, in: textField.text ?? "") {
+        textField.text?.replaceSubrange(range,with: string)
+      }
     }
     return false
   }
@@ -129,6 +154,16 @@ open class PasswordTextBox: TextBoxBase {
     _adapter.setTextbase(self)
   }
 
+  // MARK: PasswordTextBox Properties
+  @objc open var NumbersOnly: Bool {
+    get {
+      return _adapter.numbersOnly
+    }
+    set(acceptsNumbersOnly) {
+      _adapter.numbersOnly = acceptsNumbersOnly
+    }
+  }
+
   @objc open var PasswordVisible: Bool = false {
     didSet {
       _adapter.togggleVisible(PasswordVisible)
@@ -136,4 +171,6 @@ open class PasswordTextBox: TextBoxBase {
       FontTypeface = FontTypeface + 0
     }
   }
+  
+  
 }

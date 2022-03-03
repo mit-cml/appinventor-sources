@@ -255,7 +255,6 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
 
 open class TextBox: TextBoxBase {
   fileprivate let _adapter = TextBoxAdapter()
-  fileprivate var _acceptsNumbersOnly = false
   fileprivate var _colorSet = false
   fileprivate var _empty = true
 
