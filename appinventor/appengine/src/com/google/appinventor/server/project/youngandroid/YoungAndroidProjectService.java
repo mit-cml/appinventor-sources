@@ -879,6 +879,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
 
   private String verifyProjectName(String userId, String projectName) {
+    projectName = projectName.replace(" ", "_");
     int count = 0;
     List<Long> projectIds = storageIo.getProjects(userId);
     List<UserProject> projects = storageIo.getUserProjects(userId, projectIds);
