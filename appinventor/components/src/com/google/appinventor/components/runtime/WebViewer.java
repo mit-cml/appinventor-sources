@@ -115,7 +115,14 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 // TODO(halabelson): Integrate control of the Back key, when we provide it
 
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions(permissionNames = "android.permission.INTERNET" 
+                  + "android.permission.ACCESS_GPS" 
+                  + "android.permission.ACCESS_ASSISTED_GPS" 
+                  + "android.permission.ACCESS_FINE_LOCATION," 
+                  + "android.permission.ACCESS_COARSE_LOCATION," 
+                  + "android.permission.ACCESS_MOCK_LOCATION," 
+                  + "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS")
+
 public final class WebViewer extends AndroidViewComponent {
 
   private final WebView webview;
@@ -140,6 +147,11 @@ public final class WebViewer extends AndroidViewComponent {
   // Flag to mark whether we have received permission to read external storage
   private boolean havePermission = false;
 
+  // Flag to check whether app needs location permission
+  private boolean usesLocation = false;
+
+  public ComponentContainer container;
+
   /**
    * Creates a new WebViewer component.
    *
@@ -148,7 +160,7 @@ public final class WebViewer extends AndroidViewComponent {
   @androidx.annotation.RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
   public WebViewer(ComponentContainer container) {
     super(container);
-
+    this.container = container;
     webview = new WebView(container.$context());
     resetWebViewClient();       // Set up the web view client
     final WebSettings settings = webview.getSettings();
@@ -483,6 +495,18 @@ public final class WebViewer extends AndroidViewComponent {
           "This property is available only in the designer.")
   public void UsesLocation(boolean uses) {
     // We don't actually do anything here (the work is in the MockWebViewer)
+    this.usesLocation = uses;
+  }
+
+  /**
+   * Determine if the app uses location permissions.
+   * @return true if uses location
+   */
+  @SimpleProperty(userVisible = false,
+      description = "Whether or not to give the application permission to use the Javascript "
+          + "geolocation API. This property is available only in the designer.")
+  public boolean UsesLocation() {
+    return usesLocation;
   }
 
   /**
