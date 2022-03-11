@@ -115,13 +115,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 // TODO(halabelson): Integrate control of the Back key, when we provide it
 
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET" 
-                  + "android.permission.ACCESS_GPS" 
-                  + "android.permission.ACCESS_ASSISTED_GPS" 
-                  + "android.permission.ACCESS_FINE_LOCATION," 
-                  + "android.permission.ACCESS_COARSE_LOCATION," 
-                  + "android.permission.ACCESS_MOCK_LOCATION," 
-                  + "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS")
+@UsesPermissions(permissionNames = "android.permission.INTERNET," 
+                  + "android.permission.ACCESS_FINE_LOCATION")
 
 public final class WebViewer extends AndroidViewComponent {
 
