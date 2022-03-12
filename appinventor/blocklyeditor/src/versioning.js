@@ -3252,6 +3252,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: ApiKey property added
     2: "noUpgrade"
 
-  } // End YandexTranslate upgraders
+  }, // End YandexTranslate upgraders
+
+  "Translate": {
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+  } // End Translate upgraders
 
 };

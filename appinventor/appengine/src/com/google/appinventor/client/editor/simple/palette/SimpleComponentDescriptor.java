@@ -47,6 +47,7 @@ import com.google.appinventor.client.editor.simple.components.MockSpinner;
 import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
 import com.google.appinventor.client.editor.simple.components.MockTextBox;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
+import com.google.appinventor.client.editor.simple.components.MockTranslate;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
@@ -158,6 +159,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/sharing.png", images.sharingComponent());
     bundledImages.put("images/spinner.png", images.spinner());
     bundledImages.put("images/listView.png", images.listview());
+    bundledImages.put("images/translate.png", images.translate());
     bundledImages.put("images/yandex.png", images.yandex());
     bundledImages.put("images/proximitysensor.png", images.proximitysensor());
     bundledImages.put("images/extension.png", images.extension());
@@ -412,6 +414,10 @@ public final class SimpleComponentDescriptor {
             null, editor.getProjectId()));
       } else if(name.equals(MockFusionTablesControl.TYPE)) {
         return new MockFusionTablesControl(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if(name.equals(MockTranslate.TYPE)) {
+        return new MockTranslate(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
             null, editor.getProjectId()));
       } else {

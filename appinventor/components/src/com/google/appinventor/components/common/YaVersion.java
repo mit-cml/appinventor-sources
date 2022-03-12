@@ -551,7 +551,9 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 214:
   // - FILE_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 213;
+  // For YOUNG_ANDROID_VERSION 215:
+  // Added Translate
+  public static final int YOUNG_ANDROID_VERSION = 215;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1486,6 +1488,9 @@ public class YaVersion {
 
   //For MAGNETICFIELDSENSOR_COMPONENT_VERSION: Initial Version
   public static final int MAGNETICFIELDSENSOR_COMPONENT_VERSION = 1;
+
+  //For TRANSLATE_COMPONENT_VERSION: Initial Version
+  public static final int TRANSLATE_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";
