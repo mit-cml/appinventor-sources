@@ -638,6 +638,12 @@ public interface Images extends Resources {
   ImageResource spinner();
 
   /**
+   * Designer palette item: Translator Component
+   */
+  @Source("com/google/appinventor/images/translator.png")
+  ImageResource translator();
+
+  /**
     * Designer palette item: YandexTranslate
     */
   @Source("com/google/appinventor/images/yandex.png")
