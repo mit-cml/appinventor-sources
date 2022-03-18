@@ -735,7 +735,7 @@ Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(tok
   var reg = new RegExp('^-?[0-9]\\d*(\.\\d+)?$', 'g');
   var match = reg.exec(token);
   if (match && match.length > 0){
-    matches.push(token);
+    goog.array.insertAt(matches, token, 0);
   }
 
   // Added code to handle default values for text fields (they start with " or ')
