@@ -375,9 +375,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * Shows or hides an icon indicating the user's current location on the {@link Map}. The
-   * availability and accuracy of this feature will depend on whether the user has location
-   * services enabled and which location providers are available.
+   * Specifies whether to show zoom controls or not.
    *
    * @param zoom True if the controls should be shown, otherwise false.
    */
