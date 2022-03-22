@@ -166,7 +166,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
                 new FileReader(pathToTemplatesDir + "/" + templateName + "/" + templateName + ".json"));
               json += in.readLine() +  ", ";
             } catch (IOException e) {
-              LOG.log(Level.SEVERE, "I/O Exception reading template json file", e);
+              LOG.log(Level.SEVERE, "I/O Exception reading template json file: " + templateName, e);
               throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), null,
                 new IllegalArgumentException("Cannot Read Internal Project Template"));
             }

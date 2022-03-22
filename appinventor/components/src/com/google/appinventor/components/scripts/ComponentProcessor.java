@@ -423,11 +423,16 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       } else {
         // Throw out the first @ or { and everything after it,
         // in order to strip out @param, @author, {@link ...}, etc.
-        this.description = description.split("[@{]")[0].trim();
+        this.description = description.split("@|\\{@")[0].trim();
+        this.description = removeMarkup(this.description);
         defaultDescription = false;
       }
     }
-
+    private String removeMarkup(String str) {
+      String result = str.replaceAll("\\\\(.)", "$1");
+      result = result.replaceAll("\\[([a-zA-Z0-9]*)\\]\\(#.*\\)", "$1");
+      return result;
+    }
     public void setLongDescription(String longDescription) {
       if (longDescription == null || longDescription.isEmpty()) {
         this.longDescription = this.description;

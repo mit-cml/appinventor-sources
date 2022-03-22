@@ -13,7 +13,7 @@ jobs:
         with:
           java-version: 8
       - name: 'Checkout submodules'
-        uses: textbook/git-checkout-submodule-action@master
+        run: git submodule update --init --recursive
       - name: 'Install 32-bit dependencies'
         run: sudo apt-get install -y libc6-i386 lib32z1 lib32stdc++6
       - name: 'Make Auth Key'
