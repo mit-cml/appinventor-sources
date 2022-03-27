@@ -21,6 +21,9 @@ message token {
                                               // SSOLOGIN does not require an name (email) and will never
                                               // create an account
     NOOP = 20;
+    DELETEACCOUNT = 21;                       // Delete the account identified by uuid and name
+                                              // Note: Purposely using a high number as this is an
+                                              // infrequent event
   }
 
   required CommandType command = 1;
