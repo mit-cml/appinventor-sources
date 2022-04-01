@@ -150,6 +150,12 @@ public final class ProjectManager {
     fireProjectTrashed(project);
   }
 
+  public void moveProject(long projectId) {
+    Project project = projectsMap.get(projectId);
+    fireProjectMoved(project);
+    Ode.getInstance().getFolderManager().saveAllFolders();
+  }
+
   /**
    * Adds a {@link ProjectManagerEventListener} to the listener list.
    *
@@ -203,6 +209,13 @@ public final class ProjectManager {
   private void fireProjectDeleted(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onProjectDeleted(project);
+    }
+  }
+
+  private void fireProjectMoved(Project project) {
+    projectsLoaded = true;
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+      listener.onProjectMoved(project);
     }
   }
 

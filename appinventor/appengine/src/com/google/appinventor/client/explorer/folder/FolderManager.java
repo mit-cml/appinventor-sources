@@ -52,7 +52,8 @@ public final class FolderManager {
     }
 
     JSONObject folderJSON = JSONParser.parse(foldersAsString).isObject();
-    if (folderJSON.get(FolderJSONKeys.PROJECTS).isArray().size()==0) {
+    if (folderJSON.get(FolderJSONKeys.PROJECTS).isArray().size()==0 &&
+            folderJSON.get(FolderJSONKeys.CHILD_FOLDERS).isArray().size()==0) {
       OdeLog.log("Global folder is empty");
       initializeFolders();
       fireFoldersLoaded();

@@ -165,6 +165,9 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
     Ode.getInstance().getFolderManager().saveAllFolders();
     refresh();
   }
+  public void onProjectMoved(Project project) {
+    refresh();
+  }
 
   @Override
   public void onProjectDeleted(Project project) {

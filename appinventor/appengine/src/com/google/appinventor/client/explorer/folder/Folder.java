@@ -58,7 +58,9 @@ public final class Folder {
     JSONArray projectsJSON = json.get(FolderJSONKeys.PROJECTS).isArray();
     for (int i = 0; i < projectsJSON.size(); i++) {
       long projectId = Long.parseLong(projectsJSON.get(i).isString().stringValue());
-      addProject(Ode.getInstance().getProjectManager().getProject(projectId));
+      Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+      addProject(project);
+      project.setHomeFolder(this);
     }
 
     JSONArray childFoldersJSON = json.get(FolderJSONKeys.CHILD_FOLDERS).isArray();

@@ -50,6 +50,15 @@ public interface ProjectManagerEventListener {
    */
   void onProjectDeleted(Project project);
 
+
+  /**
+   * Invoked after a is moved to a new Folder
+   *
+   * @param project  project moved
+   */
+  void onProjectMoved(Project project);
+
+
   /**
    * Invoked after all projects have been loaded by ProjectManager
    *

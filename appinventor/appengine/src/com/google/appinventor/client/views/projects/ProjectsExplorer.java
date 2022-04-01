@@ -2,6 +2,7 @@ package com.google.appinventor.client.views.projects;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.components.FolderTreeItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -18,10 +19,10 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.components.Button;
-import com.google.appinventor.client.components.Dialog;
 import com.google.appinventor.client.components.Dropdown;
 import com.google.appinventor.client.components.DropdownItem;
 import com.google.appinventor.client.explorer.commands.AddFolderCommand;
+import com.google.appinventor.client.wizards.MoveProjectsWizard;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
@@ -40,13 +41,11 @@ import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
-import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectsExplorer extends Composite {
@@ -241,6 +240,18 @@ public class ProjectsExplorer extends Composite {
       // }
       projectsList.setSelected(false);
     }
+  }
+
+  @UiHandler("moveButton")
+  void moveSelectedProjects(ClickEvent e) {
+      new MoveProjectsWizard("Test Title").execute(new MoveProjectsWizard.MoveProjectsCallback() {
+        @Override
+        public void onSuccess(Folder destination) {
+          for (Project project : projectsList.getSelectedProjects()) {
+            project.moveToFolder(destination);
+          }
+        }
+      });
   }
 
   @UiHandler("restoreButton")
