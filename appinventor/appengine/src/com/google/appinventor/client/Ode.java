@@ -1545,6 +1545,9 @@ public class Ode implements EntryPoint {
         public void run() {
         }
       }, true);                 // Wait for i/o!!!
+
+    doCloseProxy();
+
   }
 
   /**
@@ -2570,6 +2573,12 @@ public class Ode implements EntryPoint {
 
   public static native void CLog(String message) /*-{
     console.log(message);
+  }-*/;
+
+  private static native void doCloseProxy() /*-{
+    if (top.proxy) {
+      top.proxy.close();
+    }
   }-*/;
 
 }
