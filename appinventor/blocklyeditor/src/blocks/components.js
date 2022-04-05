@@ -239,6 +239,13 @@ Blockly.Blocks.component_event = {
       container.setAttribute('vertical_parameters', "true"); // Only store an element for vertical
                                                              // The absence of this attribute means horizontal.
     }
+
+    for (var i = 0; i < this.parameterNames.length; i++) {
+      var parameter = document.createElement('param');
+      parameter.setAttribute('name', this.parameterNames[i]);
+      container.appendChild(parameter);
+    }
+
     return container;
   },
 
@@ -267,6 +274,16 @@ Blockly.Blocks.component_event = {
       this.instanceName = xmlElement.getAttribute('instance_name');//instance name not needed
     } else {
       delete this.instanceName;
+    }
+
+    this.parameterNames = [];
+    var paramElements = xmlElement.getElementsByTagName('param');
+    if (paramElements) {
+      for (var i = 0; i < paramElements.length; i++) {
+        var paramElement = paramElements[i];
+        var paramName = paramElement.getAttribute('name');
+        this.parameterNames.push(paramName);
+      }
     }
 
     // Orient parameters horizontally by default
@@ -315,7 +332,7 @@ Blockly.Blocks.component_event = {
     }
 
     // Set as badBlock if it doesn't exist.
-    this.verify(); 
+    this.verify();
     // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, eventType);
 
@@ -405,7 +422,17 @@ Blockly.Blocks.component_event = {
   },
   // Return a list of parameter names
   getParameters: function () {
-    /** @type {EventDescriptor} */
+   /** @type {EventDescriptor} */
+   var defaultParameters = this.getDefaultParameters_();
+   var explicitParameterNames = this.getExplicitParameterNames_();
+   var params = [];
+   for (var i = 0; i < defaultParameters.length; i++) {
+     var paramName = explicitParameterNames[i] || defaultParameters[i].name;
+     params.push({name: paramName, type: defaultParameters[i].type});
+   }
+   return params;
+  },
+  getDefaultParameters_: function () {
     var eventType = this.getEventTypeObject();
     if (this.isGeneric) {
       return [
@@ -414,6 +441,9 @@ Blockly.Blocks.component_event = {
         ].concat((eventType && eventType.parameters) || []);
     }
     return eventType && eventType.parameters;
+  },
+  getExplicitParameterNames_: function () {
+    return this.parameterNames;
   },
   // Renames the block's instanceName and type (set in BlocklyBlock constructor), and revises its title
   rename : function(oldname, newname) {
@@ -571,18 +601,6 @@ Blockly.Blocks.component_event = {
       }
       if (varList.length != params.length) {
         return false; // parameters have changed
-      }
-      for (var x = 0; x < varList.length; ++x) {
-        var found = false;
-        for (var i = 0, param; param = params[i]; ++i) {
-          if (componentDb.getInternationalizedParameterName(param.name) == varList[x]) {
-            found = true;
-            break;
-          }
-        }
-        if (!found)  {
-          return false; // parameter name changed
-        }
       }
       // No need to check event return type, events do not return.
       return true; // passed all our tests! block is defined!
@@ -788,7 +806,7 @@ Blockly.Blocks.component_method = {
       {name:"checkComponentNotExistsError"}, {name: "checkGenericComponentSocket"}];
 
     // Set as badBlock if it doesn't exist.
-    this.verify(); 
+    this.verify();
     // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, this.getMethodTypeObject());
 
@@ -1185,7 +1203,7 @@ Blockly.Blocks.component_set_get = {
       {name: 'checkEmptySetterSocket'}];
 
     // Set as badBlock if it doesn't exist.
-    this.verify(); 
+    this.verify();
     // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, this.propertyObject);
 
