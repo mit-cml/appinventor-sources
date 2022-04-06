@@ -1,0 +1,14 @@
+<!-- BuildOptions.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ai:Dropdown ui:field="dropdown">
+    <g:FlowPanel>
+      <ai:DropdownItem ui:field="apkDropdownItem" text='Build APK' />
+      <ai:DropdownItem ui:field="aabDropdownItem" text='Build AAB' />
+    </g:FlowPanel>
+  </ai:Dropdown>
+</ui:UiBinder>

@@ -67,6 +67,14 @@ body {
 }
 
 /*
+ * Module switcher root panel
+ */
+.ode-ModuleControllerRoot {
+  height: 100vh;
+  width: 100vw;
+}
+
+/*
  * Context menus
  */
 
@@ -2748,4 +2756,8 @@ div.dropdiv p {
     top: 40px;
     left: 50%;
     display: block;
+}
+
+.listItem:nth-child(2n + 0) {
+  background: rgba(200, 200, 200, 0.1);
 }

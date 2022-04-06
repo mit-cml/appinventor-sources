@@ -29,6 +29,9 @@ public class SettingsConstants {
   public static final String USER_LAST_LOCALE = "LastLocale";
   public static final String USER_DYSLEXIC_FONT = "DyslexicFont";
   public static final String USER_AUTOLOAD_PROJECT = "AutoloadLastProject";
+  public static final String USER_NEW_LAYOUT = "NewLayout";
+  public static final String DARK_THEME_ENABLED = "DarkThemeEnabled";
+  public static final String FOLDERS = "Folders";
 
   public static final String SPLASH_SETTINGS = "SplashSettings";
 

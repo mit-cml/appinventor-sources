@@ -1,0 +1,19 @@
+<!-- TitleBar.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <ui:with field="images" type="com.google.appinventor.client.Images" />
+  <ui:with field="style" />
+  <g:FlowPanel styleName="{style.container}">
+    <g:Image url="/static/images/codi_long.png" styleName="{style.logo}" />
+    <ai:Button text='Help' type="INLINE" />
+    <ai:Button text='Settings' type="INLINE" />
+    <ai:DropdownButton text='Admin' type="INLINE" />
+    <ai:DropdownButton icon='language' type="INLINE" />
+    <ai:DropdownButton text='email@email.com' type="INLINE" />
+  </g:FlowPanel>
+</ui:UiBinder>

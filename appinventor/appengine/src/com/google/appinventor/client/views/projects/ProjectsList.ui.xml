@@ -1,0 +1,30 @@
+<!-- ProjectsList.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             xmlns:aiv="urn:import:com.google.appinventor.client.views.projects"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <ui:with field="style" />
+  <g:FlowPanel ui:field='container' styleName='{style.container}'>
+    <g:FlowPanel ui:field='header' styleName='{style.sticky}'>
+      <g:FlowPanel styleName='{style.listHeader}'>
+        <g:CheckBox ui:field='checkBox' styleName='{style.selection}'/>
+        <g:FlowPanel styleName='{style.headerItem}'>
+          <g:Label text='Project name' styleName='{style.headerItemText}' />
+          <ai:Icon icon='arrow_downward' styleName='{style.sortIndicator}' />
+        </g:FlowPanel>
+        <g:FlowPanel styleName='{style.headerItem}'>
+          <g:Label text='Date modified' styleName='{style.headerItemText}' />
+          <!-- <ai:Icon icon='arrow_downward' styleName='{style.sortIndicator}' /> -->
+        </g:FlowPanel>
+        <g:FlowPanel styleName='{style.headerItem}'>
+          <g:Label text='Date created' styleName='{style.headerItemText}' />
+          <!-- <ai:Icon icon='arrow_downward' styleName='{style.sortIndicator}' /> -->
+        </g:FlowPanel>
+      </g:FlowPanel>
+    </g:FlowPanel>
+  </g:FlowPanel>
+</ui:UiBinder>

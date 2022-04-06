@@ -1,0 +1,21 @@
+<!-- AddFolderCommand.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="style" />
+  <ai:Dialog ui:field="addDialog" caption="Create folder">
+    <g:FlowPanel>
+      <g:Label styleName="{style.text}" text="Folder name" />
+      <g:TextBox ui:field='input' styleName="{style.input}" />
+      <g:Label styleName="{style.text}" text="Create folder in" />
+      <g:Tree ui:field='tree' styleName="{style.tree}" />
+      <g:FlowPanel styleName="{style.actions}">
+        <ai:Button ui:field='cancelButton' icon="close" text='Cancel' type="INLINE" groupPosition='LEFT' />
+        <ai:Button ui:field='addButton' icon="check" text='Create' type="INLINE" groupPosition='RIGHT' />
+      </g:FlowPanel>
+    </g:FlowPanel>
+  </ai:Dialog>
+</ui:UiBinder>

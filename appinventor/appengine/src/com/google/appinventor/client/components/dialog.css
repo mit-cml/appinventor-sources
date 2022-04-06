@@ -1,0 +1,30 @@
+@external Caption;
+
+.dialog {
+  border-radius: 10px;
+  z-index: 1000;
+  background-color: #FFF;
+  width: 400px;
+  box-shadow: 4px 4px 20px 7px rgba(0, 0, 0, 0.1);
+  overflow: hidden !important;
+}
+
+.dialog table {
+  width: 100%;
+}
+
+.dialog .Caption {
+  padding: 10px 20px;
+  text-align: center;
+  border-bottom: 1px solid #DDD;
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-family: 'Poppins';
+  font-weight: 500;
+}
+
+@if (com.google.appinventor.client.Ode.isMobile()) {
+  .dialog {
+    width: 80vw;
+  }
+}

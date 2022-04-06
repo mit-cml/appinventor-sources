@@ -1,0 +1,15 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr repeat(6, auto);
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 2px solid c-border-light;
+  border-radius: 0 0 l-border-radius-md l-border-radius-md;
+  grid-gap: 5px;
+  overflow: hidden;
+}
+
+.logo {
+  height: 40px;
+  width: auto;
+}

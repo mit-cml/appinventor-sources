@@ -1,0 +1,39 @@
+@external listItem;
+
+.listItem {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  height: 35px;
+  grid-gap: 10px;
+  padding: 0 20px;
+  background: c-background;
+}
+
+.selected {
+  background: c-highlight !important;
+}
+
+.field {
+  font-family: f-h4;
+  font-weight: 400;
+  font-size: 1.1em;
+  color: c-text;
+  min-width: 200px;
+}
+
+.projectName {
+  white-space: nowrap;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.selection {
+  padding-right: 10px;
+}
+
+@if (com.google.appinventor.client.Ode.isMobile()) {
+  .listItem {
+    height: 44px;
+  }
+}
