@@ -602,6 +602,20 @@ Blockly.Blocks.component_event = {
       if (varList.length != params.length) {
         return false; // parameters have changed
       }
+      if ("true" === componentType.external) {
+        for (var x = 0; x < varList.length; ++x) {
+          var found = false;
+          for (var i = 0, param; param = params[i]; ++i) {
+            if (componentDb.getInternationalizedParameterName(param.name) == varList[x]) {
+              found = true;
+              break;
+            }
+          }
+          if (!found)  {
+            return false; // parameter name changed
+          }
+        }
+      }
       // No need to check event return type, events do not return.
       return true; // passed all our tests! block is defined!
     };
