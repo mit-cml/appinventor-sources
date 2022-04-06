@@ -240,10 +240,11 @@ Blockly.Blocks.component_event = {
                                                              // The absence of this attribute means horizontal.
     }
 
+    // Note that this.parameterNames only contains parameter names that have
+    // overridden the default event parameter names specified in the component
+    // DB
     for (var i = 0; i < this.parameterNames.length; i++) {
-      var parameter = document.createElement('param');
-      parameter.setAttribute('name', this.parameterNames[i]);
-      container.appendChild(parameter);
+      container.setAttribute('param_name' + i, this.parameterNames[i]);
     }
 
     return container;
@@ -276,14 +277,18 @@ Blockly.Blocks.component_event = {
       delete this.instanceName;
     }
 
+    // this.parameterNames will be set to a list of names that will override the
+    // default names specified in the component DB. Note that some parameter
+    // names may be overridden while others may remain their defaults
     this.parameterNames = [];
-    var paramElements = xmlElement.getElementsByTagName('param');
-    if (paramElements) {
-      for (var i = 0; i < paramElements.length; i++) {
-        var paramElement = paramElements[i];
-        var paramName = paramElement.getAttribute('name');
-        this.parameterNames.push(paramName);
-      }
+    var numParams = this.getDefaultParameters_().length
+    for (var i = 0; i < numParams; i++) {
+      var paramName = xmlElement.getAttribute('param_name' + i);
+      // For now, we only allow explicit parameter names starting at the beginning
+      // of the parameter list.  Some day we may allow an arbitrary subset of the
+      // event params to be explicitly specified.
+      if (!paramName) break;
+      this.parameterNames.push(paramName);
     }
 
     // Orient parameters horizontally by default
