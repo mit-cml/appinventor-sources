@@ -2,8 +2,7 @@
 @external listItem;
 
 .folderContainer {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   width: 100%;
 }
 
@@ -45,7 +44,7 @@
 }
 
 .childrenContainerExpanded {
-  display: flex;
+  display: grid;
 }
 
 .selection {
