@@ -247,9 +247,8 @@ public class ProjectsExplorer extends Composite {
       new MoveProjectsWizard("Test Title").execute(new MoveProjectsWizard.MoveProjectsCallback() {
         @Override
         public void onSuccess(Folder destination) {
-          for (Project project : projectsList.getSelectedProjects()) {
-            project.moveToFolder(destination);
-          }
+          Ode.getInstance().getFolderManager().moveProjectsToFolder(projectsList.getSelectedProjects(),
+              destination);
         }
       });
   }

@@ -9,6 +9,7 @@ package com.google.appinventor.client.explorer.project;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
@@ -67,16 +68,26 @@ public final class ProjectManager {
         projects.add(project);
       }
     }
-
     return projects;
   }
 
-  /**
-   * Returns the project that belongs to a project node.
-   *
-   * @param node the project node for which we want to retrieve the project
-   * @return the project of the node
-   */
+  public List<Project> getProjectsWithoutFolder()
+  {
+    List<Project> projects = new ArrayList<Project>();
+    for (Project project : projectsMap.values()) {
+      if (project.getHomeFolder() == null) {
+        projects.add(project);
+      }
+    }
+    return projects;
+  }
+
+    /**
+     * Returns the project that belongs to a project node.
+     *
+     * @param node the project node for which we want to retrieve the project
+     * @return the project of the node
+     */
   public Project getProject(ProjectNode node) {
     return projectsMap.get(node.getProjectId());
   }
@@ -150,12 +161,6 @@ public final class ProjectManager {
     fireProjectTrashed(project);
   }
 
-  public void moveProject(long projectId) {
-    Project project = projectsMap.get(projectId);
-    fireProjectMoved(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-  }
-
   /**
    * Adds a {@link ProjectManagerEventListener} to the listener list.
    *
@@ -209,13 +214,6 @@ public final class ProjectManager {
   private void fireProjectDeleted(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onProjectDeleted(project);
-    }
-  }
-
-  private void fireProjectMoved(Project project) {
-    projectsLoaded = true;
-    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
-      listener.onProjectMoved(project);
     }
   }
 

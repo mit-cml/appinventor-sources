@@ -449,11 +449,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   @Override
-  public void onProjectMoved(Project project) {
-//    refreshTable(true);
-  }
-
-  @Override
   public void onProjectsLoaded() {
     projectListLoading = false;
     refreshTable(true);

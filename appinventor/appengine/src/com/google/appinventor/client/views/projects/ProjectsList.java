@@ -130,6 +130,11 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
   }
 
   @Override
+  public void onFoldersChanged() {
+    refresh();
+  }
+
+  @Override
   public void onFoldersLoaded() {
     setIsTrash(isTrash);
   }
@@ -137,10 +142,11 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
   @Override
   public void onProjectAdded(Project project) {
     OdeLog.log("On project added " + project.getProjectName() + " projectsLoaded=" + projectsLoaded);
-    OdeLog.log("Folder is: ");
-    OdeLog.log(folder.getName());
     if (folder == null) {
       OdeLog.log("Folder is null ");
+    } else {
+      OdeLog.log("Folder is: ");
+      OdeLog.log(folder.getName());
     }
 
     if (projectsLoaded) {
@@ -165,6 +171,7 @@ public class ProjectsList extends ProjectsFolder implements FolderManagerEventLi
     Ode.getInstance().getFolderManager().saveAllFolders();
     refresh();
   }
+
   public void onProjectMoved(Project project) {
     refresh();
   }

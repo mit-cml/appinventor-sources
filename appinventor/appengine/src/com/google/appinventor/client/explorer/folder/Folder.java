@@ -59,18 +59,26 @@ public final class Folder {
     for (int i = 0; i < projectsJSON.size(); i++) {
       long projectId = Long.parseLong(projectsJSON.get(i).isString().stringValue());
       Project project = Ode.getInstance().getProjectManager().getProject(projectId);
-      addProject(project);
-      project.setHomeFolder(this);
+      // If users switch back and forth between old and new explorer, the projects
+      // may have changed
+      if (project != null)
+      {
+        addProject(project);
+      }
     }
 
     JSONArray childFoldersJSON = json.get(FolderJSONKeys.CHILD_FOLDERS).isArray();
     for (int i = 0; i < childFoldersJSON.size(); i++) {
       addChildFolder(new Folder(childFoldersJSON.get(i).isObject(), this));
     }
-    cachedJSON = json;
+    cachedJSON = null;
   }
 
   public void addProject(Project project) {
+    if (project.getHomeFolder() != null) {
+      project.getHomeFolder().removeProject(project);
+    }
+    project.setHomeFolder(this);
     projects.add(project);
     cachedJSON = null;
   }

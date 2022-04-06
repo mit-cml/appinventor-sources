@@ -10,6 +10,7 @@ public interface FolderManagerEventListener {
   void onFolderAdded(Folder folder);
   void onFolderRemoved(Folder folder);
   void onFolderRenamed(Folder folder);
+  void onFoldersChanged();
   void onFoldersLoaded();
 
 }

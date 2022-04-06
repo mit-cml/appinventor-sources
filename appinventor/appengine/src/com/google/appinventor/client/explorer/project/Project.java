@@ -38,7 +38,7 @@ public final class Project {
   // Project specific settings
   private ProjectSettings settings; // lazily and asynchronously initialized
 
-  private Folder homeFolder;
+  private Folder homeFolder = null;
 
   /**
    * Creates a new project.
@@ -242,17 +242,6 @@ public final class Project {
             }
           }
         });
-  }
-
-  public void moveToFolder(Folder destination) {
-    Tracking.trackEvent(Tracking.PROJECT_EVENT,
-        Tracking.PROJECT_ACTION_MOVE_TO_FOLDER_PROJECT_YA, getProjectName());
-    if (homeFolder != null) {
-      homeFolder.removeProject(this);
-    }
-    destination.addProject(this);
-    homeFolder = destination;
-    Ode.getInstance().getProjectManager().moveProject(getProjectId());
   }
 
   public void restoreFromTrash() {

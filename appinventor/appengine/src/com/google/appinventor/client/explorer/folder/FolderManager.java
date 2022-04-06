@@ -7,6 +7,7 @@ package com.google.appinventor.client.explorer.folder;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -38,13 +39,15 @@ public final class FolderManager {
     OdeLog.log("Created new folder manager");
   }
 
-  public void loadFolders() {
+  public void loadFolders()
+  {
     String foldersAsString = Ode.getUserSettings()
         .getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
         .getPropertyValue(SettingsConstants.FOLDERS);
     foldersLoaded = true;
 
-   if (foldersAsString.isEmpty()) {
+    if (foldersAsString.isEmpty())
+    {
       OdeLog.log("Initialize folders");
       initializeFolders();
       fireFoldersLoaded();
@@ -52,23 +55,27 @@ public final class FolderManager {
     }
 
     JSONObject folderJSON = JSONParser.parse(foldersAsString).isObject();
-    if (folderJSON.get(FolderJSONKeys.PROJECTS).isArray().size()==0 &&
-            folderJSON.get(FolderJSONKeys.CHILD_FOLDERS).isArray().size()==0) {
+    if (folderJSON.get(FolderJSONKeys.PROJECTS).isArray().size() == 0 &&
+            folderJSON.get(FolderJSONKeys.CHILD_FOLDERS).isArray().size() == 0)
+    {
       OdeLog.log("Global folder is empty");
       initializeFolders();
       fireFoldersLoaded();
       return;
     }
 
-    OdeLog.log("Creating Global Folder");
+    OdeLog.log("folderJSON - " + folderJSON);
     globalFolder = new Folder(folderJSON, null);
     OdeLog.log("Creating Trash Folder");
     trashFolder = globalFolder.getChildFolder(FolderJSONKeys.TRASH_FOLDER);
-    OdeLog.log("Loaded folders from settings");
+    OdeLog.log("Checking for projects with no folder");
+    checkForUnassignedProjects();
     fireFoldersLoaded();
   }
 
   public void saveAllFolders() {
+    OdeLog.log("Saved Folder JSON: " + globalFolder.toJSON().toString());
+
     Ode.getUserSettings()
         .getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
         .changePropertyValue(SettingsConstants.FOLDERS, globalFolder.toJSON().toString());
@@ -91,6 +98,14 @@ public final class FolderManager {
       foldersToRename.get(i).setName(folderNames.get(i));
     }
     saveAllFolders();
+  }
+
+  public void moveProjectsToFolder(List<Project> projects, Folder destination) {
+    for (Project project : projects) {
+      destination.addProject(project);
+    }
+    saveAllFolders();
+    fireFoldersChanged();
   }
 
   // relative to *global*
@@ -124,6 +139,23 @@ public final class FolderManager {
     saveAllFolders();
   }
 
+  // If users are switching back and forth between old and new view, they may have created
+  // projects with the old view. Find those and assign to global root folder.
+  private void checkForUnassignedProjects()
+  {
+    for (Project project : Ode.getInstance().getProjectManager().getProjectsWithoutFolder())
+    {
+      if (project.isInTrash())
+      {
+        trashFolder.addProject(project);
+      } else
+      {
+        globalFolder.addProject(project);
+      }
+    }
+  }
+
+
   public void addFolderManagerEventListener(FolderManagerEventListener listener) {
     folderManagerEventListeners.add(listener);
     if(foldersLoaded) {
@@ -148,6 +180,12 @@ public final class FolderManager {
   private void fireFolderAdded(Folder folder) {
     for (FolderManagerEventListener listener : copyFolderManagerEventListeners()) {
       listener.onFolderAdded(folder);
+    }
+  }
+
+  private void fireFoldersChanged() {
+    for (FolderManagerEventListener listener : copyFolderManagerEventListeners()) {
+      listener.onFoldersChanged();
     }
   }
 
