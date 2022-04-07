@@ -36,7 +36,7 @@
 
 .childrenContainer > .folderContainer > .listItem > span,
 .childrenContainer > .folderContainer > .projectsFolder > .selection {
-  padding-right: 20px;
+  /*padding-right: 20px;*/
 }
 
 .childrenContainer {

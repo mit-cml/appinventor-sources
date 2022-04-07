@@ -84,7 +84,7 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   @Override
   public void setDepth(int depth) {
     super.setDepth(depth);
-    checkBox.getElement().setAttribute("style", "margin-right: " + (depth * 10) + "px");
+    checkBox.getElement().setAttribute("style", "margin-left: " + ((depth-1) * 40) + "px");
   }
 
   @Override
