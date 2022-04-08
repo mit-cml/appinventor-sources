@@ -700,6 +700,6 @@
     "Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TITLE": "sözlükteki çiftlerin listesi",
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT": "sözlük",
     "Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_IOR": "İki sayının bit düzeyinde VEYA dahil değerini döndürür.",
-    "Blockly.Msg.LANG_NO_ASSETS": "Kullanılabilir varlık yok.",
+    "Blockly.Msg.LANG_NO_ASSETS": "Kullanılabilir varlık yok",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE": "ne zaman "
 }
