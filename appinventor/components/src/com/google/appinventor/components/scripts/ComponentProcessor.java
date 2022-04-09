@@ -1759,7 +1759,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesQueries != null) {
       try {
         for (String packageName : usesQueries.packageNames()) {
-          componentInfo.queries.add("<package android:name=\"" + packageName + "\" />");
+          componentInfo.queries.add("<package android:name=\\\"" + packageName + "\\\" />");
         }
         for (IntentFilterElement intent : usesQueries.intents()) {
           updateWithNonEmptyValue(componentInfo.queries, intentFilterElementToIntentString(intent));
@@ -2755,7 +2755,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       try {
         Set<String> queries = new HashSet<>();
         for (String packageName : usesQueries.packageNames()) {
-          updateWithNonEmptyValue(queries, "<package android:name=\"" + packageName + "\" />");
+          updateWithNonEmptyValue(queries, "<package android:name=\\\"" + packageName + "\\\" />");
         }
         for (IntentFilterElement intent : usesQueries.intents()) {
           updateWithNonEmptyValue(queries, intentFilterElementToIntentString(intent));
