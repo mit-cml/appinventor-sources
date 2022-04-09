@@ -116,7 +116,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET," 
-                  + "android.permission.ACCESS_FINE_LOCATION")
+                  + "android.permission.ACCESS_FINE_LOCATION"
+                  + "android.permission.ACCESS_COARSE_LOCATION")
 
 public final class WebViewer extends AndroidViewComponent {
 
@@ -483,6 +484,8 @@ public final class WebViewer extends AndroidViewComponent {
    *
    * @param uses -- Whether or not the API is available
    */
+  @UsesPermissions(permissionNames = "android.permission.ACCESS_FINE_LOCATION"
+                  + "android.permission.ACCESS_COARSE_LOCATION")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(userVisible = false,
