@@ -65,6 +65,10 @@ public class EclairUtil {
           final String theOrigin = origin;
           final WebViewer theCaller = caller;
 
+          if (!theCaller.UsesLocation()) {
+            return;
+          }
+
           if (!theCaller.container.$form()
               .isDeniedPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
             // Permission already granted
@@ -72,9 +76,6 @@ public class EclairUtil {
             return;
           }
 
-          if (!theCaller.UsesLocation()) {
-            return;
-          }
 
           theCaller.container.$form().askPermission(Manifest.permission.ACCESS_FINE_LOCATION,
               new PermissionResultHandler() {
