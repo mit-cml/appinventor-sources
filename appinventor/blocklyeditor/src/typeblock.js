@@ -547,7 +547,7 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
             canonicName: 'text',
             dropDown: {
               titleName: 'TEXT',
-              value: blockName.endsWith('"') ? blockName.substring(1, blockName.length - 1) : blockName.substring(1)
+              value: goog.string.endsWith(blockName, '"') ? blockName.substring(1, blockName.length - 1) : blockName.substring(1)
             }
           };
         } else {
