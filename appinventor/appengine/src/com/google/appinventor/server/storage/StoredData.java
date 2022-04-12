@@ -12,6 +12,7 @@ import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.Unindexed;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -95,10 +96,6 @@ public class StoredData {
 
     // The specially formatted project history
     String history;
-
-    long galleryId;  // this is the galleryId of this project (if published)
-    long attributionId;  // if this project was initiated from the gallery, this is
-       // the id of the gallery app that was copied for remix
 
     //adding a boolean variable to mark deleted project
     boolean projectMovedToTrashFlag;
@@ -303,6 +300,25 @@ public class StoredData {
   public static final class Backpack {
     @Id public String id;
     public String content;
+  }
+
+  @Cached(expirationSeconds=120)
+  @Unindexed
+  static final class AllowedTutorialUrls {
+    // Unique Id - for now we expect there to be only 1 MotdData object.
+    @Id Long id;
+
+    // list of allowed Urls as JSON
+    // we use JSON here to make it easier to hand edit via
+    // datastore editing tools
+    String allowedUrls;
+
+  }
+
+  public static final class ProjectNotFoundException extends IOException {
+    ProjectNotFoundException(String message) {
+      super(message);
+    }
   }
 
 }

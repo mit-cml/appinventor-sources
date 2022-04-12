@@ -7,9 +7,12 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.text.InputType;
@@ -47,7 +50,10 @@ import android.widget.EditText;
 public final class PasswordTextBox extends TextBoxBase {
     
   private boolean passwordVisible;
-    
+
+  // If true, then accept numeric keyboard input only
+  private boolean acceptsNumbersOnly;
+
   /**
    * Creates a new PasswordTextBox component.
    *
@@ -66,17 +72,14 @@ public final class PasswordTextBox extends TextBoxBase {
     view.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
     PasswordVisible(false);
+    NumbersOnly(false);
     
   }
 
   @SimpleProperty(description = "Visibility of password.")
   public void PasswordVisible(boolean visible){
     passwordVisible=visible;
-    if(visible){
-      view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-    }else{
-      view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
-    }
+    setPasswordInputType(acceptsNumbersOnly, visible);
   }
 
   /**
@@ -87,6 +90,54 @@ public final class PasswordTextBox extends TextBoxBase {
   @SimpleProperty(description = "Visibility of password.")
   public boolean PasswordVisible(){
     return passwordVisible;
+  }
+
+  /**
+   * NumbersOnly property getter method.
+   *
+   * @return {@code true} indicates that the password textbox accepts numbers only, {@code false} indicates
+   *         that it accepts any text
+   */
+  @SimpleProperty(
+    category = PropertyCategory.BEHAVIOR,
+    description = "If true, then this password text box accepts only numbers as keyboard input.  " +
+      "Numbers can include a decimal point and an optional leading minus sign.  " +
+      "This applies to keyboard input only.  Even if NumbersOnly is true, you " +
+      "can use [set Text to] to enter any text at all.")
+  public boolean NumbersOnly() {
+    return acceptsNumbersOnly;
+  }
+
+  /**
+   * If true, then this `%type%`` accepts only numbers as keyboard input. Numbers can include a
+   * decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+   * if `NumbersOnly` is true, you can set the text to anything at all using the
+   * {@link #Text(String)} property.
+   *
+   * @param acceptsNumbersOnly {@code true} restricts input to numeric,
+   * {@code false} allows any text
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty(
+    description = "If true, then this password text box accepts only numbers as keyboard input.  " +
+      "Numbers can include a decimal point and an optional leading minus sign.  " +
+      "This applies to keyboard input only.  Even if NumbersOnly is true, you " +
+      "can use [set Text to] to enter any text at all.")
+  public void NumbersOnly(boolean acceptsNumbersOnly) {
+    this.acceptsNumbersOnly = acceptsNumbersOnly;
+    setPasswordInputType(acceptsNumbersOnly, passwordVisible);
+  }
+
+  private void setPasswordInputType(boolean acceptsNumbersOnly, boolean passwordVisible) {
+    if(passwordVisible && acceptsNumbersOnly) {
+      view.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+    } else if(passwordVisible && !acceptsNumbersOnly) {
+      view.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+    } else if(acceptsNumbersOnly && !passwordVisible) {
+      view.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+    } else if(!acceptsNumbersOnly && !passwordVisible) {
+      view.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    }
   }
 
 }

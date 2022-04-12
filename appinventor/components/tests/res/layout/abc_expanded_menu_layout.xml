@@ -14,9 +14,9 @@
      limitations under the License.
 -->
 
-<android.support.v7.internal.view.menu.ExpandedMenuView
+<androidx.appcompat.view.menu.ExpandedMenuView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/expanded_menu"
         android:layout_width="?attr/panelMenuListWidth"
         android:layout_height="wrap_content" />
-<!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/lmp-mr1-supportlib-release/frameworks/support/v7/appcompat/res/layout/abc_expanded_menu_layout.xml -->
+<!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/layout/abc_expanded_menu_layout.xml -->

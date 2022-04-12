@@ -7,17 +7,27 @@
 package com.google.appinventor.components.runtime;
 
 import android.Manifest;
+
 import android.app.Activity;
+
 import android.os.Environment;
+
 import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
+import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
+
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileStreamReadOperation;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.IOUtils;
 import com.google.appinventor.components.runtime.util.QUtil;
@@ -37,15 +47,12 @@ import java.io.StringWriter;
  * from this generalization)
  */
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public abstract class FileBase extends AndroidNonvisibleComponent implements Component {
   public static final String NO_ASSETS = "No_Assets";
   protected static final String LOG_TAG = "FileComponent";
   private static final int BUFFER_LENGTH = 4096;
 
-  protected final Activity activity;
-  protected boolean isRepl = false;
-  protected boolean legacy = false;
+  protected FileScope scope = FileScope.App;
 
   /**
    * Creates a new FileBase component.
@@ -54,18 +61,27 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
    */
   protected FileBase(ComponentContainer container) {
     super(container.$form());
-    if (form instanceof ReplForm) { // Note: form is defined in our superclass
-      isRepl = true;
-    }
-    activity = (Activity) container.$context();
-    LegacyMode(false);
+    DefaultScope(FileScope.App);
   }
 
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  /**
+   * Specifies the default scope for files accessed using the File component. The App scope should
+   * work for most apps. Legacy mode can be used for apps that predate the newer constraints in
+   * Android on app file access.
+   *
+   * @param scope the default file access scope
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FILESCOPE,
+      defaultValue = "App")
+  @SimpleProperty(userVisible = false)
+  public void DefaultScope(FileScope scope) {
+    this.scope = scope;
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
+  @Deprecated
   public void LegacyMode(boolean legacy) {
-    this.legacy = legacy;
+    this.scope = legacy ? FileScope.Legacy : FileScope.App;
   }
 
   /**
@@ -80,8 +96,9 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
    */
   @SimpleProperty(description = "Allows app to access files from the root of the external storage "
       + "directory (legacy mode).")
+  @Deprecated
   public boolean LegacyMode() {
-    return legacy;
+    return scope == FileScope.Legacy;
   }
 
   /**
@@ -97,39 +114,31 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
    * @param fileName name of the file to read from
    */
   protected void readFromFile(final String fileName) {
-    final boolean legacy = this.legacy;
-    form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
-      @Override
-      public void HandlePermissionResponse(String permission, boolean granted) {
-        if (granted) {
-          InputStream inputStream;
-          try {
-            if (fileName.startsWith("//")) {
-              inputStream = form.openAsset(fileName.substring(2));
-            } else {
-              String filepath = AbsoluteFileName(fileName, legacy);
-              Log.d(LOG_TAG, "filepath = " + filepath);
-              inputStream = FileUtil.openFile(filepath);
-            }
+    try {
+      new FileStreamReadOperation(form, this, "ReadFrom", fileName, scope, true) {
+        @Override
+        public boolean process(String contents) {
+          final String text = IOUtils.normalizeNewLines(contents);
+          afterRead(text);
+          return true;
+        }
 
-            // Read file contents asynchronously
-            AsyncRead(inputStream, fileName);
-          } catch (PermissionException e) {
-            form.dispatchPermissionDeniedEvent(FileBase.this, "ReadFrom", e);
-          } catch (FileNotFoundException e) {
+        @Override
+        public void onError(IOException e) {
+          if (e instanceof FileNotFoundException) {
             Log.e(LOG_TAG, "FileNotFoundException", e);
             form.dispatchErrorOccurredEvent(FileBase.this, "ReadFrom",
                 ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
-          } catch (IOException e) {
+          } else {
             Log.e(LOG_TAG, "IOException", e);
             form.dispatchErrorOccurredEvent(FileBase.this, "ReadFrom",
-                ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
+                ErrorMessages.ERROR_CANNOT_READ_FILE, fileName);
           }
-        } else {
-          form.dispatchPermissionDeniedEvent(FileBase.this, "ReadFrom", permission);
         }
-      }
-    });
+      }.run();
+    } catch (StopBlocksExecution e) {
+      // This is okay because the block is designed to be asynchronous.
+    }
   }
 
   /**
@@ -204,8 +213,7 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
    * Asynchronously reads the contents of the specified Input Stream, the
    * content of which is expected to originate from the specified filename.
    *
-   * @param inputStream Input Stream to read from
-   * @param fileName    name of the file from which the input stream was generated (used for error reporting)
+   * @param result  the contents of the file that was read
    */
-  protected abstract void AsyncRead(final InputStream inputStream, final String fileName);
+  protected abstract void afterRead(String result);
 }

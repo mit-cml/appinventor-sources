@@ -1,27 +1,34 @@
 // -*- Mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import android.Manifest;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 import android.app.Activity;
+
 import android.content.ContentResolver;
 import android.content.Intent;
+
 import android.net.Uri;
+
 import android.provider.MediaStore;
+
 import android.util.Log;
+
 import android.webkit.MimeTypeMap;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
@@ -29,6 +36,7 @@ import com.google.appinventor.components.runtime.util.QUtil;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -49,8 +57,6 @@ import java.util.Comparator;
           "fill up storage, a maximum of 10 images will be stored.  Picking more images " +
           "will delete previous images, in order from oldest to newest.",
     category = ComponentCategory.MEDIA)
-
-@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE")
 @SimpleObject
 public class ImagePicker extends Picker implements ActivityResultListener {
 
@@ -63,7 +69,7 @@ public class ImagePicker extends Picker implements ActivityResultListener {
   private static final String FILE_PREFIX = "picked_image";
 
  // max number of files to save in image directory
-  private static int maxSavedFiles = 10;
+  private static final int maxSavedFiles = 10;
 
   // The media path (URI) for the selected image file created by MediaUtil
   private String selectionURI;
@@ -99,8 +105,8 @@ public class ImagePicker extends Picker implements ActivityResultListener {
 
   @Override
   public void click() {
-    if (!havePermission) {
-      container.$form().askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    if (!havePermission && FileUtil.needsWritePermission(container.$form().DefaultFileScope())) {
+      container.$form().askPermission(WRITE_EXTERNAL_STORAGE,
           new PermissionResultHandler() {
             @Override
             public void HandlePermissionResponse(String permission, boolean granted) {
@@ -146,12 +152,6 @@ public class ImagePicker extends Picker implements ActivityResultListener {
   }
 
   private void saveSelectedImageToExternalStorage(String extension) {
-    if (container.$form().isDeniedPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-      container.$form().dispatchPermissionDeniedEvent(this, "ImagePicker",
-          Manifest.permission.WRITE_EXTERNAL_STORAGE);
-      return;
-
-    }
     // clear imageFile for new save attempt
     // This will be the stored picture
     selectionSavedImage = "";

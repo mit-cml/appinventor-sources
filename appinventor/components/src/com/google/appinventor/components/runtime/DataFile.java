@@ -35,7 +35,6 @@ import java.util.concurrent.Future;
     nonVisible = true,
     iconName = "images/dataFile.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public class DataFile extends FileBase implements DataSource<YailList, Future<YailList>> {
   private String sourceFile;
 
@@ -196,53 +195,42 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
   }
 
   @Override
-  protected void AsyncRead(final InputStream inputStream, final String fileName) {
-    // Add runnable to the Single Thread runner to read File asynchronously
-    threadRunner.execute(new Runnable() {
-      @Override
-      public void run() {
+  protected void afterRead(final String result) {
+    try {
+      // First character is a curly bracket; Assume JSON
+      // TODO: When fetching columns and rows, in the case of
+      // TODO: colums/rows being uneven lengths, the final rows and columns
+      // TODO: objects will differ (the transpose will fill missing entries
+      // TODO: with blank empty String entries, while the original List will
+      // TODO: have uneven sized Lists. For consistency, this should be
+      // TODO: handled, but currently there is a bit too much overhead in doing
+      // TODO: so due to YailLists not supporting the add() operation)
+      if (result.charAt(0) == '{') {
         try {
-          // Parse InputStream to String
-          final String result = readFromInputStream(inputStream);
+          // Parse columns from the result
+          columns = JsonUtil.getColumnsFromJSON(result);
 
-          // First character is a curly bracket; Assume JSON
-          // TODO: When fetching columns and rows, in the case of
-          // TODO: colums/rows being uneven lengths, the final rows and columns
-          // TODO: objects will differ (the transpose will fill missing entries
-          // TODO: with blank empty String entries, while the original List will
-          // TODO: have uneven sized Lists. For consistency, this should be
-          // TODO: handled, but currently there is a bit too much overhead in doing
-          // TODO: so due to YailLists not supporting the add() operation)
-          if (result.charAt(0) == '{') {
-            try {
-              // Parse columns from the result
-              columns = JsonUtil.getColumnsFromJSON(result);
-
-              // Construct row lists from columns
-              rows = ChartDataSourceUtil.getTranspose(columns);
-            } catch (JSONException e) {
-              // JSON parsing failed; Fallback to CSV
-              rows = CsvUtil.fromCsvTable(result);
-              columns = ChartDataSourceUtil.getTranspose(rows);
-            }
-          } else { // Assume CSV otherwise
-            // Parse rows from the result
-            rows = CsvUtil.fromCsvTable(result);
-
-            // Construct column lists from rows
-            columns = ChartDataSourceUtil.getTranspose(rows);
-          }
-
-          // If rows size is non-zero, set column names to first row. Otherwise,
-          // set it to an empty List.
-          columnNames = (rows.size() > 0) ? ((YailList) rows.getObject(0)) : new YailList();
-        } catch (IOException e) {
-          Log.e(this.getClass().getName(), e.getMessage());
-        } catch (Exception e) {
-          Log.e(this.getClass().getName(), e.getMessage());
+          // Construct row lists from columns
+          rows = ChartDataSourceUtil.getTranspose(columns);
+        } catch (JSONException e) {
+          // JSON parsing failed; Fallback to CSV
+          rows = CsvUtil.fromCsvTable(result);
+          columns = ChartDataSourceUtil.getTranspose(rows);
         }
+      } else { // Assume CSV otherwise
+        // Parse rows from the result
+        rows = CsvUtil.fromCsvTable(result);
+
+        // Construct column lists from rows
+        columns = ChartDataSourceUtil.getTranspose(rows);
       }
-    });
+
+      // If rows size is non-zero, set column names to first row. Otherwise,
+      // set it to an empty List.
+      columnNames = (rows.size() > 0) ? ((YailList) rows.getObject(0)) : new YailList();
+    } catch (Exception e) {
+      Log.e(this.getClass().getName(), "Unable to parse DataFile",  e);
+    }
   }
 
   /**

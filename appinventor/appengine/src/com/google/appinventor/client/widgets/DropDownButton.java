@@ -36,12 +36,22 @@ public class DropDownButton extends TextButton {
     private final String widgetName;
     private String caption;
     private final Command command;
+    private final String style;
 
     public DropDownItem(String widgetName, String caption, Command command) {
       this.widgetName = widgetName;
       this.caption = caption;
       this.command = command;
+      this.style = null;
     }
+
+    public DropDownItem(String widgetName, String caption, Command command, String style) {
+      this.widgetName = widgetName;
+      this.caption = caption;
+      this.command = command;
+      this.style = style;
+    }
+
   }
 
   /**
@@ -116,7 +126,7 @@ public class DropDownButton extends TextButton {
 
     for (DropDownItem item : toolbarItems) {
       if (item != null) {
-        this.items.add(menu.addItem(item.caption, true, item.command));
+        this.items.add(menu.addItem(item.caption, true, item.command, item.style));
       } else {
         menu.addSeparator();
       }
@@ -236,6 +246,20 @@ public class DropDownButton extends TextButton {
     for (MenuItem item : items) {
       if (item.getText().equals(itemName)) {
         item.setEnabled(enabled);
+        break;
+      }
+    }
+  }
+
+  public void setItemVisible(String itemName, boolean enabled) {
+    for (MenuItem item : items) {
+      if (item.getText().equals(itemName)) {
+        if (enabled == true) {
+    	  item.setVisible(true);
+        }
+        else{
+    	  item.setVisible(false);
+        }
         break;
       }
     }

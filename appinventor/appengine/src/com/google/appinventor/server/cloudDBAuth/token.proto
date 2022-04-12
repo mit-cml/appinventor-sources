@@ -10,6 +10,8 @@ option java_outer_classname = "TokenAuth";
 
 message unsigned {
     optional string huuid = 1;
+    optional bool monall = 2 [default = false]; // Can monitor all keys
+    optional bool privileged = 3 [default = false];
 }
 
 // This is the actual message token. The "unsigned" field

@@ -9,6 +9,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertTrue;
 
+import com.google.appinventor.components.common.FileScope;
+import com.google.appinventor.components.runtime.shadows.ShadowAsynchUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +38,7 @@ public class DataFileTest extends FileTestBase {
   public void setUp() {
     super.setUp();
     dataFile = new DataFile(getForm());
+    dataFile.DefaultScope(FileScope.Legacy);
   }
 
   /**
@@ -235,6 +238,7 @@ public class DataFileTest extends FileTestBase {
     // Grant permissions & update the Source File of the CSV File
     grantFilePermissions();
     dataFile.SourceFile(TARGET_FILE_2_ROWS);
+    ShadowAsynchUtil.runAllPendingRunnables();
 
     // Get the expected value and assert that it is equal to the result
     YailList expected = expectedValues2Rows();
@@ -447,6 +451,7 @@ public class DataFileTest extends FileTestBase {
   private void loadTestCSVFile() {
     grantFilePermissions();
     dataFile.ReadFile("//" + TARGET_CSV_FILE);
+    ShadowAsynchUtil.runAllPendingRunnables();
   }
 
   /**
@@ -455,6 +460,7 @@ public class DataFileTest extends FileTestBase {
   private void loadTestJSONFile() {
     grantFilePermissions();
     dataFile.readFromFile("//" + TARGET_JSON_FILE);
+    ShadowAsynchUtil.runAllPendingRunnables();
   }
 
   /**
@@ -469,6 +475,7 @@ public class DataFileTest extends FileTestBase {
     grantFilePermissions();
     writeTempFile(targetFile, data, external);
     dataFile.ReadFile(targetFile);
+    ShadowAsynchUtil.runAllPendingRunnables();
   }
 
   /**

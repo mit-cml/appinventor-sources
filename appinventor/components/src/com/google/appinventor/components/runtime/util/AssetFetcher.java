@@ -161,7 +161,8 @@ public class AssetFetcher {
         connection.addRequestProperty("Cookie",  "AppInventor = " + cookieValue);
         int responseCode = connection.getResponseCode();
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);
-        outFile = new File(QUtil.getReplAssetPath(form), asset.substring("assets/".length()));
+        outFile = new File(QUtil.getReplAssetPath(form, true), asset.substring("assets/".length()));
+        Log.d(LOG_TAG, "target file = " + outFile);
         File parentOutFile = outFile.getParentFile();
         if (!parentOutFile.exists() && !parentOutFile.mkdirs()) {
           throw new IOException("Unable to create assets directory " + parentOutFile);

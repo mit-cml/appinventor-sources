@@ -12,7 +12,7 @@
     App Inventor component libraries
   </description>
 
-  <property name="android.sdk.version" value="29"/>
+  <property name="android.sdk.version" value="30"/>
 
   <target name="all"
           depends="CommonConstants,AndroidRuntime">
@@ -54,6 +54,7 @@
     <mkdir dir="${CommonConstants-class.dir}" />
 
     <ai.javac destdir="${CommonConstants-class.dir}">
+      <include name="**/helpers/*.java" />
       <include name="${components.pkg}/common/*.java" />
       <exclude name="${components.pkg}/common/HtmlEntities.java" />
     </ai.javac>
@@ -166,8 +167,6 @@
     <copy toFile="${public.deps.dir}/http-legacy.jar" file="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
     <!-- END Android Support Libraries -->
     <copy toFile="${public.deps.dir}/android.jar" file="${android.lib}" />
-    <copy toFile="${public.deps.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
-    <copy toFile="${public.deps.dir}/apksigner.jar" file="${lib.dir}/android/tools/apksigner.jar" />
     <copy toFile="${public.deps.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
 
     <!-- Add extension libraries here -->
@@ -217,6 +216,7 @@
       <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
       <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
       <exclude name="${components.pkg}/common/**/*.java" /> <!-- exclude components/common package -->
+      <exclude name="**/helpers/*.java" /> <!-- exclude helpers as they are compiled with CommonConstants -->
       <classpath>
         <path refid="AndroidRuntime.path" />
         <pathelement location="${local.build.dir}/AnnotationProcessors.jar" />
@@ -540,36 +540,36 @@
       <libraryjar file="${public.deps.dir}/android.jar" />
       <libraryjar file="${public.deps.dir}/CommonVersion.jar" />
       <!-- Android Support -->
-      <libraryjar file="${public.deps.dir}/animated-vector-drawable.jar" />
-      <libraryjar file="${public.deps.dir}/appcompat-v7.jar" />
+      <libraryjar file="${public.deps.dir}/annotation.jar" />
+      <libraryjar file="${public.deps.dir}/appcompat.jar" />
       <libraryjar file="${public.deps.dir}/asynclayoutinflater.jar" />
-      <libraryjar file="${public.deps.dir}/collections.jar" />
-      <libraryjar file="${public.deps.dir}/common.jar" />
-      <libraryjar file="${public.deps.dir}/constraint-layout.jar" />
-      <libraryjar file="${public.deps.dir}/constraint-layout-solver.jar" />
+      <libraryjar file="${public.deps.dir}/collection.jar" />
+      <libraryjar file="${public.deps.dir}/constraintlayout.jar" />
+      <libraryjar file="${public.deps.dir}/constraintlayout-solver.jar" />
       <libraryjar file="${public.deps.dir}/coordinatorlayout.jar" />
+      <libraryjar file="${public.deps.dir}/core.jar" />
+      <libraryjar file="${public.deps.dir}/core-common.jar" />
+      <libraryjar file="${public.deps.dir}/core-runtime.jar" />
       <libraryjar file="${public.deps.dir}/cursoradapter.jar" />
       <libraryjar file="${public.deps.dir}/customview.jar" />
       <libraryjar file="${public.deps.dir}/documentfile.jar" />
       <libraryjar file="${public.deps.dir}/drawerlayout.jar" />
+      <libraryjar file="${public.deps.dir}/fragment.jar" />
       <libraryjar file="${public.deps.dir}/interpolator.jar" />
+      <libraryjar file="${public.deps.dir}/legacy-support-core-ui.jar" />
       <libraryjar file="${public.deps.dir}/lifecycle-common.jar" />
-      <libraryjar file="${public.deps.dir}/livedata.jar" />
-      <libraryjar file="${public.deps.dir}/livedata-core.jar" />
+      <libraryjar file="${public.deps.dir}/lifecycle-livedata.jar" />
+      <libraryjar file="${public.deps.dir}/lifecycle-livedata-core.jar" />
+      <libraryjar file="${public.deps.dir}/lifecycle-runtime.jar" />
+      <libraryjar file="${public.deps.dir}/lifecycle-viewmodel.jar" />
       <libraryjar file="${public.deps.dir}/loader.jar" />
       <libraryjar file="${public.deps.dir}/localbroadcastmanager.jar" />
       <libraryjar file="${public.deps.dir}/print.jar" />
-      <libraryjar file="${public.deps.dir}/runtime.jar" />
       <libraryjar file="${public.deps.dir}/slidingpanelayout.jar" />
-      <libraryjar file="${public.deps.dir}/support-annotations.jar" />
-      <libraryjar file="${public.deps.dir}/support-compat.jar" />
-      <libraryjar file="${public.deps.dir}/support-core-ui.jar" />
-      <libraryjar file="${public.deps.dir}/support-core-utils.jar" />
-      <libraryjar file="${public.deps.dir}/support-fragment.jar" />
-      <libraryjar file="${public.deps.dir}/support-vector-drawable.jar" />
       <libraryjar file="${public.deps.dir}/swiperefreshlayout.jar" />
+      <libraryjar file="${public.deps.dir}/vectordrawable.jar" />
+      <libraryjar file="${public.deps.dir}/vectordrawable-animated.jar" />
       <libraryjar file="${public.deps.dir}/versionedparcelable.jar" />
-      <libraryjar file="${public.deps.dir}/viewmodel.jar" />
       <libraryjar file="${public.deps.dir}/viewpager.jar" />
       <!-- Components Libraries -->
       <libraryjar file="${public.deps.dir}/osmdroid.jar" />
@@ -594,7 +594,8 @@
       <libraryjar file="${public.deps.dir}/jedis.jar" />
       <libraryjar file="${public.deps.dir}/commons-pool.jar" />
       <libraryjar file="${public.deps.dir}/guava-14.0.1.jar" />
-      <libraryjar file="${public.deps.dir}/core.jar" />
+      <libraryjar file="${public.deps.dir}/Barcode.jar" />
+      <libraryjar file="${public.deps.dir}/QRGenerator.jar" />
       <!-- Android Runtime -->
       <libraryjar file="${public.build.dir}/AndroidRuntime.jar" />
 

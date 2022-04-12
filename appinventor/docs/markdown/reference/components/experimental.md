@@ -18,7 +18,7 @@ The Firebase component communicates with a Web service to store
  the tag. It also possesses a listener to fire events when stored
  values are changed.
 
- [Additional Information](../other/firebase.html)
+ [Additional Information](../other/firebaseIntro.html)
 
 
 

@@ -6,28 +6,20 @@
 
 package com.google.appinventor.client;
 
-import java.util.Random;
-
-import java.util.List;
-import java.util.logging.Logger;
-
 import com.google.appinventor.client.boxes.AdminUserListBox;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
-import com.google.appinventor.client.boxes.PrivateUserProfileTabPanel;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.boxes.ModerationPageBox;
-import com.google.appinventor.client.boxes.GalleryListBox;
-import com.google.appinventor.client.boxes.GalleryAppBox;
-import com.google.appinventor.client.boxes.ProfileBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
+
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
@@ -38,29 +30,38 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
-import com.google.appinventor.client.explorer.youngandroid.GalleryList;
-import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
-import com.google.appinventor.client.explorer.youngandroid.GalleryToolbar;
+
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
-import com.google.appinventor.client.explorer.youngandroid.ReportList;
+
 import com.google.appinventor.client.output.OdeLog;
+
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
+
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
+
+import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 import com.google.appinventor.client.widgets.boxes.Box;
-import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
+import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
+
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
+
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
+
 import com.google.appinventor.common.version.AppInventorFeatures;
+
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthService;
 import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthServiceAsync;
+
 import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
+
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.RpcResult;
@@ -68,36 +69,39 @@ import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
 import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
-import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
-import com.google.appinventor.shared.rpc.project.GalleryComment;
-import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
-import com.google.appinventor.shared.rpc.project.UserProject;
-import com.google.appinventor.shared.rpc.project.GalleryService;
-import com.google.appinventor.shared.rpc.project.GalleryServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
+
 import com.google.appinventor.shared.settings.SettingsConstants;
+
 import com.google.common.annotations.VisibleForTesting;
+
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
+
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+
 import com.google.gwt.http.client.Response;
+
 import com.google.gwt.resources.client.ImageResource;
+
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
@@ -106,6 +110,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -125,7 +130,8 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
+
+import java.util.Random;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -133,7 +139,6 @@ import com.google.appinventor.shared.rpc.project.GalleryApp;
  *
  */
 public class Ode implements EntryPoint {
-  private static final Logger LOG = Logger.getLogger(Ode.class.getName());
   // I18n messages
   public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
 
@@ -155,9 +160,6 @@ public class Ode implements EntryPoint {
   // User settings
   private static UserSettings userSettings;
 
-  // Gallery settings
-  private static GallerySettings gallerySettings;
-
   private MotdFetcher motdFetcher;
 
   // User information
@@ -167,9 +169,10 @@ public class Ode implements EntryPoint {
   private String templatePath;
   private boolean templateLoadingFlag = false;
 
-  // Gallery id if set by /?galleryId=
-  private String galleryId;
-  private boolean galleryIdLoadingFlag = false;
+  // New Gallery path if set by /?ng=
+  // Set to true if we are loading from the new Gallery
+  private boolean newGalleryLoadingFlag = false;
+  private String newGalleryId;
 
   // Nonce Information
   private String nonce;
@@ -180,8 +183,8 @@ public class Ode implements EntryPoint {
   private boolean isReadOnly;
 
   private String sessionId = generateUuid(); // Create new session id
-  private Random random = new Random(); // For generating random nonce
 
+  private Random random = new Random(); // For generating random nonce
 
   // Collection of projects
   private ProjectManager projectManager;
@@ -197,14 +200,9 @@ public class Ode implements EntryPoint {
   // Remembers the current View
   public static final int DESIGNER = 0;
   public static final int PROJECTS = 1;
-  public static final int GALLERY = 2;
-  public static final int GALLERYAPP = 3;
-  public static final int USERPROFILE = 4;
-  public static final int PRIVATEUSERPROFILE = 5;
-  public static final int MODERATIONPAGE = 6;
-  public static final int USERADMIN = 7;
-  public static final int TRASHCAN = 8;
-  public static int currentView = DESIGNER;
+  public static final int USERADMIN = 2;
+  public static final int TRASHCAN = 3;
+  public static int currentView = PROJECTS;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
@@ -227,19 +225,12 @@ public class Ode implements EntryPoint {
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
-  private int galleryTabIndex;
-  private int galleryAppTabIndex;
   private int userAdminTabIndex;
-  private int userProfileTabIndex;
-  private int privateUserProfileIndex;
-  private int moderationPageTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
   private VerticalPanel structureAndAssets;
   private ProjectToolbar projectToolbar;
-  private GalleryToolbar galleryListToolbar;
-  private GalleryToolbar galleryPageToolbar;
   private AdminUserListBox uaListBox;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
@@ -255,9 +246,6 @@ public class Ode implements EntryPoint {
 
   // Web service for project related information
   private final ProjectServiceAsync projectService = GWT.create(ProjectService.class);
-
-  // Web service for gallery related information
-  private final GalleryServiceAsync galleryService = GWT.create(GalleryService.class);
 
   // Web service for user related information
   private final UserInfoServiceAsync userInfoService = GWT.create(UserInfoService.class);
@@ -276,7 +264,9 @@ public class Ode implements EntryPoint {
 
   private boolean screensLocked;
 
-  private boolean galleryInitialized = false;
+  // Licensing related variables
+  private String licenseCode;
+  private String systemId;
 
   /**
    * Flag set if we may need to show the splash screen based on
@@ -365,49 +355,6 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Returns the gallery settings.
-   *
-   * @return  gallery settings
-   */
-  public static GallerySettings getGallerySettings() {
-    return gallerySettings;
-  }
-
-  /**
-   * loads the gallery settings from server
-   *
-   */
-  public void  loadGallerySettings() {
-     // Callback for when the server returns us the apps
-    final Ode ode = Ode.getInstance();
-    final OdeAsyncCallback<GallerySettings> callback = new OdeAsyncCallback<GallerySettings>(
-    // failure message
-    MESSAGES.gallerySettingsError()) {
-      @Override
-      public void onSuccess(GallerySettings settings) {
-        gallerySettings = settings;
-        if(gallerySettings.galleryEnabled() == true){
-          ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(true);
-          projectToolbar.setPublishOrUpdateButtonVisible(true);
-          GalleryClient.getInstance().setSystemEnvironment(settings.getEnvironment());
-          topPanel.showGalleryLink(true);
-          if(user.isModerator()){
-            topPanel.showModerationLink(true);
-          }
-          topPanel.updateAccountMessageButton();
-        }else{
-          topPanel.showModerationLink(false);
-          topPanel.showGalleryLink(false);
-          projectToolbar.setPublishOrUpdateButtonVisible(false);
-          ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(false);
-        }
-      }
-    };
-    //this is below the call back, but of course it is done first
-    ode.getGalleryService().loadGallerySettings(callback);
-  }
-
-  /**
    * Returns the asset manager.
    *
    * @return  asset manager
@@ -459,7 +406,6 @@ public class Ode implements EntryPoint {
           // we re-enable it.
           projectToolbar.enableStartButton();
           projectToolbar.setProjectTabButtonsVisible(true);
-          projectToolbar.setPublishOrUpdateButtonVisible(true);
           projectToolbar.setTrashTabButtonsVisible(false);
         }
       };
@@ -476,13 +422,13 @@ public class Ode implements EntryPoint {
    */
 
   public void switchToTrash() {
+    Ode.getInstance().getTopToolbar().updateMoveToTrash("Delete From Trash");
     hideChaff();
     hideTutorials();
     ProjectListBox.getProjectListBox().loadTrashList();
     currentView = TRASHCAN;
     projectToolbar.enableStartButton();
     projectToolbar.setProjectTabButtonsVisible(false);
-    projectToolbar.setPublishOrUpdateButtonVisible(false);
     projectToolbar.setTrashTabButtonsVisible(true);
   }
 
@@ -495,48 +441,6 @@ public class Ode implements EntryPoint {
     hideTutorials();
     currentView = USERADMIN;
     deckPanel.showWidget(userAdminTabIndex);
-  }
-
-  /**
-   * Switch to the Gallery tab
-   */
-  public void switchToGalleryView() {
-    hideChaff();
-    hideTutorials();
-    if (!galleryInitialized) {
-      // Gallery initialization is deferred until now.
-      initializeGallery();
-    }
-    currentView = GALLERY;
-    deckPanel.showWidget(galleryTabIndex);
-  }
-
-  /**
-   * Switch to the Gallery App
-   */
-  public void switchToGalleryAppView(GalleryApp app, int editStatus) {
-    hideChaff();
-    hideTutorials();
-    if (!galleryInitialized) {
-      // Gallery initialization is deferred until now.
-      initializeGallery();
-    }
-    currentView = GALLERYAPP;
-    GalleryAppBox.setApp(app, editStatus);
-    deckPanel.showWidget(galleryAppTabIndex);
-  }
-
-  /**
-   * Switch to the user profile
-   * TODO: change string parameter
-   */
-  public void switchToUserProfileView(String userId, int editStatus) {
-    hideChaff();
-    hideTutorials();
-    currentView = USERPROFILE;
-    OdeLog.log("###########" + userId + "||||||" + editStatus);
-    ProfileBox.setProfile(userId, editStatus);
-    deckPanel.showWidget(userProfileTabIndex);
   }
 
   /**
@@ -557,27 +461,6 @@ public class Ode implements EntryPoint {
     }
   }
 
-  /**
-   * Switch to Gallery TabPanel
-   */
-  public void switchToPrivateUserProfileView() {
-    hideChaff();
-    currentView = privateUserProfileIndex;
-    deckPanel.showWidget(privateUserProfileIndex);
-  }
-
-  /**
-   * Switch to the Moderation Page tab
-   */
-  public void switchToModerationPageView() {
-    hideChaff();
-    hideTutorials();
-    if (!galleryInitialized) {
-      initializeGallery();
-    }
-    currentView = MODERATIONPAGE;
-    deckPanel.showWidget(moderationPageTabIndex);
-  }
   /**
    * Switch to the Debugging tab
    */
@@ -616,29 +499,18 @@ public class Ode implements EntryPoint {
       };
       TemplateUploadWizard.openProjectFromTemplate(templatePath, callbackCommand);
       return true;
-    } else if (galleryIdLoadingFlag) {
-      try {
-        long galleryId = Long.parseLong(this.galleryId);
-        final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
-            // failure message
-            MESSAGES.galleryError()) {
+    } else if (newGalleryLoadingFlag) {
+      final DialogBox dialog = galleryLoadingDialog();
+      NewProjectCommand callback = new NewProjectCommand() {
           @Override
-          public void onSuccess(GalleryApp app) {
-            if (app == null || !app.getActive()) {
-              Window.alert(MESSAGES.galleryIdNotExist());
-              // Reset the galleryId flag and then load the previous project
-              galleryIdLoadingFlag = false;
-              openPreviousProject();
-            } else {
-              Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
-            }
+          public void execute(Project project) {
+            newGalleryLoadingFlag = false;
+            dialog.hide();      // Get rid of the project loading dialog
+            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
           }
         };
-        Ode.getInstance().getGalleryService().getApp(galleryId, callback);
-        return true;
-      } catch (NumberFormatException e) {
-        Window.alert(MESSAGES.galleryIdNotExist());
-      }
+      LoadGalleryProject.openProjectFromGallery(newGalleryId, callback);
+      return true;
     }
     return false;
   }
@@ -779,11 +651,17 @@ public class Ode implements EntryPoint {
       templateLoadingFlag = true;
     }
 
-    // Let's see if we were started with a galleryId= parameter which points to a template
-    galleryId = Window.Location.getParameter("galleryId");
-    if(galleryId != null){
-      OdeLog.wlog("Got a galleryId of " + galleryId);
-      galleryIdLoadingFlag = true;
+    // OK, let's see if we are loading from the new gallery Note: If
+    // we are loading from a template (see above) then we ignore the
+    // "ng" parameter. It doesn't make sense to have both, but if we
+    // do, template loading wins.
+
+    if (!templateLoadingFlag) {
+      newGalleryId = Window.Location.getParameter("ng");
+      if (newGalleryId != null) {
+        OdeLog.wlog("Got a new Gallery ID of " + newGalleryId);
+        newGalleryLoadingFlag = true;
+      }
     }
 
     // We call this below to initialize the ConnectProgressBar
@@ -800,15 +678,34 @@ public class Ode implements EntryPoint {
         user = result.getUser();
         isReadOnly = user.isReadOnly();
 
+        // Arrange to redirect to the new gallery, which is run as a
+        // separate server when we are started with a galleryId flag
+        // We process this as soon as we have the system config
+        // because we need the system config to tell us where the
+        // gallery is located!
+
+        String galleryId = Window.Location.getParameter("galleryId");
+        if (galleryId != null) {
+          // This will replace us with the gallery server, displaying the app in question
+          Window.open(config.getGalleryLocation() + "?galleryid=" + galleryId, "_self", null);
+          // Never get here...(?)
+          return;
+        }
+
         // load the user's backpack if we are not using a shared
         // backpack
 
-        String backPackId = user.getBackpackId();
+        final String backPackId = user.getBackpackId();
         if (backPackId == null || backPackId.isEmpty()) {
           loadBackpack();
           OdeLog.log("backpack: No shared backpack");
         } else {
-          BlocklyPanel.setSharedBackpackId(backPackId);
+          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
+            @Override
+            public void call() {
+              BlocklyPanel.setSharedBackpackId(backPackId);
+            }
+          });
           OdeLog.log("Have a shared backpack backPackId = " + backPackId);
         }
 
@@ -863,11 +760,6 @@ public class Ode implements EntryPoint {
           @Override
           public void execute() {
 
-            // Gallery settings
-            gallerySettings = new GallerySettings();
-            //gallerySettings.loadGallerySettings();
-            loadGallerySettings();
-
             // Initialize project and editor managers
             // The project manager loads the user's projects asynchronously
             projectManager = new ProjectManager();
@@ -875,10 +767,6 @@ public class Ode implements EntryPoint {
               @Override
               public void onProjectsLoaded() {
                 projectManager.removeProjectManagerEventListener(this);
-                if (!handleQueryString() && shouldAutoloadLastProject()) {
-                  openPreviousProject();
-                }
-
                 // This handles any built-in templates stored in /war
                 // Retrieve template data stored in war/templates folder and
                 // and save it for later use in TemplateUploadWizard
@@ -890,6 +778,10 @@ public class Ode implements EntryPoint {
                       public void onSuccess(String json) {
                         // Save the templateData
                         TemplateUploadWizard.initializeBuiltInTemplates(json);
+
+                        if (!handleQueryString() && shouldAutoloadLastProject()) {
+                          openPreviousProject();
+                        }
                       }
                     };
                 Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
@@ -897,10 +789,11 @@ public class Ode implements EntryPoint {
             });
             editorManager = new EditorManager();
 
+
             // Initialize UI
             initializeUi();
-
             topPanel.showUserEmail(user.getUserEmail());
+
           }
         });
       }
@@ -910,7 +803,7 @@ public class Ode implements EntryPoint {
       }
 
       private String makeUri(String base) {
-        String[] params = new String[] { "locale", "repo", "galleryId", "autoload" };
+        String[] params = new String[] { "locale", "repo", "galleryId", "autoload", "ng" };
         String separator = "?";
         StringBuilder sb = new StringBuilder(base);
         for (String param : params) {
@@ -992,11 +885,14 @@ public class Ode implements EntryPoint {
 
     // Register services with RPC status popup
     rpcStatusPopup.register((ExtendedServiceProxy<?>) projectService);
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) galleryService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) userInfoService);
 
     Window.setTitle(MESSAGES.titleYoungAndroid());
     Window.enableScrolling(true);
+
+    if (config.getServerExpired()) {
+      RootPanel.get().add(new ExpiredServiceOverlay());
+    }
 
     topPanel = new TopPanel();
     statusPanel = new StatusPanel();
@@ -1054,8 +950,8 @@ public class Ode implements EntryPoint {
     pVertPanel.setWidth("100%");
     pVertPanel.setSpacing(0);
     projectListPanel.setWidth("100%");
-    projectToolbar = new ProjectToolbar();
     projectListPanel.add(ProjectListBox.getProjectListBox());
+    projectToolbar = new ProjectToolbar();
     pVertPanel.add(projectToolbar);
     pVertPanel.add(projectListPanel);
     projectsTabIndex = deckPanel.getWidgetCount();
@@ -1120,17 +1016,6 @@ public class Ode implements EntryPoint {
     designTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(dVertPanel);
 
-    // Gallery list tab
-    VerticalPanel gVertPanel = new VerticalPanel();
-    gVertPanel.add(createLoadingWidget(GalleryList.INITIAL_RPCS));
-    galleryTabIndex = deckPanel.getWidgetCount();
-    deckPanel.add(gVertPanel);
-
-     // Gallery app tab
-    VerticalPanel aVertPanel = new VerticalPanel();
-    galleryAppTabIndex = deckPanel.getWidgetCount();
-    deckPanel.add(aVertPanel);
-
     // User Admin Panel
     VerticalPanel uaVertPanel = new VerticalPanel();
     uaVertPanel.setWidth("100%");
@@ -1141,37 +1026,6 @@ public class Ode implements EntryPoint {
     uaVertPanel.add(adminUserListPanel);
     userAdminTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(uaVertPanel);
-
-    // KM: DEBUGGING BEGIN
-    // User profile tab
-    VerticalPanel uVertPanel = new VerticalPanel();
-    uVertPanel.setWidth("100%");
-    uVertPanel.setSpacing(0);
-    HorizontalPanel userProfilePanel = new HorizontalPanel();
-    userProfilePanel.setWidth("100%");
-    userProfilePanel.add(ProfileBox.getUserProfileBox());
-
-    uVertPanel.add(userProfilePanel);
-    userProfileTabIndex = deckPanel.getWidgetCount();
-    deckPanel.add(uVertPanel);
-    // KM: DEBUGGING END
-
-    // Private User Profile TabPanel
-    VerticalPanel ppVertPanel = new VerticalPanel();
-    ppVertPanel.setWidth("100%");
-    ppVertPanel.setSpacing(0);
-    HorizontalPanel privateUserProfileTabPanel = new HorizontalPanel();
-    privateUserProfileTabPanel.setWidth("100%");
-    privateUserProfileTabPanel.add(PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel());
-    ppVertPanel.add(privateUserProfileTabPanel);
-    privateUserProfileIndex = deckPanel.getWidgetCount();
-    deckPanel.add(ppVertPanel);
-
-    // Moderation Page tab
-    VerticalPanel mPVertPanel = new VerticalPanel();
-    mPVertPanel.add(createLoadingWidget(ReportList.INITIAL_RPCS));
-    moderationPageTabIndex = deckPanel.getWidgetCount();
-    deckPanel.add(mPVertPanel);
 
     // Debugging tab
     if (AppInventorFeatures.hasDebuggingView()) {
@@ -1383,16 +1237,6 @@ public class Ode implements EntryPoint {
   public ProjectServiceAsync getProjectService() {
     return projectService;
   }
-
-  /**
-   * Get an instance of the gallery information web service.
-   *
-   * @return gallery web service instance
-   */
-  public GalleryServiceAsync getGalleryService() {
-    return galleryService;
-  }
-
 
   /**
    * Get an instance of the user information web service.
@@ -1664,6 +1508,7 @@ public class Ode implements EntryPoint {
         userSettings.saveSettings(null);
       }
     }
+    BlocklyMsg.Loader.ensureTranslationsLoaded();
     return true;
   }
 
@@ -1790,7 +1635,7 @@ public class Ode implements EntryPoint {
    *
    * @param force Bypass the check to see if they have dimissed this version
    */
-  private void createWelcomeDialog(boolean force) {
+  private void createWelcomeDialog(final boolean force) {
     if (!shouldShowWelcomeDialog() && !force) {
       maybeShowNoProjectsDialog();
       return;
@@ -1838,7 +1683,8 @@ public class Ode implements EntryPoint {
     projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
       @Override
       public void onProjectsLoaded() {
-        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 && !templateLoadingFlag && !galleryIdLoadingFlag) {
+        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 && !templateLoadingFlag &&
+          !newGalleryLoadingFlag) {
           ErrorReporter.hide();  // hide the "Please choose a project" message
           createNoProjectsDialog(true);
         }
@@ -1951,7 +1797,8 @@ public class Ode implements EntryPoint {
     projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
       @Override
       public void onProjectsLoaded() {
-        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 && !templateLoadingFlag) {
+        if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0 && !templateLoadingFlag
+          && !newGalleryLoadingFlag) {
           ErrorReporter.hide();  // hide the "Please choose a project" message
           showSplashScreens();
         }
@@ -2171,6 +2018,31 @@ public class Ode implements EntryPoint {
     DialogBoxContents.add(message);
     dialogBox.setWidget(DialogBoxContents);
     dialogBox.show();
+  }
+
+  /**
+   * galleryLoadingDialog -- Put up a dialog box while a Gallery
+   * project is loading.
+   *
+   */
+
+  private DialogBox galleryLoadingDialog() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    // dialogBox.setText(MESSAGES.galleryLoadingDialogText());
+    dialogBox.setHeight("100px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML(MESSAGES.galleryLoadingDialogText());
+    message.setStyleName("DialogBox-message");
+    DialogBoxContents.add(message);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+    return dialogBox;
   }
 
   /**
@@ -2401,7 +2273,7 @@ public class Ode implements EntryPoint {
    * @return nonce
    */
   public String generateNonce() {
-    int v = random.nextInt(1000000);
+    int v = random.nextInt(10000000);
     nonce = Integer.toString(v, 36); // Base 36 string
     return nonce;
   }
@@ -2518,93 +2390,6 @@ public class Ode implements EntryPoint {
       });
   }
 
-  private void initializeGallery() {
-    VerticalPanel gVertPanel = (VerticalPanel)deckPanel.getWidget(galleryTabIndex);
-    gVertPanel.setWidth("100%");
-    gVertPanel.setSpacing(0);
-    galleryListToolbar = new GalleryToolbar();
-    gVertPanel.add(galleryListToolbar);
-    HorizontalPanel appListPanel = new HorizontalPanel();
-    appListPanel.setWidth("100%");
-    appListPanel.add(GalleryListBox.getGalleryListBox());
-    gVertPanel.add(appListPanel);
-
-    VerticalPanel aVertPanel = (VerticalPanel)deckPanel.getWidget(galleryAppTabIndex);
-    aVertPanel.setWidth("100%");
-    aVertPanel.setSpacing(0);
-    galleryPageToolbar = new GalleryToolbar();
-    aVertPanel.add(galleryPageToolbar);
-    HorizontalPanel appPanel = new HorizontalPanel();
-    appPanel.setWidth("100%");
-    appPanel.add(GalleryAppBox.getGalleryAppBox());
-    aVertPanel.add(appPanel);
-
-    VerticalPanel mPVertPanel = (VerticalPanel)deckPanel.getWidget(moderationPageTabIndex);
-    mPVertPanel.setWidth("100%");
-    mPVertPanel.setSpacing(0);
-    HorizontalPanel moderationPagePanel = new HorizontalPanel();
-    moderationPagePanel.setWidth("100%");
-    moderationPagePanel.add(ModerationPageBox.getModerationPageBox());
-    mPVertPanel.add(moderationPagePanel);
-
-    GalleryListBox.loadGalleryList();
-    if (user.isModerator()) {
-      ModerationPageBox.loadModerationPage();
-    }
-    PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().loadProfileImage();
-
-    galleryInitialized = true;
-  }
-
-  private Widget createLoadingWidget(final int pending) {
-    final HorizontalPanel container = new HorizontalPanel();
-    container.setWidth("100%");
-    container.setSpacing(0);
-    container.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    HorizontalPanel panel = new HorizontalPanel();
-    Image image = new Image();
-    image.setResource(IMAGES.waitingIcon());
-    panel.add(image);
-    Label label = new Label();
-    label.setText(MESSAGES.defaultRpcMessage());
-    panel.add(label);
-    container.add(panel);
-    GalleryClient.getInstance().addListener(new GalleryRequestListener() {
-      volatile int count = pending;
-      private void hideLoadingWidget() {
-        if (container.getParent() != null) {
-          container.clear();
-          container.removeFromParent();
-        }
-      }
-      @Override
-      public boolean onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable) {
-        if ((--count) <= 0) {
-          hideLoadingWidget();
-          return true;
-        }
-        return false;
-      }
-      @Override
-      public boolean onCommentsRequestCompleted(List<GalleryComment> comments) {
-        if ((--count) <= 0) {
-          hideLoadingWidget();
-          return true;
-        }
-        return false;
-      }
-      @Override
-      public boolean onSourceLoadCompleted(UserProject projectInfo) {
-        if ((--count) <= 0) {
-          hideLoadingWidget();
-          return true;
-        }
-        return false;
-      }
-    });
-    return container;
-  }
-
   // Used internally here so that the tutorial panel is only shown on
   // the blocks or designer view, not the gallery or projects (or
   // other) views. unlike setTutorialVisible, we do not side effect
@@ -2649,16 +2434,32 @@ public class Ode implements EntryPoint {
   }
 
   public void setTutorialURL(String newURL) {
-    if (newURL.isEmpty() || (!newURL.startsWith("http://appinventor.mit.edu/")
-        && !newURL.startsWith("http://appinv.us/"))) {
+    if (newURL.isEmpty()) {
+      designToolbar.setTutorialToggleVisible(false);
+      setTutorialVisible(false);
+      return;
+    }
+
+    boolean isUrlAllowed = false;
+    for (String candidate : config.getTutorialsUrlAllowed()) {
+      if (newURL.startsWith(candidate)) {
+        isUrlAllowed = true;
+        break;
+      }
+    }
+
+    if (!isUrlAllowed) {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
+      String[] urlSplits = newURL.split("//"); // [protocol, rest]
+      boolean isHttps = Window.Location.getProtocol() == "https:" || urlSplits[0] == "https:";
       String locale = Window.Location.getParameter("locale");
       if (locale != null) {
         newURL += (newURL.contains("?") ? "&" : "?") + "locale=" + locale;
       }
-      tutorialPanel.setUrl(newURL);
+      String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1];
+      tutorialPanel.setUrl(effectiveUrl);
       designToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);
     }
@@ -2669,8 +2470,13 @@ public class Ode implements EntryPoint {
   private void loadBackpack() {
     userInfoService.getUserBackpack(new AsyncCallback<String>() {
         @Override
-        public void onSuccess(String backpack) {
-          BlocklyPanel.setInitialBackpack(backpack);
+        public void onSuccess(final String backpack) {
+          BlocklyMsg.Loader.ensureTranslationsLoaded(new BlocklyMsg.LoadCallback() {
+            @Override
+            public void call() {
+              BlocklyPanel.setInitialBackpack(backpack);
+            }
+          });
         }
         @Override
         public void onFailure(Throwable caught) {
@@ -2693,6 +2499,10 @@ public class Ode implements EntryPoint {
     } else {
       warnedBuild1 = value;
     }
+  }
+
+  public boolean getGalleryReadOnly() {
+    return config.getGalleryReadOnly();
   }
 
   /**

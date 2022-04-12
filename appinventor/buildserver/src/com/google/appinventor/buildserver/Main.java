@@ -1,20 +1,22 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.StringArrayOptionHandler;
+import com.google.appinventor.buildserver.stats.NullStatReporter;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
+
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 /**
  * Main entry point for the command line version of the YAIL compiler.
@@ -23,28 +25,31 @@ import java.util.zip.ZipFile;
  */
 public final class Main {
 
+  public final static String APK_EXTENSION_VALUE = "apk";
+  public final static String AAB_EXTENSION_VALUE = "aab";
+
   static class CommandLineOptions {
     @Option(name = "--isForCompanion", usage = "create the MIT AI2 Companion APK")
     boolean isForCompanion = false;
 
     @Option(name = "--inputZipFile", required = true,
-            usage = "the ZIP file of the project to build")
+        usage = "the ZIP file of the project to build")
     File inputZipFile;
 
     @Option(name = "--userName", required = true,
-            usage = "the name of the user building the project")
+        usage = "the name of the user building the project")
     String userName;
 
     @Option(name = "--outputDir", required = true,
-            usage = "the directory in which to put the output of the build")
+        usage = "the directory in which to put the output of the build")
     File outputDir;
 
     @Option(name = "--childProcessRamMb",
-            usage = "Maximum ram that can be used by a child processes, in MB.")
+        usage = "Maximum ram that can be used by a child processes, in MB.")
     int childProcessRamMb = 2048;
 
     @Option(name = "--dexCacheDir",
-            usage = "the directory to cache the pre-dexed libraries")
+        usage = "the directory to cache the pre-dexed libraries")
     String dexCacheDir = null;
 
     @Option(name = "--includeDangerousPermissions",
@@ -63,6 +68,10 @@ public final class Main {
     @Option(name = "--isForEmulator",
         usage = "Exclude native libraries for emulator.")
     boolean isForEmulator = false;
+
+    @Option(name = "--ext",
+        usage = "Specifies the build type to use.")
+    String ext = "apk";
   }
 
   private static CommandLineOptions commandLineOptions = new CommandLineOptions();
@@ -76,7 +85,7 @@ public final class Main {
   /**
    * Main entry point.
    *
-   * @param args  command line arguments
+   * @param args command line arguments
    */
   public static void main(String[] args) {
 
@@ -89,7 +98,7 @@ public final class Main {
       System.exit(1);
     }
 
-    ProjectBuilder projectBuilder = new ProjectBuilder();
+    ProjectBuilder projectBuilder = new ProjectBuilder(new NullStatReporter());
     ZipFile zip = null;
     try {
       zip = new ZipFile(commandLineOptions.inputZipFile);
@@ -106,7 +115,9 @@ public final class Main {
                                          commandLineOptions.includeDangerousPermissions,
                                          commandLineOptions.extensions,
                                          commandLineOptions.childProcessRamMb,
-                                         commandLineOptions.dexCacheDir, null);
+                                         commandLineOptions.dexCacheDir,
+                                         null,
+                                         AAB_EXTENSION_VALUE.equals(commandLineOptions.ext));
     System.exit(result.getResult());
   }
 

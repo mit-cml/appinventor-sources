@@ -121,6 +121,11 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     throw new UnsupportedOperationException("ChartBase.setChildHeight called");
   }
 
+  @Override
+  public List<Component> getChildren() {
+    return new ArrayList<Component>(dataComponents);
+  }
+
   /**
    * Returns the type of the Chart.
    *
