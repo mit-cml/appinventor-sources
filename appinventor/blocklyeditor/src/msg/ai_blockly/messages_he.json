@@ -694,7 +694,7 @@
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "ערך מפתח",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "בצע",
     "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT": "עבור כל %1 עם %2 במילון %3",
-    "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "בלוק טקסט זה לא מכיל מספר",
+    "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "בלוק טקסט זה לא מכיל מספר תקין",
     "Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TITLE": "מזג מילונים",
     "Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_TOOLTIP": "מעתיק את הזוגות מפתח-ערך ממילון ״מקור״ לתוך מילון ״יעד״",
     "Blockly.Msg.LANG_DICTIONARIES_COMBINE_DICTS_INPUT": "מזג לתוך מילון %1 מתוך מילון %2",
@@ -712,5 +712,8 @@
     "Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TITLE": "האם זהו מילון? %1",
     "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TOOLTIP": "בשימוש ברשימה ע״י מעבר על בלוק שביל מפתח, בודק כל צומת ברמה מסויימת במעבר",
     "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_ALL_TITLE": "עבור על כולם ברמה",
-    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TOOLTIP": "מתחיל מהמילון הנתון ועוקב אחרי המפתחות שלו ושל הילדים שלו בהתבסס על השביל הנתון, ומחזיר רשימת צמתים שנמצאו בסוף המעבר"
+    "Blockly.Msg.LANG_DICTIONARIES_WALK_TREE_TOOLTIP": "מתחיל מהמילון הנתון ועוקב אחרי המפתחות שלו ושל הילדים שלו בהתבסס על השביל הנתון, ומחזיר רשימת צמתים שנמצאו בסוף המעבר",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE": "קבלת ערך לנתיב המפתח שבתיקייה",
+    "Blockly.Msg.LANG_NO_ASSETS": "אין משאבים זמינים",
+    "Blockly.Msg.LANG_SCREENS_TITLE": "שם המסך: "
 }
