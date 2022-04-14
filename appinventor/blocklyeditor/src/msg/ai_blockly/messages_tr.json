@@ -701,5 +701,6 @@
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_INPUT": "sözlük",
     "Blockly.Msg.LANG_MATH_BITWISE_TOOLTIP_IOR": "İki sayının bit düzeyinde VEYA dahil değerini döndürür.",
     "Blockly.Msg.LANG_NO_ASSETS": "Kullanılabilir varlık yok",
-    "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE": "ne zaman "
+    "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE": "ne zaman ",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_INPUT": "%1 anahtar yolunda bulunan değeri %2 sözlüğünden al, eğer bulunamazsa %3 sözlüğünden al"
 }
