@@ -427,15 +427,15 @@ Blockly.Blocks.component_event = {
   },
   // Return a list of parameter names
   getParameters: function () {
-   /** @type {EventDescriptor} */
-   var defaultParameters = this.getDefaultParameters_();
-   var explicitParameterNames = this.getExplicitParameterNames_();
-   var params = [];
-   for (var i = 0; i < defaultParameters.length; i++) {
-     var paramName = explicitParameterNames[i] || defaultParameters[i].name;
-     params.push({name: paramName, type: defaultParameters[i].type});
-   }
-   return params;
+    /** @type {EventDescriptor} */
+    var defaultParameters = this.getDefaultParameters_();
+    var explicitParameterNames = this.getExplicitParameterNames_();
+    var params = [];
+    for (var i = 0; i < defaultParameters.length; i++) {
+      var paramName = explicitParameterNames[i] || defaultParameters[i].name;
+      params.push({name: paramName, type: defaultParameters[i].type});
+    }
+    return params;
   },
   getDefaultParameters_: function () {
     var eventType = this.getEventTypeObject();
