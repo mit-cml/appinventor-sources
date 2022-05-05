@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,7 +13,7 @@ import java.util.Arrays;
  * Mock Chart Data component for 2D data.
  * Applies to Area, Bar, Line, Pie, Scatter charts.
  *
- * In the future, this would also apply to Radar/Spider-web charts.
+ * <p>In the future, this would also apply to Radar/Spider-web charts.
  */
 public class MockChartData2D extends MockChartData {
   public static final String TYPE = "ChartData2D";

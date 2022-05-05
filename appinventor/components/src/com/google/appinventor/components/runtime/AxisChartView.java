@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,8 +8,10 @@ package com.google.appinventor.components.runtime;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import com.github.mikephil.charting.interfaces.datasets.IBarLineScatterCandleBubbleDataSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,16 +20,23 @@ import java.util.List;
  * have an axis.
  *
  * @see com.google.appinventor.components.runtime.ChartView
- * @param <C> Chart parameter (MPAndroidChart class for Chart view. Must be subclass of BarLineChartBase)
- * @param <D> Chart Data parameter (MPAndroidChart class for Chart data series collection. Must extend
- *            BarLineScatterCandleBubbleData)
+ * @param <E> MPAndroidChart class for Entry type.
+ * @param <T> MPAndroidChart class for DataSet collection.
+ * @param <D> MPAndroidChart class for ChartData series collection.
+ * @param <C> MPAndroidChart class for Chart view.
+ * @param <V> Type of the view for reflective operations
  */
-public abstract class AxisChartView<C extends BarLineChartBase,
-    D extends BarLineScatterCandleBubbleData> extends ChartView<C, D> {
+public abstract class AxisChartView<
+    E extends Entry,
+    T extends IBarLineScatterCandleBubbleDataSet<E>,
+    D extends BarLineScatterCandleBubbleData<T>,
+    C extends BarLineChartBase<D>,
+    V extends AxisChartView<E, T, D, C, V>
+    > extends ChartView<E, T, D, C, V> {
   // List containing Strings to use for the X Axis of the Axis Chart.
   // The first entry corresponds to an x value of 0, the second to
   // an x value of 1, and so on.
-  private List<String> axisLabels = new ArrayList<String>();
+  private List<String> axisLabels = new ArrayList<>();
 
   /**
    * Creates a new Axis Chart View with the specified Chart component
@@ -96,8 +105,8 @@ public abstract class AxisChartView<C extends BarLineChartBase,
   /**
    * Changes the List of X Axis labels to use for the Chart
    * to the specified List of Strings.
-   * <p>
-   * The first entry of the List corresponds to an x value of 0,
+   *
+   * <p>The first entry of the List corresponds to an x value of 0,
    * the second entry to an x value of 1, and so on.
    * If an entry is not present for an x value, a default value
    * (usually the numeric value) is used instead.

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import com.github.mikephil.charting.data.LineData;
 
+import com.github.mikephil.charting.data.LineDataSet;
 import java.util.List;
 
 /**
@@ -28,7 +29,9 @@ public class AreaChartDataModel extends LineChartBaseDataModel<AreaChartView> {
   @Override
   public void setColor(int argb) {
     super.setColor(argb);
-    dataset.setFillColor(argb); // Change fill color
+    if (dataset instanceof LineDataSet) {
+      ((LineDataSet) dataset).setFillColor(argb); // Change fill color
+    }
   }
 
   @Override
@@ -38,7 +41,9 @@ public class AreaChartDataModel extends LineChartBaseDataModel<AreaChartView> {
     // If the colors List is non-empty, use the first color
     // as the fill color.
     if (!colors.isEmpty()) {
-      dataset.setFillColor(colors.get(0));
+      if (dataset instanceof LineDataSet) {
+        ((LineDataSet) dataset).setFillColor(colors.get(0));
+      }
     }
   }
 
@@ -46,6 +51,9 @@ public class AreaChartDataModel extends LineChartBaseDataModel<AreaChartView> {
   protected void setDefaultStylingProperties() {
     super.setDefaultStylingProperties();
     dataset.setDrawFilled(true); // Enable fill underneath the lines
-    dataset.setFillAlpha(100); // Set fill color to be transparent (value of 100 out of 255)
+    if (dataset instanceof LineDataSet) {
+      // Set fill color to be transparent (value of 100 out of 255)
+      ((LineDataSet) dataset).setFillAlpha(100);
+    }
   }
 }

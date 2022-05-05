@@ -1,48 +1,58 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.util.Log;
-import com.google.appinventor.components.annotations.*;
+
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.*;
-import org.json.JSONException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
+import com.google.appinventor.components.runtime.util.CsvUtil;
+import com.google.appinventor.components.runtime.util.JsonUtil;
+import com.google.appinventor.components.runtime.util.YailList;
+
 import java.util.ArrayList;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.json.JSONException;
+
 @DesignerComponent(version = YaVersion.DATA_FILE_COMPONENT_VERSION,
-    description = "Component that allows reading CSV and JSON data." +
-        "The DataFile contains functionality relevant to accessing " +
-        "CSV or JSON parsed data in the form of rows or columns." +
-        "Can be used together with the ChartData2D component to import " +
-        "data directly from a file to the Chart. The component may also be " +
-        "dragged and dropped on a Chart after a file has been selected and " +
-        "parsed successfully to create ChartData components automatically from " +
-        "the file onto the Chart.",
+    description = "Component that allows reading CSV and JSON data. "
+        + "The DataFile contains functionality relevant to accessing "
+        + "CSV or JSON parsed data in the form of rows or columns. "
+        + "Can be used together with the ChartData2D component to import "
+        + "data directly from a file to the Chart. The component may also be "
+        + "dragged and dropped on a Chart after a file has been selected and "
+        + "parsed successfully to create ChartData components automatically from "
+        + "the file onto the Chart.",
     category = ComponentCategory.STORAGE,
     nonVisible = true,
     iconName = "images/dataFile.png")
 @SimpleObject
 public class DataFile extends FileBase implements DataSource<YailList, Future<YailList>> {
-  private String sourceFile;
 
   private YailList rows;
   private YailList columns;
   private YailList columnNames; // Elements of the first column
 
-  private ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
+  private final ExecutorService threadRunner; // Used to queue & execute asynchronous tasks
 
   /**
    * Creates a new DataFile component.
@@ -64,12 +74,12 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
    *
    * @return a YailList representing the parsed rows of the Data file.
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of rows corresponding" +
-      " to the Data File's content.")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Returns a list of rows corresponding to the Data File's content.")
   public YailList Rows() {
     return getYailListPropertyHelper(new Callable<YailList>() {
       @Override
-      public YailList call() throws Exception {
+      public YailList call() {
         return rows;
       }
     });
@@ -81,12 +91,12 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
    *
    * @return a YailList representing the parsed columns of the Data file.
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns a list of columns corresponding" +
-      " to the Data File's content.")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Returns a list of columns corresponding to the Data File's content.")
   public YailList Columns() {
     return getYailListPropertyHelper(new Callable<YailList>() {
       @Override
-      public YailList call() throws Exception {
+      public YailList call() {
         return columns;
       }
     });
@@ -99,12 +109,12 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
    *
    * @return a YailList containing the elements of the first row.
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns the elements of the first row" +
-      " of the Data File's contents.")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Returns the elements of the first row of the Data File's contents.")
   public YailList ColumnNames() {
     return getYailListPropertyHelper(new Callable<YailList>() {
       @Override
-      public YailList call() throws Exception {
+      public YailList call() {
         return columnNames;
       }
     });
@@ -113,8 +123,8 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
   /**
    * Helper method for retrieving YailList properties using blocking
    * calls. Used for Rows, Columns and ColumnNames properties.
-   * <p>
-   * The property to return has to be wrapped in a Callable and passed
+   *
+   * <p>The property to return has to be wrapped in a Callable and passed
    * to this method in order to return the updated variable (post-reading).
    * Passing in the property would not work as expected because the
    * variable would have to be final.
@@ -122,6 +132,7 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
    * @param propertyCallable Callable that returns the required YailList property
    * @return YailList property
    */
+  @SuppressWarnings("TryWithIdenticalCatches")
   private YailList getYailListPropertyHelper(Callable<YailList> propertyCallable) {
     // Since reading might be in progress, the task of
     // getting a DataFile property should be queued so that the
@@ -148,8 +159,7 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
    * @param source Source file name
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
-      defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
   public void SourceFile(String source) {
     // The SourceFile property is only set from the Designer, so the
     // only possibility is a media file. Since media file paths are
@@ -158,20 +168,30 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
     ReadFile("//" + source);
   }
 
-  @SimpleFunction(description = "Indicates source file to load data from." +
-      "The expected format of the contents of the file are either CSV or JSON." +
-      "Prefix the filename with / to read from a specific file on the SD card. " +
-      "for instance /myFile.txt will read the file /sdcard/myFile.txt. To read " +
-      "assets packaged with an application (also works for the Companion) start " +
-      "the filename with // (two slashes). If a filename does not start with a " +
-      "slash, it will be read from the applications private storage (for packaged " +
-      "apps) and from /sdcard/AppInventor/data for the Companion." +
-      "The results of the reading are stored in the Rows, Columns " +
-      "and ColumnNames properties of the component.")
-  public void ReadFile(String source) {
-    this.sourceFile = source;
+  /**
+   * Indicates source file to load data from. The expected format of the contents of the file
+   * are either CSV or JSON. Prefix the `fileName`{:.text.block} with `/` to read from a
+   * specific file on the SD card (for example, `/myFile.txt` will read the file
+   * `/sdcard/myFile.txt`). To read assets packaged with an application (also works for the
+   * Companion) start the `fileName`{:.text.block} with `//` (two slashes). If a
+   * `fileName`{:.text.block} does not start with a slash, it will be read from the application's
+   * private storage (for packaged apps) and from `/sdcard/AppInventor/data` for the Companion.
+   *
+   * @param fileName the file from which the data are read
+   */
+  @SimpleFunction(description = "Indicates source file to load data from. "
+      + "The expected format of the contents of the file are either CSV or JSON."
+      + "Prefix the filename with / to read from a specific file on the SD card. "
+      + "for instance /myFile.txt will read the file /sdcard/myFile.txt. To read "
+      + "assets packaged with an application (also works for the Companion) start "
+      + "the filename with // (two slashes). If a filename does not start with a "
+      + "slash, it will be read from the applications private storage (for packaged "
+      + "apps) and from /sdcard/AppInventor/data for the Companion."
+      + "The results of the reading are stored in the Rows, Columns "
+      + "and ColumnNames properties of the component.")
+  public void ReadFile(String fileName) {
 
-    readFromFile(sourceFile);
+    readFromFile(fileName);
   }
 
   /**
@@ -208,7 +228,7 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
       if (result.charAt(0) == '{') {
         try {
           // Parse columns from the result
-          columns = JsonUtil.getColumnsFromJSON(result);
+          columns = JsonUtil.getColumnsFromJson(result);
 
           // Construct row lists from columns
           rows = ChartDataSourceUtil.getTranspose(columns);
@@ -236,14 +256,14 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
   /**
    * Returns a Future object which holds the DataFile columns at the point
    * of invoking the method.
-   * <p>
-   * If reading is in progress, the method blocks until reading is done
+   *
+   * <p>If reading is in progress, the method blocks until reading is done
    * before returning the result.
-   * <p>
-   * The method should be called asynchronously to prevent freezing of
+   *
+   * <p>The method should be called asynchronously to prevent freezing of
    * the main thread.
-   * <p>
-   * The row size is contained in the method to create default values for the
+   *
+   * <p>The row size is contained in the method to create default values for the
    * CharDataModel in case of an absence of columns.
    *
    * @param columns List of columns to retrieve (String object entries expected)
@@ -257,7 +277,7 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
     return threadRunner.submit(new Callable<YailList>() {
       @Override
       public YailList call() {
-        ArrayList<YailList> resultingColumns = new ArrayList<YailList>();
+        ArrayList<YailList> resultingColumns = new ArrayList<>();
 
         // Iterate over the specified column names
         for (int i = 0; i < columns.size(); ++i) {
@@ -268,8 +288,7 @@ public class DataFile extends FileBase implements DataSource<YailList, Future<Ya
         }
 
         // Convert result to a YailList and return it
-        YailList csvColumns = YailList.makeList(resultingColumns);
-        return csvColumns;
+        return YailList.makeList(resultingColumns);
       }
     });
   }

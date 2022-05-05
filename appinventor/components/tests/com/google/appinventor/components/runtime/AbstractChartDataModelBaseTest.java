@@ -1,29 +1,31 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import static org.junit.Assert.assertEquals;
+
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.Entry;
+
 import com.google.appinventor.components.runtime.util.YailList;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Base class for ChartDataMod*el tests.
- * <p>
- * Tests the integration with the MPAndroidChart library
+ *
+ * <p>Tests the integration with the MPAndroidChart library
  * classes by actually operating on the Data Series objects.
  */
-public abstract class AbstractChartDataModelBaseTest<M extends ChartDataModel,
-    D extends ChartData> extends RobolectricTestBase {
+public abstract class AbstractChartDataModelBaseTest<M extends ChartDataModel<?, ?, ?, ?, ?>,
+    D extends ChartData<?>> extends RobolectricTestBase {
   protected M model;
   protected D data;
 
@@ -71,10 +73,10 @@ public abstract class AbstractChartDataModelBaseTest<M extends ChartDataModel,
   @Test
   public void testSetColors() {
     List<Integer> colors = new ArrayList<Integer>() {{
-      add(0xFFEEDDCC);
-      add(0xFFFFFFFF);
-      add(0xAABBCCDD);
-    }};
+        add(0xFFEEDDCC);
+        add(0xFFFFFFFF);
+        add(0xAABBCCDD);
+      }};
 
     model.setColors(colors);
 
@@ -95,7 +97,7 @@ public abstract class AbstractChartDataModelBaseTest<M extends ChartDataModel,
 
     for (int i = 0; i < model.getEntries().size(); ++i) {
       // Get the entry from the Data Series
-      Entry entry = (Entry) model.getEntries().get(i);
+      Entry entry = model.getEntries().get(i);
 
       // Get the expected entry
       Entry expectedEntry = expectedEntries.get(i);
@@ -110,7 +112,7 @@ public abstract class AbstractChartDataModelBaseTest<M extends ChartDataModel,
     assertExpectedEntriesHelper(expectedEntries);
   }
 
-  protected void importFromListHelper(List tuples, List<Entry> expectedEntries) {
+  protected void importFromListHelper(List<?> tuples, List<Entry> expectedEntries) {
     YailList pairs = YailList.makeList(tuples);
 
     // Import the data and assert all the entries
@@ -118,12 +120,12 @@ public abstract class AbstractChartDataModelBaseTest<M extends ChartDataModel,
     assertExpectedEntriesHelper(expectedEntries);
   }
 
-  protected void importFromListGenericHelper(List tuples, List<Entry> expectedEntries) {
+  protected void importFromListGenericHelper(List<?> tuples, List<Entry> expectedEntries) {
     model.importFromList(tuples);
     assertExpectedEntriesHelper(expectedEntries);
   }
 
-  protected void importFromCSVHelper(List<Entry> expectedEntries, YailList... columns) {
+  protected void importFromCsvHelper(List<Entry> expectedEntries, YailList... columns) {
     YailList columnList = YailList.makeList(columns);
 
     model.importFromColumns(columnList);
@@ -140,7 +142,8 @@ public abstract class AbstractChartDataModelBaseTest<M extends ChartDataModel,
     assertExpectedEntriesHelper(expectedEntries);
   }
 
-  protected void doesEntryExistHelper(List<YailList> tuples, YailList searchTuple, boolean expected) {
+  protected void doesEntryExistHelper(List<YailList> tuples, YailList searchTuple,
+      boolean expected) {
     YailList pairs = YailList.makeList(tuples);
 
     model.importFromList(pairs);
@@ -165,7 +168,7 @@ public abstract class AbstractChartDataModelBaseTest<M extends ChartDataModel,
   }
 
   protected void removeValuesHelper(List<YailList> tuples, List<Entry> expectedEntries,
-                                    List removeEntries) {
+                                    List<?> removeEntries) {
     // Import the data
     model.importFromList(tuples);
 

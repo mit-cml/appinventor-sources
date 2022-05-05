@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -121,6 +121,8 @@ public interface ProjectServiceAsync {
   void load(long projectId, String fileId, AsyncCallback<String> callback);
 
   /**
+   * Loads a data file asynchronously from the server.
+   *
    * @see ProjectService#loadDataFile(long, String)
    */
   void loadDataFile(long projectId, String fileId, AsyncCallback<List<List<String>>> callback);

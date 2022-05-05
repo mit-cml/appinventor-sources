@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,7 +15,8 @@ package com.google.appinventor.components.runtime;
  */
 public interface ObservableDataSource<K,V> extends DataSource<K,V> {
   /**
-   * Adds a new Chart Data observer to the Data Source
+   * Adds a new Chart Data observer to the Data Source.
+   *
    * @param dataComponent  Chart Data object to add as an observer
    */
   void addDataObserver(ChartDataBase dataComponent);
@@ -23,12 +24,14 @@ public interface ObservableDataSource<K,V> extends DataSource<K,V> {
   /**
    * Removes the specified Chart Data observer from the observers list,
    * if it exists.
+   *
    * @param dataComponent  Chart Data object to remove
    */
   void removeDataObserver(ChartDataBase dataComponent);
 
   /**
-   * Notifies the observers of a value change
+   * Notifies the observers of a value change.
+   *
    * @param key  key of the value that changed
    * @param newValue  new value
    */

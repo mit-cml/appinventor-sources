@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -814,11 +814,13 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns a data value corresponding to the provided key:
-   * latitude  - latitude value
-   * longitude - longitude value
-   * altitude  - altitude value
-   * speed     - speed value
+   * Returns a data value for a given key. Possible keys include:
+   * <ul>
+   *   <li>latitude  - latitude value</li>
+   *   <li>longitude - longitude value</li>
+   *   <li>altitude  - altitude value</li>
+   *   <li>speed     - speed value</li>
+   * </ul>
    *
    * @param key identifier of the value
    * @return    Value corresponding to the key, or 0 if key is undefined.

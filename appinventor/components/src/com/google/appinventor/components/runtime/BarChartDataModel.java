@@ -1,15 +1,16 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -20,12 +21,14 @@ import java.util.List;
 /**
  * Handles the data operations & model-specific styling for Bar
  * Chart data for the Chart component.
+ *
  * @see com.google.appinventor.components.runtime.ChartDataModel
- * TODO: The data model's operations can be optimized further to O(1) instead of O(n)
- * TODO: (mainly for FindEntryIndex) by making use of the property that the
- * TODO: x value corresponds to the index in the Bar Chart Data Model.
  */
-public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData, BarChartView> {
+// TODO: The data model's operations can be optimized further to O(1) instead of O(n)
+// TODO: (mainly for FindEntryIndex) by making use of the property that the
+// TODO: x value corresponds to the index in the Bar Chart Data Model.
+public class BarChartDataModel
+    extends Chart2DDataModel<BarEntry, IBarDataSet, BarData, BarChart, BarChartView> {
   /**
    * Initializes a new ChartDataModel object instance.
    *
@@ -48,7 +51,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData, Bar
     if (entry != null) {
       // Since Bar Chart entries use x values as indexes (which
       // are integers), we need to cast the entry's x value to an integer.
-      int xValue = (int)entry.getX();
+      int x = (int)entry.getX();
 
       // To ensure the two properties of the Bar Chart entries
       // (one of which is the property where entries are sorted
@@ -59,20 +62,20 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData, Bar
 
       // Negative x value is an invalid input (negative index);
       // Skip entry adding.
-      if (xValue < 0) {
+      if (x < 0) {
         return;
       }
 
       // X Value is less than the entry count of the Data Series;
       // This means that the value already exists
-      if (xValue < entries.size()) {
+      if (x < entries.size()) {
         // Use x value as index and update the entry in that position
-        entries.set(xValue, entry);
+        entries.set(x, entry);
       } else {
         // To ensure that the x value would correspond to
         // the index, missing values up until the x value
         // need to be filled (with 0 values)
-        while (entries.size() < xValue) {
+        while (entries.size() < x) {
           entries.add(new BarEntry(entries.size(), 0));
         }
 
@@ -91,16 +94,16 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData, Bar
       // Tuple is expected to have at least 2 entries.
       // The first entry is assumed to be the x value, and
       // the second is assumed to be the y value.
-      String xValue = tuple.getString(0);
-      String yValue = tuple.getString(1);
+      String rawX = tuple.getString(0);
+      String rawY = tuple.getString(1);
 
       try {
         // Attempt to parse the x and y value String representations.
         // Since the Bar Chart uses x entries as an index (so an
         // x value of 3 would correspond to the 4th entry [3rd index],
         // the float value has to be floored.
-        int x = (int)Math.floor(Float.parseFloat(xValue));
-        float y = Float.parseFloat(yValue);
+        int x = (int)Math.floor(Float.parseFloat(rawX));
+        float y = Float.parseFloat(rawY);
 
         return new BarEntry(x, y);
       } catch (NumberFormatException e) {
@@ -108,7 +111,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData, Bar
         this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
             "GetEntryFromTuple",
             ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
-            xValue, yValue);
+            rawX, rawY);
       }
     } catch (NullPointerException e) {
       this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,
@@ -174,8 +177,8 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData, Bar
     // of the decimal part. The offset is guaranteed to be
     // less than 1 (based on the source code and the chosen
     // granularity and spacing)
-    return Math.floor(e1.getX()) == Math.floor(e2.getX()) &&
-        e1.getY() == e2.getY();
+    return Math.floor(e1.getX()) == Math.floor(e2.getX())
+        && e1.getY() == e2.getY();
   }
 
   @Override
@@ -184,7 +187,7 @@ public class BarChartDataModel extends Chart2DDataModel<BarDataSet, BarData, Bar
     // convert the generic List to a YailList. Since Bar Chart
     // grouping adds offsets to the x value (which are expected
     // to be below 1), the x value needs to be floored.
-    List tupleEntries = Arrays.asList((float)Math.floor(entry.getX()), entry.getY());
+    List<Float> tupleEntries = Arrays.asList((float)Math.floor(entry.getX()), entry.getY());
     return YailList.makeList(tupleEntries);
   }
 }

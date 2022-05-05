@@ -1,22 +1,14 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.output.OdeLog;
-import org.pepstock.charba.client.data.BarDataset;
-import org.pepstock.charba.client.data.Data;
-import org.pepstock.charba.client.data.DataPoint;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.ErrorReporter;
+import org.pepstock.charba.client.data.BarDataset;
 
 /**
  * Chart Data Model for Bar Chart based views.
@@ -60,14 +52,14 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset, MockBa
     // TODO: maximum (much like the MockLineChartDataModel does now)
     // TODO: or have recalculations done, since if Data Series are
     // TODO: deleted, the y values can overlap between Data Series.
-    double yVal = chartData.getDatasets().size();
+    double startY = chartData.getDatasets().size();
 
     for (int i = 0; i < points; ++i) {
       // Construct the x and y values based on the index
-      double yValue = yVal + i;
+      double curY = startY + i;
 
       // Add an entry based on the constructed values
-      addEntryFromTuple((double) i, yValue);
+      addEntryFromTuple((double) i, curY);
     }
   }
 
@@ -75,11 +67,11 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset, MockBa
   public void addEntryFromTuple(String... tuple) {
     try {
       // Parse x and y values
-      double xValue = Double.parseDouble(tuple[0]);
-      double yValue = Double.parseDouble(tuple[1]);
+      double x = Double.parseDouble(tuple[0]);
+      double y = Double.parseDouble(tuple[1]);
 
       // Add an entry from the parsed values
-      addEntryFromTuple(xValue, yValue);
+      addEntryFromTuple(x, y);
     } catch (NumberFormatException e) {
       ErrorReporter.reportInfo(MESSAGES.invalidChartDataEntry());
     }
@@ -87,11 +79,11 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset, MockBa
 
   /**
    * Adds an entry to the Data Series from the specified tuple.
-   * <p>
-   * The tuple is expected to have at least 2 entries. All subsequent
+   *
+   * <p>The tuple is expected to have at least 2 entries. All subsequent
    * values are ignored.
-   * <p>
-   * The addEntryFromTuple method relies on the property that each
+   *
+   * <p>The addEntryFromTuple method relies on the property that each
    * entry in the Bar Chart corresponds to an index, meaning that
    * an x value directly corresponds to an index in the Data Series.
    * This also implies that the entries in the Data Series are
@@ -105,14 +97,14 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset, MockBa
     // The first entry of the tuple is expected to represent
     // the x value. Since the Bar Chart's x values are whole
     // numbers, the value has to be rounded.
-    int xValue = (int) Math.round(tuple[0]);
+    int x = (int) Math.round(tuple[0]);
 
     // The second entry of the tuple is expected to be the y value.
-    double yValue = tuple[1];
+    double y = tuple[1];
 
     // If x is less than 0, then skip the insertion, since
     // Bar Chart x values start from 0.
-    if (xValue < 0) {
+    if (x < 0) {
       return;
     }
 
@@ -124,14 +116,14 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset, MockBa
     // If the x value is less than the current number of
     // Data Series in the Chart, then the x value already
     // exists in the Data Series (by the sorted entries property)
-    if (xValue < dataSeries.getData().size()) {
+    if (x < dataSeries.getData().size()) {
       // Use x value as index to update the y value
-      dataSeries.getData().set(xValue, yValue);
+      dataSeries.getData().set(x, y);
     } else {
       // Fill Bar Data Series with empty values until the
       // size equals the x value (to preserve sorted entries
       // and index property)
-      while (dataSeries.getData().size() < xValue) {
+      while (dataSeries.getData().size() < x) {
         // Due to the way the Charba library currently
         // handles the getData method, if the current
         // number of Data entries is 0, the Data has to
@@ -148,9 +140,9 @@ public class MockBarChartDataModel extends MockChartDataModel<BarDataset, MockBa
       // (size becomes 1 bigger than the x value, so the
       // x value now represents the last index of the Data)
       if (dataSeries.getData().size() == 0) {
-        dataSeries.setData(yValue);
+        dataSeries.setData(y);
       } else {
-        dataSeries.getData().add(yValue);
+        dataSeries.getData().add(y);
       }
     }
   }

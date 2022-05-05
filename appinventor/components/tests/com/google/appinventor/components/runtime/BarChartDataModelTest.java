@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,19 +11,22 @@ import static junit.framework.Assert.assertTrue;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+
 import com.google.appinventor.components.runtime.util.YailList;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.junit.Test;
 
 /**
  * Test class for the Bar Chart Data Model.
  * Tests various data operations on Bar data.
  * @see AbstractChartDataModel2DTest
  */
-public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChartDataModel, BarData> {
+public class BarChartDataModelTest
+    extends AbstractChartDataModel2DTest<BarChartDataModel, BarData> {
 
   @Override
   public void setup() {
@@ -37,17 +40,17 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
    */
   @Override
   public void testAddEntryFromTuplePair() {
-      final float xValue = 0f;
-      final float yValue = 10f;
-      YailList tuple = createTuple(xValue, yValue);
+    final float x = 0f;
+    final float y = 10f;
+    YailList tuple = createTuple(x, y);
 
-      model.addEntryFromTuple(tuple);
+    model.addEntryFromTuple(tuple);
 
-      ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
+    ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
         add(createEntry(0f, 10f));
       }};
 
-      assertExpectedEntriesHelper(expectedEntries);
+    assertExpectedEntriesHelper(expectedEntries);
   }
 
   /**
@@ -64,8 +67,8 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
     model.addEntryFromTuple(tuple);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 4f));
-    }};
+        add(createEntry(0f, 4f));
+      }};
 
     assertExpectedEntriesHelper(expectedEntries);
   }
@@ -84,8 +87,8 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
     model.addEntryFromTuple(tuple);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 1f));
-    }};
+        add(createEntry(0f, 1f));
+      }};
 
     assertExpectedEntriesHelper(expectedEntries);
   }
@@ -104,11 +107,11 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
     model.addEntryFromTuple(tuple2);
 
     ArrayList<Entry> expectedEntries1 = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 0f));
-      add(createEntry(2f, 3f));
-      add(createEntry(3f, 1f));
-    }};
+        add(createEntry(0f, 0f));
+        add(createEntry(1f, 0f));
+        add(createEntry(2f, 3f));
+        add(createEntry(3f, 1f));
+      }};
 
     assertExpectedEntriesHelper(expectedEntries1);
 
@@ -116,11 +119,11 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
     model.addEntryFromTuple(tuple3);
 
     ArrayList<Entry> expectedEntries2 = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 0f));
-      add(createEntry(2f, 10f));
-      add(createEntry(3f, 1f));
-    }};
+        add(createEntry(0f, 0f));
+        add(createEntry(1f, 0f));
+        add(createEntry(2f, 10f));
+        add(createEntry(3f, 1f));
+      }};
 
     assertExpectedEntriesHelper(expectedEntries2);
   }
@@ -140,12 +143,12 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
     model.addEntryFromTuple(tuple2);
 
     ArrayList<Entry> expectedEntries1 = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 5f));
-      add(createEntry(2f, 0f));
-      add(createEntry(3f, 0f));
-      add(createEntry(4f, 7f));
-    }};
+        add(createEntry(0f, 0f));
+        add(createEntry(1f, 5f));
+        add(createEntry(2f, 0f));
+        add(createEntry(3f, 0f));
+        add(createEntry(4f, 7f));
+      }};
 
     assertExpectedEntriesHelper(expectedEntries1);
 
@@ -153,12 +156,12 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
     model.addEntryFromTuple(tuple3);
 
     ArrayList<Entry> expectedEntries2 = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 5f));
-      add(createEntry(2f, 0f));
-      add(createEntry(3f, 0f));
-      add(createEntry(4f, 15f));
-    }};
+        add(createEntry(0f, 0f));
+        add(createEntry(1f, 5f));
+        add(createEntry(2f, 0f));
+        add(createEntry(3f, 0f));
+        add(createEntry(4f, 15f));
+      }};
 
     assertExpectedEntriesHelper(expectedEntries2);
   }
@@ -175,7 +178,7 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
 
     model.addEntryFromTuple(tuple);
 
-    ArrayList<Entry> expectedEntries = new ArrayList<Entry>();
+    ArrayList<Entry> expectedEntries = new ArrayList<>();
     assertExpectedEntriesHelper(expectedEntries);
   }
 
@@ -193,17 +196,17 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
     model.addEntryFromTuple(tuple);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 0f));
-      add(createEntry(2f, 0f));
-      add(createEntry(3f, 0f));
-      add(createEntry(4f, 0f));
-      add(createEntry(5f, 0f));
-      add(createEntry(6f, 0f));
-      add(createEntry(7f, 0f));
-      add(createEntry(8f, 0f));
-      add(createEntry(9f, 3f));
-    }};
+        add(createEntry(0f, 0f));
+        add(createEntry(1f, 0f));
+        add(createEntry(2f, 0f));
+        add(createEntry(3f, 0f));
+        add(createEntry(4f, 0f));
+        add(createEntry(5f, 0f));
+        add(createEntry(6f, 0f));
+        add(createEntry(7f, 0f));
+        add(createEntry(8f, 0f));
+        add(createEntry(9f, 3f));
+      }};
 
     assertExpectedEntriesHelper(expectedEntries);
   }
@@ -211,11 +214,11 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
   @Override
   public void testFindEntryIndexExists() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(3f, 1f));
-      add(createTuple(4f, 6f));
-      add(createTuple(6f, -1f));
-      add(createTuple(7f, 3f));
-    }};
+        add(createTuple(3f, 1f));
+        add(createTuple(4f, 6f));
+        add(createTuple(6f, -1f));
+        add(createTuple(7f, 3f));
+      }};
 
     Entry searchEntry = createEntry(7f, 3f);
     final int expectedIndex = 7;
@@ -226,67 +229,67 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
   }
 
   @Override
-  public void testImportFromCSVUnevenColumns() {
-    YailList xColumn = createTuple("X", 0f, 4f, 5f, 6f);
-    YailList yColumn = createTuple("Y", -3f, 5f);
+  public void testImportFromCsvUnevenColumns() {
+    YailList xcolumn = createTuple("X", 0f, 4f, 5f, 6f);
+    YailList ycolumn = createTuple("Y", -3f, 5f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, -3f));
-      add(createEntry(1f, 0f));
-      add(createEntry(2f, 0f));
-      add(createEntry(3f, 0f));
-      add(createEntry(4f, 5f));
-    }};
+        add(createEntry(0f, -3f));
+        add(createEntry(1f, 0f));
+        add(createEntry(2f, 0f));
+        add(createEntry(3f, 0f));
+        add(createEntry(4f, 5f));
+      }};
 
-    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+    importFromCsvHelper(expectedEntries, xcolumn, ycolumn);
   }
 
   @Override
-  public void testImportFromCSVManyEntries() {
-    YailList xColumn = createTuple("X", 1f, 3f, 6f, 7f);
-    YailList yColumn = createTuple("Y", 10f, 5f, 3f, 9f);
+  public void testImportFromCsvManyEntries() {
+    YailList xcolumn = createTuple("X", 1f, 3f, 6f, 7f);
+    YailList ycolumn = createTuple("Y", 10f, 5f, 3f, 9f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 10f));
-      add(createEntry(2f, 0f));
-      add(createEntry(3f, 5f));
-      add(createEntry(4f, 0f));
-      add(createEntry(5f, 0f));
-      add(createEntry(6f, 3f));
-      add(createEntry(7f, 9f));
-    }};
+        add(createEntry(0f, 0f));
+        add(createEntry(1f, 10f));
+        add(createEntry(2f, 0f));
+        add(createEntry(3f, 5f));
+        add(createEntry(4f, 0f));
+        add(createEntry(5f, 0f));
+        add(createEntry(6f, 3f));
+        add(createEntry(7f, 9f));
+      }};
 
-    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+    importFromCsvHelper(expectedEntries, xcolumn, ycolumn);
   }
 
   @Override
-  public void testImportFromCSVOneEntry() {
-    YailList xColumn = createTuple("X", 4f);
-    YailList yColumn = createTuple("Y", 1f);
+  public void testImportFromCsvOneEntry() {
+    YailList xcolumn = createTuple("X", 4f);
+    YailList ycolumn = createTuple("Y", 1f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 0f));
-      add(createEntry(2f, 0f));
-      add(createEntry(3f, 0f));
-      add(createEntry(4f, 1f));
-    }};
+        add(createEntry(0f, 0f));
+        add(createEntry(1f, 0f));
+        add(createEntry(2f, 0f));
+        add(createEntry(3f, 0f));
+        add(createEntry(4f, 1f));
+      }};
 
-    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+    importFromCsvHelper(expectedEntries, xcolumn, ycolumn);
   }
 
   @Override
   public void testImportFromListDuplicates() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(0f, 5f));
-      add(createTuple(0f, 4f));
-      add(createTuple(0f, 9f));
-    }};
+        add(createTuple(0f, 5f));
+        add(createTuple(0f, 4f));
+        add(createTuple(0f, 9f));
+      }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 9f));
-    }};
+        add(createEntry(0f, 9f));
+      }};
 
     importFromListHelper(tuples, expectedEntries);
   }
@@ -294,23 +297,23 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
   @Override
   public void testImportFromListMultipleEntries() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(1f, 4f));
-      add(createTuple(4f, 2f));
-      add(createTuple(6f, -5f));
-      add(createTuple(7f, 3f));
-      add(createTuple(3f, 2f));
-    }};
+        add(createTuple(1f, 4f));
+        add(createTuple(4f, 2f));
+        add(createTuple(6f, -5f));
+        add(createTuple(7f, 3f));
+        add(createTuple(3f, 2f));
+      }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, 4f));
-      add(createEntry(2f, 0f));
-      add(createEntry(3f, 2f));
-      add(createEntry(4f, 2f));
-      add(createEntry(5f, 0f));
-      add(createEntry(6f, -5f));
-      add(createEntry(7f, 3f));
-    }};
+        add(createEntry(0f, 0f));
+        add(createEntry(1f, 4f));
+        add(createEntry(2f, 0f));
+        add(createEntry(3f, 2f));
+        add(createEntry(4f, 2f));
+        add(createEntry(5f, 0f));
+        add(createEntry(6f, -5f));
+        add(createEntry(7f, 3f));
+      }};
 
     importFromListHelper(tuples, expectedEntries);
   }
@@ -323,19 +326,19 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
   @Override
   public void testRemoveFromTupleExists() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(0f, 3f));
-      add(createTuple(1f, 7f));
-      add(createTuple(3f, 5f)); // The entry to be removed
-      add(createTuple(5f, 4f));
-    }};
+        add(createTuple(0f, 3f));
+        add(createTuple(1f, 7f));
+        add(createTuple(3f, 5f)); // The entry to be removed
+        add(createTuple(5f, 4f));
+      }};
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 3f));
-      add(createEntry(1f, 7f));
-      add(createEntry(2f, 0f));
-      add(createEntry(3f, 0f));
-      add(createEntry(4f, 0f));
-      add(createEntry(5f, 4f));
-    }};
+        add(createEntry(0f, 3f));
+        add(createEntry(1f, 7f));
+        add(createEntry(2f, 0f));
+        add(createEntry(3f, 0f));
+        add(createEntry(4f, 0f));
+        add(createEntry(5f, 4f));
+      }};
 
     YailList deleteTuple = createTuple(3f, 5f);
 
@@ -349,18 +352,18 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
   @Test
   public void testRemoveFromTupleLast() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(0f, 3f));
-      add(createTuple(2f, 4f));
-      add(createTuple(3f, 1f));
-      add(createTuple(4f, 5f)); // The entry to be removed
-    }};
+        add(createTuple(0f, 3f));
+        add(createTuple(2f, 4f));
+        add(createTuple(3f, 1f));
+        add(createTuple(4f, 5f)); // The entry to be removed
+      }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 3f));
-      add(createEntry(1f, 0f));
-      add(createEntry(2f, 4f));
-      add(createEntry(3f, 1f));
-    }};
+        add(createEntry(0f, 3f));
+        add(createEntry(1f, 0f));
+        add(createEntry(2f, 4f));
+        add(createEntry(3f, 1f));
+      }};
 
     YailList deleteTuple = createTuple(4f, 5f);
 
@@ -370,14 +373,14 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
   @Override
   public void testRemoveFromTupleMultipleEntries() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(1f, 1f));
-      add(createTuple(1f, 3f));
-      add(createTuple(1f, 2f));
-    }};
+        add(createTuple(1f, 1f));
+        add(createTuple(1f, 3f));
+        add(createTuple(1f, 2f));
+      }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-    }};
+        add(createEntry(0f, 0f));
+      }};
 
     YailList deleteTuple = createTuple(1f, 2f);
 
@@ -387,26 +390,26 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
   @Override
   public void testRemoveValuesNonExistentValues() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(0f, -1f));
-      add(createTuple(2f, 2f));
-      add(createTuple(4f, 4f));
-      add(createTuple(5f, -3f));
-    }};
+        add(createTuple(0f, -1f));
+        add(createTuple(2f, 2f));
+        add(createTuple(4f, 4f));
+        add(createTuple(5f, -3f));
+      }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, -1f));
-      add(createEntry(1f, 0f));
-      add(createEntry(2f, 2f));
-      add(createEntry(3f, 0f));
-    }};
+        add(createEntry(0f, -1f));
+        add(createEntry(1f, 0f));
+        add(createEntry(2f, 2f));
+        add(createEntry(3f, 0f));
+      }};
 
     // Remove entries
-    List<List> removeEntries = new ArrayList<List>() {{
-      add(createTuple(5f, -3f));
-      add(createTuple(4f, 4f));
-      add(createTuple(3f, 1f)); // Does not exist
-      add(createTuple(2f, 3f)); // Does not exist
-    }};
+    List<YailList> removeEntries = new ArrayList<YailList>() {{
+        add(createTuple(5f, -3f));
+        add(createTuple(4f, 4f));
+        add(createTuple(3f, 1f)); // Does not exist
+        add(createTuple(2f, 3f)); // Does not exist
+      }};
 
     removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
@@ -414,22 +417,22 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
   @Override
   public void testRemoveValuesSingleValue() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(1f, -3f));
-      add(createTuple(2f, 4f));
-      add(createTuple(4f, 5f));
-    }};
+        add(createTuple(1f, -3f));
+        add(createTuple(2f, 4f));
+        add(createTuple(4f, 5f));
+      }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 0f));
-      add(createEntry(1f, -3f));
-      add(createEntry(2f, 4f));
-      add(createEntry(3f, 0f));
-    }};
+        add(createEntry(0f, 0f));
+        add(createEntry(1f, -3f));
+        add(createEntry(2f, 4f));
+        add(createEntry(3f, 0f));
+      }};
 
     // Remove entries
-    List<List> removeEntries = new ArrayList<List>() {{
-      add(Arrays.asList(4f, 5f));
-    }};
+    List<List<Float>> removeEntries = new ArrayList<List<Float>>() {{
+        add(Arrays.asList(4f, 5f));
+      }};
 
     removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
@@ -437,31 +440,31 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
   @Override
   public void testRemoveValuesMultipleValues() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(0f, 0f));
-      add(createTuple(1f, 3f));
-      add(createTuple(3f, 7f));
-      add(createTuple(5f, 6f));
-      add(createTuple(6f, 4f));
-      add(createTuple(8f, 3f));
-    }};
+        add(createTuple(0f, 0f));
+        add(createTuple(1f, 3f));
+        add(createTuple(3f, 7f));
+        add(createTuple(5f, 6f));
+        add(createTuple(6f, 4f));
+        add(createTuple(8f, 3f));
+      }};
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f,0f));
-      add(createEntry(1f,0f));
-      add(createEntry(2f,0f));
-      add(createEntry(3f,7f));
-      add(createEntry(4f,0f));
-      add(createEntry(5f,0f));
-      add(createEntry(6f,4f));
-      add(createEntry(7f,0f));
-    }};
+        add(createEntry(0f,0f));
+        add(createEntry(1f,0f));
+        add(createEntry(2f,0f));
+        add(createEntry(3f,7f));
+        add(createEntry(4f,0f));
+        add(createEntry(5f,0f));
+        add(createEntry(6f,4f));
+        add(createEntry(7f,0f));
+      }};
 
     // Remove entries
-    List<List> removeEntries = new ArrayList<List>() {{
-      add(createTuple(1f, 3f));
-      add(createTuple(5f, 6f));
-      add(createTuple(8f, 3f));
-    }};
+    List<YailList> removeEntries = new ArrayList<YailList>() {{
+        add(createTuple(1f, 3f));
+        add(createTuple(5f, 6f));
+        add(createTuple(8f, 3f));
+      }};
 
     removeValuesHelper(tuples, expectedEntries, removeEntries);
   }
@@ -472,16 +475,16 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
    * blank entries in other Lists with default values.
    */
   @Test
-  public void testImportFromCSVUnevenColumnsBlankEntries() {
-    YailList xColumn = createTuple("X", 0f, 1f, "", "");
-    YailList yColumn = createTuple("Y", 1f, 3f, 5f, -4f);
+  public void testImportFromCsvUnevenColumnsBlankEntries() {
+    YailList xcolumn = createTuple("X", 0f, 1f, "", "");
+    YailList ycolumn = createTuple("Y", 1f, 3f, 5f, -4f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 1f));
-      add(createEntry(1f, 3f));
-    }};
+        add(createEntry(0f, 1f));
+        add(createEntry(1f, 3f));
+      }};
 
-    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+    importFromCsvHelper(expectedEntries, xcolumn, ycolumn);
   }
 
   /**
@@ -491,24 +494,24 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
    * 2 for second, ...)
    */
   @Test
-  public void testImportFromCSVEmptyColumn() {
-    YailList xColumn = createTuple();
-    YailList yColumn = createTuple("Y", 1f, 3f, 4f, -3f);
+  public void testImportFromCsvEmptyColumn() {
+    YailList xcolumn = createTuple();
+    YailList ycolumn = createTuple("Y", 1f, 3f, 4f, -3f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 1f));
-      add(createEntry(1f, 3f));
-      add(createEntry(2f, 4f));
-      add(createEntry(3f, -3f));
-    }};
+        add(createEntry(0f, 1f));
+        add(createEntry(1f, 3f));
+        add(createEntry(2f, 4f));
+        add(createEntry(3f, -3f));
+      }};
 
-    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+    importFromCsvHelper(expectedEntries, xcolumn, ycolumn);
   }
 
   /**
    * Test to ensure that checking for criterion satisfaction with the
    * X Value criterion and an integer x value while checking against an
-   * Entry which has a decimal x value returns true (since x value is floored)
+   * Entry which has a decimal x value returns true (since x value is floored).
    */
   @Test
   public void testCriterionSatisfiedXDecimalMatch() {
@@ -539,7 +542,7 @@ public class BarChartDataModelTest extends AbstractChartDataModel2DTest<BarChart
    * Test case to ensure that checking for Entry
    * equality between two entries which have the
    * same y value and x values with differing
-   * decimal parts returns true (since values are floored)
+   * decimal parts returns true (since values are floored).
    */
   @Test
   public void testEntriesEqualDecimalXValues() {

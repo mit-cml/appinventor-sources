@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,15 +10,18 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import android.graphics.Color;
+
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieEntry;
+
 import com.google.appinventor.components.runtime.util.YailList;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Test;
 
 /**
  * Test class for the Pie Chart Data Model.
@@ -26,7 +29,8 @@ import java.util.List;
  *
  * @see AbstractChartDataModel2DTest
  */
-public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChartDataModel, PieData> {
+public class PieChartDataModelTest
+    extends AbstractChartDataModel2DTest<PieChartDataModel, PieData> {
   private PieChartView chartView;
   private List<LegendEntry> legendEntries;
 
@@ -37,18 +41,18 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
    * 2 for second, ...)
    */
   @Test
-  public void testImportFromCSVEmptyColumn() {
-    YailList xColumn = createTuple();
-    YailList yColumn = createTuple("Y", 3f, 5f, -3f, 7f);
+  public void testImportFromCsvEmptyColumn() {
+    YailList xcolumn = createTuple();
+    YailList ycolumn = createTuple("Y", 3f, 5f, -3f, 7f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry("0", 3f));
-      add(createEntry("1", 5f));
-      add(createEntry("2", -3f));
-      add(createEntry("3", 7f));
-    }};
+        add(createEntry("0", 3f));
+        add(createEntry("1", 5f));
+        add(createEntry("2", -3f));
+        add(createEntry("3", 7f));
+      }};
 
-    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+    importFromCsvHelper(expectedEntries, xcolumn, ycolumn);
   }
 
 
@@ -122,15 +126,15 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
     final int color = Color.BLUE;
 
     List<Integer> colorList = new ArrayList<Integer>() {{
-      add(color);
-    }};
+        add(color);
+      }};
 
     List<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple("Entry", 3f));
-      add(createTuple("Entry 2", 4f));
-      add(createTuple("Entry 3", 2f));
-      add(createTuple("Entry 4", 9f));
-    }};
+        add(createTuple("Entry", 3f));
+        add(createTuple("Entry 2", 4f));
+        add(createTuple("Entry 3", 2f));
+        add(createTuple("Entry 4", 9f));
+      }};
 
     int[] expectedColors = {
         color,
@@ -151,20 +155,20 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
   @Test
   public void testSetColorsMultipleColors() {
     List<Integer> colorList = new ArrayList<Integer>() {{
-      add(Color.RED);
-      add(Color.GREEN);
-      add(Color.BLUE);
-      add(Color.YELLOW);
-      add(Color.CYAN);
-    }};
+        add(Color.RED);
+        add(Color.GREEN);
+        add(Color.BLUE);
+        add(Color.YELLOW);
+        add(Color.CYAN);
+      }};
 
     List<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple("Entry", 32f));
-      add(createTuple("Entry 2", 40f));
-      add(createTuple("Entry 3", 25f));
-      add(createTuple("Entry 4", 15f));
-      add(createTuple("Entry 5", 10f));
-    }};
+        add(createTuple("Entry", 32f));
+        add(createTuple("Entry 2", 40f));
+        add(createTuple("Entry 3", 25f));
+        add(createTuple("Entry 4", 15f));
+        add(createTuple("Entry 5", 10f));
+      }};
 
     int[] expectedColors = {
         Color.RED,
@@ -179,7 +183,7 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
 
   /**
    * Test to ensure that setting the Colors property
-   * with a List containing multiple entries and less
+   * with a List containing multiple entries and fewer
    * colors than entries properly sets the colors of
    * the Data Series and the color for each individual entry
    * is alternated properly between the set colors.
@@ -187,20 +191,20 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
   @Test
   public void testSetColorsMultipleEntriesRepeatColors() {
     List<Integer> colorList = new ArrayList<Integer>() {{
-      add(Color.RED);
-      add(Color.GREEN);
-      add(Color.BLUE);
-    }};
+        add(Color.RED);
+        add(Color.GREEN);
+        add(Color.BLUE);
+      }};
 
     List<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple("Entry", 32f));
-      add(createTuple("Entry 2", 40f));
-      add(createTuple("Entry 3", 25f));
-      add(createTuple("Entry 4", 15f));
-      add(createTuple("Entry 5", 10f));
-      add(createTuple("Entry 6", 7f));
-      add(createTuple("Entry 7", 3f));
-    }};
+        add(createTuple("Entry", 32f));
+        add(createTuple("Entry 2", 40f));
+        add(createTuple("Entry 3", 25f));
+        add(createTuple("Entry 4", 15f));
+        add(createTuple("Entry 5", 10f));
+        add(createTuple("Entry 6", 7f));
+        add(createTuple("Entry 7", 3f));
+      }};
 
     int[] expectedColors = {
         Color.RED,
@@ -232,7 +236,7 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
   /**
    * Test case to ensure that adding a single entry
    * adds the appropriate Legend Entry with the x value
-   * as the label and the value color as the color
+   * as the label and the value color as the color.
    */
   @Test
   public void testCheckLegendSingleEntry() {
@@ -253,7 +257,7 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
    * Test case to ensure that adding multiple entries
    * to the Data Series adds the appropriate Legend
    * Entries representing the values (x values as labels
-   * and value colors as Legend colors)
+   * and value colors as Legend colors).
    */
   @Test
   public void testCheckLegendMultipleEntries() {
@@ -261,11 +265,11 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
     model.setColor(color);
 
     List<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple("Entry 1", 5f));
-      add(createTuple("Entry 2", 3f));
-      add(createTuple("test", 7f));
-      add(createTuple("test 2", 1f));
-    }};
+        add(createTuple("Entry 1", 5f));
+        add(createTuple("Entry 2", 3f));
+        add(createTuple("test", 7f));
+        add(createTuple("test 2", 1f));
+      }};
 
     model.importFromList(tuples);
 
@@ -324,11 +328,11 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
     model.setColor(color);
 
     List<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple("Entry 1", 5f));
-      add(createTuple("Entry 2", 3f));
-      add(createTuple("Entry 3", 7f));
-      add(createTuple("Entry 4", 1f));
-    }};
+        add(createTuple("Entry 1", 5f));
+        add(createTuple("Entry 2", 3f));
+        add(createTuple("Entry 3", 7f));
+        add(createTuple("Entry 4", 1f));
+      }};
 
     model.importFromList(tuples);
     model.removeEntryFromTuple(createTuple("Entry 2", 3f));
@@ -350,23 +354,23 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
   @Test
   public void testCheckLegendRemoveMultipleEntries() {
     List<Integer> colorList = new ArrayList<Integer>() {{
-      add(Color.RED);
-      add(Color.GREEN);
-      add(Color.BLUE);
-      add(Color.CYAN);
-      add(Color.YELLOW);
-    }};
+        add(Color.RED);
+        add(Color.GREEN);
+        add(Color.BLUE);
+        add(Color.CYAN);
+        add(Color.YELLOW);
+      }};
 
     model.setColors(colorList);
 
     List<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple("Entry", 5f));
-      add(createTuple("Test", 5f));
-      add(createTuple("Random", 1f));
-      add(createTuple("Slice", 12f));
-      add(createTuple("Pie Slice", 10f));
-      add(createTuple("test", 17f));
-    }};
+        add(createTuple("Entry", 5f));
+        add(createTuple("Test", 5f));
+        add(createTuple("Random", 1f));
+        add(createTuple("Slice", 12f));
+        add(createTuple("Pie Slice", 10f));
+        add(createTuple("test", 17f));
+      }};
 
     model.importFromList(tuples);
     model.removeEntryFromTuple(createTuple("Entry", 5f));
@@ -389,20 +393,20 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
   @Test
   public void testCheckLegendClearEntries() {
     List<Integer> colorList = new ArrayList<Integer>() {{
-      add(Color.RED);
-      add(Color.GREEN);
-      add(Color.BLUE);
-      add(Color.CYAN);
-    }};
+        add(Color.RED);
+        add(Color.GREEN);
+        add(Color.BLUE);
+        add(Color.CYAN);
+      }};
 
     model.setColors(colorList);
 
     List<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple("Entry", 5f));
-      add(createTuple("Test", 5f));
-      add(createTuple("Random", 1f));
-      add(createTuple("Slice", 12f));
-    }};
+        add(createTuple("Entry", 5f));
+        add(createTuple("Test", 5f));
+        add(createTuple("Random", 1f));
+        add(createTuple("Slice", 12f));
+      }};
 
     model.importFromList(tuples);
     model.clearEntries();
@@ -456,18 +460,18 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
    * x values with empty Strings.
    */
   @Test
-  public void testImportFromCSVUnevenColumnsXValue() {
-    YailList xColumn = createTuple("X", "Entry 1", "Entry 2");
-    YailList yColumn = createTuple("Y", 20f, 30f, 40f, 50f);
+  public void testImportFromCsvUnevenColumnsXValue() {
+    YailList xcolumn = createTuple("X", "Entry 1", "Entry 2");
+    YailList ycolumn = createTuple("Y", 20f, 30f, 40f, 50f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry("Entry 1", 20f));
-      add(createEntry("Entry 2", 30f));
-      add(createEntry("", 40f));
-      add(createEntry("", 50f));
-    }};
+        add(createEntry("Entry 1", 20f));
+        add(createEntry("Entry 2", 30f));
+        add(createEntry("", 40f));
+        add(createEntry("", 50f));
+      }};
 
-    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+    importFromCsvHelper(expectedEntries, xcolumn, ycolumn);
   }
 
   /**
@@ -477,13 +481,13 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
   @Test
   public void testFindEntryIndexExistsMultiple() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple("Test", 3f));
-      add(createTuple("Test", 2f));
-      add(createTuple("Entry", 1f));
-      add(createTuple("Entry", 3f));
-      add(createTuple("Entry", 3f));
-      add(createTuple("Entry 2", 4f));
-    }};
+        add(createTuple("Test", 3f));
+        add(createTuple("Test", 2f));
+        add(createTuple("Entry", 1f));
+        add(createTuple("Entry", 3f));
+        add(createTuple("Entry", 3f));
+        add(createTuple("Entry 2", 4f));
+      }};
 
     Entry searchEntry = createEntry("Entry", 3f);
     final int expectedIndex = 3;
@@ -503,7 +507,8 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
     }
   }
 
-  private void setColorsHelper(List colorList, List<YailList> tuples, int[] expectedColors) {
+  private void setColorsHelper(List<Integer> colorList, List<YailList> tuples,
+      int[] expectedColors) {
     model.setColors(colorList);
     model.importFromList(tuples);
 
@@ -543,10 +548,10 @@ public class PieChartDataModelTest extends AbstractChartDataModel2DTest<PieChart
 
   @Override
   protected Entry createEntry(Object... entries) {
-    String xValue = entries[0].toString();
-    float yValue = (float) entries[1];
+    String x = entries[0].toString();
+    float y = (float) entries[1];
 
-    return new PieEntry(yValue, xValue);
+    return new PieEntry(y, x);
   }
 
   private LegendEntry createLegendEntry(String x, int color) {

@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
@@ -13,14 +14,17 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import android.widget.RelativeLayout;
+
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.LegendEntry;
+
 import com.google.appinventor.components.common.ComponentConstants;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Test class for the Pie Chart View.
@@ -29,9 +33,12 @@ import java.util.List;
  *
  * @see com.google.appinventor.components.runtime.AbstractChartTest
  */
-public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
+public class PieChartTest extends AbstractChartTest<PieChart, PieChartView> {
   private RelativeLayout rootView;
 
+  /**
+   * Prepare the test.
+   */
   @Before
   public void setUp() {
     super.setUp();
@@ -53,7 +60,7 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
   @Override
   public void testCreateChartModel() {
     // Get model and assert that it is of the appropriate type
-    ChartDataModel model = chartView.createChartModel();
+    ChartDataModel<?, ?, ?, ?, ?> model = chartView.createChartModel();
     assertThat(model, instanceOf(PieChartDataModel.class));
 
     // Assert that the new Pie Chart ring has been added to the root ivew
@@ -75,8 +82,8 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
    * Test case to ensure that setting the Pie Radius
    * of the Chart while the type is of type Pie Chart
    * actually has effect on the radius.
-   * <p>
-   * Since the calculated values are non-direct, for
+   *
+   * <p>Since the calculated values are non-direct, for
    * simplicity, this test case tests a non-full Pie Chart
    * fill and a full fill, the difference between them being
    * that the full fill disables hole drawing, and the partial
@@ -122,7 +129,7 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
   @Test
   public void testAddMultipleLegendEntries() {
     final int entries = 5;
-    List<LegendEntry> expectedEntries = new ArrayList<LegendEntry>();
+    List<LegendEntry> expectedEntries = new ArrayList<>();
 
     for (int i = 0; i < entries; ++i) {
       LegendEntry entry = new LegendEntry();
@@ -155,7 +162,7 @@ public class PieChartTest extends AbstractChartTest<PieChartView, PieChart> {
   @Test
   public void testRemoveLegendEntry() {
     int entries = 4;
-    List<LegendEntry> expectedEntries = new ArrayList<LegendEntry>();
+    List<LegendEntry> expectedEntries = new ArrayList<>();
 
     for (int i = 0; i < entries; ++i) {
       LegendEntry entry = new LegendEntry();

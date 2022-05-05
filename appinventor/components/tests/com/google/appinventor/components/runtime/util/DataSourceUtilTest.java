@@ -1,17 +1,16 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
-
-import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
 import java.util.Arrays;
 import java.util.Collections;
+import org.junit.Test;
 
 /**
  * Unit tests for the ChartDataSourceUtil utility class.
@@ -124,7 +123,7 @@ public class DataSourceUtilTest {
   /**
    * Test case to ensure that retrieving the transpose from
    * a matrix containing a single List returns the appropriate
-   * transpose containing a List entry for each matrix entry
+   * transpose containing a List entry for each matrix entry.
    */
   @Test
   public void testGetTransposeSingleEntryMultipleColumns() {
@@ -243,12 +242,12 @@ public class DataSourceUtilTest {
     YailList rows = YailList.makeList(Arrays.asList(row1, row2, row3));
     YailList columns = ChartDataSourceUtil.getTranspose(rows);
 
-    YailList column1 = YailList.makeList(Arrays.asList("X", "Y", "Z"));
-    YailList column2 = YailList.makeList(Arrays.asList("1", "2", "3"));
-    YailList column3 = YailList.makeList(Arrays.asList("2", "3", "4"));
-    YailList column4 = YailList.makeList(Arrays.asList("3", "4", ""));
-    YailList column5 = YailList.makeList(Arrays.asList("", "5", ""));
-    YailList expected = YailList.makeList(Arrays.asList(column1, column2, column3, column4, column5));
+    YailList col1 = YailList.makeList(Arrays.asList("X", "Y", "Z"));
+    YailList col2 = YailList.makeList(Arrays.asList("1", "2", "3"));
+    YailList col3 = YailList.makeList(Arrays.asList("2", "3", "4"));
+    YailList col4 = YailList.makeList(Arrays.asList("3", "4", ""));
+    YailList col5 = YailList.makeList(Arrays.asList("", "5", ""));
+    YailList expected = YailList.makeList(Arrays.asList(col1, col2, col3, col4, col5));
 
     assertEquals(expected, columns);
   }
@@ -256,7 +255,7 @@ public class DataSourceUtilTest {
   /**
    * Test to ensure that the transpose property is satisfied
    * (taking the transpose of the transpose of a matrix returns
-   * the matrix itself)
+   * the matrix itself).
    */
   @Test
   public void testTransposeProperty() {

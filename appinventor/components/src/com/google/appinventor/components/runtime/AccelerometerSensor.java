@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -554,10 +554,14 @@ public int getDeviceDefaultOrientation() {
   }
 
   /**
-   * Returns a data value corresponding to the provided key:
-   * X - x direction acceleration
-   * Y - y direction acceleration
-   * Z - z direction acceleration
+   * Returns a data value.
+   *
+   * <p>The key can be one of:</p>
+   * <ul>
+   * <li>X - x direction acceleration</li>
+   * <li>Y - y direction acceleration</li>
+   * <li>Z - z direction acceleration</li>
+   * </ul>
    *
    * @param key identifier of the value
    * @return    Value corresponding to the key, or 0 if key is undefined.

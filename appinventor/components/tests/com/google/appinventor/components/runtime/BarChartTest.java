@@ -1,22 +1,26 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import com.github.mikephil.charting.charts.BarChart;
-import com.google.appinventor.components.common.ComponentConstants;
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 
-public class BarChartTest extends AbstractAxisChartTest<BarChartView, BarChart> {
+import com.github.mikephil.charting.charts.BarChart;
+
+import com.google.appinventor.components.common.ComponentConstants;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class BarChartTest extends AbstractAxisChartTest<BarChart, BarChartView> {
   @Before
+  @Override
   public void setUp() {
     super.setUp();
 
@@ -34,7 +38,7 @@ public class BarChartTest extends AbstractAxisChartTest<BarChartView, BarChart> 
 
   @Override
   public void testCreateChartModel() {
-    ChartDataModel model = chartComponent.createChartModel();
+    ChartDataModel<?, ?, ?, ?, ?> model = chartComponent.createChartModel();
 
     assertThat(model, instanceOf(BarChartDataModel.class));
     assertEquals(chart.getData(), model.getData());
@@ -43,18 +47,18 @@ public class BarChartTest extends AbstractAxisChartTest<BarChartView, BarChart> 
   /**
    * Test case to ensure that creating multiple Chart models
    * changes the bar width of the Bar Chart (effective resizing
-   * to fit groups of bars)
+   * to fit groups of bars).
    */
   @Test
   public void testCreateMultipleChartModels() {
-    ChartDataModel model1 = chartComponent.createChartModel();
+    chartComponent.createChartModel();
     float barWidth = chart.getData().getBarWidth();
 
-    ChartDataModel model2 = chartComponent.createChartModel();
+    chartComponent.createChartModel();
     assertNotSame(chart.getData().getBarWidth(), barWidth);
     barWidth = chart.getData().getBarWidth();
 
-    ChartDataModel model3 = chartComponent.createChartModel();
+    chartComponent.createChartModel();
     assertNotSame(chart.getData().getBarWidth(), barWidth);
   }
 

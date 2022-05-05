@@ -1,21 +1,26 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
+
 import android.view.View;
+
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.ChartData;
+import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Base class to represent Chart Views. The class (and subclasses)
@@ -24,10 +29,19 @@ import java.util.concurrent.atomic.AtomicReference;
  * class should not handle data operations directly, and is created
  * to abstract the view from the data.
  * The subclasses represent each concrete chart (e.g. Line or Bar Views)
- * @param <C>  Chart type (MPAndroidChart Chart class)
- * @param <D>  Chart Data type (MPAndroidChart ChartData class)
+ *
+ * @param <E> MPAndroidChart class for Entry type.
+ * @param <T> MPAndroidChart class for DataSet collection.
+ * @param <D> MPAndroidChart class for ChartData series collection.
+ * @param <C> MPAndroidChart class for Chart view.
+ * @param <V> Type of the view for reflective operations
  */
-public abstract class ChartView<C extends Chart, D extends ChartData> {
+public abstract class ChartView<
+    E extends Entry,
+    T extends IDataSet<E>,
+    D extends ChartData<T>,
+    C extends Chart<D>,
+    V extends ChartView<E, T, D, C, V>> {
   // Keep track of the parent Chart component to be able to report
   // detailed errors & warnings.
   protected com.google.appinventor.components.runtime.Chart chartComponent;
@@ -36,15 +50,7 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
   protected C chart;
   protected D data;
 
-  protected Handler uiHandler = new Handler();
-
-  /**
-   * Used to store a single Runnable to refresh the Chart.
-   * The AtomicReference acts as an accumulator in throttling the
-   * number of refreshes to limit the refresh rate to a single refreesh
-   * per certain time frame.
-   */
-  private AtomicReference<Runnable> refreshRunnable = new AtomicReference<Runnable>();
+  protected Handler uiHandler = new Handler(Looper.myLooper());
 
   /**
    * Creates a new Chart View with the specified Chart component
@@ -103,7 +109,7 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
    *
    * @return Chart Model instance
    */
-  public abstract ChartDataModel createChartModel();
+  public abstract ChartDataModel<E, T, D, C, V> createChartModel();
 
   /**
    * Sets the necessary default settings for the Chart view.
@@ -117,7 +123,7 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
   /**
    * Refreshes the Chart View to react to styling changes.
    */
-  public void Refresh() {
+  public void refresh() {
     chart.invalidate();
   }
 
@@ -127,7 +133,7 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
    *
    * @param model Chart Data Model to update & refresh
    */
-  public void Refresh(final ChartDataModel model) {
+  public void refresh(final ChartDataModel<E, T, D, C, V> model) {
     // Create a new RefreshTask with the model's current List of Entries
     RefreshTask refreshTask = new RefreshTask(model.getEntries());
 
@@ -141,51 +147,59 @@ public abstract class ChartView<C extends Chart, D extends ChartData> {
    * copy of the data, and re-setting it to the currently refreshed Chart Data
    * Model, while also updating the Chart itself and invalidating the View.
    */
-  private class RefreshTask extends AsyncTask<ChartDataModel, Void, ChartDataModel> {
+  @SuppressLint("StaticFieldLeak")
+  private class RefreshTask
+      extends AsyncTask<ChartDataModel<E, T, D, C, V>, Void, ChartDataModel<E, T, D, C, V>> {
 
     // Local copy of latest Chart Entries
-    private List<Entry> mEntries;
+    private final List<E> entries;
 
-    public RefreshTask(List<Entry> entries) {
+    public RefreshTask(List<E> entries) {
       // Create a copy of the passed in Entries List.
-      mEntries = new ArrayList<Entry>(entries);
+      this.entries = new ArrayList<>(entries);
     }
 
+    @SafeVarargs
     @Override
-    protected ChartDataModel doInBackground(ChartDataModel... chartDataModels) {
+    protected final ChartDataModel<E, T, D, C, V> doInBackground(
+        ChartDataModel<E, T, D, C, V>... chartDataModels) {
       // All the work should be done on the UI thread; Simply pass the first
       // passed in Chart Data Model (expect non-null, non-empty var args)
       return chartDataModels[0];
     }
 
     @Override
-    protected void onPostExecute(ChartDataModel result) {
+    protected void onPostExecute(ChartDataModel<E, T, D, C, V> result) {
       // Refresh the Chart and the Data Model with the
       // local Entries List copy. This is done on the UI
       // thread to avoid exceptions (onPostExecute runs
       // on the UI)
-      Refresh(result, mEntries);
+      refresh(result, entries);
     }
   }
 
   /**
    * Sets the specified List of Entries to the specified Chart Data
    * Model and refreshes the local Chart View.
-   * <p>
-   * To be used after updating a ChartDataModel's entries to display
+   *
+   * <p>To be used after updating a ChartDataModel's entries to display
    * the changes on the Chart itself.
-   * <p>
-   * Values are overwritten with the specified List of entries.
+   *
+   * <p>Values are overwritten with the specified List of entries.
    *
    * @param model   Chart Data Model to update
    * @param entries List of entries to set to the Chart Data Model
    */
-  protected void Refresh(ChartDataModel model, List<Entry> entries) {
+  @SuppressWarnings("unchecked")
+  protected void refresh(ChartDataModel<E, T, D, C, V> model, List<E> entries) {
     // Set the specified Entries to the Data Set. This is used to
     // prevent exceptions on quick data changing operations (so that
     // the invalidation/refreshing can keep up and inconsistent states
     // would not be caused by asynchronous operations)
-    model.getDataset().setValues(entries);
+    T dataset = model.getDataset();
+    if (dataset instanceof DataSet) {
+      ((DataSet<E>) dataset).setValues(entries);
+    }
 
     // Notify the Data component of data changes (needs to be called
     // when Datasets get changed directly)

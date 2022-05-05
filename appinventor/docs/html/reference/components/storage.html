@@ -245,8 +245,14 @@
 <h3 id="DataFile-Methods">Methods</h3>
 
 <dl class="methods">
-  <dt id="DataFile.ReadFile" class="method"><i></i> ReadFile(<em class="text">source</em>)</dt>
-  <dd>Indicates source file to load data from.The expected format of the contents of the file are either CSV or JSON.Prefix the filename with / to read from a specific file on the SD card. for instance /myFile.txt will read the file /sdcard/myFile.txt. To read assets packaged with an application (also works for the Companion) start the filename with // (two slashes). If a filename does not start with a slash, it will be read from the applications private storage (for packaged apps) and from /sdcard/AppInventor/data for the Companion.The results of the reading are stored in the Rows, Columns and ColumnNames properties of the component.</dd>
+  <dt id="DataFile.ReadFile" class="method"><i></i> ReadFile(<em class="text">fileName</em>)</dt>
+  <dd>Indicates source file to load data from. The expected format of the contents of the file
+ are either CSV or JSON. Prefix the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">/</code> to read from a
+ specific file on the SD card (for example, <code class="highlighter-rouge">/myFile.txt</code> will read the file
+ <code class="highlighter-rouge">/sdcard/myFile.txt</code>). To read assets packaged with an application (also works for the
+ Companion) start the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">//</code> (two slashes). If a
+ <code class="text block highlighter-rouge">fileName</code> does not start with a slash, it will be read from the application’s
+ private storage (for packaged apps) and from <code class="highlighter-rouge">/sdcard/AppInventor/data</code> for the Companion.</dd>
 </dl>
 
 <h2 id="File">File</h2>

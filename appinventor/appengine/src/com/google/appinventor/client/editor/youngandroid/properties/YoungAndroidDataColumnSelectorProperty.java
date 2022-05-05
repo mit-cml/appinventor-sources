@@ -1,29 +1,34 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.youngandroid.properties;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.editor.simple.components.DataFileChangeListener;
 import com.google.appinventor.client.editor.simple.components.MockDataFile;
+
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+
 import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
+
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.List;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
+import java.util.Objects;
 
 /**
  * Property setter for selecting columns in Chart Data components
  * for the attached DataFile sources.
- * <p>
- * TODO: Reduce redundancy (a lot of reuse from ComponentSelector)
+ *
+ * <p>TODO: Reduce redundancy (a lot of reuse from ComponentSelector)
  */
 public class YoungAndroidDataColumnSelectorProperty
     extends AdditionalChoicePropertyEditor implements DataFileChangeListener {
@@ -33,9 +38,6 @@ public class YoungAndroidDataColumnSelectorProperty
   // UI elements
   private final ListBox columnsList;
 
-  // The YaFormEditor associated with this property editor.
-  private final YaFormEditor editor;
-
   private MockDataFile dataFile; // Associated source MockDataFile
 
   /**
@@ -44,9 +46,8 @@ public class YoungAndroidDataColumnSelectorProperty
    * @param editor the editor that this property editor belongs to
    */
   public YoungAndroidDataColumnSelectorProperty(final YaFormEditor editor) {
-    this.editor = editor;
 
-    VerticalPanel selectorPanel = new VerticalPanel();
+    final VerticalPanel selectorPanel = new VerticalPanel();
     columnsList = new ListBox();
     columnsList.setVisibleItemCount(10);
     columnsList.setWidth("100%");
@@ -80,7 +81,7 @@ public class YoungAndroidDataColumnSelectorProperty
     String value = property.getValue();
 
     // Check if the current value is exactly the None value
-    if (value == choices.getValueAtIndex(0)) {
+    if (Objects.equals(value, choices.getValueAtIndex(0))) {
       property.setValue("");
     }
   }
@@ -114,8 +115,8 @@ public class YoungAndroidDataColumnSelectorProperty
 
   /**
    * Clears the current columns and reinitializes the choices list.
-   * <p>
-   * Re-initialization is needed to clear old entries of the list.
+   *
+   * <p>Re-initialization is needed to clear old entries of the list.
    * Used when updating the DataFile source.
    */
   private void initializeChoices() {
@@ -145,7 +146,7 @@ public class YoungAndroidDataColumnSelectorProperty
   }
 
   /**
-   * Changes the MockDataFile source of the Data column selector
+   * Changes the MockDataFile source of the Data column selector.
    *
    * @param source new MockDataFile source
    */

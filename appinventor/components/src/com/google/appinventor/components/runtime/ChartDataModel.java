@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,6 +10,7 @@ import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -22,11 +23,19 @@ import java.util.List;
  * are used to handle the data part of the Chart component. One model
  * represents a single Data Series in a Chart (e.g. one line in a Line Chart
  * or one list of points in a Scatter Chart).
- * @param <T>  (Chart) DataSet type (MPAndroidChart DataSet class)
- * @param <D>  (Chart) Data type  (MPAndroidChart ChartData class)
- * @param <V>  (Chart) View that the model is compatible with (ChartView (sub)classes)
+ *
+ * @param <E> MPAndroidChart class for Entry type.
+ * @param <T> MPAndroidChart class for DataSet collection.
+ * @param <D> MPAndroidChart class for ChartData series collection.
+ * @param <C> MPAndroidChart class for Chart view.
+ * @param <V> Type of the view that renders the data model.
  */
-public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V extends ChartView> {
+public abstract class ChartDataModel<
+    E extends Entry,
+    T extends IDataSet<E>,
+    D extends ChartData<T>,
+    C extends com.github.mikephil.charting.charts.Chart<D>,
+    V extends ChartView<E, T, D, C, V>> {
   protected D data;
   protected T dataset;
   protected V view;
@@ -35,9 +44,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
    * Local List of entries; The modifications of the Data are made
    * directly to these Entries, which are meant to be detached from
    * the Dataset object itself to prevent exceptions & crashes due
-   * to asynchronous operations
+   * to asynchronous operations.
   */
-  protected List<Entry> entries;
+  protected List<E> entries;
 
   /**
    * Limit the maximum allowed real-time data entries
@@ -53,7 +62,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
   public enum EntryCriterion {
     All, // Return all entries
     XValue,
-    YValue;
+    YValue
   }
 
   /**
@@ -66,7 +75,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
     this.data = data;
     this.view = view;
 
-    entries = new ArrayList<Entry>();
+    entries = new ArrayList<>();
   }
 
   /**
@@ -90,7 +99,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
     return dataset;
   }
 
-  public ChartData getData() {
+  public D getData() {
     return data;
   }
 
@@ -100,7 +109,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
    * @param argb new color
    */
   public void setColor(int argb) {
-    getDataset().setColor(argb);
+    if (dataset instanceof DataSet) {
+      ((DataSet<?>) dataset).setColor(argb);
+    }
   }
 
   /**
@@ -113,7 +124,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
     // ScatterChartDataModel, currently an issue exists:
     // https://github.com/PhilJay/MPAndroidChart/issues/4483
     // which sets the same color to 2 points at once.
-    getDataset().setColors(colors);
+    if (dataset instanceof DataSet) {
+      ((DataSet<?>) dataset).setColors(colors);
+    }
   }
 
   /**
@@ -143,7 +156,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
     // The index is incremented by the tupleSize to move to the next
     // group of entries for a tuple.
     for (int i = tupleSize - 1; i < entries.length; i += tupleSize) {
-      List<String> tupleEntries = new ArrayList<String>();
+      List<String> tupleEntries = new ArrayList<>();
 
       // Iterate over all the tuple entries
       // First entry is in (i - tupleSize + 1)
@@ -163,7 +176,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
    *
    * @param list List containing tuples
    */
-  public void importFromList(List list) {
+  public void importFromList(List<?> list) {
     // Iterate over all the entries of the List
     for (Object entry : list) {
       YailList tuple = null;
@@ -173,7 +186,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
         tuple = (YailList) entry;
       } else if (entry instanceof List) {
         // List has to be converted to a YailList
-        tuple = YailList.makeList((List) entry);
+        tuple = YailList.makeList((List<?>) entry);
       }
 
       // Entry could be parsed to a YailList; Attempt importing from
@@ -190,7 +203,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
    *
    * @param values List of values to remove
    */
-  public void removeValues(List values) {
+  public void removeValues(List<?> values) {
     // Iterate all the entries of the generic List)
     for (Object entry : values) {
       YailList tuple = null;
@@ -200,7 +213,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
         tuple = (YailList) entry;
       } else if (entry instanceof List) {
         // Create a tuple from the entry
-        tuple = YailList.makeList((List) entry);
+        tuple = YailList.makeList((List<?>) entry);
       }
 
       // Attempt to remove entry
@@ -212,8 +225,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
    * Imports data from the specified list of columns.
    * Tuples are formed from the rows of the combined
    * columns in order of the columns.
-   * <p>
-   * The first element is skipped, since it is assumed that it
+   *
+   * <p>The first element is skipped, since it is assumed that it
    * is the column name.
    *
    * @param columns columns to import data from
@@ -240,11 +253,11 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
     // Determine the (maximum) row count of the specified columns
     int rows = ChartDataSourceUtil.determineMaximumListSize(columns);
 
-    List<YailList> tuples = new ArrayList<YailList>();
+    List<YailList> tuples = new ArrayList<>();
 
     // Generate tuples from the columns
     for (int i = 1; i < rows; ++i) {
-      ArrayList<String> tupleElements = new ArrayList<String>();
+      ArrayList<String> tupleElements = new ArrayList<>();
 
       // Add entries to the tuple from all i-th values (i-th row)
       // of the data columns.
@@ -298,7 +311,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
 
   /**
    * Removes an entry from the Data Series from the specified
-   * tuple (provided the entry exists)
+   * tuple (provided the entry exists).
    *
    * @param tuple Tuple representing the entry to remove
    */
@@ -307,8 +320,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
     Entry entry = getEntryFromTuple(tuple);
 
     if (entry != null) {
-      // TODO: The commented line should be used instead. However, the library does not (yet) implement
-      // TODO: equals methods in it's entries as of yet, so the below method fails.
+      // TODO: The commented line should be used instead. However, the library does not yet
+      // TODO: implement equals methods in it's entries as of yet, so the below method fails.
       // dataset.removeEntry(entry);
 
       // Get the index of the entry
@@ -350,15 +363,15 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
 
   /**
    * Finds and returns all the entries by the specified criterion and value.
-   * <p>
-   * The entries are returned as tuple (YailList) representations.
+   *
+   * <p>The entries are returned as tuple (YailList) representations.
    *
    * @param value     value to use for comparison
    * @param criterion criterion to use for comparison
    * @return YailList of entries represented as tuples matching the specified conditions
    */
   public YailList findEntriesByCriterion(String value, EntryCriterion criterion) {
-    List<YailList> entries = new ArrayList<YailList>();
+    List<YailList> entries = new ArrayList<>();
 
     for (Entry entry : this.entries) {
       // Check whether the provided criterion & value combination are satisfied
@@ -373,7 +386,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
   }
 
   /**
-   * Returns all the entries of the Data Series in the form of tuples (YailLists)
+   * Returns all the entries of the Data Series in the form of tuples (YailLists).
    *
    * @return YailList of all entries represented as tuples
    */
@@ -438,6 +451,9 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
           // Do nothing (value already false)
         }
         break;
+
+      default:
+        throw new IllegalArgumentException("Unknown criterion: " + criterion);
     }
 
     return criterionSatisfied;
@@ -452,7 +468,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
   public abstract Entry getEntryFromTuple(YailList tuple);
 
   /**
-   * Returns a YailList tuple representation of the specfied entry
+   * Returns a YailList tuple representation of the specified entry.
    *
    * @param entry Entry to convert to tuple
    * @return tuple (YailList) representation of the Entry
@@ -462,9 +478,10 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
   /**
    * Finds the index of the specified Entry in the Data Series.
    * Returns -1 if the Entry does not exist.
-   * <p>
-   * TODO: Primarily used due to equals not implemented in MPAndroidChart (needed for specific operations)
-   * TODO: In the future, this method will probably become obsolete if it ever gets fixed (post-v3.1.0).
+   *
+   * <p>TODO: Primarily used due to equals not implemented in MPAndroidChart (needed for specific
+   * TODO: operations). In the future, this method will probably become obsolete if it ever gets
+   * TODO: fixed (post-v3.1.0).
    *
    * @param entry Entry to find
    * @return index of the entry, or -1 if entry is not found
@@ -494,8 +511,8 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
 
   /**
    * Adds the specified entry as a time entry to the Data Series.
-   * <p>
-   * The method handles additional logic for removing excess values
+   *
+   * <p>The method handles additional logic for removing excess values
    * if the count exceeds the threshold.
    *
    * @param tuple tuple representing the time entry
@@ -514,7 +531,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
   }
 
   /**
-   * Sets the maximum time entries to be kept in the Data Series
+   * Sets the maximum time entries to be kept in the Data Series.
    *
    * @param entries number of entries to keep
    */
@@ -548,18 +565,17 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
 
   /**
    * Checks equality between two entries.
-   * <p>
-   * TODO: REMARK
-   * TODO: The reason why this method is needed is due to the equals()
-   * TODO: and equalTo() methods not being implemented fully to fit
-   * TODO: the requirements of the comparison done in the models.
-   * TODO: equalTo() does not check label equality (for Pie Charts)
-   * TODO: and equals() checks memory references instead of values.
    *
    * @param e1 first Entry to compare
    * @param e2 second Entry to compare
    * @return true if the entries are equal
    */
+  // REMARK
+  // The reason why this method is needed is due to the equals()
+  // and equalTo() methods not being implemented fully to fit
+  // the requirements of the comparison done in the models.
+  // equalTo() does not check label equality (for Pie Charts)
+  // and equals() checks memory references instead of values.
   protected boolean areEntriesEqual(Entry e1, Entry e2) {
     return e1.equalTo(e2);
   }
@@ -569,7 +585,7 @@ public abstract class ChartDataModel<T extends DataSet, D extends ChartData, V e
    *
    * @return List of entries of the Chart Data Model (Data Series)
    */
-  public List<Entry> getEntries() {
+  public List<E> getEntries() {
     return Collections.unmodifiableList(entries);
   }
 }

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -536,10 +536,12 @@ public class Pedometer extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns a data value corresponding to the provided key:
-   * SimpleSteps - SimpleSteps value
-   * WalkSteps   - WalkSteps value
-   * Distance    - Distance value
+   * Returns a data value corresponding to the given key. Possible keys include:
+   * <ul>
+   *   <li>SimpleSteps - SimpleSteps value</li>
+   *   <li>WalkSteps   - WalkSteps value</li>
+   *   <li>Distance    - Distance value</li>
+   * </ul>
    *
    * @param key identifier of the value
    * @return    Value corresponding to the key, or 0 if key is undefined.

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -60,8 +60,8 @@ public class ChartDataSourceUtil {
    * The specified YailList parameter is expected to contain nested
    * YailList entries. Invalid entries are simply ignored.
    *
-   * The method is used to convert a List of rows to a List of
-   * columns and vice versa (the transpose)
+   * <p>The method is used to convert a List of rows to a List of
+   * columns and vice versa (the transpose)</p>
    *
    * @param matrix  Matrix to return the transpose of
    * @return  Transpose of the specified matrix.
@@ -70,7 +70,7 @@ public class ChartDataSourceUtil {
     // Determine the maximum entry count of the matrix
     int entries = determineMaximumListSize(matrix);
 
-    List<YailList> result = new ArrayList<YailList>();
+    List<YailList> result = new ArrayList<>();
 
     for (int i = 0; i < entries; ++i) {
       // Get the i-th transpose entry and add it to the
@@ -88,17 +88,17 @@ public class ChartDataSourceUtil {
    * Constructs and returns a transpose entry from the given matrix
    * with the given index.
    *
-   * The index represents the entry required. If the matrix is a List
+   * <p>The index represents the entry required. If the matrix is a List
    * of rows, the index represents the number of the column to return.
    * If the matrix is a List of columns, the index represents the
-   * number of the row to return.
+   * number of the row to return.</p>
    *
    * @param matrix  Matrix to return the transpose entry of
    * @param index  The index of the entry to return
    * @return  The index-th transpose entry of the matrix
    */
   private static YailList getTransposeEntry(YailList matrix, int index) {
-    List<String> entries = new ArrayList<String>();
+    List<String> entries = new ArrayList<>();
 
     for (int i = 0; i < matrix.size(); ++i) {
       // Get the i-th matrix entry

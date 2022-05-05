@@ -1,32 +1,32 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.ErrorReporter;
-import org.pepstock.charba.client.data.Data;
-import org.pepstock.charba.client.data.PieDataset;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
+import org.pepstock.charba.client.data.PieDataset;
 
 public class MockPieChartDataModel extends MockChartDataModel<PieDataset, MockPieChartView> {
   // Local references of the colors and labels properties have to be
   // kept in the Data Model class to be able to add to them and set them.
   // This is due to the API for changing colors and labels being quite limited (in v2.5)
-  private List<String> colors = new ArrayList<String>();
-  private List<String> labels = new ArrayList<String>();
+  private final List<String> colors = new ArrayList<>();
+  private final List<String> labels = new ArrayList<>();
   private String color = "";
 
   /**
    * Creates a new Mock Pie Chart Model object instance, linking it with
    * the specified Chart View.
    *
-   * @Param view  Mock Pie Chart View to link Data Model to
+   * @param view  Mock Pie Chart View to link Data Model to
    */
   public MockPieChartDataModel(MockPieChartView view) {
     super(view);
@@ -76,11 +76,11 @@ public class MockPieChartDataModel extends MockChartDataModel<PieDataset, MockPi
       // Construct the x and y values based on the data series
       // index offset and the loop index. This allows to differentiate
       // the default entries of each individual Data Series.
-      double xValue = indexOffset + i + 1;
-      double yValue = indexOffset + i + 1;
+      double x = indexOffset + i + 1;
+      double y = indexOffset + i + 1;
 
       // Add an entry based on the constructed values
-      addEntryFromTuple(xValue + "", yValue + "");
+      addEntryFromTuple(x + "", y + "");
     }
   }
 

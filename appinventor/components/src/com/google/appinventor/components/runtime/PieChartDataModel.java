@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,6 +11,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.interfaces.datasets.IPieDataSet;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -24,19 +25,20 @@ import java.util.List;
  * Chart data for the Chart component.
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
-public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData, PieChartView> {
+public class PieChartDataModel
+    extends Chart2DDataModel<PieEntry, IPieDataSet, PieData, PieChart, PieChartView> {
   /* Since a custom legend is used which is shared by all the separate
    * Pie Chart views (rings), for ease of deletion and operations on
    * the entries, the Legend Entries List is kept for this single
    * Data Series. The central view reference is kept to modify the
    * Legend accordingly.
    */
-  private List<LegendEntry> legendEntries = new ArrayList<LegendEntry>();
+  private final List<LegendEntry> legendEntries = new ArrayList<>();
 
   /**
    * Initializes a new PieChartDataModel object instance.
    *
-   * Links the Data Model to the specified Chart, since one
+   * <p>Links the Data Model to the specified Chart, since one
    * Pie Chart instance represents a single ring of a Pie Chart.
    *
    * @param chart  Chart to link Data Model
@@ -162,14 +164,16 @@ public class PieChartDataModel extends Chart2DDataModel<PieDataSet, PieData, Pie
 
     // Create a list with the X and Y values of the entry, and
     // convert the generic List to a YailList
-    List tupleEntries = Arrays.asList(pieEntry.getLabel(), pieEntry.getY());
+    List<?> tupleEntries = Arrays.asList(pieEntry.getLabel(), pieEntry.getY());
     return YailList.makeList(tupleEntries);
   }
 
   @Override
   protected void setDefaultStylingProperties() {
     // Set spacing between each slice
-    dataset.setSliceSpace(3);
+    if (dataset instanceof PieDataSet) {
+      ((PieDataSet) dataset).setSliceSpace(3);
+    }
   }
 
   /**

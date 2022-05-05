@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -269,10 +269,12 @@ public class GyroscopeSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns a data value corresponding to the provided key:
-   * X - x direction angular velocity
-   * Y - y direction angular velocity
-   * Z - z direction angular velocity
+   * Returns a data value. Possible keys include:
+   * <ul>
+   *   <li>X - x direction angular velocity</li>
+   *   <li>Y - y direction angular velocity</li>
+   *   <li>Z - z direction angular velocity</li>
+   * </ul>
    *
    * @param key identifier of the value
    * @return    Value corresponding to the key, or 0 if key is undefined.

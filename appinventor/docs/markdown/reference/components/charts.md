@@ -36,7 +36,7 @@ The Chart component plots data originating from it's attached Data components. F
 {:id="Chart.GridEnabled" .boolean} *GridEnabled*
 : Changes the visibility of the Chart's grid, if the
  Chart Type is set to a Chart with an Axis (applies for Area, Bar, Line,
- Scatter Chart types)
+ Scatter Chart types).
 
 {:id="Chart.Height" .number .bo} *Height*
 : Specifies the `Chart`'s vertical height, measured in pixels.
@@ -48,12 +48,12 @@ The Chart component plots data originating from it's attached Data components. F
 {:id="Chart.Labels" .list .bo} *Labels*
 : Changes the Chart's X axis labels to the specified List,
  if the Chart's Type is set to a Chart with an Axis.
- <p>
- The first entry of the List corresponds to the minimum x value of the data,
+
+   The first entry of the List corresponds to the minimum x value of the data,
  the second to the min x value + 1, and so on.
- <p>
- If a label is not specified for an x value, a default value
- is used (the x value of the axis tick at that location)
+
+   If a label is not specified for an x value, a default value
+ is used (the x value of the axis tick at that location).
 
 {:id="Chart.LabelsFromString" .text .wo .do} *LabelsFromString*
 : Specifies the labels to set to the Chart's X Axis, provided the current
@@ -67,11 +67,6 @@ The Chart component plots data originating from it's attached Data components. F
 {:id="Chart.PieRadius" .number .wo .do} *PieRadius*
 : Sets the Pie Radius of the Chart. If the current type is
  not the Pie Chart, the value has no effect.
- <p>
- The value is hidden in the blocks due to it being applicable
- to a single Chart only. TODO: Might be better to change this in the future
- <p>
- TODO: Make this an enum selection in the future? (Donut, Full Pie, Small Donut, etc.)
 
 {:id="Chart.Type" .number .do} *Type*
 : Specifies the type of the Chart, which determines how to visualize the data.
@@ -101,10 +96,10 @@ None
 
 ## ChartData2D  {#ChartData2D}
 
-A ChartData2D component represents a single two dimensional Data Series in the Chart component,
- for example, a single Line in the case of a Line Chart, or a single Bar in the case of a Bar Chart.
- The Data component is responsible for handling all of the data of the Chart. The entries of the Data
- component correspond of an x and a y value.
+A ChartData2D component represents a single two-dimensional Data Series in the Chart component,
+ for example, a single Line in the case of a Line Chart, or a single Bar in the case of a Bar
+ Chart. The Data component is responsible for handling all the data of the Chart. The entries
+ of the Data component correspond of an x and a y value.
  The component is attached directly to a Chart component by dragging it onto the Chart.
 
 
@@ -118,8 +113,8 @@ A ChartData2D component represents a single two dimensional Data Series in the C
 
 {:id="ChartData2D.Colors" .list .bo} *Colors*
 : Specifies the data series colors as a list of alpha-red-green-blue integers.
- <p>
- If there is more data than there are colors, the cclors will be alternated
+
+   If there is more data than there are colors, the colors will be alternated
  in order. E.g. if there are two colors Red and Blue, the colors will be applied
  in the order: Red, Blue, Red, Blue, ...
 
@@ -142,23 +137,28 @@ A ChartData2D component represents a single two dimensional Data Series in the C
 {:id="ChartData2D.DataSourceKey" .text .wo .do} *DataSourceKey*
 : Sets the Data Source key identifier for the value to import from the
  attached Data Source.
- <p>
- An example is the tag of the TinyDB component, which identifies the value.
- <p>
- The property is a Designer-only property, and should be changed after setting the
+
+   An example is the tag of the TinyDB component, which identifies the value.
+
+   The property is a Designer-only property, and should be changed after setting the
  Source component of the Chart Data component.
- <p>
- A complete list of applicable values for each compatible source is as follows:
- For TinyDB and CloudDB, this is the tag value. <br>
- For the AccelerometerSensor, the value should be one of the following: X Y or Z<br>
- For the GyroscopeSensor, the value should be one of the following: X Y or Z<br>
- For the LocationSensor, the value should be one of the following: latitude, longitude, altitude or speed<br>
- For the OrientationSensor, the value should be one of the following: pitch, azimuth or roll<br>
- For the Pedometer, the value should be one of the following: WalkSteps, SimpleSteps or Distance<br>
- For the ProximitySensor, the value should be distance.<br>
- For the BluetoothClient, the value represents the prefix to remove from the value. For instance,
- if values come in the format "t:12", the prefix can be specified as "t:", and the prefix will
- then be removed from the data. No value can be specified if purely numerical values are returned.
+
+   A complete list of applicable values for each compatible source is as follows:
+
+     * For TinyDB and CloudDB, this is the tag value.
+     * For the AccelerometerSensor, the value should be one of the following: X Y or Z
+     * For the GyroscopeSensor, the value should be one of the following: X Y or Z
+     * For the LocationSensor, the value should be one of the following:
+       latitude, longitude, altitude or speed
+     * For the OrientationSensor, the value should be one of the following:
+       pitch, azimuth or roll
+     * For the Pedometer, the value should be one of the following:
+       WalkSteps, SimpleSteps or Distance
+     * For the ProximitySensor, the value should be distance.
+     * For the BluetoothClient, the value represents the prefix to remove from the value.
+       For instance, if values come in the format "t:12", the prefix can be specified as "t:",
+       and the prefix will then be removed from the data. No value can be specified if purely
+       numerical values are returned.
 
 {:id="ChartData2D.ElementsFromPairs" .text .wo .do} *ElementsFromPairs*
 : Comma separated list of Elements to use for the data series. Values are formatted
@@ -187,9 +187,10 @@ A ChartData2D component represents a single two dimensional Data Series in the C
  valid DataSourceValue, WebColumn or DataFileColumn properties,
  depending on the type of the Source attached (the required properties
  show up in the Properties menu after the Source is changed).
- <p>
- If the data identified by the [`DataSourceKey`](#ChartData2D.DataSourceKey) is updated in the attached Data Source component,
- then the data is also updated in the Chart Data component.
+
+   If the data identified by the [`DataSourceKey`](#ChartData2D.DataSourceKey) is updated
+ in the attached Data Source component, then the data is also updated in
+ the Chart Data component.
 
 {:id="ChartData2D.WebXColumn" .text .wo .do} *WebXColumn*
 : Value used when importing data from a Web component Source. The
@@ -224,9 +225,10 @@ None
 {:id="ChartData2D.ChangeDataSource" class="method"} <i/> ChangeDataSource(*source*{:.component},*keyValue*{:.text})
 : Changes the Data Source of the component to the specified component Source with the
  specified key value. See the [`Source`](#ChartData2D.Source) property for
- applicable components. See the [`DataSourceKey`](#ChartData2D.DataSourceKey) property for the interpretation of the keyValue.
- In the case of the DataFile and Web components, the keyValue is expected to be a CSV formatted string,
- where the first value corresponds to the x column, and the second value corresponds to the y value.
+ applicable components. See the [`DataSourceKey`](#ChartData2D.DataSourceKey) property for the interpretation
+ of the keyValue. In the case of the DataFile and Web components, the keyValue is expected to
+ be a CSV formatted string, where the first value corresponds to the x column, and the second
+ value corresponds to the y value.
 
 {:id="ChartData2D.Clear" class="method"} <i/> Clear()
 : Removes all the entries from the Data Series.
@@ -253,18 +255,18 @@ None
 {:id="ChartData2D.ImportFromCloudDB" class="method"} <i/> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
 : Imports data from the specified CloudDB component by taking the value
  identified by the specified tag value.
- <p>
- The expected CloudDB value is a list formatted in the same way as described in
+
+   The expected CloudDB value is a list formatted in the same way as described in
  [`ImportFromList`](#ChartData2D.ImportFromList).
- <p>
- Does not overwrite any data.
+
+   Does not overwrite any data.
 
 {:id="ChartData2D.ImportFromDataFile" class="method"} <i/> ImportFromDataFile(*dataFile*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified DataFile component by taking the specified x column
  for the x values, and the specified y column for the y values. The DataFile's source file
  is expected to be either a CSV or a JSON file.
- <p>
- Passing in empty test for any of the column parameters will result in the usage of
+
+   Passing in empty test for any of the column parameters will result in the usage of
  default values which are the indices of the entries. For the first entry, the default
  value would be the 1, for the second it would be 2, and so on.
 
@@ -273,29 +275,27 @@ None
  The list is expected to contain element which are also lists. Each
  list element is expected to have 2 values, the first one being
  the x value, and the second one being the y value.
- Invalid list entries are simply skipped.
- <p>
- Does not overwrite any data.
+ Invalid list entries are simply skipped. Existing data are not cleared.
 
 {:id="ChartData2D.ImportFromTinyDB" class="method"} <i/> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
 : Imports data from the specified TinyDB component by taking the value
  identified by the specified tag value.
- <p>
- The expected TinyDB value is a list formatted in the same way as described in
+
+   The expected TinyDB value is a list formatted in the same way as described in
  [`ImportFromList`](#ChartData2D.ImportFromList).
- <p>
- Does not overwrite any data.
+
+   Does not overwrite any data.
 
 {:id="ChartData2D.ImportFromWeb" class="method"} <i/> ImportFromWeb(*web*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified Web component by taking the specified x column
  for the x values, and the specified y column for the y values. Prior to calling this function,
  the Web component's Get method has to be called to load the data. The usage of the gotValue
  event in the Web component is unnecessary.
- <p>
- The expected response of the Web component is a JSON or CSV formatted file for this function to
- work.
- <p>
- Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+
+   The expected response of the Web component is a JSON or CSV formatted
+ file for this function to work.
+
+   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
 
 {:id="ChartData2D.RemoveDataSource" class="method"} <i/> RemoveDataSource()
 : Removes the currently attached Data Source from the Chart Data component.

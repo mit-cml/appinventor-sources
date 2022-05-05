@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,31 +8,46 @@ package com.google.appinventor.components.runtime;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import android.graphics.drawable.ColorDrawable;
+
 import android.view.View;
+
 import android.widget.RelativeLayout;
+
+import com.github.mikephil.charting.data.ChartData;
+
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.google.appinventor.components.common.ComponentConstants;
-import org.easymock.EasyMock;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.ArrayList;
 
+import org.easymock.EasyMock;
+
+import org.junit.Before;
+import org.junit.Test;
+
 /**
  * Abstract test class for the Chart class.
- * <p>
- * Contains test cases for functionality independent of the Chart type.
+ *
+ * <p>Contains test cases for functionality independent of the Chart type.</p>
  */
-public abstract class AbstractChartTest<V extends ChartView,
-    C extends com.github.mikephil.charting.charts.Chart> extends RobolectricTestBase {
+public abstract class AbstractChartTest<
+    C extends com.github.mikephil.charting.charts.Chart<?>,
+    V extends ChartView<?, ?, ?, C, V>>
+    extends RobolectricTestBase {
   protected V chartView;
   protected C chart;
   protected Chart chartComponent;
 
+  /**
+   * Configures a new Chart component for testing.
+   */
   @Before
   public void setUp() {
     super.setUp();
@@ -150,7 +165,7 @@ public abstract class AbstractChartTest<V extends ChartView,
    */
   @Test
   public void testChangeTypeReinitializeChartDataComponents() {
-    ArrayList<ChartDataBase> dataComponents = new ArrayList<ChartDataBase>();
+    ArrayList<ChartDataBase> dataComponents = new ArrayList<>();
 
     for (int i = 0; i < 3; ++i) {
       // Create a mock Data component, and expect an initChartData
@@ -254,7 +269,7 @@ public abstract class AbstractChartTest<V extends ChartView,
   }
 
   /**
-   * Returns the type of the Chart (integer representation)
+   * Returns the type of the Chart (integer representation).
    *
    * @return Chart Type (integer)
    */

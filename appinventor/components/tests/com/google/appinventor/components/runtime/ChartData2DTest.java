@@ -1,12 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import static junit.framework.Assert.assertEquals;
 import static org.easymock.EasyMock.replay;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
@@ -14,16 +15,21 @@ import static org.junit.Assert.assertTrue;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.renderer.scatter.IShapeRenderer;
+
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.YailList;
-import org.easymock.EasyMock;
-import org.junit.Test;
-import org.robolectric.android.util.concurrent.RoboExecutorService;
 
 import java.util.Arrays;
 import java.util.Collections;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import org.easymock.EasyMock;
+
+import org.junit.Test;
+
+import org.robolectric.android.util.concurrent.RoboExecutorService;
 
 /**
  * Test class for the ChartData2D component.
@@ -34,7 +40,7 @@ import java.util.concurrent.Future;
 public class ChartData2DTest extends RobolectricTestBase {
   private Chart chartComponent;
   private ChartData2D data;
-  private ChartDataModel model;
+  private ChartDataModel<?, ?, ?, ?, ?> model;
 
   @Override
   public void setUp() {
@@ -328,7 +334,7 @@ public class ChartData2DTest extends RobolectricTestBase {
         YailList.makeList(Arrays.asList("Y", "2", "3", "4"))
     ));
 
-    Future returnValue = getMockFutureObject(columns);
+    Future<YailList> returnValue = getMockFutureObject(columns);
 
 
     // Setup mock Data File to return the expected value given the
@@ -400,7 +406,7 @@ public class ChartData2DTest extends RobolectricTestBase {
         YailList.makeList(Arrays.asList("B", "3", "1"))
     ));
 
-    Future returnValue = getMockFutureObject(columns);
+    Future<YailList> returnValue = getMockFutureObject(columns);
 
     // Setup mock Web component to return the expected value given the
     // expected parameters
@@ -434,7 +440,7 @@ public class ChartData2DTest extends RobolectricTestBase {
         YailList.makeList(Arrays.asList("Y", "1", "2", "3", "5", "7"))
     ));
 
-    Future returnValue = getMockFutureObject(columns);
+    Future<YailList> returnValue = getMockFutureObject(columns);
 
 
     // Setup mock Data File to return the expected value given the
@@ -474,7 +480,7 @@ public class ChartData2DTest extends RobolectricTestBase {
         YailList.makeList(Arrays.asList("B", "3", "1", "-3"))
     ));
 
-    Future returnValue = getMockFutureObject(columns);
+    Future<YailList> returnValue = getMockFutureObject(columns);
 
     // Setup mock Web component to return the expected value given the
     // expected parameters
@@ -587,12 +593,12 @@ public class ChartData2DTest extends RobolectricTestBase {
         YailList.makeList(Arrays.asList("B", "3", "1", "-3"))
     ));
 
-    YailList newColumns = YailList.makeList(Arrays.asList(
+    final YailList newColumns = YailList.makeList(Arrays.asList(
         YailList.makeList(Arrays.asList("A", "0")),
         YailList.makeList(Arrays.asList("B", "1"))
     ));
 
-    Future returnValue = getMockFutureObject(columns);
+    Future<YailList> returnValue = getMockFutureObject(columns);
 
     // Setup mock Web component to return the expected value given the
     // expected parameters
@@ -627,11 +633,11 @@ public class ChartData2DTest extends RobolectricTestBase {
 
     // Send an onDataSourceValueChange event originating from the
     // attached Web component with a new value
-     data.onDataSourceValueChange(web, null, newColumns);
+    data.onDataSourceValueChange(web, null, newColumns);
 
     // The previous values should be deleted, and the new ones
     // should be added, resulting in 1 value in the Data Series.
-     assertEquals(1, model.getDataset().getEntryCount());
+    assertEquals(1, model.getDataset().getEntryCount());
   }
 
   /**
@@ -646,7 +652,6 @@ public class ChartData2DTest extends RobolectricTestBase {
     replay(sensor);
 
     String keyValue = "X";
-    float value = 3f;
 
     data.DataSourceKey(keyValue);
     data.Source(sensor);
@@ -654,7 +659,7 @@ public class ChartData2DTest extends RobolectricTestBase {
 
     assertEquals(0, model.getDataset().getEntryCount());
 
-    data.onReceiveValue(sensor, keyValue, value);
+    data.onReceiveValue(sensor, keyValue, 3f);
 
     assertEquals(1, model.getDataset().getEntryCount());
   }
@@ -664,56 +669,56 @@ public class ChartData2DTest extends RobolectricTestBase {
   // TODO: that both Robolectric and PowerMock would run at the same time. However,
   // TODO: this requires updating and pulling in new dependencies.
   // TODO: See: https://github.com/robolectric/robolectric/wiki/Using-PowerMocks
-//  @Test
-//  public void testImportFromCloudDB() {
-//    String expectedParameter = "CloudKey";
-//    YailList expectedList = YailList.makeList(
-//        Arrays.asList(
-//            YailList.makeList(
-//                Arrays.asList("0", "7")
-//            ),
-//            YailList.makeList(
-//                Arrays.asList("1", "9")
-//            ),
-//            YailList.makeList(
-//                Arrays.asList("3", "0")
-//            )
-//        )
-//    );
-//
-//    Future returnValue = getMockFutureObject(expectedList);
-//
-//    // Setup mock CloudDB to return the expected value given the
-//    // expected parameter
-//    CloudDB cloudDB = EasyMock.createMock(CloudDB.class);
-//    EasyMock.expect(cloudDB.getDataValue(expectedParameter))
-//        .andReturn(returnValue);
-//    replay(cloudDB);
-//
-//    data.ImportFromCloudDB(cloudDB, expectedParameter);
-//
-//    // 3 entries are expected to be imported
-//    assertEquals(3, model.getDataset().getEntryCount());
-//  }
+  @Test
+  public void testImportFromCloudDB() {
+    String expectedParameter = "CloudKey";
+    YailList expectedList = YailList.makeList(
+        Arrays.asList(
+            YailList.makeList(
+                Arrays.asList("0", "7")
+            ),
+            YailList.makeList(
+                Arrays.asList("1", "9")
+            ),
+            YailList.makeList(
+                Arrays.asList("3", "0")
+            )
+        )
+    );
+
+    Future<YailList> returnValue = getMockFutureObject(expectedList);
+
+    // Setup mock CloudDB to return the expected value given the
+    // expected parameter
+    CloudDB cloudDB = EasyMock.createMock(CloudDB.class);
+    EasyMock.expect(cloudDB.getDataValue(expectedParameter))
+        .andReturn(returnValue);
+    replay(cloudDB);
+
+    data.ImportFromCloudDB(cloudDB, expectedParameter);
+
+    // 3 entries are expected to be imported
+    assertEquals(3, model.getDataset().getEntryCount());
+  }
 
   /**
    * Helper method that constructs a Mock Future object
    * instance wrapping the specified return value.
    *
-   * To avoid thread blocking, mock Future objects can
+   * <p>To avoid thread blocking, mock Future objects can
    * be used to test Chart Data Sources which return
-   * Future objects/
+   * Future objects
+   *
    * @param returnValue  value that the Future object should return
    * @return  Future object wrapping the return value.
    */
-  private Future getMockFutureObject(Object returnValue) {
-    Future futureObject = EasyMock.createMock(Future.class);
+  @SuppressWarnings("unchecked")
+  private <V> Future<V> getMockFutureObject(V returnValue) {
+    Future<V> futureObject = (Future<V>) EasyMock.createMock(Future.class);
 
     try {
       EasyMock.expect(futureObject.get()).andReturn(returnValue);
-    } catch (ExecutionException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
+    } catch (ExecutionException | InterruptedException e) {
       e.printStackTrace();
     }
 

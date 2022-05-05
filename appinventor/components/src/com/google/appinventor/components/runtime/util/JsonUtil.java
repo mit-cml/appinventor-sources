@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -437,35 +437,35 @@ public class JsonUtil {
    * A column consists of the key and all the entries
    * of the value itself. Each column is a YailList.
    *
-   * E.g. "x: 5" would be a List (x 5), while
-   * "y: [1,2,3]" would be a List (y 1 2 3)
+   * <p>E.g. "x: 5" would be a List (x 5), while
+   * "y: [1,2,3]" would be a List (y 1 2 3)</p>
    *
    * @param json  JSON string to parse
    * @return  YailList of columns, where each entry is a YailList
    */
-  public static YailList getColumnsFromJSON(String json) throws JSONException {
+  public static YailList getColumnsFromJson(String json) throws JSONException {
     // Parse object from JSON object
     Object jsonObject = getObjectFromJson(json);
 
     // Generate columns from parsed JSON object.
     // Only proceed with column generation logic if the parsed
     // object is a List. Otherwise, return empty columns
-    List<YailList> resultColumns = new ArrayList<YailList>();
+    List<YailList> resultColumns = new ArrayList<>();
 
     // JSON object is expected to be of type ArrayList.
     // If that is not the case, parsing is not done.
     if (jsonObject instanceof List) {
       // Cast parsed object to List, which represents
       // all the JSON entries
-      List jsonList = (List) jsonObject;
+      List<?> jsonList = (List<?>) jsonObject;
 
       for (Object entry : jsonList) {
-        List<String> columnElements = new ArrayList<String>();
+        List<String> columnElements = new ArrayList<>();
 
         // Expected type of the entry is a List (key, value pair)
         // If this is not the case, add nothing to the column elements.
         if (entry instanceof List) {
-          List listEntry = (List) entry;
+          List<?> listEntry = (List<?>) entry;
 
           // Add first value as a String to the column elements
           // List. The first entry should always be a String,
@@ -479,7 +479,7 @@ public class JsonUtil {
           if (jsonValue instanceof List) {
             // If the value is a List, then add all
             // entries to the column
-            List jsonValueList = (List)jsonValue;
+            List<?> jsonValueList = (List<?>)jsonValue;
 
             for (Object jsonValueListEntry : jsonValueList) {
               columnElements.add(jsonValueListEntry.toString());

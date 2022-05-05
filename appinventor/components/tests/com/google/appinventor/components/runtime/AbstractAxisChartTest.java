@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,21 +9,26 @@ import static org.junit.Assert.assertEquals;
 
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+
 import com.google.appinventor.components.runtime.util.YailList;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Test;
+
 /**
  * Abstract test class for Axis based Charts.
  *
- * Contains test cases related to functionality specific for
- * Axis based Charts.
+ * <p>Contains test cases related to functionality specific for
+ * Axis based Charts.</p>
  */
-public abstract class AbstractAxisChartTest<V extends AxisChartView,
-    C extends BarLineChartBase> extends AbstractChartTest<V, C> {
+@SuppressWarnings("checkstyle:MemberName")
+public abstract class AbstractAxisChartTest<
+    C extends BarLineChartBase<?>,
+    V extends AxisChartView<?, ?, ?, C, V>
+    > extends AbstractChartTest<C, V> {
   protected ValueFormatter xAxisValueFormatter;
 
   /**
@@ -98,8 +103,8 @@ public abstract class AbstractAxisChartTest<V extends AxisChartView,
   @Test
   public void testSetLabelsSingle() {
     List<String> labelValues = new ArrayList<String>() {{
-      add("A");
-    }};
+        add("A");
+      }};
     YailList labels = YailList.makeList(labelValues);
 
     setLabelsHelper(labels);
@@ -113,10 +118,10 @@ public abstract class AbstractAxisChartTest<V extends AxisChartView,
   @Test
   public void testSetLabelsMultiple() {
     List<String> labelValues = new ArrayList<String>() {{
-      add("A");
-      add("B");
-      add("E");
-    }};
+        add("A");
+        add("B");
+        add("E");
+      }};
     YailList labels = YailList.makeList(labelValues);
 
     setLabelsHelper(labels);
@@ -132,11 +137,11 @@ public abstract class AbstractAxisChartTest<V extends AxisChartView,
   @Test
   public void testSetLabelsMultipleAfterLabels() {
     List<String> labelValues = new ArrayList<String>() {{
-      add("A");
-      add("C");
-      add("Test");
-      add("Test2");
-    }};
+        add("A");
+        add("C");
+        add("Test");
+        add("Test2");
+      }};
     YailList labels = YailList.makeList(labelValues);
 
     setLabelsHelper(labels);

@@ -1,26 +1,26 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
+import java.util.List;
 import org.pepstock.charba.client.data.Data;
 import org.pepstock.charba.client.data.Dataset;
 
-import java.util.List;
-
 /**
  * Chart Data Model base class.
- * <p>
- * The Data Model is responsible for handling data operations
+ *
+ * <p>The Data Model is responsible for handling data operations
  * of a Chart, and represents the data of a single Data Series.
  * Individual styling and options of a single Data Series is also
  * a responsibility of the Data Model class.
+ *
  * @param <D>  Dataset used by the model (Charba Dataset)
  * @param <V>  Chart view type that generated the model (MockChartView (sub)class)
  */
-public abstract class MockChartDataModel<D extends Dataset, V extends MockChartView> {
+public abstract class MockChartDataModel<D extends Dataset, V extends MockChartView<D, ?, V>> {
   protected D dataSeries;
   protected V view;
   protected Data chartData;
@@ -109,10 +109,10 @@ public abstract class MockChartDataModel<D extends Dataset, V extends MockChartV
     // The tuples are grouped together and then added to the
     // Data Model in this loop
     for (int i = 0; i < entries.length; i += tupleSize) {
-            /* (i, i + 1, ..., i + tupleSize - 1) forms the tuple
-               E.g.: i = 0, tupleSize = 2, (0, 1) indexes represent the tuple
-               Therefore if the last index is greater than the entries length,
-               the tuple group is invalid and the method should return. */
+      /* (i, i + 1, ..., i + tupleSize - 1) forms the tuple
+         E.g.: i = 0, tupleSize = 2, (0, 1) indexes represent the tuple
+         Therefore if the last index is greater than the length of entries,
+         the tuple group is invalid and the method should return. */
       if (i + tupleSize - 1 >= entries.length) {
         break;
       }
@@ -163,8 +163,8 @@ public abstract class MockChartDataModel<D extends Dataset, V extends MockChartV
     // Initially, the row size of the columns has to be determined
     int rows = 0;
 
-    for (int i = 0; i < columns.size(); ++i) {
-      int columnSize = columns.get(i).size();
+    for (List<String> strings : columns) {
+      int columnSize = strings.size();
 
       // Bigger column found; Update rows entry
       if (columnSize > rows) {
@@ -184,7 +184,8 @@ public abstract class MockChartDataModel<D extends Dataset, V extends MockChartV
 
         if (column.size() == 0) { // Empty column; Use default value
           tuple[j] = getDefaultTupleEntry(i - 1); // Minus one to compensate for skipped entry
-        } else if (column.size() > i) { // Column has value; Use the column's value (if the column is large enough)
+        } else if (column.size() > i) {
+          // Column has value; Use the column's value (if the column is large enough)
           tuple[j] = column.get(i);
         } else {
           // Column too small; Use empty String (up for interpretation
@@ -227,8 +228,8 @@ public abstract class MockChartDataModel<D extends Dataset, V extends MockChartV
   /**
    * Action performed after data importing.
    * To be called after each data importing method.
-   * <p>
-   * The most common example of such action is setting
+   *
+   * <p>The most common example of such action is setting
    * default elements in case no data is present.
    */
   protected abstract void postDataImportAction();

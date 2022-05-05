@@ -1,31 +1,36 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.errors.YailRuntimeError;
-import com.google.appinventor.components.runtime.util.JsonUtil;
 
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+
+import com.google.appinventor.components.runtime.util.JsonUtil;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import android.content.Context;
-import android.content.SharedPreferences;
 
 import org.json.JSONException;
 
@@ -53,34 +58,34 @@ import org.json.JSONException;
  * @author markf@google.com (Mark Friedman)
  */
 @DesignerComponent(version = YaVersion.TINYDB_COMPONENT_VERSION,
-    description = "TinyDB is a non-visible component that stores data for an app. " +
-        "<p> Apps created with App Inventor are initialized each time they run: " +
-        "If an app sets the value of a variable and the user then quits the app, " +
-        "the value of that variable will not be remembered the next time the app is run. " +
-        "In contrast, TinyDB is a <em> persistent </em> data store for the app, " +
-        "that is, the data stored there will be available each time the app is " +
-        "run. An example might be a game that saves the high score and " +
-        "retrieves it each time the game is played. </<p> " +
-        "<p> Data items are strings stored under <em>tags</em> . To store a data " +
-        "item, you specify the tag it should be stored under.  Subsequently, you " +
-        "can retrieve the data that was stored under a given tag. </p>" +
-        "<p> There is only one data store per app. Even if you have multiple TinyDB " +
-        "components, they will use the same data store. To get the effect of " +
-        "separate stores, use different keys. Also each app has its own data " +
-        "store. You cannot use TinyDB to pass data between two different apps on " +
-        "the phone, although you <em>can</em> use TinyDb to shares data between the " +
-        "different screens of a multi-screen app. </p> " +
-        "<p>When you are developing apps using the AI Companion, all the apps " +
-        "using that companion will share the same TinyDb.  That sharing will disappear " +
-        "once the apps are packaged.  But, during development, you should be careful to clear " +
-        "the TinyDb each time you start working on a new app.</p>",
+    description = "TinyDB is a non-visible component that stores data for an app. "
+        + "<p> Apps created with App Inventor are initialized each time they run: "
+        + "If an app sets the value of a variable and the user then quits the app, "
+        + "the value of that variable will not be remembered the next time the app is run. "
+        + "In contrast, TinyDB is a <em> persistent </em> data store for the app, "
+        + "that is, the data stored there will be available each time the app is "
+        + "run. An example might be a game that saves the high score and "
+        + "retrieves it each time the game is played. </<p> "
+        + "<p> Data items are strings stored under <em>tags</em> . To store a data "
+        + "item, you specify the tag it should be stored under.  Subsequently, you "
+        + "can retrieve the data that was stored under a given tag. </p>"
+        + "<p> There is only one data store per app. Even if you have multiple TinyDB "
+        + "components, they will use the same data store. To get the effect of "
+        + "separate stores, use different keys. Also each app has its own data "
+        + "store. You cannot use TinyDB to pass data between two different apps on "
+        + "the phone, although you <em>can</em> use TinyDb to shares data between the "
+        + "different screens of a multi-screen app. </p> "
+        + "<p>When you are developing apps using the AI Companion, all the apps "
+        + "using that companion will share the same TinyDb.  That sharing will disappear "
+        + "once the apps are packaged.  But, during development, you should be careful to clear "
+        + "the TinyDb each time you start working on a new app.</p>",
     category = ComponentCategory.STORAGE,
     nonVisible = true,
     iconName = "images/tinyDB.png")
 
 @SimpleObject
 public class TinyDB extends AndroidNonvisibleComponent implements Component, Deleteable,
-    ObservableDataSource<String, List> {
+    ObservableDataSource<String, YailList> {
 
   public static final String DEFAULT_NAMESPACE = "TinyDB1";
 
@@ -246,17 +251,17 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
    * @return value as a List object, or empty List if not applicable
    */
   @Override
-  public List<Object> getDataValue(String key) {
+  public YailList getDataValue(String key) {
     // Get the value from the TinyDB data with the specified key
-    Object value = GetValue(key, new ArrayList());
+    Object value = GetValue(key, YailList.makeEmptyList());
 
     // Check if value is of type List, and return it if that is the case.
-    if (value instanceof List) {
-      return (List<Object>) value;
+    if (value instanceof YailList) {
+      return (YailList) value;
     }
 
-    // Default option (could not parse data): return empty ArrayList
-    return new ArrayList<Object>();
+    // Default option (could not parse data): return empty YailList
+    return YailList.makeEmptyList();
   }
 
   @Override

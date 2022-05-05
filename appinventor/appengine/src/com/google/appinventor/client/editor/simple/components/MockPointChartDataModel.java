@@ -1,29 +1,29 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.ErrorReporter;
-import org.pepstock.charba.client.data.Data;
-import org.pepstock.charba.client.data.DataPoint;
-import org.pepstock.charba.client.data.ScatterDataset;
 
 import java.util.Comparator;
 import java.util.Optional;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
+import org.pepstock.charba.client.data.DataPoint;
+import org.pepstock.charba.client.data.ScatterDataset;
 
 /**
  * Data Model class for Point-based Charts for the Mock Chart component.
  * The class is used in extensions of the Point Charts whenever the specified
  * class type is selected in the Mock Chart (e.g. Line/Scatter Chart)
- * <p>
- * Extensions should minimally only provide a constructor. The class handles
+ *
+ * <p>Extensions should minimally only provide a constructor. The class handles
  * 2D data operations.
  */
-public abstract class MockPointChartDataModel<V extends MockPointChartView>
+public abstract class MockPointChartDataModel<V extends MockPointChartView<V>>
     extends MockChartDataModel<ScatterDataset, V> {
 
   /**
@@ -62,20 +62,20 @@ public abstract class MockPointChartDataModel<V extends MockPointChartView>
     // that many data points.
     Optional<DataPoint> maxYPoint = chartData.getDatasets() // Get all the data sets
         .stream() // Create a stream
-        .flatMap(l -> ((ScatterDataset) l).getDataPoints().stream()) // Flatten the nested lists to a List of data points
+        .flatMap(l -> ((ScatterDataset) l).getDataPoints().stream()) // Flatten the nested lists
         .max(Comparator.comparing(DataPoint::getY)); // Get the maximum data point value
 
     // Get the maximum data point Y value. We take the maximum to ensure
     // that our newly added default data does not overlap existing lines.
-    double yVal = maxYPoint.map(DataPoint::getY).orElse(0.0);
+    double maxY = maxYPoint.map(DataPoint::getY).orElse(0.0);
 
     for (int i = 0; i < points; ++i) {
       // Construct the x and y values based on the index
-      double xValue = i + 1;
-      double yValue = yVal + i;
+      double x = i + 1;
+      double y = maxY + i;
 
       // Add an entry based on the constructed values
-      addEntryFromTuple(xValue, yValue);
+      addEntryFromTuple(x, y);
     }
   }
 
@@ -83,11 +83,11 @@ public abstract class MockPointChartDataModel<V extends MockPointChartView>
   public void addEntryFromTuple(String... tuple) {
     try {
       // Parse x and y values
-      double xValue = Double.parseDouble(tuple[0]);
-      double yValue = Double.parseDouble(tuple[1]);
+      double x = Double.parseDouble(tuple[0]);
+      double y = Double.parseDouble(tuple[1]);
 
       // Add an entry from the parsed values
-      addEntryFromTuple(xValue, yValue);
+      addEntryFromTuple(x, y);
     } catch (NumberFormatException e) {
       ErrorReporter.reportInfo(MESSAGES.invalidChartDataEntry());
     }
@@ -95,8 +95,8 @@ public abstract class MockPointChartDataModel<V extends MockPointChartView>
 
   /**
    * Adds an entry to the Data Series from the specified tuple.
-   * <p>
-   * The tuple is expected to have at least 2 entries. All subsequent
+   *
+   * <p>The tuple is expected to have at least 2 entries. All subsequent
    * values are ignored.
    *
    * @param tuple tuple (array of doubles)

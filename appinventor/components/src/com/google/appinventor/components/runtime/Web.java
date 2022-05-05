@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -107,7 +107,8 @@ import org.xml.sax.InputSource;
 @SimpleObject
 @UsesPermissions({INTERNET})
 @UsesLibraries(libraries = "json.jar")
-public class Web extends AndroidNonvisibleComponent implements Component, ObservableDataSource<YailList, Future<YailList>> {
+public class Web extends AndroidNonvisibleComponent implements Component,
+    ObservableDataSource<YailList, Future<YailList>> {
   /**
    * InvalidRequestHeadersException can be thrown from processRequestHeaders.
    * It is thrown if the list passed to processRequestHeaders contains an item that is not a list.
@@ -1603,26 +1604,26 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
 
     // Construct a new FutureTask which handles returning the appropriate data
     // value after the currently recorded last task is processed.
-    FutureTask<YailList> getDataValueTask = new FutureTask<YailList>
-        (new Callable<YailList>() {
-      @Override
-      public YailList call() throws Exception {
-        // If the last recorded GET task is not yet done/cancelled, then the get()
-        // method is invoked to wait for completion of the task.
-        if (currentTask != null && !currentTask.isDone() && !currentTask.isCancelled()) {
-          try {
-            currentTask.get();
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          } catch (ExecutionException e) {
-            e.printStackTrace();
-          }
-        }
+    FutureTask<YailList> getDataValueTask = new FutureTask<>(
+        new Callable<YailList>() {
+          @Override
+          public YailList call() throws Exception {
+            // If the last recorded GET task is not yet done/cancelled, then the get()
+            // method is invoked to wait for completion of the task.
+            if (currentTask != null && !currentTask.isDone() && !currentTask.isCancelled()) {
+              try {
+                currentTask.get();
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              } catch (ExecutionException e) {
+                e.printStackTrace();
+              }
+            }
 
-        // Return resulting columns
-        return getColumns(key);
-      }
-    });
+            // Return resulting columns
+            return getColumns(key);
+          }
+        });
 
     // Run and return the getDataValue FutureTask
     AsynchUtil.runAsynchronously(getDataValueTask);
@@ -1634,8 +1635,8 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
    * and type. Columns are parsed either from JSON or CSV, depending on
    * the response type. On invalid response types, parsing is simply skipped.
    *
-   * Currently supported MIME types are all types which have 'json' in the name,
-   * types which have 'csv' in the name, as well as types which start with 'text/'
+   * <p>Currently supported MIME types are all types which have 'json' in the name,
+   * types which have 'csv' in the name, as well as types which start with 'text/'</p>
    *
    * @param responseContent  Content of the response
    * @param responseType  Type of the response
@@ -1649,7 +1650,7 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
     if (responseType.contains("json")) {
       // Proceed with JSON parsing
       try {
-        columns = JsonUtil.getColumnsFromJSON(responseContent);
+        columns = JsonUtil.getColumnsFromJson(responseContent);
       } catch (JSONException e) {
         // Json importing unsuccessful
       }
@@ -1688,9 +1689,9 @@ public class Web extends AndroidNonvisibleComponent implements Component, Observ
 
   /**
    * Returns a List of the specified columns stored internally
-   * in the Web component (as data of the last request)
+   * in the Web component (as data of the last request).
    *
-   * If a column is not found, it is substituted by an empty List.
+   * <p>If a column is not found, it is substituted by an empty List.</p>
    *
    * @param keyColumns  List of columns to return
    * @return  List of the specified columns

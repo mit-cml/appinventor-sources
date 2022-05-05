@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -141,10 +141,10 @@ public class JsonUtilTest {
    * from an element that is not a List returns an empty List.
    */
   @Test
-  public void testGetColumnsFromJSONNotList() throws JSONException {
+  public void testGetColumnsFromJsonNotList() throws JSONException {
     String json = "1";
 
-    YailList result = JsonUtil.getColumnsFromJSON(json);
+    YailList result = JsonUtil.getColumnsFromJson(json);
     YailList expected = new YailList();
 
     assertEquals(expected, result);
@@ -156,16 +156,16 @@ public class JsonUtilTest {
    * returns a List containing the appropriate column.
    */
   @Test
-  public void testGetColumnsFromJSONArrayMultipleEntries() throws JSONException {
-    String json = "{" +
-        "\"array\": " +
-        "[1,2,3]" +
-        "}";
+  public void testGetColumnsFromJsonArrayMultipleEntries() throws JSONException {
+    String json = "{"
+        + "\"array\": "
+        + "[1,2,3]"
+        + "}";
 
     YailList expectedColumn = YailList.makeList(Arrays.asList("array", "1", "2", "3"));
     YailList expected = YailList.makeList(Collections.singletonList(expectedColumn));
 
-    YailList result = JsonUtil.getColumnsFromJSON(json);
+    YailList result = JsonUtil.getColumnsFromJson(json);
     assertEquals(expected, result);
   }
 
@@ -175,16 +175,16 @@ public class JsonUtilTest {
    * returns a List containing the appropriate column.
    */
   @Test
-  public void testGetColumnsFromJSONArraySingleEntry() throws JSONException {
-    String json = "{" +
-        "\"array\": " +
-        "[7]" +
-        "}";
+  public void testGetColumnsFromJsonArraySingleEntry() throws JSONException {
+    String json = "{"
+        + "\"array\": "
+        + "[7]"
+        + "}";
 
     YailList expectedColumn = YailList.makeList(Arrays.asList("array", "7"));
     YailList expected = YailList.makeList(Collections.singletonList(expectedColumn));
 
-    YailList result = JsonUtil.getColumnsFromJSON(json);
+    YailList result = JsonUtil.getColumnsFromJson(json);
     assertEquals(expected, result);
   }
 
@@ -194,16 +194,16 @@ public class JsonUtilTest {
    * the appropriate column.
    */
   @Test
-  public void testGetColumnsFromJSONElement() throws JSONException {
-    String json = "{" +
-        "\"value\": " +
-        "\"test-value\"" +
-        "}";
+  public void testGetColumnsFromJsonElement() throws JSONException {
+    String json = "{"
+        + "\"value\": "
+        + "\"test-value\""
+        + "}";
 
     YailList expectedColumn = YailList.makeList(Arrays.asList("value", "test-value"));
     YailList expected = YailList.makeList(Collections.singletonList(expectedColumn));
 
-    YailList result = JsonUtil.getColumnsFromJSON(json);
+    YailList result = JsonUtil.getColumnsFromJson(json);
     assertEquals(expected, result);
   }
 
@@ -213,18 +213,18 @@ public class JsonUtilTest {
    * returns a List of the appropriate columns.
    */
   @Test
-  public void testGetColumnsFromJSONMixedEntries() throws JSONException {
-    String json = "{" +
-        "\"array\": [1,2,3]," +
-        "\"values\": [4,7,2,1]," +
-        "\"test-value\": \"element\"" +
-        "}";
+  public void testGetColumnsFromJsonMixedEntries() throws JSONException {
+    String json = "{"
+        + "\"array\": [1,2,3],"
+        + "\"values\": [4,7,2,1],"
+        + "\"test-value\": \"element\""
+        + "}";
 
     YailList expected1 = YailList.makeList(Arrays.asList("array", "1", "2", "3"));
     YailList expected2 = YailList.makeList(Arrays.asList("values", "4", "7", "2", "1"));
     YailList expected3 = YailList.makeList(Arrays.asList("test-value", "element"));
 
-    YailList result = JsonUtil.getColumnsFromJSON(json);
+    YailList result = JsonUtil.getColumnsFromJson(json);
 
     // Since JSON stores it's properties in Sets, order cannot be guaranteed here, hence
     // contains is checked instaed.

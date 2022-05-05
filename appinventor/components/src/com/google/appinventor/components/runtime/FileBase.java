@@ -1,16 +1,10 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
-
-import android.Manifest;
-
-import android.app.Activity;
-
-import android.os.Environment;
 
 import android.util.Log;
 
@@ -18,25 +12,18 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesPermissions;
 
 import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
-import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
 
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileStreamReadOperation;
-import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.IOUtils;
-import com.google.appinventor.components.runtime.util.QUtil;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
 
 /**
  * Base class for File-based components.
@@ -48,9 +35,7 @@ import java.io.StringWriter;
  */
 @SimpleObject
 public abstract class FileBase extends AndroidNonvisibleComponent implements Component {
-  public static final String NO_ASSETS = "No_Assets";
   protected static final String LOG_TAG = "FileComponent";
-  private static final int BUFFER_LENGTH = 4096;
 
   protected FileScope scope = FileScope.App;
 
@@ -91,7 +76,7 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
    * store files relative to the app-specific private directory on external storage in accordance
    * with this security change.
    *
-   *   **Note:** Apps that enable this property will likely stop working after upgrading to
+   *   <p><b>Note:</b> Apps that enable this property will likely stop working after upgrading to
    * Android 11, which strongly enforces that apps only write to app-private directories.
    */
   @SimpleProperty(description = "Allows app to access files from the root of the external storage "
@@ -104,8 +89,8 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
   /**
    * Establishes the file path and reads the contents of the specified File
    * asynchronously.
-   * <p>
-   * Filename formats:
+   *
+   * <p>Filename formats:
    * /file.txt - reads from SD card
    * //file.txt - reads from packaged application files
    * file.txt - application private storage (for packaged apps) or
@@ -138,74 +123,6 @@ public abstract class FileBase extends AndroidNonvisibleComponent implements Com
       }.run();
     } catch (StopBlocksExecution e) {
       // This is okay because the block is designed to be asynchronous.
-    }
-  }
-
-  /**
-   * Returns absolute file path.
-   *
-   * @param filename the file used to construct the file path
-   */
-  protected String AbsoluteFileName(String filename, boolean legacy) {
-    if (filename.startsWith("/")) {
-      return QUtil.getExternalStoragePath(form, false, legacy) + filename;
-    } else {
-      java.io.File dirPath;
-      if (form.isRepl()) {
-        dirPath = new java.io.File(QUtil.getReplDataPath(form, false));
-      } else {
-        dirPath = form.getFilesDir();
-      }
-      if (!dirPath.exists()) {
-        dirPath.mkdirs();           // Make sure it exists
-      }
-      return dirPath.getPath() + "/" + filename;
-    }
-  }
-
-  /**
-   * Replace Windows-style CRLF with Unix LF as String. This allows
-   * end-user to treat Windows text files same as Unix or Mac. In
-   * future, allowing user to choose to normalize new lines might also
-   * be nice - in case someone really wants to detect Windows-style
-   * line separators, or save a file which was read (and expect no
-   * changes in size or checksum).
-   *
-   * @param s to convert
-   */
-
-  private String normalizeNewLines(String s) {
-    return s.replaceAll("\r\n", "\n");
-  }
-
-  /**
-   * Reads from the specified InputStream and returns the contents as a String.
-   *
-   * @param fileInput the stream to read from
-   * @return Contents of the file (as a String)
-   * @throws IOException when the system cannot read the file
-   */
-  public String readFromInputStream(InputStream fileInput) throws IOException {
-    InputStreamReader input = null;
-    try {
-      input = new InputStreamReader(fileInput);
-      StringWriter output = new StringWriter();
-      char[] buffer = new char[BUFFER_LENGTH];
-      int offset = 0;
-      int length = 0;
-      while ((length = input.read(buffer, offset, BUFFER_LENGTH)) > 0) {
-        output.write(buffer, 0, length);
-      }
-
-      // Now that we have the file as a String,
-      // normalize any line separators to avoid compatibility between Windows and Mac
-      // text files. Users can expect \n to mean a line separator regardless of how
-      // file was created. Currently only doing this for files opened locally - not files we pull
-      // from other places like URLs.
-
-      return normalizeNewLines(output.toString());
-    } finally {
-      IOUtils.closeQuietly(LOG_TAG, fileInput);
     }
   }
 

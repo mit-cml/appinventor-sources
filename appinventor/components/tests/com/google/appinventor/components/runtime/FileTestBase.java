@@ -1,39 +1,44 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import android.Manifest;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 import android.os.Environment;
+
 import com.google.appinventor.components.runtime.shadows.ShadowActivityCompat;
 import com.google.appinventor.components.runtime.util.IOUtils;
-import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
+
+import java.nio.charset.StandardCharsets;
+
+import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 
 @Config(shadows = {ShadowActivityCompat.class})
-public class FileTestBase extends RobolectricTestBase {  /// Helper functions
+public abstract class FileTestBase extends RobolectricTestBase {  /// Helper functions
   protected static final String TAG = FileTest.class.getSimpleName();
 
   /**
    * Helper function to grant read/write permissions to the app.
    */
   public void grantFilePermissions() {
-    Shadows.shadowOf(getForm()).grantPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE);
-    Shadows.shadowOf(getForm()).grantPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    Shadows.shadowOf(getForm()).grantPermissions(READ_EXTERNAL_STORAGE);
+    Shadows.shadowOf(getForm()).grantPermissions(WRITE_EXTERNAL_STORAGE);
   }
 
   /**
    * Helper function to deny read/write permissions to the app.
    */
   public void denyFilePermissions() {
-    Shadows.shadowOf(getForm()).denyPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE);
-    Shadows.shadowOf(getForm()).denyPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    Shadows.shadowOf(getForm()).denyPermissions(READ_EXTERNAL_STORAGE);
+    Shadows.shadowOf(getForm()).denyPermissions(WRITE_EXTERNAL_STORAGE);
   }
 
   /**
@@ -46,13 +51,14 @@ public class FileTestBase extends RobolectricTestBase {  /// Helper functions
    *                 otherwise false.
    * @return the absolute path of the file
    */
+  @SuppressWarnings("deprecation")
   public String writeTempFile(String name, String content, boolean external) {
     String target;
     if (external) {
       target = Environment.getExternalStorageDirectory().getAbsolutePath();
     } else if (getForm().isRepl()) {
-      target = Environment.getExternalStorageDirectory().getAbsolutePath() +
-          "/AppInventor/data";
+      target = Environment.getExternalStorageDirectory().getAbsolutePath()
+          + "/AppInventor/data";
     } else {
       target = getForm().getFilesDir().getAbsolutePath();
     }
@@ -67,7 +73,7 @@ public class FileTestBase extends RobolectricTestBase {  /// Helper functions
         }
       }
       out = new FileOutputStream(target);
-      out.write(content.getBytes(Charset.forName("UTF-8")));
+      out.write(content.getBytes(StandardCharsets.UTF_8));
       return targetFile.getAbsolutePath();
     } catch (IOException e) {
       throw new IllegalStateException("Unable to prepare test", e);

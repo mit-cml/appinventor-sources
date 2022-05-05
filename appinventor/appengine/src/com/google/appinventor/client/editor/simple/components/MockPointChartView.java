@@ -1,21 +1,23 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
+import java.util.List;
+
 import org.pepstock.charba.client.ScatterChart;
 import org.pepstock.charba.client.callbacks.TickCallback;
 import org.pepstock.charba.client.configuration.Axis;
-
-import java.util.List;
+import org.pepstock.charba.client.data.ScatterDataset;
 
 /**
  * Chart View for the Point-Based Charts for the Mock Chart component.
  * Handles the UI of Point-based Charts (e.g. Line/Scatter)
  */
-public abstract class MockPointChartView extends MockAxisChartView<ScatterChart> {
+public abstract class MockPointChartView<V extends MockPointChartView<V>>
+    extends MockAxisChartView<ScatterDataset, ScatterChart, V> {
   /**
    * Creates a new MockPointChartView object instance.
    */

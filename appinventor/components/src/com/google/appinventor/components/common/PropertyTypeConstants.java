@@ -1,8 +1,9 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.common;
 
 /**
@@ -11,6 +12,7 @@ package com.google.appinventor.components.common;
  * should be used for modifying a property value within the Designer.  This is used within
  * {@link com.google.appinventor.components.annotations.DesignerProperty#editorType()}.
  */
+@SuppressWarnings("checkstyle:LineLength")
 public class PropertyTypeConstants {
   private PropertyTypeConstants() {}
 
@@ -355,43 +357,43 @@ public class PropertyTypeConstants {
 
   /**
    * Chart types.
-   * @see
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartTypeChoicePropertyEditor
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartTypeChoicePropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_TYPE = "chart_type";
 
   /**
-   * DataFile columns
-   * @see
-   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDataFileSelectorPropertyEditor
+   * DataFile columns.
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDataColumnSelectorProperty
    */
   public static final String PROPERTY_TYPE_DATA_FILE_COLUMN = "data_file_column";
 
   /**
-   * ChartData Data Source component
-   * @see
-   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor
+   * ChartData Data Source component.
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_DATA_SOURCE = "chart_data_source";
 
   /**
-   * Chart Pie Chart radius
-   * @see
-   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidIntegerRangePropertyEditor
+   * Chart Pie Chart radius.
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidIntegerRangePropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_PIE_RADIUS = "chart_pie_radius";
 
   /**
-   * Chart Point Shape for Scatter Chart
-   * @see
-   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartPointShapeChoicePropertyEditor
+   * Chart Point Shape for Scatter Chart.
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartPointShapeChoicePropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_POINT_SHAPE = "chart_point_shape";
 
   /**
-   * Chart Line Type for Line Chart
-   * @see
-   *  com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLineTypeChoicePropertyEditor
+   * Chart Line Type for Line Chart.
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLineTypeChoicePropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_LINE_TYPE = "chart_line_type";
 

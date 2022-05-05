@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,11 +8,19 @@ package com.google.appinventor.components.runtime;
 import android.app.Activity;
 import android.view.View;
 import android.widget.RelativeLayout;
-import com.google.appinventor.components.annotations.*;
+
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -36,13 +44,15 @@ import java.util.List;
     category = ComponentCategory.CHARTS,
     description = "A component that allows visualizing data")
 @UsesLibraries(libraries = "mpandroidchart.jar")
-public class Chart extends AndroidViewComponent implements ComponentContainer, OnInitializeListener {
+@SuppressWarnings("checkstyle:JavadocParagraph")
+public class Chart extends AndroidViewComponent
+    implements ComponentContainer, OnInitializeListener {
   // Root layout of the Chart view. This is used to make Chart
   // dynamic removal & adding easier.
-  private RelativeLayout view;
+  private final RelativeLayout view;
 
   // Underlying Chart view
-  private ChartView chartView;
+  private ChartView<?, ?, ?, ?, ?> chartView;
 
   // Properties
   private int type;
@@ -53,13 +63,13 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
   private boolean gridEnabled;
   private YailList labels;
 
-  // Synced t value across all Data Series (used for real-time entries)
+  // Synced tick value across all Data Series (used for real-time entries)
   // Start the value from 1 (in contrast to starting from 0 as in Chart
   // Data Base) to lessen off-by-one offsets for multiple Chart Data Series.
-  private int t = 1;
+  private int tick = 1;
 
   // Attached Data components
-  private ArrayList<ChartDataBase> dataComponents;
+  private final ArrayList<ChartDataBase> dataComponents;
 
   /**
    * Creates a new Chart component.
@@ -74,7 +84,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     // Adds the view to the designated container
     container.$add(this);
 
-    dataComponents = new ArrayList<ChartDataBase>();
+    dataComponents = new ArrayList<>();
 
     // Set default values
     Type(ComponentConstants.CHART_TYPE_LINE);
@@ -154,8 +164,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE,
       defaultValue = ComponentConstants.CHART_TYPE_LINE + "")
-  @SimpleProperty(description = "Specifies the chart's type (area, bar, " +
-      "pie, scatter), which determines how to visualize the data.",
+  @SimpleProperty(description = "Specifies the chart's type (area, bar, "
+      + "pie, scatter), which determines how to visualize the data.",
       userVisible = false)
   public void Type(int type) {
     if (type >= 0 && type < ComponentConstants.CHART_TYPES) {
@@ -195,7 +205,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
    *             {@link ComponentConstants#CHART_TYPE_PIE}
    * @return new ChartView instance
    */
-  private ChartView createChartViewFromType(int type) {
+  private ChartView<?, ?, ?, ?, ?> createChartViewFromType(int type) {
     switch (type) {
       case ComponentConstants.CHART_TYPE_LINE:
         return new LineChartView(this);
@@ -251,8 +261,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
    *
    * @param text description
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty
   public void Description(String text) {
     this.description = text;
@@ -288,19 +297,20 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
   /**
    * Sets the Pie Radius of the Chart. If the current type is
    * not the Pie Chart, the value has no effect.
-   * <p>
-   * The value is hidden in the blocks due to it being applicable
-   * to a single Chart only. TODO: Might be better to change this in the future
-   * <p>
-   * TODO: Make this an enum selection in the future? (Donut, Full Pie, Small Donut, etc.)
+   *
+   * @internaldoc
+   *     The value is hidden in the blocks due to it being applicable
+   *     to a single Chart only. TODO: Might be better to change this in the future
+   *
+   *     TODO: Make this an enum selection in the future? (Donut, Full Pie, Small Donut, etc.)
    *
    * @param percent Percentage of the Pie Chart radius to fill
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_PIE_RADIUS,
       defaultValue = "100")
-  @SimpleProperty(description = "Sets the Pie Radius of a Pie Chart from 0% to 100%, where the percentage " +
-      "indicates the percentage of the hole fill. 100% means that a full Pie Chart " +
-      "is drawn, while values closer to 0% correspond to hollow Pie Charts.", userVisible = false)
+  @SimpleProperty(description = "Sets the Pie Radius of a Pie Chart from 0% to 100%, where the "
+      + "percentage indicates the percentage of the hole fill. 100% means that a full Pie Chart "
+      + "is drawn, while values closer to 0% correspond to hollow Pie Charts.", userVisible = false)
   public void PieRadius(int percent) {
     this.pieRadius = percent;
 
@@ -349,7 +359,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
   /**
    * Changes the visibility of the Chart's grid, if the
    * Chart Type is set to a Chart with an Axis (applies for Area, Bar, Line,
-   * Scatter Chart types)
+   * Scatter Chart types).
    *
    * @param enabled indicates whether the Chart's grid should be enabled.
    */
@@ -363,7 +373,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     // Axis Chart View, since non-axis Charts do not have
     // grids.
     if (chartView instanceof AxisChartView) {
-      ((AxisChartView) chartView).setGridEnabled(enabled);
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).setGridEnabled(enabled);
     }
   }
 
@@ -380,20 +390,20 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
   /**
    * Changes the Chart's X axis labels to the specified List,
    * if the Chart's Type is set to a Chart with an Axis.
-   * <p>
-   * The first entry of the List corresponds to the minimum x value of the data,
+   *
+   *   The first entry of the List corresponds to the minimum x value of the data,
    * the second to the min x value + 1, and so on.
-   * <p>
-   * If a label is not specified for an x value, a default value
-   * is used (the x value of the axis tick at that location)
+   *
+   *   If a label is not specified for an x value, a default value
+   * is used (the x value of the axis tick at that location).
    *
    * @param labels List of labels to set to the X Axis of the Chart
    */
-  @SimpleProperty(description = "Changes the Chart's X axis labels to the specified List of Strings, " +
-      " provided that the Chart Type is set to a Chart with an Axis (applies to Area, Bar, Line, Scatter Charts)." +
-      "The labels are applied in order, starting from the smallest x value on the Chart, and continuing in order." +
-      "If a label is not specified for an x value, a default value is used (the x value of the axis tick " +
-      "at that location)")
+  @SimpleProperty(description = "Changes the Chart's X axis labels to the specified List of "
+      + "Strings,  provided that the Chart Type is set to a Chart with an Axis (applies to Area, "
+      + "Bar, Line, Scatter Charts). The labels are applied in order, starting from the smallest "
+      + "x value on the Chart, and continuing in order. If a label is not specified for an x "
+      + "value, a default value is used (the x value of the axis tick at that location).")
   public void Labels(YailList labels) {
     this.labels = labels;
 
@@ -401,14 +411,14 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     // an Axis Chart View, since Charts without an
     // axis will not have an X Axis.
     if (chartView instanceof AxisChartView) {
-      List<String> stringLabels = new ArrayList<String>();
+      List<String> stringLabels = new ArrayList<>();
 
       for (int i = 0; i < labels.size(); ++i) {
         String label = labels.getString(i);
         stringLabels.add(label);
       }
 
-      ((AxisChartView) chartView).setLabels(stringLabels);
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).setLabels(stringLabels);
     }
   }
 
@@ -422,8 +432,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
    * @param labels Comma-separated values, where each value represents a label (in order)
    * @see #Labels(YailList)
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty(userVisible = false)
   public void LabelsFromString(String labels) {
     // Retrieve the elements from the CSV-formatted String
@@ -437,7 +446,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
    *
    * @return new ChartDataModel object instance
    */
-  public ChartDataModel createChartModel() {
+  public ChartDataModel<?, ?, ?, ?, ?> createChartModel() {
     return chartView.createChartModel();
   }
 
@@ -445,7 +454,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
    * Refreshes the Chart View.
    */
   public void refresh() {
-    chartView.Refresh();
+    chartView.refresh();
   }
 
   /**
@@ -453,7 +462,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
    *
    * @return Chart View object
    */
-  public ChartView getChartView() {
+  public ChartView<?, ?, ?, ?, ?> getChartView() {
     return chartView;
   }
 
@@ -475,19 +484,19 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     // values after the Screen is initialized.
     if (chartView instanceof PieChartView) {
       ((PieChartView) chartView).setPieRadius(pieRadius);
-      chartView.Refresh();
+      chartView.refresh();
     }
   }
 
   /**
    * Returns the t value to use for time entries for a
    * Data Series of this Chart component.
-   * <p>
-   * Takes in the t value of a Data Series as an argument
+   *
+   * <p>Takes in the t value of a Data Series as an argument
    * to determine a value tailored to the Data Series, while
    * updating the synced t value of the Chart component.
-   * <p>
-   * This method primarily takes care of syncing t values
+   *
+   * <p>This method primarily takes care of syncing t values
    * across all the Data Series of the Chart for consistency.
    *
    * @param dataSeriesT t value of a Data Series
@@ -499,8 +508,8 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     // If the difference between the global t and the Data Series' t
     // value is more than one, that means the Data Series' t value
     // is out of sync and must be updated.
-    if (t - dataSeriesT > 1) {
-      returnValue = t;
+    if (tick - dataSeriesT > 1) {
+      returnValue = tick;
     } else {
       returnValue = dataSeriesT;
     }
@@ -509,7 +518,7 @@ public class Chart extends AndroidViewComponent implements ComponentContainer, O
     // the new synchronized t value should be 1 higher than
     // the return value (since immediately after getting the
     // t value, the value will be incremented either way)
-    t = returnValue + 1;
+    tick = returnValue + 1;
 
     // Return the calculated t value
     return returnValue;

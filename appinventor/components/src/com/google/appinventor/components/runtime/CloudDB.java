@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2017-2020 MIT, All rights reserved
+// Copyright 2017-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -111,8 +111,8 @@ import redis.clients.jedis.exceptions.JedisNoScriptException;
     iconName = "images/cloudDB.png")
 @UsesPermissions({INTERNET, ACCESS_NETWORK_STATE})
 @UsesLibraries(libraries = "jedis.jar")
-public final class CloudDB extends AndroidNonvisibleComponent implements Component,
-  OnClearListener, OnDestroyListener, ObservableDataSource<String, Future<List>> {
+public class CloudDB extends AndroidNonvisibleComponent implements Component,
+    OnClearListener, OnDestroyListener, ObservableDataSource<String, Future<YailList>> {
   private static final boolean DEBUG = false;
   private static final String LOG_TAG = "CloudDB";
   private boolean importProject = false;
@@ -786,7 +786,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
    * Gets the specified value from the underlying Redis database, or
    * returns the specified value if the tag is not present.
    *
-   * The value is returned as an AtomicReference, and will contain
+   * <p>The value is returned as an AtomicReference, and will contain
    * a null value in case of exceptions.
    *
    * @param tag  tag of the value to get
@@ -807,10 +807,12 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       }
       if (returnValue != null) {
         String val = JsonUtil.getJsonRepresentationIfValueFileName(returnValue);
-        if(val != null) value.set(val);
-        else value.set(returnValue);
-      }
-      else {
+        if (val != null) {
+          value.set(val);
+        } else {
+          value.set(returnValue);
+        }
+      } else {
         if (DEBUG) {
           Log.d(CloudDB.LOG_TAG,"Value retrieved is null");
         }
@@ -1441,17 +1443,17 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
    * If the value is not a List object, or it does not exist, an empty List
    * is returned.
    *
-   * The return type being a Future object ensures that the data is
+   * <p>The return type being a Future object ensures that the data is
    * retrieved from the database asynchronously.
    *
    * @param key  Key of the value to retrieve
    * @return  Future object holding the value as a List object, or empty List if not applicable
    */
   @Override
-  public Future<List> getDataValue(final String key) {
-    return background.submit(new Callable<List>() {
+  public Future<YailList> getDataValue(final String key) {
+    return background.submit(new Callable<YailList>() {
       @Override
-      public List call() {
+      public YailList call() {
         // Get the value identified by the tag (key) or an empty
         // YailList if not present
         AtomicReference<Object> valueReference = getValueByTag(key, new YailList());
@@ -1463,12 +1465,12 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         Object value = JsonUtil.getObjectFromJson(valueString);
 
         // Value is a List object; Convert and return it
-        if (value instanceof List) {
-          return (List)value;
+        if (value instanceof YailList) {
+          return (YailList)value;
         }
 
         // Return empty list otherwise
-        return new ArrayList();
+        return YailList.makeEmptyList();
       }
     });
   }

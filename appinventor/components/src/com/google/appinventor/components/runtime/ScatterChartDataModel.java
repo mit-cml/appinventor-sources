@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,6 +9,8 @@ import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet;
+
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -19,7 +21,8 @@ import java.util.ArrayList;
  * Chart data for the Chart component.
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
-public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, ScatterData, ScatterChartView> {
+public class ScatterChartDataModel extends PointChartDataModel<
+    Entry, IScatterDataSet, ScatterData, ScatterChart, ScatterChartView> {
   /**
    * Initializes a new ScatterChartDataModel object instance.
    *
@@ -46,7 +49,9 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
 
   @Override
   protected void setDefaultStylingProperties() {
-    getDataset().setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+    if (dataset instanceof ScatterDataSet) {
+      ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+    }
   }
 
   /**
@@ -59,26 +64,32 @@ public class ScatterChartDataModel extends PointChartDataModel<ScatterDataSet, S
    *          {@link ComponentConstants#CHART_POINT_STYLE_X}
    */
   public void setPointShape(int shape) {
+    if (!(dataset instanceof ScatterDataSet)) {
+      return;
+    }
     switch (shape) {
       case ComponentConstants.CHART_POINT_STYLE_CIRCLE:
-        dataset.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+        ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.CIRCLE);
         break;
 
       case ComponentConstants.CHART_POINT_STYLE_SQUARE:
-        dataset.setScatterShape(ScatterChart.ScatterShape.SQUARE);
+        ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.SQUARE);
         break;
 
       case ComponentConstants.CHART_POINT_STYLE_TRIANGLE:
-        dataset.setScatterShape(ScatterChart.ScatterShape.TRIANGLE);
+        ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.TRIANGLE);
         break;
 
       case ComponentConstants.CHART_POINT_STYLE_CROSS:
-        dataset.setScatterShape(ScatterChart.ScatterShape.CROSS);
+        ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.CROSS);
         break;
 
       case ComponentConstants.CHART_POINT_STYLE_X:
-        dataset.setScatterShape(ScatterChart.ScatterShape.X);
+        ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.X);
         break;
+
+      default:
+        throw new IllegalArgumentException("Unknown shape type: " + shape);
     }
   }
 }

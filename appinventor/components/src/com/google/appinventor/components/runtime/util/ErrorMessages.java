@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -728,9 +728,10 @@ public final class ErrorMessages {
     //ChartData Errors
     errorMessages.put(ERROR_INVALID_CHART_ENTRY_VALUES, "Invalid Chart Entry Value(s): %1$s, %2$s");
     errorMessages.put(ERROR_NULL_CHART_ENTRY_VALUES, "Undefined value was present in Chart Entry");
-    errorMessages.put(ERROR_INSUFFICIENT_CHART_ENTRY_VALUES, "Chart entry did not contain enough values; " +
-        "Expected %1$d, but was %2$d");
-    errorMessages.put(ERROR_INVALID_CHART_DATA_COLOR, "Invalid Chart Data color parameter specified: %1$s");
+    errorMessages.put(ERROR_INSUFFICIENT_CHART_ENTRY_VALUES, "Chart entry did not contain enough "
+        + "values; Expected %1$d, but was %2$d");
+    errorMessages.put(ERROR_INVALID_CHART_DATA_COLOR, "Invalid Chart Data color parameter "
+        + "specified: %1$s");
 
   }
 

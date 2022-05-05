@@ -147,8 +147,14 @@ None
 
 {:.methods}
 
-{:id="DataFile.ReadFile" class="method"} <i/> ReadFile(*source*{:.text})
-: Indicates source file to load data from.The expected format of the contents of the file are either CSV or JSON.Prefix the filename with / to read from a specific file on the SD card. for instance /myFile.txt will read the file /sdcard/myFile.txt. To read assets packaged with an application (also works for the Companion) start the filename with // (two slashes). If a filename does not start with a slash, it will be read from the applications private storage (for packaged apps) and from /sdcard/AppInventor/data for the Companion.The results of the reading are stored in the Rows, Columns and ColumnNames properties of the component.
+{:id="DataFile.ReadFile" class="method"} <i/> ReadFile(*fileName*{:.text})
+: Indicates source file to load data from. The expected format of the contents of the file
+ are either CSV or JSON. Prefix the `fileName`{:.text.block} with `/` to read from a
+ specific file on the SD card (for example, `/myFile.txt` will read the file
+ `/sdcard/myFile.txt`). To read assets packaged with an application (also works for the
+ Companion) start the `fileName`{:.text.block} with `//` (two slashes). If a
+ `fileName`{:.text.block} does not start with a slash, it will be read from the application's
+ private storage (for packaged apps) and from `/sdcard/AppInventor/data` for the Companion.
 
 ## File  {#File}
 

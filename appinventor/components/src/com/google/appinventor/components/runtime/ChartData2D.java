@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -18,10 +18,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * A ChartData2D component represents a single two dimensional Data Series in the Chart component,
- * for example, a single Line in the case of a Line Chart, or a single Bar in the case of a Bar Chart.
- * The Data component is responsible for handling all of the data of the Chart. The entries of the Data
- * component correspond of an x and a y value.
+ * A ChartData2D component represents a single two-dimensional Data Series in the Chart component,
+ * for example, a single Line in the case of a Line Chart, or a single Bar in the case of a Bar
+ * Chart. The Data component is responsible for handling all the data of the Chart. The entries
+ * of the Data component correspond of an x and a y value.
  * The component is attached directly to a Chart component by dragging it onto the Chart.
  */
 @DesignerComponent(version = YaVersion.CHART_DATA_2D_COMPONENT_VERSION,
@@ -29,13 +29,15 @@ import java.util.concurrent.ExecutionException;
     category = ComponentCategory.CHARTS,
     iconName = "images/web.png")
 @SimpleObject
+@SuppressWarnings("checkstyle:JavadocParagraph")
 public final class ChartData2D extends ChartDataBase {
   /**
    * Creates a new Coordinate Data component.
    */
   public ChartData2D(Chart chartContainer) {
     super(chartContainer);
-    dataFileColumns = Arrays.asList("", ""); // Construct default dataFileColumns list with 2 entries
+    // Construct default dataFileColumns list with 2 entries
+    dataFileColumns = Arrays.asList("", "");
     webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
   }
 
@@ -101,10 +103,11 @@ public final class ChartData2D extends ChartDataBase {
    *
    * @param x - x value of entry
    * @param y - y value of entry
-   * @return true if entry eexists
+   * @return true if entry exists
    */
-  @SimpleFunction(description = "Checks whether an (x, y) entry exists in the Coordinate Data." +
-      "Returns true if the Entry exists, and false otherwise.")
+  @SuppressWarnings("TryWithIdenticalCatches")
+  @SimpleFunction(description = "Checks whether an (x, y) entry exists in the Coordinate Data."
+      + "Returns true if the Entry exists, and false otherwise.")
   public boolean DoesEntryExist(final String x, final String y) {
     try {
       return threadRunner.submit(new Callable<Boolean>() {
@@ -129,8 +132,8 @@ public final class ChartData2D extends ChartDataBase {
    * Imports data from the specified DataFile component by taking the specified x column
    * for the x values, and the specified y column for the y values. The DataFile's source file
    * is expected to be either a CSV or a JSON file.
-   * <p>
-   * Passing in empty test for any of the column parameters will result in the usage of
+   *
+   *   Passing in empty test for any of the column parameters will result in the usage of
    * default values which are the indices of the entries. For the first entry, the default
    * value would be the 1, for the second it would be 2, and so on.
    *
@@ -138,8 +141,10 @@ public final class ChartData2D extends ChartDataBase {
    * @param xValueColumn x-value column name
    * @param yValueColumn y-value column name
    */
+  @SuppressWarnings("checkstyle:ParameterName")
   @SimpleFunction()
-  public void ImportFromDataFile(final DataFile dataFile, String xValueColumn, String yValueColumn) {
+  public void ImportFromDataFile(final DataFile dataFile, String xValueColumn,
+      String yValueColumn) {
     // Construct a YailList of columns from the specified parameters
     YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
@@ -151,21 +156,21 @@ public final class ChartData2D extends ChartDataBase {
    * for the x values, and the specified y column for the y values. Prior to calling this function,
    * the Web component's Get method has to be called to load the data. The usage of the gotValue
    * event in the Web component is unnecessary.
-   * <p>
-   * The expected response of the Web component is a JSON or CSV formatted file for this function to
-   * work.
-   * <p>
-   * Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+   *
+   *   The expected response of the Web component is a JSON or CSV formatted
+   * file for this function to work.
+   *
+   *   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
    *
    * @param web          Web component to import from
    * @param xValueColumn x-value column name
    * @param yValueColumn y-value column name
    */
-  @SimpleFunction(description = "Imports data from the specified Web component, given the names of the " +
-      "X and Y value columns. Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, ...). " +
-      "In order for the data importing to be successful, first the Get block must be called on the Web component " +
-      "to load the data, and then this block should be used on that Web component. The usage of the gotValue event " +
-      "in the Web component is unnecessary.")
+  @SimpleFunction(description = "Imports data from the specified Web component, given the names "
+      + "of the X and Y value columns. Empty columns are filled with default values "
+      + "(1, 2, 3, ... for Entry 1, 2, ...). In order for the data importing to be successful, "
+      + "to load the data, and then this block should be used on that Web component. The usage "
+      + "of the gotValue event in the Web component is unnecessary.")
   public void ImportFromWeb(final Web web, String xValueColumn, String yValueColumn) {
     // Construct a YailList of columns from the specified parameters
     YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));

@@ -1,16 +1,18 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
+import org.pepstock.charba.client.data.ScatterDataset;
+
 /**
- * Chart View for the Area Chart
+ * Chart View for the Area Chart.
  *
- * Responsible for the GUI of the Area Chart.
+ * <p>Responsible for the GUI of the Area Chart.
  */
-public class MockAreaChartView extends MockLineChartViewBase {
+public class MockAreaChartView extends MockLineChartViewBase<MockAreaChartView> {
   /**
    * Creates a new Mock Area Chart view instance.
    */
@@ -31,7 +33,7 @@ public class MockAreaChartView extends MockLineChartViewBase {
   }
 
   @Override
-  public MockChartDataModel createDataModel() {
+  public MockChartDataModel<ScatterDataset, MockAreaChartView> createDataModel() {
     return new MockAreaChartDataModel(this);
   }
 }

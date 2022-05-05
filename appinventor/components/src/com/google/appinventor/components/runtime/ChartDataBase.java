@@ -1,18 +1,21 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+
 import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -20,6 +23,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -33,11 +37,12 @@ import java.util.concurrent.Future;
  * Right now, the only extension is the ChartData2D component, but the
  * base class was created with future extensions (e.g. 3D data) in mind.
  */
+@SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
 public abstract class ChartDataBase implements Component, DataSourceChangeListener,
     DataSourceGetValueListener {
   protected Chart container;
-  protected ChartDataModel chartDataModel;
+  protected ChartDataModel<?, ?, ?, ?, ?> chartDataModel;
 
   /**
    * Used to queue & execute asynchronous tasks while ensuring
@@ -73,10 +78,8 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   private String label;
   private int color;
   private YailList colors;
-  private int pointShape;
-  private int lineType;
 
-  private DataSource dataSource; // Attached Chart Data Source
+  private DataSource<?, ?> dataSource; // Attached Chart Data Source
 
   /**
    * Last seen observed Data Source value. This has to be
@@ -89,7 +92,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
   private boolean initialized = false; // Keep track whether the Screen has already been initialized
 
-  private int t = 0;
+  private int tick = 0;
 
   /**
    * Creates a new Chart Data component.
@@ -107,8 +110,8 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
   /**
    * Changes the underlying Executor Service of the threadRunner.
-   * <p>
-   * Primarily used for testing to inject test/mock ExecutorService
+   *
+   *   Primarily used for testing to inject test/mock ExecutorService
    * classes.
    *
    * @param service new ExecutorService object to use..
@@ -148,7 +151,21 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   }
 
   /**
-   * Returns the Chart's colors as a List
+   * Specifies the data series color as an alpha-red-green-blue integer.
+   *
+   * @param argb background RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
+  @SimpleProperty
+  public void Color(int argb) {
+    color = argb;
+    chartDataModel.setColor(color);
+    refreshChart();
+  }
+
+  /**
+   * Returns the Chart's colors as a List.
    *
    * @return List of colors
    */
@@ -161,8 +178,8 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
   /**
    * Specifies the data series colors as a list of alpha-red-green-blue integers.
-   * <p>
-   * If there is more data than there are colors, the cclors will be alternated
+   *
+   *   If there is more data than there are colors, the colors will be alternated
    * in order. E.g. if there are two colors Red and Blue, the colors will be applied
    * in the order: Red, Blue, Red, Blue, ...
    *
@@ -174,7 +191,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
     // TODO: the colors of the Chart.
 
     // Parse the entries of the YailList
-    List<Integer> resultColors = new ArrayList<Integer>();
+    List<Integer> resultColors = new ArrayList<>();
 
     for (int i = 0; i < colors.size(); ++i) {
       // Get the element of the YailList as a String
@@ -203,20 +220,6 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   }
 
   /**
-   * Specifies the data series color as an alpha-red-green-blue integer.
-   *
-   * @param argb background RGB color with alpha
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
-  @SimpleProperty
-  public void Color(int argb) {
-    color = argb;
-    chartDataModel.setColor(color);
-    refreshChart();
-  }
-
-  /**
    * Returns the label text of the data series.
    *
    * @return label text
@@ -232,8 +235,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    *
    * @param text label text
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty
   public void Label(String text) {
     this.label = text;
@@ -256,7 +258,6 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
       defaultValue = ComponentConstants.CHART_POINT_STYLE_CIRCLE + "")
   @SimpleProperty(userVisible = false)
   public void PointShape(int shape) {
-    this.pointShape = shape;
 
     // Only change the Point Shape if the Chart Data Model is a
     // ScatterChartDataModel (other models do not support changing
@@ -280,13 +281,12 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
       defaultValue = ComponentConstants.CHART_LINE_TYPE_LINEAR + "")
   @SimpleProperty(userVisible = false)
   public void LineType(int type) {
-    this.lineType = type;
 
     // Only change the Line Type if the Chart Data Model is a
     // LineChartBaseDataModel (other models do not support changing
     // the Line Type)
     if (chartDataModel instanceof LineChartBaseDataModel) {
-      ((LineChartBaseDataModel) chartDataModel).setLineType(type);
+      ((LineChartBaseDataModel<?>) chartDataModel).setLineType(type);
     }
   }
 
@@ -297,7 +297,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    *
    * @param elements Comma-separated values of Chart entries alternating between x and y values.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       userVisible = false)
   public void ElementsFromPairs(final String elements) {
@@ -335,7 +335,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    *
    * @param column name of the column for the x values
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_DATA_FILE_COLUMN, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_DATA_FILE_COLUMN)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       userVisible = false)
   public void DataFileXColumn(String column) {
@@ -352,9 +352,10 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    *
    * @param column name of the column for the x values
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "Sets the column to parse from the attached Web component for the x values." +
-      "If a column is not specified, default values for the x values will be generated instead.",
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(description = "Sets the column to parse from the attached Web component for "
+      + "the x values. If a column is not specified, default values for the x values will be "
+      + "generated instead.",
       category = PropertyCategory.BEHAVIOR,
       userVisible = false)
   public void WebXColumn(String column) {
@@ -372,7 +373,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    *
    * @param column name of the column for the y values
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_DATA_FILE_COLUMN, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_DATA_FILE_COLUMN)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       userVisible = false)
   public void DataFileYColumn(String column) {
@@ -389,9 +390,10 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    *
    * @param column name of the column for the y values
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "Sets the column to parse from the attached Web component for the y values." +
-      "If a column is not specified, default values for the y values will be generated instead.",
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(description = "Sets the column to parse from the attached Web component for the "
+      + "y values. If a column is not specified, default values for the y values will be "
+      + "generated instead.",
       category = PropertyCategory.BEHAVIOR,
       userVisible = false)
   public void WebYColumn(String column) {
@@ -402,27 +404,32 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   /**
    * Sets the Data Source key identifier for the value to import from the
    * attached Data Source.
-   * <p>
-   * An example is the tag of the TinyDB component, which identifies the value.
-   * <p>
-   * The property is a Designer-only property, and should be changed after setting the
+   *
+   *   An example is the tag of the TinyDB component, which identifies the value.
+   *
+   *   The property is a Designer-only property, and should be changed after setting the
    * Source component of the Chart Data component.
-   * <p>
-   * A complete list of applicable values for each compatible source is as follows:
-   * For TinyDB and CloudDB, this is the tag value. <br>
-   * For the AccelerometerSensor, the value should be one of the following: X Y or Z<br>
-   * For the GyroscopeSensor, the value should be one of the following: X Y or Z<br>
-   * For the LocationSensor, the value should be one of the following: latitude, longitude, altitude or speed<br>
-   * For the OrientationSensor, the value should be one of the following: pitch, azimuth or roll<br>
-   * For the Pedometer, the value should be one of the following: WalkSteps, SimpleSteps or Distance<br>
-   * For the ProximitySensor, the value should be distance.<br>
-   * For the BluetoothClient, the value represents the prefix to remove from the value. For instance,
-   * if values come in the format "t:12", the prefix can be specified as "t:", and the prefix will
-   * then be removed from the data. No value can be specified if purely numerical values are returned.
+   *
+   *   A complete list of applicable values for each compatible source is as follows:
+   *
+   *     * For TinyDB and CloudDB, this is the tag value.
+   *     * For the AccelerometerSensor, the value should be one of the following: X Y or Z
+   *     * For the GyroscopeSensor, the value should be one of the following: X Y or Z
+   *     * For the LocationSensor, the value should be one of the following:
+   *       latitude, longitude, altitude or speed
+   *     * For the OrientationSensor, the value should be one of the following:
+   *       pitch, azimuth or roll
+   *     * For the Pedometer, the value should be one of the following:
+   *       WalkSteps, SimpleSteps or Distance
+   *     * For the ProximitySensor, the value should be distance.
+   *     * For the BluetoothClient, the value represents the prefix to remove from the value.
+   *       For instance, if values come in the format "t:12", the prefix can be specified as "t:",
+   *       and the prefix will then be removed from the data. No value can be specified if purely
+   *       numerical values are returned.
    *
    * @param key new key value
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       userVisible = false)
   public void DataSourceKey(String key) {
@@ -438,20 +445,21 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * valid DataSourceValue, WebColumn or DataFileColumn properties,
    * depending on the type of the Source attached (the required properties
    * show up in the Properties menu after the Source is changed).
-   * <p>
-   * If the data identified by the {@link #DataSourceKey(String)} is updated in the attached Data Source component,
-   * then the data is also updated in the Chart Data component.
+   *
+   *   If the data identified by the {@link #DataSourceKey(String)} is updated
+   * in the attached Data Source component, then the data is also updated in
+   * the Chart Data component.
    *
    * @param dataSource Data Source to use for the Chart data.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_DATA_SOURCE)
-  public void Source(DataSource dataSource) {
+  public <K, V> void Source(DataSource<K, V> dataSource) {
     // If the previous Data Source is an ObservableDataSource,
     // this Chart Data component must be removed from the observers
     // List of the Data Source.
     if (this.dataSource != dataSource && this.dataSource instanceof ObservableDataSource) {
-      ((ObservableDataSource) this.dataSource).removeDataObserver(this);
+      ((ObservableDataSource<?, ?>) this.dataSource).removeDataObserver(this);
     }
 
     this.dataSource = dataSource;
@@ -462,7 +470,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
     if (initialized) {
       if (dataSource instanceof ObservableDataSource) {
         // Add this Data Component as an observer to the ObservableDataSource object
-        ((ObservableDataSource) dataSource).addDataObserver(this);
+        ((ObservableDataSource<?, ?>) dataSource).addDataObserver(this);
 
         // No Data Source Value specified; Do not proceed with importing data
         if (dataSourceKey == null) {
@@ -491,11 +499,9 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * The list is expected to contain element which are also lists. Each
    * list element is expected to have 2 values, the first one being
    * the x value, and the second one being the y value.
-   * Invalid list entries are simply skipped.
-   * <p>
-   * Does not overwrite any data.
+   * Invalid list entries are simply skipped. Existing data are not cleared.
    *
-   * @param list YailList of tuples.
+   * @param list list of tuples.
    */
   @SimpleFunction()
   public void ImportFromList(final YailList list) {
@@ -532,15 +538,16 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   /**
    * Changes the Data Source of the component to the specified component Source with the
    * specified key value. See the {@link #Source(DataSource)} property for
-   * applicable components. See the {@link #DataSourceKey(String)} property for the interpretation of the keyValue.
-   * In the case of the DataFile and Web components, the keyValue is expected to be a CSV formatted string,
-   * where the first value corresponds to the x column, and the second value corresponds to the y value.
+   * applicable components. See the {@link #DataSourceKey(String)} property for the interpretation
+   * of the keyValue. In the case of the DataFile and Web components, the keyValue is expected to
+   * be a CSV formatted string, where the first value corresponds to the x column, and the second
+   * value corresponds to the y value.
    *
    * @param source   Data Source to attach to the Data component
    * @param keyValue Key value identifying the value to use from the Data Source
    */
   @SimpleFunction()
-  public void ChangeDataSource(final DataSource source, final String keyValue) {
+  public <K, V> void ChangeDataSource(final DataSource<K, V> source, final String keyValue) {
     // To avoid interruptions to Data importing, the Chart Data Source should be
     // changed asynchronously.
     threadRunner.execute(new Runnable() {
@@ -597,7 +604,8 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * Doing so will result in no more updates from the Data Source being sent, however,
    * the current data will not be removed.
    */
-  @SimpleFunction(description = "Un-links the currently associated Data Source component from the Chart.")
+  @SimpleFunction(description = "Un-links the currently associated Data Source component from "
+      + "the Chart.")
   public void RemoveDataSource() {
     // To avoid interruptions to Data importing, the Chart Data Source should be
     // changed asynchronously.
@@ -628,8 +636,9 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * @param x x value to search for
    * @return YailList of entries (represented as tuples)
    */
-  @SimpleFunction(description = "Returns a List of entries with x values matching the specified x value." +
-      "A single entry is represented as a List of values of the entry.")
+  @SuppressWarnings("TryWithIdenticalCatches")
+  @SimpleFunction(description = "Returns a List of entries with x values matching the specified "
+      + "x value. A single entry is represented as a List of values of the entry.")
   public YailList GetEntriesWithXValue(final String x) {
     try {
       return threadRunner.submit(new Callable<YailList>() {
@@ -656,8 +665,9 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * @param y y value to search for
    * @return YailList of entries (represented as tuples)
    */
-  @SimpleFunction(description = "Returns a List of entries with y values matching the specified y value." +
-      "A single entry is represented as a List of values of the entry.")
+  @SuppressWarnings("TryWithIdenticalCatches")
+  @SimpleFunction(description = "Returns a List of entries with y values matching the specified "
+      + "y value. A single entry is represented as a List of values of the entry.")
   public YailList GetEntriesWithYValue(final String y) {
     try {
       return threadRunner.submit(new Callable<YailList>() {
@@ -683,8 +693,9 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    *
    * @return YailList of all the entries of the Data Series
    */
-  @SimpleFunction(description = "Returns all the entries of the Data Series." +
-      "A single entry is represented as a List of values of the entry.")
+  @SuppressWarnings("TryWithIdenticalCatches")
+  @SimpleFunction(description = "Returns all the entries of the Data Series. "
+      + "A single entry is represented as a List of values of the entry.")
   public YailList GetAllEntries() {
     try {
       return threadRunner.submit(new Callable<YailList>() {
@@ -705,18 +716,18 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   /**
    * Imports data from the specified TinyDB component by taking the value
    * identified by the specified tag value.
-   * <p>
-   * The expected TinyDB value is a list formatted in the same way as described in
+   *
+   *   The expected TinyDB value is a list formatted in the same way as described in
    * {@link #ImportFromList(YailList)}.
-   * <p>
-   * Does not overwrite any data.
+   *
+   *   Does not overwrite any data.
    *
    * @param tinyDB TinyDB component to import from
    * @param tag    the identifier of the value to import
    */
   @SimpleFunction()
   public void ImportFromTinyDB(final TinyDB tinyDB, final String tag) {
-    final List list = tinyDB.getDataValue(tag); // Get the List value from the TinyDB data
+    final List<?> list = tinyDB.getDataValue(tag); // Get the List value from the TinyDB data
 
     // Update the current Data Source value (if appropriate)
     updateCurrentDataSourceValue(tinyDB, tag, list);
@@ -734,11 +745,11 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   /**
    * Imports data from the specified CloudDB component by taking the value
    * identified by the specified tag value.
-   * <p>
-   * The expected CloudDB value is a list formatted in the same way as described in
+   *
+   *   The expected CloudDB value is a list formatted in the same way as described in
    * {@link #ImportFromList(YailList)}.
-   * <p>
-   * Does not overwrite any data.
+   *
+   *   Does not overwrite any data.
    *
    * @param cloudDB CloudDB component to import from
    * @param tag     the identifier of the value to import
@@ -746,13 +757,13 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   @SimpleFunction()
   public void ImportFromCloudDB(final CloudDB cloudDB, final String tag) {
     // Get the Future YailList object from the CloudDB data
-    final Future<List> list = cloudDB.getDataValue(tag);
+    final Future<YailList> list = cloudDB.getDataValue(tag);
 
     // Import data asynchronously
     threadRunner.execute(new Runnable() {
       @Override
       public void run() {
-        final List listValue;
+        final YailList listValue;
 
         try {
           // Get the value from the Future object
@@ -779,7 +790,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
   /**
    * Imports data from a Data File component, with the specified column names.
-   * The method is ran asynchronously.
+   * The method is run asynchronously.
    *
    * @param dataFile Data File component to import from
    * @param columns  list of column names to import from
@@ -790,6 +801,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
     // Import the data from the Data file asynchronously
     threadRunner.execute(new Runnable() {
+      @SuppressWarnings("TryWithIdenticalCatches")
       @Override
       public void run() {
         YailList dataResult = null;
@@ -860,10 +872,11 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * Refreshes the Chart View object with the current up to date
    * Data Series data.
    */
+  @SuppressWarnings({"unchecked", "rawtypes"})
   protected void refreshChart() {
     // Update the Chart with the Chart Data Model's current
     // data and refresh the Chart itself.
-    container.getChartView().Refresh(chartDataModel);
+    container.getChartView().refresh((ChartDataModel) chartDataModel);
   }
 
   @Override
@@ -874,8 +887,8 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   /**
    * Links the Data Source component with the Data component, if
    * the Source component has been defined earlier.
-   * <p>
-   * The reason this is done is because otherwise exceptions
+   *
+   *   The reason this is done is because otherwise exceptions
    * are thrown if the Data is being imported before the component
    * is fully initialized.
    */
@@ -897,12 +910,12 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
   /**
    * Event called when the value of the observed DataSource component changes.
-   * <p>
-   * If the key matches the dataSourceKey of the Data Component, the specified
+   *
+   *   If the key matches the dataSourceKey of the Data Component, the specified
    * new value is processed and imported, while the old data part of the Data
    * Source is removed.
-   * <p>
-   * A key value of null is interpreted as a change of all the values, so it would
+   *
+   *   A key value of null is interpreted as a change of all the values, so it would
    * change the imported data.
    *
    * @param component component that triggered the event
@@ -910,8 +923,10 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * @param newValue  the new value of the observed value
    */
   @Override
-  public void onDataSourceValueChange(final DataSource component, final String key, final Object newValue) {
-    if (component != dataSource // Calling component is not the attached Data Source. TODO: Un-observe?
+  public void onDataSourceValueChange(final DataSource<?, ?> component, final String key,
+      final Object newValue) {
+    // Calling component is not the attached Data Source. TODO: Un-observe?
+    if (component != dataSource
         || (!isKeyValid(key))) { // The changed value is not the observed value
       return;
     }
@@ -923,14 +938,14 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
         // Old value originating from the Data Source exists and is of type List
         if (lastDataSourceValue instanceof List) {
           // Remove the old values
-          chartDataModel.removeValues((List) lastDataSourceValue);
+          chartDataModel.removeValues((List<?>) lastDataSourceValue);
         }
 
         updateCurrentDataSourceValue(component, key, newValue);
 
         // New value is a List; Import the value
         if (lastDataSourceValue instanceof List) {
-          chartDataModel.importFromList((List) lastDataSourceValue);
+          chartDataModel.importFromList((List<?>) lastDataSourceValue);
         }
 
         // Refresh the Chart view
@@ -940,7 +955,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   }
 
   @Override
-  public void onReceiveValue(RealTimeDataSource component, final String key, Object value) {
+  public void onReceiveValue(RealTimeDataSource<?, ?> component, final String key, Object value) {
     // Calling component is not the actual Data Source
     if (component != dataSource) {
       return;
@@ -948,7 +963,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
     // Boolean to indicate whether data should be imported (conditions
     // for importing are satisfied)
-    boolean importData = false;
+    boolean importData;
 
     // BluetoothClient requires different handling due to value format
     // expected to be with a prefix (prefix||value)
@@ -985,16 +1000,16 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
         public void run() {
           // Get the  t value synced across the entire Chart
           // and update the synced value if necessary
-          t = container.getSyncedTValue(t);
+          tick = container.getSyncedTValue(tick);
 
           // Create tuple from current t value and the received value
-          final YailList tuple = YailList.makeList(Arrays.asList(t, finalValue));
+          final YailList tuple = YailList.makeList(Arrays.asList(tick, finalValue));
 
           chartDataModel.addTimeEntry(tuple);
           refreshChart();
 
           // Increment t value
-          t++;
+          tick++;
         }
       });
     }
@@ -1002,13 +1017,13 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
   /**
    * Updates the current observed Data Source value if the source and key matches
-   * the attached Data Source & value
+   * the attached Data Source and value.
    *
    * @param source   Source component
    * @param key      Key of the updated value
    * @param newValue The updated value
    */
-  private void updateCurrentDataSourceValue(DataSource source, String key, Object newValue) {
+  private void updateCurrentDataSourceValue(DataSource<?, ?> source, String key, Object newValue) {
     // The source must be the same as the attached source & the key must
     // be valid in order to process the update.
     if (source == dataSource && isKeyValid(key)) {

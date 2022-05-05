@@ -1,21 +1,21 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.components.common.ComponentConstants;
-import org.pepstock.charba.client.data.Data;
-import org.pepstock.charba.client.data.DataPoint;
-import org.pepstock.charba.client.enums.SteppedLine;
 
 import java.util.Comparator;
+
+import org.pepstock.charba.client.data.DataPoint;
+import org.pepstock.charba.client.enums.SteppedLine;
 
 /**
  * Chart Data Model for Mock Line Chart based views.
  */
-public abstract class MockLineChartBaseDataModel<V extends MockLineChartViewBase>
+public abstract class MockLineChartBaseDataModel<V extends MockLineChartViewBase<V>>
     extends MockPointChartDataModel<V> {
   /**
    * Creates a new MockLineChartBaseDataModel instance.
@@ -53,8 +53,8 @@ public abstract class MockLineChartBaseDataModel<V extends MockLineChartViewBase
 
   /**
    * Changes the Line type of the Data Series.
-   * <p>
-   * The following values are used:
+   *
+   * <p>The following values are used:
    * 0 - Linear
    * 1 - Curved
    * 2 - Stepped
@@ -77,6 +77,9 @@ public abstract class MockLineChartBaseDataModel<V extends MockLineChartViewBase
         dataSeries.setSteppedLine(SteppedLine.BEFORE); // Enable stepped line
         dataSeries.setLineTension(0); // Disable curved line
         break;
+
+      default:
+        throw new IllegalArgumentException("Unknown line type: " + type);
     }
   }
 }

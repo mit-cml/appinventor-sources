@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,24 +7,27 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
+
 import com.google.appinventor.components.common.ComponentConstants;
-import org.pepstock.charba.client.resources.EmbeddedResources;
-import org.pepstock.charba.client.resources.ResourcesType;
 
 import java.util.List;
+
+import org.pepstock.charba.client.resources.EmbeddedResources;
+import org.pepstock.charba.client.resources.ResourcesType;
 
 /**
  * Central Chart component available to use for the users.
  * Supports multiple types and handling all property changes.
  *
- * The class handles using the correct Chart view based on
+ * <p>The class handles using the correct Chart view based on
  * the current selected Chart type, hiding/showing properties according
  * to the selected Chart type and contains functionality related to
  * checking compatibility with attaching Chart Data objects to the Chart.
  *
- * The class extends from McokContainer due to the Chart component
+ * <p>The class extends from McokContainer due to the Chart component
  * holding ChartData components as children.
  */
 public final class MockChart extends MockContainer {
@@ -41,7 +44,7 @@ public final class MockChart extends MockContainer {
     ResourcesType.setClientBundle(EmbeddedResources.INSTANCE);
   }
 
-  protected MockChartView chartView;
+  private MockChartView<?, ?, ?> chartView;
 
   // Legal values for type are defined in
   // com.google.appinventor.components.common.ComponentConstants.java.
@@ -51,9 +54,6 @@ public final class MockChart extends MockContainer {
   // reattached. The reattachment has to happen only once, since the Data
   // Series are part of the Chart object itself.
   private boolean childrenReattached = false;
-
-  // Store the LabelsFromStrings property parsed result
-  private String[] labelArray = new String[0];
 
   /**
    * Creates a new instance of a visible component.
@@ -171,6 +171,8 @@ public final class MockChart extends MockContainer {
    */
   private void setLabelsFromStringProperty(String labels) {
     // Base case: Empty List of Labels should be an empty array.
+    // Store the LabelsFromStrings property parsed result
+    String[] labelArray;
     if (labels.equals("")) {
       labelArray = new String[0];
     } else {
@@ -181,7 +183,7 @@ public final class MockChart extends MockContainer {
     // Only update the labels to the Chart if the Chart is of type
     // MockAxisChartView, since the labels apply to the X Axis.
     if (chartView instanceof MockAxisChartView) {
-      ((MockAxisChartView) chartView).updateLabels(labelArray);
+      ((MockAxisChartView<?, ?, ?>) chartView).updateLabels(labelArray);
       refreshChart();
     }
   }
@@ -197,7 +199,7 @@ public final class MockChart extends MockContainer {
     // if the Chart View is an Axis Chart View.
     if (chartView instanceof MockAxisChartView) {
       boolean enabled = Boolean.parseBoolean(newValue);
-      ((MockAxisChartView) chartView).setGridEnabled(enabled);
+      ((MockAxisChartView<?, ?, ?>) chartView).setGridEnabled(enabled);
 
       chartView.getChartWidget().draw(); // Re-draw the Chart to take effect
     }
@@ -206,8 +208,8 @@ public final class MockChart extends MockContainer {
   /**
    * Changes Chart property visibilities depending on the
    * current type of the Chart.
-   * <p>
-   * Should be invoked after the Type property is changed.
+   *
+   * <p>Should be invoked after the Type property is changed.
    */
   private void changeChartPropertyVisibilities() {
     // Handle Pie Chart property hiding
@@ -229,12 +231,12 @@ public final class MockChart extends MockContainer {
 
   /**
    * Creates and returns a new MockChartView object based on the type
-   * (integer) provided
+   * (integer) provided.
    *
    * @param type Chart type (integer representation)
    * @return new MockChartView object instance
    */
-  private MockChartView createMockChartViewFromType(int type) {
+  private MockChartView<?, ?, ?> createMockChartViewFromType(int type) {
     switch (type) {
       case ComponentConstants.CHART_TYPE_LINE:
         return new MockLineChartView();
@@ -341,7 +343,7 @@ public final class MockChart extends MockContainer {
    *
    * @return new MockChartDataModel instance
    */
-  public MockChartDataModel createDataModel() {
+  public MockChartDataModel<?, ?> createDataModel() {
     return chartView.createDataModel();
   }
 
@@ -358,7 +360,7 @@ public final class MockChart extends MockContainer {
    * @param source DragSource instance
    * @return MockComponent instance
    */
-  protected MockComponent getComponentFromDragSource(DragSource source) {
+  private MockComponent getComponentFromDragSource(DragSource source) {
     MockComponent component = null;
     if (source instanceof MockComponent) {
       component = (MockComponent) source;

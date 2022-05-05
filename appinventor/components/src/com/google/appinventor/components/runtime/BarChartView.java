@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,9 +7,12 @@ package com.google.appinventor.components.runtime;
 
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
 import java.util.List;
@@ -18,7 +21,8 @@ import java.util.List;
  * Class for handling the UI (view) of the Bar Chart for the Chart component.
  * @see com.google.appinventor.components.runtime.ChartView
  */
-public class BarChartView extends AxisChartView<BarChart, BarData> {
+public class BarChartView extends AxisChartView<
+    BarEntry, IBarDataSet, BarData, BarChart, BarChartView> {
   // Constant for the starting value to group Bar Chart bars from
   private static final float START_X_VALUE = 0f;
 
@@ -55,7 +59,7 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
   }
 
   @Override
-  public ChartDataModel createChartModel() {
+  public ChartDataModel<BarEntry, IBarDataSet, BarData, BarChart, BarChartView> createChartModel() {
     // Instantiate a new Bar Chart Data Model with the local
     // BarData object.
     BarChartDataModel model = new BarChartDataModel(data, this);
@@ -88,7 +92,7 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
       // Since the number of data sets can change, the bar space and
       // bar width should be re-calculated. 10% and 90% of the remainder
       // are given to the Bar Space and the Bar Width, respectively.
-      float x = (1f - GROUP_SPACE)/dataSetCount;
+      float x = (1f - GROUP_SPACE) / dataSetCount;
       barSpace = x * 0.1f;
       barWidth = x * 0.9f;
 
@@ -100,7 +104,8 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
     // 2, that means the 2nd Data Set has been added, and as such,
     // the appropriate settings can be set which apply to Grouped Bar Charts.
     if (dataSetCount == 2) {
-      chart.getXAxis().setCenterAxisLabels(true); // Axis labels should be centered to align with the grid lines
+      // Axis labels should be centered to align with the grid lines
+      chart.getXAxis().setCenterAxisLabels(true);
     }
   }
 
@@ -110,16 +115,22 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
 
     // Since the Chart is stored in a RelativeLayout, settings are
     // needed to fill the Layout.
-    chart.setLayoutParams(new ViewGroup.LayoutParams
-        (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    chart.setLayoutParams(new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    chart.getXAxis().setGranularity(1f); // Granularity should be 1 (bars go from x values of 0, 1, ..., N)
+    // Granularity should be 1 (bars go from x values of 0, 1, ..., N)
+    chart.getXAxis().setGranularity(1f);
   }
 
   @Override
-  protected void Refresh(ChartDataModel model, List<Entry> entries) {
+  protected void refresh(
+      ChartDataModel<BarEntry, IBarDataSet, BarData, BarChart, BarChartView> model,
+      List<BarEntry> entries) {
     // Update the ChartDataModel's entries
-    model.getDataset().setValues(entries);
+    IBarDataSet dataset = model.getDataset();
+    if (dataset instanceof BarDataSet) {
+      ((BarDataSet) dataset).setValues(entries);
+    }
 
     // Regroup bars (if appropriate)
     regroupBars();
@@ -159,13 +170,14 @@ public class BarChartView extends AxisChartView<BarChart, BarData> {
         maxEntries = Math.max(maxEntries, dataSet.getEntryCount());
       }
 
-      chart.getXAxis().setAxisMinimum(START_X_VALUE); // Update the x axis to start from the start x value
+      // Update the x axis to start from the start x value
+      chart.getXAxis().setAxisMinimum(START_X_VALUE);
 
       // Set the maximum value for the x axis based on maximum entries and the group
       // width of the grouped bars. The calculation is based directly on the example
       // presented in the MPAndroidChart library example activities.
-      chart.getXAxis().setAxisMaximum(START_X_VALUE +
-          chart.getData().getGroupWidth(GROUP_SPACE, barSpace) * maxEntries);
+      chart.getXAxis().setAxisMaximum(START_X_VALUE
+          + chart.getData().getGroupWidth(GROUP_SPACE, barSpace) * maxEntries);
     }
   }
 }

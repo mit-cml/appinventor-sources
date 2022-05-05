@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
 import org.pepstock.charba.client.AbstractChart;
+import org.pepstock.charba.client.data.Dataset;
 import org.pepstock.charba.client.enums.Position;
 
 /**
@@ -13,9 +14,11 @@ import org.pepstock.charba.client.enums.Position;
  * Since the Mock Chart is an individual component, this
  * class serves the purpose of abstracting away the Chart Widget
  * for each Chart type individually (e.g. Line, Bar Chart)
+ *
  * @param <C>  Parameter representing the Chart of the Chart View (Charba Chart)
  */
-public abstract class MockChartView<C extends AbstractChart> {
+public abstract class MockChartView
+    <D extends Dataset, C extends AbstractChart<D>, V extends MockChartView<D, C, V>> {
   protected C chartWidget;
 
   /**
@@ -25,7 +28,7 @@ public abstract class MockChartView<C extends AbstractChart> {
     chartWidget.getOptions().setMaintainAspectRatio(false); // Fill panel
     chartWidget.getOptions().getTitle().setDisplay(true); // Display title
     chartWidget.getOptions().getLegend().getLabels().setBoxWidth(20); // Reduce label size
-    chartWidget.getOptions().getLegend().setPosition(Position.BOTTOM); // Position legend at the bottom
+    chartWidget.getOptions().getLegend().setPosition(Position.BOTTOM); // Position legend at bottom
 
     chartWidget.setWidth("100%"); // Fill root panel with Chart Widget's width
   }
@@ -75,5 +78,6 @@ public abstract class MockChartView<C extends AbstractChart> {
    *
    * @return new MockChartDataModel instance
    */
-  public abstract MockChartDataModel createDataModel();
+  public abstract MockChartDataModel<D, V>
+      createDataModel();
 }

@@ -1,12 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
 import com.google.appinventor.common.version.AppInventorFeatures;
+
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
@@ -14,9 +15,9 @@ import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.util.CsvParser;
+
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
-import com.google.appinventor.shared.properties.json.JSONString;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
@@ -32,8 +33,8 @@ import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.util.Base64Util;
+
 import com.google.common.collect.Lists;
-import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -48,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.json.JSONException;
 
 /**
  * The implementation of the RPC service which runs on the server.
@@ -410,7 +413,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Loads the file information associated with a node in the project tree. After
    * loading the file, the contents of it are parsed.
    *
-   * Expected format is either JSON or CSV. If the first character of the
+   * <p>Expected format is either JSON or CSV. If the first character of the
    * file's contents is a left curly bracket ( { ), then JSON parsing is
    * attempted. Otherwise, CSV parsing is done.
    *
@@ -421,7 +424,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    */
   @Override
   public List<List<String>> loadDataFile(long projectId, String fileId) {
-    final int MAX_ROWS = 10; // Parse a maximum of 10 rows
+    final int maxRows = 10; // Parse a maximum of 10 rows
 
     // Load the contents of the specified file
     String result = load(projectId, fileId);
@@ -431,13 +434,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     // the contents as a CSV file.
     if (result.startsWith("{")) {
       try {
-        return parseJSONColumns(result, MAX_ROWS);
+        return parseJsonColumns(result, maxRows);
       } catch (JSONException e) {
         // JSON parsing failed; Attempt CSV parsing instead
-        return parseCSVColumns(result, MAX_ROWS);
+        return parseCsvColumns(result, maxRows);
       }
     } else {
-      return parseCSVColumns(result, MAX_ROWS);
+      return parseCsvColumns(result, maxRows);
     }
   }
 
@@ -449,7 +452,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @param rows  Number of rows to parse
    * @return  List representing the columns (each column is a List of Strings)
    */
-  private List<List<String>> parseCSVColumns(String source, int rows) {
+  private List<List<String>> parseCsvColumns(String source, int rows) {
     List<List<String>> columns = new ArrayList<List<String>>();
 
     // Construct an InputStream and a CSVParser for the contents of the file
@@ -486,7 +489,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @param rows  Number of rows to parse
    * @return  List representing the columns (each column is a List of Strings)
    */
-  private List<List<String>> parseJSONColumns(String source, int rows) throws JSONException {
+  private List<List<String>> parseJsonColumns(String source, int rows) throws JSONException {
     List<List<String>> columns = new ArrayList<List<String>>();
 
     // Parse a JSON value from the specified source String

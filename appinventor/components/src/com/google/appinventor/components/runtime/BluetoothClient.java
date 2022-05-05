@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -49,7 +49,8 @@ import java.util.concurrent.TimeUnit;
 @UsesPermissions(permissionNames =
                  "android.permission.BLUETOOTH, " +
                  "android.permission.BLUETOOTH_ADMIN")
-public final class BluetoothClient extends BluetoothConnectionBase implements RealTimeDataSource<String, String> {
+public final class BluetoothClient extends BluetoothConnectionBase
+    implements RealTimeDataSource<String, String> {
   private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
 
   private final List<Component> attachedComponents = new ArrayList<Component>();
@@ -207,9 +208,13 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
     return addressesAndNames;
   }
 
-  @SimpleProperty(description = "Changes the polling rate in milliseconds when the Bluetooth Client is used " +
-      "as a Data Source in a Chart Data component. The minimum value is 1, and values of less than 1 will be " +
-      "automatically resolved to the value 1.")
+  /**
+   * The polling rate in milliseconds when the Bluetooth Client is used as a Data Source in a
+   * Chart Data component. The minimum value is 1.
+   *
+   * @param rate the rate in milliseconds
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   @DesignerProperty(defaultValue = "10")
   public void PollingRate(int rate) {
     // Resolve polling rate values that are too small to the smallest possible value.
@@ -222,10 +227,10 @@ public final class BluetoothClient extends BluetoothConnectionBase implements Re
 
   /**
    * Returns the configured polling rate value of the Bluetooth Client.
+   *
    * @return  polling rate value
    */
-  @SimpleProperty(description = "The polling rate in milliseconds when the Bluetooth Client is used " +
-      "as a Data Source in a Chart Data component.")
+  @SimpleProperty
   public int PollingRate() {
     return this.pollingRate;
   }

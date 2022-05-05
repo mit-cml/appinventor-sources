@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,10 +9,12 @@ import static junit.framework.Assert.assertEquals;
 
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.Entry;
+
 import com.google.appinventor.components.runtime.util.YailList;
-import org.junit.Test;
 
 import java.util.ArrayList;
+
+import org.junit.Test;
 
 /**
  * Base class for Line Chart based Data Model tests.
@@ -21,8 +23,8 @@ import java.util.ArrayList;
  * @param <D> ChartData type under test (should be same type as the M ChartData type used)
  */
 public abstract class AbstractPointChartDataModelTest
-    <M extends PointChartDataModel,
-        D extends ChartData>
+    <M extends PointChartDataModel<?, ?, ?, ?, ?>,
+        D extends ChartData<?>>
     extends AbstractChartDataModel2DTest<M, D> {
   /**
    * Test to ensure that importing from a tuple with
@@ -43,18 +45,18 @@ public abstract class AbstractPointChartDataModelTest
    * 2 for second, ...)
    */
   @Test
-  public void testImportFromCSVEmptyColumn() {
-    YailList xColumn = createTuple();
-    YailList yColumn = createTuple("Y", 3f, 5f, -3f, 7f);
+  public void testImportFromCsvEmptyColumn() {
+    YailList xcolumn = createTuple();
+    YailList ycolumn = createTuple("Y", 3f, 5f, -3f, 7f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(0f, 3f));
-      add(createEntry(1f, 5f));
-      add(createEntry(2f, -3f));
-      add(createEntry(3f, 7f));
-    }};
+        add(createEntry(0f, 3f));
+        add(createEntry(1f, 5f));
+        add(createEntry(2f, -3f));
+        add(createEntry(3f, 7f));
+      }};
 
-    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+    importFromCsvHelper(expectedEntries, xcolumn, ycolumn);
   }
 
   /**
@@ -63,16 +65,16 @@ public abstract class AbstractPointChartDataModelTest
    * blank entries in other Lists with default values.
    */
   @Test
-  public void testImportFromCSVUnevenColumnsBlankEntries() {
-    YailList xColumn = createTuple("X", 1f, 2f, "", "");
-    YailList yColumn = createTuple("Y", 2f, 5f, 7f, 10f);
+  public void testImportFromCsvUnevenColumnsBlankEntries() {
+    YailList xcolumn = createTuple("X", 1f, 2f, "", "");
+    YailList ycolumn = createTuple("Y", 2f, 5f, 7f, 10f);
 
     ArrayList<Entry> expectedEntries = new ArrayList<Entry>() {{
-      add(createEntry(1f, 2f));
-      add(createEntry(2f, 5f));
-    }};
+        add(createEntry(1f, 2f));
+        add(createEntry(2f, 5f));
+      }};
 
-    importFromCSVHelper(expectedEntries, xColumn, yColumn);
+    importFromCsvHelper(expectedEntries, xcolumn, ycolumn);
   }
 
   /**
@@ -82,13 +84,13 @@ public abstract class AbstractPointChartDataModelTest
   @Test
   public void testFindEntryIndexExistsMultiple() {
     ArrayList<YailList> tuples = new ArrayList<YailList>() {{
-      add(createTuple(1f, 3f));
-      add(createTuple(1f, 2f));
-      add(createTuple(2f, 1f));
-      add(createTuple(2f, 3f));
-      add(createTuple(2f, 3f));
-      add(createTuple(3f, 4f));
-    }};
+        add(createTuple(1f, 3f));
+        add(createTuple(1f, 2f));
+        add(createTuple(2f, 1f));
+        add(createTuple(2f, 3f));
+        add(createTuple(2f, 3f));
+        add(createTuple(3f, 4f));
+      }};
 
     Entry searchEntry = createEntry(2f, 3f);
     final int expectedIndex = 3;

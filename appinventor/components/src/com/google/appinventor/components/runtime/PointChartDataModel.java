@@ -1,13 +1,19 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import com.github.mikephil.charting.charts.BarLineChartBase;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleDataSet;
+import com.github.mikephil.charting.data.ChartData;
+import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.interfaces.datasets.IBarLineScatterCandleBubbleDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -22,9 +28,13 @@ import com.google.appinventor.components.runtime.util.YailList;
  * @param <V>  Point Chart View type to be specialized by subclasses.
  * @see com.google.appinventor.components.runtime.ChartDataModel
  */
-public abstract class PointChartDataModel<T extends BarLineScatterCandleBubbleDataSet,
-    D extends BarLineScatterCandleBubbleData, V extends PointChartView>
-    extends Chart2DDataModel<T, D, V> {
+public abstract class PointChartDataModel<
+    E extends Entry,
+    T extends IBarLineScatterCandleBubbleDataSet<E>,
+    D extends BarLineScatterCandleBubbleData<T>,
+    C extends BarLineChartBase<D>,
+    V extends PointChartView<E, T, D, C, V>>
+    extends Chart2DDataModel<E, T, D, C, V> {
   /**
    * Initializes a new PointChartDataModel object instance.
    *
