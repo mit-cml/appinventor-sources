@@ -19,11 +19,7 @@ import android.view.View;
 
 import android.widget.RelativeLayout;
 
-import com.github.mikephil.charting.data.ChartData;
-
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.interfaces.datasets.IDataSet;
-import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.ChartType;
 
 import java.util.ArrayList;
 
@@ -65,7 +61,7 @@ public abstract class AbstractChartTest<
   public void testChartConstructorDefaultProperties() {
     Chart defaultChart = new Chart(getForm());
 
-    assertEquals(ComponentConstants.CHART_TYPE_LINE, defaultChart.Type());
+    assertEquals(ChartType.Line, defaultChart.Type());
     assertEquals(Component.COLOR_DEFAULT, defaultChart.BackgroundColor());
     assertEquals("", defaultChart.Description());
     assertTrue(defaultChart.getView().isEnabled());
@@ -121,7 +117,7 @@ public abstract class AbstractChartTest<
     // Chart itself in the Chart componentt Relative Layout view,
     // separate handling has to be done here for the Pie Chart.
     // TODO: Refactor this to be in separate corresponding classes.
-    if (getType() == ComponentConstants.CHART_TYPE_PIE) {
+    if (getType() == ChartType.Pie) {
       // The Root Chart view is the child of the RelativeLayout which is
       // a child of the Chart component's RelativeLayout.
       assertEquals(chart, ((RelativeLayout) child).getChildAt(0));
@@ -130,7 +126,7 @@ public abstract class AbstractChartTest<
     }
 
     // Change the Type of the Chart
-    chartComponent.Type(0);
+    chartComponent.Type(ChartType.Line);
 
     // Assert that the getChartView method no longer returns
     // the removed chartView
@@ -153,7 +149,7 @@ public abstract class AbstractChartTest<
 
     chartComponent.Description(description);
     chartComponent.BackgroundColor(argb);
-    chartComponent.Type(0);
+    chartComponent.Type(ChartType.Line);
 
     assertEquals(description, chart.getDescription().getText());
     assertEquals(argb, ((ColorDrawable) chart.getBackground()).getColor());
@@ -180,7 +176,7 @@ public abstract class AbstractChartTest<
       dataComponents.add(dataComponent);
     }
 
-    chartComponent.Type(0);
+    chartComponent.Type(ChartType.Line);
 
     // Verify initChartData() method calls for all the
     // attached Data components.
@@ -273,5 +269,5 @@ public abstract class AbstractChartTest<
    *
    * @return Chart Type (integer)
    */
-  public abstract int getType();
+  public abstract ChartType getType();
 }

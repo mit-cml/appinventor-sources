@@ -68,7 +68,7 @@ The Chart component plots data originating from it's attached Data components. F
 : Sets the Pie Radius of the Chart. If the current type is
  not the Pie Chart, the value has no effect.
 
-{:id="Chart.Type" .number .do} *Type*
+{:id="Chart.Type" .com.google.appinventor.components.common.ChartTypeEnum .do} *Type*
 : Specifies the type of the Chart, which determines how to visualize the data.
 
 {:id="Chart.Visible" .boolean} *Visible*
@@ -168,13 +168,13 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 {:id="ChartData2D.Label" .text} *Label*
 : Specifies the text for the data series label.
 
-{:id="ChartData2D.LineType" .number .wo .do} *LineType*
+{:id="ChartData2D.LineType" .com.google.appinventor.components.common.LineTypeEnum .wo .do} *LineType*
 : Changes the Line Type of the Data Series, provided that the
  Data component is attached to a Chart that has the type set to
  a line-based Chart(applies to area and line Chart types).
     Valid types include linear, curved or stepped.
 
-{:id="ChartData2D.PointShape" .number .wo .do} *PointShape*
+{:id="ChartData2D.PointShape" .com.google.appinventor.components.common.PointStyleEnum .wo .do} *PointShape*
 : Changes the Point Shape of the Data Series, provided that the
  Data component is attached to a Chart that has the type set to
  the Scatter Chart. Valid types include circle, square, triangle, cross, x.

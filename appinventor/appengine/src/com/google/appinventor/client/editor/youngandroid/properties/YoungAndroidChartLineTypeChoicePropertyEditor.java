@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
-import com.google.appinventor.components.common.ComponentConstants;
 
 /**
  * Property editor for Chart Line type.
@@ -17,9 +16,9 @@ public class YoungAndroidChartLineTypeChoicePropertyEditor extends ChoicePropert
 
   // Chart Point Shape choices
   private static final Choice[] types = new Choice[] {
-      new Choice(MESSAGES.lineTypeLinear(), ComponentConstants.CHART_LINE_TYPE_LINEAR + ""),
-      new Choice(MESSAGES.lineTypeCurved(), ComponentConstants.CHART_LINE_TYPE_CURVED + ""),
-      new Choice(MESSAGES.lineTypeStepped(), ComponentConstants.CHART_LINE_TYPE_STEPPED + "")
+      new Choice(MESSAGES.lineTypeLinear(), "0"),
+      new Choice(MESSAGES.lineTypeCurved(), "1"),
+      new Choice(MESSAGES.lineTypeStepped(), "2")
   };
 
   public YoungAndroidChartLineTypeChoicePropertyEditor() {

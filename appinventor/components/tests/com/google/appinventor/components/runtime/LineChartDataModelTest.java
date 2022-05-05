@@ -11,7 +11,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.LineType;
 
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -276,7 +276,7 @@ public class LineChartDataModelTest
    */
   @Test
   public void testSetLineTypeLinear() {
-    int lineType = ComponentConstants.CHART_LINE_TYPE_LINEAR;
+    LineType lineType = LineType.Linear;
     LineDataSet.Mode expectedMode = LineDataSet.Mode.LINEAR;
 
     setLineTypeHelper(lineType, expectedMode);
@@ -289,7 +289,7 @@ public class LineChartDataModelTest
    */
   @Test
   public void testSetLineTypeCurved() {
-    int lineType = ComponentConstants.CHART_LINE_TYPE_CURVED;
+    LineType lineType = LineType.Curved;
     LineDataSet.Mode expectedMode = LineDataSet.Mode.CUBIC_BEZIER;
 
     setLineTypeHelper(lineType, expectedMode);
@@ -302,7 +302,7 @@ public class LineChartDataModelTest
    */
   @Test
   public void testSetLineTypeStepped() {
-    int lineType = ComponentConstants.CHART_LINE_TYPE_STEPPED;
+    LineType lineType = LineType.Stepped;
     LineDataSet.Mode expectedMode = LineDataSet.Mode.STEPPED;
 
     setLineTypeHelper(lineType, expectedMode);
@@ -315,7 +315,7 @@ public class LineChartDataModelTest
    * @param type  Line Type to set to the Data Series (integer)
    * @param expectedMode  Expected Mode of the Data Series
    */
-  private void setLineTypeHelper(int type, LineDataSet.Mode expectedMode) {
+  private void setLineTypeHelper(LineType type, LineDataSet.Mode expectedMode) {
     model.setLineType(type);
 
     assertEquals(expectedMode, model.getDataset().getMode());

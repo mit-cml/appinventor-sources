@@ -9,6 +9,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.ErrorReporter;
 
+import com.google.appinventor.components.common.PointStyle;
+
 import java.util.Comparator;
 import java.util.Optional;
 
@@ -141,7 +143,7 @@ public abstract class MockPointChartDataModel<V extends MockPointChartView<V>>
    * Changes the Point Shape of the Data Series.
    * @param shape new Point Shape value (integer)
    */
-  public void changePointShape(int shape) {
+  public void changePointShape(PointStyle shape) {
     /*
      * By default, no functionality should happen because not all
      * Point Chart Data Models can yet support this functionality.

@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.LegendEntry;
 
+import com.google.appinventor.components.common.ChartType;
 import com.google.appinventor.components.common.ComponentConstants;
 
 import java.util.ArrayList;
@@ -219,7 +220,7 @@ public class PieChartTest extends AbstractChartTest<PieChart, PieChartView> {
   }
 
   @Override
-  public int getType() {
-    return ComponentConstants.CHART_TYPE_PIE;
+  public ChartType getType() {
+    return ChartType.Pie;
   }
 }

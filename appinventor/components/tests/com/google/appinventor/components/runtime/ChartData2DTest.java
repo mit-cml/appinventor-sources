@@ -16,7 +16,10 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.renderer.scatter.IShapeRenderer;
 
-import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.ChartType;
+import com.google.appinventor.components.common.LineType;
+import com.google.appinventor.components.common.PointStyle;
+
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.Arrays;
@@ -266,12 +269,12 @@ public class ChartData2DTest extends RobolectricTestBase {
    */
   @Test
   public void testSetPointShape() {
-    chartComponent.Type(ComponentConstants.CHART_TYPE_SCATTER);
+    chartComponent.Type(ChartType.Scatter);
     model = data.chartDataModel;
 
     IShapeRenderer renderer = ((ScatterDataSet)model.getDataset()).getShapeRenderer();
 
-    data.PointShape(ComponentConstants.CHART_POINT_STYLE_TRIANGLE);
+    data.PointShape(PointStyle.Triangle);
     assertNotSame(renderer, ((ScatterDataSet)model.getDataset()).getShapeRenderer());
   }
 
@@ -284,7 +287,7 @@ public class ChartData2DTest extends RobolectricTestBase {
   public void testSetLineType() {
     LineDataSet.Mode mode = ((LineDataSet)model.getDataset()).getMode();
 
-    data.LineType(ComponentConstants.CHART_LINE_TYPE_STEPPED);
+    data.LineType(LineType.Stepped);
     assertNotSame(mode, ((LineDataSet)model.getDataset()).getMode());
   }
 

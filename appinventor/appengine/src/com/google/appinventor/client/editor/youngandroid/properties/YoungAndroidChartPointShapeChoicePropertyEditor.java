@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
-import com.google.appinventor.components.common.ComponentConstants;
 
 /**
  * Property editor for Chart Point Shape.
@@ -17,11 +16,11 @@ public class YoungAndroidChartPointShapeChoicePropertyEditor extends ChoicePrope
 
   // Chart Point Shape choices
   private static final Choice[] shapes = new Choice[] {
-      new Choice(MESSAGES.chartCircleShape(), ComponentConstants.CHART_POINT_STYLE_CIRCLE + ""),
-      new Choice(MESSAGES.chartSquareShape(), ComponentConstants.CHART_POINT_STYLE_SQUARE + ""),
-      new Choice(MESSAGES.chartTriangleShape(), ComponentConstants.CHART_POINT_STYLE_TRIANGLE + ""),
-      new Choice(MESSAGES.chartCrossShape(), ComponentConstants.CHART_POINT_STYLE_CROSS + ""),
-      new Choice(MESSAGES.chartXShape(), ComponentConstants.CHART_POINT_STYLE_X + "")
+      new Choice(MESSAGES.chartCircleShape(), "0"),
+      new Choice(MESSAGES.chartSquareShape(), "1"),
+      new Choice(MESSAGES.chartTriangleShape(), "2"),
+      new Choice(MESSAGES.chartCrossShape(), "3"),
+      new Choice(MESSAGES.chartXShape(), "4")
   };
 
   public YoungAndroidChartPointShapeChoicePropertyEditor() {

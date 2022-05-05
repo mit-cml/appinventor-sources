@@ -16,6 +16,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 
+import com.google.appinventor.components.common.ChartType;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -31,7 +32,7 @@ import java.util.List;
 /**
  * The Chart component plots data originating from it's attached Data components. Five different
  * Chart types are available, including Line, Area, Scatter, Bar and Pie, which can be changed by
- * the {@link #Type(int)} property.
+ * the {@link #Type(ChartType)} property.
  * The Chart component itself has various other properties that change the appearance
  * of the Chart, such as {{@link #Description(String)}, {@link #GridEnabled(boolean)},
  * @link #Labels(YailList)} and {@link #LegendEnabled(boolean)}.
@@ -55,7 +56,7 @@ public class Chart extends AndroidViewComponent
   private ChartView<?, ?, ?, ?, ?> chartView;
 
   // Properties
-  private int type;
+  private ChartType type;
   private int backgroundColor;
   private String description;
   private int pieRadius;
@@ -87,7 +88,7 @@ public class Chart extends AndroidViewComponent
     dataComponents = new ArrayList<>();
 
     // Set default values
-    Type(ComponentConstants.CHART_TYPE_LINE);
+    Type(ChartType.Line);
     Width(ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH);
     Height(ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT);
     BackgroundColor(Component.COLOR_DEFAULT);
@@ -139,58 +140,49 @@ public class Chart extends AndroidViewComponent
   /**
    * Returns the type of the Chart.
    *
-   * @return one of {@link ComponentConstants#CHART_TYPE_LINE},
-   * {@link ComponentConstants#CHART_TYPE_SCATTER},
-   * {@link ComponentConstants#CHART_TYPE_AREA},
-   * {@link ComponentConstants#CHART_TYPE_BAR} or
-   * {@link ComponentConstants#CHART_TYPE_PIE}
+   * @return the current type of the chart
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
       userVisible = false)
-  public int Type() {
+  public ChartType Type() {
     return type;
   }
 
   /**
    * Specifies the type of the Chart, which determines how to visualize the data.
    *
-   * @param type one of {@link ComponentConstants#CHART_TYPE_LINE},
-   *             {@link ComponentConstants#CHART_TYPE_SCATTER},
-   *             {@link ComponentConstants#CHART_TYPE_AREA},
-   *             {@link ComponentConstants#CHART_TYPE_BAR} or
-   *             {@link ComponentConstants#CHART_TYPE_PIE}
+   * @param type the desired chart type
    * @throws IllegalArgumentException if shape is not a legal value.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE,
-      defaultValue = ComponentConstants.CHART_TYPE_LINE + "")
+      defaultValue = "0")
   @SimpleProperty(description = "Specifies the chart's type (area, bar, "
       + "pie, scatter), which determines how to visualize the data.",
       userVisible = false)
-  public void Type(int type) {
-    if (type >= 0 && type < ComponentConstants.CHART_TYPES) {
-      this.type = type;
+  public void Type(ChartType type) {
+    // Keep track whether a ChartView already exists,
+    // in which case it will have to be reinitialized.
+    boolean chartViewExists = (chartView != null);
 
-      // Keep track whether a ChartView already exists,
-      // in which case it will have to be reinitialized.
-      boolean chartViewExists = (chartView != null);
+    // Create a new Chart view based on the supplied type
+    ChartView<?, ?, ?, ?, ?> newChartView = createChartViewFromType(type);
 
-      // ChartView currently exists in root layout. Remove it.
-      if (chartViewExists) {
-        view.removeView(chartView.getView());
-      }
+    // ChartView currently exists in root layout. Remove it.
+    if (chartViewExists) {
+      view.removeView(chartView.getView());
+    }
 
-      // Create a new Chart view based on the supplied type
-      chartView = createChartViewFromType(type);
+    this.type = type;
+    chartView = newChartView;
 
-      // Add the new Chart view as the first child of the root RelativeLayout
-      view.addView(chartView.getView(), 0);
+    // Add the new Chart view as the first child of the root RelativeLayout
+    view.addView(chartView.getView(), 0);
 
-      // If a ChartView already existed, then the Chart
-      // has to be reinitialized.
-      if (chartViewExists) {
-        reinitializeChart();
-      }
+    // If a ChartView already existed, then the Chart
+    // has to be reinitialized.
+    if (chartViewExists) {
+      reinitializeChart();
     }
   }
 
@@ -198,24 +190,20 @@ public class Chart extends AndroidViewComponent
    * Creates and returns a ChartView object based on the type
    * (integer) provided.
    *
-   * @param type one of {@link ComponentConstants#CHART_TYPE_LINE},
-   *             {@link ComponentConstants#CHART_TYPE_SCATTER},
-   *             {@link ComponentConstants#CHART_TYPE_AREA},
-   *             {@link ComponentConstants#CHART_TYPE_BAR} or
-   *             {@link ComponentConstants#CHART_TYPE_PIE}
+   * @param type the desired chart type to render
    * @return new ChartView instance
    */
-  private ChartView<?, ?, ?, ?, ?> createChartViewFromType(int type) {
+  private ChartView<?, ?, ?, ?, ?> createChartViewFromType(ChartType type) {
     switch (type) {
-      case ComponentConstants.CHART_TYPE_LINE:
+      case Line:
         return new LineChartView(this);
-      case ComponentConstants.CHART_TYPE_SCATTER:
+      case Scatter:
         return new ScatterChartView(this);
-      case ComponentConstants.CHART_TYPE_AREA:
+      case Area:
         return new AreaChartView(this);
-      case ComponentConstants.CHART_TYPE_BAR:
+      case Bar:
         return new BarChartView(this);
-      case ComponentConstants.CHART_TYPE_PIE:
+      case Pie:
         return new PieChartView(this);
       default:
         // Invalid argument

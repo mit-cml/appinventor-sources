@@ -10,7 +10,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import com.github.mikephil.charting.charts.ScatterChart;
-import com.google.appinventor.components.common.ComponentConstants;
+
+import com.google.appinventor.components.common.ChartType;
+
 import org.junit.Before;
 
 public class ScatterChartTest extends AbstractAxisChartTest<ScatterChart, ScatterChartView> {
@@ -42,7 +44,7 @@ public class ScatterChartTest extends AbstractAxisChartTest<ScatterChart, Scatte
   }
 
   @Override
-  public int getType() {
-    return ComponentConstants.CHART_TYPE_SCATTER;
+  public ChartType getType() {
+    return ChartType.Scatter;
   }
 }

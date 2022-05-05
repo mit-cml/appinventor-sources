@@ -12,7 +12,7 @@ import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.renderer.scatter.IShapeRenderer;
 
-import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PointStyle;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class ScatterChartDataModelTest
    */
   @Test
   public void testSetPointShapeCircle() {
-    int shape = ComponentConstants.CHART_POINT_STYLE_CIRCLE;
+    PointStyle shape = PointStyle.Circle;
     ScatterChart.ScatterShape expectedShape = ScatterChart.ScatterShape.CIRCLE;
 
     setPointShapeHelper(shape, expectedShape);
@@ -44,7 +44,7 @@ public class ScatterChartDataModelTest
    */
   @Test
   public void testSetPointShapeSquare() {
-    int shape = ComponentConstants.CHART_POINT_STYLE_SQUARE;
+    PointStyle shape = PointStyle.Square;
     ScatterChart.ScatterShape expectedShape = ScatterChart.ScatterShape.SQUARE;
 
     setPointShapeHelper(shape, expectedShape);
@@ -56,7 +56,7 @@ public class ScatterChartDataModelTest
    */
   @Test
   public void testSetPointShapeTriangle() {
-    int shape = ComponentConstants.CHART_POINT_STYLE_TRIANGLE;
+    PointStyle shape = PointStyle.Triangle;
     ScatterChart.ScatterShape expectedShape = ScatterChart.ScatterShape.TRIANGLE;
 
     setPointShapeHelper(shape, expectedShape);
@@ -68,7 +68,7 @@ public class ScatterChartDataModelTest
    */
   @Test
   public void testSetPointShapeCross() {
-    int shape = ComponentConstants.CHART_POINT_STYLE_CROSS;
+    PointStyle shape = PointStyle.Cross;
     ScatterChart.ScatterShape expectedShape = ScatterChart.ScatterShape.CROSS;
 
     setPointShapeHelper(shape, expectedShape);
@@ -80,7 +80,7 @@ public class ScatterChartDataModelTest
    */
   @Test
   public void testSetPointShapeX() {
-    int shape = ComponentConstants.CHART_POINT_STYLE_X;
+    PointStyle shape = PointStyle.X;
     ScatterChart.ScatterShape expectedShape = ScatterChart.ScatterShape.X;
 
     setPointShapeHelper(shape, expectedShape);
@@ -92,7 +92,7 @@ public class ScatterChartDataModelTest
    * @param shape  shape value to set to the Data Series (integer)
    * @param expectedShape  Expected Shape
    */
-  private void setPointShapeHelper(int shape, ScatterChart.ScatterShape expectedShape) {
+  private void setPointShapeHelper(PointStyle shape, ScatterChart.ScatterShape expectedShape) {
     model.setPointShape(shape);
 
     // Since we cannot get the point shape directly from the Data Set,

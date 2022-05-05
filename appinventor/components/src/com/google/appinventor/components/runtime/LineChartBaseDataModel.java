@@ -13,6 +13,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.EntryXComparator;
 
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.LineType;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -108,24 +109,22 @@ public abstract class LineChartBaseDataModel<V extends LineChartViewBase<V>>
   /**
    * Changes the Line Type of the Line Chart Data Series.
    *
-   * @param type one of {@link ComponentConstants#CHART_LINE_TYPE_LINEAR},
-   *             {@link ComponentConstants#CHART_LINE_TYPE_CURVED} or
-   *             {@link ComponentConstants#CHART_LINE_TYPE_STEPPED}
+   * @param type the desired line type
    */
-  public void setLineType(int type) {
+  public void setLineType(LineType type) {
     if (!(dataset instanceof LineDataSet)) {
       return;
     }
     switch (type) {
-      case ComponentConstants.CHART_LINE_TYPE_LINEAR:
+      case Linear:
         ((LineDataSet) dataset).setMode(LineDataSet.Mode.LINEAR);
         break;
 
-      case ComponentConstants.CHART_LINE_TYPE_CURVED:
+      case Curved:
         ((LineDataSet) dataset).setMode(LineDataSet.Mode.CUBIC_BEZIER);
         break;
 
-      case ComponentConstants.CHART_LINE_TYPE_STEPPED:
+      case Stepped:
         ((LineDataSet) dataset).setMode(LineDataSet.Mode.STEPPED);
         break;
 

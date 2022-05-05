@@ -14,6 +14,8 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.LineType;
+import com.google.appinventor.components.common.PointStyle;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 import com.google.appinventor.components.runtime.util.CsvUtil;
@@ -248,16 +250,12 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * Data component is attached to a Chart that has the type set to
    * the Scatter Chart. Valid types include circle, square, triangle, cross, x.
    *
-   * @param shape one of {@link ComponentConstants#CHART_POINT_STYLE_CIRCLE},
-   *              {@link ComponentConstants#CHART_POINT_STYLE_SQUARE},
-   *              {@link ComponentConstants#CHART_POINT_STYLE_TRIANGLE},
-   *              {@link ComponentConstants#CHART_POINT_STYLE_CROSS} or
-   *              {@link ComponentConstants#CHART_POINT_STYLE_X}
+   * @param shape the desired shape of the data points
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_POINT_SHAPE,
-      defaultValue = ComponentConstants.CHART_POINT_STYLE_CIRCLE + "")
+      defaultValue = "0")
   @SimpleProperty(userVisible = false)
-  public void PointShape(int shape) {
+  public void PointShape(PointStyle shape) {
 
     // Only change the Point Shape if the Chart Data Model is a
     // ScatterChartDataModel (other models do not support changing
@@ -273,14 +271,12 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * a line-based Chart(applies to area and line Chart types).
     Valid types include linear, curved or stepped.
    *
-   * @param type one of {@link ComponentConstants#CHART_LINE_TYPE_LINEAR},
-   *             {@link ComponentConstants#CHART_LINE_TYPE_CURVED} or
-   *             {@link ComponentConstants#CHART_LINE_TYPE_STEPPED}
+   * @param type the desired style of line type
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_LINE_TYPE,
-      defaultValue = ComponentConstants.CHART_LINE_TYPE_LINEAR + "")
+      defaultValue = "0")
   @SimpleProperty(userVisible = false)
-  public void LineType(int type) {
+  public void LineType(LineType type) {
 
     // Only change the Line Type if the Chart Data Model is a
     // LineChartBaseDataModel (other models do not support changing

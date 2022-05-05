@@ -8,6 +8,8 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDataColumnSelectorProperty;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.components.common.LineType;
+import com.google.appinventor.components.common.PointStyle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import java.util.Collections;
@@ -211,7 +213,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
    * @param newValue New value of the Point Shape (String)
    */
   private void setPointShapeProperty(String newValue) {
-    int pointShape = Integer.parseInt(newValue);
+    PointStyle pointShape = PointStyle.fromUnderlyingValue(Integer.parseInt(newValue));
 
     // Only change the point shape of the Model if it is of
     // type ScatterChartDataModel (since only that model supports
@@ -230,7 +232,7 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
    * @param newValue New value of the Line Type (String)
    */
   private void setLineTypeProperty(String newValue) {
-    int lineType = Integer.parseInt(newValue);
+    LineType lineType = LineType.fromUnderlyingValue(Integer.parseInt(newValue));
 
     // Only change the line type of the Model if it is of
     // type lineChartBaseDataModel (since only that model

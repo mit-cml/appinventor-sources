@@ -13,6 +13,7 @@ import static org.junit.Assert.assertThat;
 
 import com.github.mikephil.charting.charts.BarChart;
 
+import com.google.appinventor.components.common.ChartType;
 import com.google.appinventor.components.common.ComponentConstants;
 
 import org.junit.Before;
@@ -63,7 +64,7 @@ public class BarChartTest extends AbstractAxisChartTest<BarChart, BarChartView> 
   }
 
   @Override
-  public int getType() {
-    return ComponentConstants.CHART_TYPE_BAR;
+  public ChartType getType() {
+    return ChartType.Bar;
   }
 }

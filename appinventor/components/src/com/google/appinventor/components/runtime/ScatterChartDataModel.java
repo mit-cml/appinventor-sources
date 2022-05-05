@@ -11,7 +11,8 @@ import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet;
 
-import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PointStyle;
+
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -57,34 +58,30 @@ public class ScatterChartDataModel extends PointChartDataModel<
   /**
    * Changes the Point Shape of the Scatter Data Series.
    *
-   * @param shape  one of {@link ComponentConstants#CHART_POINT_STYLE_CIRCLE},
-   *          {@link ComponentConstants#CHART_POINT_STYLE_SQUARE},
-   *          {@link ComponentConstants#CHART_POINT_STYLE_TRIANGLE},
-   *          {@link ComponentConstants#CHART_POINT_STYLE_CROSS} or
-   *          {@link ComponentConstants#CHART_POINT_STYLE_X}
+   * @param shape the desired point style
    */
-  public void setPointShape(int shape) {
+  public void setPointShape(PointStyle shape) {
     if (!(dataset instanceof ScatterDataSet)) {
       return;
     }
     switch (shape) {
-      case ComponentConstants.CHART_POINT_STYLE_CIRCLE:
+      case Circle:
         ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.CIRCLE);
         break;
 
-      case ComponentConstants.CHART_POINT_STYLE_SQUARE:
+      case Square:
         ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.SQUARE);
         break;
 
-      case ComponentConstants.CHART_POINT_STYLE_TRIANGLE:
+      case Triangle:
         ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.TRIANGLE);
         break;
 
-      case ComponentConstants.CHART_POINT_STYLE_CROSS:
+      case Cross:
         ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.CROSS);
         break;
 
-      case ComponentConstants.CHART_POINT_STYLE_X:
+      case X:
         ((ScatterDataSet) dataset).setScatterShape(ScatterChart.ScatterShape.X);
         break;
 

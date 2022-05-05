@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 
 import com.github.mikephil.charting.charts.LineChart;
 
+import com.google.appinventor.components.common.ChartType;
 import com.google.appinventor.components.common.ComponentConstants;
 
 import org.junit.Before;
@@ -46,7 +47,7 @@ public class AreaChartTest extends AbstractAxisChartTest<LineChart, AreaChartVie
   }
 
   @Override
-  public int getType() {
-    return ComponentConstants.CHART_TYPE_AREA;
+  public ChartType getType() {
+    return ChartType.Area;
   }
 }

@@ -11,6 +11,7 @@ import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 
+import com.google.appinventor.components.common.ChartType;
 import com.google.appinventor.components.common.ComponentConstants;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public final class MockChart extends MockContainer {
 
   // Legal values for type are defined in
   // com.google.appinventor.components.common.ComponentConstants.java.
-  private int type;
+  private ChartType type;
 
   // Keep track whether the children of the Mock Chart have been
   // reattached. The reattachment has to happen only once, since the Data
@@ -105,7 +106,7 @@ public final class MockChart extends MockContainer {
    */
   private void setTypeProperty(String value) {
     // Update type
-    type = Integer.parseInt(value);
+    type = ChartType.fromUnderlyingValue(Integer.parseInt(value));
 
     // Keep track whether this is the first time that
     // the Chart view is being initialized
@@ -236,17 +237,17 @@ public final class MockChart extends MockContainer {
    * @param type Chart type (integer representation)
    * @return new MockChartView object instance
    */
-  private MockChartView<?, ?, ?> createMockChartViewFromType(int type) {
+  private MockChartView<?, ?, ?> createMockChartViewFromType(ChartType type) {
     switch (type) {
-      case ComponentConstants.CHART_TYPE_LINE:
+      case Line:
         return new MockLineChartView();
-      case ComponentConstants.CHART_TYPE_SCATTER:
+      case Scatter:
         return new MockScatterChartView();
-      case ComponentConstants.CHART_TYPE_AREA:
+      case Area:
         return new MockAreaChartView();
-      case ComponentConstants.CHART_TYPE_BAR:
+      case Bar:
         return new MockBarChartView();
-      case ComponentConstants.CHART_TYPE_PIE:
+      case Pie:
         return new MockPieChartView();
       default:
         // Invalid argument
@@ -397,7 +398,7 @@ public final class MockChart extends MockContainer {
     // Pie Radius property should be invisible by default, since
     // the default Chart Type is a Line Chart
     if (propertyName.equals(PROPERTY_NAME_PIE_RADIUS)) {
-      return type == ComponentConstants.CHART_TYPE_PIE;
+      return type == ChartType.Pie;
     }
 
     return super.isPropertyVisible(propertyName);

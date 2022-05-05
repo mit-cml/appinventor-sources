@@ -5,8 +5,6 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.components.common.ComponentConstants;
-
 import org.pepstock.charba.client.enums.PointStyle;
 
 /**
@@ -53,26 +51,26 @@ public class MockScatterChartDataModel extends MockPointChartDataModel<MockScatt
    * @param shape new Point Shape value (integer)
    */
   @Override
-  public void changePointShape(int shape) {
+  public void changePointShape(com.google.appinventor.components.common.PointStyle shape) {
     PointStyle pointStyle;
     switch (shape) {
-      case ComponentConstants.CHART_POINT_STYLE_CIRCLE:
+      case Circle:
         pointStyle = PointStyle.CIRCLE;
         break;
 
-      case ComponentConstants.CHART_POINT_STYLE_SQUARE:
+      case Square:
         pointStyle = PointStyle.RECT;
         break;
 
-      case ComponentConstants.CHART_POINT_STYLE_TRIANGLE:
+      case Triangle:
         pointStyle = PointStyle.TRIANGLE;
         break;
 
-      case ComponentConstants.CHART_POINT_STYLE_CROSS:
+      case Cross:
         pointStyle = PointStyle.CROSS;
         break;
 
-      case ComponentConstants.CHART_POINT_STYLE_X:
+      case X:
         pointStyle = PointStyle.CROSS_ROT;
         break;
 

@@ -5,7 +5,7 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.LineType;
 
 import java.util.Comparator;
 
@@ -61,19 +61,19 @@ public abstract class MockLineChartBaseDataModel<V extends MockLineChartViewBase
    *
    * @param type new Line type value (integer)
    */
-  public void setLineType(int type) {
+  public void setLineType(LineType type) {
     switch (type) {
-      case ComponentConstants.CHART_LINE_TYPE_LINEAR:
+      case Linear:
         dataSeries.setSteppedLine(SteppedLine.FALSE); // Disable stepped line
         dataSeries.setLineTension(0); // Disable curved line
         break;
 
-      case ComponentConstants.CHART_LINE_TYPE_CURVED:
+      case Curved:
         dataSeries.setSteppedLine(SteppedLine.FALSE); // Disable stepped line
         dataSeries.setLineTension(0.5); // Set 50% Line Tension (enable curve)
         break;
 
-      case ComponentConstants.CHART_LINE_TYPE_STEPPED:
+      case Stepped:
         dataSeries.setSteppedLine(SteppedLine.BEFORE); // Enable stepped line
         dataSeries.setLineTension(0); // Disable curved line
         break;
