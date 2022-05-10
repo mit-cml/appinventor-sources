@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
       propertyPanels.put( category, child );
       DisclosurePanel disclosure = new DisclosurePanel( category );
       disclosure.add( child );
-      disclosure.setOpen( true );
+      disclosure.setOpen( !"Advanced".equals(category) );
       disclosure.setWidth( "100%" );
       headers.put( category, disclosure );
     }
@@ -80,7 +81,24 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
   }
 
   private final void updateStackPanel() {
-    Set<String> categories = new TreeSet<String>( headers.keySet() );
+    // Sort the categories Alphabetically, except Advanced should always come last
+    Set<String> categories = new TreeSet<String>(new Comparator<String>() {
+      @Override
+      public int compare(String o1, String o2) {
+        if (o1.equals("Advanced")) {
+          if (o2.equals("Advanced")) {
+            return 0;
+          } else {
+            return 1;
+          }
+        } else if (o2.equals("Advanced")) {
+          return -1;
+        } else {
+          return o1.compareTo(o2);
+        }
+      }
+    });
+    categories.addAll(headers.keySet());
     for ( String category : categories ) {
       panel.add( headers.get( category ) );
     }
