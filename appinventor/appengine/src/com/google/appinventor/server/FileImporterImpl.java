@@ -175,13 +175,16 @@ public final class FileImporterImpl implements FileImporter {
     while ((bytes = bis.read(buffer, 0, buffer.length)) != -1) {
       bos.write(buffer, 0, bytes);
       fileLength += bytes;
+      if (fileLength > maxSizeBytes) {
+        // Read the rest of the stream, but throw it away
+        // and throw an error, so we do not consume memory storing
+        // a large object
+        while((bytes = bis.read(buffer, 0, buffer.length)) != -1) {
+        }
+        throw new FileImporterException(UploadResponse.Status.FILE_TOO_LARGE);
+      }
     }
     bos.flush();
-
-    // First check the file length, to avoid loading the file into memory if it is too large anyhow.
-    if (fileLength > maxSizeBytes) {
-      throw new FileImporterException(UploadResponse.Status.FILE_TOO_LARGE);
-    }
 
     byte[] content = os.toByteArray();
 
