@@ -3,5 +3,14 @@
     "Blockly.Msg.DUPLICATE_BLOCK": "நகல்எடுத்தல்",
     "Blockly.Msg.SHOW": "பணியிடக் கட்டுப்பாடுகளைக் காட்டு",
     "Blockly.Msg.REDO": "மீண்டும் செய்",
-    "Blockly.Msg.ADD_COMMENT": "கருத்து"
+    "Blockly.Msg.ADD_COMMENT": "கருத்து",
+    "Blockly.Msg.HIDE": "பணியிடக் கட்டுப்பாடுகளை மறை",
+    "Blockly.Msg.CLEAN_UP": "தொகுதிகளை சுத்தம் செய்யவும்",
+    "Blockly.Msg.DELETE_ALL_BLOCKS": "அனைத்து % 1 தொகுதிகளையும் நீக்கவா?",
+    "Blockly.Msg.CONFIRM_DELETE": "நீக்குவதை உறுதிப்படுத்தவும்",
+    "Blockly.Msg.VERTICAL_PARAMETERS": "அளவுருக்களை செங்குத்தாக அமைக்கவும்",
+    "Blockly.Msg.HORIZONTAL_PARAMETERS": "அளவுருக்களை கிடைமட்டமாக அமைக்கவும்",
+    "Blockly.Msg.INLINE_INPUTS": "கோட்டில் உள்ளீடுகள்",
+    "Blockly.Msg.EXTERNAL_INPUTS": "வெளிப்புற உள்ளீடுகள்",
+    "Blockly.Msg.UNDO": "செயல்தவிர்"
 }
