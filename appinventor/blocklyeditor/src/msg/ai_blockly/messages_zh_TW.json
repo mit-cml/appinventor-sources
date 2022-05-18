@@ -718,7 +718,7 @@
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE": "取代所有的對應結果",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER": "字典",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST": "最長的字串在前",
-	"Blockly.Msg.REPL_CODE_PREAMBLE": "<tr><td colspan=2>請在裝置上啟動 MIT AI Companion <br/> 然後掃描條形碼或輸入代碼<br/>進行連接以對您的程式進行實時測試。<br /> <a href="http://appinventor.mit.edu/explore/ai2/setup-device-wifi" target="_blank">需要幫助查找 Companion 程式?</a></td></tr>\n ", 
+	"Blockly.Msg.REPL_CODE_PREAMBLE": "<tr><td colspan=2>請在裝置上啟動 MIT AI Companion <br/> 然後掃描條形碼或輸入代碼<br/>進行連接以對您的程式進行實時測試。<br /> <a href=\"http://appinventor.mit.edu/explore/ai2/setup-device-wifi\" target=\"_blank\">需要幫助查找 Companion 程式?</a></td></tr>\n ",
 	"Blockly.Msg.REPL_ERROR_SETUPTOOLS_2_3_NOT_SUPPORTED": "與 MIT App Inventor aiStarter 2.3 捆綁在一起的模擬器不適用於 Mac OS X 10.13 High Sierra。對於給您帶來的不便，我們深表歉意，並正在努力修復。 請查看我們的網站<a href=\"http://appinventor.mit.edu\">http://appinventor.mit.edu/</a>獲取 aiStarter 發佈公告。",
        "Blockly.Msg.REPL_ERROR_UNABLE_TO_GET_SETUPTOOLS_VERSION": "無法檢索計算機上安裝的 aiStarter 版本。連接將繼續，但可能會出現錯誤。"
 }
