@@ -457,9 +457,7 @@ A two-dimensional container that renders map tiles in the background and allows 
  services enabled and which location providers are available.
 
 {:id="Map.ShowZoom" .boolean} *ShowZoom*
-: Shows or hides an icon indicating the user's current location on the [`Map`](#Map). The
- availability and accuracy of this feature will depend on whether the user has location
- services enabled and which location providers are available.
+: Specifies whether to show zoom controls or not.
 
 {:id="Map.UserLatitude" .number .ro .bo} *UserLatitude*
 : Returns the user's latitude if ShowUser is enabled.

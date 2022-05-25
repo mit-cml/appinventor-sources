@@ -821,7 +821,6 @@ The Notifier component displays alert messages and creates Android log entries t
 
 {:id="Notifier.TextInputCanceled"} TextInputCanceled()
 : Event raised when the user cancels
- [`ShowChooseDialog`](#Notifier.ShowChooseDialog),
  [`ShowPasswordDialog`](#Notifier.ShowPasswordDialog), or
  [`ShowTextDialog`](#Notifier.ShowTextDialog).
 

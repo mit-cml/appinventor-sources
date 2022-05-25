@@ -1,40 +1,47 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2021 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.BitmapDrawable;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.core.view.ViewCompat;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.TextView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.graphics.drawable.Drawable;
-import java.io.IOException;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 import android.util.Log;
 
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.UsesPermissions;
+import android.view.View;
+import android.view.ViewGroup;
+
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.cardview.widget.CardView;
+
+import androidx.core.view.ViewCompat;
+
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.io.IOException;
 
-@SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-        "android.permission.READ_EXTERNAL_STORAGE")
- public class ListAdapterWithRecyclerView extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> implements Filterable {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class ListAdapterWithRecyclerView
+    extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> implements Filterable {
   private static final String LOG_TAG = "ListAdapterRecyclerView";
 
-  private static ClickListener clickListener;
+  private ClickListener clickListener;
 
   public Boolean[] selection;
   public Boolean[] isVisible;
@@ -55,10 +62,63 @@ import com.google.appinventor.components.runtime.util.YailList;
   private List<YailDictionary> items;
   private List<YailDictionary> filterItems;
   protected final ComponentContainer container;
+  protected final Filter filter = new Filter() {
+    @Override
+    protected FilterResults performFiltering(CharSequence charSequence) {
+      String filterQuery = charSequence.toString().toLowerCase();
+      FilterResults results = new FilterResults();
+      List<YailDictionary> filteredList = new ArrayList<>();
+
+      if (filterQuery == null || filterQuery.length() == 0) {
+        filteredList = new ArrayList<>(items);
+      } else {
+        for (YailDictionary itemDict : items) {
+          Object o = itemDict.get(Component.LISTVIEW_KEY_DESCRIPTION);
+          String filterString = itemDict.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
+          if (o != null) {
+            filterString += " " + o.toString().toLowerCase();
+          }
+          if (filterString.toLowerCase().contains(filterQuery)) {
+            filteredList.add(itemDict);
+          }
+        }
+      }
+      results.count = filteredList.size();
+      results.values = filteredList;
+      return results;
+    }
+
+    @Override
+    protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+      filterItems = (List<YailDictionary>) filterResults.values;
+      // Usually GUI objects take up no screen space when set to invisible, but setting a CardView object to invisible
+      // was displaying an empty object. Therefore, set the height to 0 as well.
+      // Setting visibility on individual entries will keep the selected index(ices) the same regardless of filter.
+      for (int i = 0; i < items.size(); ++i) {
+        if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
+          isVisible[i] = true;
+          if (itemViews[i] != null) {
+            itemViews[i].setVisibility(View.VISIBLE);
+            itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+          }
+        } else {
+          isVisible[i] = false;
+          if (itemViews[i] != null) {
+            itemViews[i].setVisibility(View.GONE);
+            itemViews[i].getLayoutParams().height = 0;
+          }
+        }
+      }
+    }
+  };
 
   public boolean isSelected = false;
 
-  private int idFirst = -1, idSecond = -1, idImages = -1, idCard = 1;
+  private int idFirst = -1;
+  private int idSecond = -1;
+  private int idImages = -1;
+  private int idCard = 1;
+
   public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, float textMainSize, float textDetailSize, int textMainFont, int textDetailFont, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
     this.items = items;
     this.container = container;
@@ -114,17 +174,6 @@ import com.google.appinventor.components.runtime.util.YailList;
     }
   }
 
-  public void selectFromText(String text1) {
-    for (int i = 0; i < itemViews.length; i++) {
-      YailDictionary d = items.get(i);
-      if (d.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString() == text1) {
-        selection[i] = true;
-        itemViews[i].setBackgroundColor(selectionColor);
-        break;
-      }
-    }
-  }
-
   public void clearSelections() {
     Arrays.fill(selection, Boolean.FALSE);
     for (int i = 0; i < itemViews.length; i++) {
@@ -141,8 +190,10 @@ import com.google.appinventor.components.runtime.util.YailList;
         itemViews[i].setBackgroundColor(backgroundColor);
       }
     }
-    selection[pos] = true;
-    itemViews[pos].setBackgroundColor(selectionColor);
+    if (pos >= 0) {
+      selection[pos] = true;
+      itemViews[pos].setBackgroundColor(selectionColor);
+    }
   }
 
   public void changeSelections(int pos) {
@@ -153,6 +204,10 @@ import com.google.appinventor.components.runtime.util.YailList;
     } else {
       itemViews[pos].setBackgroundColor(backgroundColor);
     }
+  }
+
+  public boolean hasVisibleItems() {
+    return Arrays.asList(isVisible).contains(true);
   }
 
   @Override
@@ -255,7 +310,7 @@ import com.google.appinventor.components.runtime.util.YailList;
     String first = dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
     String second = "";
     if (dictItem.containsKey(Component.LISTVIEW_KEY_DESCRIPTION)) {
-      second = dictItem.get("Text2").toString();
+      second = dictItem.get(Component.LISTVIEW_KEY_DESCRIPTION).toString();
     }
     if (layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
       holder.textViewFirst.setText(first);
@@ -298,6 +353,9 @@ import com.google.appinventor.components.runtime.util.YailList;
     {
       holder.cardView.setVisibility(View.GONE);
       holder.cardView.getLayoutParams().height = 0;
+    } else {
+      holder.cardView.setVisibility(View.VISIBLE);
+      holder.cardView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
     }
     itemViews[position] = holder.cardView;
   }
@@ -345,7 +403,7 @@ import com.google.appinventor.components.runtime.util.YailList;
   }
 
   public void setOnItemClickListener(ClickListener clickListener) {
-    ListAdapterWithRecyclerView.clickListener = clickListener;
+    this.clickListener = clickListener;
   }
 
   public interface ClickListener {
@@ -353,68 +411,21 @@ import com.google.appinventor.components.runtime.util.YailList;
   }
 
   public String getSelectedItems() {
-    String selectedItems = new String();
+    StringBuilder sb = new StringBuilder();
+    String sep = "";
     for (int i = 0; i < selection.length; ++i) {
       if (selection[i]) {
         YailDictionary dictItem = items.get(i);
-        selectedItems += "," + dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
+        sb.append(sep);
+        sb.append(dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString());
+        sep = ",";
       }
     }
-    return selectedItems.length() > 0 ? selectedItems.substring(1) : "";
+    return sb.toString();
   }
 
   @Override
   public Filter getFilter() {
-    Filter filter = new Filter() {
-      @Override
-      protected FilterResults performFiltering(CharSequence charSequence) {
-        String filterQuery = charSequence.toString().toLowerCase();
-        FilterResults results = new FilterResults();
-        List<YailDictionary> filteredList = new ArrayList<>();
-
-        if(filterQuery == null || filterQuery.length() == 0) {
-          filteredList = new ArrayList<>(items);
-        } else {
-          for(int i = 0; i < items.size(); ++i) {
-            YailDictionary itemDict = items.get(i);
-            String filterString = itemDict.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString() + " " + itemDict.get("Text2").toString();
-            if (filterString.toLowerCase().contains(filterQuery)) {
-              filteredList.add(itemDict);
-            }
-          }
-        }
-        results.count = filteredList.size();
-        results.values = filteredList;
-        return results;
-      }
-
-      @Override
-      protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-        filterItems = (List<YailDictionary>) filterResults.values;
-        // Usually GUI objects take up no screen space when set to invisible, but setting a CardView object to invisible
-        // was displaying an empty object. Therefore, set the height to 0 as well.
-        // Setting visibility on individual entries will keep the selected index(ices) the same regardless of filter.
-        if (filterItems.size() == 0) {
-          Arrays.fill(isVisible, Boolean.TRUE);
-        } else {
-          for (int i = 0; i < items.size(); ++i) {
-            if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
-              isVisible[i] = true;
-              if (itemViews[i] != null) {
-                itemViews[i].setVisibility(View.VISIBLE);
-                itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-              }
-            } else {
-              isVisible[i] = false;
-              if (itemViews[i] != null) {
-                itemViews[i].setVisibility(View.GONE);
-                itemViews[i].getLayoutParams().height = 0;
-              }
-            }
-          }
-        }
-      }
-    };
     return filter;
   }
-};
+}

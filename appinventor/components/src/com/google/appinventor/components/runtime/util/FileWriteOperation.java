@@ -14,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import java.net.URI;
+
 /**
  * The FileWriteOperation class is responsible for opening files for write operations.
  *
@@ -46,6 +48,27 @@ public class FileWriteOperation extends FileStreamOperation<OutputStream> {
   }
 
   /**
+   * Create a new FileWriteOperation targeting a ScopedFile.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param component the Component requesting the file operation
+   * @param method the method of {@code component} requesting the file operation
+   * @param file the ScopedFile to perform the operation on
+   * @param append true if the file should be opened for appending, false if the file should be
+   *               overwritten
+   * @param async true if the operation should be performed on a separate thread to prevent
+   *              blocking the UI thread
+   */
+  public FileWriteOperation(Form form, Component component, String method, ScopedFile file,
+      boolean append, boolean async) {
+    super(form, component, method, file,
+        append ? FileAccessMode.APPEND : FileAccessMode.WRITE, async);
+    if (file.getScope() == FileScope.Asset) {
+      throw new IllegalArgumentException("Cannot perform a write operation on an asset");
+    }
+  }
+
+  /**
    * Process the stream. The default implementation does nothing. Subclasses should override this
    * method to write content to the stream.
    *
@@ -63,9 +86,9 @@ public class FileWriteOperation extends FileStreamOperation<OutputStream> {
   protected OutputStream openFile() throws IOException {
     String path = FileUtil.resolveFileName(form, fileName, scope);
     if (path.startsWith("file://")) {
-      path = path.substring(7);
+      path = URI.create(path).getPath();
     } else if (path.startsWith("file:")) {
-      path = path.substring(5);
+      path = URI.create(path).getPath();
     }
     File file = new File(path);
     IOUtils.mkdirs(file);

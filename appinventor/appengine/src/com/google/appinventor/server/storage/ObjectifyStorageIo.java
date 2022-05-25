@@ -2825,4 +2825,42 @@ public class ObjectifyStorageIo implements  StorageIo {
     return returnValue;
   }
 
+  @Override
+  public boolean deleteAccount(final String userId) {
+    List<Long> projectIds = getProjects(userId);
+    // We iterate over the projects in two loops The first loop is
+    // just to determine that all remaining projects are in the trash.
+    // The second loop actually removes such projects.  We do it this
+    // way so that no projects are removed if any projects
+    // exist. Otherwise some trashed projects may get removed before
+    // we discover a live project.
+    for (long projectId : projectIds) {
+      ProjectData projectData = getProject(projectId);
+      if (!projectData.projectMovedToTrashFlag) {
+        return false;           // Have a live project
+      }
+    }
+    // Got here, no live projects, remove the remainders
+    for (long projectId : projectIds) {
+      deleteProject(userId, projectId);
+    }
+
+    // Now flush the user data object both from the datastore and the
+    // cache.
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            // Delete the UserData object
+            datastore.delete(userKey(userId));
+            // And remove it from memcache
+            String cachekey = User.usercachekey + "|" + userId;
+            memcache.delete(cachekey);
+          }
+        }, true);
+      return true;
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+  }
 }
