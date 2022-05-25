@@ -314,7 +314,7 @@
     "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT": "aralığındaki sayı için",
     "Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE": "metinleri karşılaştır",
     "Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL": "Metin dizelerinin aynı mı, yoksa aynı sırayla aynı karakterleri mi bulunduğunu test eder. Metin dizelerinin sayı olduğu durumda sıradan = farklıdır: 123 ve 0123 = olur ancak metin = değildir.",
-    "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END": "değeri",
+    "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END": "ile",
     "Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_INPUT_TEXT": "Metin",
     "Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO": "Yap",
     "Blockly.Msg.REPL_TRY_AGAIN1": "MIT AI2 Companion'a bağlanılamadı,Tekrar deneyin.",
