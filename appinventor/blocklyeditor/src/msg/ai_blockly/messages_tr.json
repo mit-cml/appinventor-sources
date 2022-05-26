@@ -694,7 +694,7 @@
     "Blockly.Msg.LANG_SCREENS_TITLE": "Ekran Adı: ",
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TOOLTIP": "Sözlükteki bütün çiftlerin bir listesini döndürür",
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TITLE": "anahtarlar",
-    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_INPUT": "%2 sözlüğünde %1 anahtarını, veya bulunamadıysa %3'ü al",
+    "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_LOOKUP_INPUT": "sözlük %2 içinden alınacak anahtar %1 eğer bulunamadıysa alınacak %3",
     "Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TOOLTIP": "İç içe olan sözlükteki değeri döndürür",
     "Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX": "genel",
     "Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TITLE": "sözlükteki çiftlerin listesi",
