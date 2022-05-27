@@ -25,6 +25,8 @@ public final class Button: ButtonBase, AbstractMethodsForButton {
   @objc public func longPress(_ gesture: UILongPressGestureRecognizer) {
     if ( gesture.state == UIGestureRecognizer.State.began) {
       LongClick()
+    } else if (gesture.state == UIGestureRecognizer.State.ended) {
+      TouchUp()
     }
   }
   
