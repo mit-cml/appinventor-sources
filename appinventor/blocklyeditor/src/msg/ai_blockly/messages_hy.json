@@ -714,5 +714,6 @@
     "Blockly.Msg.LANG_TEXT_CONTAINS_OPERATOR_CONTAINS_ANY": "պարունակում է ցանկացած",
     "Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED": "Companion-ը անջատվեց",
     "Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP": "Ավելացնել զույգը բառարանում։",
-    "Blockly.Msg.LANG_MATH_DECIMAL_FORMAT": "տասնորդական"
+    "Blockly.Msg.LANG_MATH_DECIMAL_FORMAT": "տասնորդական",
+    "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS": "Ստուգում է, թե արդյոք մասը պարունակվում է տեքստում։"
 }
