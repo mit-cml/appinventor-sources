@@ -44,6 +44,7 @@ public final class AssetManager implements ProjectChangeListener {
 
   private static class AssetInfo { // Describes one asset
     String fileId;
+    byte [] fileContent;
     boolean loaded;         // true if already loaded to the repl (phone)
     boolean transferred;           // true if asset received on phone
   }
@@ -190,6 +191,29 @@ public final class AssetManager implements ProjectChangeListener {
     return allow | allowAll;
   }
 
+  private void readIn(final AssetInfo assetInfo) {
+    Ode.getInstance().getProjectService().loadraw2(projectId, assetInfo.fileId,
+      new AsyncCallback<String>() {
+        @Override
+          public void onSuccess(String data) {
+            assetTransferProgress++;
+            assetInfo.fileContent = Base64Util.decodeLines(data);
+            assetInfo.loaded = false; // Set to true when it is loaded to the repl
+            assetInfo.transferred = false; // Set to true when file is received on phone
+            refreshAssets1();
+          }
+        @Override
+          public void onFailure(Throwable ex) {
+          if (retryCount > 0) {
+            retryCount--;
+            readIn(assetInfo);
+          } else {
+            OdeLog.elog("Failed to load asset.");
+          }
+        }
+      });
+  }
+
   private void refreshAssets1(JavaScriptObject callback) {
     assetsTransferredCallback = callback;
     assetTransferProgress = 0;
@@ -201,12 +225,21 @@ public final class AssetManager implements ProjectChangeListener {
     for (AssetInfo a : assets.values()) {
       if (!a.loaded) {
         loadInProgress = true;
-        ConnectProgressBar.setProgress(100 * assetTransferProgress / (2 * assets.size()),
-          MESSAGES.sendingAssetToCompanion(a.fileId));
-        boolean didit = doPutAsset(Long.toString(projectId), a.fileId);
-        if (didit) {
-          assetTransferProgress++;
-          a.loaded = true;
+        if (a.fileContent == null && !hasFetchAssets()) { // Need to fetch it from the server
+          retryCount = 3;
+          ConnectProgressBar.setProgress(100 * assetTransferProgress / (2 * assets.size()),
+            MESSAGES.loadingAsset(a.fileId));
+          readIn(a);          // Read it in asynchronously
+          break;                     // we'll resume when we have it
+        } else {
+          ConnectProgressBar.setProgress(100 * assetTransferProgress / (2 * assets.size()),
+            MESSAGES.sendingAssetToCompanion(a.fileId));
+          boolean didit = doPutAsset(Long.toString(projectId), a.fileId, a.fileContent);
+          if (didit) {
+            assetTransferProgress++;
+            a.loaded = true;
+            a.fileContent = null; // Save memory
+          }
         }
       }
     }
@@ -315,8 +348,8 @@ public final class AssetManager implements ProjectChangeListener {
       $entry(@com.google.appinventor.client.AssetManager::getExtensionsToLoad());
   }-*/;
 
-  private static native boolean doPutAsset(String projectId, String filename) /*-{
-    return Blockly.ReplMgr.putAsset(projectId, filename, null, function() { window.parent.AssetManager_markAssetTransferred(filename) });
+  private static native boolean doPutAsset(String projectId, String filename, byte[] content) /*-{
+    return Blockly.ReplMgr.putAsset(projectId, filename, content, function() { window.parent.AssetManager_markAssetTransferred(filename) });
   }-*/;
 
   private static native void doCallBack(JavaScriptObject callback) /*-{
@@ -325,6 +358,10 @@ public final class AssetManager implements ProjectChangeListener {
 
   private static native boolean useWebRTC() /*-{
     return top.usewebrtc;
+  }-*/;
+
+  private static native boolean hasFetchAssets() /*-{
+    return top.ReplState.hasfetchassets;
   }-*/;
 
 }

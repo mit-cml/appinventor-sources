@@ -1462,6 +1462,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = (json.os || 'Android').toLowerCase() !== 'ios';
+                rs.hasfetchassets = rs.android;
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
                                           // HTTP
@@ -1682,14 +1683,21 @@ Blockly.ReplMgr.resendAssetsAndExtensions = function() {
 
 Blockly.ReplMgr.loadExtensions = function() {
     var rs = top.ReplState;
-    // Need to trigger the loading of extensions here
-    rs.state = Blockly.ReplMgr.rsState.EXTENSIONS;
-    var extensionJson = JSON.stringify(top.AssetManager_getExtensions());
-    extensionJson = Blockly.Yail.quotifyForREPL(extensionJson);
-    var yailstring = "(AssetFetcher:loadExtensions "  +
-        extensionJson + ")";
-    console.log("Blockly.ReplMgr.loadExtensions: Yail = " + yailstring);
-    this.putYail.putAsset(yailstring);
+    // Note: If hasfetchassets is false, we are on iOS which doesn't yet
+    // support extensions
+    if (rs.hasfetchassets) {
+        // Need to trigger the loading of extensions here
+        rs.state = Blockly.ReplMgr.rsState.EXTENSIONS;
+        var extensionJson = JSON.stringify(top.AssetManager_getExtensions());
+        extensionJson = Blockly.Yail.quotifyForREPL(extensionJson);
+        var yailstring = "(AssetFetcher:loadExtensions "  +
+            extensionJson + ")";
+        console.log("Blockly.ReplMgr.loadExtensions: Yail = " + yailstring);
+        this.putYail.putAsset(yailstring);
+    } else {
+        rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+        Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
+    }
 };
 
 // Called by the main poller function. Manages the state transitions for polling
@@ -1791,7 +1799,8 @@ Blockly.ReplMgr.putAsset = function(projectid, filename, blob, success, fail, fo
         return false;
     if (!force && (top.ReplState.state != this.rsState.ASSET && top.ReplState.state != this.rsState.CONNECTED))
         return false;           // We didn't really do anything
-    if (!force) {               // Force is only used for updating the emulator
+    if (!force && top.ReplState.hasfetchassets) {               // Force is only used for updating the emulator
+                                                         // Only android has AssetFetcher:fetchAssets working
         // Note: We only use the passed in callback if we are updating
         // the emulator (code below). Otherwise we just call
         // makeAssetTransferred ourselves
