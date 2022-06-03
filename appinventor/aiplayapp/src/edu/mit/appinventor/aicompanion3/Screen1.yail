@@ -360,6 +360,27 @@ $Source $Yail
 
 (define-event CheckBox1 Changed()(set-this-form)
     (set-and-coerce-property! 'PhoneStatus1 'WebRTC (call-yail-primitive yail-not (*list-for-runtime* (get-property 'CheckBox1 'Checked)) '(boolean) "not") 'boolean))
+;;; SplashBox
+
+(add-component MainPanel com.google.appinventor.components.runtime.TextBox SplashBox 
+(set-and-coerce-property! 'SplashBox 'Enabled #f 'boolean)
+
+(set-and-coerce-property! 'SplashBox 'FontSize 16.0 'number)
+
+(set-and-coerce-property! 'SplashBox 'Height -2 'number)
+
+(set-and-coerce-property! 'SplashBox 'Hint "Hint for TextBox1" 'text)
+
+(set-and-coerce-property! 'SplashBox 'MultiLine #t 'boolean)
+
+(set-and-coerce-property! 'SplashBox 'ReadOnly #t 'boolean)
+
+(set-and-coerce-property! 'SplashBox 'Text "This App is a helper Application for MIT App Inventor. It does not do anything by itself! Go to appinventor.mit.edu for more information." 'text)
+
+(set-and-coerce-property! 'SplashBox 'Width -2 'number)
+
+)
+
 ;;; PhoneStatus1
 
 (add-component MainPanel com.google.appinventor.components.runtime.PhoneStatus PhoneStatus1 
