@@ -140,7 +140,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     txtSearchBox.setPadding(10, 10, 10, 10);
     txtSearchBox.setHint("Search list...");
     if (!AppInventorCompatActivity.isClassicMode()) {
-      txtSearchBox.setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
+      txtSearchBox.setBackgroundColor(COLOR_WHITE);
+    }
+
+    if (container.$form().isDarkTheme())  {
+      txtSearchBox.setTextColor(COLOR_BLACK);
+      txtSearchBox.setHintTextColor(COLOR_BLACK);
     }
 
     //set up the listener

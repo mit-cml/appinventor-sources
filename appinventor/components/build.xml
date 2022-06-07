@@ -156,6 +156,8 @@
     <copy toFile="${public.deps.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${public.deps.dir}/QRGenerator.jar" file="${lib.dir}/QRGenerator/core.jar" />
     <copy toFile="${public.deps.dir}/physicaloid.jar" file="${lib.dir}/physicaloid/physicaloid-library.jar" />
+    <!-- Protocol Buf Support (used by the Translation Component) -->
+    <copy toFile="${public.deps.dir}/protobuf-java-3.0.0.jar" file="${lib.dir}/protobuf/protobuf-java-3.0.0.jar" />    
     <!-- BEGIN Android Support Libraries -->
     <copy todir="${public.deps.dir}/">
       <fileset dir="${support.dir}/" includes="*.aar,*.jar" excludes="testing-support-R-classes.jar" />
