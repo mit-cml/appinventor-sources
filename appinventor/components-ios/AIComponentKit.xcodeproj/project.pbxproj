@@ -971,9 +971,9 @@
 			buildConfigurationList = 0618A2951D8CF4EE0013A191 /* Build configuration list for PBXNativeTarget "AIComponentKit" */;
 			buildPhases = (
 				069684EE0D28A74072439CF3 /* [CP] Check Pods Manifest.lock */,
+				0618A2811D8CF4EE0013A191 /* Headers */,
 				0618A27F1D8CF4EE0013A191 /* Sources */,
 				0618A2801D8CF4EE0013A191 /* Frameworks */,
-				0618A2811D8CF4EE0013A191 /* Headers */,
 				0618A2821D8CF4EE0013A191 /* Resources */,
 			);
 			buildRules = (
