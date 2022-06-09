@@ -21,7 +21,7 @@ layout: documentation
 * [random set seed to](#randomseed)
 * [min](#min)
 * [max](#max)
-* [sqrt](#sqrt)
+* [square root](#sqrt)
 * [abs](#abs)
 * [neg](#neg)
 * [log](#log)
@@ -202,7 +202,7 @@ Returns the smallest value of a set of numbers. If there are unplugged sockets i
 
 Returns the largest value of a set of numbers. If there are unplugged sockets in the block, max will also consider 0 in its set of numbers. This block is a [mutator](../concepts/mutators.html) and a dropdown.
 
-### sqrt   {#sqrt}
+### square root   {#sqrt}
 
 ![](images/math/sqrt.png)
 
@@ -392,3 +392,4 @@ Example:
 |         |       6 | 0 1 1 0 |
 |         |       3 | 0 0 1 1 |
 | Result: |       5 | 0 1 0 1 |
+

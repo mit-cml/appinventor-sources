@@ -82,7 +82,18 @@
     <url-pattern>/remote_api</url-pattern>
   </servlet-mapping>
 
+  <!-- REST interface Servlet -->
+
+  <servlet>
+    <servlet-name>RestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.RestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RestServlet</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
   <!-- Nonce based APK download -->
+
   <servlet>
     <servlet-name>buildOutputServlet</servlet-name>
     <servlet-class>com.google.appinventor.server.BuildOutputServlet</servlet-class>
@@ -177,18 +188,18 @@
     <servlet-name>userInfoService</servlet-name>
   </filter-mapping>
 
-  <!-- cloudDBAuth -->
+  <!-- TokenAuth -->
   <servlet>
-    <servlet-name>cloudDBAuthService</servlet-name>
-    <servlet-class>com.google.appinventor.server.cloudDBAuth.CloudDBAuthServiceImpl</servlet-class>
+    <servlet-name>tokenAuthService</servlet-name>
+    <servlet-class>com.google.appinventor.server.tokenauth.TokenAuthServiceImpl</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>cloudDBAuthService</servlet-name>
-    <url-pattern>/ode/cloudDBAuth</url-pattern>
+    <servlet-name>tokenAuthService</servlet-name>
+    <url-pattern>/ode/tokenauth</url-pattern>
   </servlet-mapping>
   <filter-mapping>
     <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>cloudDBAuthService</servlet-name>
+    <servlet-name>tokenAuthService</servlet-name>
   </filter-mapping>
 
   <!-- accept tos -->

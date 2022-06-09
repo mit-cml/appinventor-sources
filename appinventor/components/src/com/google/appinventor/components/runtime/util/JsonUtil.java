@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
 
@@ -445,19 +446,37 @@ public class JsonUtil {
    */
   private static String writeFile(Form context, final String input, String fileExtension) {
     String fullDirName = context.getDefaultPath(BINFILE_DIR);
-    File destDirectory = new File(fullDirName);
+    String preAmble = Uri.parse(context.getDefaultPath("")).getPath();
+
+    ///////////////////////////////////////////////////////////////////////////////
+    // What's going on here?                                                     //
+    //                                                                           //
+    // fullDirName is in fact the full path name of the BINFILE_DIR AS A URI!    //
+    // preAmble is the parent directory path as a plain path. FileWriteOperation //
+    // takes a path, but then uses the file scope to pre-pend the appropriate    //
+    // directory. However this is already included in the variable "dest"        //
+    // returned by File.createTempFile. So we use preAmble to remove it.         //
+    // Obscure for sure... but there it is!                                      //
+    ///////////////////////////////////////////////////////////////////////////////
+
+    File destDirectory = new File(Uri.parse(fullDirName).getPath());
     final Synchronizer<Boolean> result = new Synchronizer<>();
     File dest;
     try {
       dest = File.createTempFile("BinFile", "." + fileExtension, destDirectory);
       new FileWriteOperation(context, context, "Write",
-          dest.getAbsolutePath().replace(context.getDefaultPath(""), ""),
+          dest.getAbsolutePath().replace(preAmble, ""),
           context.DefaultFileScope(), false, true) {
         @Override
         protected boolean process(OutputStream stream) throws IOException {
-          stream.write(Base64.decode(input, Base64.DEFAULT));
-          result.wakeup(true);
-          return true;
+          try {
+            stream.write(Base64.decode(input, Base64.DEFAULT));
+            result.wakeup(true);
+            return true;
+          } catch (Exception e) {
+            result.caught(e);
+            return true;
+          }
         }
       }.run();
       result.waitfor();
@@ -473,7 +492,7 @@ public class JsonUtil {
         }
       }
     } catch (IOException e) {
-      throw new YailRuntimeError(e.getMessage(), "Write");
+      throw new YailRuntimeError(e.getMessage() + " destDirectory: " + destDirectory, "Write");
     }
     trimDirectory(20, destDirectory);
     return dest.getAbsolutePath();
