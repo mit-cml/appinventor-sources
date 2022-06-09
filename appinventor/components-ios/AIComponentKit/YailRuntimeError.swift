@@ -1,14 +1,9 @@
-//
-//  YailRuntimeError.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 10/9/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2022 Massachusetts Institute of Technology. All rights reserved.
 
 import Foundation
 
-@objc open class YailRuntimeError : NSException, Error {
+@objc open class YailRuntimeError : NSException, Error, @unchecked Sendable {
   @objc public init(_ message: String, _ errorType: String) {
     super.init(name: errorType as NSString as NSExceptionName, reason: message, userInfo: nil)
   }
