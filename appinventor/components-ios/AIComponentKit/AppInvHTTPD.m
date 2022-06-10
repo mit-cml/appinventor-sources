@@ -36,6 +36,7 @@ static NSString *stringFromResult(unsigned char *result, int length) {
 static NSString *_hmacKey = nil;
 static int _hmacSeq = 1;
 static NSString *kMimeJson = @"application/json";
+static NSString *_popup = @"No Page Provided";
 
 @implementation AppInvHTTPD
 
@@ -46,6 +47,9 @@ static NSString *kMimeJson = @"application/json";
   _hmacSeq = 1;
 }
 
++ (void)setPopup:(NSString *)popup {
+  _popup = [popup copy];
+}
 + (void)resetSeq {
   _hmacSeq = 1;
 }
@@ -99,6 +103,12 @@ static NSString *kMimeJson = @"application/json";
 - (GCDWebServerResponse *)values:(GCDWebServerRequest *)request {
   GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:[[RetValManager sharedManager] fetch:YES]];
   response.contentType = @"application/json";
+  response.statusCode = 200;
+  return [self setDefaultHeaders:response];
+}
+
+- (GCDWebServerResponse *)proxy:(GCDWebServerRequest *)request {
+  GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithHTML:_popup];
   response.statusCode = 200;
   return [self setDefaultHeaders:response];
 }
@@ -255,6 +265,10 @@ static NSString *kMimeJson = @"application/json";
     }];
     [self addHandlerForMethod:@"POST" path:@"/_eval" requestClass:[GCDWebServerDataRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerDataRequest *request) {
       return [httpd eval:request];
+    }];
+    [self addHandlerForMethod:@"GET" path:@"/_proxy" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest
+        *request) {
+      return [httpd proxy:request];
     }];
     [self addDefaultHandlerForMethod:@"OPTIONS" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
       GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"OK"];

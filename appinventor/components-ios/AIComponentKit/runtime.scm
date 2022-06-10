@@ -21,6 +21,7 @@
 (define *test-global-var-environment* '())
 (define *testing* #f)
 (define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
+(define-alias AssetFetcher <AIComponentKit.AssetFetcher>)
 
 (define-syntax call-with-output-string
   (syntax-rules ()

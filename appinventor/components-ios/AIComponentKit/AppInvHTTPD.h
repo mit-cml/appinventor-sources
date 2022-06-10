@@ -11,6 +11,7 @@
 
 @class ReplForm;
 @class SCMInterpreter;
+@class PhoneStatus;
 
 @protocol AppInvHTTPDDelegate
 
@@ -21,6 +22,7 @@
 @interface AppInvHTTPD : GCDWebServer
 
 + (void)setHmacKey:(NSString *)key;
++ (void)setPopup:(NSString *)popup;
 + (void)resetSeq;
 - (instancetype)initWithPort:(NSUInteger)port rootDirectory:(NSString *)wwwroot secure:(BOOL)secure
   forReplForm:(ReplForm *)form;

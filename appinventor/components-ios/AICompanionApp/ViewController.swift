@@ -197,14 +197,25 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       "installer": phoneStatus.GetInstaller(),
       "os": form.Platform,
       "aid": phoneStatus.InstallationId(),
-      "r2": "true"
+      "r2": "true",
+      "useproxy": String(describing: phoneStatus.UseProxy)
     ].map({ (key: String, value: String) -> String in
       return "\(key)=\(value)"
     }).joined(separator: "&")
     NSLog("Values = \(values)")
     request.httpMethod = "POST"
     request.httpBody = values.data(using: String.Encoding.utf8)
-    URLSession.shared.dataTask(with: request).resume()
+    URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+      var responseContent: NSString = ""
+      if let data = data {
+        guard let responseContentStr = String(data: data, encoding: .utf8) else {
+          return
+        }
+        responseContent = responseContentStr as NSString
+      }
+      self.setPopup(popup: responseContent as String)
+    }
+    ).resume()
   }
   
   @objc func showBarcodeScanner(_ sender: UIButton?) {
@@ -220,7 +231,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       ViewController.controller?.connect(nil)
     }
   }
-
+  
   override public var childForStatusBarStyle: UIViewController? {
     return form
   }
@@ -269,6 +280,10 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     if let newRoot = storyboard.instantiateInitialViewController() {
       UIApplication.shared.delegate?.window??.rootViewController = newRoot
     }
+  }
+
+  private func setPopup(popup: String) {
+    phoneStatus.setPopup(popup)
   }
 
   /**

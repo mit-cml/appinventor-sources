@@ -77,6 +77,19 @@ static RetValManager *_manager = nil;
   [self addResult:output];
 }
 
+- (void)assetTransferred:(NSString *)name {
+  NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary: @{@"status": @"OK", @"type": @"assetTransferred"}];
+  if (name) {
+    output[@"value"] = name;
+  }
+  [self addResult:output];
+}
+
+- (void)extensionsLoaded {
+  NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary: @{@"status": @"OK", @"type": @"extensionLoaded"}];
+  [self addResult:output];
+}
+
 - (NSString *)fetch:(BOOL)block {
   NSDate *finishBy = [NSDate dateWithTimeIntervalSinceNow:TENSECONDS];
   NSDate *exitBy = [NSDate dateWithTimeIntervalSinceNow:TENSECONDS - 0.1];

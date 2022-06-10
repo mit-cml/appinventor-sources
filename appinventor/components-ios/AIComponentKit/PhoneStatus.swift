@@ -100,4 +100,10 @@ open class PhoneStatus : NonvisibleComponent {
 
   // MARK: PhoneStatus Properties
   @objc open var WebRTC: Bool = false
+  
+  @objc open var UseProxy: Bool = true
+  
+  @objc open func setPopup(_ popup : String) {
+    AppInvHTTPD.setPopup(popup);
+  }
 }
