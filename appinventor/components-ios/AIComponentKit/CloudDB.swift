@@ -106,10 +106,15 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
         if _useSSL {
           sslConfig = [GCDAsyncSocketManuallyEvaluateTrust as String: true as NSObject]
         }
+        var jToken: String = _token
+        if _token.hasPrefix("%") {
+          jToken = String(_token.dropFirst())
+        }
+        
         _redis = RedisClient(delegate: self, queue: _redisQueue, sslConfig: sslConfig)
         _subscriptionManager = RedisClient(delegate: self, queue: _redisQueue, sslConfig: sslConfig)
-        _redis?.connect(host: _useDefault ? _defaultRedisServer: _redisServer, port: Int(_redisPort), pwd: _token)
-        _subscriptionManager?.connect(host: _useDefault ? _defaultRedisServer: _redisServer, port: Int(_redisPort), pwd: _token)
+        _redis?.connect(host: _useDefault ? _defaultRedisServer: _redisServer, port: Int(_redisPort), pwd: jToken)
+        _subscriptionManager?.connect(host: _useDefault ? _defaultRedisServer: _redisServer, port: Int(_redisPort), pwd: jToken)
       }
     }
   }
