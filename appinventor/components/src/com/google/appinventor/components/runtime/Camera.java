@@ -145,7 +145,7 @@ public class Camera extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void TakePicture() {
-    final ScopedFile target = FileUtil.getScopedPictureFile(form, "png");
+    final ScopedFile target = FileUtil.getScopedPictureFile(form, "jpg");
     if (!havePermission) {
       String[] permissions;
       if (FileUtil.needsWritePermission(target)) {
