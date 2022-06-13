@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
@@ -426,6 +427,19 @@ public class Chart extends AndroidViewComponent
     // Retrieve the elements from the CSV-formatted String
     YailList labelsList = ElementsUtil.elementsFromString(labels);
     Labels(labelsList); // Set the Labels from the retrieved elements List
+  }
+
+  /**
+   * Indicates that the user clicked on a data entry in the `Chart`. The specific series, along
+   * with its x and y values, are reported.
+   *
+   * @param series the series clicked on
+   * @param x the x position of the clicked entry
+   * @param y the y position of the clicked entry
+   */
+  @SimpleEvent
+  public void EntryClick(Component series, double x, double y) {
+    EventDispatcher.dispatchEvent(this, "EntryClick", series, x, y);
   }
 
   /**

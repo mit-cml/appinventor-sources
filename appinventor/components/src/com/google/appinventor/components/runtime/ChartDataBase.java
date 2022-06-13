@@ -7,13 +7,20 @@ package com.google.appinventor.components.runtime;
 
 import android.util.Log;
 
+import android.view.MotionEvent;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.ChartTouchListener;
+import com.github.mikephil.charting.listener.OnChartGestureListener;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 
-import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.LineType;
 import com.google.appinventor.components.common.PointStyle;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -42,7 +49,7 @@ import java.util.concurrent.Future;
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
 public abstract class ChartDataBase implements Component, DataSourceChangeListener,
-    DataSourceGetValueListener {
+    DataSourceGetValueListener, OnChartGestureListener, OnChartValueSelectedListener {
   protected Chart container;
   protected ChartDataModel<?, ?, ?, ?, ?> chartDataModel;
 
@@ -135,6 +142,8 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
     // Set default values
     Color(Component.COLOR_BLACK);
     Label("");
+    chartDataModel.view.chart.setOnChartGestureListener(this);
+    chartDataModel.view.chart.setOnChartValueSelectedListener(this);
   }
 
   /*
@@ -1048,5 +1057,75 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   private boolean isKeyValid(String key) {
     // The key should either be equal to the local key, or null.
     return (key == null || key.equals(dataSourceKey));
+  }
+
+  @Override
+  public void onChartGestureStart(MotionEvent motionEvent,
+      ChartTouchListener.ChartGesture chartGesture) {
+
+  }
+
+  @Override
+  public void onChartGestureEnd(MotionEvent motionEvent,
+      ChartTouchListener.ChartGesture chartGesture) {
+
+  }
+
+  @Override
+  public void onChartLongPressed(MotionEvent motionEvent) {
+
+  }
+
+  @Override
+  public void onChartDoubleTapped(MotionEvent motionEvent) {
+
+  }
+
+  @Override
+  public void onChartSingleTapped(MotionEvent motionEvent) {
+
+  }
+
+  @Override
+  public void onChartFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+
+  }
+
+  @Override
+  public void onChartScale(MotionEvent motionEvent, float v, float v1) {
+
+  }
+
+  @Override
+  public void onChartTranslate(MotionEvent motionEvent, float v, float v1) {
+
+  }
+
+  @Override
+  public void onValueSelected(final Entry entry, Highlight highlight) {
+    container.$form().runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        EntryClick(entry.getX(), entry.getY());
+      }
+    });
+  }
+
+  /**
+   * Indicates that the user tapped on a data point in the chart. The x and y values of the
+   * tapped entry are reported.
+   *
+   * @param x the x position of the clicked entry
+   * @param y the y position of the clicked entry
+   */
+  @SimpleEvent()
+  public void EntryClick(double x, double y) {
+    EventDispatcher.dispatchEvent(this, "EntryClick", x, y);
+    container.EntryClick(this, x, y);
+  }
+
+  @Override
+  public void onNothingSelected() {
+
   }
 }
