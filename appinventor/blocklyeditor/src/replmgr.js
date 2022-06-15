@@ -677,10 +677,15 @@ Blockly.ReplMgr.putYail = (function() {
                 var allcode = "";
                 var chunked = false;
                 var lastblock;
+                var first = true;
                 while ((chunk = rs.phoneState.phoneQueue.shift())) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        console.log("We did chunk!");
+                        chunked = true;
+                    }
                     rs.phoneState.ioRunning = true; // Indicate that we are doing i/o
-                    console.log("We did chunk!");
-                    chunked = true;
                     allcode += chunk.code; // We can concatonate because AppInvHTTPD runs us
                                            // in a (begin) block
                     lastblock = chunk.block;
@@ -1548,10 +1553,11 @@ Blockly.ReplMgr.rendezvousDone = function() {
     var startwebrtc = function() {
         top.usewebrtc = true;
         rs.state = me.rsState.ASSET;
-        me.putYail();
+        me.putYail();           // Sets up the context
     };
     var startproxy = function() {
         rs.proxy_ready = false;
+        me.putYail();           // Sets up the context
         var promise = new Promise(function(resolve, reject) {
             var w = 600;
             var h = 500
@@ -1622,6 +1628,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
         // are loaded over https. If we are, then Legacy Mode will fail. So
         // shutdown the whole thing here and put up a dialog box explaining
         // the problem.
+        me.putYail();           // Sets up the context
         if (window.location.protocol === 'https:') {
             // Reset State to initial
             rs.state = Blockly.ReplMgr.rsState.IDLE;
