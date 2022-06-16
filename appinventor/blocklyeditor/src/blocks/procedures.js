@@ -902,3 +902,49 @@ Blockly.Blocks['procedures_callreturn'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME}]
 };
 
+Blockly.Blocks['map_list2'] = {
+  // Map a list with a specific procedure
+  category: 'Procedures',
+  helpUrl: "helpUrl",
+  init: function () {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    var procDb = this.getTopWorkspace().getProcedureDatabase();
+    var procNameArray = [Blockly.FieldProcedure.defaultValue];
+    this.procNamesFxn = function() {
+
+      var topBlocks = procDb.getDeclarationBlocks(true);
+      if (topBlocks.length <= 0) {
+        return ['', ''];
+      }
+      for (var i = 0; i < topBlocks.length; i++) {
+        if (topBlocks[i].arguments_.length == 1) {
+          var procName = topBlocks[i].getFieldValue('NAME')
+          procNameArray.push([procName,procName]);
+        }
+      }
+
+      return procNameArray;
+    };
+
+    this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn, Blockly.FieldProcedure.onChange);
+    this.procDropDown.block = this;
+    this.appendValueInput()
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT))
+        .appendField("map the list");
+    this.appendDummyInput()
+        .appendField("using procedure")
+        .appendField(this.procDropDown,"PROCNAME");
+    this.setOutput(true, null);
+    this.setTooltip("Tool Tip text");
+    this.arguments_ = [];
+    this.quarkConnections_ = null;
+    this.quarkArguments_ = null;
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
+    Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.getField("PROCNAME").getValue());
+  },
+  setProcedureParameters: function(paramNames, paramIds, startTracking) {
+    return;
+  },
+
+  typeblock: [{ translatedName: "translatedName"}],
+};
