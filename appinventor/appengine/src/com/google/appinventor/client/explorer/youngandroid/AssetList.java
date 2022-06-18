@@ -190,7 +190,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
   @Override
   public void onProjectNodeRenamed(Project project, ProjectNode node, String oldName) {
-    OdeLog.log("AssetLIst: got onProjectNodeRenamed for node " + node.getFileId()
+    Ode.CLog("AssetLIst: got onProjectNodeRenamed for node " + node.getFileId()
             + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode) {
       refreshAssetList();

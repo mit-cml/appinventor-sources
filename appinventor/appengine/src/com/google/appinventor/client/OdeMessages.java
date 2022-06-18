@@ -9,7 +9,7 @@ package com.google.appinventor.client;
 import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;
 
-/* *
+/**
  * I18n strings for {@link Ode}.
  *
  */
