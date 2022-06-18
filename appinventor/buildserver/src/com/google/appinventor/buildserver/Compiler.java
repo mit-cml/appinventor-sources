@@ -216,6 +216,8 @@ public final class Compiler {
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> broadcastReceiversNeeded =
       new ConcurrentHashMap<String, Set<String>>();
+  private final ConcurrentMap<String, Set<String>> queriesNeeded =
+      new ConcurrentHashMap<>();
   private final ConcurrentMap<String, Set<String>> servicesNeeded =
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> contentProvidersNeeded =
@@ -475,6 +477,11 @@ public final class Compiler {
     return broadcastReceiversNeeded;
   }
 
+  @VisibleForTesting
+  Map<String, Set<String>> getQueries() {
+    return queriesNeeded;
+  }
+
   // Just used for testing
   @VisibleForTesting
   Map<String, Set<String>> getServices() {
@@ -665,6 +672,24 @@ public final class Compiler {
     }
 
     mergeConditionals(conditionals.get(ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET), broadcastReceiversNeeded);
+  }
+
+  /*
+   * Generate a set of conditionally included queries needed by this project.
+   */
+  @VisibleForTesting
+  void generateQueries() {
+    try {
+      loadJsonInfo(queriesNeeded, ComponentDescriptorConstants.QUERIES_TARGET);
+    } catch (IOException e) {
+      // This is fatal.
+      userErrors.print(String.format(ERROR_IN_STAGE, "Services"));
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      userErrors.print(String.format(ERROR_IN_STAGE, "Services"));
+    }
+
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.QUERIES_TARGET), queriesNeeded);
   }
 
   /*
@@ -1051,6 +1076,17 @@ public final class Compiler {
         }
       }
 
+      if (queriesNeeded.size() > 0) {
+        out.write("  <queries>\n");
+        for (Map.Entry<String, Set<String>> componentSubElSetPair : queriesNeeded.entrySet()) {
+          Set<String> subelementSet = componentSubElSetPair.getValue();
+          for (String subelement : subelementSet) {
+            // replace %packageName% with the actual packageName
+            out.write(subelement.replace("%packageName%", packageName));
+          }
+        }
+        out.write("  </queries>\n");
+      }
       int minSdk = Integer.parseInt(project.getMinSdk());
       if (!isForCompanion) {
         for (Set<String> minSdks : minSdksNeeded.values()) {
@@ -1385,28 +1421,30 @@ public final class Compiler {
         reporter.report(0);
       }
 
-      statReporter.nextStage(compiler, "generateAssets");
-      compiler.generateAssets();
       statReporter.nextStage(compiler, "generateActivities");
       compiler.generateActivities();
-      statReporter.nextStage(compiler, "generateMetadata");
-      compiler.generateMetadata();
       statReporter.nextStage(compiler, "generateActivityMetadata");
       compiler.generateActivityMetadata();
+      statReporter.nextStage(compiler, "generateAssets");
+      compiler.generateAssets();
       statReporter.nextStage(compiler, "generateBroadcastReceivers");
       compiler.generateBroadcastReceivers();
-      statReporter.nextStage(compiler, "generateServices");
-      compiler.generateServices();
       statReporter.nextStage(compiler, "generateContentProviders");
       compiler.generateContentProviders();
       statReporter.nextStage(compiler, "generateLibNames");
       compiler.generateLibNames();
+      statReporter.nextStage(compiler, "generateMetadata");
+      compiler.generateMetadata();
+      statReporter.nextStage(compiler, "generateMinSdks");
+      compiler.generateMinSdks();
       statReporter.nextStage(compiler, "generateNativeLibNames");
       compiler.generateNativeLibNames();
       statReporter.nextStage(compiler, "generatePermissions");
       compiler.generatePermissions();
-      statReporter.nextStage(compiler, "generateMinSdks");
-      compiler.generateMinSdks();
+      statReporter.nextStage(compiler, "generateQueries");
+      compiler.generateQueries();
+      statReporter.nextStage(compiler, "generateServices");
+      compiler.generateServices();
 
       // TODO(Will): Remove the following call once the deprecated
       //             @SimpleBroadcastReceiver annotation is removed. It should

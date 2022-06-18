@@ -29,15 +29,16 @@ public abstract class SingleFileOperation extends FileOperation {
 
   /**
    * Create a new {@code SingleFileOperation} to be executed under the given arguments. This
-   * version of the constructor allows
+   * version of the constructor allows the caller to specify whether the operation is asynchronous.
    *
-   * @param form
-   * @param component
-   * @param method
-   * @param fileName
-   * @param scope
-   * @param accessMode
-   * @param async
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param component the Component requesting the file operation
+   * @param method the method of {@code component} requesting the file operation
+   * @param fileName the name of the file to be accessed, using the File semantics
+   * @param scope permission mode to use for locating the file and asking permissions
+   * @param accessMode access mode for the file
+   * @param async true if the operation should be performed on a separate thread to prevent
+   *              blocking the UI thread
    */
   protected SingleFileOperation(Form form, Component component, String method, String fileName,
       FileScope scope, FileAccessMode accessMode, boolean async) {
@@ -48,6 +49,29 @@ public abstract class SingleFileOperation extends FileOperation {
     this.scopedFile = new ScopedFile(scope, fileName);
     this.file = scopedFile.resolve(form);
     this.resolvedPath = file.getAbsolutePath();
+    Log.d(LOG_TAG, "resolvedPath = " + resolvedPath);
+  }
+
+  /**
+   * Create a new {@code SingleFileOperation} to be executed under the given arguments.
+   *
+   * @param form the Form object to use as a Context and to ask for permissions, if needed
+   * @param component the Component requesting the file operation
+   * @param method the method of {@code component} requesting the file operation
+   * @param file the ScopedFile to perform the operation on
+   * @param accessMode access mode for the file
+   * @param async true if the operation should be performed on a separate thread to prevent
+   *              blocking the UI thread
+   */
+  protected SingleFileOperation(Form form, Component component, String method, ScopedFile file,
+      FileAccessMode accessMode, boolean async) {
+    super(form, component, method, async);
+    this.scope = file.getScope();
+    this.accessMode = accessMode;
+    this.fileName = file.getFileName();
+    this.scopedFile = file;
+    this.file = scopedFile.resolve(form);
+    this.resolvedPath = this.file.getAbsolutePath();
     Log.d(LOG_TAG, "resolvedPath = " + resolvedPath);
   }
 

@@ -153,6 +153,18 @@ public final class YoungAndroidFormUpgrader {
       }
     }
 
+    if (srcYaVersion < 216) {
+      // YandexTranslate deprecated in favor of Translator
+      if (componentType.equals("YandexTranslate")) {
+        componentType = "Translator";
+        srcCompVersion = COMPONENT_DATABASE.getComponentVersion(componentType);
+        componentProperties.put("$Type", new ClientJsonString(componentType));
+        componentProperties.put("$Version", new ClientJsonString("" + srcCompVersion));
+        upgradeDetails.append(MESSAGES.yandexTranslateReplacedwithTranslator(
+            componentProperties.get("$Name").asString().getString()));
+      }
+    }
+
     // Get the system component version from the component database.
     final int sysCompVersion;
     try {
@@ -1510,6 +1522,11 @@ public final class YoungAndroidFormUpgrader {
       // The Stop method was added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The Language property was added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

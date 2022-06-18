@@ -13,6 +13,7 @@ import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.server.tokens.Token;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -219,6 +220,22 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void storeSharedBackpack(String backPackId, String content) {
     storageIo.uploadBackpack(backPackId, content);
+  }
+
+  @Override
+  public String deleteAccount() {
+    if (storageIo.deleteAccount(userInfoProvider.getUserId())) {
+      String delAccountUrl = Flag.createFlag("deleteaccount.url", "NONE").get();
+      if (delAccountUrl.equals("NONE")) {
+        return (delAccountUrl);
+      } else {
+        String token = Token.makeAccountDeletionToken(userInfoProvider.getUserId(),
+          userInfoProvider.getUserEmail());
+        return (delAccountUrl + "/?token=" + token);
+      }
+    } else {
+      return ("");
+    }
   }
 
 }

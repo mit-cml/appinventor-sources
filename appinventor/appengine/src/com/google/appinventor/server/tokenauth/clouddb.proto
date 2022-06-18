@@ -1,7 +1,7 @@
-package tokenauth;
+package clouddbauth;
 
-option java_package = "com.google.appinventor.server.cloudDBAuth";
-option java_outer_classname = "TokenAuth";
+option java_package = "com.google.appinventor.server.tokenauth";
+option java_outer_classname = "CloudDBTokenAuth";
 
 // This message just contains the user's uuid, which is
 // unique to them. Depending on App Inventor version this

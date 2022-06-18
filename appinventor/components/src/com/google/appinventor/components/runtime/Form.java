@@ -6,12 +6,9 @@
 
 package com.google.appinventor.components.runtime;
 
-import static android.Manifest.permission.ACCESS_NETWORK_STATE;
-import static android.Manifest.permission.ACCESS_WIFI_STATE;
 import static android.Manifest.permission.INTERNET;
 import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -45,8 +42,6 @@ import android.widget.ScrollView;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import com.google.appinventor.common.version.AppInventorFeatures;
 
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -130,7 +125,7 @@ import org.json.JSONException;
     description = "Top-level component containing all other components in the program",
     showOnPalette = false)
 @SimpleObject
-@UsesPermissions({INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE})
+@UsesPermissions({INTERNET})
 public class Form extends AppInventorCompatActivity
     implements Component, ComponentContainer, HandlesEventDispatching,
     OnGlobalLayoutListener {
@@ -2545,17 +2540,11 @@ public class Form extends AppInventorCompatActivity
         doNothing);
   }
 
-  private String yandexTranslateTagline = "";
-
-  void setYandexTranslateTagline(){
-    yandexTranslateTagline = "<p><small>Language translation powered by Yandex.Translate</small></p>";
-  }
-
   private void showAboutApplicationNotification() {
     String title = "About this app";
     String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
     // Users can hide the taglines by including an HTML open comment <!-- in the about screen message
-    String message = aboutScreen + MITtagline + yandexTranslateTagline;
+    String message = aboutScreen + MITtagline;
     message = message.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
@@ -2911,6 +2900,10 @@ public class Form extends AppInventorCompatActivity
 
   public String getCachePath(String cache) {
     return "file://" + new java.io.File(getCacheDir(), cache).getAbsolutePath();
+  }
+
+  public String getDefaultPath(String name) {
+    return FileUtil.resolveFileName(this, name, defaultFileScope);
   }
 
   /**

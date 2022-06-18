@@ -1,16 +1,18 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.NxtMailbox;
 import com.google.appinventor.components.common.NxtMotorMode;
@@ -21,17 +23,17 @@ import com.google.appinventor.components.common.NxtSensorMode;
 import com.google.appinventor.components.common.NxtSensorPort;
 import com.google.appinventor.components.common.NxtSensorType;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import android.util.Log;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,9 +52,6 @@ import java.util.List;
     nonVisible = true,
     iconName = "images/legoMindstormsNxt.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-  "android.permission.WRITE_EXTERNAL_STORAGE," +
-  "android.permission.READ_EXTERNAL_STORAGE")
 public class NxtDirectCommands extends LegoMindstormsNxtBase {
 
   /**

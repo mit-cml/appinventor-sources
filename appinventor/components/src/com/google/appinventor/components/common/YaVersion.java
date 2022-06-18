@@ -551,7 +551,13 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 214:
   // - FILE_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 213;
+  // For YOUNG_ANDROID_VERSION 215:
+  // Added Translator
+  // For YOUNG_ANDROID_VERSION 216:
+  // YandexTranslate turned into Translator (and YandexTranslate
+  //   itself stubbed out and placed in INTERNAL
+
+  public static final int YOUNG_ANDROID_VERSION = 216;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1275,7 +1281,9 @@ public class YaVersion {
   // - The UseLegacy property was added which is set to True by default.
   // - The Stop method was added, which works only when UseLegacy
   //   property is set to False.
-  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 2;
+  // For SPEECHRECOGNIZER_COMPONENT_VERSION 3:
+  // - The Language property was added.
+  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 3;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
@@ -1474,7 +1482,9 @@ public class YaVersion {
   // - Initial version.
   // For YANDEX_COMPONENT_VERSION 2:
   // - Added ApiKey property
-  public static final int YANDEX_COMPONENT_VERSION = 2;
+  // For YANDEX_COMPONENT_VERSION 3:
+  // - Stubbed out: blocks changed to use Translator
+  public static final int YANDEX_COMPONENT_VERSION = 3;
 
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
@@ -1484,6 +1494,9 @@ public class YaVersion {
 
   //For MAGNETICFIELDSENSOR_COMPONENT_VERSION: Initial Version
   public static final int MAGNETICFIELDSENSOR_COMPONENT_VERSION = 1;
+
+  //For TRANSLATE_COMPONENT_VERSION: Initial Version
+  public static final int TRANSLATOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";
@@ -1529,11 +1542,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.61";
+  public static final String PREFERRED_COMPANION = "2.64";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.61", "2.61u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.64", "2.64u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

@@ -6,7 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.Manifest;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 import android.app.Activity;
 
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
+
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -47,26 +49,29 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.collect.Sets;
 
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
 
 import com.google.appinventor.components.runtime.util.BoundingBox;
-import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.FileWriteOperation;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.PaintUtil;
+import com.google.appinventor.components.runtime.util.ScopedFile;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.Synchronizer;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -762,7 +767,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     paint.setFlags(Paint.ANTI_ALIAS_FLAG);
 
     // Set default properties.
-    paint.setStrokeWidth(DEFAULT_LINE_WIDTH);
+    LineWidth(DEFAULT_LINE_WIDTH);
     PaintColor(DEFAULT_PAINT_COLOR);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
     TextAlignment(DEFAULT_TEXTALIGNMENT);
@@ -772,29 +777,25 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     sprites = new LinkedList<Sprite>();
     motionEventParser = new MotionEventParser();
     mGestureDetector = new GestureDetector(context, new FlingGestureListener());
-  }
-
-  public void Initialize() {
-    // Note: The code below does not call ourselves after the
-    // onGranted because we don't do anything beyond getting
-    // permissions. If we ever add code to this Initialize method,
-    // that requires permissions, then be sure to call ourselves in
-    // onGranted().
-    if (!havePermission && form.doesAppDeclarePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-      final Canvas me = this;
-      form.askPermission(new BulkPermissionRequest(this, "Canvas",
-          Manifest.permission.WRITE_EXTERNAL_STORAGE) {
-          @Override
-          public void onGranted() {
-            me.havePermission = true;
-          }
-        });
+    if (FileUtil.needsWritePermission(form.DefaultFileScope())) {
+      havePermission = !form.isDeniedPermission(WRITE_EXTERNAL_STORAGE);
+    } else {
+      havePermission = true;
     }
   }
 
   @Override
   public View getView() {
     return view;
+  }
+
+
+
+  // For extension components to
+  // access the bitmap of the canvas
+
+  public Bitmap getBitmap() {
+    return view.buildCache();
   }
 
   public Activity getContext() {
@@ -1637,24 +1638,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @return the full path name of the saved file, or the empty string if the
    *         save failed
    */
-  @UsesPermissions({Manifest.permission.WRITE_EXTERNAL_STORAGE})
+  @UsesPermissions({WRITE_EXTERNAL_STORAGE})
   @SimpleFunction(description = "Saves a picture of this Canvas to the " +
        "device's external storage. If an error occurs, the Screen's ErrorOccurred " +
        "event will be called.")
   public String Save() {
-    try {
-      File file = FileUtil.getPictureFile($form(), "png");
-      return saveFile(file, Bitmap.CompressFormat.PNG, "Save");
-    } catch (PermissionException e) {
-      container.$form().dispatchPermissionDeniedEvent(this, "Save", e);
-    } catch (IOException e) {
-      container.$form().dispatchErrorOccurredEvent(this, "Save",
-          ErrorMessages.ERROR_MEDIA_FILE_ERROR, e.getMessage());
-    } catch (FileUtil.FileException e) {
-      container.$form().dispatchErrorOccurredEvent(this, "Save",
-          e.getErrorMessageNumber());
-    }
-    return "";
+    return saveFile(FileUtil.getScopedPictureFile($form(), "png"),
+        Bitmap.CompressFormat.PNG, "Save");
   }
 
   /**
@@ -1665,7 +1655,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @return the full path name of the saved file, or the empty string if the
    *         save failed
    */
-  @UsesPermissions({Manifest.permission.WRITE_EXTERNAL_STORAGE})
+  @UsesPermissions({WRITE_EXTERNAL_STORAGE})
   @SimpleFunction(description =  "Saves a picture of this Canvas to the device's " +
    "external storage in the file " +
    "named fileName. fileName must end with one of .jpg, .jpeg, or .png, " +
@@ -1685,44 +1675,47 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           ErrorMessages.ERROR_MEDIA_IMAGE_FILE_FORMAT);
       return "";
     }
-    try {
-      File file = FileUtil.getExternalFile($form(), fileName);
-      return saveFile(file, format, "SaveAs");
-    } catch (PermissionException e) {
-      container.$form().dispatchPermissionDeniedEvent(this, "SaveAs", e);
-    } catch (FileUtil.FileException e) {
-      container.$form().dispatchErrorOccurredEvent(this, "SaveAs",
-          e.getErrorMessageNumber());
-    }
-    return "";
+    return saveFile(new ScopedFile(form.DefaultFileScope(), fileName), format, "SaveAs");
   }
 
   // Helper method for Save and SaveAs
-  private String saveFile(File file, Bitmap.CompressFormat format, String method) {
-    try {
-      boolean success = false;
-      FileOutputStream fos = new FileOutputStream(file);
-      // Don't cache, in order to save memory.  It seems unlikely to be used again soon.
-      Bitmap bitmap = (view.completeCache == null ? view.buildCache() : view.completeCache);
-      try {
-        success = bitmap.compress(format,
-            100,  // quality: ignored for png
-            fos);
-      } finally {
-        fos.close();
+  private String saveFile(ScopedFile scopedFile, final Bitmap.CompressFormat format,
+      String method) {
+    if (!havePermission && FileUtil.needsWritePermission(scopedFile)) {
+      form.askPermission(WRITE_EXTERNAL_STORAGE, new PermissionResultHandler() {
+        @Override
+        public void HandlePermissionResponse(String permission, boolean granted) {
+          havePermission = granted;
+        }
+      });
+      throw new StopBlocksExecution();
+    }
+
+    final Synchronizer<Boolean> result = new Synchronizer<>();
+    new FileWriteOperation(form, this, method, scopedFile, false, false) {
+      @Override
+      protected boolean process(OutputStream stream) {
+        Bitmap bitmap = view.completeCache == null ? view.buildCache() : view.completeCache;
+        result.wakeup(bitmap.compress(format, 100, stream));
+        return true;
       }
-      if (success) {
-        return file.getAbsolutePath();
-      } else {
-        container.$form().dispatchErrorOccurredEvent(this, method,
-            ErrorMessages.ERROR_CANVAS_BITMAP_ERROR);
-      }
-    } catch (FileNotFoundException e) {
+    }.run();
+
+    if (result.getThrowable() instanceof FileNotFoundException) {
       container.$form().dispatchErrorOccurredEvent(this, method,
-          ErrorMessages.ERROR_MEDIA_CANNOT_OPEN, file.getAbsolutePath());
-    } catch (IOException e) {
+          ErrorMessages.ERROR_MEDIA_CANNOT_OPEN,
+          FileUtil.resolveFileName(form, scopedFile));
+    } else if (result.getThrowable() instanceof IOException) {
       container.$form().dispatchErrorOccurredEvent(this, method,
-          ErrorMessages.ERROR_MEDIA_FILE_ERROR, e.getMessage());
+          ErrorMessages.ERROR_MEDIA_FILE_ERROR, result.getThrowable().getMessage());
+    } else if (result.getThrowable() instanceof PermissionException) {
+      container.$form().dispatchPermissionDeniedEvent(this, method,
+          (PermissionException) result.getThrowable());
+    } else if (result.getThrowable() instanceof FileUtil.FileException) {
+      container.$form().dispatchErrorOccurredEvent(this, method,
+          ((FileUtil.FileException) result.getThrowable()).getErrorMessageNumber());
+    } else if (result.getResult()) {
+      return FileUtil.resolveFileName(form, scopedFile);
     }
     return "";
   }
