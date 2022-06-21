@@ -56,4 +56,12 @@ public interface UserInfoProvider {
 
   void setSessionId(String SessionId);
 
+  boolean isCommunityLogin();
+
+  void setCommunityLogin(boolean communityLogin);
+
+  public String getCommunityLoginEmail();
+
+  public void setCommunityLoginEmail(String email);
+
 }

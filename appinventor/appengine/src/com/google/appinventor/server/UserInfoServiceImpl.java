@@ -238,4 +238,39 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     }
   }
 
+  @Override
+  public boolean getUserCommunityLogin() {
+    return storageIo.getUserCommunityLogin(userInfoProvider.getUserId());
+  }
+
+  /**
+   * setUserCommunityLogin
+   */
+  @Override
+  public void setUserCommunityLogin(boolean communityLogin) {
+    storageIo.setUserCommunityLogin(userInfoProvider.getUserId(), communityLogin);
+  }
+
+  @Override
+  public String getCommunityLoginEmail() {
+    return storageIo.getUserCommunityLoginEmail(userInfoProvider.getUserId());
+  }
+
+  @Override
+  public void setCommunityLoginEmail(String email) {
+    storageIo.setUserCommunityLoginEmail(userInfoProvider.getUserId(), email);
+  }
+
+  @Override
+  public void loginToCommunity(String email) {
+    storageIo.setUserCommunityLogin(userInfoProvider.getUserId(), true);
+    storageIo.setUserCommunityLoginEmail(userInfoProvider.getUserId(), email);
+  }
+
+  @Override
+  public void logoutFromCommunity() {
+    storageIo.setUserCommunityLogin(userInfoProvider.getUserId(), false);
+    storageIo.setUserCommunityLoginEmail(userInfoProvider.getUserId(), null);
+  }
+
 }

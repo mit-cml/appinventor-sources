@@ -59,6 +59,8 @@ public class StoredData {
     public int type;
     String sessionid;           // uuid of active session
     String password;            // Hashed (PBKDF2 hashing) password
+    public boolean communityLogin;
+    public String communityLoginEmail;
 
     // Path to template project passed as GET parameter
     String templatePath;

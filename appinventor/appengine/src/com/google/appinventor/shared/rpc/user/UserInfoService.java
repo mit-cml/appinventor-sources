@@ -16,6 +16,35 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath(ServerLayout.USER_INFO_SERVICE)
 public interface UserInfoService extends RemoteService {
+  /**
+   * getUserCommunityLogin
+   */
+  boolean getUserCommunityLogin();
+
+  /**
+   * setUserCommunityLogin
+   */
+  void setUserCommunityLogin(boolean communityLogin);
+
+  /**
+   * gets users community email address
+   */
+  public String getCommunityLoginEmail();
+
+  /**
+   * sets users community login address
+   */
+  public void setCommunityLoginEmail(String email);
+   
+  /**
+   * login user to community account
+   */
+  public void loginToCommunity(String email);
+
+  /**
+   * logout user from community account
+   */
+  public void logoutFromCommunity();
 
   /**
    * Retrieves system configuration information, including

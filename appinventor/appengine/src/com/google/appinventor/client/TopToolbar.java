@@ -15,6 +15,11 @@ import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCo
 import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
 import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
 import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
@@ -54,6 +59,8 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.Label;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -351,6 +358,8 @@ public class TopToolbar extends Composite {
     List<DropDownItem> helpItems = Lists.newArrayList();
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
         new AboutAction()));
+    helpItems.add(new DropDownItem("InstantHelp", "Instant Help",
+        new InstantHelpAction()));
     helpItems.add(null);
     Config config = Ode.getSystemConfig();
     String libraryUrl = config.getLibraryUrl();
@@ -931,7 +940,339 @@ public class TopToolbar extends Composite {
       Ode.getInstance().showWelcomeDialog();
     }
   }
+  private static class InstantHelpAction implements Command {
+    private static final String HMAC_SHA512 = "HmacSHA256";
+    static DialogBox db;
+    static Frame frame;
+    @Override
+    public void execute() {
+      db = new DialogBox(false, true);
+      db.setText("Get Instant Help");
+      db.setStyleName("ode-DialogBox");
+      db.setHeight("320px");
+      db.setWidth("600px");
+      db.setGlassEnabled(true);
+      db.setAnimationEnabled(true);
+      db.center();
 
+      VerticalPanel DialogBoxContents = new VerticalPanel();
+      Label lblMessage = new Label("Loading...");
+      Button btn = new Button("Close");
+      btn.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          db.hide();
+        }
+      });
+      Config config = Ode.getInstance().getSystemConfig();
+      String userEmail = Ode.getInstance().getUser().getUserEmail();
+      frame = new Frame("/CommunityLogin.html");
+      frame.setWidth("600px");
+      frame.setHeight("320px");
+      frame.getElement().setId("CommunityLoginFrame");
+      // DialogBoxContents.add(lblMessage);
+      // DialogBoxContents.add(btn);
+      DialogBoxContents.add(frame);
+      listenToSubmit(db);
+      db.setWidget(DialogBoxContents);
+      db.show();
+      checkIfAlreadyLoggedIn();
+    }
+
+    private static void checkIfAlreadyLoggedIn() {
+      AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>() {
+        @Override
+        public void onSuccess(Boolean communityLogin) {
+          Ode.CLog("status: " + communityLogin);
+          if(!communityLogin)
+            showLoginButton();
+          else {
+            showAskQuestionFrame();
+          }
+        }
+  
+        @Override
+        public void onFailure(Throwable caught) {
+          // error
+          Ode.CLog("error: " + caught.getMessage());
+        }
+      };
+      Ode.getInstance().getUserInfoService().getUserCommunityLogin(callback); 
+    }
+
+    private static void showAskQuestionFrame() {
+      db.hide();
+      db = null;
+      frame = null;
+      db = new DialogBox(false, true);
+      db.setText("Get Instant Help");
+      db.setStyleName("ode-DialogBox");
+      db.setHeight("320px");
+      db.setWidth("600px");
+      db.setGlassEnabled(true);
+      db.setAnimationEnabled(true);
+      db.center();
+      
+      HorizontalPanel DialogBoxContents = new HorizontalPanel();
+      Config config = Ode.getInstance().getSystemConfig();
+      final String userEmail = Ode.getInstance().getUser().getCommunityLoginEmail();
+      Frame frameX = new Frame("/AskHelp.html");
+      frameX.setWidth("400px");
+      frameX.setHeight("500px");
+      frameX.getElement().setId("AskHelpFrame");
+      frameX.addLoadHandler(new LoadHandler() {
+        @Override 
+        public void onLoad(LoadEvent event) {
+            // do something
+            updateEmail(userEmail);
+        }
+      });
+    
+      Frame frameY = new Frame("/SimilarQuestions.html");
+      frameY.setWidth("400px");
+      frameY.setHeight("500px");
+      DialogBoxContents.add(frameX);
+      DialogBoxContents.add(frameY);
+
+      db.setWidget(DialogBoxContents);
+      askQuestionListener(userEmail, Ode.getInstance().getCurrentYoungAndroidProjectId()+"");
+      db.show();
+
+    }
+
+    private static native void askQuestionListener(String userEmail, String projectId) /*-{
+      $wnd.onmessage = function(r) {
+        console.log(r)
+        var d = r.data
+        var json = JSON.parse(d)
+        console.log(json.type)
+        if(json.type == 'close') {
+          @com.google.appinventor.client.TopToolbar.InstantHelpAction::closeDialog(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;)(@com.google.appinventor.client.TopToolbar.InstantHelpAction::db, d);
+        }
+        else if (json.type == 'submit') 
+        {
+          console.log("Printing data: ", json);
+          var title = json.title
+          var category = json.category
+          var description = json.description
+          var attach = json.isChecked
+          @com.google.appinventor.client.TopToolbar.InstantHelpAction::submitPost(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZLjava/lang/String;)(userEmail, title, description, category, attach, projectId)
+        } else if (json.type == 'logout') {
+          console.log("type is logout")
+          @com.google.appinventor.client.TopToolbar.InstantHelpAction::closeDialog(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;)(@com.google.appinventor.client.TopToolbar.InstantHelpAction::db, d);
+          @com.google.appinventor.client.TopToolbar.InstantHelpAction::logout()();
+        } else if (json.type == 'get_user_email') {
+          $doc.getElementById("AskHelpFrame").contentWindow.postMessage(userEmail);
+        }
+      }
+    }-*/;
+
+    private static void submitPost(String username, String title, String description, int categoryId, boolean attachProject, String projectId) { // passing project id as string because long is not safe to access in JSNI
+      Ode.getInstance().getSubmitPostService().submitPost(Ode.getInstance().getUser().getUserId()
+      , username, title, description, categoryId
+      , attachProject, projectId, new AsyncCallback<String> (){ 
+          @Override
+          public void onSuccess(String response) {
+            Ode.CLog(response);
+            JSONObject jsonObject = JSONParser.parseStrict(response).isObject();
+            if (jsonObject != null) {
+              if (jsonObject.get("errors") == null || jsonObject.get("errors").isArray() == null) {
+                submitPostResult(false, null);
+              } else {
+                JSONArray errors = jsonObject.get("errors").isArray();
+                if (errors.get(0) != null)
+                  submitPostResult(true, errors.get(0).isString().stringValue());
+                else 
+                  submitPostResult(true, "Something went wrong.");
+              }
+            } else {
+              submitPostResult(true, "Something went wrong.");
+            }
+          }
+  
+          @Override
+          public void onFailure(Throwable reason) {
+            Ode.CLog("ERROR: " + reason.getMessage() + reason.getStackTrace()[0].getLineNumber());
+            submitPostResult(true, "Something went wrong.");
+          }
+        });
+    }
+
+    private static native void submitPostResult(boolean error, String errorMessage) /*-{
+      if (error) {
+        $doc.getElementById("AskHelpFrame").contentWindow.postMessage({
+          type: 'error',
+          message: errorMessage
+        });
+      } else {
+        $doc.getElementById("AskHelpFrame").contentWindow.postMessage({
+          type: 'upload_success',
+        });
+      }
+      
+    }-*/;
+
+    private static native void updateEmail(String username) /*-{
+      $doc.getElementById("AskHelpFrame").contentWindow.postMessage({
+        type: 'email',
+        username: username
+      });
+    }-*/;
+
+    private static void logout() {
+      Ode.getInstance().getUserInfoService().logoutFromCommunity(new AsyncCallback<Void>(){
+        @Override
+        public void onSuccess(Void res) {
+        }
+        @Override
+        public void onFailure(Throwable caught) {
+          Ode.CLog("error: " + caught.getMessage());
+        }
+      });
+    }
+
+    private static native void showLoginButton() /*-{
+      console.log("Sending Message")
+      $doc.getElementById("CommunityLoginFrame").contentWindow.postMessage("show")
+    }-*/;
+
+    // private void checkIfAlreadyLoggedIn() {
+    //   AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>() {
+    //   @Override
+    //   public void onSuccess(Boolean communityLogin) {
+    //     Ode.CLog("status: " + communityLogin);
+    //     db.hide();
+    //     db = new DialogBox(false, true);
+    //     db.setText("Get Instant Help");
+    //     db.setStyleName("ode-DialogBox");
+    //     db.setHeight("320px");
+    //     db.setWidth("600px");
+    //     db.setGlassEnabled(true);
+    //     db.setAnimationEnabled(true);
+    //     db.center();
+
+    //     if (communityLogin) {
+    //       VerticalPanel DialogBoxContents = new VerticalPanel();
+    //       Label lblMessage = new Label("Yes you are logged in " + Ode.getInstance().getUser().getCommunityLoginEmail());
+    //       Button btn = new Button("Close");
+    //       Button btnLogout = new Button("Logout");
+    //       btn.addClickListener(new ClickListener() {
+    //         public void onClick(Widget sender) {
+    //           db.hide();
+    //         }
+    //       });
+    //       btnLogout.addClickListener(new ClickListener() {
+    //         public void onClick(Widget sender) {
+    //           Ode.getInstance().getUserInfoService().logoutFromCommunity(new AsyncCallback<Void>() {
+    //             @Override
+    //             public void onSuccess(Void res) {
+    //               Ode.CLog("logged out ");
+    //             }
+                
+    //             @Override
+    //             public void onFailure(Throwable caught) {
+    //               // error
+    //               Ode.CLog("error: " + caught.getMessage());
+    //             }
+    //           });
+    //         }
+    //       });
+    //       DialogBoxContents.add(lblMessage);
+    //       DialogBoxContents.add(btn);
+    //       DialogBoxContents.add(btnLogout);
+    //       db.setWidget(DialogBoxContents);
+    //       db.show();
+    //     } else {
+    //       VerticalPanel DialogBoxContents = new VerticalPanel();
+    //       Label lblMessage = new Label("No you are NOT logged in");
+    //       Button btn = new Button("Close");
+    //       // Button btnLogin = new Button("Login");
+    //       HTML html = new HTML("<a href='/community/login' target='_blank' >Login</a>");
+    //       btn.addClickListener(new ClickListener() {
+    //         public void onClick(Widget sender) {
+    //           db.hide();
+    //         }
+    //       });
+    //       // btnLogin.addClickListener(new ClickListener() {
+    //       //   public void onClick(Widget sender) {
+
+    //       //     // Ode.getInstance().getUserInfoService().setUserCommunityLogin(true, new AsyncCallback<Void>() {
+    //       //     //   @Override
+    //       //     //   public void onSuccess(Void res) {
+    //       //     //     Ode.CLog("logged in: ");
+    //       //     //   }
+                
+    //       //     //   @Override
+    //       //     //   public void onFailure(Throwable caught) {
+    //       //     //     // error
+    //       //     //     Ode.CLog("error: " + caught.getMessage());
+    //       //     //   }
+    //       //     // });
+    //       //   }
+    //       // });
+    //       DialogBoxContents.add(lblMessage);
+    //       DialogBoxContents.add(btn);
+    //       DialogBoxContents.add(html);
+    //       db.setWidget(DialogBoxContents);
+    //       db.show();
+    //     }
+    //   }
+
+    //   @Override
+    //   public void onFailure(Throwable caught) {
+    //     // error
+    //     Ode.CLog("error: " + caught.getMessage());
+    //   }
+    // };
+    //   Ode.getInstance().getUserInfoService().getUserCommunityLogin(callback);
+    // }
+
+    private static native void listenToSubmit(DialogBox db) /*-{
+      $wnd.onmessage = function(r) {
+        console.log("From ODE: ", r)
+        var type;
+        type = r.data;
+        console.log(r)
+        if (type == 'close')
+          @com.google.appinventor.client.TopToolbar.InstantHelpAction::closeDialog(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;)(db, r)
+        else if (type == 'check_status') {
+          @com.google.appinventor.client.TopToolbar.InstantHelpAction::checkIfAlreadyLoggedIn()()
+        }
+        //else if (type == 'login') ;
+          //@com.google.appinventor.client.TopToolbar.InstantHelpAction::login()()
+      }
+    }-*/;
+
+    private static void closeDialog(DialogBox db, String response) {
+      db.hide();
+    }
+  }
+  private static class AskQuestionAction implements Command {
+    @Override
+    public void execute() {
+      final DialogBox db = new DialogBox(false, true);
+      db.setText("Get Instant Help");
+      db.setStyleName("ode-DialogBox");
+      db.setHeight("500px");
+      db.setWidth("800px");
+      db.setGlassEnabled(true);
+      db.setAnimationEnabled(true);
+      db.center();
+
+      HorizontalPanel DialogBoxContents = new HorizontalPanel();
+      Config config = Ode.getInstance().getSystemConfig();
+      String userEmail = Ode.getInstance().getUser().getUserEmail();
+      Frame frame = new Frame("/AskHelp.html");
+      frame.setWidth("400px");
+      frame.setHeight("500px");
+      Frame frame2 = new Frame("/SimilarQuestions.html");
+      frame2.setWidth("400px");
+      frame2.setHeight("500px");
+      DialogBoxContents.add(frame);
+      DialogBoxContents.add(frame2);
+      db.setWidget(DialogBoxContents);
+      db.show();
+    }
+  }
   private static class WindowOpenAction implements Command {
     private final String url;
 

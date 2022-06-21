@@ -1,0 +1,49 @@
+<html>
+<head>
+    <title>Frame</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <FORM id="help__form" class="d-flex flex-column p-3">
+            <div class="form-floating my-1">
+                <input type="email" class="form-control" id="help__email" placeholder="name@example.com">
+                <label for="help__email">Email address</label>
+            </div>
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="help__username" placeholder="Username">
+                <label for="help__username">Username</label>
+            </div>
+            <div class="form-floating my-1">
+                <input type="password" class="form-control" id="help__password" placeholder="Password">
+                <label for="help__password">Password</label>
+            </div>
+            <div class="d-flex">
+                <INPUT type="submit" class="form-control my-3 btn btn-primary mx-3" placeholder="Submit" >
+                <button type="button" id="help__close" class="form-control my-3 btn btn-danger mx-3">Close</button>
+            </div>
+        </FORM>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById("help__close").addEventListener("click", (r) => {
+            console.log("Close")
+            window.top.postMessage('close', "*")
+        })
+        document.getElementById('help__form').addEventListener('submit', (r) => {
+            r.preventDefault();
+            console.log("Form submitted", r)
+            var name = document.getElementById("help__username")
+            var email = document.getElementById("help__email")
+            var password = document.getElementById("help__password")
+    
+            window.top.postMessage(JSON.stringify(`{
+                type: 'submit',
+                name: name,
+                email: email,
+                password: password
+            }`), "*")
+        })
+    </script>
+</body>
+</html>

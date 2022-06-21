@@ -58,6 +58,8 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthService;
 import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthServiceAsync;
+import com.google.appinventor.shared.rpc.communityhelp.SubmitPostServiceAsync;
+import com.google.appinventor.shared.rpc.communityhelp.SubmitPostService;
 
 import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
@@ -259,6 +261,9 @@ public class Ode implements EntryPoint {
 
   //Web service for CloudDB authentication operations
   private final CloudDBAuthServiceAsync cloudDBAuthService = GWT.create(CloudDBAuthService.class);
+
+  // Web service for SubmitPost to community
+  private final SubmitPostServiceAsync submitPostService = GWT.create(SubmitPostService.class);
 
   private boolean windowClosing;
 
@@ -1281,6 +1286,14 @@ public class Ode implements EntryPoint {
    */
   public CloudDBAuthServiceAsync getCloudDBAuthService(){
     return cloudDBAuthService;
+  }
+
+  /**
+   * Get an instance of SubmitPostService
+   * @reutrn SubmitPostService
+   */
+  public SubmitPostServiceAsync getSubmitPostService() {
+    return submitPostService;
   }
 
   /**

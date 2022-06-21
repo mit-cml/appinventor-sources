@@ -78,6 +78,26 @@ public interface StorageIo {
    */
   void setUserEmail(String userId, String email);
 
+  /*
+   * get the valus of whether user logged in to community website
+   */
+  boolean getUserCommunityLogin(String userId);
+
+  /*
+   * Sets the valus of whether user logged in to community website
+   */
+  void setUserCommunityLogin(String userId, boolean communityLogin);
+
+  /**
+   * gets email address that is used to login in community website
+   */
+  String getUserCommunityLoginEmail(String userId);
+
+  /**
+   * sets email address used in community
+   */
+  void setUserCommunityLoginEmail(String userId, String email);
+
   /**
    * Sets that the user has accepted the terms of service.
    *

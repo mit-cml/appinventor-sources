@@ -15,6 +15,37 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  *
  */
 public interface UserInfoServiceAsync {
+  /**
+   * getUserCommunityLogin
+   */
+  void getUserCommunityLogin(AsyncCallback<Boolean> callback);
+
+  /**
+   * setUserCommunityLogin
+   */
+  void setUserCommunityLogin(boolean communityLogin, AsyncCallback<Void> callback);
+
+  /**
+   * gets users community email address
+   */
+  public void getCommunityLoginEmail(AsyncCallback<String> callback);
+
+  /**
+   * sets users community email address
+   */
+  public void setCommunityLoginEmail(String email, AsyncCallback<Void> callback);
+
+
+  /**
+   * login user to community account
+   */
+  public void loginToCommunity(String email, AsyncCallback<Void> callback);
+
+  /**
+   * logout user from community account
+   */
+  public void logoutFromCommunity(AsyncCallback<Void> callback);
+
 
   /**
    * @see UserInfoService#getSystemConfig()
