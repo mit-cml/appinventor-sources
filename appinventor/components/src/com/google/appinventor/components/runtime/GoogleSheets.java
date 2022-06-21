@@ -63,8 +63,15 @@ import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+
 /**
  * GoogleSheets is a non-visible component for storing and receiving data from
  * a Google Sheets document using the Google Sheets API.
@@ -128,7 +135,8 @@ import java.util.ArrayList;
            })
     })
 })
-public class GoogleSheets extends AndroidNonvisibleComponent implements Component {
+public class GoogleSheets extends AndroidNonvisibleComponent implements Component,
+    ObservableDataSource<YailList, Future<YailList>> {
   private static final String LOG_TAG = "GOOGLESHEETS";
 
   private static final String WEBVIEW_ACTIVITY_CLASS = WebViewActivity.class
@@ -155,6 +163,12 @@ public class GoogleSheets extends AndroidNonvisibleComponent implements Componen
   //   private final Activity activity;
   private final ComponentContainer container;
   private final Activity activity;
+
+  private FutureTask<Void> lastTask = null;
+
+  private YailList columns = new YailList();
+
+  private Set<DataSourceChangeListener> observers = new HashSet<>();
 
   private HashMap<String, Integer> sheetIdMap = new HashMap<>();
 
@@ -1796,4 +1810,74 @@ public class GoogleSheets extends AndroidNonvisibleComponent implements Componen
     EventDispatcher.dispatchEvent(this, "GotSheetData", sheetData);
   }
 
+  //region ObservableDataSource Implementation
+
+  @Override
+  public Future<YailList> getDataValue(final YailList key) {
+    final FutureTask<Void> currentTask = lastTask;
+
+    FutureTask<YailList> getDataValueTask = new FutureTask<>(
+        new Callable<YailList>() {
+          @Override
+          public YailList call() throws Exception {
+            if (currentTask != null && !currentTask.isDone() && !currentTask.isCancelled()) {
+              try {
+                currentTask.get();
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            }
+
+            return getColumns(key);
+          }
+        });
+
+    AsynchUtil.runAsynchronously(getDataValueTask);
+    return getDataValueTask;
+  }
+
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    observers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    observers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(YailList key, Object newValue) {
+    for (DataSourceChangeListener dataComponent : observers) {
+      dataComponent.onDataSourceValueChange(this, null, columns);
+    }
+  }
+
+  //endregion
+
+  private YailList getColumn(String column) {
+    YailList result = new YailList();
+
+    for (int i = 0; i < columns.size(); i++) {
+      YailList list = (YailList) columns.getObject(i);
+
+      if (!list.isEmpty() && list.getString(0).equals(column)) {
+        result = list;
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  private YailList getColumns(YailList keyColumns) {
+    List<YailList> resultingColumns = new ArrayList<>();
+    for (int i = 0; i < keyColumns.size(); i++) {
+      String columnName = keyColumns.getString(i);
+      YailList column = getColumn(columnName);
+      resultingColumns.add(column);
+    }
+
+    return YailList.makeList(resultingColumns);
+  }
 }
