@@ -141,7 +141,8 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
 
   private void outputComponentAutogen(ComponentInfo component,
       Map<String, Property> outProperties, Map<String, Method> outMethods,
-      Map<String, Event> outEvents, StringBuilder sb) {
+      Map<String, Event> outEvents, Map<String, Parameter> outParams,
+      StringBuilder sb) {
     sb.append("  @DefaultMessage(\"");
     sb.append(component.getName());
     sb.append("\")\n");
@@ -166,11 +167,17 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     for (Method method : component.methods.values()) {
       if (method.userVisible || method.deprecated) {
         outMethods.put(method.name, method);
+        for (Parameter p : method.parameters) {
+          outParams.put(p.name, p);
+        }
       }
     }
     for (Event event : component.events.values()) {
       if (event.userVisible || event.deprecated) {
         outEvents.put(event.name, event);
+        for (Parameter p : event.parameters) {
+          outParams.put(p.name, p);
+        }
       }
     }
   }
@@ -185,7 +192,7 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("Properties();\n\n");
   }
 
-  private void outputMethodAutogen(Method method, Map<String, Parameter> outParameters, StringBuilder sb) {
+  private void outputMethodAutogen(Method method, StringBuilder sb) {
     sb.append("  @DefaultMessage(\"");
     sb.append(sanitize(method.name));
     sb.append("\")\n");
@@ -193,12 +200,9 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("  String ");
     sb.append(method.name);
     sb.append("Methods();\n\n");
-    for (Parameter param : method.parameters) {
-      outParameters.put(param.name, param);
-    }
   }
 
-  private void outputEventAutogen(Event event, Map<String, Parameter> outParameters, StringBuilder sb) {
+  private void outputEventAutogen(Event event, StringBuilder sb) {
     sb.append("  @DefaultMessage(\"");
     sb.append(sanitize(event.name));
     sb.append("\")\n");
@@ -206,9 +210,6 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("  String ");
     sb.append(event.name);
     sb.append("Events();\n\n");
-    for (Parameter param : event.parameters) {
-      outParameters.put(param.name, param);
-    }
   }
 
   private void outputParameterAutogen(Parameter parameter, StringBuilder sb) {
@@ -308,7 +309,7 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("\n  /* Components */\n");
     for (Map.Entry<String, ComponentInfo> entry : components.entrySet()) {
       ComponentInfo component = entry.getValue();
-      outputComponentAutogen(component, properties, methods, events, sb);
+      outputComponentAutogen(component, properties, methods, events, parameters, sb);
       computeTooltipMap(component);
       categories.add(component.getCategory());
     }
@@ -325,11 +326,11 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     }
     sb.append("\n  /* Methods */\n");
     for (Map.Entry<String, Method> entry : methods.entrySet()) {
-      outputMethodAutogen(entry.getValue(), parameters, sb);
+      outputMethodAutogen(entry.getValue(), sb);
     }
     sb.append("\n  /* Events */\n");
     for (Map.Entry<String, Event> entry : events.entrySet()) {
-      outputEventAutogen(entry.getValue(), parameters, sb);
+      outputEventAutogen(entry.getValue(), sb);
     }
     for (Map.Entry<String, String> entry : tooltips.entrySet()) {
       sb.append("  @DefaultMessage(\"");
