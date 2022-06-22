@@ -969,8 +969,6 @@ public class TopToolbar extends Composite {
       frame.setWidth("600px");
       frame.setHeight("320px");
       frame.getElement().setId("CommunityLoginFrame");
-      // DialogBoxContents.add(lblMessage);
-      // DialogBoxContents.add(btn);
       DialogBoxContents.add(frame);
       listenToSubmit(db);
       db.setWidget(DialogBoxContents);
@@ -1006,8 +1004,8 @@ public class TopToolbar extends Composite {
       db = new DialogBox(false, true);
       db.setText("Get Instant Help");
       db.setStyleName("ode-DialogBox");
-      db.setHeight("320px");
-      db.setWidth("600px");
+      db.setHeight("500px");
+      db.setWidth("700px");
       db.setGlassEnabled(true);
       db.setAnimationEnabled(true);
       db.center();
@@ -1016,22 +1014,17 @@ public class TopToolbar extends Composite {
       Config config = Ode.getInstance().getSystemConfig();
       final String userEmail = Ode.getInstance().getUser().getCommunityLoginEmail();
       Frame frameX = new Frame("/AskHelp.html");
-      frameX.setWidth("400px");
+      frameX.setWidth("700px");
       frameX.setHeight("500px");
       frameX.getElement().setId("AskHelpFrame");
       frameX.addLoadHandler(new LoadHandler() {
         @Override 
         public void onLoad(LoadEvent event) {
-            // do something
             updateEmail(userEmail);
         }
       });
     
-      Frame frameY = new Frame("/SimilarQuestions.html");
-      frameY.setWidth("400px");
-      frameY.setHeight("500px");
       DialogBoxContents.add(frameX);
-      DialogBoxContents.add(frameY);
 
       db.setWidget(DialogBoxContents);
       askQuestionListener(userEmail, Ode.getInstance().getCurrentYoungAndroidProjectId()+"");
@@ -1135,97 +1128,6 @@ public class TopToolbar extends Composite {
       $doc.getElementById("CommunityLoginFrame").contentWindow.postMessage("show")
     }-*/;
 
-    // private void checkIfAlreadyLoggedIn() {
-    //   AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>() {
-    //   @Override
-    //   public void onSuccess(Boolean communityLogin) {
-    //     Ode.CLog("status: " + communityLogin);
-    //     db.hide();
-    //     db = new DialogBox(false, true);
-    //     db.setText("Get Instant Help");
-    //     db.setStyleName("ode-DialogBox");
-    //     db.setHeight("320px");
-    //     db.setWidth("600px");
-    //     db.setGlassEnabled(true);
-    //     db.setAnimationEnabled(true);
-    //     db.center();
-
-    //     if (communityLogin) {
-    //       VerticalPanel DialogBoxContents = new VerticalPanel();
-    //       Label lblMessage = new Label("Yes you are logged in " + Ode.getInstance().getUser().getCommunityLoginEmail());
-    //       Button btn = new Button("Close");
-    //       Button btnLogout = new Button("Logout");
-    //       btn.addClickListener(new ClickListener() {
-    //         public void onClick(Widget sender) {
-    //           db.hide();
-    //         }
-    //       });
-    //       btnLogout.addClickListener(new ClickListener() {
-    //         public void onClick(Widget sender) {
-    //           Ode.getInstance().getUserInfoService().logoutFromCommunity(new AsyncCallback<Void>() {
-    //             @Override
-    //             public void onSuccess(Void res) {
-    //               Ode.CLog("logged out ");
-    //             }
-                
-    //             @Override
-    //             public void onFailure(Throwable caught) {
-    //               // error
-    //               Ode.CLog("error: " + caught.getMessage());
-    //             }
-    //           });
-    //         }
-    //       });
-    //       DialogBoxContents.add(lblMessage);
-    //       DialogBoxContents.add(btn);
-    //       DialogBoxContents.add(btnLogout);
-    //       db.setWidget(DialogBoxContents);
-    //       db.show();
-    //     } else {
-    //       VerticalPanel DialogBoxContents = new VerticalPanel();
-    //       Label lblMessage = new Label("No you are NOT logged in");
-    //       Button btn = new Button("Close");
-    //       // Button btnLogin = new Button("Login");
-    //       HTML html = new HTML("<a href='/community/login' target='_blank' >Login</a>");
-    //       btn.addClickListener(new ClickListener() {
-    //         public void onClick(Widget sender) {
-    //           db.hide();
-    //         }
-    //       });
-    //       // btnLogin.addClickListener(new ClickListener() {
-    //       //   public void onClick(Widget sender) {
-
-    //       //     // Ode.getInstance().getUserInfoService().setUserCommunityLogin(true, new AsyncCallback<Void>() {
-    //       //     //   @Override
-    //       //     //   public void onSuccess(Void res) {
-    //       //     //     Ode.CLog("logged in: ");
-    //       //     //   }
-                
-    //       //     //   @Override
-    //       //     //   public void onFailure(Throwable caught) {
-    //       //     //     // error
-    //       //     //     Ode.CLog("error: " + caught.getMessage());
-    //       //     //   }
-    //       //     // });
-    //       //   }
-    //       // });
-    //       DialogBoxContents.add(lblMessage);
-    //       DialogBoxContents.add(btn);
-    //       DialogBoxContents.add(html);
-    //       db.setWidget(DialogBoxContents);
-    //       db.show();
-    //     }
-    //   }
-
-    //   @Override
-    //   public void onFailure(Throwable caught) {
-    //     // error
-    //     Ode.CLog("error: " + caught.getMessage());
-    //   }
-    // };
-    //   Ode.getInstance().getUserInfoService().getUserCommunityLogin(callback);
-    // }
-
     private static native void listenToSubmit(DialogBox db) /*-{
       $wnd.onmessage = function(r) {
         console.log("From ODE: ", r)
@@ -1237,8 +1139,6 @@ public class TopToolbar extends Composite {
         else if (type == 'check_status') {
           @com.google.appinventor.client.TopToolbar.InstantHelpAction::checkIfAlreadyLoggedIn()()
         }
-        //else if (type == 'login') ;
-          //@com.google.appinventor.client.TopToolbar.InstantHelpAction::login()()
       }
     }-*/;
 
@@ -1246,33 +1146,7 @@ public class TopToolbar extends Composite {
       db.hide();
     }
   }
-  private static class AskQuestionAction implements Command {
-    @Override
-    public void execute() {
-      final DialogBox db = new DialogBox(false, true);
-      db.setText("Get Instant Help");
-      db.setStyleName("ode-DialogBox");
-      db.setHeight("500px");
-      db.setWidth("800px");
-      db.setGlassEnabled(true);
-      db.setAnimationEnabled(true);
-      db.center();
-
-      HorizontalPanel DialogBoxContents = new HorizontalPanel();
-      Config config = Ode.getInstance().getSystemConfig();
-      String userEmail = Ode.getInstance().getUser().getUserEmail();
-      Frame frame = new Frame("/AskHelp.html");
-      frame.setWidth("400px");
-      frame.setHeight("500px");
-      Frame frame2 = new Frame("/SimilarQuestions.html");
-      frame2.setWidth("400px");
-      frame2.setHeight("500px");
-      DialogBoxContents.add(frame);
-      DialogBoxContents.add(frame2);
-      db.setWidget(DialogBoxContents);
-      db.show();
-    }
-  }
+  
   private static class WindowOpenAction implements Command {
     private final String url;
 
