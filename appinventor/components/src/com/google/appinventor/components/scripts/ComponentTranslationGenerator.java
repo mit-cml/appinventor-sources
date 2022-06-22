@@ -27,6 +27,7 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
   private Map<String, String> tooltips = new TreeMap<>();
   private Map<String, Set<String>> tooltipComponent = new TreeMap<>();
   private Set<String> collisionKeys = new HashSet<>();
+  private Set<String> writtenKeys = new HashSet<>();
 
   private void outputComponent(ComponentInfo component, Set<String> outProperties,
       Set<String> outMethods, Set<String> outEvents, StringBuilder sb) {
@@ -48,8 +49,13 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
           || prop.isDeprecated() // [lyn, 2015/12/30] For deprecated AI2 blocks (but not AI1 blocks)
                                  // must translate property names so they can be displayed in bad blocks.
           ) {
-        sb.append("    map.put(\"PROPERTY-" + propertyName + "\", MESSAGES." + propertyName + "Properties());\n");
+        String key = "PROPERTY-" + propertyName;
+        if (writtenKeys.contains(key)) {
+          continue;
+        }
+        sb.append("    map.put(\"" + key + "\", MESSAGES." + propertyName + "Properties());\n");
         outProperties.add(propertyName);
+        writtenKeys.add(key);
       }
     }
 
@@ -60,11 +66,15 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
           || event.deprecated // [lyn, 2015/12/30] For deprecated AI2 blocks (but not AI1 blocks)
                               // must translate property names so they can be displayed in bad blocks.
           ) {
-        sb.append("    map.put(\"EVENT-" + propertyName + "\", MESSAGES." + propertyName + "Events());\n");
+        String key = "EVENT-" + propertyName;
+        if (!writtenKeys.contains(key)) {
+          sb.append("    map.put(\"" + key + "\", MESSAGES." + propertyName + "Events());\n");
+        }
         for (Parameter parameter : event.parameters) {
           parameters.put(parameter.name, parameter);
         }
         outEvents.add(propertyName);
+        writtenKeys.add(key);
       }
     }
 
@@ -75,11 +85,15 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
           || method.deprecated // [lyn, 2015/12/30] For deprecated AI2 blocks (but not AI1 blocks)
                                // must translate property names so they can be displayed in bad blocks.
           ) {
-        sb.append("    map.put(\"METHOD-" + propertyName + "\", MESSAGES." + propertyName + "Methods());\n");
+        String key = "METHOD-" + propertyName;
+        if (!writtenKeys.contains(key)) {
+          sb.append("    map.put(\"" + key + "\", MESSAGES." + propertyName + "Methods());\n");
+        }
         for (Parameter parameter : method.parameters) {
           parameters.put(parameter.name, parameter);
         }
         outMethods.add(propertyName);
+        writtenKeys.add(key);
       }
     }
 
@@ -94,9 +108,14 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     // here for internationalization.
     names.add("notAlreadyHandled");
     for (String name : names) {
-      sb.append("    map.put(\"PARAM-").append(name).append("\", MESSAGES.")
+      String key = "PARAM-" + name;
+      if (writtenKeys.contains(key)) {
+        continue;
+      }
+      sb.append("    map.put(\"").append(key).append("\", MESSAGES.")
           .append(Character.toLowerCase(name.charAt(0))).append(name.substring(1))
           .append("Params());\n");
+      writtenKeys.add(key);
     }
   }
 
