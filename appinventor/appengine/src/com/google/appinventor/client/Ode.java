@@ -2508,6 +2508,10 @@ public class Ode implements EntryPoint {
     return config.getGalleryReadOnly();
   }
 
+  public boolean getDeleteAccountAllowed() {
+    return config.getDeleteAccountAllowed();
+  }
+
   /**
    * setRendezvousServer
    *
