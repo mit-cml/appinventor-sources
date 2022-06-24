@@ -185,7 +185,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     let code = phoneStatus.setHmacSeedReturnCode((connectCode?.text)!)
     NSLog("Seed = \((connectCode?.text)!)")
     NSLog("Code = \(code)")
-    let url = URL(string: "http://rendezvous.appinventor.mit.edu/rendezvous/");
+    let url = URL(string: "https://rendezvous.appinventor.mit.edu/rendezvous/");
     var request = URLRequest(url: url!)
     let values = [
       "key": code,
