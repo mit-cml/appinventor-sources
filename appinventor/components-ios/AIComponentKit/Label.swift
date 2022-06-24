@@ -12,6 +12,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _hasMargins = false
   fileprivate var _htmlContent: String = ""
   fileprivate var _htmlFormat = false
+  fileprivate var _fontSize: Float64 = 0
   
   public override init(_ parent: ComponentContainer) {
     _view = UILabel()
@@ -115,14 +116,16 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   
   @objc public var FontSize: Float64 {
     get {
-      return Float64(_view.font.pointSize)
+      return _fontSize
     }
     set(size) {
-      _view.font = _view.font.withSize(CGFloat(size))
-      _view.sizeToFit()
+      _fontSize = size
       if _htmlFormat {
         updateFormattedContent()
+      } else {
+        _view.font = _view.font.withSize(CGFloat(size))
       }
+      _view.sizeToFit()
     }
   }
   
@@ -185,7 +188,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
 
   private func updateFormattedContent() {
     if _htmlFormat {
-      var style = "font-size: \(_view.font.pointSize)pt;"
+      var style = "font-size: \(_fontSize)pt;"
       switch _typeface {
       case .normal, .sansSerif:
         style += "font-family: sans-serif;"
