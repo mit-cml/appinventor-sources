@@ -80,6 +80,7 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   private static boolean useWebRTC = false;
   private String firstSeed = null;
   private String firstHmacSeed = null;
+  private static String popup = "No Page Provided!";
 
   public PhoneStatus(ComponentContainer container) {
     super(container.$form());
@@ -350,6 +351,16 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(description = "Return the ACRA Installation ID")
   public String InstallationId() {
     return org.acra.util.Installation.id(form);
+  }
+
+  @SimpleFunction(description = "Set the content of the Pop-Up page used for the new legacy connection")
+  public void SetPopup(String page) {
+    popup = page;
+  }
+
+  // get the pop-up page, called from AppInvHTTPD
+  public static String getPopup() {
+    return popup;
   }
 
   /* Static context way to get the useWebRTC flag */
