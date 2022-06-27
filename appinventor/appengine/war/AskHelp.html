@@ -26,10 +26,6 @@
                 </div>
                 <div class="form my-2">
                     <select class="form-select my-2" id="ask_help_category" aria-label="Default select example">
-                        <option selected>Select Category</option>
-                        <option value="1">Open-source</option>
-                        <option value="2">Extensions Development</option>
-                        <option value="3">MIT App Inventor Help</option>
                     </select>
                 </div>
                 <div class="form-floating my-1">
@@ -52,6 +48,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script>
         var username;
+        var isCategoriesLoaded;
         document.getElementById('error_box').style.display = 'none'
         document.getElementById('success_box').style.display = 'none'
         document.getElementById("help__close").addEventListener("click", (r) => {
@@ -91,6 +88,19 @@
             } else if (type == 'upload_success') {
                 document.getElementById('success_box').style.display = 'block'
                 document.getElementById('success_box').innerText = "Your question is posted successfully"
+            } else if (type == 'categories') {
+                var categories = JSON.parse(r.data.categories).category_list.categories
+                console.log(r.data)
+                isCategoriesLoaded = true
+                let innerHtml = ''
+                categories.forEach((cat, index) => {
+                    if (index == 0) {
+                        innerHtml += `<option selected value=${cat.id}>${cat.name}</option>`;
+                    } else {
+                        innerHtml += `<option value=${cat.id}>${cat.name}</option>`;
+                    }
+                })
+                document.getElementById('ask_help_category').innerHTML = innerHtml;
             }
         }
         window.onload = function(r) {
@@ -99,19 +109,28 @@
             document.getElementById('success_box').style.display = 'none'
 
             // Ask for username from GWT client
-            window.top.document.getElementById("ode").contentWindow.postMessage(JSON.stringify({
+            window.top.postMessage(JSON.stringify({
                 type: 'get_user_email'
+            }), "*")
+            window.top.postMessage(JSON.stringify({
+                type: 'categories'
             }), "*")
             setInterval(1000, function() {
                 // Check if username is fetched from server
-                console.log('interval', username)
                 if (!username) {
                     // Ask for username from GWT client
-                    window.top.document.getElementById("ode").contentWindow.postMessage(JSON.stringify({
+                    window.top.postMessage(JSON.stringify({
                         type: 'get_user_email'
                     }), "*")
                 }
+                if (!isCategoriesLoaded) {
+                    console.log("yo")
+                    window.top.postMessage(JSON.stringify({
+                        type: 'categories'
+                    }), "*")
+                }
             })
+            
         }
 
     </script>

@@ -14,6 +14,7 @@ import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
 import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
 import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
+import com.google.gwt.dom.client.IFrameElement;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.json.client.JSONArray;
@@ -21,6 +22,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
+import com.google.gwt.dom.client.Document;
 import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.explorer.commands.WarningDialogCommand;
@@ -1081,8 +1083,32 @@ public class TopToolbar extends Composite {
             type: 'email',
             username: userEmail
           });
+        } else if (json.type == 'categories') {
+          @com.google.appinventor.client.TopToolbar.InstantHelpAction::fetchCategories()();
         }
       }
+    }-*/;
+
+    private static void fetchCategories() {
+      Ode.getInstance().getSubmitPostService().getDiscourseCategories(new AsyncCallback<String>() {
+        @Override
+        public void onSuccess(String response) {
+          Ode.CLog(response);
+          updateCategories(response);
+        }
+        
+        @Override
+        public void onFailure(Throwable error) {
+          Ode.CLog(error.getMessage());
+        }
+      });
+    }
+
+    private static native void updateCategories(String response) /*-{
+      $doc.getElementById("AskHelpFrame").contentWindow.postMessage({
+            type: 'categories',
+            categories: response
+          });
     }-*/;
 
     private static void submitPost(String username, String title, String description, int categoryId, boolean attachProject, String projectId) { // passing project id as string because long is not safe to access in JSNI

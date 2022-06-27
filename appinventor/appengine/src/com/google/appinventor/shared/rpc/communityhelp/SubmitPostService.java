@@ -15,4 +15,10 @@ public interface SubmitPostService extends RemoteService
      * uploads a file to Community Server
      */
     public String uploadFile(String userId, String username, String title, String description, int categoryId, boolean attachProject, String projectId);
+
+    /**
+     * Fetches all public categories from discourse
+     */
+    public String getDiscourseCategories();
+
 }

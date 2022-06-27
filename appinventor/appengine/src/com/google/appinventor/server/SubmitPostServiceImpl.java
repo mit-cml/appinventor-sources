@@ -41,6 +41,26 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
   private static final String charset = "UTF-8";
 
   @Override
+  public String getDiscourseCategories() {
+    try {
+      URL url = new URL(BASE_URL + "/categories.json?include_subcategories=true");
+      HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+      httpConn.setRequestMethod("GET");
+      httpConn.setRequestProperty("content-type", "application/json");
+      httpConn.connect();
+      InputStream responseStream = httpConn.getResponseCode() == 200
+          ? httpConn.getInputStream()
+          : httpConn.getErrorStream();
+      Scanner s = new Scanner(responseStream).useDelimiter("\\A");
+      String response = s.hasNext() ? s.next() : "";
+      return response;
+    } catch(Exception e) {
+      e.printStackTrace();
+      return e.getMessage();
+    }
+  }
+
+  @Override
   public String submitPost(String userId, String username, String title, String description, int categoryId, boolean attachProject, String projectId) {
     if (!attachProject) {
       // Submit the content

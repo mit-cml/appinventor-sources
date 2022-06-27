@@ -14,4 +14,9 @@ public interface SubmitPostServiceAsync extends RemoteService
      */
     public void uploadFile(String userId, String username, String title, String description, int categoryId, boolean attachProject, String projectId, AsyncCallback<String> callback);
 
+    /**
+     * Fetches all public categories from discourse
+     */
+    public void getDiscourseCategories(AsyncCallback<String> callback);
+
 }
