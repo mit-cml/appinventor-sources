@@ -1,10 +1,5 @@
-//
-//  SCMNameResolver.m
-//  SchemeKit
-//
-//  Created by Evan Patton on 9/23/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2022 Massachusetts Institute of Technology, All rights reserved.
 
 #import <objc/runtime.h>
 #import "SCMNameResolver.h"
@@ -12,6 +7,10 @@
 
 static NSMutableDictionary<NSString *, NSMutableDictionary<NSString *, SCMMethod *> *> *methodLookupDict = nil;
 static NSString *JAVA_PACKAGE = @"com.google.appinventor.components.runtime";
+static NSString *JAVA_UTIL_PACKAGE =
+    @"com.google.appinventor.components.runtime.util";
+static NSString *JAVA_COMMON_PACKAGE = @"com.google.appinventor.components.common";
+static NSString *JAVA_EXTENSION_PACKAGE = @"edu.mit.appinventor.";
 static NSString *SWIFT_PACKAGE = @"AIComponentKit";
 static NSMutableDictionary<NSString *, Protocol *> *preregisteredProtocols = nil;
 
@@ -86,8 +85,22 @@ static NSMutableDictionary<NSString *, Protocol *> *preregisteredProtocols = nil
 
 + (Class)classFromQualifiedName:(const char *)name {
   NSString *localName = [NSString stringWithUTF8String:name];
-  if ([localName hasPrefix:JAVA_PACKAGE]) {
+  if ([localName hasPrefix:JAVA_UTIL_PACKAGE]) {
+    if ([localName hasSuffix:@".YailDictionary"]) {
+      localName = @"YailDictionary";
+    } else if ([localName hasSuffix:@".YailList"]) {
+      localName = @"YailList";
+    } else {
+      localName = [localName
+                   stringByReplacingOccurrencesOfString:JAVA_UTIL_PACKAGE
+                   withString:SWIFT_PACKAGE];
+    }
+  } else if ([localName hasPrefix:JAVA_PACKAGE]) {
     localName = [localName stringByReplacingOccurrencesOfString:JAVA_PACKAGE withString:SWIFT_PACKAGE];
+  } else if ([localName hasPrefix:JAVA_COMMON_PACKAGE]) {
+    localName = [localName stringByReplacingOccurrencesOfString:JAVA_COMMON_PACKAGE withString:SWIFT_PACKAGE];
+  } else if ([localName hasPrefix:JAVA_EXTENSION_PACKAGE]) {
+    localName = [NSString stringWithFormat:@"AIComponentKit.%@", [localName componentsSeparatedByString:@"."].lastObject];
   }
   return NSClassFromString(localName);
 }

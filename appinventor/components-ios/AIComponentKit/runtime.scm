@@ -52,9 +52,6 @@
 (define (component? arg)
   (instance? arg AIComponentKit.Component))
 
-(define-syntax (static-field class field-name)
-  #`(invoke YailDictionary 'ALL))
-
 (define (add-to-current-form-environment name object)
   (yail-dictionary-set-pair name (yail:invoke *this-form* 'environment) object))
 

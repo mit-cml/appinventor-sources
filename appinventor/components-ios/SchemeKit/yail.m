@@ -1090,6 +1090,11 @@ yail_isa(pic_state *pic) {
     NSString *name = [NSString stringWithUTF8String:pic_str(pic, pic_sym_name(pic, native_class))];
     if ([name hasPrefix:@"com.google.appinventor.components.runtime."]) {
       name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime." withString:@"AIComponentKit."];
+    } else if ([name hasPrefix:@"com.google.appinventor.components.common."]) {
+      name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.common." withString:@"AIComponentKit."];
+    } else if ([name hasPrefix:@"edu.mit.appinventor."]) {
+      NSArray *parts = [name componentsSeparatedByString:@"."];
+      name = [NSString stringWithFormat:@"AIComponentKit.%@", parts.lastObject];
     }
     Class clazz = [SCMNameResolver classFromQualifiedName:name.UTF8String];
     if (clazz == nil) {
@@ -1436,6 +1441,39 @@ yail_define_alias(pic_state *pic) {
   return pic_undef_value(pic);
 }
 
+static pic_value
+yail_static_field(pic_state *pic) {
+  pic_value class_name, field_name;
+
+  pic_get_args(pic, "oo", &class_name, &field_name);
+
+  Class clazz = yail_native_class_ptr(pic, class_name)->class_;
+  const char *field_name_cstr;
+
+  if (pic_sym_p(pic, field_name)) {
+    // The `walk all` block uses a symbol rather than a string
+    field_name_cstr = pic_str(pic, pic_sym_name(pic, field_name));
+  } else if (pic_str_p(pic, field_name)) {
+    // Helper blocks use strings to look up fields
+    field_name_cstr = pic_str(pic, field_name);
+  } else {
+    pic_error(pic, "Unknown field name in static-field", 1, field_name);
+  }
+
+  SCMMethod *method = [SCMNameResolver methodForClass:clazz
+                                             withName:field_name_cstr
+                                     argumentTypeList:@[]];
+  if (method == nil) {
+    return pic_undef_value(pic);
+  }
+
+  NSInvocation *invocation = [method staticInvocation];
+  [invocation invoke];
+  id result = nil;
+  [invocation getReturnValue:&result];
+  return yail_make_native_instance(pic, result);
+}
+
 /// MARK: Memory Management
 
 void
@@ -1636,6 +1674,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:define-alias", yail_define_alias);
   pic_defun(pic, "format", yail_format);
   pic_defun(pic, "yail:print-type", yail_print_type);
+  pic_defun(pic, "static-field", yail_static_field);
   pic_load_cstr(pic, "(define-syntax define-alias (syntax-rules () ((_ alias name) "
       "(yail:define-alias 'alias 'name))))");
   objects = [NSMutableDictionary dictionary];
