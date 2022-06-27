@@ -104,6 +104,7 @@
             }), "*")
             setInterval(1000, function() {
                 // Check if username is fetched from server
+                console.log('interval', username)
                 if (!username) {
                     // Ask for username from GWT client
                     window.top.document.getElementById("ode").contentWindow.postMessage(JSON.stringify({

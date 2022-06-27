@@ -316,7 +316,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           user.setSessionId(userData.sessionid);
           user.setPassword(userData.password);
           user.setCommunityLogin(userData.communityLogin);
-          user.setCommunityLoginEmail(userData.communityLoginEmail);
+          user.setCommunityLoginUsername(userData.communityLoginUsername);
         }
       }, false);                // Transaction not needed. If we fail there is nothing to rollback
     } catch (ObjectifyException e) {
@@ -446,7 +446,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public String getUserCommunityLoginEmail(final String userId) {
+  public String getUserCommunityLoginUsername(final String userId) {
     final Result<String> login = new Result<>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -454,7 +454,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         public void run(Objectify datastore) {
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
-            login.t = userData.communityLoginEmail;
+            login.t = userData.communityLoginUsername;
           }
         }
       }, true);
@@ -465,14 +465,14 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public void setUserCommunityLoginEmail(final String userId, final String email) {
+  public void setUserCommunityLoginUsername(final String userId, final String username) {
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
-            userData.communityLoginEmail = email;
+            userData.communityLoginUsername = username;
             datastore.put(userData);
           }
         }

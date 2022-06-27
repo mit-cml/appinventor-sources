@@ -60,8 +60,8 @@ public interface UserInfoProvider {
 
   void setCommunityLogin(boolean communityLogin);
 
-  public String getCommunityLoginEmail();
+  public String getCommunityLoginUsername();
 
-  public void setCommunityLoginEmail(String email);
+  public void setCommunityLoginUsername(String username);
 
 }

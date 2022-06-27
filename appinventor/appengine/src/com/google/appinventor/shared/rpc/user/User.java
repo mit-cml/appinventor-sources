@@ -41,7 +41,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   private boolean communityLogin;
   
-  private String communityLoginEmail;;
+  private String communityLoginUsername;;
 
   public final static String usercachekey = "f682688a-1065-4cda-8515-a8bd70200ac9"; // UUID
   // This UUID is prepended to any key lookup for User objects. Memcache is a common
@@ -227,12 +227,12 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.communityLogin = communityLogin;
   }
 
-  public String getCommunityLoginEmail() {
-    return communityLoginEmail;
+  public String getCommunityLoginUsername() {
+    return communityLoginUsername;
   }
 
-  public void setCommunityLoginEmail(String email) {
-    this.communityLoginEmail = email;
+  public void setCommunityLoginUsername(String username) {
+    this.communityLoginUsername = username;
   }
 
   public User copy() {
@@ -244,7 +244,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     retval.setReadOnly(isReadOnly);
     retval.setBackpackId(this.backPackId);
     retval.setCommunityLogin(this.communityLogin);
-    retval.setCommunityLoginEmail(this.communityLoginEmail);
+    retval.setCommunityLoginUsername(this.communityLoginUsername);
     return retval;
   }
 }

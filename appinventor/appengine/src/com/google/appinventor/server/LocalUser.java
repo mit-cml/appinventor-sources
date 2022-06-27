@@ -138,18 +138,18 @@ public class LocalUser implements UserInfoProvider {
   }
 
   @Override
-  public String getCommunityLoginEmail() {
+  public String getCommunityLoginUsername() {
     try {
-      return user.get().getCommunityLoginEmail();
+      return user.get().getCommunityLoginUsername();
     } catch (NullPointerException e) {
       throw new UnsupportedOperationException("User field should have been initialized. " + e.getMessage());
     }
   }
 
   @Override
-  public void setCommunityLoginEmail(String email) {
+  public void setCommunityLoginUsername(String username) {
     try {
-      user.get().setCommunityLoginEmail(email);
+      user.get().setCommunityLoginUsername(username);
     } catch (NullPointerException e) {
       throw new UnsupportedOperationException("User field should have been initialized.");
     }

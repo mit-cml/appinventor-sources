@@ -91,12 +91,12 @@ public interface StorageIo {
   /**
    * gets email address that is used to login in community website
    */
-  String getUserCommunityLoginEmail(String userId);
+  String getUserCommunityLoginUsername(String userId);
 
   /**
    * sets email address used in community
    */
-  void setUserCommunityLoginEmail(String userId, String email);
+  void setUserCommunityLoginUsername(String userId, String username);
 
   /**
    * Sets that the user has accepted the terms of service.

@@ -28,12 +28,12 @@ public interface UserInfoServiceAsync {
   /**
    * gets users community email address
    */
-  public void getCommunityLoginEmail(AsyncCallback<String> callback);
+  public void getCommunityLoginUsername(AsyncCallback<String> callback);
 
   /**
    * sets users community email address
    */
-  public void setCommunityLoginEmail(String email, AsyncCallback<Void> callback);
+  public void setCommunityLoginUsername(String username, AsyncCallback<Void> callback);
 
 
   /**

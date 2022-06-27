@@ -29,12 +29,12 @@ public interface UserInfoService extends RemoteService {
   /**
    * gets users community email address
    */
-  public String getCommunityLoginEmail();
+  public String getCommunityLoginUsername();
 
   /**
    * sets users community login address
    */
-  public void setCommunityLoginEmail(String email);
+  public void setCommunityLoginUsername(String username);
    
   /**
    * login user to community account

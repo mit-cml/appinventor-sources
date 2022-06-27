@@ -946,6 +946,29 @@ public class TopToolbar extends Composite {
     static Frame frame;
     @Override
     public void execute() {
+      AsyncCallback<String> callback = new AsyncCallback<String>() {
+        @Override
+        public void onSuccess(String communityUsername) {
+          Ode.CLog("status: " + (communityUsername != null));
+          if(communityUsername == null)
+            // Show login form
+            showLoginFrame();
+            // showLoginButton();
+          else {
+            showAskQuestionFrame(communityUsername);
+          }
+        }
+  
+        @Override
+        public void onFailure(Throwable caught) {
+          // error
+          Ode.CLog("error: " + caught.getMessage());
+        }
+      };
+      Ode.getInstance().getUserInfoService().getCommunityLoginUsername(callback);
+    }
+
+    private static void showLoginFrame() {
       db = new DialogBox(false, true);
       db.setText("Get Instant Help");
       db.setStyleName("ode-DialogBox");
@@ -954,7 +977,6 @@ public class TopToolbar extends Composite {
       db.setGlassEnabled(true);
       db.setAnimationEnabled(true);
       db.center();
-
       VerticalPanel DialogBoxContents = new VerticalPanel();
       Label lblMessage = new Label("Loading...");
       Button btn = new Button("Close");
@@ -973,18 +995,18 @@ public class TopToolbar extends Composite {
       listenToSubmit(db);
       db.setWidget(DialogBoxContents);
       db.show();
-      checkIfAlreadyLoggedIn();
+      // checkIfAlreadyLoggedIn();
     }
 
     private static void checkIfAlreadyLoggedIn() {
-      AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>() {
+      AsyncCallback<String> callback = new AsyncCallback<String>() {
         @Override
-        public void onSuccess(Boolean communityLogin) {
-          Ode.CLog("status: " + communityLogin);
-          if(!communityLogin)
+        public void onSuccess(String communityLoginUsername) {
+          Ode.CLog("status: " + (communityLoginUsername != null));
+          if(communityLoginUsername == null)
             showLoginButton();
           else {
-            showAskQuestionFrame();
+            showAskQuestionFrame(communityLoginUsername);
           }
         }
   
@@ -994,13 +1016,15 @@ public class TopToolbar extends Composite {
           Ode.CLog("error: " + caught.getMessage());
         }
       };
-      Ode.getInstance().getUserInfoService().getUserCommunityLogin(callback); 
+      Ode.getInstance().getUserInfoService().getCommunityLoginUsername(callback); 
     }
 
-    private static void showAskQuestionFrame() {
-      db.hide();
-      db = null;
-      frame = null;
+    private static void showAskQuestionFrame(final String userEmail) {
+      if (db != null) {
+        db.hide();
+        db = null;
+        frame = null;
+      }
       db = new DialogBox(false, true);
       db.setText("Get Instant Help");
       db.setStyleName("ode-DialogBox");
@@ -1012,7 +1036,7 @@ public class TopToolbar extends Composite {
       
       HorizontalPanel DialogBoxContents = new HorizontalPanel();
       Config config = Ode.getInstance().getSystemConfig();
-      final String userEmail = Ode.getInstance().getUser().getCommunityLoginEmail();
+      Ode.CLog(userEmail);
       Frame frameX = new Frame("/AskHelp.html");
       frameX.setWidth("700px");
       frameX.setHeight("500px");
@@ -1027,9 +1051,8 @@ public class TopToolbar extends Composite {
       DialogBoxContents.add(frameX);
 
       db.setWidget(DialogBoxContents);
-      askQuestionListener(userEmail, Ode.getInstance().getCurrentYoungAndroidProjectId()+"");
       db.show();
-
+      askQuestionListener(userEmail, Ode.getInstance().getCurrentYoungAndroidProjectId()+"");
     }
 
     private static native void askQuestionListener(String userEmail, String projectId) /*-{
@@ -1054,7 +1077,10 @@ public class TopToolbar extends Composite {
           @com.google.appinventor.client.TopToolbar.InstantHelpAction::closeDialog(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;)(@com.google.appinventor.client.TopToolbar.InstantHelpAction::db, d);
           @com.google.appinventor.client.TopToolbar.InstantHelpAction::logout()();
         } else if (json.type == 'get_user_email') {
-          $doc.getElementById("AskHelpFrame").contentWindow.postMessage(userEmail);
+          $doc.getElementById("AskHelpFrame").contentWindow.postMessage({
+            type: 'email',
+            username: userEmail
+          });
         }
       }
     }-*/;
@@ -1132,7 +1158,7 @@ public class TopToolbar extends Composite {
       $wnd.onmessage = function(r) {
         console.log("From ODE: ", r)
         var type;
-        type = r.data;
+        type = JSON.parse(r.data).type;
         console.log(r)
         if (type == 'close')
           @com.google.appinventor.client.TopToolbar.InstantHelpAction::closeDialog(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;)(db, r)

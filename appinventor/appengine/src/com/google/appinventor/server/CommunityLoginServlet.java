@@ -28,7 +28,7 @@ import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-public class CommunityLoginServlet extends OdeServlet {
+public class CommunityLoginServlet extends OdeRemoteServiceServlet {
     private static final String HMAC_SHA512 = "HmacSHA256";
     private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
@@ -46,12 +46,13 @@ public class CommunityLoginServlet extends OdeServlet {
                     byte[] decodedString = Base64.getDecoder().decode(decoded);
                     String queryString = new String(decodedString);
                     Map<String, String> queries = getQueryMap(queryString);
-                    System.out.println(queries.get("name") + " " + queries.get("email"));
-                    String decodedEmail = URLDecoder.decode(queries.get("name"), StandardCharsets.US_ASCII.name());
+                    String decodedEmail = URLDecoder.decode(queries.get("username"), StandardCharsets.US_ASCII.name());
                     System.out.println(decodedEmail);
                     storageIo.setUserCommunityLogin(userInfoProvider.getUserId(), true);
-                    storageIo.setUserCommunityLoginEmail(userInfoProvider.getUserId(), decodedEmail);
-                    pw.print("<h1>You have been logged in successfully. Go back to MIT App Inventor to continue.</h1>");
+                    storageIo.setUserCommunityLoginUsername(userInfoProvider.getUserId(), decodedEmail);
+                    userInfoProvider.setCommunityLogin(true);
+                    userInfoProvider.setCommunityLoginUsername(decodedEmail);
+                    pw.print("<h1>You have been logged in successfully. Go back to MIT App Inventor to continue.</h1> ");
                 } else {
                     pw.print("Something went wrong. please try to login again.");
                 }
