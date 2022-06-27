@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright © 2016-2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2022 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -115,8 +115,8 @@ import Foundation
   case ERROR_INVALID_MAP_TYPE = 3421
 
   // CloudDB Errors
-  case ERROR_EMPTY_CLOUDDB_PROPERTY = 4001
-  case ERROR_CLOUDDB_JSON_MALFORMED = 4002
+  case ERROR_EMPTY_CLOUDDB_PROPERTY = 104001
+  case ERROR_CLOUDDB_JSON_MALFORMED = 104002
 
   // iOS Specific Errors
   case ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED = 100001
