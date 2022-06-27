@@ -114,6 +114,12 @@ import Foundation
   case ERROR_INVALID_ANCHOR_HORIZONTAL = 3417
   case ERROR_INVALID_MAP_TYPE = 3421
 
+  // Navigation Errors
+  case ERROR_INVALID_API_KEY = 4001
+  case ERROR_UNABLE_TO_REQUEST_DIRECTIONS = 4002
+  case ERROR_ROUTING_SERVICE_ERROR = 4003
+  case ERROR_NO_ROUTE_FOUND = 4004
+
   // CloudDB Errors
   case ERROR_EMPTY_CLOUDDB_PROPERTY = 104001
   case ERROR_CLOUDDB_JSON_MALFORMED = 104002
@@ -320,6 +326,16 @@ import Foundation
       return "CloudDB %s property cannot be blank"
     case .ERROR_CLOUDDB_JSON_MALFORMED:
       return "The JSON is malformed and cannot be parsed: %s"
+
+    // Navigation Errors
+    case .ERROR_INVALID_API_KEY:
+      return "No api key provided"
+    case .ERROR_UNABLE_TO_REQUEST_DIRECTIONS:
+      return "Unable to request directions. Reason: %s"
+    case .ERROR_ROUTING_SERVICE_ERROR:
+      return "Routing service failed with status %d %s"
+    case .ERROR_NO_ROUTE_FOUND:
+      return "No route returned by the routing service."
 
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:

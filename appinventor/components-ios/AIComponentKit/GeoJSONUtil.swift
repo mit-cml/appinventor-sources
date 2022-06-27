@@ -730,4 +730,15 @@ open class GeoJSONUtil {
       }
     }
   }
+
+  public static func swapCoordinates(_ original: YailList<AnyObject>) -> YailList<AnyObject> {
+    for coord in original {
+      if let coord = coord as? YailList<AnyObject> {
+        let temp = coord[1]
+        coord[1] = coord[2]
+        coord[2] = temp
+      }
+    }
+    return original
+  }
 }

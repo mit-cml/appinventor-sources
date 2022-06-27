@@ -60,6 +60,7 @@
 		0658E9C1201399FA009D6A15 /* math.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BF201399F9009D6A15 /* math.yail */; };
 		0658E9C2201399FA009D6A15 /* text.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9C0201399FA009D6A15 /* text.yail */; };
 		0658E9C42013D19A009D6A15 /* colors.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9C32013D19A009D6A15 /* colors.yail */; };
+		065E429D2866BC5500479153 /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065E429C2866BC5500479153 /* Navigation.swift */; };
 		06604B732034EFE70066C459 /* CsvUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06604B722034EFE70066C459 /* CsvUtil.swift */; };
 		0665ADE7210F592D0044C887 /* FileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC78693202E0B6E005363A3 /* FileTests.swift */; };
 		06678E32233956EE00BD3F19 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06678E31233956EE00BD3F19 /* main.swift */; };
@@ -290,6 +291,7 @@
 		0658E9BF201399F9009D6A15 /* math.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = math.yail; sourceTree = "<group>"; };
 		0658E9C0201399FA009D6A15 /* text.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = text.yail; sourceTree = "<group>"; };
 		0658E9C32013D19A009D6A15 /* colors.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = colors.yail; sourceTree = "<group>"; };
+		065E429C2866BC5500479153 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
 		06604B722034EFE70066C459 /* CsvUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvUtil.swift; sourceTree = "<group>"; };
 		06678E31233956EE00BD3F19 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		067D1B151D9B398E00A6190E /* RetValManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetValManager.h; sourceTree = "<group>"; };
@@ -775,6 +777,7 @@
 				06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */,
 				068E0EB01DC251240086FFDA /* Clock.swift */,
 				0417585420098566007D2C31 /* File.swift */,
+				065E429C2866BC5500479153 /* Navigation.swift */,
 				06E59EA51D92C6C300C42804 /* NonvisibleComponent.swift */,
 				06B216031DB95146000B3366 /* Notifier.swift */,
 				068E0EB21DC251890086FFDA /* PhoneCall.swift */,
@@ -1273,6 +1276,7 @@
 				06B216041DB95146000B3366 /* Notifier.swift in Sources */,
 				DE3E730820C72AFE0063B339 /* GyroscopeSensor.swift in Sources */,
 				DE4CDF572093982F008412BC /* FontUtil.swift in Sources */,
+				065E429D2866BC5500479153 /* Navigation.swift in Sources */,
 				DED39C2F2005537D0054B646 /* Camcorder.swift in Sources */,
 				DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */,
 				DE84293420D3FC6A00094BCB /* GeometryUtil.swift in Sources */,
