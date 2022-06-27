@@ -10,9 +10,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- <div class="spinner-border" role="status" id="loading_indicator">
-            <span class="visually-hidden">Loading...</span>
-        </div> -->
         <div id="top">
             <div class="d-flex flex-column justify-content-center align-items-center" id="content_base">
                 <h1>
@@ -26,22 +23,6 @@
     </div>
     <script>
         window.onload = function() {
-            // var doc = document.getElementById("top");
-            // window.top.postMessage(JSON.stringify({
-            //     type: "check_status"
-            // }), "*")
-            // doc.style.display = 'none'
-            // var loading = document.getElementById("loading_indicator");
-            // loading.style.display = 'block'
-            window.onmessage = function(r) {
-                console.log('frame ', r)
-                if(r.data == 'show') {
-                    // var doc = document.getElementById("top");
-                    // doc.style.display = 'block'
-                    // var loading = document.getElementById("loading_indicator");
-                    // loading.style.display = 'none'
-                }
-            }
             window.addEventListener("focus", function(event) 
             { 
                 console.log('focus')

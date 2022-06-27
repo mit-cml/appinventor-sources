@@ -224,10 +224,6 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
     "Content-Disposition: form-data; name=\"" + fieldName
     + "\"; filename=\"" + name + "\"")
     .append(LINE_FEED);
-    // writer.append(
-    // "Content-Type: "
-    // + "*/*")
-    // .append(LINE_FEED);
     writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
     writer.append("Content-Length: " + file.length).append(LINE_FEED);
     writer.append(LINE_FEED);
