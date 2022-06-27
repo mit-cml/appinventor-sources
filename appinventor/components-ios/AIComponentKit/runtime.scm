@@ -217,7 +217,7 @@
 (define-syntax protect-enum
   (syntax-rules ()
     ((_ enum-value number-value)
-     #'number-value)))
+     enum-value)))
 
 (define (set-and-coerce-property! component prop-sym property-value property-type)
   (let ((component (coerce-to-component-and-verify component)))
