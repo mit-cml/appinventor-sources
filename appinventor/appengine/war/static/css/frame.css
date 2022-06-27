@@ -1,9 +1,0 @@
-#help__form {
-    display: flex;
-    flex-direction: column;
-
-}
-
-#help__form INPUT {
-    width: 50%;
-}
