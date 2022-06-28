@@ -392,6 +392,8 @@ public abstract class CommonProjectService {
     storageIo.addSourceFilesToProject(userId, projectId, false, newFileId);
     byte[] content = storageIo.downloadRawFile(userId, projectId, oldFileId);
     long modDate = storageIo.uploadRawFileForce(projectId, newFileId, userId, content);
+    // throws exception if file with new name cannot be downloaded
+    storageIo.downloadRawFile(userId, projectId, newFileId);
     storageIo.removeSourceFilesFromProject(userId, projectId, true, oldFileId);
     return modDate;
   }
