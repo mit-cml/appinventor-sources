@@ -2,9 +2,12 @@ package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -93,14 +96,17 @@ public class RenameFileCommand extends ChainableCommand {
       if (newName == this.node.getName()) {
         hide();
         return;
-      }
-      if (!TextValidators.isValidCharFilename(newName)) {
+      } else if (!TextValidators.isValidCharFilename(newName)) {
         onRenameErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(), this.node.getName());
         return;
       } else if (!TextValidators.isValidLengthFilename(newName)) {
         onRenameErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(), this.node.getName());
         return;
+      } else if (conflictingNameWithExistingFile(newName, getAssetsFolderForProject(node))) {
+        onRenameErrorDialog(MESSAGES.duplicateTitleInAssetRenameError(), MESSAGES.duplicateFileName(), this.node.getName());
+        return;
       }
+
       hide();
       // Passed check
       final Ode ode = Ode.getInstance();
@@ -130,6 +136,21 @@ public class RenameFileCommand extends ChainableCommand {
           newNameTextBox.selectAll();
         }
       });
+    }
+
+    private YoungAndroidAssetsFolder getAssetsFolderForProject(ProjectNode node) {
+      Project project = Ode.getInstance().getProjectManager().getProject(node.getProjectId());
+      YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
+      return assetsFolder;
+    }
+
+    private boolean conflictingNameWithExistingFile(String newName, YoungAndroidAssetsFolder assetsFolder) {
+      for (ProjectNode node : assetsFolder.getChildren()) {
+        if (node.getName() == newName) {
+          return true;
+        }
+      }
+      return false;
     }
 
     private void onRenameErrorDialog(String title, String body, final String oldName) {
