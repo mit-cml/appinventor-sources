@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
@@ -14,12 +16,19 @@ import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.ui.*;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * Command for renaming files.
@@ -172,9 +181,9 @@ public class RenameFileCommand extends ChainableCommand {
       VerticalPanel DialogBoxContents = new VerticalPanel();
       FlowPanel holder = new FlowPanel();
       Button ok = new Button("OK");
-      ok.addClickListener(new ClickListener() {
+      ok.addClickHandler(new ClickHandler() {
         @Override
-        public void onClick(Widget widget) {
+        public void onClick(ClickEvent event) {
           dialogBox.hide();
           show();
         }
