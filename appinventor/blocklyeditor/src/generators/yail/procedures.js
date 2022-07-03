@@ -88,27 +88,14 @@ Blockly.Yail['procedures_callreturn'] = function() {
 
 Blockly.Yail['map_list'] = function() {
   /*
-   (begin
-      (let
-          ( ($new_list (call-yail-primitive make-yail-list (*list-for-runtime* ) '() "make a list"))  )
-          (foreach
-              $item
-              (begin
-                  (call-yail-primitive
-                      yail-list-add-to-list!
-                      (*list-for-runtime*
-                          (lexical-value $new_list)
-                          ((get-var p$procedure))
-                      )
-                      '(list list)
-                      "add items to list"
-                  )
-              )
-              CODE_FOR_PROVIDED_LIST
-          )
-          (get-var $new_list)
-      )
-  )
+  (call-yail-primitive
+    map
+    (*list-for-runtime*
+        (get-var p$<PROVIDED_PROCEDURE_NAME>)
+        <CODE_FOR_PROVIDED_LIST>)
+    '(procedure any)
+    "map-list")
+
   */
   var procName = Blockly.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME');
 
@@ -118,22 +105,15 @@ Blockly.Yail['map_list'] = function() {
   emptyListCode += Blockly.Yail.YAIL_CLOSE_COMBINATION;
   emptyListCode += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "make a list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 
-  var newListCode = "( ($new_list (call-yail-primitive make-yail-list (*list-for-runtime* ) '() \"make a list\"))  ) ";
   var listCode = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || emptyListCode;
-  var bodyCode = Blockly.Yail.YAIL_FOREACH + "$item" + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN +
-      Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-add-to-list!" + Blockly.Yail.YAIL_SPACER +
+  var allCode =
+      Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "map" + Blockly.Yail.YAIL_SPACER +
       Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER +
-      Blockly.Yail.YAIL_LEXICAL_VALUE + "$new_list" + Blockly.Yail.YAIL_CLOSE_COMBINATION +
-      Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_GET_VARIABLE + procName +
-      Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_LEXICAL_VALUE + "$item" + Blockly.Yail.YAIL_CLOSE_COMBINATION +
-      Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION +
+      Blockly.Yail.YAIL_GET_VARIABLE + procName + Blockly.Yail.YAIL_CLOSE_COMBINATION +
+      Blockly.Yail.YAIL_SPACER + listCode + Blockly.Yail.YAIL_CLOSE_COMBINATION +
       Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION +
-      "list list" + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER +
-      Blockly.Yail.YAIL_DOUBLE_QUOTE + "add items to list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION +
-      Blockly.Yail.YAIL_CLOSE_COMBINATION + listCode;
-  var returnListCode = Blockly.Yail.YAIL_GET_VARIABLE + "$new_list" + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  var allCode = Blockly.Yail.YAIL_BEGIN + Blockly.Yail.YAIL_LET + newListCode + bodyCode + Blockly.Yail.YAIL_CLOSE_COMBINATION +
-      Blockly.Yail.YAIL_CLOSE_COMBINATION + returnListCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+      "procedure any" + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER +
+      Blockly.Yail.YAIL_DOUBLE_QUOTE + "map-list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 
   console.log(allCode);
   return [ allCode, Blockly.Yail.ORDER_ATOMIC ];

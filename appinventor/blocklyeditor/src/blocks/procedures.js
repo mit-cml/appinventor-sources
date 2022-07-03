@@ -916,7 +916,7 @@ Blockly.Blocks['map_list'] = {
         return ['', ''];
       }
       for (var i = 0; i < topBlocks.length; i++) {
-        console.log(topBlocks);
+        // console.log(topBlocks);
         if (topBlocks[i].arguments_.length == 1) {
           var procName = topBlocks[i].getFieldValue('NAME');
           procNameArray.push([procName,procName]);
@@ -930,10 +930,13 @@ Blockly.Blocks['map_list'] = {
     this.procDropDown.block = this;
     this.appendValueInput('LIST')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT))
-        .appendField("map the list");
-    this.appendDummyInput()
-        .appendField("using procedure")
-        .appendField(this.procDropDown,"PROCNAME");
+        .appendField("make new list from", 'TITLE')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendDummyInput('PROCEDURE_CHOICE')
+        .appendField("mapping each item using")
+        .appendField(this.procDropDown,"PROCNAME")
+        .setAlign(Blockly.ALIGN_RIGHT);
+
     this.setOutput(true, null);
     this.setTooltip("Tool Tip text");
     this.arguments_ = [];
