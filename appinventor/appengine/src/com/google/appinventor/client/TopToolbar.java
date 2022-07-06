@@ -1085,9 +1085,26 @@ public class TopToolbar extends Composite {
           });
         } else if (json.type == 'categories') {
           @com.google.appinventor.client.TopToolbar.InstantHelpAction::fetchCategories()();
+        } else if (json.type == 'similar_topics') {
+          @com.google.appinventor.client.TopToolbar.InstantHelpAction::fetchSimilarTopics(Ljava/lang/String)(json.text);
         }
       }
     }-*/;
+
+    private static void fetchSimilarTopics(String query) {
+      Ode.getInstance().getSubmitPostService().getSimilarTopics(query, new AsyncCallback<String>() {
+        @Override
+        public void onSuccess(String response) {
+          Ode.CLog(response);
+          updateSimilarTopics(response);
+        }
+        
+        @Override
+        public void onFailure(Throwable error) {
+          Ode.CLog(error.getMessage());
+        }
+      });
+    }
 
     private static void fetchCategories() {
       Ode.getInstance().getSubmitPostService().getDiscourseCategories(new AsyncCallback<String>() {
@@ -1108,6 +1125,13 @@ public class TopToolbar extends Composite {
       $doc.getElementById("AskHelpFrame").contentWindow.postMessage({
             type: 'categories',
             categories: response
+          });
+    }-*/;
+
+    private static native void updateSimilarTopics(String response) /*-{
+      $doc.getElementById("SimilarTopicsFrame").contentWindow.postMessage({
+            type: 'similar_topics',
+            topics: response
           });
     }-*/;
 

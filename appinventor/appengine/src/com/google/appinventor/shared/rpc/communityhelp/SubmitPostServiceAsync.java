@@ -19,4 +19,10 @@ public interface SubmitPostServiceAsync extends RemoteService
      */
     public void getDiscourseCategories(AsyncCallback<String> callback);
 
+
+    /**
+     * Fetch all similar topics from discourse 
+     */
+    public void getSimilarTopics(String query, AsyncCallback<String> callback);
+
 }

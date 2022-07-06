@@ -21,4 +21,9 @@ public interface SubmitPostService extends RemoteService
      */
     public String getDiscourseCategories();
 
+    /**
+     * Fetch all similar topics from discourse 
+     */
+    public String getSimilarTopics(String query);
+
 }

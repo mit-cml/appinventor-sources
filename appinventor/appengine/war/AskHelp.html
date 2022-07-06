@@ -132,6 +132,13 @@
             })
             
         }
+        function onInputChange() {
+            var txt = document.getElementById("ask_help_title").value
+            window.top.postMessage(JSON.stringify({
+                type: 'similar_topics',
+                text: txt
+            }))
+        }
 
     </script>
 </body>

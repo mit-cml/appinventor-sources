@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.communityhelp.SubmitPostService;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import java.net.URLEncoder;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -278,6 +279,25 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
     }
 
     return line;
+  }
+
+  public String getSimilarTopics(String query) {
+    try {
+      URL url = new URL(BASE_URL + "/similar_topics.json?title="+URLEncoder.encode(query));
+      HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+      httpConn.setRequestMethod("GET");
+      httpConn.setRequestProperty("content-type", "application/json");
+      httpConn.connect();
+      InputStream responseStream = httpConn.getResponseCode() == 200
+          ? httpConn.getInputStream()
+          : httpConn.getErrorStream();
+      Scanner s = new Scanner(responseStream).useDelimiter("\\A");
+      String response = s.hasNext() ? s.next() : "";
+      return response;
+    } catch(Exception e) {
+      e.printStackTrace();
+      return e.getMessage();
+    }    
   }
 
 }
