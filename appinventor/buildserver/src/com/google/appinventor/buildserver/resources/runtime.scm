@@ -943,6 +943,31 @@
   ;;      )
   ;;  '(100 200 17 300))
 
+(define-syntax map_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+     (yail-list-map (lambda (lambda-arg-name) body-form) list))))
+
+;;(define-syntax map_nondest
+;;  (syntax-rules ()
+;;    ((_ lambda-arg-name body-form list)
+;;     (yail-list-map (lambda (lambda-arg-name) body-form) list))))
+
+(define-syntax filter_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+     (yail-list-filter (lambda (lambda-arg-name) body-form) list))))
+
+;;(define-syntax filter_dest
+;;  (syntax-rules ()
+;;    ((_ lambda-arg-name body-form list)
+;;     (yail-list-filter! (lambda (lambda-arg-name) body-form) list))))
+
+(define-syntax reduceovereach
+  (syntax-rules ()
+    ((_ initialAnswer lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-reduce initialAnswer (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
 (define-syntax forrange-with-break
   (syntax-rules ()
     ((_ escapename lambda-arg-name body-form start end step)
@@ -2505,6 +2530,45 @@ list, use the make-yail-list constructor with no arguments.
         (begin
           (for-each proc (yail-list-contents verified-list))
           *the-null-value*))))
+
+(define (yail-list-map proc yail-list)
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+        (signal-runtime-error
+         (format #f
+                 "The second argument to map is not a list.  The second argument is: ~A"
+                 (get-display-representation yail-list))
+         "Bad list argument to map")
+         (kawa-list->yail-list (map proc (yail-list-contents verified-list))))))
+
+;; Throws "unbound location filter", hence defined own filter_ function
+(define (yail-list-filter pred yail-list)
+  (define filter_
+    (lambda (pred lst)
+      (cond ((null? lst) '())
+        ((pred (car lst)) (cons (car lst) (filter_ pred (cdr lst))))
+        (else (filter_ pred (cdr lst))))))
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+        (signal-runtime-error
+         (format #f
+                 "The second argument to filter is not a list.  The second argument is: ~A"
+                 (get-display-representation yail-list))
+         "Bad list argument to filter")
+        (kawa-list->yail-list (filter_ pred (yail-list-contents verified-list))))))
+
+(define (yail-list-reduce ans binop yail-list)
+  (define (reduce accum func lst)
+    (cond ((null? lst) accum)
+      (else (reduce (func accum (car lst)) func (cdr lst)))))
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+      (signal-runtime-error
+        (format #f
+          "The second argument to reduce is not a list.  The second argument is: ~A"
+          (get-display-representation yail-list))
+        "Bad list argument to reduce")
+      (kawa-list->yail-list (reduce ans binop (yail-list-contents verified-list))))))
 
 ;; yail-for-range needs to check that its args are numeric
 ;; because the blocks editor can't guarantee this
