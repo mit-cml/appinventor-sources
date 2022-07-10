@@ -1024,10 +1024,11 @@ Blockly.Blocks['lists_reverse'] = {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_LISTS_REVERSE_DEST_TITLE_REVERSE, 'TITLE')
+        .appendField(Blockly.Msg.LANG_LISTS_REVERSE_NONDEST_TITLE_REVERSE, 'TITLE');
+    this.setOutput(true, null);
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
-    // this.setMutator(new Blockly.Mutator([]));
+    // this.setMutator(new Blockly.Mutator([]))；
     this.setTooltip(Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP);
     this.changeList = false;
   },
@@ -1167,7 +1168,8 @@ Blockly.Blocks['lists_sort'] = {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_LISTS_SORT_DEST_TITLE_SORT, 'TITLE')
+        .appendField(Blockly.Msg.LANG_LISTS_SORT_NONDEST_TITLE_SORT, 'TITLE');
+    this.setOutput(true, null);
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
     // this.setMutator(new Blockly.Mutator([]));
@@ -1310,7 +1312,7 @@ Blockly.Blocks['lists_sort_comparator'] = {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_DEST_TITLE_SORT, 'TITLE')
+        .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_NONDEST_TITLE_SORT, 'TITLE')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendDummyInput('DESCRIPTION')
         .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR)
@@ -1326,6 +1328,7 @@ Blockly.Blocks['lists_sort_comparator'] = {
         .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR2)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendIndentedValueInput('COMPARE');
+    this.setOutput(true, null);
     // this.setMutator(new Blockly.Mutator([]));
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
@@ -1479,9 +1482,6 @@ Blockly.Blocks['lists_sort_comparator'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COLLAPSED_TEXT }]
 };
 
-
-
-
 Blockly.Blocks['lists_sort_key'] = {
   // For each loop.
   category : 'Lists',
@@ -1490,7 +1490,7 @@ Blockly.Blocks['lists_sort_key'] = {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_LISTS_SORT_KEY_DEST_TITLE_SORT, 'TITLE')
+        .appendField(Blockly.Msg.LANG_LISTS_SORT_KEY_NONDEST_TITLE_SORT, 'TITLE')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendDummyInput('DESCRIPTION')
       .appendField(Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_KEY)
@@ -1503,6 +1503,7 @@ Blockly.Blocks['lists_sort_key'] = {
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
     // this.setMutator(new Blockly.Mutator([]));
+    this.setOutput(true, null);
     this.setTooltip( Blockly.Msg.LANG_LISTS_SORT_KEY_TOOLTIP);
     this.changeList = false;
   },
@@ -1654,7 +1655,7 @@ Blockly.Blocks['lists_sort_key'] = {
 	};
 
 Blockly.Blocks['lists_minimum'] = {
-	  // category : 'Lists', // Lyn sez: keep out of this version
+	  category : 'Lists',
 	  helpUrl : Blockly.Msg.LANG_LISTS_MIN_HELPURL,
 	  init : function() {
 	    this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -1668,7 +1669,7 @@ Blockly.Blocks['lists_minimum'] = {
 	};
 
 Blockly.Blocks['lists_maximum'] = {
-	  // category : 'Lists', // Lyn sez: keep out of this version
+	  category : 'Lists',
 	  helpUrl : Blockly.Msg.LANG_LISTS_MAX_HELPURL,
 	  init : function() {
 	    this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -1693,6 +1694,7 @@ Blockly.Blocks['lists_but_first'] = {
 		      .appendField(Blockly.Msg.LANG_LISTS_BUT_FIRST_INPUT_BUT_FIRST);
 		this.setTooltip(Blockly.Msg.LANG_LISTS_BUT_FIRST_TOOLTIP);
 		// this.setMutator(new Blockly.Mutator([]));
+        this.setOutput(true, null);
 	    this.changeList = false;
 	   },
 	   // updateBlock_: function() {
@@ -1833,6 +1835,7 @@ Blockly.Blocks['lists_but_last'] = {
 	      .appendField(Blockly.Msg.LANG_LISTS_BUT_LAST_INPUT_BUT_LAST);
 	    this.setTooltip(Blockly.Msg.LANG_LISTS_BUT_LAST_TOOLTIP);
 	    // this.setMutator(new Blockly.Mutator([]));
+        this.setOutput(true, null);
 	    this.changeList = false
 	  },
 	  // updateBlock_: function() {
@@ -1978,6 +1981,7 @@ Blockly.Blocks['lists_slice'] = {
 	            Blockly.ALIGN_RIGHT);
 	    this.setTooltip(Blockly.Msg.LANG_LISTS_SLICE_TOOLTIP);
 	    this.setInputsInline(false);
+        this.setOutput(true, null);
 	    // this.setMutator(new Blockly.Mutator([]));
 	    this.changeList = false;
 	  },

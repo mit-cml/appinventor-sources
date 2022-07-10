@@ -2570,6 +2570,164 @@ list, use the make-yail-list constructor with no arguments.
         "Bad list argument to reduce")
       (kawa-list->yail-list (reduce ans binop (yail-list-contents verified-list))))))
 
+;;Implements a generic sorting procedure that works on lists of any type.
+
+(define typeordering '(boolean number text list component))
+
+(define (typeof val)
+  (cond ((boolean? val) 'boolean)
+    ((number? val) 'number)
+    ((string? val) 'text)
+    ((yail-list? val) 'list)
+    ((instance? val com.google.appinventor.components.runtime.Component) 'component)
+    (else (signal-runtime-error
+            (format #f
+              "typeof called with unexpected value: ~A"
+              (get-display-representation val))
+            "Bad arguement to typeof"))))
+
+(define (indexof element list)
+  (list-index (lambda (x) (eq? x element)) list))
+
+(define (type-lt? type1 type2)
+  (< (indexof type1 typeordering)
+    (indexof type2 typeordering)))
+
+(define (is-lt? val1 val2)
+  (let ((type1 (typeof val1))
+         (type2 (typeof val2)))
+    (or (type-lt? type1 type2)
+      (and (eq? type1 type2)
+        (cond ((eq? type1 'boolean) (boolean-lt? val1 val2))
+          ((eq? type1 'number) (< val1 val2))
+          ((eq? type1 'text) (string<? val1 val2))
+          ((eq? type1 'list) (list-lt? val1 val2))
+          ((eq? type1 'component) (component-lt? val1 val2))
+          (else (signal-runtime-error
+                  (format #f
+                    "(islt? ~A ~A)"
+                    (get-display-representation val1)
+                    (get-display-representation val2))
+                  "Shouldn't happen")))))))
+
+(define (is-eq? val1 val2)
+  (let ((type1 (typeof val1))
+         (type2 (typeof val2)))
+    (and (eq? type1 type2)
+      (cond ((eq? type1 'boolean) (boolean-eq? val1 val2))
+        ((eq? type1 'number) (= val1 val2))
+        ((eq? type1 'text) (string=? val1 val2))
+        ((eq? type1 'list) (list-eq? val1 val2))
+        ((eq? type1 'component) (component-eq? val1 val2))
+        (else (signal-runtime-error
+                (format #f
+                  "(islt? ~A ~A)"
+                  (get-display-representation val1)
+                  (get-display-representation val2))
+                "Shouldn't happen"))))))
+
+(define (is-leq? val1 val2)
+  (let ((type1 (typeof val1))
+         (type2 (typeof val2)))
+    (or (type-lt? type1 type2)
+      (and (eq? type1 type2)
+        (cond ((eq? type1 'boolean) (boolean-leq? val1 val2))
+          ((eq? type1 'number) (<= val1 val2))
+          ((eq? type1 'text) (string<=? val1 val2))
+          ((eq? type1 'list) (list-leq? val1 val2))
+          ((eq? type1 'component) (component-leq? val1 val2))
+          (else (signal-runtime-error
+                  (format #f
+                    "(isleq? ~A ~A)"
+                    (get-display-representation val1)
+                    (get-display-representation val2))
+                  "Shouldn't happen")))))))
+
+;;false is less than true
+(define (boolean-lt? val1 val2)
+  (and (not val1) val2))
+
+(define (boolean-eq? val1 val2)
+  (or (and val1 val2)
+    (and (not val1) (not val2))))
+
+(define (boolean-leq? val1 val2)
+  (not (and val1 (not val2))))
+
+(define (list-lt? y1 y2)
+  (define (helper-list-lt? lst1 lst2)
+    (cond ((null? lst1) (not (null? lst2)))
+      ((null? lst2) #f)
+      ((is-lt? (car lst1) (car lst2)) #t)
+      ((is-eq? (car lst1) (car lst2)) (helper-list-lt? (cdr lst1) (cdr lst2)))
+      (else #f)))
+  (helper-list-lt? (yail-list-contents y1) (yail-list-contents y2)))
+
+(define (list-eq? y1 y2)
+  (define (helper-list-eq? lst1 lst2)
+    (cond ((and (null? lst1) (null? lst2)) #t)
+      ((is-eq? (car lst1) (car lst2)) (helper-list-eq? (cdr lst1) (cdr lst2)))
+      (else #f)))
+  (helper-list-eq? (yail-list-contents y1) (yail-list-contents y2)))
+
+;;throw exception is not yail-list
+(define (yail-list-necessary y1)
+  (cond ((yail-list? y1) (yail-list-contents y1))
+    (else y1)))
+
+(define (list-leq? y1 y2)
+  (define (helper-list-leq? lst1 lst2)
+    (cond ((and (null? lst1) (null? lst2)) #t)
+      ((null? lst1) #t)
+      ((null? lst2) #f)
+      ((is-lt? (car lst1) (car lst2)) #t)
+      ((is-eq? (car lst1) (car lst2)) (helper-list-leq? (cdr lst1) (cdr lst2)))
+      (else #f)))
+  (helper-list-leq? (yail-list-necessary y1) (yail-list-necessary y2)))
+
+;;Component are first compared using their class names. If they are instances of the same class,
+;;then they are compared using their hashcodes.
+(define (component-lt? comp1 comp2)
+  (or (string<? (*:getSimpleName (*:getClass comp1))
+        (*:getSimpleName (*:getClass comp2)))
+    (and (string=? (*:getSimpleName (*:getClass comp1))
+           (*:getSimpleName (*:getClass comp2)))
+      (< (*:hashCode comp1)
+        (*:hashCode comp2)))))
+
+(define (component-eq? comp1 comp2)
+  (and (string=? (*:getSimpleName (*:getClass comp1))
+         (*:getSimpleName (*:getClass comp2)))
+    (= (*:hashCode comp1)
+      (*:hashCode comp2))))
+
+(define (component-leq? comp1 comp2)
+  (or (string<? (*:getSimpleName (*:getClass comp1))
+        (*:getSimpleName (*:getClass comp2)))
+    (and (string=? (*:getSimpleName (*:getClass comp1))
+           (*:getSimpleName (*:getClass comp2)))
+      (<= (*:hashCode comp1)
+        (*:hashCode comp2)))))
+
+;; Merge sort
+(define (merge lessthan? lst1 lst2)
+  (cond ((null? lst1) lst2)
+    ((null? lst2) lst1)
+    ((lessthan? (car lst1) (car lst2)) (cons (car lst1) (merge lessthan? (cdr lst1) lst2)))
+    (else (cons (car lst2) (merge lessthan? lst1 (cdr lst2))))))
+
+(define (mergesort lessthan? lst)
+  (cond ((null? lst) lst)
+    ((null? (cdr lst)) lst)
+    (else (merge lessthan? (mergesort lessthan? (take lst (quotient (length lst) 2)))
+            (mergesort lessthan? (drop lst (quotient (length lst) 2)))))))
+
+
+(define (yail-list-sort y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (kawa-list->yail-list (mergesort is-leq? (yail-list-contents y1))))))
+
 ;; yail-for-range needs to check that its args are numeric
 ;; because the blocks editor can't guarantee this
 (define (yail-for-range proc start end step)
