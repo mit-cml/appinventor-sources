@@ -556,8 +556,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 216:
   // YandexTranslate turned into Translator (and YandexTranslate
   //   itself stubbed out and placed in INTERNAL
+  // For YOUNG_ANDROID_VERION 217:
+  // - Added GOOGLESHEETS_COMPONENT_VERSION
 
-  public static final int YOUNG_ANDROID_VERSION = 216;
+  public static final int YOUNG_ANDROID_VERSION = 217;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -975,6 +977,8 @@ public class YaVersion {
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 4;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
+
+  public static final int GOOGLESHEETS_COMPONENT_VERSION = 1;
 
   public static final int GYROSCOPESENSOR_COMPONENT_VERSION = 1;
 

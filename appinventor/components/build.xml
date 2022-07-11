@@ -143,17 +143,29 @@
     <copy toFile="${public.deps.dir}/httpmime.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
     <copy toFile="${public.deps.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${public.deps.dir}/firebase.jar" file="${lib.dir}/firebase/firebase-client-android-2.5.0.jar" />
-    <copy toFile="${public.deps.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
-    <copy toFile="${public.deps.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
+    <!-- Google Sheets Component -->
+    <copy toFile="${public.deps.dir}/googlesheets.jar" file="${lib.dir}/googlesheets/googlesheets.jar" />
+    <copy toFile="${public.deps.dir}/opencensus.jar" file="${lib.dir}/googlesheets/opencensus-api-0.26.0.jar" />
+    <copy toFile="${public.deps.dir}/opencensus-contrib-http-util.jar" file="${lib.dir}/googlesheets/opencensus-contrib-http-util-0.26.0.jar" />
+    <copy toFile="${public.deps.dir}/grpc-context.jar" file="${lib.dir}/googlesheets/grpc-context-1.29.0.jar" />
+    <copy toFile="${public.deps.dir}/jetty.jar" file="${lib.dir}/googlesheets/jetty-6.1.26.jar" />
+    <copy toFile="${public.deps.dir}/jetty-util.jar" file="${lib.dir}/googlesheets/jetty-util-6.1.26.jar" />
+    <copy toFile="${public.deps.dir}/google-http-client.jar" file="${lib.dir}/oauth/google-http-client-1.35.0.jar" />
+    <copy toFile="${public.deps.dir}/google-api-client.jar" file="${lib.dir}/oauth/google-api-client-1.30.2.jar" />
+    <copy toFile="${public.deps.dir}/google-api-client-jackson2.jar" file="${lib.dir}/gcs/google-api-client-jackson2-1.20.0.jar" />
     <copy toFile="${public.deps.dir}/google-api-client-android2-beta.jar" file="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
     <copy toFile="${public.deps.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
     <copy toFile="${public.deps.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
+    <copy toFile="${public.deps.dir}/google-http-client-jackson2.jar" file="${lib.dir}/oauth/google-http-client-jackson2-1.33.0.jar" />
+    <copy toFile="${public.deps.dir}/google-oauth-client.jar" file="${lib.dir}/oauth/google-oauth-client-1.30.4.jar" />
+    <copy toFile="${public.deps.dir}/google-oauth-client-java6.jar" file="${lib.dir}/oauth/google-oauth-client-java6-1.30.4.jar" />
+    <copy toFile="${public.deps.dir}/google-oauth-client-jetty.jar" file="${lib.dir}/oauth/google-oauth-client-jetty-1.30.4.jar" />
     <copy toFile="${public.deps.dir}/gson-2.1.jar" file="${lib.dir}/gson/gson-2.1.jar" />
     <copy toFile="${public.deps.dir}/json.jar" file="${lib.dir}/json/json-android.jar" />
-    <copy toFile="${public.deps.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+    <copy toFile="${public.deps.dir}/jackson-core.jar" file="${lib.dir}/gcs/jackson-core-2.1.3.jar" />
     <copy toFile="${public.deps.dir}/jedis.jar" file="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
     <copy toFile="${public.deps.dir}/commons-pool.jar" file="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
-    <copy toFile="${public.deps.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
+    <copy toFile="${public.deps.dir}/guava.jar" file="${lib.dir}/guava/guava-27.1-android.jar" />
     <copy toFile="${public.deps.dir}/QRGenerator.jar" file="${lib.dir}/QRGenerator/core.jar" />
     <copy toFile="${public.deps.dir}/physicaloid.jar" file="${lib.dir}/physicaloid/physicaloid-library.jar" />
     <!-- Protocol Buf Support (used by the Translation Component) -->
@@ -325,7 +337,7 @@
       <classpath>
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
         <pathelement location="${build.dir}/common/CommonUtils.jar" />
-        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-27.1-android.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
       </classpath>
     </ai.javac>
@@ -340,7 +352,7 @@
          destfile="${local.build.dir}/AnnotationProcessors.jar" >
       <zipfileset src="${public.build.dir}/CommonConstants.jar"/>
       <zipfileset src="${build.dir}/common/CommonUtils.jar" />
-      <zipfileset src="${lib.dir}/guava/guava-14.0.1.jar" />
+      <zipfileset src="${lib.dir}/guava/guava-27.1-android.jar" />
       <zipfileset src="${lib.dir}/json/json.jar" />
       <fileset dir="${src.dir}">
         <include name="META-INF/**/*"/>
@@ -594,7 +606,7 @@
       <libraryjar file="${public.deps.dir}/google-oauth-client-beta.jar" />
       <libraryjar file="${public.deps.dir}/jedis.jar" />
       <libraryjar file="${public.deps.dir}/commons-pool.jar" />
-      <libraryjar file="${public.deps.dir}/guava-14.0.1.jar" />
+      <libraryjar file="${public.deps.dir}/guava-27.1-android.jar" />
       <libraryjar file="${public.deps.dir}/Barcode.jar" />
       <libraryjar file="${public.deps.dir}/QRGenerator.jar" />
       <!-- Android Runtime -->
