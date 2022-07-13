@@ -5,10 +5,12 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
+import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.communityhelp.SubmitPostService;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
+import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import java.net.URLEncoder;
 
@@ -35,7 +37,8 @@ import org.json.JSONObject;
  *
  */
 public class SubmitPostServiceImpl extends RemoteServiceServlet implements SubmitPostService {
-  private final static String BASE_URL = "http://localhost:4200";
+  private final static Flag<String> communityBaseUrlFlag = Flag.createFlag("community.url", "http://localhost:4200");
+  private final static String COMMUNITY_BASE_URL = communityBaseUrlFlag.get();
   private final static String API_KEY = "958543d9f5d4df2c2739b8f9156cbd18759d192d435fb4d2c08e5f61fdf3b699";
   private final FileExporter fileExporter = new FileExporterImpl();
   private static final String LINE_FEED = "\r\n";
@@ -44,7 +47,7 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
   @Override
   public String getDiscourseCategories() {
     try {
-      URL url = new URL(BASE_URL + "/categories.json?include_subcategories=true");
+      URL url = new URL(COMMUNITY_BASE_URL + "/categories.json?include_subcategories=true");
       HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
       httpConn.setRequestMethod("GET");
       httpConn.setRequestProperty("content-type", "application/json");
@@ -72,7 +75,7 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
         String uploadResponse = uploadFile(userId, username, title, description, categoryId, attachProject, projectId);
         JSONObject jsonObject = new JSONObject(uploadResponse);
 
-        String urlString = jsonObject.getString("short_path");
+        String urlString = jsonObject.getString("url");
         String nameString = jsonObject.getString("original_filename");
         String fileSizeString = jsonObject.getString("human_filesize");
 
@@ -121,7 +124,7 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
 
   public String submitContent(String username, String title, String description, int categoryId) {
     try {
-      URL url = new URL(BASE_URL + "/posts.json");
+      URL url = new URL(COMMUNITY_BASE_URL + "/posts.json");
       HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
       httpConn.setDoOutput(true);
       httpConn.setRequestMethod("POST");
@@ -167,7 +170,7 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
       RawFile downloadableFile = zipFile.getRawFile();
       String fileName = downloadableFile.getFileName();
       byte[] content = downloadableFile.getContent();
-      URL url = new URL(BASE_URL + "/uploads.json");
+      URL url = new URL(COMMUNITY_BASE_URL + "/uploads.json");
       HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
       httpConn.setDoOutput(true);
       httpConn.setRequestMethod("POST");
@@ -177,7 +180,7 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
       httpConn.setRequestProperty("content-type", "multipart/form-data; boundary="+boundary);
       OutputStream outputStream = httpConn.getOutputStream();
       PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream));
-      addFormField("type", "aia", writer, boundary);
+      addFormField("type", "application/zip", writer, boundary);
       addFormField("synchronous", "true", writer, boundary);
       addFilePart("file", content, fileName, writer, outputStream, boundary);
       String response = finish(writer, httpConn, boundary);
@@ -204,7 +207,7 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
       RawFile downloadableFile = zipFile.getRawFile();
       String fileName = downloadableFile.getFileName();
       byte[] content = downloadableFile.getContent();
-      URL url = new URL(BASE_URL + "/uploads.json");
+      URL url = new URL(COMMUNITY_BASE_URL + "/uploads.json");
       HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
       httpConn.setDoOutput(true);
       httpConn.setRequestMethod("POST");
@@ -214,7 +217,7 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
       httpConn.setRequestProperty("content-type", "multipart/form-data; boundary="+boundary);
       OutputStream outputStream = httpConn.getOutputStream();
       PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream));
-      addFormField("type", "aia", writer, boundary);
+      addFormField("type", "application/zip", writer, boundary);
       addFormField("synchronous", "true", writer, boundary);
       addFilePart("file", content, fileName, writer, outputStream, boundary);
       String response = finish(writer, httpConn, boundary);
@@ -245,13 +248,13 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
     "Content-Disposition: form-data; name=\"" + fieldName
     + "\"; filename=\"" + name + "\"")
     .append(LINE_FEED);
+    writer.append("Content-Type: " + StorageUtil.getContentTypeForFilePath(name)).append(
+      LINE_FEED);
     writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
     writer.append("Content-Length: " + file.length).append(LINE_FEED);
     writer.append(LINE_FEED);
     writer.flush();
-    
     outputStream.write(file, 0, file.length);
-
     outputStream.flush();
     writer.append(LINE_FEED);
     writer.flush();
@@ -283,7 +286,7 @@ public class SubmitPostServiceImpl extends RemoteServiceServlet implements Submi
 
   public String getSimilarTopics(String query) {
     try {
-      URL url = new URL(BASE_URL + "/similar_topics.json?title="+URLEncoder.encode(query));
+      URL url = new URL(COMMUNITY_BASE_URL + "/similar_topics.json?title="+URLEncoder.encode(query));
       HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
       httpConn.setRequestMethod("GET");
       httpConn.setRequestProperty("content-type", "application/json");

@@ -1,0 +1,69 @@
+<html>
+<head>
+    <title>Ask Help</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <div class="row" style="height: 100vh">
+            
+            <div class="col-12 p-3 d-flex flex-column" style="background: #d1f0ff">
+                
+                <div class="d-flex flex-column overflow-y-scroll" id="topic_list">
+                    <div class="col-12 p-3 d-flex flex-column" style="background: #d1f0ff">
+                        <h4>
+                            How to ask a question?
+                        </h4>
+                        <p>
+                            Before you ask a question please take care of the following points:
+                            <br>
+                            <ol>
+                                <li>The forum was previously searched for similar topics / issues.</li>
+                                <li>Give a precise (detailed) description of the issue / bug, the goal.</li>
+                                <li>Debug your blocks (connect to Companion and right mouse click: → Do it).</li>
+                                <li>Name the Android version running on your (test) device.</li>
+                                <li>Do not open multiple threads on the same topic.</li>
+                                <li>Note: Make it as easy as possible for those who are helping. Especially:
+                                → Write in English and
+                                → use English blocks (set the language in the Designer - temporarily - in English).
+                                </li>
+                            </ol>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        window.onmessage = function(e) {
+                var json = JSON.parse(e.data.topics)
+                if (e.data.type == 'similar_topics') {
+                    var topics = json.topics
+                    if (topics && topics.length && topics.length != 0) {
+                        var topicIds = []
+                        var filteredTopics = {}
+                        topics.forEach(topic => {
+                            topicIds.push(topic.id)
+                            filteredTopics[topic.id] = {}
+                            filteredTopics[topic.id].title = topic.title
+                            filteredTopics[topic.id].slug = topic.slug
+                        })
+                        json.similar_topics.forEach(topic => {
+                            filteredTopics[topic.id].blurb = topic.blurb
+                        })
+                        var element = document.getElementById('topic_list')
+                        element.innerHTML = "<h4>Your post is similar to</h4>"
+                        topicIds.forEach( ti => {
+                            var st = filteredTopics[ti]
+                            element.innerHTML += `<h4>${st.title}</h4><p>${st.blurb}</p>`
+                        })
+                    }
+                }
+            }
+    </script>
+</body>
+</html>

@@ -1,3 +1,9 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2013 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.server;
 
 import java.io.IOException;
@@ -8,7 +14,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import java.net.URLEncoder;
-import java.security.*;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +26,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.security.SignatureException;
+import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
 
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
@@ -29,11 +37,12 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 public class CommunityLoginServlet extends OdeRemoteServiceServlet {
-    private static final String HMAC_SHA512 = "HmacSHA256";
+    private static final String HMAC_SHA256 = "HmacSHA256";
     private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
+        
         if (((request.getParameter("sso"))) != null) {
             // Verify payload integrity
             PrintWriter pw = response.getWriter();
@@ -61,6 +70,10 @@ public class CommunityLoginServlet extends OdeRemoteServiceServlet {
                 pw.print("Error: " + e.getMessage());
             }
         } else {
+            Cookie cookie = new Cookie("sso_redirect", "true");
+            cookie.setDomain("community.appinventor.mit.edu");
+            cookie.setPath("/");
+            response.addCookie(cookie);
             byte[] noncee = new byte[16];
 	        new SecureRandom().nextBytes(noncee);
             String nonce = convertBytesToHex(noncee);
@@ -85,10 +98,10 @@ public class CommunityLoginServlet extends OdeRemoteServiceServlet {
 		return result.toString();
     	}	
 	public static String calculateHMAC(String data, String key)
-	    throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, SignatureException
+	    throws SignatureException, NoSuchAlgorithmException, InvalidKeyException
 	{
-	    SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), HMAC_SHA512);
-	    Mac mac = Mac.getInstance(HMAC_SHA512);
+	    SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), HMAC_SHA256);
+	    Mac mac = Mac.getInstance(HMAC_SHA256);
 	    mac.init(secretKeySpec);
 	    return toHexString(mac.doFinal(data.getBytes()));
 	}
