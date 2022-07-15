@@ -968,6 +968,16 @@
     ((_ initialAnswer lambda-arg1-name lambda-arg2-name body-form list)
       (yail-list-reduce initialAnswer (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
 
+(define-syntax sortcomparator_nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-sort-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax sortkey_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+      (yail-list-sort-key (lambda (lambda-arg-name) body-form) list))))
+
 (define-syntax forrange-with-break
   (syntax-rules ()
     ((_ escapename lambda-arg-name body-form start end step)
@@ -2586,8 +2596,8 @@ list, use the make-yail-list constructor with no arguments.
               (get-display-representation val))
             "Bad arguement to typeof"))))
 
-(define (indexof element list)
-  (list-index (lambda (x) (eq? x element)) list))
+(define (indexof element lst)
+  (yail-list-index object lst))
 
 (define (type-lt? type1 type2)
   (< (indexof type1 typeordering)
@@ -2709,6 +2719,22 @@ list, use the make-yail-list constructor with no arguments.
       (<= (*:hashCode comp1)
         (*:hashCode comp2)))))
 
+;; take function returns a list containing the first 'n' number of elements from the list 'xs'
+;; Need to check if n is a proper list and xs is a postive integer
+(define (take n xs)
+  (let loop ((n n) (xs xs) (zs '()))
+    (if (or (= n 0) (null? xs))
+      (reverse zs)
+      (loop (- n 1) (cdr xs)
+        (cons (car xs) zs)))))
+
+;; drop function returns a list drops the first 'n' number of elements from the list 'xs'
+;; Need to check if n is a proper list and xs is a postive integer
+(define (drop n xs)
+  (if (or (= n 0) (null? xs))
+    xs
+    (drop (- n 1) (cdr xs))))
+
 ;; Merge sort
 (define (merge lessthan? lst1 lst2)
   (cond ((null? lst1) lst2)
@@ -2719,14 +2745,124 @@ list, use the make-yail-list constructor with no arguments.
 (define (mergesort lessthan? lst)
   (cond ((null? lst) lst)
     ((null? (cdr lst)) lst)
-    (else (merge lessthan? (mergesort lessthan? (take lst (quotient (length lst) 2)))
-            (mergesort lessthan? (drop lst (quotient (length lst) 2)))))))
-
+    (else (merge lessthan? (mergesort lessthan? (take (quotient (length lst) 2) lst))
+            (mergesort lessthan? (drop (quotient (length lst) 2) lst))))))
 
 (define (yail-list-sort y1)
   (cond ((yail-list-empty? y1) (make YailList))
     ((not (pair? y1)) y1)
     (else (kawa-list->yail-list (mergesort is-leq? (yail-list-contents y1))))))
+
+(define (yail-list-sort-comparator lessthan? y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (kawa-list->yail-list (mergesort lessthan? (yail-list-contents y1))))))
+
+(define (merge-key lessthan? key lst1 lst2)
+  (cond ((null? lst1) lst2)
+    ((null? lst2) lst1)
+    ((lessthan? (key (car lst1)) (key (car lst2))) (cons (car lst1) (merge-key lessthan? key (cdr lst1) lst2)))
+    (else (cons (car lst2) (merge-key lessthan? key lst1 (cdr lst2))))))
+
+(define (mergesort-key lessthan? key lst)
+  (cond ((null? lst) lst)
+    ((null? (cdr lst)) lst)
+    (else (merge-key lessthan? key (mergesort-key lessthan? key (take (quotient (length lst) 2) lst))
+            (mergesort-key lessthan? key (drop (quotient (length lst) 2) lst))))))
+
+(define (yail-list-sort-key key y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (kawa-list->yail-list (mergesort-key is-leq? key (yail-list-contents y1))))))
+
+(define (list-min lst)
+  (cond ((null? lst) '())
+    ((null? (cdr lst)) (car lst))
+    ((is-leq? (car lst) (list-min (cdr lst))) (car lst))
+    (else (list-min (cdr lst)))))
+
+(define (yail-list-minimum yail-list)
+  (let ((contents (yail-list-contents yail-list)))
+    (if (null? contents)
+      (signal-runtime-error
+        (format #f
+          "The list cannot be empty")
+        "Bad list argument to yail-list-minimum")
+      (list-min contents))))
+
+(define (list-max lst)
+  (cond ((null? lst) '())
+    ((null? (cdr lst)) (car lst))
+    ((is-leq? (list-max (cdr lst)) (car lst)) (car lst))
+    (else (list-max (cdr lst)))))
+
+(define (yail-list-maximum yail-list)
+  (let ((contents (yail-list-contents yail-list)))
+    (if (null? contents)
+      (signal-runtime-error
+        (format #f
+          "The list cannot be empty")
+        "Bad list argument to yail-list-maximum")
+      (list-max contents))))
+
+(define (yail-list-but-first yail-list)
+  (let ((contents (yail-list-contents yail-list)))
+    (cond ((null? contents) (signal-runtime-error
+                              (format #f
+                                "The list cannot be empty")
+                              "Bad list argument to but-first"))
+      ((null? (cdr contents)) '())
+      (else (kawa-list->yail-list (cdr contents))))))
+
+(define (but-last lst)
+  (cond ((null? lst) '())
+    ((null? (cdr lst)) '())
+    (else (cons (car lst) (but-last (cdr lst))))))
+
+(define (yail-list-but-last yail-list)
+  (let ((contents (yail-list-contents yail-list)))
+    (cond ((null? contents) (signal-runtime-error
+                              (format #f
+                                "The list cannot be empty")
+                              "Bad list argument to but-last"))
+      (else  (kawa-list->yail-list (but-last (yail-list-contents yail-list)))))))
+
+(define (front lst n)
+  (cond ((= n 1) lst)
+    (else (front (cdr lst) (- n 1)))))
+
+(define (back lst n1 n2)
+  (cond ((= n1 (- n2 1)) '())
+    (else (cons (car lst) (back (cdr lst) (+ n1 1) n2)))))
+
+(define (yail-list-slice yail-list index1 index2)
+  (let ((verified-index1 (coerce-to-number index1))
+         (verified-index2 (coerce-to-number index2)))
+    (if (eq? verified-index1 *non-coercible-value*)
+      (signal-runtime-error
+        (format #f "Insert list item: index (~A) is not a number" (get-display-representation verified-index1))
+        "Bad list verified-index1"))
+    (if (eq? verified-index2 *non-coercible-value*)
+      (signal-runtime-error
+        (format #f "Insert list item: index (~A) is not a number" (get-display-representation verified-index2))
+        "Bad list verified-index2"))
+    (if (< verified-index1 1)
+      (signal-runtime-error
+        (format #f
+          "Slice list: Attempt to slice list ~A at index ~A. The minimum valid index number is 1."
+          (get-display-representation yail-list)
+          verified-index2)
+        "List index smaller than 1"))
+    (let ((len+1 (+ (yail-list-length yail-list) 1)))
+      (if (> verified-index2 len+1)
+        (signal-runtime-error
+          (format #f
+            "Slice list: Attempt to slice list ~A at index ~A.  The maximum valid index number is ~A."
+            (get-display-representation yail-list)
+            verified-index2
+            len+1)
+          "List index too large"))
+      (kawa-list->yail-list (take (- verified-index2 verified-index1) (drop (- verified-index1 1) (yail-list-contents yail-list)))))))
 
 ;; yail-for-range needs to check that its args are numeric
 ;; because the blocks editor can't guarantee this
