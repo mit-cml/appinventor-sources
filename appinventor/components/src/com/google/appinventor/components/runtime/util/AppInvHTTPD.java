@@ -5,35 +5,42 @@
 // This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 
 package com.google.appinventor.components.runtime.util;
+
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+
+import android.net.Uri;
+
+import android.os.Build;
+import android.os.Handler;
 import android.os.Looper;
+
+import android.util.Log;
+
+import com.google.appinventor.components.runtime.PhoneStatus;
 import com.google.appinventor.components.runtime.ReplForm;
+
+import gnu.expr.Language;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import java.net.InetAddress;
+import java.net.Socket;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Properties;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import android.os.Build;
-import android.os.Handler;
-import android.util.Log;
-
 import kawa.standard.Scheme;
-import gnu.expr.Language;
 
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -250,6 +257,14 @@ public class AppInvHTTPD extends NanoHTTPD {
       return (res);
     } else if (uri.equals("/_extensions")) {
       return processLoadExtensionsRequest(parms);
+    } else if (uri.equals("/_proxy")) {
+      String popup = PhoneStatus.getPopup();
+      Response res = new Response(HTTP_OK, MIME_HTML, popup);
+      res.addHeader("Access-Control-Allow-Origin", "*");
+      res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+      res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+      res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+      return(res);
     }
 
     if (method.equals("PUT")) { // Asset File Upload for newblocks
@@ -406,5 +421,108 @@ public class AppInvHTTPD extends NanoHTTPD {
   public void resetSeq() {
     seq = 1;
   }
+
+  private final String PROXY_TEXT =
+    "<html>\n" +
+    "  <head>\n" +
+    "    <script type=\"text/javascript\">\n" +
+    "      var origin = \"*\"; // Will be replaced with real origin\n" +
+    "      var QUEUE = [];\n" +
+    "      var QUEUE_RUNNING = false;\n" +
+    "      async function sendtophone(how, value, value2) {\n" +
+    "        if (how == 'blocks') {\n" +
+    "          await sendblocks(value);\n" +
+    "        } else if (how == 'version') {\n" +
+    "          let resp = await getversion();\n" +
+    "          window.opener.postMessage(resp, origin);\n" +
+    "        } else if (how == 'asset') {\n" +
+    "          // console.log(\"About to PUT \" + value);\n" +
+    "          let resp = await fetch('/?' + value, {\n" +
+    "            method : 'PUT',\n" +
+    "            mode: 'cors',\n" +
+    "            body: value2 });\n" +
+    "          let result = await resp.text();\n" +
+    "          // console.log(\"Asset Result = \" + result);\n" +
+    "        } else if (how == 'extensions') {\n" +
+    "          let resp = await\n" +
+    "          fetch('/_extensions', {\n" +
+    "            method: 'POST',\n" +
+    "            mode: 'cors',\n" +
+    "            body: value });\n" +
+    "          let result = await resp.text();\n" +
+    "          // Tell App Inventor that extensions are loaded\n" +
+    "          window.opener.postMessage({'status' : 'EXTENSIONS_LOADED'},\n" +
+    "                                    origin);\n" +
+    "          // console.log(\"Extensions Result = \" + result);\n" +
+    "        }\n" +
+    "      };\n" +
+    "      async function sendblocks(block) {\n" +
+    "        let resp = await fetch('/_newblocks', {\n" +
+    "          method : 'POST',\n" +
+    "          mode: 'cors',\n" +
+    "          body: block });\n" +
+    "        let data = await resp.json();\n" +
+    "        // console.log(data);\n" +
+    "        return data;\n" +
+    "      }\n" +
+    "      async function getversion() {\n" +
+    "        let resp = await\n" +
+    "        fetch('/_getversion');\n" +
+    "        let data = await resp.json();\n" +
+    "        // console.log(data);\n" +
+    "        return data;\n" +
+    "      }\n" +
+    "      async function init() {\n" +
+    "        // First let replmgr.js that we are loaded and running\n" +
+    "        window.opener.postMessage({ \"status\" : \"hello\" }, origin);\n" +
+    "        while (true) {\n" +
+    "          // console.log('getting values');\n" +
+    "          let resp = await fetch('/_values', {\n" +
+    "            method: 'POST',\n" +
+    "            mode: 'cors',\n" +
+    "            body: \"IGNORED=STUFF\" });\n" +
+    "          let data = await resp.json();\n" +
+    "          window.opener.postMessage(data, origin);\n" +
+    "        }\n" +
+    "      }\n" +
+    "      function dowork() {\n" +
+    "        let work = QUEUE.shift();\n" +
+    "        if (!work) {\n" +
+    "          // console.log(\"QUEUE_RUNNING = false\");\n" +
+    "          QUEUE_RUNNING = false;\n" +
+    "        } else {\n" +
+    "          origin = work.origin;\n" +
+    "          let how = work.data[0];\n" +
+    "          let value = work.data[1];\n" +
+    "          let value2 = work.data[2];\n" +
+    "          // console.log(\"About to: how = \" + how + \" value = \" + value);\n" +
+    "          sendtophone(how, value, value2).then(function() {\n" +
+    "            setTimeout(() => {\n" +
+    "              dowork();\n" +
+    "            });\n" +
+    "          });\n" +
+    "        }\n" +
+    "      };\n" +
+    "      window.addEventListener(\"message\", (event) => {\n" +
+    "        QUEUE.push(event);\n" +
+    "        if (!QUEUE_RUNNING) {\n" +
+    "          QUEUE_RUNNING = true;\n" +
+    "          // console.log(\"QUEUE_RUNNING = true\");\n" +
+    "          setTimeout(() => {\n" +
+    "            dowork();\n" +
+    "          });\n" +
+    "        }\n" +
+    "      });\n" +
+    "      window.onload = init;\n" +
+    "    </script>\n" +
+    "  </head>\n" +
+    "  <body>\n" +
+    "    <h1>This is a special window used by MIT App Inventor</h1>\n" +
+    "    <p>\n" +
+    "      You can safely ignore this window, it should close when you\n" +
+    "      disconnect the MIT AI2 Companion, or exit MIT App Inventor.\n" +
+    "    </p>\n" +
+    "  </body>\n" +
+    "</html>\n";
 
 }

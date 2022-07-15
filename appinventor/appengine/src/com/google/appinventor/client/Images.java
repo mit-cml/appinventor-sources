@@ -409,6 +409,12 @@ public interface Images extends Resources {
   ImageResource gameclient();
 
   /**
+   * Designer pallete item: GoogleSheets component
+   */
+  @Source("com/google/appinventor/images/googleSheets.png")
+  ImageResource googleSheets();
+
+  /**
    * Designer palette item: Sprite
    */
   @Source("com/google/appinventor/images/imageSprite.png")
@@ -636,6 +642,12 @@ public interface Images extends Resources {
     */
   @Source("com/google/appinventor/images/spinner.png")
   ImageResource spinner();
+
+  /**
+   * Designer palette item: Translator Component
+   */
+  @Source("com/google/appinventor/images/translator.png")
+  ImageResource translator();
 
   /**
     * Designer palette item: YandexTranslate

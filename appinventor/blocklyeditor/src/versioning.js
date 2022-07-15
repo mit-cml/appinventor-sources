@@ -1350,6 +1350,31 @@ Blockly.Versioning.findAllPropertyBlocks = function (dom, componentType, propert
 };
 
 /**
+ * @param dom: DOM for XML workspace
+ * @param componentType: component type to rename
+ * @param newComponentType: New component type name
+ *
+ * @author jis@mit.edu (Jeffrey I. Schiller>
+ *
+ */
+
+Blockly.Versioning.renameComponentType = function(componentType, newComponentType) {
+  return function(blocksRep) {
+    var dom = Blockly.Versioning.ensureDom(blocksRep);
+    var allBlocks = dom.getElementsByTagName('block');
+    for (var b = 0, block; block = allBlocks[b]; b++) {
+      var mutation = Blockly.Versioning.firstChildWithTagName(block, "mutation");
+      if (mutation) {
+        if (mutation.getAttribute("component_type") == componentType) {
+          mutation.setAttribute("component_type", newComponentType);
+        }
+      }
+    }
+    return dom;
+  }
+};
+
+/**
  * @param elem: an HTML element
  * @param tag: string thats a tag name
  * @returns the first child of elem with the given tag name (case insensitive)
@@ -3266,8 +3291,19 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     // AI2: ApiKey property added
-    2: "noUpgrade"
+    2: "noUpgrade",
 
-  } // End YandexTranslate upgraders
+    // YandexTranslate to be removed, rename blocks to Translator
+    // which has identical set of blocks
+    3: [
+      Blockly.Versioning.renameComponentType("YandexTranslate", "Translator"),
+      ]
+
+  }, // End YandexTranslate upgraders
+
+  "Translator": {
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+  } // End Translate upgraders
 
 };

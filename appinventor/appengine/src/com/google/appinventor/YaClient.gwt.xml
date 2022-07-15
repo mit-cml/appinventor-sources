@@ -148,8 +148,12 @@
   <extend-property name="locale" values="pl"/>
   <!-- Lithuanian -->
   <extend-property name="locale" values="lt"/>
+  <!-- Turkish -->
+  <extend-property name="locale" values="tr"/>
   <!-- Armenian -->
   <extend-property name="locale" values="hy"/>
+  <!-- Catalan -->
+  <extend-property name="locale" values="ca"/>
 
   <set-property-fallback name="locale" value="en"/>
 </module>
