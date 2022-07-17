@@ -17,4 +17,13 @@ public interface DataSourceChangeListener {
    * @param newValue  the new value of the observed value
    */
   void onDataSourceValueChange(DataSource<?, ?> component, String key, Object newValue);
+
+  /**
+   * Event called when a new real time value is sent to the observer.
+   *
+   * @param component  component that triggered the event
+   * @param key  identifier of the value
+   * @param value  value received
+   */
+  void onReceiveValue(RealTimeDataSource<?, ?> component, String key, Object value);
 }

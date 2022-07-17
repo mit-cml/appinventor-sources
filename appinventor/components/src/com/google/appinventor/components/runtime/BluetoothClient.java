@@ -57,7 +57,7 @@ public final class BluetoothClient extends BluetoothConnectionBase
   private Set<Integer> acceptableDeviceClasses;
 
   // Set of observers
-  private HashSet<ChartDataBase> dataSourceObservers = new HashSet<ChartDataBase>();
+  private HashSet<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   // Executor Service to poll data continuously from the Input Stream
   // which holds data sent by Bluetooth connections. Used for sending
@@ -371,18 +371,6 @@ public final class BluetoothClient extends BluetoothConnectionBase
         BluetoothReflection.getBluetoothDeviceName(bluetoothDevice) + ".");
   }
 
-  @Override
-  public synchronized void addDataObserver(ChartDataBase dataComponent) {
-    // Data Polling Service has not been initialized yet; Initialize it
-    // (since Data Component is added)
-    if (dataPollService == null) {
-      startBluetoothDataPolling();
-    }
-
-    // Add the Data Component as an observer
-    dataSourceObservers.add(dataComponent);
-  }
-
   /**
    * Starts the scheduled Data Polling Service that
    * continuously reads data and notifies all the
@@ -413,7 +401,19 @@ public final class BluetoothClient extends BluetoothConnectionBase
   }
 
   @Override
-  public synchronized void removeDataObserver(ChartDataBase dataComponent) {
+  public synchronized void addDataObserver(DataSourceChangeListener dataComponent) {
+    // Data Polling Service has not been initialized yet; Initialize it
+    // (since Data Component is added)
+    if (dataPollService == null) {
+      startBluetoothDataPolling();
+    }
+
+    // Add the Data Component as an observer
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public synchronized void removeDataObserver(DataSourceChangeListener dataComponent) {
     dataSourceObservers.remove(dataComponent);
 
     // No more Data Source observers exist;
@@ -429,7 +429,7 @@ public final class BluetoothClient extends BluetoothConnectionBase
 
   @Override
   public void notifyDataObservers(String key, Object newValue) {
-    for (ChartDataBase observer : dataSourceObservers) {
+    for (DataSourceChangeListener observer : dataSourceObservers) {
       observer.onReceiveValue(this, key, newValue);
     }
   }

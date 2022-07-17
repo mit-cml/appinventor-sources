@@ -49,7 +49,7 @@ import java.util.concurrent.Future;
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
 public abstract class ChartDataBase implements Component, DataSourceChangeListener,
-    DataSourceGetValueListener, OnChartGestureListener, OnChartValueSelectedListener {
+    OnChartGestureListener, OnChartValueSelectedListener {
   protected Chart container;
   protected ChartDataModel<?, ?, ?, ?, ?> chartDataModel;
 
