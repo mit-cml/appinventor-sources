@@ -38,6 +38,7 @@ public final class ChartData2D extends ChartDataBase {
     super(chartContainer);
     // Construct default dataFileColumns list with 2 entries
     dataFileColumns = Arrays.asList("", "");
+    sheetsColumns = Arrays.asList("", "");
     webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
   }
 
@@ -149,6 +150,27 @@ public final class ChartData2D extends ChartDataBase {
     YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
     importFromDataFileAsync(dataFile, columns);
+  }
+
+  /**
+   * Imports data from the specified GoogleSheets component by taking the specified x column
+   * for the x values, and the specified y column for the y values. Prior to calling this function,
+   * the GoogleSheet component's ReadSheet method has to be called to load the data. The usage of
+   * the GotSheet event in the GoogleSheets component is unnecessary.
+   *
+   *   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+   *
+   * @param sheet        GoogleSheet component to import from
+   * @param xColumn      x-value column name
+   * @param yColumn      y-value column name
+   * @param useHeaders   use the first row of values to interpret the column names
+   */
+  @SimpleFunction
+  public void ImportFromGoogleSheets(final GoogleSheets sheet, String xColumn, String yColumn,
+      boolean useHeaders) {
+    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+
+    importFromGoogleSheetsAsync(sheet, columns, useHeaders);
   }
 
   /**

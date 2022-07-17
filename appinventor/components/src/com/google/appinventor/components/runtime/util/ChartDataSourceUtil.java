@@ -39,11 +39,13 @@ public class ChartDataSourceUtil {
     // Iterate through all the matrix's entries
     for (int i = 0; i < matrix.size(); ++i) {
       // Matrix entry is not of type YailList; Skip
-      if (!(matrix.getObject(i) instanceof YailList)) {
+      Object row = matrix.getObject(i);
+
+      if (!(row instanceof List)) {
         continue;
       }
 
-      YailList list = (YailList)matrix.getObject(i);
+      List<?> list = (List<?>) row;
 
       // A list entry with a bigger size has been found; update
       // the value.
@@ -102,14 +104,18 @@ public class ChartDataSourceUtil {
 
     for (int i = 0; i < matrix.size(); ++i) {
       // Get the i-th matrix entry
-      YailList matrixEntry = (YailList) matrix.getObject(i); // Safe cast
+      List<?> matrixEntry = (List<?>) matrix.getObject(i); // Safe cast
 
       // Ensure that the entry has the required index value
       // (this handles un-even list case)
       if (matrixEntry.size() > index) {
         // Each index-th element is added from all the matrix entries
         // to create the transpose entry
-        entries.add((matrixEntry.getString(index)));
+        if (matrixEntry instanceof YailList) {
+          entries.add((((YailList) matrixEntry).getString(index)));
+        } else {
+          entries.add(matrixEntry.get(index).toString());
+        }
       } else { // Entry does not exist
         // Add blank entry
         entries.add("");

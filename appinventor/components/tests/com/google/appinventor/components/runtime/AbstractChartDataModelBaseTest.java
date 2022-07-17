@@ -128,7 +128,7 @@ public abstract class AbstractChartDataModelBaseTest<M extends ChartDataModel<?,
   protected void importFromCsvHelper(List<Entry> expectedEntries, YailList... columns) {
     YailList columnList = YailList.makeList(columns);
 
-    model.importFromColumns(columnList);
+    model.importFromColumns(columnList, true);
     assertExpectedEntriesHelper(expectedEntries);
   }
 

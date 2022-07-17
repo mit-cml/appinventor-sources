@@ -71,6 +71,10 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    */
   protected List<String> dataFileColumns;
 
+  protected boolean useSheetHeaders;
+
+  protected List<String> sheetsColumns;
+
   /**
    * Properties used in Designer to import from Web components.
    * Represents the names of the columns to use,
@@ -332,6 +336,19 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   }
 
   /**
+   * If checked, the first row of the spreadsheet will be used to interpret the x and y column
+   * values. Otherwise, the x and y columns should be a column reference, such as A or B.
+   *
+   * @param useHeaders true if the first row of the spreadsheet should be interpreted as a header
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      userVisible = false)
+  public void GoogleSheetsUseHeaders(boolean useHeaders) {
+    useSheetHeaders = useHeaders;
+  }
+
+  /**
    * Value used when importing data from a DataFile component {@link #Source(DataSource)}. The
    * value represents the column to use from the DataFile for the x entries
    * of the Data Series. For instance, if a column's first value is "Time",
@@ -370,6 +387,18 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   }
 
   /**
+   * Sets the column to parse from the attached GoogleSheets component for the x values. If a
+   * column is not specified, default values for the x values will be generated instead.
+   *
+   * @param column the name of the column to use for X values
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
+  public void GoogleSheetsXColumn(String column) {
+    sheetsColumns.set(0, column);
+  }
+
+  /**
    * Value used when importing data from a DataFile component {@link #Source(DataSource)}. The
    * value represents the column to use from the DataFile for the y entries
    * of the Data Series. For instance, if a column's first value is "Temperature",
@@ -405,6 +434,18 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   public void WebYColumn(String column) {
     // The second element represents the y entries
     webColumns.set(1, column);
+  }
+
+  /**
+   * Sets the column to parse from the attached GoogleSheets component for the y values. If a
+   * column is not specified, default values for the y values will be generated instead.
+   *
+   * @param column the name of the column to use for Y values
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
+  public void GoogleSheetsYColumn(String column) {
+    sheetsColumns.set(1, column);
   }
 
   /**
@@ -490,6 +531,9 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
         ImportFromTinyDB((TinyDB) dataSource, dataSourceKey);
       } else if (dataSource instanceof CloudDB) {
         ImportFromCloudDB((CloudDB) dataSource, dataSourceKey);
+      } else if (dataSource instanceof GoogleSheets) {
+        importFromGoogleSheetsAsync((GoogleSheets) dataSource, YailList.makeList(sheetsColumns),
+            useSheetHeaders);
       } else if (dataSource instanceof Web) {
         importFromWebAsync((Web) dataSource, YailList.makeList(webColumns));
       }
@@ -573,7 +617,16 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
           // Retrieve the List of columns to modify (DataFile columns if Data Source
           // is a DataFile, and Web columns otherwise.
-          List<String> columnsList = (source instanceof DataFile) ? dataFileColumns : webColumns;
+          List<String> columnsList;
+          if (source instanceof DataFile) {
+            columnsList = dataFileColumns;
+          } else if (source instanceof GoogleSheets) {
+            columnsList = sheetsColumns;
+          } else if (source instanceof Web) {
+            columnsList = webColumns;
+          } else {
+            throw new IllegalArgumentException(source + " is not an expected DataSource");
+          }
 
           // Iterate through all the columns
           for (int i = 0; i < columnsList.size(); ++i) {
@@ -629,6 +682,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
         for (int i = 0; i < dataFileColumns.size(); ++i) {
           dataFileColumns.set(i, "");
+          sheetsColumns.set(i, "");
           webColumns.set(i, "");
         }
       }
@@ -824,9 +878,38 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
         }
 
         // Import from Data file with the specified parameters
-        chartDataModel.importFromColumns(dataResult);
+        chartDataModel.importFromColumns(dataResult, true);
 
         // Refresh the Chart after import
+        refreshChart();
+      }
+    });
+  }
+
+
+  protected void importFromGoogleSheetsAsync(final GoogleSheets sheets, final YailList columns,
+      final boolean useHeaders) {
+    final Future<YailList> sheetColumns = sheets.getDataValue(columns, useHeaders);
+
+    threadRunner.execute(new Runnable() {
+      @Override
+      public void run() {
+        YailList dataColumns = null;
+
+        try {
+          dataColumns = sheetColumns.get();
+        } catch (InterruptedException e) {
+          Log.e(this.getClass().getName(), e.getMessage());
+        } catch (ExecutionException e) {
+          Log.e(this.getClass().getName(), e.getMessage());
+        }
+
+        if (sheets == dataSource) {
+          updateCurrentDataSourceValue(dataSource, null, null);
+        }
+
+        chartDataModel.importFromColumns(dataColumns, useHeaders);
+
         refreshChart();
       }
     });
@@ -866,7 +949,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
         }
 
         // Import the data from the retrieved columns
-        chartDataModel.importFromColumns(dataColumns);
+        chartDataModel.importFromColumns(dataColumns, true);
 
         // Refresh the Chart after import
         refreshChart();
@@ -1040,7 +1123,11 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
         // Set the current Data Source Value to all the tuples from the columns.
         // This is needed to easily remove values later on when the value changes
         // again.
-        lastDataSourceValue = chartDataModel.getTuplesFromColumns(columns);
+        lastDataSourceValue = chartDataModel.getTuplesFromColumns(columns, true);
+      } else if (source instanceof GoogleSheets) {
+        YailList columns = ((GoogleSheets) source).getColumns(YailList.makeList(sheetsColumns),
+            useSheetHeaders);
+        lastDataSourceValue = chartDataModel.getTuplesFromColumns(columns, useSheetHeaders);
       } else {
         // Update current Data Source value
         lastDataSourceValue = newValue;

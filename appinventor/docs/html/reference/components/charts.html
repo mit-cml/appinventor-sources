@@ -271,6 +271,15 @@ numerical values are returned.</li>
   <dd>Comma separated list of Elements to use for the data series. Values are formatted
  as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed
  from the x and y values.</dd>
+  <dt id="ChartData2D.GoogleSheetsUseHeaders" class="boolean wo do"><em>GoogleSheetsUseHeaders</em></dt>
+  <dd>If checked, the first row of the spreadsheet will be used to interpret the x and y column
+ values. Otherwise, the x and y columns should be a column reference, such as A or B.</dd>
+  <dt id="ChartData2D.GoogleSheetsXColumn" class="text wo do"><em>GoogleSheetsXColumn</em></dt>
+  <dd>Sets the column to parse from the attached GoogleSheets component for the x values. If a
+ column is not specified, default values for the x values will be generated instead.</dd>
+  <dt id="ChartData2D.GoogleSheetsYColumn" class="text wo do"><em>GoogleSheetsYColumn</em></dt>
+  <dd>Sets the column to parse from the attached GoogleSheets component for the y values. If a
+ column is not specified, default values for the y values will be generated instead.</dd>
   <dt id="ChartData2D.Label" class="text"><em>Label</em></dt>
   <dd>Specifies the text for the data series label.</dd>
   <dt id="ChartData2D.LineType" class="com google appinventor components common LineTypeEnum wo do"><em>LineType</em></dt>
@@ -366,6 +375,14 @@ numerical values are returned.</li>
     <p>Passing in empty test for any of the column parameters will result in the usage of
  default values which are the indices of the entries. For the first entry, the default
  value would be the 1, for the second it would be 2, and so on.</p>
+  </dd>
+  <dt id="ChartData2D.ImportFromGoogleSheets" class="method"><i></i> ImportFromGoogleSheets(<em class="component">sheet</em>,<em class="text">xColumn</em>,<em class="text">yColumn</em>,<em class="boolean">useHeaders</em>)</dt>
+  <dd>Imports data from the specified GoogleSheets component by taking the specified x column
+ for the x values, and the specified y column for the y values. Prior to calling this function,
+ the GoogleSheet component’s ReadSheet method has to be called to load the data. The usage of
+ the GotSheet event in the GoogleSheets component is unnecessary.
+
+    <p>Empty columns are filled with default values (1, 2, 3, … for Entry 1, 2, 3, …).</p>
   </dd>
   <dt id="ChartData2D.ImportFromList" class="method"><i></i> ImportFromList(<em class="list">list</em>)</dt>
   <dd>Imports the data from the specified list parameter to the data series.

@@ -14,6 +14,7 @@ import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import gnu.mapping.Symbol;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -214,6 +215,12 @@ public abstract class ChartDataModel<
       } else if (entry instanceof List) {
         // Create a tuple from the entry
         tuple = YailList.makeList((List<?>) entry);
+      } else if (entry instanceof Symbol) {
+        continue;  // Skip *list* header
+      }
+
+      if (tuple == null) {
+        continue;
       }
 
       // Attempt to remove entry
@@ -231,9 +238,9 @@ public abstract class ChartDataModel<
    *
    * @param columns columns to import data from
    */
-  public void importFromColumns(YailList columns) {
+  public void importFromColumns(YailList columns, boolean hasHeaders) {
     // Get a YailList of tuples from the specified columns
-    YailList tuples = getTuplesFromColumns(columns);
+    YailList tuples = getTuplesFromColumns(columns, hasHeaders);
 
     // Use the generated tuple list in the importFromList method to
     // import the data.
@@ -249,14 +256,14 @@ public abstract class ChartDataModel<
    * @param columns List of columns to generate tuples from
    * @return Generated List of tuples from the columns
    */
-  public YailList getTuplesFromColumns(YailList columns) {
+  public YailList getTuplesFromColumns(YailList columns, boolean hasHeaders) {
     // Determine the (maximum) row count of the specified columns
     int rows = ChartDataSourceUtil.determineMaximumListSize(columns);
 
     List<YailList> tuples = new ArrayList<>();
 
     // Generate tuples from the columns
-    for (int i = 1; i < rows; ++i) {
+    for (int i = hasHeaders ? 1 : 0; i < rows; ++i) {
       ArrayList<String> tupleElements = new ArrayList<>();
 
       // Add entries to the tuple from all i-th values (i-th row)
