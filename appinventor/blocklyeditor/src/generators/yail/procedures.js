@@ -85,36 +85,3 @@ Blockly.Yail['procedures_callreturn'] = function() {
       + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
-
-Blockly.Yail['map_list'] = function() {
-  /*
-  (call-yail-primitive
-    map
-    (*list-for-runtime*
-        (get-var p$<PROVIDED_PROCEDURE_NAME>)
-        <CODE_FOR_PROVIDED_LIST>)
-    '(procedure any)
-    "map-list")
-
-  */
-  var procName = Blockly.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME');
-
-  var emptyListCode = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-list" + Blockly.Yail.YAIL_SPACER;
-  emptyListCode += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
-  emptyListCode += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
-  emptyListCode += Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  emptyListCode += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "make a list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-
-  var listCode = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || emptyListCode;
-  var allCode =
-      Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "map" + Blockly.Yail.YAIL_SPACER +
-      Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER +
-      Blockly.Yail.YAIL_GET_VARIABLE + procName + Blockly.Yail.YAIL_CLOSE_COMBINATION +
-      Blockly.Yail.YAIL_SPACER + listCode + Blockly.Yail.YAIL_CLOSE_COMBINATION +
-      Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION +
-      "procedure any" + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER +
-      Blockly.Yail.YAIL_DOUBLE_QUOTE + "map-list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-
-  console.log(allCode);
-  return [ allCode, Blockly.Yail.ORDER_ATOMIC ];
-};

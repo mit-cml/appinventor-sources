@@ -449,6 +449,7 @@ Blockly.Blocks['lists_lookup_in_pairs'] = {
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_TITLE_LOOKUP_IN_PAIRS }]
 };
+
 Blockly.Blocks['lists_join_with_separator'] = {
   // Joins list items into a single string separated by specified separator
   category : 'Lists',
@@ -468,18 +469,69 @@ Blockly.Blocks['lists_join_with_separator'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_JOIN_WITH_SEPARATOR_TITLE }]
 };
 
-Blockly.Blocks['lists_mutatorcontainer'] = {
-  init: function() {
+// Blockly.Blocks['lists_mutatorcontainer'] = {
+//   init: function() {
+//     this.setColour(Blockly.LIST_CATEGORY_HUE);
+//     var group = new Blockly.RadioButtonGroup();
+//     this.appendDummyInput()
+//         .appendField(new Blockly.FieldRadioButton(group), 'CHANGE_LIST')
+//         .appendField("changes existing list");
+//     this.appendDummyInput()
+//         .appendField(new Blockly.FieldRadioButton(group), 'MAKE_NEW_LIST')
+//         .appendField("makes new list");
+//     this.contextMenu = false;
+//   }
+// };
+
+Blockly.Blocks['lists_map_proc'] = {
+  // Map a list with a specific procedure
+  category: 'Lists',
+  helpUrl: "helpUrl",
+  init: function () {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    var group = new Blockly.RadioButtonGroup();
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldRadioButton(group), 'CHANGE_LIST')
-        .appendField("changes existing list");
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldRadioButton(group), 'MAKE_NEW_LIST')
-        .appendField("makes new list");
-    this.contextMenu = false;
-  }
+    var procDb = this.getTopWorkspace().getProcedureDatabase();
+    this.procNamesFxn = function() {
+      var procNameArray = [Blockly.FieldProcedure.defaultValue];
+      var topBlocks = procDb.getDeclarationBlocks(true);
+      if (topBlocks.length <= 0) {
+        return ['', ''];
+      }
+      for (var i = 0; i < topBlocks.length; i++) {
+        // console.log(topBlocks);
+        if (topBlocks[i].arguments_.length == 1) {
+          var procName = topBlocks[i].getFieldValue('NAME');
+          procNameArray.push([procName,procName]);
+        }
+      }
+
+      return procNameArray;
+    };
+
+    this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn, Blockly.FieldProcedure.onChange);
+    this.procDropDown.block = this;
+    this.appendValueInput('LIST')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT))
+        .appendField("make new list from", 'TITLE')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendDummyInput('PROCEDURE_CHOICE')
+        .appendField("mapping each item using")
+        .appendField(this.procDropDown,"PROCNAME")
+        .setAlign(Blockly.ALIGN_RIGHT);
+
+    this.setOutput(true, null);
+    this.setTooltip("Tool Tip text");
+    this.arguments_ = [];
+    this.quarkConnections_ = null;
+    this.quarkArguments_ = null;
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
+    Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.getField("PROCNAME").getValue());
+    this.changeList = false;
+    this.setInputsInline(false);
+  },
+  setProcedureParameters: function(paramNames, paramIds, startTracking) {
+    return;
+  },
+  typeblock: [{ translatedName: "translatedName"}],
 };
 
 Blockly.Blocks['lists_map'] = {
@@ -507,6 +559,7 @@ Blockly.Blocks['lists_map'] = {
     this.setTooltip(Blockly.Msg.LANG_LISTS_MAP_TOOLTIP);
     // this.setMutator(new Blockly.Mutator([]));
     this.changeList = false;
+    this.setInputsInline(false);
   },
   // updateBlock_: function() {
 	//  if (this.changeList) {
@@ -682,6 +735,7 @@ Blockly.Blocks['lists_filter'] = {
     // this.setMutator(new Blockly.Mutator([]));
     this.setTooltip(Blockly.Msg.LANG_LISTS_FILTER_TOOLTIP);
     this.changeList = false;
+    this.setInputsInline(false);
   },
   // updateBlock_: function() {
 	//  if (this.changeList) {
@@ -860,6 +914,7 @@ Blockly.Blocks['lists_reduce'] = {
     this.appendIndentedValueInput('COMBINE');
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_REDUCE_TOOLTIP);
+    this.setInputsInline(false);
   },
   getVars: function() {
     var names = []
@@ -904,6 +959,7 @@ Blockly.Blocks['lists_reverse'] = {
     // this.setMutator(new Blockly.Mutator([]))；
     this.setTooltip(Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP);
     this.changeList = false;
+    this.setInputsInline(false);
   },
   // updateBlock_: function() {
 	//  if (this.changeList) {
@@ -1048,6 +1104,7 @@ Blockly.Blocks['lists_sort'] = {
     // this.setMutator(new Blockly.Mutator([]));
     this.setTooltip(Blockly.Msg.LANG_LISTS_SORT_TOOLTIP);
     this.changeList = false;
+    this.setInputsInline(false);
   },
   // updateBlock_: function() {
 	//  if (this.changeList) {
@@ -1207,6 +1264,7 @@ Blockly.Blocks['lists_sort_comparator'] = {
     // this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_TOOLTIP);
     this.changeList = false;
+    this.setInputsInline(false);
   },
   // updateBlock_: function() {
 	//  if (this.changeList) {
@@ -1379,6 +1437,7 @@ Blockly.Blocks['lists_sort_key'] = {
     this.setOutput(true, null);
     this.setTooltip( Blockly.Msg.LANG_LISTS_SORT_KEY_TOOLTIP);
     this.changeList = false;
+    this.setInputsInline(false);
   },
   // updateBlock_: function() {
 	// 	 if (this.changeList) {
@@ -1569,6 +1628,7 @@ Blockly.Blocks['lists_but_first'] = {
 		// this.setMutator(new Blockly.Mutator([]));
         this.setOutput(true, null);
 	    this.changeList = false;
+        this.setInputsInline(false);
 	   },
 	   // updateBlock_: function() {
 		// 	  if (this.changeList) {
@@ -1710,6 +1770,7 @@ Blockly.Blocks['lists_but_last'] = {
 	    // this.setMutator(new Blockly.Mutator([]));
         this.setOutput(true, null);
 	    this.changeList = false
+        this.setInputsInline(false);
 	  },
 	  // updateBlock_: function() {
 		//   if (this.changeList) {
@@ -1857,6 +1918,7 @@ Blockly.Blocks['lists_slice'] = {
         this.setOutput(true, null);
 	    // this.setMutator(new Blockly.Mutator([]));
 	    this.changeList = false;
+        this.setInputsInline(false);
 	  },
 	  // updateBlock_: function() {
 		//   if (this.changeList) {

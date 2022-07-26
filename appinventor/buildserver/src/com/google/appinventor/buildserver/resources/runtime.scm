@@ -942,6 +942,10 @@
   ;;      (begin (display x) (display " "))
   ;;      )
   ;;  '(100 200 17 300))
+(define-syntax map_proc
+  (syntax-rules ()
+    ((_ _ proc list)
+      (yail-list-map proc list))))
 
 (define-syntax map_nondest
   (syntax-rules ()
