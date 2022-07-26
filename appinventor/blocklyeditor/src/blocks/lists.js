@@ -535,7 +535,6 @@ Blockly.Blocks['lists_map_proc'] = {
 };
 
 Blockly.Blocks['lists_map'] = {
-  // For each loop.
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_MAP_HELPURL,
   init : function() {
@@ -710,7 +709,6 @@ Blockly.Blocks['lists_map'] = {
 
 
 Blockly.Blocks['lists_filter'] = {
-  // For each loop.
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_FILTER_HELPURL,
   init : function() {
@@ -886,7 +884,6 @@ Blockly.Blocks['lists_filter'] = {
 
 
 Blockly.Blocks['lists_reduce'] = {
-  // For each loop.
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_REDUCE_HELPURL,
   init : function() {
@@ -944,153 +941,151 @@ Blockly.Blocks['lists_reduce'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_REDUCE_TITLE_REDUCE }]
 };
 
-Blockly.Blocks['lists_reverse'] = {
-  // For each loop.
-  category : 'Lists',
-  helpUrl : Blockly.Msg.LANG_LISTS_REVERSE_HELPURL,
-  init : function() {
-    this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.appendValueInput('LIST')
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-      .appendField(Blockly.Msg.LANG_LISTS_REVERSE_NONDEST_TITLE_REVERSE, 'TITLE');
-    this.setOutput(true, null);
-    // this.setPreviousStatement(true);
-    // this.setNextStatement(true);
-    // this.setMutator(new Blockly.Mutator([]))；
-    this.setTooltip(Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP);
-    this.changeList = false;
-    this.setInputsInline(false);
-  },
-  // updateBlock_: function() {
-	//  if (this.changeList) {
-	//    if (this.outputConnection && this.outputConnection.targetConnection) {
-	//      this.outputConnection.disconnect();
-  //
-	//      var children = this.parentBlock_.childBlocks_;
-	//      for (var child, x = 0; child = children[x]; x++) {
-	//        if (child == this) {
-	//          children.splice(x, 1);
-	//          break;
-	//        }
-	//      }
-	//      this.setParent(null);
-	//      this.parentBlock_ = null;
-	//    }
-  //
-	//    if (this.outputConnection) {
-	//      if (this.outputConnection.inDB_) {
-	//        this.outputConnection.dbList_[this.outputConnection.type].removeConnection_(this.outputConnection);
-	//      }
-	//      this.outputConnection.inDB_ = false;
-	//      if (Blockly.highlightedConnection_ == this.outputConnection) {
-	//        Blockly.highlightedConnection_ = null;
-	//      }
-	//      if (Blockly.localConnection_ == this.outputConnection) {
-	//        Blockly.localConnection_ = null;
-	//      }
-	//    }
-  //
-	//    this.outputConnection = null;
-	//    this.setFieldValue(Blockly.Msg.LANG_LISTS_REVERSE_DEST_TITLE_REVERSE, 'TITLE');
-	//    this.setPreviousStatement(true);
-	//    this.setNextStatement(true);
-	//    this.previousConnection.dbList_[this.previousConnection.type].addConnection_(this.previousConnection);
-	//    this.nextConnection.dbList_[this.nextConnection.type].addConnection_(this.nextConnection);
-	//    this.render();
-  //
-	//  } else {
-	//    if (this.previousConnection && this.previousConnection.targetConnection) {
-	//      this.previousConnection.disconnect();
-  //
-	//      var children = this.parentBlock_.childBlocks_;
-	//      for (var child, x = 0; child = children[x]; x++) {
-	//        if (child == this) {
-	//          children.splice(x, 1);
-	//          break;
-	//        }
-	//      }
-	//      this.setParent(null);
-	//      this.parentBlock_ = null;
-	//   }
-  //
-	//    if (this.previousConnection) {
-	//      if (this.previousConnection.inDB_) {
-	//        this.previousConnection.dbList_[this.previousConnection.type].removeConnection_(this.previousConnection);
-	//      }
-	//      this.previousConnection.inDB_ = false;
-	//      if (Blockly.highlightedConnection_ == this.previousConnection) {
-	//        Blockly.highlightedConnection_ = null;
-	//      }
-	//      if (Blockly.localConnection_ == this.previousConnection) {
-	//        Blockly.localConnection_ = null;
-	//      }
-	//    }
-  //
-	//    if (this.nextConnection) {
-	//      if (this.nextConnection.inDB_) {
-	//        this.nextConnection.dbList_[this.nextConnection.type].removeConnection_(this.nextConnection);
-	//      }
-	//      this.nextConnection.inDB_ = false;
-	//      if (Blockly.highlightedConnection_ == this.nextConnection) {
-	//        Blockly.highlightedConnection_ = null;
-	//      }
-	//      if (Blockly.localConnection_ == this.nextConnection) {
-	//        Blockly.localConnection_ = null;
-	//      }
-	//      if (Blockly.localConnection_ == this.nextConnection) {
-	//        Blockly.localConnection_ = null;
-	//      }
-	//    }
-  //
-	//    this.previousConnection = null;
-	//    this.nextConnection = null;
-	//    this.setFieldValue(Blockly.Msg.LANG_LISTS_REVERSE_NONDEST_TITLE_REVERSE, 'TITLE');
-	//    this.setOutput(true, null);
-	//    this.outputConnection.dbList_[this.outputConnection.type].addConnection_(this.outputConnection);
-	//    this.render();
-  //    }
-  // },
-  // mutationToDom: function() {
-  //   var container = document.createElement('mutation');
-  //   if (! this.changeList) {
-  //     container.setAttribute('destructive', this.changeList);
-  //   }
-  //   return container;
-  // },
-  // domToMutation: function(xmlElement) {
-  //   if(!xmlElement.getAttribute('destructive')){
-  //     this.changeList = true;
-  //   } else {
-  //     this.changeList = (xmlElement.getAttribute('destructive') == "true");
-  //   }
-  //   this.updateBlock_();
-  // },
-  // decompose: function(workspace) {
-  //   var containerBlock = Blockly.Block.obtain(workspace,'lists_mutatorcontainer');
-  //   containerBlock.initSvg();
-  //   var changeListButton = containerBlock.getField_('CHANGE_LIST');
-  //   var makeNewListButton = containerBlock.getField_('MAKE_NEW_LIST');
-  //   var group = changeListButton.group;
-  //   if (this.changeList) {
-  //     group.setSelected(changeListButton);
-  //   } else {
-  //     group.setSelected(makeNewListButton);
-  //   }
-  //   return containerBlock;
-  // },
-  // compose: function(containerBlock) {
-	// this.oldChangeList = this.changeList;
-  //   this.changeList = containerBlock.getFieldValue('CHANGE_LIST') == 'TRUE' ? true : false;
-  //   if (this.oldChangeList != this.changeList) {
-  //   	this.updateBlock_();
-  //   }
-  // },
-  saveConnections: Blockly.saveConnections,
-  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_REVERSE_INPUT_COLLAPSED_TEXT }]
-};
+// Blockly.Blocks['lists_reverse'] = {
+//   category : 'Lists',
+//   helpUrl : Blockly.Msg.LANG_LISTS_REVERSE_HELPURL,
+//   init : function() {
+//     this.setColour(Blockly.LIST_CATEGORY_HUE);
+//     this.appendValueInput('LIST')
+//       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+//       .appendField(Blockly.Msg.LANG_LISTS_REVERSE_NONDEST_TITLE_REVERSE, 'TITLE');
+//     this.setOutput(true, null);
+//     // this.setPreviousStatement(true);
+//     // this.setNextStatement(true);
+//     // this.setMutator(new Blockly.Mutator([]))；
+//     this.setTooltip(Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP);
+//     this.changeList = false;
+//     this.setInputsInline(false);
+//   },
+//   // updateBlock_: function() {
+// 	//  if (this.changeList) {
+// 	//    if (this.outputConnection && this.outputConnection.targetConnection) {
+// 	//      this.outputConnection.disconnect();
+//   //
+// 	//      var children = this.parentBlock_.childBlocks_;
+// 	//      for (var child, x = 0; child = children[x]; x++) {
+// 	//        if (child == this) {
+// 	//          children.splice(x, 1);
+// 	//          break;
+// 	//        }
+// 	//      }
+// 	//      this.setParent(null);
+// 	//      this.parentBlock_ = null;
+// 	//    }
+//   //
+// 	//    if (this.outputConnection) {
+// 	//      if (this.outputConnection.inDB_) {
+// 	//        this.outputConnection.dbList_[this.outputConnection.type].removeConnection_(this.outputConnection);
+// 	//      }
+// 	//      this.outputConnection.inDB_ = false;
+// 	//      if (Blockly.highlightedConnection_ == this.outputConnection) {
+// 	//        Blockly.highlightedConnection_ = null;
+// 	//      }
+// 	//      if (Blockly.localConnection_ == this.outputConnection) {
+// 	//        Blockly.localConnection_ = null;
+// 	//      }
+// 	//    }
+//   //
+// 	//    this.outputConnection = null;
+// 	//    this.setFieldValue(Blockly.Msg.LANG_LISTS_REVERSE_DEST_TITLE_REVERSE, 'TITLE');
+// 	//    this.setPreviousStatement(true);
+// 	//    this.setNextStatement(true);
+// 	//    this.previousConnection.dbList_[this.previousConnection.type].addConnection_(this.previousConnection);
+// 	//    this.nextConnection.dbList_[this.nextConnection.type].addConnection_(this.nextConnection);
+// 	//    this.render();
+//   //
+// 	//  } else {
+// 	//    if (this.previousConnection && this.previousConnection.targetConnection) {
+// 	//      this.previousConnection.disconnect();
+//   //
+// 	//      var children = this.parentBlock_.childBlocks_;
+// 	//      for (var child, x = 0; child = children[x]; x++) {
+// 	//        if (child == this) {
+// 	//          children.splice(x, 1);
+// 	//          break;
+// 	//        }
+// 	//      }
+// 	//      this.setParent(null);
+// 	//      this.parentBlock_ = null;
+// 	//   }
+//   //
+// 	//    if (this.previousConnection) {
+// 	//      if (this.previousConnection.inDB_) {
+// 	//        this.previousConnection.dbList_[this.previousConnection.type].removeConnection_(this.previousConnection);
+// 	//      }
+// 	//      this.previousConnection.inDB_ = false;
+// 	//      if (Blockly.highlightedConnection_ == this.previousConnection) {
+// 	//        Blockly.highlightedConnection_ = null;
+// 	//      }
+// 	//      if (Blockly.localConnection_ == this.previousConnection) {
+// 	//        Blockly.localConnection_ = null;
+// 	//      }
+// 	//    }
+//   //
+// 	//    if (this.nextConnection) {
+// 	//      if (this.nextConnection.inDB_) {
+// 	//        this.nextConnection.dbList_[this.nextConnection.type].removeConnection_(this.nextConnection);
+// 	//      }
+// 	//      this.nextConnection.inDB_ = false;
+// 	//      if (Blockly.highlightedConnection_ == this.nextConnection) {
+// 	//        Blockly.highlightedConnection_ = null;
+// 	//      }
+// 	//      if (Blockly.localConnection_ == this.nextConnection) {
+// 	//        Blockly.localConnection_ = null;
+// 	//      }
+// 	//      if (Blockly.localConnection_ == this.nextConnection) {
+// 	//        Blockly.localConnection_ = null;
+// 	//      }
+// 	//    }
+//   //
+// 	//    this.previousConnection = null;
+// 	//    this.nextConnection = null;
+// 	//    this.setFieldValue(Blockly.Msg.LANG_LISTS_REVERSE_NONDEST_TITLE_REVERSE, 'TITLE');
+// 	//    this.setOutput(true, null);
+// 	//    this.outputConnection.dbList_[this.outputConnection.type].addConnection_(this.outputConnection);
+// 	//    this.render();
+//   //    }
+//   // },
+//   // mutationToDom: function() {
+//   //   var container = document.createElement('mutation');
+//   //   if (! this.changeList) {
+//   //     container.setAttribute('destructive', this.changeList);
+//   //   }
+//   //   return container;
+//   // },
+//   // domToMutation: function(xmlElement) {
+//   //   if(!xmlElement.getAttribute('destructive')){
+//   //     this.changeList = true;
+//   //   } else {
+//   //     this.changeList = (xmlElement.getAttribute('destructive') == "true");
+//   //   }
+//   //   this.updateBlock_();
+//   // },
+//   // decompose: function(workspace) {
+//   //   var containerBlock = Blockly.Block.obtain(workspace,'lists_mutatorcontainer');
+//   //   containerBlock.initSvg();
+//   //   var changeListButton = containerBlock.getField_('CHANGE_LIST');
+//   //   var makeNewListButton = containerBlock.getField_('MAKE_NEW_LIST');
+//   //   var group = changeListButton.group;
+//   //   if (this.changeList) {
+//   //     group.setSelected(changeListButton);
+//   //   } else {
+//   //     group.setSelected(makeNewListButton);
+//   //   }
+//   //   return containerBlock;
+//   // },
+//   // compose: function(containerBlock) {
+// 	// this.oldChangeList = this.changeList;
+//   //   this.changeList = containerBlock.getFieldValue('CHANGE_LIST') == 'TRUE' ? true : false;
+//   //   if (this.oldChangeList != this.changeList) {
+//   //   	this.updateBlock_();
+//   //   }
+//   // },
+//   saveConnections: Blockly.saveConnections,
+//   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_REVERSE_INPUT_COLLAPSED_TEXT }]
+// };
 
 Blockly.Blocks['lists_sort'] = {
-  // For each loop.
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_SORT_HELPURL,
   init : function() {
@@ -1235,7 +1230,6 @@ Blockly.Blocks['lists_sort'] = {
 };
 
 Blockly.Blocks['lists_sort_comparator'] = {
-  // For each loop.
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_HELPURL,
   init : function() {
@@ -1414,7 +1408,6 @@ Blockly.Blocks['lists_sort_comparator'] = {
 };
 
 Blockly.Blocks['lists_sort_key'] = {
-  // For each loop.
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_SORT_KEY_HELPURL,
   init : function() {
