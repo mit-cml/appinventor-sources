@@ -541,17 +541,17 @@ Blockly.Blocks['lists_map'] = {
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
-       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-       .appendField(Blockly.Msg.LANG_LISTS_MAP_NONDEST_TITLE_MAP, 'TITLE')
-       .setAlign(Blockly.ALIGN_RIGHT);
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_LISTS_MAP_NONDEST_TITLE_MAP, 'TITLE')
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.appendDummyInput('DESCRIPTION')
-        .appendField(Blockly.Msg.LANG_LISTS_MAP_INPUT_ITEM)
-        .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_MAP_INPUT_VAR,
+      .appendField(Blockly.Msg.LANG_LISTS_MAP_INPUT_ITEM)
+      .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_MAP_INPUT_VAR,
                                                        true, // name is editable
                                                        Blockly.FieldFlydown.DISPLAY_BELOW),
                      'VAR')
-        .appendField(Blockly.Msg.LANG_LISTS_MAP_INPUT_TO)
-        .setAlign(Blockly.ALIGN_RIGHT);
+      .appendField(Blockly.Msg.LANG_LISTS_MAP_INPUT_TO)
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.appendIndentedValueInput('TO');
     this.setOutput(true, null);
     // this.setPreviousStatement(true);
@@ -716,15 +716,15 @@ Blockly.Blocks['lists_filter'] = {
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_LISTS_FILTER_NONDEST_TITLE_FILTER, 'TITLE')
-        .setAlign(Blockly.ALIGN_RIGHT);
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_LISTS_FILTER_NONDEST_TITLE_FILTER, 'TITLE')
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.appendDummyInput('DESCRIPTION')
-        .appendField(Blockly.Msg.LANG_LISTS_FILTER_INPUT_ITEM)
-        .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_FILTER_INPUT_VAR,
-                                                       true, // name is editable
-                                                       Blockly.FieldFlydown.DISPLAY_BELOW),
-                     'VAR')
+      .appendField(Blockly.Msg.LANG_LISTS_FILTER_INPUT_ITEM)
+      .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_FILTER_INPUT_VAR,
+                                                     true, // name is editable
+                                                     Blockly.FieldFlydown.DISPLAY_BELOW),
+                   'VAR')
       .appendField(Blockly.Msg.LANG_LISTS_FILTER_INPUT_PASSING)
       .setAlign(Blockly.ALIGN_RIGHT);
     this.appendIndentedValueInput('TEST')
@@ -892,25 +892,25 @@ Blockly.Blocks['lists_reduce'] = {
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_LISTS_REDUCE_TITLE_REDUCE)
-        .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_INLIST)
-        .setAlign(Blockly.ALIGN_RIGHT);
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_LISTS_REDUCE_TITLE_REDUCE)
+      .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_INLIST)
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('INITANSWER')
-        .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_INITIAL_ANSWER)
-        .setAlign(Blockly.ALIGN_RIGHT);
+      .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_INITIAL_ANSWER)
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.appendDummyInput('DESCRIPTION')
-        .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_COMBINE)
-        .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_VAR,
+      .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_COMBINE)
+      .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_VAR,
                                                        true, // name is editable
                                                        Blockly.FieldFlydown.DISPLAY_BELOW),
                      'VAR1')
-        .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_AND)
-        .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_ANSWER,
+      .appendField(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_AND)
+      .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_REDUCE_INPUT_ANSWER,
                                                        true, // name is editable
                                                        Blockly.FieldFlydown.DISPLAY_BELOW),
                      'VAR2')
-        .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.appendIndentedValueInput('COMBINE');
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_LISTS_REDUCE_TOOLTIP);
@@ -951,8 +951,8 @@ Blockly.Blocks['lists_reverse'] = {
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_LISTS_REVERSE_NONDEST_TITLE_REVERSE, 'TITLE');
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_LISTS_REVERSE_NONDEST_TITLE_REVERSE, 'TITLE');
     this.setOutput(true, null);
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
@@ -1096,8 +1096,8 @@ Blockly.Blocks['lists_sort'] = {
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_LISTS_SORT_NONDEST_TITLE_SORT, 'TITLE');
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_LISTS_SORT_NONDEST_TITLE_SORT, 'TITLE');
     this.setOutput(true, null);
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
@@ -1241,22 +1241,22 @@ Blockly.Blocks['lists_sort_comparator'] = {
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_NONDEST_TITLE_SORT, 'TITLE')
-        .setAlign(Blockly.ALIGN_RIGHT);
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_NONDEST_TITLE_SORT, 'TITLE')
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.appendDummyInput('DESCRIPTION')
-        .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR)
-        .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_VAR1,
-                                                       true, // name is editable
-                                                       Blockly.FieldFlydown.DISPLAY_BELOW),
-                     'VAR1')
-        .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_AND)
-        .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_VAR2,
-                                                       true, // name is editable
-                                                       Blockly.FieldFlydown.DISPLAY_BELOW),
-                     'VAR2')
-        .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR2)
-        .setAlign(Blockly.ALIGN_RIGHT);
+      .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR)
+      .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_VAR1,
+                                                     true, // name is editable
+                                                     Blockly.FieldFlydown.DISPLAY_BELOW),
+                   'VAR1')
+      .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_AND)
+      .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_VAR2,
+                                                     true, // name is editable
+                                                     Blockly.FieldFlydown.DISPLAY_BELOW),
+                   'VAR2')
+      .appendField(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR2)
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.appendIndentedValueInput('COMPARE');
     this.setOutput(true, null);
     // this.setMutator(new Blockly.Mutator([]));
@@ -1420,9 +1420,9 @@ Blockly.Blocks['lists_sort_key'] = {
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_LISTS_SORT_KEY_NONDEST_TITLE_SORT, 'TITLE')
-        .setAlign(Blockly.ALIGN_RIGHT);
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_LISTS_SORT_KEY_NONDEST_TITLE_SORT, 'TITLE')
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.appendDummyInput('DESCRIPTION')
       .appendField(Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_KEY)
       .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_VAR,
@@ -1623,7 +1623,7 @@ Blockly.Blocks['lists_but_first'] = {
 	    // this.setNextStatement(true);
 	    this.appendValueInput('LIST')
 	      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-		      .appendField(Blockly.Msg.LANG_LISTS_BUT_FIRST_INPUT_BUT_FIRST);
+          .appendField(Blockly.Msg.LANG_LISTS_BUT_FIRST_INPUT_BUT_FIRST);
 		this.setTooltip(Blockly.Msg.LANG_LISTS_BUT_FIRST_TOOLTIP);
 		// this.setMutator(new Blockly.Mutator([]));
         this.setOutput(true, null);
@@ -1909,10 +1909,10 @@ Blockly.Blocks['lists_slice'] = {
 	    var checkTypeList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT);
 	    var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT);
 	    this.interpolateMsg(Blockly.Msg.LANG_LISTS_SLICE_INPUT,
-	            ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
-	            ['INDEX1', checkTypeNumber, Blockly.ALIGN_RIGHT],
-	            ['INDEX2', checkTypeNumber, Blockly.ALIGN_RIGHT],
-	            Blockly.ALIGN_RIGHT);
+          ['LIST', checkTypeList, Blockly.ALIGN_RIGHT],
+          ['INDEX1', checkTypeNumber, Blockly.ALIGN_RIGHT],
+          ['INDEX2', checkTypeNumber, Blockly.ALIGN_RIGHT],
+          Blockly.ALIGN_RIGHT);
 	    this.setTooltip(Blockly.Msg.LANG_LISTS_SLICE_TOOLTIP);
 	    this.setInputsInline(false);
         this.setOutput(true, null);
