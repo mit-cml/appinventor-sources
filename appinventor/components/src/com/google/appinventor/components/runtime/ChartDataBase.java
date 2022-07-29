@@ -9,6 +9,7 @@ import android.util.Log;
 
 import android.view.MotionEvent;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
@@ -1106,7 +1107,11 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
     container.$form().runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        EntryClick(entry.getX(), entry.getY());
+        if (entry instanceof PieEntry) {
+          EntryClick(((PieEntry) entry).getLabel(), ((PieEntry) entry).getValue());
+        } else {
+          EntryClick(entry.getX(), entry.getY());
+        }
       }
     });
   }
@@ -1119,7 +1124,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
    * @param y the y position of the clicked entry
    */
   @SimpleEvent()
-  public void EntryClick(double x, double y) {
+  public void EntryClick(Object x, double y) {
     EventDispatcher.dispatchEvent(this, "EntryClick", x, y);
     container.EntryClick(this, x, y);
   }

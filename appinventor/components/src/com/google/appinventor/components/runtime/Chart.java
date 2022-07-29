@@ -438,7 +438,7 @@ public class Chart extends AndroidViewComponent
    * @param y the y position of the clicked entry
    */
   @SimpleEvent
-  public void EntryClick(Component series, double x, double y) {
+  public void EntryClick(Component series, Object x, double y) {
     EventDispatcher.dispatchEvent(this, "EntryClick", series, x, y);
   }
 

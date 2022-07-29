@@ -86,7 +86,7 @@ The Chart component plots data originating from it's attached Data components. F
 
 {:.events}
 
-{:id="Chart.EntryClick"} EntryClick(*series*{:.component},*x*{:.number},*y*{:.number})
+{:id="Chart.EntryClick"} EntryClick(*series*{:.component},*x*{:.any},*y*{:.number})
 : Indicates that the user clicked on a data entry in the `Chart`. The specific series, along
  with its x and y values, are reported.
 
@@ -212,7 +212,7 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 
 {:.events}
 
-{:id="ChartData2D.EntryClick"} EntryClick(*x*{:.number},*y*{:.number})
+{:id="ChartData2D.EntryClick"} EntryClick(*x*{:.any},*y*{:.number})
 : Indicates that the user tapped on a data point in the chart. The x and y values of the
  tapped entry are reported.
 
