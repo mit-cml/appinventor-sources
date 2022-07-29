@@ -13,6 +13,9 @@
 goog.provide('Blockly.Blocks.lists');
 
 goog.require('Blockly.Blocks.Utilities');
+goog.require('Blockly.Blocks.Utilities');
+goog.require('goog.dom');
+goog.require('AI.Blockly.FieldProcedureName');
 
 Blockly.Blocks['lists_create_with'] = {
   // Create a list with any number of elements of any type.
@@ -657,6 +660,16 @@ Blockly.Blocks['lists_map'] = {
       this.setFieldValue(newName, 'VAR');
     }
   },
+  freeVariables: function() { // return the free lexical variables of this block
+    // Should return the empty set: something is wrong if it doesn't!
+    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
+    result.subtract(new Blockly.NameSet(this.declaredNames()));
+    if (result.isEmpty()) {
+      return result;
+    } else {
+      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
+    }
+  },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MAP_INPUT_COLLAPSED_TEXT }]
 };
 
@@ -886,6 +899,16 @@ Blockly.Blocks['lists_filter'] = {
       this.setFieldValue(newName, 'VAR');
     }
   },
+  freeVariables: function() { // return the free lexical variables of this block
+    // Should return the empty set: something is wrong if it doesn't!
+    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
+    result.subtract(new Blockly.NameSet(this.declaredNames()));
+    if (result.isEmpty()) {
+      return result;
+    } else {
+      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
+    }
+  },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_FILTER_INPUT_COLLAPSED_TEXT }]
 };
 
@@ -943,6 +966,16 @@ Blockly.Blocks['lists_reduce'] = {
     }
     if (Blockly.Names.equals(oldName, this.getFieldValue('VAR2'))) {
       this.setFieldValue(newName, 'VAR2');
+    }
+  },
+  freeVariables: function() { // return the free lexical variables of this block
+    // Should return the empty set: something is wrong if it doesn't!
+    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
+    result.subtract(new Blockly.NameSet(this.declaredNames()));
+    if (result.isEmpty()) {
+      return result;
+    } else {
+      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
     }
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_REDUCE_TITLE_REDUCE }]
@@ -1417,6 +1450,16 @@ Blockly.Blocks['lists_sort_comparator'] = {
       this.setFieldValue(newName, 'VAR');
     }
   },
+  freeVariables: function() { // return the free lexical variables of this block
+    // Should return the empty set: something is wrong if it doesn't!
+    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
+    result.subtract(new Blockly.NameSet(this.declaredNames()));
+    if (result.isEmpty()) {
+      return result;
+    } else {
+      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
+    }
+  },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COLLAPSED_TEXT }]
 };
 
@@ -1571,42 +1614,52 @@ Blockly.Blocks['lists_sort_key'] = {
 	//     	this.updateBlock_();
 	//     }
 	//   },
-	  saveConnections: Blockly.saveConnections,
-	  getVars: function() {
-	    return [this.getFieldValue('VAR')];
-	  },
-	  blocksInScope: function() {
-	    var keyBlock = this.getInputTargetBlock('KEY');
-	    if (keyBlock) {
-	      return [keyBlock];
-	    } else {
-	      return [];
-	    }
-	  },
-	  declaredNames: function() {
-	    return [this.getFieldValue('VAR')];
-	  },
-	  renameVar: function(oldName, newName) {
-	    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
-	      this.setFieldValue(newName, 'VAR');
-	    }
-	  },
-	  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_COLLAPSED_TEXT }]
-	};
+  saveConnections: Blockly.saveConnections,
+  getVars: function() {
+    return [this.getFieldValue('VAR')];
+  },
+  blocksInScope: function() {
+    var keyBlock = this.getInputTargetBlock('KEY');
+    if (keyBlock) {
+      return [keyBlock];
+    } else {
+      return [];
+    }
+  },
+  declaredNames: function() {
+    return [this.getFieldValue('VAR')];
+  },
+  renameVar: function(oldName, newName) {
+    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
+      this.setFieldValue(newName, 'VAR');
+    }
+  },
+  freeVariables: function() { // return the free lexical variables of this block
+    // Should return the empty set: something is wrong if it doesn't!
+    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
+    result.subtract(new Blockly.NameSet(this.declaredNames()));
+    if (result.isEmpty()) {
+      return result;
+    } else {
+      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
+    }
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_COLLAPSED_TEXT }]
+};
 
 Blockly.Blocks['lists_minimum'] = {
-	  category : 'Lists',
-	  helpUrl : Blockly.Msg.LANG_LISTS_MIN_HELPURL,
-	  init : function() {
-	    this.setColour(Blockly.LIST_CATEGORY_HUE);
-	    this.setOutput(true, null);
-	    this.appendValueInput('LIST')
-	      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-	      .appendField(Blockly.Msg.LANG_LISTS_MIN_INPUT_MIN);
-	    this.setTooltip(Blockly.Msg.LANG_LISTS_MIN_TOOLTIP);
-	  },
-	  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MIN_INPUT_MIN }]
-	};
+  category : 'Lists',
+  helpUrl : Blockly.Msg.LANG_LISTS_MIN_HELPURL,
+  init : function() {
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
+    this.setOutput(true, null);
+    this.appendValueInput('LIST')
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_LISTS_MIN_INPUT_MIN);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_MIN_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MIN_INPUT_MIN }]
+};
 
 Blockly.Blocks['lists_maximum'] = {
   category : 'Lists',
