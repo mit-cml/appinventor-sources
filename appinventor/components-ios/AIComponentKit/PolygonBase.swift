@@ -131,9 +131,12 @@ open class PolygonMarker: Marker {
   }
 
   @objc open override var Visible: Bool {
-    didSet {
-      _visible = Visible
-      _overlay?.visible = Visible
+    get {
+      return _visible
+    }
+    set {
+      _visible = newValue
+      _overlay?.visible = newValue
     }
   }
 

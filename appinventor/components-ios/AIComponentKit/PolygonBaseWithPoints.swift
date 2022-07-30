@@ -18,16 +18,38 @@ public struct NestedArray {
     _array = []
   }
 
+  static func unwrapYail(_ json: [Any]) -> [Any] {
+    if json.first != nil && json.first is SCMSymbol {
+      var result: [Any] = []
+      for item in json {
+        if item is SCMSymbol {
+          continue
+        } else if item is [Any] {
+          result.append(unwrapYail(item as! [Any]))
+        } else {
+          result.append(item)
+        }
+      }
+      return result
+    } else {
+      return json
+    }
+  }
+
   init(_ json: [Any]) throws {
-    if let points = json as? [[Double]] {
+    var data = json
+    if json.first != nil && json.first is SCMSymbol {
+      data = NestedArray.unwrapYail(json)
+    }
+    if let points = data as? [[Double]] {
       _array = try processList(points)
       _depth = 2
-    } else if let singleNestedPoints = json as? [[[Double]]] {
+    } else if let singleNestedPoints = data as? [[[Double]]] {
       _array = try singleNestedPoints.map { points in
         return try processList(points)
       }
       _depth = 3
-    } else if let doubleNestedPoints = json as? [[[[Double]]]] {
+    } else if let doubleNestedPoints = data as? [[[[Double]]]] {
       _array = try doubleNestedPoints.map { singleNestedPoints in
         return try singleNestedPoints.map { points in
           return try processList(points)
