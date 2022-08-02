@@ -88,16 +88,16 @@ public class PropertiesUtil {
   }
 
   /**
-   * Populate properties of a MockComponent, given a list of property definitons
+   * Populate properties of a MockComponent, given a list of property definitions
    * @param mockComponent
-   * @param propertyDefintions
+   * @param propertyDefinitions
    */
-  public static void populateProperties(MockComponent mockComponent, List<ComponentDatabaseInterface.PropertyDefinition> propertyDefintions,
+  public static void populateProperties(MockComponent mockComponent, List<ComponentDatabaseInterface.PropertyDefinition> propertyDefinitions,
                                         YaFormEditor editor) {
 
     String componentType = mockComponent.getType();
     // Configure properties
-    for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefintions) {
+    for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefinitions) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
           ComponentsTranslation.getPropertyName(property.getCaption()),
           property.getEditorType(), property.getEditorArgs(),

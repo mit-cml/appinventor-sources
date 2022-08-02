@@ -129,11 +129,13 @@ public final class PropertiesBox extends Box {
     }
     designProperties.setProperties(selectedProperties);
     if (components.size() > 1) {
+      // TODO: Localize
       designProperties.setPropertiesCaption(components.size() + " components selected");
     } else {
       // need to update the caption after the setProperties call, since
       // setProperties clears the caption!
-      designProperties.setPropertiesCaption(components.get(0).getName());
+      designProperties.setPropertiesCaption(components.get(0).getName() + " (" +
+                                               components.get(0).getType() + ")");
     }
     setContent(designProperties);
   }
