@@ -487,6 +487,10 @@ public class Ode implements EntryPoint {
     }
   }
 
+  public void refreshProperties() {
+    bindPropertiesBox.show((YaFormEditor) currentFileEditor, true);
+  }
+
   /**
    * Processes the template and galleryId flags.
    *
@@ -1128,6 +1132,10 @@ public class Ode implements EntryPoint {
           "" + getCurrentYoungAndroidProjectId());
       userSettings.saveSettings(null);
     }
+  }
+
+  public void refreshSourceStructure() {
+    bindSourceStructureBox.show((YaFormEditor) currentFileEditor);
   }
 
   /**

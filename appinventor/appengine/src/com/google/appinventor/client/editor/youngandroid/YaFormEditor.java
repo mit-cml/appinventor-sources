@@ -357,6 +357,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public void onPropertyChange(String propertyName, String propertyValue) {
+    LOG.info("Property change " + propertyName + " to " + propertyValue);
     for (MockComponent selectedComponent : form.getSelectedComponents()) {
       selectedComponent.changeProperty(propertyName, propertyValue);
       // Ensure the editor matches (multiselect)
@@ -405,7 +406,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onComponentRenamed(MockComponent component, String oldName) {
     if (loadComplete) {
       onFormStructureChange();
-      updatePropertiesPanel(form.getSelectedComponents(), true);
+      Ode.getInstance().refreshProperties();
     } else {
       LOG.severe("onComponentRenamed called when loadComplete is false");
     }
@@ -414,8 +415,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   @Override
   public void onComponentSelectionChange(MockComponent component, boolean selected) {
     if (loadComplete) {
+      // TODO: SMRL Not sure this class should keep a pointer to source structure
       sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
-      updatePropertiesPanel(form.getSelectedComponents(), selected);
+      Ode.getInstance().refreshSourceStructure();
+      Ode.getInstance().refreshProperties();
     } else {
       LOG.severe("onComponentSelectionChange called when loadComplete is false");
     }
@@ -751,6 +754,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     paletteBox.setContent(palettePanel);
 
     // Update the source structure explorer with the tree of this form's components.
+    // TODO: SMRL Refactor links to source structure
     sourceStructureExplorer.updateTree(form.buildComponentsTree(),
         selectedComponent.getSourceStructureExplorerItem());
     SourceStructureBox.getSourceStructureBox().setVisible(true);
@@ -760,89 +764,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     assetListBox.setVisible(true);
 
     // Set the properties box's content.
+    // TODO: This should be a method on Ode
     PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
-    propertiesBox.setContent(designProperties);
-    updatePropertiesPanel(form.getSelectedComponents(), true);
     propertiesBox.setVisible(true);
+    Ode.getInstance().refreshSourceStructure();
+    Ode.getInstance().refreshProperties();
   }
 
-  /*
-   * Show the given component's properties in the properties panel.
-   */
-  private void updatePropertiesPanel(List<MockComponent> components, boolean selected) {
-    if (components == null || components.size() == 0) {
-      throw new IllegalArgumentException("components must be a list of at least 1");
-    }
-    if (selectedProperties != null) {
-      selectedProperties.removePropertyChangeListener(this);
-    }
-    if (components.size() == 1) {
-      selectedProperties = components.get(0).getProperties();
-    } else {
-      EditableProperties newProperties = new EditableProperties(true);
-      Map<String, EditableProperty> propertyMaps = new HashMap<>();
-      boolean first = true;
-      for (MockComponent component : components) {
-        Set<String> properties = new HashSet<>();
-        for (EditableProperty property : component.getProperties()) {
-          String propertyName = property.getName();
-          // Ignore UUID and NAME properties (can't be edited and always unique)
-          if ("Uuid".equals(propertyName) || "Name".equals(propertyName)) {
-            continue;
-          }
-          if (first) {
-            propertyMaps.put(propertyName + ":" + property.getType(), property);
-          } else {
-            properties.add(propertyName + ":" + property.getType());
-          }
-        }
-        if (properties.size() > 0) {
-          propertyMaps.keySet().retainAll(properties);
-        }
-        first = false;
-      }
-      for (EditableProperty property : propertyMaps.values()) {
-        String name = property.getName();
-        newProperties.addProperty(
-            name,
-            property.getDefaultValue(),
-            property.getCaption(),
-            PropertiesUtil.createPropertyEditor(property.getEditorType(),
-                property.getDefaultValue(), this, property.getEditorArgs()),
-            property.getType(),
-            property.getEditorType(),
-            property.getEditorArgs()
-        );
-
-        // Determine if all components have the same value and apply it
-        String sharedValue = components.get(0).getPropertyValue(name);
-        boolean collision = false;
-        for (MockComponent component : components) {
-          String propValue = component.getPropertyValue(name);
-          if (!sharedValue.equals(propValue)) {
-            sharedValue = "";
-            collision = true;
-            break;
-          }
-        }
-        newProperties.getProperty(name).getEditor().setMultipleValues(collision);
-        newProperties.getProperty(name).getEditor().setMultiselectMode(true);
-        newProperties.getProperty(name).setValue(sharedValue);
-      }
-      selectedProperties = newProperties;
-    }
-    if (selected) {
-      selectedProperties.addPropertyChangeListener(this);
-    }
-    designProperties.setProperties(selectedProperties);
-    if (components.size() > 1) {
-      designProperties.setPropertiesCaption(components.size() + " components selected");
-    } else {
-      // need to update the caption after the setProperties call, since
-      // setProperties clears the caption!
-      designProperties.setPropertiesCaption(components.get(0).getName());
-    }
-  }
 
   public void onFormStructureChange() {
     Ode.getInstance().getEditorManager().scheduleAutoSave(this);
@@ -977,12 +905,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onComponentTypeAdded(List<String> componentTypes) {
     COMPONENT_DATABASE.removeComponentDatabaseListener(this);
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      // TODO: Refactor calls to to Source Structure
       cdbChangeListener.onComponentTypeAdded(componentTypes);
     }
     //Update Mock Components
     updateMockComponents(componentTypes);
     //Update the Properties Panel
-    updatePropertiesPanel(form.getSelectedComponents(), true);
+    Ode.getInstance().refreshProperties();
+    Ode.getInstance().refreshSourceStructure();
   }
 
   @Override

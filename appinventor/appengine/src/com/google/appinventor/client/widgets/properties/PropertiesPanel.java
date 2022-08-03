@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client.widgets.properties;
 
-import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -14,12 +13,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Panel to display properties.
  *
  */
 public class PropertiesPanel extends Composite implements ComponentDatabaseChangeListener {
+  private static final Logger LOG = Logger.getLogger(PropertiesPanel.class.getName());
 
   // UI elements
   private final VerticalPanel panel;
