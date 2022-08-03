@@ -13,7 +13,6 @@
 goog.provide('Blockly.Blocks.lists');
 
 goog.require('Blockly.Blocks.Utilities');
-goog.require('Blockly.Blocks.Utilities');
 goog.require('goog.dom');
 goog.require('AI.Blockly.FieldProcedureName');
 
@@ -474,19 +473,19 @@ Blockly.Blocks['lists_join_with_separator'] = {
 
 // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
 // There are still bugs need to be fixed so this part is commented out.
-// Blockly.Blocks['lists_mutatorcontainer'] = {
-//   init: function() {
-//     this.setColour(Blockly.LIST_CATEGORY_HUE);
-//     var group = new Blockly.RadioButtonGroup();
-//     this.appendDummyInput()
-//         .appendField(new Blockly.FieldRadioButton(group), 'CHANGE_LIST')
-//         .appendField("changes existing list");
-//     this.appendDummyInput()
-//         .appendField(new Blockly.FieldRadioButton(group), 'MAKE_NEW_LIST')
-//         .appendField("makes new list");
-//     this.contextMenu = false;
-//   }
-// };
+Blockly.Blocks['lists_mutatorcontainer'] = {
+  init: function() {
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
+    var group = new Blockly.RadioButtonGroup();
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldRadioButton(group), 'CHANGE_LIST')
+        .appendField("changes existing list");
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldRadioButton(group), 'MAKE_NEW_LIST')
+        .appendField("makes new list");
+    this.contextMenu = false;
+  }
+};
 
 Blockly.Blocks['lists_map'] = {
   category : 'Lists',
@@ -510,136 +509,152 @@ Blockly.Blocks['lists_map'] = {
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_LISTS_MAP_TOOLTIP);
-    // this.setMutator(new Blockly.Mutator([]));
+    this.setMutator(new Blockly.Mutator([]));
     this.changeList = false;
     this.setInputsInline(false);
   },
   // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
   // There are still bugs need to be fixed so this part is commented out.
-  // updateBlock_: function() {
-	//  if (this.changeList) {
-	//    if (this.outputConnection && this.outputConnection.targetConnection) {
-	//      this.outputConnection.disconnect();
-  //
-	//      var children = this.parentBlock_.childBlocks_;
-	//      for (var child, x = 0; child = children[x]; x++) {
-	//        if (child == this) {
-	//          children.splice(x, 1);
-	//          break;
-	//        }
-	//      }
-	//      this.setParent(null);
-	//      this.parentBlock_ = null;
-	//    }
-  //
-	//    if (this.outputConnection) {
-	//      if (this.outputConnection.inDB_) {
-	//        this.outputConnection.dbList_[this.outputConnection.type].removeConnection_(this.outputConnection);
-	//      }
-	//      this.outputConnection.inDB_ = false;
-	//      if (Blockly.highlightedConnection_ == this.outputConnection) {
-	//        Blockly.highlightedConnection_ = null;
-	//      }
-	//      if (Blockly.localConnection_ == this.outputConnection) {
-	//        Blockly.localConnection_ = null;
-	//      }
-	//    }
-  //
-	//    this.outputConnection = null;
-	//    this.setFieldValue(Blockly.Msg.LANG_LISTS_MAP_DEST_TITLE_MAP, 'TITLE');
-	//    this.setPreviousStatement(true);
-	//    this.setNextStatement(true);
-	//    this.previousConnection.dbList_[this.previousConnection.type].addConnection_(this.previousConnection);
-	//    this.nextConnection.dbList_[this.nextConnection.type].addConnection_(this.nextConnection);
-	//    this.render();
-  //
-	//  } else {
-	//    if (this.previousConnection && this.previousConnection.targetConnection) {
-	//      this.previousConnection.disconnect();
-  //
-	//      var children = this.parentBlock_.childBlocks_;
-	//      for (var child, x = 0; child = children[x]; x++) {
-	//        if (child == this) {
-	//          children.splice(x, 1);
-	//          break;
-	//        }
-	//      }
-	//      this.setParent(null);
-	//      this.parentBlock_ = null;
-	//   }
-  //
-	//    if (this.previousConnection) {
-	//      if (this.previousConnection.inDB_) {
-	//        this.previousConnection.dbList_[this.previousConnection.type].removeConnection_(this.previousConnection);
-	//      }
-	//      this.previousConnection.inDB_ = false;
-	//      if (Blockly.highlightedConnection_ == this.previousConnection) {
-	//        Blockly.highlightedConnection_ = null;
-	//      }
-	//      if (Blockly.localConnection_ == this.previousConnection) {
-	//        Blockly.localConnection_ = null;
-	//      }
-	//    }
-  //
-	//    if (this.nextConnection) {
-	//      if (this.nextConnection.inDB_) {
-	//        this.nextConnection.dbList_[this.nextConnection.type].removeConnection_(this.nextConnection);
-	//      }
-	//      this.nextConnection.inDB_ = false;
-	//      if (Blockly.highlightedConnection_ == this.nextConnection) {
-	//        Blockly.highlightedConnection_ = null;
-	//      }
-	//      if (Blockly.localConnection_ == this.nextConnection) {
-	//        Blockly.localConnection_ = null;
-	//      }
-	//      if (Blockly.localConnection_ == this.nextConnection) {
-	//        Blockly.localConnection_ = null;
-	//      }
-	//    }
-  //
-	//    this.previousConnection = null;
-	//    this.nextConnection = null;
-	//    this.setFieldValue(Blockly.Msg.LANG_LISTS_MAP_NONDEST_TITLE_MAP, 'TITLE');
-	//    this.setOutput(true, null);
-	//    this.outputConnection.dbList_[this.outputConnection.type].addConnection_(this.outputConnection);
-	//    this.render();
-  //    }
-  // },
-  // mutationToDom: function() {
-  //   var container = document.createElement('mutation');
-  //   if (! this.changeList) {
-  //     container.setAttribute('destructive', this.changeList);
+  updateBlock_: function() {
+	 if (this.changeList) {
+	   if (this.outputConnection && this.outputConnection.targetConnection) {
+	     this.outputConnection.disconnect();
+
+	     var children = this.parentBlock_.childBlocks_;
+	     for (var child, x = 0; child = children[x]; x++) {
+	       if (child == this) {
+	         children.splice(x, 1);
+	         break;
+	       }
+	     }
+	     this.setParent(null);
+	     this.parentBlock_ = null;
+	   }
+
+	   if (this.outputConnection) {
+	     if (this.outputConnection.inDB_) {
+	       this.outputConnection.dbList_[this.outputConnection.type].removeConnection_(this.outputConnection);
+	     }
+	     this.outputConnection.inDB_ = false;
+	     if (Blockly.highlightedConnection_ == this.outputConnection) {
+	       Blockly.highlightedConnection_ = null;
+	     }
+	     if (Blockly.localConnection_ == this.outputConnection) {
+	       Blockly.localConnection_ = null;
+	     }
+	   }
+
+	   this.outputConnection = null;
+	   this.setFieldValue(Blockly.Msg.LANG_LISTS_MAP_DEST_TITLE_MAP, 'TITLE');
+	   this.setPreviousStatement(true);
+	   this.setNextStatement(true);
+	   this.previousConnection.dbList_[this.previousConnection.type].addConnection_(this.previousConnection);
+	   this.nextConnection.dbList_[this.nextConnection.type].addConnection_(this.nextConnection);
+	   this.render();
+
+	 } else {
+	   if (this.previousConnection && this.previousConnection.targetConnection) {
+	     this.previousConnection.disconnect();
+
+	     var children = this.parentBlock_.childBlocks_;
+	     for (var child, x = 0; child = children[x]; x++) {
+	       if (child == this) {
+	         children.splice(x, 1);
+	         break;
+	       }
+	     }
+	     this.setParent(null);
+	     this.parentBlock_ = null;
+	  }
+
+	   if (this.previousConnection) {
+	     if (this.previousConnection.inDB_) {
+	       this.previousConnection.dbList_[this.previousConnection.type].removeConnection_(this.previousConnection);
+	     }
+	     this.previousConnection.inDB_ = false;
+	     if (Blockly.highlightedConnection_ == this.previousConnection) {
+	       Blockly.highlightedConnection_ = null;
+	     }
+	     if (Blockly.localConnection_ == this.previousConnection) {
+	       Blockly.localConnection_ = null;
+	     }
+	   }
+
+	   if (this.nextConnection) {
+	     if (this.nextConnection.inDB_) {
+	       this.nextConnection.dbList_[this.nextConnection.type].removeConnection_(this.nextConnection);
+	     }
+	     this.nextConnection.inDB_ = false;
+	     if (Blockly.highlightedConnection_ == this.nextConnection) {
+	       Blockly.highlightedConnection_ = null;
+	     }
+	     if (Blockly.localConnection_ == this.nextConnection) {
+	       Blockly.localConnection_ = null;
+	     }
+	     if (Blockly.localConnection_ == this.nextConnection) {
+	       Blockly.localConnection_ = null;
+	     }
+	   }
+
+	   this.previousConnection = null;
+	   this.nextConnection = null;
+	   this.setFieldValue(Blockly.Msg.LANG_LISTS_MAP_NONDEST_TITLE_MAP, 'TITLE');
+	   this.setOutput(true, null);
+	   this.outputConnection.dbList_[this.outputConnection.type].addConnection_(this.outputConnection);
+	   this.render();
+     }
+  },
+
+  // Blockly.Blocks['lists_mutatorcontainer'] = {
+  //   init: function() {
+  //     this.setColour(Blockly.LIST_CATEGORY_HUE);
+  //     // var group = new Blockly.RadioButtonGroup();
+  //     this.appendDummyInput()
+  //         .appendField(new Blockly.FieldRadioButton(group), 'CHANGE_LIST')
+  //         .appendField("changes existing list");
+  //     this.appendDummyInput()
+  //         .appendField(new Blockly.FieldRadioButton(group), 'MAKE_NEW_LIST')
+  //         .appendField("makes new list");
+  //     this.contextMenu = false;
   //   }
-  //   return container;
-  // },
-  // domToMutation: function(xmlElement) {
-  //   if(!xmlElement.getAttribute('destructive')){
-  //     this.changeList = true;
-  //   } else {
-  //     this.changeList = (xmlElement.getAttribute('destructive') === "true");
-  //   }
-  //   this.updateBlock_();
-  // },
-  // decompose: function(workspace) {
-  //   var containerBlock = workspace.newBlock('lists_mutatorcontainer');
-  //   containerBlock.initSvg();
-  //   var changeListButton = containerBlock.getField_('CHANGE_LIST');
-  //   var makeNewListButton = containerBlock.getField_('MAKE_NEW_LIST');
-  //   var group = changeListButton.group;
-  //   if (this.changeList) {
-  //     group.setSelected(changeListButton);
-  //   } else {
-  //     group.setSelected(makeNewListButton);
-  //   }
-  //   return containerBlock;
-  // },
-  // compose: function(containerBlock) {
-	// this.oldChangeList = this.changeList;
-  //   this.changeList = containerBlock.getFieldValue('CHANGE_LIST') == 'TRUE' ? true : false;
-  //   if (this.oldChangeList != this.changeList) {
-  //   	this.updateBlock_();
-  //   }
-  // },
+  // };
+
+
+  mutationToDom: function() {
+    var container = document.createElement('mutation');
+    if (! this.changeList) {
+      container.setAttribute('destructive', this.changeList);
+    }
+    return container;
+  },
+  domToMutation: function(xmlElement) {
+    if(!xmlElement.getAttribute('destructive')){
+      this.changeList = true;
+    } else {
+      this.changeList = (xmlElement.getAttribute('destructive') === "true");
+    }
+    this.updateBlock_();
+  },
+  decompose: function(workspace) {
+    var containerBlock = workspace.newBlock('lists_mutatorcontainer');
+    containerBlock.initSvg();
+    var changeListButton = containerBlock.getField('CHANGE_LIST');
+    var makeNewListButton = containerBlock.getField('MAKE_NEW_LIST');
+    var group = changeListButton.group;
+    if (this.changeList) {
+      group.setSelected(changeListButton);
+    } else {
+      group.setSelected(makeNewListButton);
+    }
+    return containerBlock;
+  },
+  compose: function(containerBlock) {
+	this.oldChangeList = this.changeList;
+    this.changeList = containerBlock.getFieldValue('CHANGE_LIST') == 'TRUE' ? true : false;
+    if (this.oldChangeList != this.changeList) {
+    	this.updateBlock_();
+    }
+  },
   saveConnections: Blockly.saveConnections,
   getVars: function() {
     return [this.getFieldValue('VAR')];
