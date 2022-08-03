@@ -3,6 +3,10 @@ PODS:
   - Base58Swift (2.1.10):
     - BigInt (~> 5.0.0)
   - BigInt (5.0.0)
+  - Charts (4.1.0):
+    - Charts/Core (= 4.1.0)
+  - Charts/Core (4.1.0):
+    - SwiftAlgorithms (~> 1.0)
   - CocoaAsyncSocket (7.6.3)
   - GCDWebServer (3.4.2):
     - GCDWebServer/Core (= 3.4.2)
@@ -16,6 +20,7 @@ PODS:
   - SQLite.swift (0.11.5):
     - SQLite.swift/standard (= 0.11.5)
   - SQLite.swift/standard (0.11.5)
+  - SwiftAlgorithms (1.0.0)
   - SwiftProtobuf (1.20.3)
   - SwiftSVG (2.2.0)
   - Toast-Swift (4.0.1)
@@ -27,6 +32,7 @@ PODS:
 DEPENDENCIES:
   - Alamofire (~> 4.8)
   - Base58Swift (~> 2.1.0)
+  - Charts (~> 4.1.0)
   - GCDWebServer (~> 3.4.1)
   - GEOSwift (~> 3.1.0)
   - KTVJSONWebToken (from `https://github.com/kreactive/JSONWebToken.git`, commit `d2e37fa`)
@@ -43,11 +49,13 @@ SPEC REPOS:
     - Alamofire
     - Base58Swift
     - BigInt
+    - Charts
     - CocoaAsyncSocket
     - GCDWebServer
     - geos
     - GEOSwift
     - SQLite.swift
+    - SwiftAlgorithms
     - SwiftProtobuf
     - SwiftSVG
     - Toast-Swift
@@ -79,6 +87,7 @@ SPEC CHECKSUMS:
   Alamofire: 16ce2c353fb72865124ddae8a57c5942388f4f11
   Base58Swift: 53d551f0b33d9478fa63b3445e453a772d6b31a7
   BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
+  Charts: 354f86803d11d9c35de280587fef50d1af063978
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
   GCDWebServer: 8d67ee9f634b4bb91eb4b8aee440318a5fc6debd
   geos: 4f86329dc270f513bc220c77d9079aef38c5960d
@@ -86,12 +95,13 @@ SPEC CHECKSUMS:
   KTVJSONWebToken: c3cc06e26876d63c62a5c40c5e89939899de48cf
   PSSRedisClient: 1b8e9d807999f0ee3d1f09e5b80da4367ba41550
   SQLite.swift: 6e5356850bb1791459f8c16d6ee9195b28714a2e
+  SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   SwiftSVG: 19bc4e434dcf236ece45ddf75f5ee1d3ef8061e6
   Toast-Swift: e42a638589a2f95036b4bb7626cfbdde7daf0393
   Zip: 414f59909701fda9a84ab774ebe0f5449b1082cc
   ZXingObjC: ec0306e7c8dac717f653e165f1c4fd0e69fde99f
 
-PODFILE CHECKSUM: 861ff4c17bf6c095f34cfce17417044abe9edf37
+PODFILE CHECKSUM: ce4f64e09e0e35953797d26f96e90712161921bb
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1
