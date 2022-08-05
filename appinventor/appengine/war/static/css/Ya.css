@@ -677,9 +677,8 @@ div.StatusPanel {
   color: white;
   font-weight: bold;
   font-size: 18px;
-  padding-top: 8px;
+  padding-top: 2px;
   padding-left: 8px;
-  padding-bottom: 8px;
   text-shadow: 0 0 1px #404040;
 }
 
@@ -2793,15 +2792,21 @@ div.dropdiv p {
 
 .ya-Toolbar {
   display: flex;
+  justify-content: space-between;
 }
 
 .ya-Toolbar .left {
-  flex-grow: 1;
-  display: inline;
+  min-width: 220px;
+  text-align: left;
 }
 
 .ya-Toolbar .right {
-  display: inline;
+  min-width: 410px;
+  text-align: right;
+}
+
+.ya-Toolbar .center {
+  text-align: center;
 }
 
 .ya-Toolbar>div>div {

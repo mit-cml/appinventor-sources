@@ -12,15 +12,27 @@
     <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName" />
 
     <!-- Left button items -->
-    <ai:ToolbarItem name="TutorialToggle" caption="{messages.toggleTutorialButton}" visible="false">
+    <ai:ToolbarItem name="TutorialToggle" caption="{messages.toggleTutorialButton}"
+                    visible="false">
       <ya:ToggleTutorialAction />
     </ai:ToolbarItem>
-    <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}" />
-    <ai:ToolbarItem name="AddForm" caption="{messages.addFormButton}" ui:field="addFormItem">
+    <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}"
+                       ui:field="pickFormItem" align="center" />
+    <ai:ToolbarItem name="AddForm" caption="{messages.addFormButton}" ui:field="addFormItem"
+                    align="center">
       <ya:AddFormAction />
     </ai:ToolbarItem>
-    <ai:ToolbarItem name="RemoveForm" caption="{messages.removeFormButton}" ui:field="removeFormItem">
+    <ai:ToolbarItem name="RemoveForm" caption="{messages.removeFormButton}" ui:field="removeFormItem"
+                    align="center">
       <ya:RemoveFormAction />
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="switchToDesign" caption="{messages.switchToFormEditorButton}"
+                    ui:field="switchToDesign" align="right">
+      <ya:SwitchToFormEditorAction />
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="switchToBlocks" caption="{messages.switchToBlocksEditorButton}"
+                    ui:field="switchToBlocks" align="right">
+      <ya:SwitchToBlocksEditorAction />
     </ai:ToolbarItem>
   </ai:Toolbar>
 </ui:UiBinder>

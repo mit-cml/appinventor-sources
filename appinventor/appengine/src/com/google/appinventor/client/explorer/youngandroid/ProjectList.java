@@ -217,7 +217,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
             table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
             selectedProjects.remove(project);
           }
-          Ode.getInstance().getProjectToolbar().updateButtons();
+          Ode.getInstance().getBindProjectToolbar().updateButtons();
         }
       });
 
@@ -323,7 +323,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     if (isInTrash && table.getRowCount() == 1) {
       Ode.getInstance().createEmptyTrashDialog(true);
     }
-    Ode.getInstance().getProjectToolbar().updateButtons();
+    Ode.getInstance().getBindProjectToolbar().updateButtons();
   }
 
   /**
@@ -369,14 +369,14 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   public void onTrashProjectRestored(Project project) {
     selectedProjects.remove(project);
     refreshTable(false);
-    Ode.getInstance().getProjectToolbar().updateButtons();
+    Ode.getInstance().getBindProjectToolbar().updateButtons();
   }
 
   @Override
   public void onProjectTrashed(Project project) {
     selectedProjects.remove(project);
     refreshTable(false);
-    Ode.getInstance().getProjectToolbar().updateButtons();
+    Ode.getInstance().getBindProjectToolbar().updateButtons();
   }
 
   @Override
@@ -384,7 +384,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     projects.remove(project);
     projectWidgets.remove(project);
     refreshTable(false);
-    Ode.getInstance().getProjectToolbar().updateButtons();
+    Ode.getInstance().getBindProjectToolbar().updateButtons();
   }
 
   @Override

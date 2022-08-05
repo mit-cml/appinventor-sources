@@ -16,6 +16,7 @@ import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.actions.SendToGalleryAction;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchScreenAction;
 
+import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.widgets.ToolbarItem;
@@ -146,8 +147,11 @@ public class DesignToolbar extends Toolbar {
   interface DesignToolbarUiBinder extends UiBinder<Toolbar, DesignToolbar> {}
   private static final DesignToolbarUiBinder UI_BINDER = GWT.create(DesignToolbarUiBinder.class);
 
+  @UiField DropDownButton pickFormItem;
   @UiField ToolbarItem addFormItem;
   @UiField ToolbarItem removeFormItem;
+  @UiField ToolbarItem switchToDesign;
+  @UiField ToolbarItem switchToBlocks;
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -371,8 +375,10 @@ public class DesignToolbar extends Toolbar {
   }
 
   public void toggleEditor(boolean blocks) {
-    setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
-    setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
+    setEnabledItem(switchToBlocks, !blocks);
+    setEnabledItem(switchToDesign, blocks);
+//    setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
+//    setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
 
     boolean notOnScreen1 = getCurrentProject() != null
         && !"Screen1".equals(getCurrentProject().currentScreen);

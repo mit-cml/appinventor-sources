@@ -37,6 +37,7 @@ public class Toolbar extends FlowPanel {
 
   private final FlowPanel leftButtons = new FlowPanel();
   private final FlowPanel rightButtons = new FlowPanel();
+  private final FlowPanel centerButtons = new FlowPanel();
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -45,8 +46,10 @@ public class Toolbar extends FlowPanel {
     setStylePrimaryName("ya-Toolbar");
     leftButtons.setStylePrimaryName("left");
     rightButtons.setStylePrimaryName("right");
+    centerButtons.setStylePrimaryName("center");
 
     super.add(leftButtons);
+    super.add(centerButtons);
     super.add(rightButtons);
   }
 
@@ -85,7 +88,13 @@ public class Toolbar extends FlowPanel {
 
   public void add(DropDownButton button) {
     dropDownButtonMap.put(button.getName(), button);
-    leftButtons.add(button);
+    if ("right".equals(button.getAlign())) {
+      rightButtons.add(button);
+    } else if ("center".equals(button.getAlign())) {
+      centerButtons.add(button);
+    } else {
+      leftButtons.add(button);
+    }
   }
 
   public void add(final ToolbarItem item) {
@@ -93,6 +102,8 @@ public class Toolbar extends FlowPanel {
     button.addClickHandler(event -> item.getCommand().execute());
     if ("right".equals(item.getAlign())) {
       rightButtons.add(button);
+    } else if ("center".equals(item.getAlign())) {
+      centerButtons.add(button);
     } else {
       leftButtons.add(button);
     }
@@ -112,15 +123,29 @@ public class Toolbar extends FlowPanel {
     }
   }
 
+  protected void setEnabledItem(ToolbarItem item, boolean enabled) {
+    TextButton button = buttonMap.remove(item.getName());
+    if (button != null) {
+      button.setEnabled(enabled);
+    }
+  }
+
+
   protected void populateToolbar(Toolbar other) {
     leftButtons.clear();
     rightButtons.clear();
+    centerButtons.clear();
     buttonMap.clear();
     dropDownButtonMap.clear();
     while (other.leftButtons.getWidgetCount() > 0) {
       Widget w = other.leftButtons.getWidget(0);
       w.removeFromParent();
       leftButtons.add(w);
+    }
+    while (other.centerButtons.getWidgetCount() > 0) {
+      Widget w = other.centerButtons.getWidget(0);
+      w.removeFromParent();
+      centerButtons.add(w);
     }
     while (other.rightButtons.getWidgetCount() > 0) {
       Widget w = other.rightButtons.getWidget(0);

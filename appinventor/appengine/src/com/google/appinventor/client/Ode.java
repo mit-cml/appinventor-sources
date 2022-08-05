@@ -234,8 +234,8 @@ public class Ode implements EntryPoint {
   @UiField StatusPanel statusPanel;
   @UiField FlowPanel workColumns;
   @UiField FlowPanel structureAndAssets;
-  @UiField ProjectToolbar projectToolbar;
-  @UiField DesignToolbar designToolbar;
+  @UiField ProjectToolbar bindProjectToolbar;
+  @UiField DesignToolbar bindDesignToolbar;
   @UiField PaletteBox paletteBox;
   @UiField ViewerBox bindViewerBox = ViewerBox.getViewerBox();
   @UiField AssetListBox bindAssetListBox = AssetListBox.getAssetListBox();
@@ -424,12 +424,12 @@ public class Ode implements EntryPoint {
           // a second press while the new project wizard was starting (aka we "debounce"
           // the button). When the person switches to the projects list view again (here)
           // we re-enable it.
-          projectToolbar.enableStartButton();
-          projectToolbar.setProjectTabButtonsVisible(true);
-          projectToolbar.setTrashTabButtonsVisible(false);
+          bindProjectToolbar.enableStartButton();
+          bindProjectToolbar.setProjectTabButtonsVisible(true);
+          bindProjectToolbar.setTrashTabButtonsVisible(false);
         }
       };
-    if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
+    if (bindDesignToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
       next.run();
     } else {
       // maybe take a screenshot, second argument is true so we wait for i/o to complete
@@ -447,9 +447,9 @@ public class Ode implements EntryPoint {
     hideTutorials();
     ProjectListBox.getProjectListBox().loadTrashList();
     currentView = TRASHCAN;
-    projectToolbar.enableStartButton();
-    projectToolbar.setProjectTabButtonsVisible(false);
-    projectToolbar.setTrashTabButtonsVisible(true);
+    bindProjectToolbar.enableStartButton();
+    bindProjectToolbar.setProjectTabButtonsVisible(false);
+    bindProjectToolbar.setTrashTabButtonsVisible(true);
   }
 
   /**
@@ -1015,8 +1015,8 @@ public class Ode implements EntryPoint {
    *
    * @return  {@link ProjectToolbar}
    */
-  public ProjectToolbar getProjectToolbar() {
-    return projectToolbar;
+  public ProjectToolbar getBindProjectToolbar() {
+    return bindProjectToolbar;
   }
 
   /**
@@ -1043,7 +1043,7 @@ public class Ode implements EntryPoint {
    * @return  {@link DesignToolbar}
    */
   public DesignToolbar getDesignToolbar() {
-    return designToolbar;
+    return bindDesignToolbar;
   }
 
   /**
@@ -1225,7 +1225,7 @@ public class Ode implements EntryPoint {
    * HideChaff when switching view from block to others
    */
   private void hideChaff() {
-    if (designToolbar.getCurrentView() == DesignToolbar.View.BLOCKS
+    if (bindDesignToolbar.getCurrentView() == DesignToolbar.View.BLOCKS
         // currentFileEditor may be null when switching projects
         && currentFileEditor != null) {
       currentFileEditor.hideChaff();
@@ -2186,7 +2186,7 @@ public class Ode implements EntryPoint {
     }
     // If we are not in the blocks editor, we do nothing
     // but we do run our callback
-    if (designToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
+    if (bindDesignToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
       next.run();
       return;
     }
@@ -2277,7 +2277,7 @@ public class Ode implements EntryPoint {
   public void setTutorialURL(String newURL) {
     if (newURL.isEmpty() || (!newURL.startsWith("http://appinventor.mit.edu/")
         && !newURL.startsWith("http://appinv.us/"))) {
-      designToolbar.setTutorialToggleVisible(false);
+      bindDesignToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
       String locale = Window.Location.getParameter("locale");
@@ -2285,7 +2285,7 @@ public class Ode implements EntryPoint {
         newURL += (newURL.contains("?") ? "&" : "?") + "locale=" + locale;
       }
       tutorialPanel.setUrl(newURL);
-      designToolbar.setTutorialToggleVisible(true);
+      bindDesignToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);
     }
   }
