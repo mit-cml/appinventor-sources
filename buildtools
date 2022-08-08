@@ -86,7 +86,7 @@ companion() {
   if [ $? -eq 0 ]; then
     echo ""
     echo The companion is generated at:
-    echo $PWD/appinventor/build/buildserver/MIT AI2 Companion.apk
+    echo "$PWD"/build/buildserver/MIT AI2 Companion.apk
   fi
 }
 
