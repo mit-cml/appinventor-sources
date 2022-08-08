@@ -82,7 +82,7 @@ buildnoplay() {
 
 companion() {
   title Building Companion...
-  any PlayApp
+  ant PlayApp
   if [ $? -eq 0 ]; then
     echo ""
     echo The companion is generated at:
