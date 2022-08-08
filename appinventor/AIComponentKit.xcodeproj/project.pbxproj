@@ -88,6 +88,13 @@
 		068E0EB51DC251A20086FFDA /* Sharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0EB41DC251A20086FFDA /* Sharing.swift */; };
 		068E0EB71DC251BA0086FFDA /* Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0EB61DC251BA0086FFDA /* Slider.swift */; };
 		068E0EB91DC251E90086FFDA /* Texting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0EB81DC251E90086FFDA /* Texting.swift */; };
+		068F9858289A2FD600E2883F /* Chart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068F9857289A2FD600E2883F /* Chart.swift */; };
+		068F985A289A320200E2883F /* ChartData2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068F9859289A320200E2883F /* ChartData2D.swift */; };
+		068F985C289A323400E2883F /* ChartDataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068F985B289A323400E2883F /* ChartDataBase.swift */; };
+		068F985E289A33AA00E2883F /* DataSourceChangeListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068F985D289A33AA00E2883F /* DataSourceChangeListener.swift */; };
+		068F9860289A344C00E2883F /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068F985F289A344C00E2883F /* DataSource.swift */; };
+		068F9862289A34B100E2883F /* RealTimeDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068F9861289A34B100E2883F /* RealTimeDataSource.swift */; };
+		068F9864289A34F000E2883F /* ObservableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068F9863289A34F000E2883F /* ObservableDataSource.swift */; };
 		06925559228B01B60091057E /* NSLock+Synchronized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06925558228B01B60091057E /* NSLock+Synchronized.swift */; };
 		06941F402603B4A900F8E1B2 /* StringUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06941F3F2603B4A900F8E1B2 /* StringUtil.swift */; };
 		06A47CD323F12EF400668126 /* PermissionException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A47CD223F12EF400668126 /* PermissionException.swift */; };
@@ -331,6 +338,13 @@
 		068E0EB41DC251A20086FFDA /* Sharing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sharing.swift; sourceTree = "<group>"; };
 		068E0EB61DC251BA0086FFDA /* Slider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Slider.swift; sourceTree = "<group>"; };
 		068E0EB81DC251E90086FFDA /* Texting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texting.swift; sourceTree = "<group>"; };
+		068F9857289A2FD600E2883F /* Chart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chart.swift; sourceTree = "<group>"; };
+		068F9859289A320200E2883F /* ChartData2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartData2D.swift; sourceTree = "<group>"; };
+		068F985B289A323400E2883F /* ChartDataBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartDataBase.swift; sourceTree = "<group>"; };
+		068F985D289A33AA00E2883F /* DataSourceChangeListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceChangeListener.swift; sourceTree = "<group>"; };
+		068F985F289A344C00E2883F /* DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
+		068F9861289A34B100E2883F /* RealTimeDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealTimeDataSource.swift; sourceTree = "<group>"; };
+		068F9863289A34F000E2883F /* ObservableDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableDataSource.swift; sourceTree = "<group>"; };
 		06925558228B01B60091057E /* NSLock+Synchronized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLock+Synchronized.swift"; sourceTree = "<group>"; };
 		06941F3F2603B4A900F8E1B2 /* StringUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringUtil.swift; sourceTree = "<group>"; };
 		06A47CD223F12EF400668126 /* PermissionException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionException.swift; sourceTree = "<group>"; };
@@ -606,6 +620,19 @@
 			path = "components-ios/tests";
 			sourceTree = "<group>";
 		};
+		068F9856289A2FB800E2883F /* charts */ = {
+			isa = PBXGroup;
+			children = (
+				068F9857289A2FD600E2883F /* Chart.swift */,
+				068F9859289A320200E2883F /* ChartData2D.swift */,
+				068F985B289A323400E2883F /* ChartDataBase.swift */,
+				068F985F289A344C00E2883F /* DataSource.swift */,
+				068F9863289A34F000E2883F /* ObservableDataSource.swift */,
+				068F9861289A34B100E2883F /* RealTimeDataSource.swift */,
+			);
+			name = charts;
+			sourceTree = "<group>";
+		};
 		06D151911DC4646000FC981E /* ui */ = {
 			isa = PBXGroup;
 			children = (
@@ -721,15 +748,16 @@
 				06EF26592998A94600D6093C /* ComponentUtil.swift */,
 				46E77D8D29DD6894002CCDFB /* ShowAlert.swift */,
 				06604B722034EFE70066C459 /* CsvUtil.swift */,
-				06AEDC571E04C12900371E72 /* FormatUtil.swift */,
+				068F985D289A33AA00E2883F /* DataSourceChangeListener.swift */,
 				06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */,
 				06D1518F1DC45E9700FC981E /* ErrorMessages.swift */,
 				06C94A381D99D10400341AAE /* EventDispatcher.swift */,
-				DE84293320D3FC6A00094BCB /* GeometryUtil.swift */,
-				DE55C2E620EEA89A005ED8CB /* GeoJSONUtil.swift */,
 				0417584F20093AE5007D2C31 /* FileError.swift */,
 				CBC786812006AD2F005363A3 /* FileUtil.swift */,
 				DE4CDF562093982F008412BC /* FontUtil.swift */,
+				06AEDC571E04C12900371E72 /* FormatUtil.swift */,
+				DE55C2E620EEA89A005ED8CB /* GeoJSONUtil.swift */,
+				DE84293320D3FC6A00094BCB /* GeometryUtil.swift */,
 				0650F5171F1F1B7A00D4E6FA /* HMAC.swift */,
 				DE4EA34520AE2CDD009681D8 /* HTMLEntities.swift */,
 				060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */,
@@ -786,6 +814,7 @@
 		06E59EAB1D92C91800C42804 /* visible */ = {
 			isa = PBXGroup;
 			children = (
+				068F9856289A2FB800E2883F /* charts */,
 				04AB2222202129BD0033281F /* maps */,
 				06D151931DC464BB00FC981E /* core */,
 				06D151911DC4646000FC981E /* ui */,
@@ -1266,10 +1295,12 @@
 				CBC78690202BA119005363A3 /* Marker.swift in Sources */,
 				DE4075E520126DA7000F4C3E /* SpeechRecognizer.swift in Sources */,
 				0685B5B32003C931005153ED /* ThemeEnum.swift in Sources */,
+				068F985A289A320200E2883F /* ChartData2D.swift in Sources */,
 				0417585020093AE5007D2C31 /* FileError.swift in Sources */,
 				08815DB7210B532800FA89F7 /* Ev3Commands.swift in Sources */,
 				068E0EB51DC251A20086FFDA /* Sharing.swift in Sources */,
 				DEA5C6E220E1A2B00083A49B /* Rectangle.swift in Sources */,
+				068F9862289A34B100E2883F /* RealTimeDataSource.swift in Sources */,
 				04AB2224202129FA0033281F /* Map.swift in Sources */,
 				082778F720112FE300ACC99A /* ImagePicker.swift in Sources */,
 				068E0EAF1DC251090086FFDA /* ActivityStarter.swift in Sources */,
@@ -1287,7 +1318,9 @@
 				06D998EE1F53CDDB00A13A0E /* ContactPicker.swift in Sources */,
 				DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */,
 				06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */,
+				068F9864289A34F000E2883F /* ObservableDataSource.swift in Sources */,
 				068E0EB91DC251E90086FFDA /* Texting.swift in Sources */,
+				068F985C289A323400E2883F /* ChartDataBase.swift in Sources */,
 				06DA9F511D8CFBA200389B04 /* Component.swift in Sources */,
 				06DA9F611D8D0DFC00389B04 /* ReplForm.swift in Sources */,
 				0655BED82614CCD000EBE3F6 /* Form+Debugging.swift in Sources */,
@@ -1302,6 +1335,7 @@
 				DEB9C5502101199E0069BAD7 /* PolygonBaseWithPoints.swift in Sources */,
 				0644F7031F38EDF200642E4D /* LinearView.swift in Sources */,
 				06E59EA41D92C68900C42804 /* PhoneStatus.swift in Sources */,
+				068F9858289A2FD600E2883F /* Chart.swift in Sources */,
 				CBC7868C202B9743005363A3 /* MapFeatureBase.swift in Sources */,
 				DE24349620D935DE003B5CD0 /* PolygonBase.swift in Sources */,
 				06F91464252CE50B00AF8F88 /* BundledApp.swift in Sources */,
@@ -1373,6 +1407,7 @@
 				062217F42A37798E00B89562 /* ImageBot.swift in Sources */,
 				CBE5DE9A1FE1C421009A139F /* SoundRecorder.swift in Sources */,
 				061DC7B6224027C900539213 /* ScaleFrameLayout.swift in Sources */,
+				068F985E289A33AA00E2883F /* DataSourceChangeListener.swift in Sources */,
 				06A47CD323F12EF400668126 /* PermissionException.swift in Sources */,
 				06B216001DB95122000B3366 /* TinyDB.swift in Sources */,
 				06DA9F541D8CFBA200389B04 /* ComponentConstants.swift in Sources */,
@@ -1382,6 +1417,7 @@
 				C41392922280708000DBA8C6 /* Switch.swift in Sources */,
 				DE67C49D1FCE5A8A004F0D35 /* WebViewer.swift in Sources */,
 				DE55C2E720EEA89A005ED8CB /* GeoJSONUtil.swift in Sources */,
+				068F9860289A344C00E2883F /* DataSource.swift in Sources */,
 				06DA9F551D8CFBA200389B04 /* ViewComponent.swift in Sources */,
 				DE962F3C20ADC8A3004AA45A /* CloudDB.swift in Sources */,
 				062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */,
