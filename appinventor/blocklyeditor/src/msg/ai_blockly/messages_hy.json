@@ -646,7 +646,7 @@
     "Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE": "ստեղծել դատարկ բառարան",
     "Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TOOLTIP": "Ստեղծել բառարան:",
     "Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TITLE": "ստեղծել բառարան",
-    "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK": "ստանալ արժեքներ",
+    "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK": "ստանալ բառարանի արժեքներ",
     "Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TITLE": "արժեքներ",
     "Blockly.Msg.LANG_TEXT_REVERSE_INPUT": "հակառակ հերթականությամբ",
     "Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TITLE_ADD": "բռրն",
@@ -654,7 +654,7 @@
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_INPUT_TEXT": "տեքստում",
     "Blockly.Msg.LANG_DICTIONARIES_IS_DICT_TITLE": "Բառարա՞ն է%1",
     "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TITLE": "բանալիներ",
-    "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TYPEBLOCK": "ստանալ բանալիներ",
+    "Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TYPEBLOCK": "ստանալ բառարանի բանալիներ",
     "Blockly.Msg.LANG_DICTIONARIES_IS_KEY_IN_INPUT": "բանալին բառարանու՞մ է բանալի %1 բառարան %2",
     "Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_TITLE": "բառարանը՝ զույգերի ցուցակի",
     "Blockly.Msg.LANG_DICTIONARIES_ALIST_TO_DICT_TITLE": "զույգերի ցուցակը՝ բառարանի",
@@ -715,5 +715,6 @@
     "Blockly.Msg.REPL_WEBRTC_CONNECTION_CLOSED": "Companion-ը անջատվեց",
     "Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP": "Ավելացնել զույգը բառարանում։",
     "Blockly.Msg.LANG_MATH_DECIMAL_FORMAT": "տասնորդական",
-    "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS": "Ստուգում է, թե արդյոք մասը պարունակվում է տեքստում։"
+    "Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP_CONTAINS": "Ստուգում է, թե արդյոք մասը պարունակվում է տեքստում։",
+    "Blockly.Msg.LANG_NO_ASSETS": "Չկա հասանելի ակտիվներ"
 }
