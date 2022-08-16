@@ -112,8 +112,6 @@
     "./src/input.js",
     "./src/field_event_flydown.js",
     "./src/utils_xml.js",
-    // "./src/field_radio_button.js",
-    // "./src/radio_button_group.js",
 
     // Dialog Utiltiy
     "./src/util.js",

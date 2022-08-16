@@ -525,15 +525,14 @@
 
 	"Blockly.Msg.LANG_LISTS_MAP_HELPURL" : "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#map",
 	"Blockly.Msg.LANG_LISTS_MAP_NONDEST_TITLE_MAP" : "make new list from",
-	"Blockly.Msg.LANG_LISTS_MAP_DEST_TITLE_MAP" : "change existing list",
 	"Blockly.Msg.LANG_LISTS_MAP_INPUT_ITEM" : "mapping each",
 	"Blockly.Msg.LANG_LISTS_MAP_INPUT_VAR" : "item",
 	"Blockly.Msg.LANG_LISTS_MAP_INPUT_TO" : "to",
 	"Blockly.Msg.LANG_LISTS_MAP_INPUT_COLLAPSED_TEXT" : "map list",
 	"Blockly.Msg.LANG_LISTS_MAP_TOOLTIP" : "Maps each item in the list to a new item. Use the given variable name to refer to the current list item.",
+
 	"Blockly.Msg.LANG_LISTS_FILTER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#filter",
 	"Blockly.Msg.LANG_LISTS_FILTER_NONDEST_TITLE_FILTER": "make new filtered list from ",
-	"Blockly.Msg.LANG_LISTS_FILTER_DEST_TITLE_FILTER": "filter existing list ",
 	"Blockly.Msg.LANG_LISTS_FILTER_INPUT_ITEM": "keeping each ",
 	"Blockly.Msg.LANG_LISTS_FILTER_INPUT_VAR": "item",
 	"Blockly.Msg.LANG_LISTS_FILTER_INPUT_PASSING": "passing ",
@@ -556,18 +555,15 @@
 	"Blockly.Msg.LANG_LISTS_REVERSE_INPUT_LIST": "list",
 	"Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP": "Reverses the order of input list and returns it as a new list.",
 	"Blockly.Msg.LANG_LISTS_REVERSE_NONDEST_TITLE_REVERSE": "make new reversed list from",
-	"Blockly.Msg.LANG_LISTS_REVERSE_DEST_TITLE_REVERSE": "reverse existing list",
 	"Blockly.Msg.LANG_LISTS_REVERSE_TYPEBLOCK": "reverse list",
 
 	"Blockly.Msg.LANG_LISTS_SORT_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sort",
 	"Blockly.Msg.LANG_LISTS_SORT_NONDEST_TITLE_SORT": "make new sorted list from",
-	"Blockly.Msg.LANG_LISTS_SORT_DEST_TITLE_SORT": "sort existing list ",
 	"Blockly.Msg.LANG_LISTS_SORT_TOOLTIP": "Sorts list in ascending order.",
 	"Blockly.Msg.LANG_LISTS_SORT_TYPEBLOCK": "sort list",
 
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sortcomparator",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_NONDEST_TITLE_SORT": "make new sorted list from",
-	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_DEST_TITLE_SORT": "sort existing list",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR": "where ",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_VAR1": "item1",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_AND": "precedes",
@@ -578,7 +574,6 @@
 
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sortkey",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_NONDEST_TITLE_SORT": "make new sorted list from",
-	"Blockly.Msg.LANG_LISTS_SORT_KEY_DEST_TITLE_SORT": "sort existing list",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_KEY": "using key called on each ",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_VAR": "item",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_COLLAPSED_TEXT": "sort list using key",
