@@ -600,7 +600,12 @@ public class FileUtil {
       throws IOException, FileException {
     String fileName = DOCUMENT_DIRECTORY + category + "/" + FILENAME_PREFIX
         + System.currentTimeMillis() + "." + extension;
-    return getExternalFile(form, fileName);
+    File target = getExternalFile(form, fileName);
+    File parent = target.getParentFile();
+    if (!parent.exists() && !parent.mkdirs()) {
+      throw new IOException("Unable to create directory: " + parent.getAbsolutePath());
+    }
+    return target;
   }
 
   /**

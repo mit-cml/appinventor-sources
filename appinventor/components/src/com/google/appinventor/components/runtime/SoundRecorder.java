@@ -9,8 +9,6 @@ package com.google.appinventor.components.runtime;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-import android.Manifest;
-
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
 import android.media.MediaRecorder.OnInfoListener;
@@ -218,6 +216,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
       form.dispatchPermissionDeniedEvent(this, "Start", e);
       return;
     } catch (Throwable t) {
+      Log.e(TAG, "Cannot record sound", t);
       form.dispatchErrorOccurredEvent(
           this, "Start", ErrorMessages.ERROR_SOUND_RECORDER_CANNOT_CREATE, t.getMessage());
       return;
@@ -229,6 +228,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
       // it's not clear to me how to handle that.
       // controller.stop();
       controller = null;
+      Log.e(TAG, "Cannot record sound", t);
       form.dispatchErrorOccurredEvent(
           this, "Start", ErrorMessages.ERROR_SOUND_RECORDER_CANNOT_CREATE, t.getMessage());
       return;
