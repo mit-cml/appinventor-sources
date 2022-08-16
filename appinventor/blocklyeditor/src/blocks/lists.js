@@ -470,6 +470,7 @@ Blockly.Blocks['lists_join_with_separator'] = {
 };
 
 Blockly.Blocks['lists_map'] = {
+  // Map the list with given expression
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_MAP_HELPURL,
   init : function() {
@@ -525,6 +526,7 @@ Blockly.Blocks['lists_map'] = {
 };
 
 Blockly.Blocks['lists_filter'] = {
+  // Filter the list
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_FILTER_HELPURL,
   init : function() {
@@ -582,6 +584,7 @@ Blockly.Blocks['lists_filter'] = {
 
 
 Blockly.Blocks['lists_reduce'] = {
+  // Reduce the list
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_REDUCE_HELPURL,
   init : function() {
@@ -650,6 +653,7 @@ Blockly.Blocks['lists_reduce'] = {
 };
 
 Blockly.Blocks['lists_sort'] = {
+  // Sort the list in ascending order
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_SORT_HELPURL,
   init : function() {
@@ -666,6 +670,7 @@ Blockly.Blocks['lists_sort'] = {
 };
 
 Blockly.Blocks['lists_sort_comparator'] = {
+  // Sort the list with specified comparator
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_HELPURL,
   init : function() {
@@ -726,6 +731,7 @@ Blockly.Blocks['lists_sort_comparator'] = {
 };
 
 Blockly.Blocks['lists_sort_key'] = {
+  // Sorting the list using the key, a proxy value user creates with expressions.
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_SORT_KEY_HELPURL,
   init : function() {
@@ -780,6 +786,7 @@ Blockly.Blocks['lists_sort_key'] = {
 };
 
 Blockly.Blocks['lists_minimum'] = {
+  // Minimum value in the list
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_MIN_HELPURL,
   init : function() {
@@ -794,6 +801,7 @@ Blockly.Blocks['lists_minimum'] = {
 };
 
 Blockly.Blocks['lists_maximum'] = {
+  // Maximum value in the list
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_MAX_HELPURL,
   init : function() {
@@ -808,6 +816,7 @@ Blockly.Blocks['lists_maximum'] = {
 };
 
 Blockly.Blocks['lists_but_first'] = {
+  // Return the list without the first element
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_BUT_FIRST_HELPURL,
   init : function() {
@@ -824,6 +833,7 @@ Blockly.Blocks['lists_but_first'] = {
 };
 
 Blockly.Blocks['lists_but_last'] = {
+  // Return the list without the last element
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_BUT_LAST_HELPURL,
   init : function() {
