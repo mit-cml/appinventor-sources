@@ -412,7 +412,7 @@ public interface Images extends Resources {
    * Designer pallete item: GoogleSheets component
    */
   @Source("com/google/appinventor/images/googleSheets.png")
-  ImageResource googleSheets();
+  ImageResource spreadsheet();
 
   /**
    * Designer palette item: Sprite

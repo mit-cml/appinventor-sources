@@ -129,6 +129,11 @@ public final class YoungAndroidFormUpgrader {
 
     String componentType = componentProperties.get("$Type").asString().getString();
 
+    if (srcYaVersion < 218 && "GoogleSheets".equals(componentType)) {
+      componentType = "Spreadsheet";
+      componentProperties.put("$Type", new ClientJsonString("Spreadsheet"));
+    }
+
     // Get the source component version from the componentProperties.
     int srcCompVersion = 0;
     if (componentProperties.containsKey("$Version")) {
