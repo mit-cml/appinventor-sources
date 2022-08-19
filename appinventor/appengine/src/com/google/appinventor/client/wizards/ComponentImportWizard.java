@@ -90,7 +90,7 @@ public class ComponentImportWizard extends Wizard {
           project.addNode(componentsFolder, node);
           if ((node.getName().equals("component.json") || node.getName().equals("components.json"))
               && StringUtils.countMatches(node.getFileId(), "/") == 3) {
-            projectEditor.addComponent(node, null);
+            projectEditor.importExtension(node);
           }
         }
       }

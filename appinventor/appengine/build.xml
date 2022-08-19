@@ -678,6 +678,7 @@
     <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
     <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
     <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+    <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
     <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
