@@ -971,7 +971,9 @@ public class FileUtil {
    */
   @SuppressWarnings({"unused", "deprecation"})
   public static boolean isExternalStorageUri(Form form, String fileUri) {
-    if (fileUri.startsWith("file:///sdcard/") || fileUri.startsWith("file:///storage")) {
+    if (fileUri.startsWith("file:///sdcard/")
+            || fileUri.startsWith("file:///storage")
+            || fileUri.startsWith("file:/storage")) {
       return true;
     }
     return fileUri.startsWith("file://"
