@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+ROOTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 title() {
   echo -ne "\e]0;$*\a"
 }
@@ -82,11 +84,11 @@ buildnoplay() {
 
 companion() {
   title Building Companion...
-  any PlayApp
+  ant PlayApp
   if [ $? -eq 0 ]; then
     echo ""
     echo The companion is generated at:
-    echo $PWD/appinventor/build/buildserver/MIT AI2 Companion.apk
+    echo "$ROOTDIR"/appinventor/build/buildserver/MIT AI2 Companion.apk
   fi
 }
 
@@ -96,7 +98,7 @@ extension() {
   if [ $? -eq 0 ]; then
     echo ""
     echo The extension is generated at:
-    echo $PWD/appinventor/components/build/extensions
+    echo "$ROOTDIR"/appinventor/components/build/extensions
   fi
 }
 
