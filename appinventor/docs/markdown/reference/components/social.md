@@ -48,6 +48,10 @@ A button that, when clicked on, displays a list of the contacts to choose among.
  integer.  If an [`Image`](#ContactPicker.Image) has been set, the color
  change will not be visible until the [`Image`](#ContactPicker.Image) is removed.
 
+{:id="ContactPicker.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+ value.
+
 {:id="ContactPicker.ContactName" .text .ro .bo} *ContactName*
 : Returns the full name of the selected contact, or the empty string if a name is unavailable.
 
@@ -359,6 +363,10 @@ A button that, when clicked on, displays a list of the contacts' phone numbers t
 : Specifies the `PhoneNumberPicker`'s background color as an alpha-red-green-blue
  integer.  If an [`Image`](#PhoneNumberPicker.Image) has been set, the color
  change will not be visible until the [`Image`](#PhoneNumberPicker.Image) is removed.
+
+{:id="PhoneNumberPicker.BackgroundRepeatMode" .number .do} *BackgroundRepeatMode*
+: Specifies the repeat mode for the button background image. This does not check that the argument is a legal    
+ value.
 
 {:id="PhoneNumberPicker.ContactName" .text .ro .bo} *ContactName*
 : Returns the full name of the selected contact, or the empty string if a name is unavailable.

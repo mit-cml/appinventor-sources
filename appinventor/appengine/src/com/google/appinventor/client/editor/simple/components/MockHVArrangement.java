@@ -22,6 +22,7 @@ import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.user.client.DOM;
 
 import com.google.gwt.resources.client.ImageResource;
 
@@ -65,6 +66,10 @@ public class MockHVArrangement extends MockContainer {
   private String imagePropValue;
   private boolean scrollAble;
   private int orientation;
+
+  //Legal values for background repeat mode are defined in
+  // com.google.appinventor.components.runtime.Component.java.
+  private int backgroundRepeatMode;
 
 
  /**
@@ -138,11 +143,36 @@ public class MockHVArrangement extends MockContainer {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
       setBackgroundColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUND_REPEAT_MODE)){
+      setBackgroundRepeatMode(newValue);
     } else {
       if (propertyName.equals(PROPERTY_NAME_WIDTH) || propertyName.equals(PROPERTY_NAME_HEIGHT)) {
         refreshForm();
       }
     }
+  }
+
+  /*
+   * Set's background repeat mode property to a new value
+   */
+  private void setBackgroundRepeatMode(String value) {
+    backgroundRepeatMode = Integer.parseInt(value);
+    //property is only applicable if image is set
+    if(!hasImage) return;
+    switch(backgroundRepeatMode) {
+      case 0:
+        DOM.setStyleAttribute(layoutWidget.getElement(), "backgroundRepeat", "no-repeat");
+        DOM.setStyleAttribute(layoutWidget.getElement(), "backgroundSize", "100% 100%");
+        break;
+      case 1:
+        DOM.setStyleAttribute(layoutWidget.getElement(), "backgroundRepeat", "repeat");
+        DOM.setStyleAttribute(layoutWidget.getElement(), "backgroundSize", "");
+        break;
+      default:
+        // This should never happen
+        throw new IllegalArgumentException("backgroundRepeatMode:" + backgroundRepeatMode);
+    }
+
   }
 
   private void adjustAlignmentDropdowns() {
@@ -184,6 +214,9 @@ public class MockHVArrangement extends MockContainer {
     }
     MockComponentsUtil.setWidgetBackgroundImage(layoutWidget, url);
     image.setUrl(url);
+    if(hasImage) {
+      setBackgroundRepeatMode(Integer.toString(backgroundRepeatMode));
+    }
   }
 
   /*

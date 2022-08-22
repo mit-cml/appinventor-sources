@@ -1647,7 +1647,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     7: Blockly.Versioning.makeSetterUseHelper(
-        'Button', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'Button', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    //Background Image Repeat property was added
+    8: "noUpgrade"
 
   }, // End BarcodeScanner upgraders
 
@@ -1944,7 +1947,8 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseDropdown(
            'HorizontalArrangement', 'AlignVertical', 'VerticalAlignment'),
         Blockly.Versioning.makeSetterUseHelper(
-           'HorizontalArrangement', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)]
+           'HorizontalArrangement', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)],
+    5: "noUpgrade"
 
   }, // End HorizontalArrangement upgraders
 
@@ -1961,7 +1965,8 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseDropdown(
            'HorizontalScrollArrangement', 'AlignVertical', 'VerticalAlignment'),
         Blockly.Versioning.makeSetterUseHelper('HorizontalScrollArrangement', 'Image',
-           Blockly.Versioning.tryReplaceBlockWithAssets)]
+           Blockly.Versioning.tryReplaceBlockWithAssets)],
+    3: "noUpgrade"
 
   }, // End HorizontalScrollArrangement upgraders
 
@@ -2881,7 +2886,8 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 30:
     // - DefaultFileScope designer property was added
-    30: "noUpgrade"
+    30: "noUpgrade",
+    31: "noUpgrade"
 
   }, // End Screen
 
@@ -3132,7 +3138,8 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseDropdown(
            'VerticalArrangement', 'AlignVertical', 'VerticalAlignment'),
         Blockly.Versioning.makeSetterUseHelper('VerticalArrangement', 'Image',
-           Blockly.Versioning.tryReplaceBlockWithAssets)]
+           Blockly.Versioning.tryReplaceBlockWithAssets)],
+    5: "noUpgrade"
   }, // End VerticalArrangement upgraders
 
   "VerticalScrollArrangement": {
@@ -3148,7 +3155,8 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseDropdown(
            'VerticalScrollArrangement', 'AlignVertical', 'VerticalAlignment'),
         Blockly.Versioning.makeSetterUseHelper('VerticalScrollArrangement', 'Image',
-           Blockly.Versioning.tryReplaceBlockWithAssets)]
+           Blockly.Versioning.tryReplaceBlockWithAssets)],
+    3: "noUpgrade"
   }, // End VerticalScrollArrangement upgraders
 
   "VideoPlayer": {

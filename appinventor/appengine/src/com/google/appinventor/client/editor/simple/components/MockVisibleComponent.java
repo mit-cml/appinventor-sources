@@ -56,6 +56,7 @@ public abstract class MockVisibleComponent extends MockComponent {
   public static final String PROPERTY_NAME_ROW = "Row";
   protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = "ListData";
   protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = "ListViewLayout";
+  protected static final String PROPERTY_NAME_BACKGROUND_REPEAT_MODE = "BackgroundRepeatMode";
 
   // Note: the values below are duplicated in Component.java
   // If you change them here, change them there!
