@@ -37,6 +37,7 @@ import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.RUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import java.io.IOException;
 
@@ -197,18 +198,16 @@ public final class VideoPlayer extends AndroidViewComponent implements
   @UsesPermissions(READ_EXTERNAL_STORAGE)
   public void Source(@Asset String path) {
     final String tempPath = (path == null) ? "" : path;
-    if (MediaUtil.isExternalFile(container.$context(), tempPath)
-        && container.$form().isDeniedPermission(READ_EXTERNAL_STORAGE)) {
-      container.$form().askPermission(READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
-        @Override
-        public void HandlePermissionResponse(String permission, boolean granted) {
-          if (granted) {
-            VideoPlayer.this.Source(tempPath);
-          } else {
-            container.$form().dispatchPermissionDeniedEvent(VideoPlayer.this, "Source", permission);
-          }
+    if (MediaUtil.askFilePermissionIfNeeded(container.$form(), path, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          VideoPlayer.this.Source(tempPath);
+        } else {
+          container.$form().dispatchPermissionDeniedEvent(VideoPlayer.this, "Source", permission);
         }
-      });
+      }
+    })) {
       return;
     }
 

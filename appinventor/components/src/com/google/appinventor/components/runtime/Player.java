@@ -29,6 +29,7 @@ import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.RUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import java.io.IOException;
 
@@ -177,18 +178,16 @@ public final class Player extends AndroidNonvisibleComponent
   @UsesPermissions(READ_EXTERNAL_STORAGE)
   public void Source(String path) {
     final String tempPath = (path == null) ? "" : path;
-    if (MediaUtil.isExternalFile(form, tempPath)
-        && form.isDeniedPermission(READ_EXTERNAL_STORAGE)) {
-      form.askPermission(READ_EXTERNAL_STORAGE, new PermissionResultHandler() {
-        @Override
-        public void HandlePermissionResponse(String permission, boolean granted) {
-          if (granted) {
-            Player.this.Source(tempPath);
-          } else {
-            form.dispatchPermissionDeniedEvent(Player.this, "Source", permission);
-          }
+    if (MediaUtil.askFilePermissionIfNeeded(form, tempPath, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          Player.this.Source(tempPath);
+        } else {
+          form.dispatchPermissionDeniedEvent(Player.this, "Source", permission);
         }
-      });
+      }
+    })) {
       return;
     }
 
