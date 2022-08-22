@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime.util;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -26,8 +27,8 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.VideoView;
 
-import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.PermissionResultHandler;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 
@@ -200,6 +201,26 @@ public class MediaUtil {
     }
     return mediaPath.startsWith(QUtil.getExternalStoragePath(context))
         || mediaPath.startsWith("/sdcard/") || isExternalFileUrl(context, mediaPath);
+  }
+
+  /**
+   * Tests and asks file permission if the given path is a pathname pointing to
+   *                          an external file a
+   * @param path path of the media file
+   * @param handler permission handler that posts the results
+   * @return true if permission is needed
+   */
+
+  public static boolean askFilePermissionIfNeeded(Form form, String path, PermissionResultHandler handler) {
+    boolean bool = RUtil.needsFilePermission(form, path, null);
+    Log.i(LOG_TAG, "RUtil, needs file permission = " + bool);
+    if (bool
+            && MediaUtil.isExternalFile(form, path)
+            && form.isDeniedPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+      form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, handler);
+      return true;
+    }
+    return false;
   }
 
   private static ConcurrentHashMap<String, String> pathCache = new ConcurrentHashMap<String, String>(2);
