@@ -43,7 +43,7 @@ public class LegoMindstormsEv3Sensor extends LegoMindstormsEv3Base {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LEGO_EV3_SENSOR_PORT,
                     defaultValue = DEFAULT_SENSOR_PORT)
-  @SimpleProperty
+  @SimpleProperty(userVisible = false)
   public void SensorPort(String sensorPortLetter) {
     String functionName = "SensorPort";
     setSensorPort(functionName, sensorPortLetter);

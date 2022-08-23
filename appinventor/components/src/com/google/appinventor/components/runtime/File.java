@@ -150,7 +150,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * Android 11, which strongly enforces that apps only write to app-private directories.
    */
   @SimpleProperty(description = "Allows app to access files from the root of the external storage "
-      + "directory (legacy mode).")
+      + "directory (legacy mode).", userVisible = false)
   @Deprecated
   public boolean LegacyMode() {
     return scope == FileScope.Legacy;

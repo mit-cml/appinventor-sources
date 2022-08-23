@@ -1996,8 +1996,8 @@ public class Form extends AppInventorCompatActivity
    * This is the primary color used as part of the Android theme, including coloring the `%type%`'s
    * title bar.
    */
-  @SimpleProperty
   @IsColor
+  @SimpleProperty(userVisible = false)
   public int PrimaryColor() {
     return primaryColor;
   }
@@ -2014,8 +2014,8 @@ public class Form extends AppInventorCompatActivity
    * This is the primary color used when the Theme property is specified to be Dark. It applies to
    * a number of elements, including the `%type%`'s title bar.
    */
-  @SimpleProperty()
   @IsColor
+  @SimpleProperty(userVisible = false)
   public int PrimaryColorDark() {
     return primaryColorDark;
   }
@@ -2033,8 +2033,8 @@ public class Form extends AppInventorCompatActivity
    * versions of Android. Components affected by this property include dialogs created by the
    * {@link Notifier}, the {@link DatePicker}, and others.
    */
-  @SimpleProperty
   @IsColor
+  @SimpleProperty(userVisible = false)
   public int AccentColor() {
     return accentColor;
   }

@@ -104,7 +104,7 @@ public class Ev3Motors extends LegoMindstormsEv3Base {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
                     defaultValue = DEFAULT_MOTOR_PORTS)
-  @SimpleProperty
+  @SimpleProperty(userVisible = false)
   public void MotorPorts(String motorPortLetters) {
     String functionName = "MotorPorts";
     try {
@@ -119,7 +119,7 @@ public class Ev3Motors extends LegoMindstormsEv3Base {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
                     defaultValue = "" + DEFAULT_WHEEL_DIAMETER)
-  @SimpleProperty
+  @SimpleProperty(userVisible = false)
   public void WheelDiameter(double diameter) {
     wheelDiameter = diameter;
   }

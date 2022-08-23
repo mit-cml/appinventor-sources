@@ -419,7 +419,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   }
 
   @Override
-  @SimpleProperty(description = "Gets whether or not the shadow of the Marker is shown.")
+  @SimpleProperty(userVisible = false, description = "Gets whether or not the shadow of the Marker is shown.")
   public boolean ShowShadow() {
     return false;
   }

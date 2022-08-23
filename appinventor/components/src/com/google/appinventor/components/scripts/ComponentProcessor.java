@@ -2026,7 +2026,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   /**
    * Returns the OptionList HelperKey associated with the given element.
-   * @param element the Element describing a class which implements the OptionList interface.
+   * @param optionList the Element describing a class which implements the OptionList interface.
    * @return the HelperKey associated with the given element.
    */
   private HelperKey optionListToHelperKey(Element optionList) {
@@ -2551,9 +2551,19 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           if (priorProperty.helper == null) {
             priorProperty.helper = newProperty.helper;
           }
-          priorProperty.readable = priorProperty.readable || newProperty.readable;
-          priorProperty.writable = priorProperty.writable || newProperty.writable;
-          priorProperty.userVisible = priorProperty.isUserVisible() && newProperty.isUserVisible();
+
+          // We don't check for the cases when both prior and new properties are invisible, and when
+          // only the new property is invisible because in both the cases `readable`, `writable` and
+          // `userVisible` properties won't require any change and would be same as prior property.
+          if (!priorProperty.isUserVisible() && newProperty.isUserVisible()) {
+            priorProperty.readable = newProperty.readable;
+            priorProperty.writable = newProperty.writable;
+            priorProperty.userVisible = true;
+          } else if (priorProperty.isUserVisible() && newProperty.isUserVisible()) {
+            priorProperty.readable = priorProperty.readable || newProperty.readable;
+            priorProperty.writable = priorProperty.writable || newProperty.writable;
+          }
+
           priorProperty.deprecated = priorProperty.isDeprecated() && newProperty.isDeprecated();
           priorProperty.componentInfoName = componentInfo.name;
           priorProperty.color = newProperty.color || priorProperty.color;

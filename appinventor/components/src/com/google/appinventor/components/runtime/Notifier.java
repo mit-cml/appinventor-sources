@@ -450,8 +450,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_TOAST_LENGTH,
       defaultValue = Component.TOAST_LENGTH_LONG + "")
-  @SimpleProperty(
-      userVisible = false)
+  @SimpleProperty(userVisible = false)
   public void NotifierLength(int length){
     notifierLength = length;
   }
@@ -460,6 +459,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @suppressdoc
    */
   @SimpleProperty(
+      userVisible = false,
       description="Specifies the length of time that the alert is shown -- either \"short\" or \"long\".",
       category = PropertyCategory.APPEARANCE)
   public int NotifierLength() {

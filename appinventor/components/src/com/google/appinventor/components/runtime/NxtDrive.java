@@ -84,7 +84,7 @@ public class NxtDrive extends LegoMindstormsNxtBase {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "CB")
-  @SimpleProperty
+  @SimpleProperty(userVisible = false)
   public void DriveMotors(String motorPortLetters) {
     driveMotors = motorPortLetters;
     driveMotorPorts = new ArrayList<NxtMotorPort>();
@@ -117,7 +117,7 @@ public class NxtDrive extends LegoMindstormsNxtBase {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "4.32")
-  @SimpleProperty
+  @SimpleProperty(userVisible = false)
   public void WheelDiameter(float wheelDiameter) {
     this.wheelDiameter = wheelDiameter;
   }

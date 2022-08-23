@@ -264,7 +264,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FIREBASE_URL,
     defaultValue = "DEFAULT")
-  @SimpleProperty(description = "Sets the URL for this FirebaseDB.")
+  @SimpleProperty(description = "Sets the URL for this FirebaseDB.", userVisible = false)
   public void FirebaseURL(String url) {
     if (url.equals("DEFAULT")) {
       if (!useDefault) {        // If we weren't setup for the default
@@ -303,7 +303,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
    * @param bucket the name of the developer's bucket
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
-  @SimpleProperty
+  @SimpleProperty(userVisible = false)
   public void DeveloperBucket(String bucket) {
     developerBucket = bucket;
     resetListener();
@@ -352,7 +352,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
    *            default Firebase
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
-  @SimpleProperty
+  @SimpleProperty(userVisible = false)
   public void FirebaseToken(String JWT) {
     firebaseToken = JWT;
     resetListener();
