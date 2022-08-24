@@ -816,7 +816,7 @@ Blockly.Blocks['lists_maximum'] = {
 };
 
 Blockly.Blocks['lists_but_first'] = {
-  // Return the list without the first element
+  // Return the list without the first item
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_BUT_FIRST_HELPURL,
   init : function() {
@@ -833,7 +833,7 @@ Blockly.Blocks['lists_but_first'] = {
 };
 
 Blockly.Blocks['lists_but_last'] = {
-  // Return the list without the last element
+  // Return the list without the last item
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_BUT_LAST_HELPURL,
   init : function() {
