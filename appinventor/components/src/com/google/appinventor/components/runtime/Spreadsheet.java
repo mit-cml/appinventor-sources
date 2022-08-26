@@ -26,7 +26,6 @@ import com.google.api.services.sheets.v4.model.ClearValuesResponse;
 import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
 import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.Request;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -56,7 +55,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -74,7 +72,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 /**
- * GoogleSheets is a non-visible component for storing and receiving data from
+ * Spreadsheet is a non-visible component for storing and receiving data from
  * a Google Sheets document using the Google Sheets API.
  *
  * In order to utilize this component, one must first have a Google Developer
@@ -88,16 +86,16 @@ import java.util.concurrent.FutureTask;
  *
  * Row and column numbers are 1-indexed.
  */
-@DesignerComponent(version = YaVersion.GOOGLESHEETS_COMPONENT_VERSION,
+@DesignerComponent(version = YaVersion.SPREADSHEET_COMPONENT_VERSION,
     category = ComponentCategory.STORAGE,
-    description = "GoogleSheets is a non-visible component for storing and " +
-      "receiving data from a Google Sheets document using the Google Sheets API. " +
+    description = "Spreadsheet is a non-visible component for storing and " +
+      "receiving data from a Spreadsheet document using the Google Sheets API. " +
       "<p>In order to utilize this component, one must first have a Google " +
       "Developer Account. Then, one must create a new project under that Google " +
       "Developer Account, enable the Google Sheets API on that project, and " +
       "finally create a Service Account for the Sheets API.</p>" +
       "<p>Instructions on how to create the Service Account, as well as where to " +
-      "find other relevant information for using the Google Sheets Component, " +
+      "find other relevant information for using the Spreadsheet Component, " +
       "can be found <a href='https://docs.google.com/document/d/1PurfpFV6_ncXq-SvMKCF7_xBHKTWF10L1LqmHoSTUF4/edit?usp=sharing'>" +
       "here</a>.</p>",
     nonVisible = true,
@@ -136,14 +134,14 @@ import java.util.concurrent.FutureTask;
            })
     })
 })
-public class GoogleSheets extends AndroidNonvisibleComponent implements Component,
+public class Spreadsheet extends AndroidNonvisibleComponent implements Component,
     ObservableDataSource<YailList, Future<YailList>> {
-  private static final String LOG_TAG = "GOOGLESHEETS";
+  private static final String LOG_TAG = "SPREADSHEET";
 
   private static final String WEBVIEW_ACTIVITY_CLASS = WebViewActivity.class
     .getName();
   private int requestCode;
-  public GoogleSheets(ComponentContainer componentContainer) {
+  public Spreadsheet(ComponentContainer componentContainer) {
     super(componentContainer.$form());
     this.container = componentContainer;
     this.activity = componentContainer.$context();
@@ -156,7 +154,7 @@ public class GoogleSheets extends AndroidNonvisibleComponent implements Componen
   // This gets changed to the name of the project by MockGoogleSheets by default
   private String ApplicationName = "App Inventor";
 
-  // Variables for Authenticating the Google Sheets Component
+  // Variables for Authenticating the Spreadsheet Component
   private File cachedCredentialsFile = null;
   private String accessToken = null;
   private Sheets sheetsService = null;
@@ -183,7 +181,7 @@ public class GoogleSheets extends AndroidNonvisibleComponent implements Componen
         ranges.add(sheetName);
         getSheetRequest.setRanges(ranges);
         getSheetRequest.setIncludeGridData(false);
-        Spreadsheet testSheet = getSheetRequest.execute();
+        com.google.api.services.sheets.v4.model.Spreadsheet testSheet = getSheetRequest.execute();
         if (testSheet.size() == 0) {
           return -1;
         }
@@ -314,7 +312,7 @@ public class GoogleSheets extends AndroidNonvisibleComponent implements Componen
     description="Triggered whenever an API call encounters an error. Details " +
       "about the error are in `errorMessage`.")
   public void ErrorOccurred (final String errorMessage) {
-    final GoogleSheets thisInstance = this;
+    final Spreadsheet thisInstance = this;
     Log.d(LOG_TAG, errorMessage);
     activity.runOnUiThread(new Runnable() {
       @Override

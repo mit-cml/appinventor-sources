@@ -28,7 +28,7 @@ import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
-import com.google.appinventor.client.editor.simple.components.MockGoogleSheets;
+import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
@@ -138,7 +138,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/clock.png", images.clock());
     bundledImages.put("images/fusiontables.png", images.fusiontables());
     bundledImages.put("images/gameClient.png", images.gameclient());
-    bundledImages.put("images/googleSheets.png", images.googleSheets());
+    bundledImages.put("images/googleSheets.png", images.spreadsheet());
     bundledImages.put("images/locationSensor.png", images.locationSensor());
     bundledImages.put("images/notifier.png", images.notifier());
     bundledImages.put("images/legoMindstormsNxt.png", images.legoMindstormsNxt());
@@ -430,8 +430,8 @@ public final class SimpleComponentDescriptor {
         return new MockTranslator(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
             null, editor.getProjectId()));
-      } else if(name.equals(MockGoogleSheets.TYPE)) {
-        return new MockGoogleSheets(editor, name,
+      } else if(name.equals(MockSpreadsheet.TYPE)) {
+        return new MockSpreadsheet(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
             null, editor.getProjectId()));
       } else if (name.equals(MockDataFile.TYPE)) {

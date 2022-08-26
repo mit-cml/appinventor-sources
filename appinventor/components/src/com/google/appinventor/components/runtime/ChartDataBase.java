@@ -344,7 +344,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       userVisible = false)
-  public void GoogleSheetsUseHeaders(boolean useHeaders) {
+  public void SpreadsheetUseHeaders(boolean useHeaders) {
     useSheetHeaders = useHeaders;
   }
 
@@ -387,14 +387,14 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   }
 
   /**
-   * Sets the column to parse from the attached GoogleSheets component for the x values. If a
+   * Sets the column to parse from the attached Spreadsheet component for the x values. If a
    * column is not specified, default values for the x values will be generated instead.
    *
    * @param column the name of the column to use for X values
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public void GoogleSheetsXColumn(String column) {
+  public void SpreadsheetXColumn(String column) {
     sheetsColumns.set(0, column);
   }
 
@@ -437,14 +437,14 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   }
 
   /**
-   * Sets the column to parse from the attached GoogleSheets component for the y values. If a
+   * Sets the column to parse from the attached Spreadsheet component for the y values. If a
    * column is not specified, default values for the y values will be generated instead.
    *
    * @param column the name of the column to use for Y values
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public void GoogleSheetsYColumn(String column) {
+  public void SpreadsheetYColumn(String column) {
     sheetsColumns.set(1, column);
   }
 
@@ -531,8 +531,8 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
         ImportFromTinyDB((TinyDB) dataSource, dataSourceKey);
       } else if (dataSource instanceof CloudDB) {
         ImportFromCloudDB((CloudDB) dataSource, dataSourceKey);
-      } else if (dataSource instanceof GoogleSheets) {
-        importFromGoogleSheetsAsync((GoogleSheets) dataSource, YailList.makeList(sheetsColumns),
+      } else if (dataSource instanceof Spreadsheet) {
+        importFromSpreadsheetAsync((Spreadsheet) dataSource, YailList.makeList(sheetsColumns),
             useSheetHeaders);
       } else if (dataSource instanceof Web) {
         importFromWebAsync((Web) dataSource, YailList.makeList(webColumns));
@@ -620,7 +620,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
           List<String> columnsList;
           if (source instanceof DataFile) {
             columnsList = dataFileColumns;
-          } else if (source instanceof GoogleSheets) {
+          } else if (source instanceof Spreadsheet) {
             columnsList = sheetsColumns;
           } else if (source instanceof Web) {
             columnsList = webColumns;
@@ -887,7 +887,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   }
 
 
-  protected void importFromGoogleSheetsAsync(final GoogleSheets sheets, final YailList columns,
+  protected void importFromSpreadsheetAsync(final Spreadsheet sheets, final YailList columns,
       final boolean useHeaders) {
     final Future<YailList> sheetColumns = sheets.getDataValue(columns, useHeaders);
 
@@ -1124,8 +1124,8 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
         // This is needed to easily remove values later on when the value changes
         // again.
         lastDataSourceValue = chartDataModel.getTuplesFromColumns(columns, true);
-      } else if (source instanceof GoogleSheets) {
-        YailList columns = ((GoogleSheets) source).getColumns(YailList.makeList(sheetsColumns),
+      } else if (source instanceof Spreadsheet) {
+        YailList columns = ((Spreadsheet) source).getColumns(YailList.makeList(sheetsColumns),
             useSheetHeaders);
         lastDataSourceValue = chartDataModel.getTuplesFromColumns(columns, useSheetHeaders);
       } else {

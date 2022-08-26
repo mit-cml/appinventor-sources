@@ -110,7 +110,7 @@ public class PropertiesUtil {
       add("ProximitySensor");
       add("Pedometer");
       add("LocationSensor");
-      add("GoogleSheets");
+      add("Spreadsheet");
     }};
 
 

@@ -167,18 +167,6 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed
  from the x and y values.
 
-{:id="ChartData2D.GoogleSheetsUseHeaders" .boolean .wo .do} *GoogleSheetsUseHeaders*
-: If checked, the first row of the spreadsheet will be used to interpret the x and y column
- values. Otherwise, the x and y columns should be a column reference, such as A or B.
-
-{:id="ChartData2D.GoogleSheetsXColumn" .text .wo .do} *GoogleSheetsXColumn*
-: Sets the column to parse from the attached GoogleSheets component for the x values. If a
- column is not specified, default values for the x values will be generated instead.
-
-{:id="ChartData2D.GoogleSheetsYColumn" .text .wo .do} *GoogleSheetsYColumn*
-: Sets the column to parse from the attached GoogleSheets component for the y values. If a
- column is not specified, default values for the y values will be generated instead.
-
 {:id="ChartData2D.Label" .text} *Label*
 : Specifies the text for the data series label.
 
@@ -205,6 +193,18 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
    If the data identified by the [`DataSourceKey`](#ChartData2D.DataSourceKey) is updated
  in the attached Data Source component, then the data is also updated in
  the Chart Data component.
+
+{:id="ChartData2D.SpreadsheetUseHeaders" .boolean .wo .do} *SpreadsheetUseHeaders*
+: If checked, the first row of the spreadsheet will be used to interpret the x and y column
+ values. Otherwise, the x and y columns should be a column reference, such as A or B.
+
+{:id="ChartData2D.SpreadsheetXColumn" .text .wo .do} *SpreadsheetXColumn*
+: Sets the column to parse from the attached Spreadsheet component for the x values. If a
+ column is not specified, default values for the x values will be generated instead.
+
+{:id="ChartData2D.SpreadsheetYColumn" .text .wo .do} *SpreadsheetYColumn*
+: Sets the column to parse from the attached Spreadsheet component for the y values. If a
+ column is not specified, default values for the y values will be generated instead.
 
 {:id="ChartData2D.WebXColumn" .text .wo .do} *WebXColumn*
 : Value used when importing data from a Web component Source. The
@@ -286,20 +286,20 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  default values which are the indices of the entries. For the first entry, the default
  value would be the 1, for the second it would be 2, and so on.
 
-{:id="ChartData2D.ImportFromGoogleSheets" class="method"} <i/> ImportFromGoogleSheets(*sheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
-: Imports data from the specified GoogleSheets component by taking the specified x column
- for the x values, and the specified y column for the y values. Prior to calling this function,
- the GoogleSheet component's ReadSheet method has to be called to load the data. The usage of
- the GotSheet event in the GoogleSheets component is unnecessary.
-
-   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
-
 {:id="ChartData2D.ImportFromList" class="method"} <i/> ImportFromList(*list*{:.list})
 : Imports the data from the specified list parameter to the data series.
  The list is expected to contain element which are also lists. Each
  list element is expected to have 2 values, the first one being
  the x value, and the second one being the y value.
  Invalid list entries are simply skipped. Existing data are not cleared.
+
+{:id="ChartData2D.ImportFromSpreadsheet" class="method"} <i/> ImportFromSpreadsheet(*sheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
+: Imports data from the specified Spreadsheet component by taking the specified x column
+ for the x values, and the specified y column for the y values. Prior to calling this function,
+ the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
+ the GotSheet event in the Spreadsheet component is unnecessary.
+
+   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
 
 {:id="ChartData2D.ImportFromTinyDB" class="method"} <i/> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
 : Imports data from the specified TinyDB component by taking the value

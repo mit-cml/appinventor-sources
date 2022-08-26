@@ -36,9 +36,9 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
   private static final String PROPERTY_CHART_SOURCE_VALUE = "DataSourceKey";
   private static final String PROPERTY_DATA_FILE_X_COLUMN = "DataFileXColumn";
   private static final String PROPERTY_DATA_FILE_Y_COLUMN = "DataFileYColumn";
-  private static final String PROPERTY_GOOGLESHEETS_HEADERS = "GoogleSheetsUseHeaders";
-  private static final String PROPERTY_GOOGLESHEETS_X_COLUMN = "GoogleSheetsXColumn";
-  private static final String PROPERTY_GOOGLESHEETS_Y_COLUMN = "GoogleSheetsYColumn";
+  private static final String PROPERTY_SPREADSHEET_HEADERS = "SpreadsheetUseHeaders";
+  private static final String PROPERTY_SPREADSHEET_X_COLUMN = "SpreadsheetXColumn";
+  private static final String PROPERTY_SPREADSHEET_Y_COLUMN = "SpreadsheetYColumn";
   private static final String PROPERTY_WEB_X_COLUMN = "WebXColumn";
   private static final String PROPERTY_WEB_Y_COLUMN = "WebYColumn";
 
@@ -61,9 +61,9 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
         add(PROPERTY_DATA_FILE_X_COLUMN);
         add(PROPERTY_DATA_FILE_Y_COLUMN);
         add(PROPERTY_CHART_SOURCE_VALUE);
-        add(PROPERTY_GOOGLESHEETS_HEADERS);
-        add(PROPERTY_GOOGLESHEETS_X_COLUMN);
-        add(PROPERTY_GOOGLESHEETS_Y_COLUMN);
+        add(PROPERTY_SPREADSHEET_HEADERS);
+        add(PROPERTY_SPREADSHEET_X_COLUMN);
+        add(PROPERTY_SPREADSHEET_Y_COLUMN);
         add(PROPERTY_WEB_X_COLUMN);
         add(PROPERTY_WEB_Y_COLUMN);
         add(PROPERTY_POINT_SHAPE);
@@ -292,10 +292,10 @@ public abstract class MockChartData extends MockVisibleComponent implements Data
     showProperty(PROPERTY_WEB_X_COLUMN, showWebColumns);
     showProperty(PROPERTY_WEB_Y_COLUMN, showWebColumns);
 
-    boolean showSheetsColumns = (dataSource != null && dataSource.getType().equals("GoogleSheets"));
-    showProperty(PROPERTY_GOOGLESHEETS_HEADERS, showSheetsColumns);
-    showProperty(PROPERTY_GOOGLESHEETS_X_COLUMN, showSheetsColumns);
-    showProperty(PROPERTY_GOOGLESHEETS_Y_COLUMN, showSheetsColumns);
+    boolean showSheetsColumns = (dataSource != null && dataSource.getType().equals("Spreadsheet"));
+    showProperty(PROPERTY_SPREADSHEET_HEADERS, showSheetsColumns);
+    showProperty(PROPERTY_SPREADSHEET_X_COLUMN, showSheetsColumns);
+    showProperty(PROPERTY_SPREADSHEET_Y_COLUMN, showSheetsColumns);
 
     // Handle DataFile-related property responses
     handleDataFilePropertySetting();

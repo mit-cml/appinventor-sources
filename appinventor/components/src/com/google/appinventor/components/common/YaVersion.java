@@ -558,13 +558,16 @@ public class YaVersion {
   //   itself stubbed out and placed in INTERNAL
   // For YOUNG_ANDROID_VERION 217:
   // - Added GOOGLESHEETS_COMPONENT_VERSION
-  // For YOUNG_ANDROID_VERSION 218:
+  // For YOUNG_ANDROID_VERION 218:
+  // - SPREADSHEET_COMPONENT_VERSION = 1
+  // - Renamed GoogleSheets to Spreadsheet
+  // For YOUNG_ANDROID_VERSION 219:
   // - CHART_COMPONENT_VERSION was introduced
   // - CHART_DATA_2D_COMPONENT_VERSION was introduced
   // - DATA_FILE_COMPONENT_VERSION was introduced
   // - BLUETOOTH_CLIENT_COMPONENT_VERSION was incremented to 7
 
-  public static final int YOUNG_ANDROID_VERSION = 218;
+  public static final int YOUNG_ANDROID_VERSION = 219;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -991,7 +994,7 @@ public class YaVersion {
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
 
-  public static final int GOOGLESHEETS_COMPONENT_VERSION = 1;
+  public static final int SPREADSHEET_COMPONENT_VERSION = 1;
 
   public static final int GYROSCOPESENSOR_COMPONENT_VERSION = 1;
 
