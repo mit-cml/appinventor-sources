@@ -409,9 +409,9 @@ public interface Images extends Resources {
   ImageResource gameclient();
 
   /**
-   * Designer pallete item: GoogleSheets component
+   * Designer pallete item: Spreadsheet component
    */
-  @Source("com/google/appinventor/images/googleSheets.png")
+  @Source("com/google/appinventor/images/spreadsheet.png")
   ImageResource spreadsheet();
 
   /**

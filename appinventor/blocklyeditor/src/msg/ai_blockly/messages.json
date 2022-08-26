@@ -790,10 +790,10 @@
 	"Blockly.Msg.DIALOG_SUBMIT": "Submit",
 	"Blockly.Msg.DIALOG_ENTER_VALUES": "Enter values for:",
 
-	"Blockly.Msg.LANG_COMPONENT_BLOCK_GOOGLESHEETS_HELPURL": "/reference/components/storage.html#GoogleSheets",
-	"Blockly.Msg.LANG_COMPONENT_BLOCK_GOOGLESHEETS_PROPERTIES_HELPURL": "/reference/components/storage.html#GoogleSheets",
-	"Blockly.Msg.LANG_COMPONENT_BLOCK_GOOGLESHEETS_EVENTS_HELPURL": "/reference/components/storage.html#GoogleSheets",
-	"Blockly.Msg.LANG_COMPONENT_BLOCK_GOOGLESHEETS_METHODS_HELPURL": "/reference/components/storage.html#GoogleSheets",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_HELPURL": "/reference/components/storage.html#Spreadsheet",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_PROPERTIES_HELPURL": "/reference/components/storage.html#Spreadsheet",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_EVENTS_HELPURL": "/reference/components/storage.html#Spreadsheet",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_METHODS_HELPURL": "/reference/components/storage.html#Spreadsheet",
 
 	"Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS": "/reference/blocks/text.html#contains",
 	"Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL": "/reference/blocks/text.html#containsall",

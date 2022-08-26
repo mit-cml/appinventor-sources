@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Mock for the non-visible GoogleSheets component. This needs a separate mock
+ * Mock for the non-visible Spreadsheet component. This needs a separate mock
  * to set APPLICATION_NAME to the name of the current App Inventor project.
  *
  * Cribbed from MockFusionTablesControl.java
