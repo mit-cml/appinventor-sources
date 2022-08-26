@@ -88,10 +88,10 @@ import java.util.ArrayList;
       "finally create a Service Account for the Sheets API.</p>" +
       "<p>Instructions on how to create the Service Account, as well as where to " +
       "find other relevant information for using the Spreadsheet Component, " +
-      "can be found <a href='https://docs.google.com/document/d/1PurfpFV6_ncXq-SvMKCF7_xBHKTWF10L1LqmHoSTUF4/edit?usp=sharing'>" +
+      "can be found <a href='/reference/other/googlesheets-api-setup.html'>" +
       "here</a>.</p>",
     nonVisible = true,
-    iconName = "images/googleSheets.png")
+    iconName = "images/spreadsheet.png")
 @SimpleObject
 @UsesPermissions({
     INTERNET,
@@ -142,7 +142,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   private String apiKey;
   private String credentialsPath;
   private String spreadsheetID = "";
-  // This gets changed to the name of the project by MockGoogleSheets by default
+  // This gets changed to the name of the project by MockSpreadsheet by default
   private String ApplicationName = "App Inventor";
 
   // Variables for Authenticating the Spreadsheet Component
@@ -219,7 +219,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    *
    * @internaldoc
    * This is set programmatically
-   * in {@link com.google.appinventor.client.editor.simple.components.MockGoogleSheets}
+   * in {@link com.google.appinventor.client.editor.simple.components.MockSpreadsheet}
    * and consists of the current App Inventor project name.
    *
    * @param ApplicationName the name of the App

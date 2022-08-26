@@ -133,7 +133,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/clock.png", images.clock());
     bundledImages.put("images/fusiontables.png", images.fusiontables());
     bundledImages.put("images/gameClient.png", images.gameclient());
-    bundledImages.put("images/googleSheets.png", images.spreadsheet());
+    bundledImages.put("images/spreadsheet.png", images.spreadsheet());
     bundledImages.put("images/locationSensor.png", images.locationSensor());
     bundledImages.put("images/notifier.png", images.notifier());
     bundledImages.put("images/legoMindstormsNxt.png", images.legoMindstormsNxt());
