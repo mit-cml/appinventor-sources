@@ -460,6 +460,11 @@ public class JsonUtil {
     ///////////////////////////////////////////////////////////////////////////////
 
     File destDirectory = new File(Uri.parse(fullDirName).getPath());
+    if (!destDirectory.isDirectory()) {
+      if (!destDirectory.mkdirs()) {
+        throw new YailRuntimeError("Unable to create " + destDirectory, "Write");
+      }
+    }
     final Synchronizer<Boolean> result = new Synchronizer<>();
     File dest;
     try {
