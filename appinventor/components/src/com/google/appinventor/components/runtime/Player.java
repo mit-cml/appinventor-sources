@@ -29,7 +29,6 @@ import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.RUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import java.io.IOException;
 
