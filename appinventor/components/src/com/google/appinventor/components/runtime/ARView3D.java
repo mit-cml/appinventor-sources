@@ -5,24 +5,42 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.runtime.util.AR3DFactory.*;
+import static android.Manifest.permission.CAMERA;
 
 import android.app.Activity;
-import com.google.appinventor.components.annotations.DesignerProperty;
+import android.opengl.GLSurfaceView;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesLibraries;
+import com.google.appinventor.components.annotations.UsesNativeLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-
-import android.view.View;
-
+import com.google.appinventor.components.runtime.util.AR3DFactory.ARDetectedPlane;
+import com.google.appinventor.components.runtime.util.AR3DFactory.ARDetectedPlaneContainer;
+import com.google.appinventor.components.runtime.util.AR3DFactory.ARImageMarker;
+import com.google.appinventor.components.runtime.util.AR3DFactory.ARImageMarkerContainer;
+import com.google.appinventor.components.runtime.util.AR3DFactory.ARLight;
+import com.google.appinventor.components.runtime.util.AR3DFactory.ARLightContainer;
+import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
+import com.google.appinventor.components.runtime.util.AR3DFactory.ARNodeContainer;
+import com.google.ar.core.ArCoreApk;
+import com.google.ar.core.Config;
+import com.google.ar.core.Config.InstantPlacementMode;
+import com.google.ar.core.Session;
+import com.google.ar.core.exceptions.UnavailableApkTooOldException;
+import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
+import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
+import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
+import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,15 +54,32 @@ import java.util.List;
       "<p>Although the ARView3D displays the live camera feed when tracking has started, it " +
       "does not need to take the entire size of the view.  It can be resized to cover as much " +
       "screenspace as desired.</p>",
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR,
+    androidMinSdk = 14)
 
 @SimpleObject
+@UsesLibraries({"ar-core.jar", "ar-core.aar"})
+@UsesNativeLibraries(
+    v7aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so",
+    v8aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so",
+    x86_64Libraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so"
+)
+public final class ARView3D extends AndroidViewComponent implements Component, ARNodeContainer,
+    ARImageMarkerContainer, ARDetectedPlaneContainer, ARLightContainer,
+    OnPauseListener, OnResumeListener, OnClearListener {
 
-public final class ARView3D extends AndroidViewComponent implements Component, ARNodeContainer, ARImageMarkerContainer, ARDetectedPlaneContainer, ARLightContainer {
+  private static final String LOG_TAG = ARView3D.class.getSimpleName();
   private final List<? extends Component> children = new ArrayList<>();
+  private final GLSurfaceView view;
+
+  private Session session;
+
+  private boolean installRequested = false;
 
     public ARView3D(final ComponentContainer container) {
         super(container);
+        view = new GLSurfaceView(container.$form());
+        view.setPreserveEGLContextOnPause(true);
         container.$add(this);
 
         //Default Property Values
@@ -52,7 +87,7 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
 
     @Override
     public View getView() {
-        return new View(container.$context());
+        return view;
     }
 
   @Override
@@ -60,6 +95,83 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
     return children;
   }
 
+    // OnResumeListener implementation
+
+    @Override
+    public void onResume() {
+        if (session != null) {
+            return;
+        }
+        Exception exception = null;
+        String message = null;
+        try {
+            switch (ArCoreApk.getInstance().requestInstall($form(), !installRequested)) {
+                case INSTALL_REQUESTED:
+                    installRequested = true;
+                    return;
+                case INSTALLED:
+                    break;
+            }
+
+            // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+            // permission on Android M and above, now is a good time to ask the user for it.
+            if ($form().isDeniedPermission(CAMERA)) {
+                $form().askPermission(CAMERA, new PermissionResultHandler() {
+                    @Override
+                    public void HandlePermissionResponse(String permission, boolean granted) {
+                        if (!granted) {
+                            // TODO: Handle error
+                        }
+                    }
+                });
+                return;
+            }
+
+            // Create the session.
+            session = new Session(/* context= */ $context());
+            configureSession();
+            session.resume();
+            view.onResume();
+        } catch (UnavailableArcoreNotInstalledException
+                 | UnavailableUserDeclinedInstallationException e) {
+            message = "Please install ARCore";
+            exception = e;
+        } catch (UnavailableApkTooOldException e) {
+            message = "Please update ARCore";
+            exception = e;
+        } catch (UnavailableSdkTooOldException e) {
+            message = "Please update this app";
+            exception = e;
+        } catch (UnavailableDeviceNotCompatibleException e) {
+            message = "This device does not support AR";
+            exception = e;
+        } catch (Exception e) {
+            message = "Failed to create AR session";
+            exception = e;
+        }
+        Toast.makeText($context(), message, Toast.LENGTH_SHORT).show();
+        Log.e(LOG_TAG, message, exception);
+    }
+
+    // OnPauseListener implementation
+
+    @Override
+    public void onPause() {
+        if (session == null) {
+            return;
+        }
+        view.onPause();
+        session.pause();
+    }
+
+    // OnClearListener implementation
+
+    @Override
+    public void onClear() {
+        onPause();
+        session.close();
+        session = null;
+    }
 
     // PROPERTIES
 
@@ -344,4 +456,19 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
       "estimate for the real-world ambient lighting.  This event will only trigger if " +
       "LightingEstimation is true.")
     public void LightingEstimateUpdated(float ambientIntensity, float ambientTemperature) {}
+
+    // Private implementation
+
+    /** Configures the session with feature settings. */
+    private void configureSession() {
+        Config config = session.getConfig();
+        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+        } else {
+            config.setDepthMode(Config.DepthMode.DISABLED);
+        }
+        config.setInstantPlacementMode(InstantPlacementMode.LOCAL_Y_UP);
+        session.configure(config);
+    }
 }

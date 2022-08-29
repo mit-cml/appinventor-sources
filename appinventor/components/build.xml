@@ -167,6 +167,13 @@
     <copy toFile="${public.deps.dir}/guava.jar" file="${lib.dir}/guava/guava-27.1-android.jar" />
     <copy toFile="${public.deps.dir}/QRGenerator.jar" file="${lib.dir}/QRGenerator/core.jar" />
     <copy toFile="${public.deps.dir}/physicaloid.jar" file="${lib.dir}/physicaloid/physicaloid-library.jar" />
+    <copy toFile="${public.deps.dir}/ar-core.aar" file="${lib.dir}/ar-core/ar-core-1.33.0.aar" />
+    <copy toFile="${public.deps.dir}/ar-core.jar" file="${lib.dir}/ar-core/ar-core-1.33.0.jar" />
+    <copy todir="${public.deps.dir}">
+      <fileset dir="${lib.dir}/ar-core">
+        <include name="**/*.so" />
+      </fileset>
+    </copy>
     <!-- Protocol Buf Support (used by the Translation Component) -->
     <copy toFile="${public.deps.dir}/protobuf-java-3.0.0.jar" file="${lib.dir}/protobuf/protobuf-java-3.0.0.jar" />    
     <copy toFile="${public.deps.dir}/mpandroidchart.jar" file="${lib.dir}/mpandroidchart/mpandroidchart.jar" />
