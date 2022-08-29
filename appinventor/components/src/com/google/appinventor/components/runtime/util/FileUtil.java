@@ -141,34 +141,29 @@ public class FileUtil {
    * @return the file's contents as a byte array
    */
   public static byte[] readFile(Form form, String inputFileName) throws IOException {
-    File inputFile = new File(inputFileName);
-    // There are cases where our caller will hand us a file to read that
-    // doesn't exist and is expecting a FileNotFoundException if this is the
-    // case. So we check if the file exists and throw the exception
-    if (!inputFile.isFile()) {
-      throw new FileNotFoundException("Cannot find file: " + inputFileName);
+    if (inputFileName.startsWith("file://")) {
+      // The remainder of this function expects Unix-like paths, not URIs
+      inputFileName = inputFileName.substring(7);
     }
-    FileInputStream inputStream = null;
+    InputStream inputStream = null;
     byte[] content;
     try {
-      inputStream = openFile(form, inputFileName);
-      int fileLength = (int) inputFile.length();
-      content = new byte[fileLength];
-      int offset = 0;
-      int bytesRead;
-      do {
-        bytesRead = inputStream.read(content, offset, fileLength - offset);
-        if (bytesRead > 0) {
-          offset += bytesRead;
+      if (inputFileName.startsWith("/android_asset/")) {
+        // Assets don't live in the file system, so need to be handled separately.
+        inputStream = form.openAsset(inputFileName.substring(inputFileName.lastIndexOf('/') + 1));
+      } else {
+        File inputFile = new File(inputFileName);
+        // There are cases where our caller will hand us a file to read that
+        // doesn't exist and is expecting a FileNotFoundException if this is the
+        // case. So we check if the file exists and throw the exception
+        if (!inputFile.isFile()) {
+          throw new FileNotFoundException("Cannot find file: " + inputFileName);
         }
-        if (offset == fileLength) {
-          break;
-        }
-      } while (bytesRead >= 0);
-    } finally {
-      if (inputStream != null) {
-        inputStream.close();
+        inputStream = openFile(form, inputFileName);
       }
+      content = IOUtils.readStream(inputStream);
+    } finally {
+      IOUtils.closeQuietly(LOG_TAG, inputStream);
     }
     return content;
   }

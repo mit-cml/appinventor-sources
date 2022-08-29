@@ -16,6 +16,10 @@ import android.os.Environment;
 import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.RobolectricTestBase;
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -238,5 +242,36 @@ public class FileUtilTest extends RobolectricTestBase {
         new ScopedFile(FileScope.Private, "test.txt")));
     assertTrue(FileUtil.needsExternalStorage(getForm(),
         new ScopedFile(FileScope.Shared, "test.txt")));
+  }
+
+  @Test
+  public void testReadAsset() throws IOException {
+    String result = new String(FileUtil.readFile(getForm(), "/android_asset/test.txt"),
+        StandardCharsets.UTF_8).trim();
+    assertEquals("Hello, world!", result);
+  }
+
+  @Test
+  public void testReadFile() throws IOException {
+    ShadowEnvironment.setExternalStorageState(Environment.MEDIA_MOUNTED);
+    ScopedFile target = new ScopedFile(FileScope.App, "testReadFile.txt");
+    String filename = FileUtil.resolveFileName(getForm(), target);
+    try (OutputStream out = FileUtil.openForWriting(getForm(), target)) {
+      out.write("success".getBytes(StandardCharsets.UTF_8));
+    }
+    String result = new String(FileUtil.readFile(getForm(), filename),
+        StandardCharsets.UTF_8);
+    assertEquals("success", result);
+  }
+
+  @Test
+  public void testReadFileFails() throws IOException {
+    ScopedFile target = new ScopedFile(FileScope.Private, "testReadFileFails.txt");
+    try {
+      FileUtil.readFile(getForm(), FileUtil.resolveFileName(getForm(), target));
+      fail("Should not have found testReadFileFails.txt");
+    } catch (FileNotFoundException e) {
+      // This is expected behavior
+    }
   }
 }
