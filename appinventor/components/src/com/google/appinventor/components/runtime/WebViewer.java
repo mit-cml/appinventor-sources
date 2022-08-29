@@ -602,7 +602,7 @@ public final class WebViewer extends AndroidViewComponent {
 
   private void loadUrl(final String caller, final String url) {
     if (!havePermission
-            && MediaUtil.askFilePermissionIfNeeded(container.$form(), url, new PermissionResultHandler() {
+          && MediaUtil.askFilePermissionIfNeeded(container.$form(), url, new PermissionResultHandler() {
       @Override
       public void HandlePermissionResponse(String permission, boolean granted) {
         if (granted) {
@@ -610,7 +610,7 @@ public final class WebViewer extends AndroidViewComponent {
           webview.loadUrl(url);
         } else {
           container.$form().dispatchPermissionDeniedEvent(WebViewer.this, caller,
-                  Manifest.permission.READ_EXTERNAL_STORAGE);
+              Manifest.permission.READ_EXTERNAL_STORAGE);
         }
       }
     })) {
