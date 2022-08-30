@@ -51,6 +51,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -1040,7 +1041,7 @@ public class FileUtil {
       // New style. Use Java NIO to move the file, potentially between file system providers
       Path source = Paths.get(src.resolve(form).toURI());
       Path destination = Paths.get(dest.resolve(form).toURI());
-      Files.move(source, destination);
+      Files.move(source, destination, REPLACE_EXISTING);
       return true;
     } else {
       // Old style. Copy the file and then delete the original.

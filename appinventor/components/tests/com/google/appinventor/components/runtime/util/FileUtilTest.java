@@ -19,6 +19,7 @@ import com.google.appinventor.components.runtime.errors.PermissionException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -273,5 +274,33 @@ public class FileUtilTest extends RobolectricTestBase {
     } catch (FileNotFoundException e) {
       // This is expected behavior
     }
+  }
+
+  @Test(expected = FileNotFoundException.class)
+  public void testMoveFileThrowsIfSourceMissing() throws Exception {
+    ScopedFile source = new ScopedFile(FileScope.Private, "neverMakeThisFile.txt");
+    ScopedFile target = new ScopedFile(FileScope.Private, "target.txt");
+    FileUtil.moveFile(getForm(), source, target);
+  }
+
+  @Test
+  public void testMoveFileOverwrites() throws Exception {
+    ScopedFile source = new ScopedFile(FileScope.Private, "testMoveFileOverwrittenSource.txt");
+    ScopedFile target = new ScopedFile(FileScope.Private, "testMoveFileOverwrittenTarget.txt");
+    try (OutputStream out = FileUtil.openForWriting(getForm(), source)) {
+      out.write("source".getBytes(StandardCharsets.UTF_8));
+    }
+    try (OutputStream out = FileUtil.openForWriting(getForm(), target)) {
+      out.write("target".getBytes(StandardCharsets.UTF_8));
+    }
+    FileUtil.moveFile(getForm(), source, target);
+
+    // source file should be gone
+    assertFalse(new java.io.File(new URI(FileUtil.resolveFileName(getForm(), source))).exists());
+
+    // target file should now be source
+    String content = new String(FileUtil.readFile(getForm(),
+        FileUtil.resolveFileName(getForm(), target)));
+    assertEquals("source", content);
   }
 }
