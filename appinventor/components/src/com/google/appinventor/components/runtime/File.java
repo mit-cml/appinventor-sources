@@ -456,8 +456,13 @@ public class File extends AndroidNonvisibleComponent implements Component {
         .addFile(toScope, toFileName, FileAccessMode.WRITE)
         .addCommand(new FileOperation.FileInvocation() {
           @Override
-          public void call(ScopedFile[] files) throws IOException {
-            result.wakeup(FileUtil.moveFile(form, files[0], files[1]));
+          public void call(ScopedFile[] files) {
+            try {
+              result.wakeup(FileUtil.moveFile(form, files[0], files[1]));
+            } catch (IOException e) {
+              // The file was not moved, return false to the blocks
+              result.wakeup(false);
+            }
           }
         }).build().run();
     AsynchUtil.finish(result, continuation);
