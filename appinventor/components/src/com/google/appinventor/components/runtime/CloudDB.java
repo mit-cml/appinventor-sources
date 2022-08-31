@@ -1027,6 +1027,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
     }
 
     // Invoke the application's "GotValue" event handler
+    notifyDataObservers(tag, value);
     EventDispatcher.dispatchEvent(this, "GotValue", tag, value);
   }
 
