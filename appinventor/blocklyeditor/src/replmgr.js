@@ -1466,7 +1466,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
-                rs.android = (json.os || 'Android').toLowerCase() !== 'ios';
+                rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
                 rs.hasfetchassets = rs.android;
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
@@ -1516,7 +1516,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
         // Rendezvous server. Note: Only post 2.47 Companions provide this
         // information. So if it isn't present we will assume it is old and
         // say that an update is advisable (or needed)
-        if (!rs.version || !Blockly.ReplMgr.acceptableVersion(rs.version)) {
+        if (!rs.version || (rs.android && !Blockly.ReplMgr.acceptableVersion(rs.version))) {
             if (top.COMPANION_UPDATE_URL1 && !rs.isUSB) {
                 var url = top.location.origin + top.COMPANION_UPDATE_URL1;
                 var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
