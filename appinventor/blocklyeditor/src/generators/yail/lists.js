@@ -379,7 +379,7 @@ Blockly.Yail['lists_reduce'] = function() {
 Blockly.Yail['lists_sort'] = function() {
   // Sort the list in ascending order
 	var argument0 = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.emptyListCode;
-	var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE;
+	var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-sort";
 	code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
 	code = code + argument0;
 	code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_CLOSE_COMBINATION;
@@ -430,6 +430,7 @@ Blockly.Yail['lists_minimum'] = function() {
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
   code = code + "list" + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "minimum of list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  console.log(code);
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
@@ -449,7 +450,7 @@ Blockly.Yail['lists_maximum'] = function() {
 Blockly.Yail['lists_but_first'] = function() {
   // Return the list without the first element
   var argument0 = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.emptyListCode;
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE;
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-but-first";
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
   code = code + argument0;
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_CLOSE_COMBINATION;
@@ -462,7 +463,7 @@ Blockly.Yail['lists_but_first'] = function() {
 Blockly.Yail['lists_but_last'] = function() {
   // Return the list without the last element
   var argument0 = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.emptyListCode;
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE;
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-but-last";
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
   code = code + argument0;
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_CLOSE_COMBINATION;
@@ -477,7 +478,7 @@ Blockly.Yail['lists_slice'] = function() {
   var argument0 = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.emptyListCode;
   var argument1 = Blockly.Yail.valueToCode(this, 'INDEX1', Blockly.Yail.ORDER_NONE) || 1;
   var argument2 = Blockly.Yail.valueToCode(this, 'INDEX2', Blockly.Yail.ORDER_NONE) || 1;
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE;
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-slice";
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
   code = code + argument0 + Blockly.Yail.YAIL_SPACER + argument1;
   code = code + Blockly.Yail.YAIL_SPACER + argument2 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
