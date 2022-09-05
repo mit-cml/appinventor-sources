@@ -788,31 +788,31 @@ Blockly.Blocks['lists_sort_key'] = {
 Blockly.Blocks['lists_minimum_number'] = {
   // Minimum value in the list
   category : 'Lists',
-  helpUrl : Blockly.Msg.LANG_LISTS_MIN_HELPURL,
+  helpUrl : Blockly.Msg.LANG_LISTS_MIN_NUMBER_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-      .appendField(Blockly.Msg.LANG_LISTS_MIN_INPUT_MIN);
-    this.setTooltip(Blockly.Msg.LANG_LISTS_MIN_TOOLTIP);
+      .appendField(Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_MIN);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_MIN_NUMBER_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MIN_INPUT_MIN }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_MIN }]
 };
 
 Blockly.Blocks['lists_maximum_number'] = {
   // Maximum value in the list
   category : 'Lists',
-  helpUrl : Blockly.Msg.LANG_LISTS_MAX_HELPURL,
+  helpUrl : Blockly.Msg.LANG_LISTS_MAX_NUMBER_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-      .appendField(Blockly.Msg.LANG_LISTS_MAX_INPUT_MAX);
-    this.setTooltip(Blockly.Msg.LANG_LISTS_MAX_TOOLTIP);
+      .appendField(Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_MAX);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_MAX_NUMBER_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MAX_INPUT_MAX }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_MAX }]
 };
 
 Blockly.Blocks['lists_but_first'] = {
