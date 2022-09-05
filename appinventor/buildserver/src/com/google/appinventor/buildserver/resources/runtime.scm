@@ -2766,20 +2766,25 @@ list, use the make-yail-list constructor with no arguments.
     ((not (pair? y1)) y1)
     (else (kawa-list->yail-list (mergesort-key is-leq? key (yail-list-contents y1))))))
 
+(define (list-number-only lst)
+  (cond ((null? lst) '())
+    ((number? (car lst)) (cons (car lst) (list-number-only (cdr lst))))
+    (else (list-number-only (cdr lst)))))
+
 (define (list-min lst)
   (cond ((null? lst) '())
     ((null? (cdr lst)) (car lst))
     ((is-leq? (car lst) (list-min (cdr lst))) (car lst))
     (else (list-min (cdr lst)))))
 
-(define (yail-list-minimum yail-list)
+(define (yail-list-minimum-number yail-list)
   (let ((contents (yail-list-contents yail-list)))
     (if (null? contents)
       (signal-runtime-error
         (format #f
           "The list cannot be empty")
-        "Bad list argument to yail-list-minimum")
-      (list-min contents))))
+        "Bad list argument to yail-list-minimum-number")
+      (list-min (list-number-only contents)))))
 
 (define (list-max lst)
   (cond ((null? lst) '())
@@ -2787,14 +2792,14 @@ list, use the make-yail-list constructor with no arguments.
     ((is-leq? (list-max (cdr lst)) (car lst)) (car lst))
     (else (list-max (cdr lst)))))
 
-(define (yail-list-maximum yail-list)
+(define (yail-list-maximum-number yail-list)
   (let ((contents (yail-list-contents yail-list)))
     (if (null? contents)
       (signal-runtime-error
         (format #f
           "The list cannot be empty")
-        "Bad list argument to yail-list-maximum")
-      (list-max contents))))
+        "Bad list argument to yail-list-maximum-number")
+      (list-max (list-number-only contents)))))
 
 (define (yail-list-but-first yail-list)
   (let ((contents (yail-list-contents yail-list)))
