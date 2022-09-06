@@ -211,6 +211,11 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     description="The ID for the Google Sheets file you want to edit. You can " +
       "find the spreadsheetID in the URL of the Google Sheets file.")
   public void SpreadsheetID(String spreadsheetID) {
+    if (spreadsheetID.startsWith("https:")) {
+      // URL: https://docs.google.com/spreadsheets/d/<id>/edit#gid=0
+      String[] parts = spreadsheetID.substring(8).split("/");
+      spreadsheetID = parts[3];
+    }
     this.spreadsheetID = spreadsheetID;
   }
 
