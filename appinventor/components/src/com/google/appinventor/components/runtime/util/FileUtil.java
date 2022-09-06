@@ -867,6 +867,23 @@ public class FileUtil {
   }
 
   /**
+   * Check whether the given scoped file needs the READ_EXTERNAL_STORAGE permission to be
+   * granted to the app before the file can be read.
+   *
+   * @param scopedFile the scoped file to check for permission
+   * @return true if the file will need READ_EXTERNAL_STORAGE permission, otherwise false
+   */
+  public static boolean needsReadPermission(ScopedFile scopedFile) {
+    switch (scopedFile.getScope()) {
+      case Legacy:
+      case Shared:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /**
    * Check if the given {@code fileUri} will need WRITE permission to be accessed.
    *
    * @param form the Form to serve as an Android context
@@ -882,23 +899,6 @@ public class FileUtil {
       return false;
     } else {
       return needsPermission(form, fileUri);
-    }
-  }
-
-  /**
-   * Check whether the given scoped file needs the READ_EXTERNAL_STORAGE permission to be
-   * granted to the app before the file can be read.
-   *
-   * @param scopedFile the scoped file to check for permission
-   * @return true if the file will need READ_EXTERNAL_STORAGE permission, otherwise false
-   */
-  public static boolean needsReadPermission(ScopedFile scopedFile) {
-    switch (scopedFile.getScope()) {
-      case Legacy:
-      case Shared:
-        return true;
-      default:
-        return false;
     }
   }
 
