@@ -211,7 +211,9 @@ public class FileUtil {
    */
   public static FileInputStream openFile(Form form, String fileName) throws IOException,
       PermissionException {
-    if (MediaUtil.isExternalFile(form, fileName)) {
+    // Make fileName a URI for testing permissions
+    String fileUri = fileName.startsWith("/") ? "file://" + fileName : fileName;
+    if (needsReadPermission(form, fileUri)) {
       form.assertPermission(READ_EXTERNAL_STORAGE);
     }
     return new FileInputStream(fileName);
@@ -849,6 +851,37 @@ public class FileUtil {
       return Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT;
     } else {
       return isExternalStorageUri(form, fileUri);
+    }
+  }
+
+  /**
+   * Check if the given {@code fileUri} will need READ permission to be accessed.
+   *
+   * @param form the Form to serve as an Android context
+   * @param fileUri the file that will be accessed
+   * @return true if the READ_EXTERNAL_STORAGE will need to be granted before the file can be
+   *     accessed
+   */
+  public static boolean needsReadPermission(Form form, String fileUri) {
+    return needsPermission(form, fileUri);
+  }
+
+  /**
+   * Check if the given {@code fileUri} will need WRITE permission to be accessed.
+   *
+   * @param form the Form to serve as an Android context
+   * @param fileUri the file that will be accessed
+   * @return true if the WRITE_EXTERNAL_STORAGE will need to be granted before the file can be
+   *     accessed
+   */
+  public static boolean needsWritePermission(Form form, String fileUri) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      // WRITE_EXTERNAL_STORAGE is removed starting with Android R
+      // For files the app can write to, write operations will proceed as expected
+      // For file the app cannot write to, write operations will fail
+      return false;
+    } else {
+      return needsPermission(form, fileUri);
     }
   }
 
