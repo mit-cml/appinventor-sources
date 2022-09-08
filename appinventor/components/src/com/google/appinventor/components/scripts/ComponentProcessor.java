@@ -71,15 +71,7 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.AnnotationValueVisitor;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
@@ -2026,7 +2018,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   /**
    * Returns the OptionList HelperKey associated with the given element.
-   * @param element the Element describing a class which implements the OptionList interface.
+   * @param optionList the Element describing a class which implements the OptionList interface.
    * @return the HelperKey associated with the given element.
    */
   private HelperKey optionListToHelperKey(Element optionList) {
@@ -2071,21 +2063,26 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           + "method.");
     }
 
-    // Get the fromUnderlyingValue method. This is not used, we just need to require it.
-    java.lang.reflect.Method fromValueMethod;
-    Type genericType = null;
-    try {
-      ParameterizedType optionListType = (ParameterizedType) clazz.getGenericInterfaces()[0];
-      genericType = optionListType.getActualTypeArguments()[0];
-      Class<?> typeClass = (Class<?>) genericType;
-      fromValueMethod = clazz.getDeclaredMethod("fromUnderlyingValue", typeClass);
-    } catch (NoSuchMethodException e) {
-      throw new IllegalArgumentException("Class: " + className + " must have a static "
-          + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
-    }
-    if (!java.lang.reflect.Modifier.isStatic(fromValueMethod.getModifiers())) {
-      throw new IllegalArgumentException("Class: " + className + " must have a static "
-          + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
+    // Get the "fromUnderlyingValue" static method if this class falls under the "com.google.appinventor.components"
+    // package. We don't use this method here, but we require the built-in helpers to have it for providing backward
+    // compatibility.
+    final PackageElement packageElem = processingEnv.getElementUtils().getPackageOf(optionElem);
+    if (packageElem.getSimpleName().toString().startsWith("com.google.appinventor.components.")) {
+      java.lang.reflect.Method fromValueMethod;
+      Type genericType = null;
+      try {
+        ParameterizedType optionListType = (ParameterizedType) clazz.getGenericInterfaces()[0];
+        genericType = optionListType.getActualTypeArguments()[0];
+        Class<?> typeClass = (Class<?>) genericType;
+        fromValueMethod = clazz.getDeclaredMethod("fromUnderlyingValue", typeClass);
+      } catch (NoSuchMethodException e) {
+        throw new IllegalArgumentException("Class: " + className + " must have a static "
+                + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
+      }
+      if (!java.lang.reflect.Modifier.isStatic(fromValueMethod.getModifiers())) {
+        throw new IllegalArgumentException("Class: " + className + " must have a static "
+                + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
+      }
     }
   
     // Create a map of enum const names -> values. This is used to filter the below elements
