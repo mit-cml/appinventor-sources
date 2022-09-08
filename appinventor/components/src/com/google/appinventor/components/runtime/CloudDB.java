@@ -806,7 +806,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
         Log.d(LOG_TAG, "finished call jedis.get()");
       }
       if (returnValue != null) {
-        String val = JsonUtil.getJsonRepresentationIfValueFileName(returnValue);
+        String val = JsonUtil.getJsonRepresentationIfValueFileName(form, returnValue);
         if (val != null) {
           value.set(val);
         } else {
