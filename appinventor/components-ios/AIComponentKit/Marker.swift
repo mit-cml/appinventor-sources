@@ -79,6 +79,10 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
     _pinView.rightAnchor.constraint(equalTo: _imageView.rightAnchor).isActive = true
     _pinView.topAnchor.constraint(equalTo: _imageView.topAnchor).isActive = true
     _pinView.bottomAnchor.constraint(equalTo: _imageView.bottomAnchor).isActive = true
+    _imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
+    let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+    gesture.delegate = Marker._lchelper
+   _imageView.addGestureRecognizer(gesture)
   }
 
   // used for resizing the Marker when the parent Map size changes
@@ -391,5 +395,17 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
     newMarker.Longitude = Longitude
     newMarker.Width = _width
   }
-  
+
+  @objc fileprivate func handleTap(gesture: UITapGestureRecognizer) {
+    Click()
+  }
+
+  @objc fileprivate func handleLongPress(gesture: UILongPressGestureRecognizer) {
+    // On Android, LongClick won't fire if we are able to Drag (it causes a
+    // DragStart/DragEnd event pair). We implement this check here to match
+    // the behavior.
+    if gesture.state == .ended && !Draggable {
+      LongClick()
+    }
+  }
 }
