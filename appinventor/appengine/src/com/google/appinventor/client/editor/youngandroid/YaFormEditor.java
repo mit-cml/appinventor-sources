@@ -6,9 +6,6 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-import static com.google.appinventor.client.editor.simple.components.MockComponent.PROPERTY_NAME_NAME;
-
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -27,7 +24,6 @@ import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
-import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescriptor;
 import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
@@ -38,7 +34,6 @@ import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
-import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.client.widgets.properties.PropertiesPanel;
 import com.google.appinventor.client.widgets.properties.PropertyChangeListener;
 import com.google.appinventor.client.youngandroid.YoungAndroidFormUpgrader;
@@ -71,6 +66,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.editor.simple.components.MockComponent.PROPERTY_NAME_NAME;
 
 /**
  * Editor for Young Android Form (.scm) files.
@@ -759,16 +757,12 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         selectedComponent.getSourceStructureExplorerItem());
     SourceStructureBox.getSourceStructureBox().setVisible(true);
 
-    // Show the assets box.
-    AssetListBox assetListBox = AssetListBox.getAssetListBox();
-    assetListBox.setVisible(true);
-
     // Set the properties box's content.
     // TODO: This should be a method on Ode
-    PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
-    propertiesBox.setVisible(true);
     Ode.getInstance().refreshSourceStructure();
     Ode.getInstance().refreshProperties();
+
+    Ode.getInstance().showComponentDesigner();
   }
 
 
@@ -878,6 +872,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
     propertiesBox.clear();
     propertiesBox.setVisible(false);
+
+    Ode.getInstance().hideComponentDesigner();
   }
 
   /**

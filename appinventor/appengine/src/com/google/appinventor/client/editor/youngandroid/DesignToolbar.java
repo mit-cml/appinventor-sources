@@ -6,31 +6,22 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
-
 import com.google.appinventor.client.editor.youngandroid.actions.SendToGalleryAction;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchScreenAction;
-
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.widgets.ToolbarItem;
-
 import com.google.appinventor.common.version.AppInventorFeatures;
-
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Label;
@@ -38,6 +29,8 @@ import com.google.gwt.user.client.ui.Label;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * The design toolbar houses command buttons in the Young Android Design
@@ -375,10 +368,8 @@ public class DesignToolbar extends Toolbar {
   }
 
   public void toggleEditor(boolean blocks) {
-    setEnabledItem(switchToBlocks, !blocks);
-    setEnabledItem(switchToDesign, blocks);
-//    setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
-//    setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
+    setButtonEnabled(switchToBlocks.getName(), !blocks);
+    setButtonEnabled(switchToDesign.getName(), blocks);
 
     boolean notOnScreen1 = getCurrentProject() != null
         && !"Screen1".equals(getCurrentProject().currentScreen);

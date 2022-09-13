@@ -9,20 +9,20 @@ package com.google.appinventor.client;
 import com.google.appinventor.client.actions.DisableAutoloadAction;
 import com.google.appinventor.client.actions.EnableAutoloadAction;
 import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
-
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
+import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg;
-import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
-import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -31,75 +31,52 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
-
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
-
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
-
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.widgets.DropDownButton;
-
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
-
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
-
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
-
 import com.google.appinventor.common.version.AppInventorFeatures;
-
 import com.google.appinventor.components.common.YaVersion;
-
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
-
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
 import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
-
 import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthService;
 import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthServiceAsync;
-
 import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
-
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
-
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
-
 import com.google.appinventor.shared.settings.SettingsConstants;
-
 import com.google.common.annotations.VisibleForTesting;
-
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
-
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-
 import com.google.gwt.http.client.Response;
-
 import com.google.gwt.resources.client.ImageResource;
-
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.History;
@@ -107,7 +84,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -129,8 +105,6 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.appinventor.client.boxes.PaletteBox;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -461,6 +435,18 @@ public class Ode implements EntryPoint {
     hideTutorials();
     currentView = USERADMIN;
     deckPanel.showWidget(userAdminTabIndex);
+  }
+
+  public void hideComponentDesigner() {
+    paletteBox.setVisible(false);
+    bindSourceStructureBox.setVisible(false);
+    bindPropertiesBox.setVisible(false);
+  }
+
+  public void showComponentDesigner() {
+    paletteBox.setVisible(true);
+    bindSourceStructureBox.setVisible(true);
+    bindPropertiesBox.setVisible(true);
   }
 
   /**
@@ -1124,8 +1110,8 @@ public class Ode implements EntryPoint {
     LOG.info("Ode: Setting current file editor to " + currentFileEditor.getFileId());
     if (currentFileEditor instanceof YaFormEditor) {
       bindSourceStructureBox.show((YaFormEditor) currentFileEditor);
+      switchToDesignView();
     }
-    switchToDesignView();
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
       changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
