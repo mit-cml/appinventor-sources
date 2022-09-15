@@ -214,6 +214,24 @@ public class FileUtilTest extends RobolectricTestBase {
   }
 
   @Test
+  public void testNeedsReadPermissionByUri() {
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.App)));
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Asset)));
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Cache)));
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "text.txt", FileScope.Legacy)));
+    assertTrue(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "/test.txt", FileScope.Legacy)));
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "//test.txt", FileScope.Legacy)));
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Private)));
+  }
+
+  @Test
   public void testNeedsWritePermission() {
     assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.App, "test.txt")));
     assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Asset, "test.txt")));
@@ -223,6 +241,24 @@ public class FileUtilTest extends RobolectricTestBase {
     assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Legacy, "//test.txt")));
     assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Private, "test.txt")));
     assertTrue(FileUtil.needsWritePermission(new ScopedFile(FileScope.Shared, "test.txt")));
+  }
+
+  @Test
+  public void testNeedsWritePermissionByUri() {
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.App)));
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Asset)));
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Cache)));
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Legacy)));
+    assertTrue(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "/test.txt", FileScope.Legacy)));
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "//test.txt", FileScope.Legacy)));
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Private)));
   }
 
   @Test
