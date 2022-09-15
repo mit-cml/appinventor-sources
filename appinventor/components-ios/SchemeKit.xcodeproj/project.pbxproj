@@ -83,7 +83,6 @@
 		065ECF891D94A02000C749A1 /* object.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF831D94A02000C749A1 /* object.h */; };
 		065ECF8A1D94A02000C749A1 /* state.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF841D94A02000C749A1 /* state.h */; };
 		065ECF8B1D94A02000C749A1 /* vm.h in Headers */ = {isa = PBXBuildFile; fileRef = 065ECF851D94A02000C749A1 /* vm.h */; };
-
 		0682D1382555881C00015CF1 /* SCMProcedure.h in Headers */ = {isa = PBXBuildFile; fileRef = 0682D1362555881C00015CF1 /* SCMProcedure.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0682D1392555881C00015CF1 /* SCMProcedure.m in Sources */ = {isa = PBXBuildFile; fileRef = 0682D1372555881C00015CF1 /* SCMProcedure.m */; };
 		0682D18C255AF67400015CF1 /* SCMWeakReference.h in Headers */ = {isa = PBXBuildFile; fileRef = 0682D18A255AF67400015CF1 /* SCMWeakReference.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -804,6 +803,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -867,6 +867,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
