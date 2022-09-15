@@ -2076,7 +2076,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // package. We don't use this method here, but we require the built-in helpers to have it for providing backward
     // compatibility.
     final PackageElement packageElem = processingEnv.getElementUtils().getPackageOf(optionElem);
-    if (packageElem.getSimpleName().toString().startsWith("com.google.appinventor.components.")) {
+    if (packageElem.getQualifiedName().toString().startsWith("com.google.appinventor.components.")) {
       java.lang.reflect.Method fromValueMethod;
       Type genericType = null;
       try {
