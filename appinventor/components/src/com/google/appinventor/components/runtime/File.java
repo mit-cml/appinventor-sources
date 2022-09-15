@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,7 +16,6 @@ import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -35,7 +34,6 @@ import com.google.appinventor.components.runtime.util.Continuation;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileAccessMode;
 import com.google.appinventor.components.runtime.util.FileOperation;
-import com.google.appinventor.components.runtime.util.FileStreamReadOperation;
 import com.google.appinventor.components.runtime.util.FileStreamWriteOperation;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.FileWriteOperation;
@@ -44,7 +42,6 @@ import com.google.appinventor.components.runtime.util.ScopedFile;
 import com.google.appinventor.components.runtime.util.SingleFileOperation;
 import com.google.appinventor.components.runtime.util.Synchronizer;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -106,9 +103,8 @@ import java.util.List;
     iconName = "images/file.png")
 @SimpleObject
 @SuppressLint({"InlinedApi", "SdCardPath"})
-public class File extends AndroidNonvisibleComponent implements Component {
+public class File extends FileBase implements Component {
   private static final String LOG_TAG = "FileComponent";
-  private FileScope scope = FileScope.App;
 
   /**
    * Creates a new File component.
@@ -116,44 +112,6 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   public File(ComponentContainer container) {
     super(container.$form());
-    DefaultScope(FileScope.App);
-  }
-
-  /**
-   * Specifies the default scope for files accessed using the File component. The App scope should
-   * work for most apps. Legacy mode can be used for apps that predate the newer constraints in
-   * Android on app file access.
-   *
-   * @param scope the default file access scope
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FILESCOPE,
-      defaultValue = "App")
-  @SimpleProperty(userVisible = false)
-  public void DefaultScope(FileScope scope) {
-    this.scope = scope;
-  }
-
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
-  @Deprecated
-  public void LegacyMode(boolean legacy) {
-    this.scope = legacy ? FileScope.Legacy : FileScope.App;
-  }
-
-  /**
-   * Allows app to access files from the root of the external storage directory (legacy mode).
-   * Starting with Android 11, this will no longer be allowed and the behavior is strongly
-   * discouraged on Android 10. Starting with Android 10, App Inventor by default will attempt to
-   * store files relative to the app-specific private directory on external storage in accordance
-   * with this security change.
-   *
-   *   **Note:** Apps that enable this property will likely stop working after upgrading to
-   * Android 11, which strongly enforces that apps only write to app-private directories.
-   */
-  @SimpleProperty(description = "Allows app to access files from the root of the external storage "
-      + "directory (legacy mode).")
-  @Deprecated
-  public boolean LegacyMode() {
-    return scope == FileScope.Legacy;
   }
 
   /**
@@ -568,36 +526,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
       + "slash, it will be read from the applications private storage (for packaged "
       + "apps) and from /sdcard/AppInventor/data for the Companion.")
   public void ReadFrom(final String fileName) {
-    try {
-      new FileStreamReadOperation(form, this, "ReadFrom", fileName, scope, true) {
-        @Override
-        public boolean process(String contents) {
-          final String text = IOUtils.normalizeNewLines(contents);
-          form.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              GotText(text);
-            }
-          });
-          return true;
-        }
-
-        @Override
-        public void onError(IOException e) {
-          if (e instanceof FileNotFoundException) {
-            Log.e(LOG_TAG, "FileNotFoundException", e);
-            form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-                ErrorMessages.ERROR_CANNOT_FIND_FILE, fileName);
-          } else {
-            Log.e(LOG_TAG, "IOException", e);
-            form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-                ErrorMessages.ERROR_CANNOT_READ_FILE, fileName);
-          }
-        }
-      }.run();
-    } catch (StopBlocksExecution e) {
-      // This is okay because the block is designed to be asynchronous.
-    }
+    readFromFile(fileName);
   }
 
 
@@ -723,5 +652,15 @@ public class File extends AndroidNonvisibleComponent implements Component {
   public void AfterFileSaved(String fileName) {
     // invoke the application's "AfterFileSaved" event handler.
     EventDispatcher.dispatchEvent(this, "AfterFileSaved", fileName);
+  }
+
+  @Override
+  protected void afterRead(final String result) {
+    form.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        GotText(result);
+      }
+    });
   }
 }

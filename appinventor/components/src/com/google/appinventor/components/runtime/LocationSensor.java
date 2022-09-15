@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -79,7 +79,11 @@ import java.util.Set;
                  "android.permission.ACCESS_MOCK_LOCATION," +
                  "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS")
 public class LocationSensor extends AndroidNonvisibleComponent
-    implements Component, OnStopListener, OnResumeListener, Deleteable {
+    implements Component, OnStopListener, OnResumeListener, Deleteable,
+    RealTimeDataSource<String, Float> {
+
+  // Set of observers
+  private Set<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   public interface LocationSensorListener extends LocationListener {
     void onTimeIntervalChanged(int time);
@@ -282,6 +286,11 @@ public class LocationSensor extends AndroidNonvisibleComponent
    */
   @SimpleEvent(description = "Indicates that a new location has been detected.")
   public void LocationChanged(double latitude, double longitude, double altitude, float speed) {
+    notifyDataObservers("latitude", latitude);
+    notifyDataObservers("longitude", longitude);
+    notifyDataObservers("altitude", altitude);
+    notifyDataObservers("speed", speed);
+
     EventDispatcher.dispatchEvent(this, "LocationChanged", latitude, longitude, altitude, speed);
   }
 
@@ -784,5 +793,55 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
   private boolean empty(String s) {
     return s == null || s.length() == 0;
+  }
+
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (DataSourceChangeListener dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  /**
+   * Returns a data value for a given key. Possible keys include:
+   * <ul>
+   *   <li>latitude  - latitude value</li>
+   *   <li>longitude - longitude value</li>
+   *   <li>altitude  - altitude value</li>
+   *   <li>speed     - speed value</li>
+   * </ul>
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
+  @Override
+  public Float getDataValue(String key) {
+    switch (key) {
+      case "latitude":
+        return (float) latitude;
+
+      case "longitude":
+        return (float )longitude;
+
+      case "altitude":
+        return (float) altitude;
+
+      case "speed":
+        return speed;
+
+      default:
+        return 0f;
+    }
   }
 }

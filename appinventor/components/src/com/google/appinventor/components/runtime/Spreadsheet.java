@@ -44,6 +44,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
+import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -61,8 +62,15 @@ import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+
 /**
  * Spreadsheet is a non-visible component for storing and receiving data from
  * a Google Sheets document using the Google Sheets API.
@@ -126,7 +134,8 @@ import java.util.ArrayList;
            })
     })
 })
-public class Spreadsheet extends AndroidNonvisibleComponent implements Component {
+public class Spreadsheet extends AndroidNonvisibleComponent implements Component,
+    ObservableDataSource<YailList, Future<YailList>> {
   private static final String LOG_TAG = "SPREADSHEET";
 
   private static final String WEBVIEW_ACTIVITY_CLASS = WebViewActivity.class
@@ -153,6 +162,12 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   //   private final Activity activity;
   private final ComponentContainer container;
   private final Activity activity;
+
+  private FutureTask<Void> lastTask = null;
+
+  private YailList columns = new YailList();
+
+  private Set<DataSourceChangeListener> observers = new HashSet<>();
 
   private HashMap<String, Integer> sheetIdMap = new HashMap<>();
 
@@ -416,7 +431,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       return;
     }
 
-    AsynchUtil.runAsynchronously(RetrieveSheet(sheetName, colID, value, true));
+    AsynchUtil.runAsynchronously(RetrieveSheet(sheetName, colID, value, true, true));
   }
 
   /**
@@ -433,7 +448,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       return;
     }
 
-    AsynchUtil.runAsynchronously(RetrieveSheet(sheetName, colID, value, false));
+    AsynchUtil.runAsynchronously(RetrieveSheet(sheetName, colID, value, false, true));
   }
 
   /* Row-wise Operations */
@@ -641,7 +656,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     description="Given a list of values as `data`, appends the values " +
       "to the next empty row of the sheet. Additionally, this returns " +
       "the row number for the new row.")
-  public void AddRow (String sheetName, YailList data) {
+  public void AddRow (final String sheetName, YailList data) {
     if (spreadsheetID == "" || spreadsheetID == null) {
       ErrorOccurred("AddRow: " + "SpreadsheetID is empty.");
       return;
@@ -699,6 +714,9 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
               FinishedAddRow(rowNumber);
             }
           });
+          if (observers.size() > 0) {
+            RetrieveSheet(sheetName, -1, null, false, false);
+          }
         }
         catch (Exception e) {
           e.printStackTrace();
@@ -1624,10 +1642,11 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       ErrorOccurred("ReadSheet: " + "SpreadsheetID is empty.");
       return;
     }
-    AsynchUtil.runAsynchronously(RetrieveSheet(sheetName, -1, null, false));
+    AsynchUtil.runAsynchronously(RetrieveSheet(sheetName, -1, null, false, true));
   }
 
-  Runnable RetrieveSheet(final String sheetName, final int colID, final String value, final boolean exact) {
+  Runnable RetrieveSheet(final String sheetName, final int colID, final String value,
+      final boolean exact, final boolean fireEvent) {
     return new Runnable() {
       @Override
       public void run() {
@@ -1667,39 +1686,42 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             }
 
             // Parse the Response
-            String responseContent = getResponseContent(connection);
+            final String responseContent = getResponseContent(connection);
             final YailList parsedCsv = CsvUtil.fromCsvTable(responseContent);
             // We need to re-enter the main thread before we can dispatch the event!
             activity.runOnUiThread(new Runnable() {
               @Override
               public void run() {
-                if (colID >= 0) {
-                  try {
-                  List<Integer> return_rows = new YailList();
-                  List<List<String>> return_data = new YailList();
-                  int rowNum = 0;
-                  while (rowNum < parsedCsv.size()) {
-                    YailList sheet_row = CsvUtil.fromCsvRow(parsedCsv.get(rowNum).toString());
-                    if (sheet_row.size() >= colID)
-                    {
-                      if ((exact && sheet_row.get(colID - 1).equals(value))
-                              || (!exact && sheet_row.get(colID - 1).toString().contains(value)))
-                      {
-                        return_rows.add(rowNum);
-                        return_data.add(sheet_row);
+                if (fireEvent) {
+                  if (colID >= 0) {
+                    try {
+                      List<Integer> return_rows = new YailList();
+                      List<List<String>> return_data = new YailList();
+                      int rowNum = 0;
+                      while (rowNum < parsedCsv.size()) {
+                        YailList sheet_row = CsvUtil.fromCsvRow(parsedCsv.get(rowNum).toString());
+                        if (sheet_row.size() >= colID) {
+                          if ((exact && sheet_row.get(colID - 1).equals(value))
+                              || (!exact && sheet_row.get(colID - 1).toString().contains(value))) {
+                            return_rows.add(rowNum);
+                            return_data.add(sheet_row);
+                          }
+                          rowNum++;
+                        }
                       }
-                      rowNum++;
+                      GotFilterResult(return_rows, return_data);
+                    } catch (Exception e) {
+                      Log.d(LOG_TAG, "ReadWithFilter (no creds) Error: " + e.getMessage());
+                      ErrorOccurred(e.getMessage());
                     }
+                  } else {
+                    GotSheetData(parsedCsv);
                   }
-                  GotFilterResult(return_rows, return_data);
-                  } catch (Exception e)
-                  {
-                    Log.d(LOG_TAG, "ReadWithFilter (no creds) Error: " + e.getMessage());
-                    ErrorOccurred(e.getMessage());
-                  }
-                } else {
-                  GotSheetData(parsedCsv);
                 }
+
+                updateColumns(parsedCsv);
+
+                notifyDataObservers(null, null);
               }
             });
             return;
@@ -1775,6 +1797,9 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
               } else {
                 GotSheetData(ret);
               }
+
+              updateColumns(YailList.makeList(ret));
+              notifyDataObservers(null, null);
             }
           });
         }
@@ -1799,4 +1824,106 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     EventDispatcher.dispatchEvent(this, "GotSheetData", sheetData);
   }
 
+  //region ObservableDataSource Implementation
+
+  @Override
+  public Future<YailList> getDataValue(final YailList key) {
+    return getDataValue(key, false);
+  }
+
+  public Future<YailList> getDataValue(final YailList key, final boolean useHeaders) {
+    final FutureTask<Void> currentTask = lastTask;
+
+    FutureTask<YailList> getDataValueTask = new FutureTask<>(
+        new Callable<YailList>() {
+          @Override
+          public YailList call() throws Exception {
+            if (currentTask != null && !currentTask.isDone() && !currentTask.isCancelled()) {
+              try {
+                currentTask.get();
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            }
+
+            return getColumns(key, useHeaders);
+          }
+        });
+
+    AsynchUtil.runAsynchronously(getDataValueTask);
+    return getDataValueTask;
+  }
+
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    observers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    observers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(YailList key, Object newValue) {
+    for (DataSourceChangeListener dataComponent : observers) {
+      dataComponent.onDataSourceValueChange(this, null, columns);
+    }
+  }
+
+  //endregion
+
+  private void updateColumns(final YailList parsedCsv) {
+    try {
+      columns = ChartDataSourceUtil.getTranspose(parsedCsv);
+    } catch (Exception e) {
+      columns = new YailList();
+    }
+  }
+
+  private YailList getColumn(String column) {
+    YailList result = new YailList();
+
+    for (int i = 0; i < columns.size(); i++) {
+      YailList list = (YailList) columns.getObject(i);
+
+      if (!list.isEmpty() && list.getString(0).equals(column)) {
+        result = list;
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  private YailList getColumn(int column) {
+    YailList result = new YailList();
+
+    if (column < columns.size()) {
+      result = (YailList) columns.getObject(column);
+    }
+
+    return result;
+  }
+
+  YailList getColumns(YailList keyColumns, boolean useHeaders) {
+    List<YailList> resultingColumns = new ArrayList<>();
+    for (int i = 0; i < keyColumns.size(); i++) {
+      String columnName = keyColumns.getString(i);
+      YailList column;
+      if (useHeaders) {
+        column = getColumn(columnName);
+      } else {
+        int colIndex = 0;
+        for (char c : columnName.toCharArray()) {
+          colIndex *= 26;
+          colIndex += c - 'A';
+        }
+        column = getColumn(colIndex);
+      }
+      resultingColumns.add(column);
+    }
+
+    return YailList.makeList(resultingColumns);
+  }
 }

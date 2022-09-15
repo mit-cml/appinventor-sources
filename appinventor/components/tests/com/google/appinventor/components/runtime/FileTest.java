@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2018-2020 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2022 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -56,9 +56,7 @@ import org.robolectric.shadows.ShadowEnvironment;
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
 @Config(shadows = {ShadowActivityCompat.class})
-public class FileTest extends RobolectricTestBase {
-
-  private static final String TAG = FileTest.class.getSimpleName();
+public class FileTest extends FileTestBase {
   private static final String DATA = "test data";
   protected static final String TARGET_FILE = "test.txt";
   protected File file;

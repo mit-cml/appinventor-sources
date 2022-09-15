@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -28,6 +28,9 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * ![Example of the OrientationSensor icon](images/orientationsensor.png)
@@ -74,7 +77,8 @@ import android.view.WindowManager;
 
 @SimpleObject
 public class OrientationSensor extends AndroidNonvisibleComponent
-    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener {
+    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener,
+    RealTimeDataSource<String, Float> {
   // Constants
   private static final String LOG_TAG = "OrientationSensor";
   // offsets in array returned by SensorManager.getOrientation()
@@ -111,6 +115,9 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   private final float[] rotationMatrix = new float[DIMENSIONS * DIMENSIONS];
   private final float[] inclinationMatrix = new float[DIMENSIONS * DIMENSIONS];
   private final float[] values = new float[DIMENSIONS];
+
+  // Set of observers
+  private Set<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   /**
    * Creates a new OrientationSensor component.
@@ -172,6 +179,11 @@ public class OrientationSensor extends AndroidNonvisibleComponent
    */
   @SimpleEvent(description = "Called when the orientation has changed.")
   public void OrientationChanged(float azimuth, float pitch, float roll) {
+    // Notify the Data Source observers with the updated values
+    notifyDataObservers("azimuth", azimuth);
+    notifyDataObservers("pitch", pitch);
+    notifyDataObservers("roll", roll);
+
     EventDispatcher.dispatchEvent(this, "OrientationChanged", azimuth, pitch, roll);
   }
 
@@ -449,6 +461,52 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   public void onResume() {
     if (enabled) {
       startListening();
+    }
+  }
+
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (DataSourceChangeListener dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  /**
+   * Returns a data value corresponding the given key. Possible keys include:
+   * <ul>
+   * <li>azimuth - azimuth value</li>
+   * <li>pitch   - pitch value</li>
+   * <li>roll    - roll value</li>
+   * </ul>
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
+  @Override
+  public Float getDataValue(String key) {
+    switch (key) {
+      case "azimuth":
+        return azimuth;
+
+      case "pitch":
+        return pitch;
+
+      case "roll":
+        return roll;
+
+      default:
+        return 0f;
     }
   }
 }

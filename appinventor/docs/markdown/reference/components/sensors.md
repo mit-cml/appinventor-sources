@@ -820,7 +820,7 @@ A sensor component that can measure the proximity of an object (in cm) relative 
  case, the sensor usually reports its maximum range value in the far state and a lesser value
  in the near state. It reports the following value:
 
-  - **Distance**: The distance from the object to the device
+   - **Distance**: The distance from the object to the device
 
 
 
@@ -840,7 +840,7 @@ A sensor component that can measure the proximity of an object (in cm) relative 
  are generated.
 
 {:id="ProximitySensor.KeepRunningWhenOnPause" .boolean} *KeepRunningWhenOnPause*
-: Returns value of keepRunningWhenOnPause
+: Returns value of keepRunningWhenOnPause.
 
 {:id="ProximitySensor.MaximumRange" .number .ro .bo} *MaximumRange*
 : Determines a sensor's maximum range. Some proximity sensors return binary values

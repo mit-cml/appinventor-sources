@@ -132,6 +132,7 @@
 
 <ul>
   <li><a href="#CloudDB">CloudDB</a></li>
+  <li><a href="#DataFile">DataFile</a></li>
   <li><a href="#File">File</a></li>
   <li><a href="#Spreadsheet">Spreadsheet</a></li>
   <li><a href="#TinyDB">TinyDB</a></li>
@@ -210,6 +211,49 @@
   <dt id="CloudDB.StoreValue" class="method"><i></i> StoreValue(<em class="text">tag</em>,<em class="any">valueToStore</em>)</dt>
   <dd>Asks <code class="highlighter-rouge">CloudDB</code> to store the given <code class="variable block highlighter-rouge">value</code> under the given
  <code class="text block highlighter-rouge">tag</code>.</dd>
+</dl>
+
+<h2 id="DataFile">DataFile</h2>
+
+<p>Component for DataFile</p>
+
+<h3 id="DataFile-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="DataFile.ColumnNames" class="list ro bo"><em>ColumnNames</em></dt>
+  <dd>Retrieve the column names of the currently loaded Source file.
+ For CSV files, this will return a List of entries in the first row.
+ For JSON files, this will return a List of keys in the JSON object.</dd>
+  <dt id="DataFile.Columns" class="list ro bo"><em>Columns</em></dt>
+  <dd>Retrieve a List of columns of the currently loaded Source file.</dd>
+  <dt id="DataFile.DefaultScope" class="com google appinventor components common FileScopeEnum wo do"><em>DefaultScope</em></dt>
+  <dd>Specifies the default scope for files accessed using the File component. The App scope should
+ work for most apps. Legacy mode can be used for apps that predate the newer constraints in
+ Android on app file access.</dd>
+  <dt id="DataFile.Rows" class="list ro bo"><em>Rows</em></dt>
+  <dd>Retrieve a List of rows of the currently loaded Source file.</dd>
+  <dt id="DataFile.SourceFile" class="text wo do"><em>SourceFile</em></dt>
+  <dd>Sets the source file to parse data from, and then parses the
+ file asynchronously. The results are stored in the <a href="#DataFile.Columns"><code class="highlighter-rouge">Columns</code></a>,
+ <a href="#DataFile.Rows"><code class="highlighter-rouge">Rows</code></a> and <a href="#DataFile.ColumnNames"><code class="highlighter-rouge">ColumnNames</code></a> properties.
+ The expected formatting of the file is either the CSV or JSON format.</dd>
+</dl>
+
+<h3 id="DataFile-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="DataFile-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="DataFile.ReadFile" class="method"><i></i> ReadFile(<em class="text">fileName</em>)</dt>
+  <dd>Indicates source file to load data from. The expected format of the contents of the file
+ are either CSV or JSON. Prefix the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">/</code> to read from a
+ specific file on the SD card (for example, <code class="highlighter-rouge">/myFile.txt</code> will read the file
+ <code class="highlighter-rouge">/sdcard/myFile.txt</code>). To read assets packaged with an application (also works for the
+ Companion) start the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">//</code> (two slashes). If a
+ <code class="text block highlighter-rouge">fileName</code> does not start with a slash, it will be read from the application’s
+ private storage (for packaged apps) and from <code class="highlighter-rouge">/sdcard/AppInventor/data</code> for the Companion.</dd>
 </dl>
 
 <h2 id="File">File</h2>

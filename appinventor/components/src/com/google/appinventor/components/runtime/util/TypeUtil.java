@@ -52,7 +52,8 @@ public final class TypeUtil {
             + " does not identify an OptionList type.");
       }
       for (Method m : clazz.getMethods()) {
-        if ("fromUnderlyingValue".equals(m.getName())) {
+        if ("fromUnderlyingValue".equals(m.getName())
+            && m.getParameterTypes()[0].isAssignableFrom(value.getClass())) {
           return (OptionList<T>) m.invoke(clazz, value);
         }
       }
