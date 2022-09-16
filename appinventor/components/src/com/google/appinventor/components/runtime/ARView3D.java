@@ -25,6 +25,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesNativeLibraries;
+import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -88,6 +89,7 @@ import java.util.List;
     v8aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so",
     x86_64Libraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so"
 )
+@UsesPermissions({CAMERA})
 public final class ARView3D extends AndroidViewComponent implements Component, ARNodeContainer, ARImageMarkerContainer,
    ARDetectedPlaneContainer, ARLightContainer, OnPauseListener, OnResumeListener, OnClearListener, OnDestroyListener,
    ARViewRender.Renderer {

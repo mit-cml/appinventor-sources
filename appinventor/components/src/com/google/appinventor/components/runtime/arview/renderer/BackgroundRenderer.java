@@ -106,7 +106,7 @@ public class BackgroundRenderer {
             depthColorPaletteTexture =
                     Texture.createFromAsset(
                             render,
-                            "models/depth_color_palette.png",
+                            "depth_color_palette.png",
                             Texture.WrapMode.CLAMP_TO_EDGE,
                             Texture.ColorFormat.LINEAR);
             backgroundShader =
