@@ -17,6 +17,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.content.Context;
@@ -27,6 +28,10 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -685,24 +690,18 @@ public class LocationSensor extends AndroidNonvisibleComponent
       androidUIHandler.post(new Runnable() {
           @Override
           public void run() {
-            me.form.askPermission(Manifest.permission.ACCESS_FINE_LOCATION,
-              new PermissionResultHandler() {
+            me.form.askPermission(new BulkPermissionRequest(me, "RefreshProvider", Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION) {
                 @Override
-                public void HandlePermissionResponse(String permission, boolean granted) {
-                  if (granted) {
-                    me.havePermission = true;
-                    me.RefreshProvider(caller);
-                    Log.d(LOG_TAG, "Permission Granted");
-                  } else {
-                    me.havePermission = false;
-                    me.enabled = false;
-                    me.form.dispatchPermissionDeniedEvent(me, caller, Manifest.permission.ACCESS_FINE_LOCATION);
-                  }
+                public void onGranted() {
+                  me.havePermission = true;
+                  me.RefreshProvider(caller);
+                  Log.d(LOG_TAG, "Permission Granted");
                 }
               });
           }
         });
     }
+
     if (providerLocked && !empty(providerName)) {
       listening = startProvider(providerName);
       return;
