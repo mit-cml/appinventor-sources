@@ -23,9 +23,14 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesActivities;
+import com.google.appinventor.components.annotations.UsesApplicationMetadata;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesNativeLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesQueries;
+import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
+import com.google.appinventor.components.annotations.androidmanifest.MetaDataElement;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -90,6 +95,21 @@ import java.util.List;
     x86_64Libraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so"
 )
 @UsesPermissions({CAMERA})
+@UsesApplicationMetadata(metaDataElements = {
+    @MetaDataElement(name = "com.google.ar.core", value = "required"),
+    @MetaDataElement(name = "com.google.ar.core.min_apk_version", value = "221930000")
+})
+@UsesQueries(packageNames = {"com.google.ar.core"})
+@UsesActivities(activities = {
+    @ActivityElement(
+        name = "com.google.ar.core.InstallActivity",
+        configChanges = "keyboardHidden|orientation|screenSize",
+        excludeFromRecents = "true",
+        exported = "false",
+        launchMode = "singleTop",
+        theme = "@android:style/Theme.Material.Light.Dialog.Alert"
+    )
+})
 public final class ARView3D extends AndroidViewComponent implements Component, ARNodeContainer, ARImageMarkerContainer,
    ARDetectedPlaneContainer, ARLightContainer, OnPauseListener, OnResumeListener, OnClearListener, OnDestroyListener,
    ARViewRender.Renderer {
@@ -161,6 +181,14 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
         depthSettings.onCreate(container.$context());
         instantPlacementSettings.onCreate(container.$context());
         container.$add(this);
+        container.$form().registerForOnClear(this);
+        container.$form().registerForOnResume(this);
+        container.$form().registerForOnPause(this);
+        container.$form().registerForOnDestroy(this);
+    }
+
+    public void Initialize() {
+        onResume();
     }
 
     // OnDestroyListener implementation
@@ -194,6 +222,7 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
                     public void HandlePermissionResponse(String permission, boolean granted) {
                         if (!granted) {
                             // TODO: Handle error
+                            onResume();
                         }
                     }
                 });
@@ -204,6 +233,7 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
             session.resume();
             view.onResume();
             displayRotationHelper.onResume();
+            return;
         } catch (UnavailableArcoreNotInstalledException
                  | UnavailableUserDeclinedInstallationException e) {
             message = "Please install ARCore";
@@ -350,7 +380,8 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
         if (message == null) {
             //messageSnackbarHelper.hide(this);
         } else {
-            Toast.makeText($context(), message, Toast.LENGTH_SHORT).show();
+            //Toast.makeText($context(), message, Toast.LENGTH_SHORT).show();
+            Log.i(LOG_TAG, message);
         }
         if (frame.getTimestamp() != 0) {
             backgroundRenderer.drawBackground(render);
