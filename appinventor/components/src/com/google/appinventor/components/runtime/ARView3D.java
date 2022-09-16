@@ -156,7 +156,7 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
         this.view = new GLSurfaceView(container.$form());
         this.view.setPreserveEGLContextOnPause(true);
         this.view.setOnTouchListener(tapHelper);
-        arViewRender = new ARViewRender(this.view, this, container.$context().getAssets());
+        arViewRender = new ARViewRender(this.view, this, container.$form());
         installRequested = false;
         depthSettings.onCreate(container.$context());
         instantPlacementSettings.onCreate(container.$context());
@@ -265,7 +265,7 @@ public final class ARView3D extends AndroidViewComponent implements Component, A
             final int dfgChannels = 2;
             final int halfFloatSize = 2;
             ByteBuffer buffer = ByteBuffer.allocateDirect(dfgResolution * dfgResolution * dfgChannels * halfFloatSize);
-            try (InputStream is = $context().getAssets().open("dfg.raw")) {
+            try (InputStream is = $form().openAsset("dfg.raw")) {
                 is.read(buffer.array());
             }
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, dfgTexture.getTextureId());

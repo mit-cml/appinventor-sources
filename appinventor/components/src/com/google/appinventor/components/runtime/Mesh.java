@@ -84,7 +84,7 @@ public class Mesh implements Closeable {
 
 
     public static Mesh createFromAsset(ARViewRender render, String assetFileName) throws IOException {
-        try (InputStream inputStream = render.getAssets().open(assetFileName)) {
+        try (InputStream inputStream = render.getForm().openAsset(assetFileName)) {
             Obj obj = ObjUtils.convertToRenderable(ObjReader.read(inputStream));
 
             // Obtain the data from the OBJ, as direct buffers:

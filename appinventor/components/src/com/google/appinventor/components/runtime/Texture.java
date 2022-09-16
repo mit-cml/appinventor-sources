@@ -126,7 +126,7 @@ public class Texture implements Closeable {
             // the ARGB_8888 config is actually stored in RGBA order.
             bitmap =
                     convertBitmapToConfig(
-                            BitmapFactory.decodeStream(render.getAssets().open(assetFileName)),
+                            BitmapFactory.decodeStream(render.getForm().openAsset(assetFileName)),
                             Bitmap.Config.ARGB_8888);
             ByteBuffer buffer = ByteBuffer.allocateDirect(bitmap.getByteCount());
             bitmap.copyPixelsToBuffer(buffer);

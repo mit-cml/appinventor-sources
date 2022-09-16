@@ -14,6 +14,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class ARViewRender {
     private static final String TAG = ARViewRender.class.getSimpleName();
 
+    private final Form form;
     private final AssetManager assetManager;
 
     private int viewportWidth = 1;
@@ -26,8 +27,9 @@ public class ARViewRender {
      * @param renderer      Renderer implementation to receive callbacks
      * @param assetManager  AssetManager for loading Android resources
      */
-    public ARViewRender(GLSurfaceView glSurfaceView, final Renderer renderer, AssetManager assetManager) {
-        this.assetManager = assetManager;
+    public ARViewRender(GLSurfaceView glSurfaceView, final Renderer renderer, Form form) {
+        this.form = form;
+        this.assetManager = form.getAssets();
         glSurfaceView.setPreserveEGLContextOnPause(true);
         glSurfaceView.setEGLContextClientVersion(3);
         glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
@@ -91,6 +93,10 @@ public class ARViewRender {
     /* package-private */
     AssetManager getAssets() {
         return assetManager;
+    }
+
+    Form getForm() {
+        return form;
     }
 
     private void useFramebuffer(Framebuffer framebuffer) {
