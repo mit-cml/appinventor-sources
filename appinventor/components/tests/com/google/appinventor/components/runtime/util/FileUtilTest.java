@@ -16,6 +16,11 @@ import android.os.Environment;
 import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.RobolectricTestBase;
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -209,6 +214,24 @@ public class FileUtilTest extends RobolectricTestBase {
   }
 
   @Test
+  public void testNeedsReadPermissionByUri() {
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.App)));
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Asset)));
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Cache)));
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "text.txt", FileScope.Legacy)));
+    assertTrue(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "/test.txt", FileScope.Legacy)));
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "//test.txt", FileScope.Legacy)));
+    assertFalse(FileUtil.needsReadPermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Private)));
+  }
+
+  @Test
   public void testNeedsWritePermission() {
     assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.App, "test.txt")));
     assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Asset, "test.txt")));
@@ -218,6 +241,24 @@ public class FileUtilTest extends RobolectricTestBase {
     assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Legacy, "//test.txt")));
     assertFalse(FileUtil.needsWritePermission(new ScopedFile(FileScope.Private, "test.txt")));
     assertTrue(FileUtil.needsWritePermission(new ScopedFile(FileScope.Shared, "test.txt")));
+  }
+
+  @Test
+  public void testNeedsWritePermissionByUri() {
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.App)));
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Asset)));
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Cache)));
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Legacy)));
+    assertTrue(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "/test.txt", FileScope.Legacy)));
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "//test.txt", FileScope.Legacy)));
+    assertFalse(FileUtil.needsWritePermission(getForm(),
+        FileUtil.resolveFileName(getForm(), "test.txt", FileScope.Private)));
   }
 
   @Test
@@ -238,5 +279,64 @@ public class FileUtilTest extends RobolectricTestBase {
         new ScopedFile(FileScope.Private, "test.txt")));
     assertTrue(FileUtil.needsExternalStorage(getForm(),
         new ScopedFile(FileScope.Shared, "test.txt")));
+  }
+
+  @Test
+  public void testReadAsset() throws IOException {
+    String result = new String(FileUtil.readFile(getForm(), "/android_asset/test.txt"),
+        StandardCharsets.UTF_8).trim();
+    assertEquals("Hello, world!", result);
+  }
+
+  @Test
+  public void testReadFile() throws IOException {
+    ShadowEnvironment.setExternalStorageState(Environment.MEDIA_MOUNTED);
+    ScopedFile target = new ScopedFile(FileScope.App, "testReadFile.txt");
+    String filename = FileUtil.resolveFileName(getForm(), target);
+    try (OutputStream out = FileUtil.openForWriting(getForm(), target)) {
+      out.write("success".getBytes(StandardCharsets.UTF_8));
+    }
+    String result = new String(FileUtil.readFile(getForm(), filename),
+        StandardCharsets.UTF_8);
+    assertEquals("success", result);
+  }
+
+  @Test
+  public void testReadFileFails() throws IOException {
+    ScopedFile target = new ScopedFile(FileScope.Private, "testReadFileFails.txt");
+    try {
+      FileUtil.readFile(getForm(), FileUtil.resolveFileName(getForm(), target));
+      fail("Should not have found testReadFileFails.txt");
+    } catch (FileNotFoundException e) {
+      // This is expected behavior
+    }
+  }
+
+  @Test(expected = FileNotFoundException.class)
+  public void testMoveFileThrowsIfSourceMissing() throws Exception {
+    ScopedFile source = new ScopedFile(FileScope.Private, "neverMakeThisFile.txt");
+    ScopedFile target = new ScopedFile(FileScope.Private, "target.txt");
+    FileUtil.moveFile(getForm(), source, target);
+  }
+
+  @Test
+  public void testMoveFileOverwrites() throws Exception {
+    ScopedFile source = new ScopedFile(FileScope.Private, "testMoveFileOverwrittenSource.txt");
+    ScopedFile target = new ScopedFile(FileScope.Private, "testMoveFileOverwrittenTarget.txt");
+    try (OutputStream out = FileUtil.openForWriting(getForm(), source)) {
+      out.write("source".getBytes(StandardCharsets.UTF_8));
+    }
+    try (OutputStream out = FileUtil.openForWriting(getForm(), target)) {
+      out.write("target".getBytes(StandardCharsets.UTF_8));
+    }
+    FileUtil.moveFile(getForm(), source, target);
+
+    // source file should be gone
+    assertFalse(new java.io.File(new URI(FileUtil.resolveFileName(getForm(), source))).exists());
+
+    // target file should now be source
+    String content = new String(FileUtil.readFile(getForm(),
+        FileUtil.resolveFileName(getForm(), target)));
+    assertEquals("source", content);
   }
 }

@@ -16,17 +16,17 @@ import java.lang.annotation.Target;
  * a component is a service. <service> element attributes that are not
  * set explicitly default to "" or {} and are ignored when the element is created
  * in the manifest.
- * 
+ *
  * Note: Most of this documentation is adapted from the Android framework specification
  *       linked below. That documentation is licensed under the
  *       {@link <a href="https://creativecommons.org/licenses/by/2.5/">
  *         Creative Commons Attribution license v2.5
  *       </a>}.
- * 
+ *
  * See {@link <a href="https://developer.android.com/guide/topics/manifest/service-element">
  *              https://developer.android.com/guide/topics/manifest/service-element
  *            </a>}.
- * 
+ *
  * @author https://github.com/ShreyashSaitwal (Shreyash Saitwal)
  */
 
@@ -50,10 +50,10 @@ public @interface ServiceElement {
   MetaDataElement[] metaDataElements() default {};
 
   /**
-   * The name of the class that implements the service. This should 
-   * be a fully qualified class name (such as, "com.example.project.RoomService"). 
-   * However, as a shorthand, if the first character of the name is 
-   * a period (for example, ".RoomService"), it is appended to the 
+   * The name of the class that implements the service. This should
+   * be a fully qualified class name (such as, "com.example.project.RoomService").
+   * However, as a shorthand, if the first character of the name is
+   * a period (for example, ".RoomService"), it is appended to the
    * package name of the application.
    *
    * @return  the Service class name
@@ -62,50 +62,50 @@ public @interface ServiceElement {
 
   /**
    * If set to true, this service will run under a special process that
-   * is isolated from the rest of the system and has no permissions 
-   * of its own. The only communication with it is through the Service 
+   * is isolated from the rest of the system and has no permissions
+   * of its own. The only communication with it is through the Service
    * API (binding and starting).
-   * 
+   *
    * @return  the service isolatedProcess attribute
    */
   String isolatedProcess() default "";
 
   /**
-   * Specify that the service is a foreground service that satisfies a 
-   * particular use case. For example, a foreground service type of 
-   * "location" indicates that an app is getting the device's current 
-   * location, usually to continue a user-initiated action related to 
-   * device location. 
+   * Specify that the service is a foreground service that satisfies a
+   * particular use case. For example, a foreground service type of
+   * "location" indicates that an app is getting the device's current
+   * location, usually to continue a user-initiated action related to
+   * device location.
    * You can assign multiple foreground service types to a particular service.
-   * 
+   *
    * @return  the service foregroundServiceType attribute
    */
   String foregroundServiceType() default "";
 
   /**
-   * A string that describes the service to users. The label should be 
-   * set as a reference to a string resource, so that it can be localized 
+   * A string that describes the service to users. The label should be
+   * set as a reference to a string resource, so that it can be localized
    * like other strings in the user interface.
-   * 
+   *
    * @return  the service desciption attribute
    */
   String description() default "";
 
   /**
-   * Whether or not the service is direct-boot aware; that is, whether or 
+   * Whether or not the service is direct-boot aware; that is, whether or
    * not it can run before the user unlocks the device.
-   * 
+   *
    * @return  the service directBootAware attribute
    */
   String directBootAware() default "";
 
   /**
-   * Whether or not the service can be instantiated by the system — "true" 
+   * Whether or not the service can be instantiated by the system — "true"
    * if it can be, and "false" if not. The default value is "true".
-   * The <application> element has its own enabled attribute that applies 
-   * to all application components, including services. The <application> 
-   * and <service> attributes must both be "true" (as they both are by default) 
-   * for the service to be enabled. If either is "false", the service is 
+   * The <application> element has its own enabled attribute that applies
+   * to all application components, including services. The <application>
+   * and <service> attributes must both be "true" (as they both are by default)
+   * for the service to be enabled. If either is "false", the service is
    * disabled; it cannot be instantiated.
    *
    * @return  the service enabled attribute
@@ -113,26 +113,26 @@ public @interface ServiceElement {
   String enabled() default "";
 
   /**
-   * Whether or not components of other applications can invoke the service 
-   * or interact with it — "true" if they can, and "false" if not. When the 
-   * value is "false", only components of the same application or applications 
+   * Whether or not components of other applications can invoke the service
+   * or interact with it — "true" if they can, and "false" if not. When the
+   * value is "false", only components of the same application or applications
    * with the same user ID can start the service or bind to it.
-   * 
-   * The default value depends on whether the service contains intent filters. 
-   * The absence of any filters means that it can be invoked only by specifying 
-   * its exact class name. This implies that the service is intended only for 
-   * application-internal use (since others would not know the class name). So 
-   * in this case, the default value is "false". On the other hand, the presence 
-   * of at least one filter implies that the service is intended for external use, 
+   *
+   * The default value depends on whether the service contains intent filters.
+   * The absence of any filters means that it can be invoked only by specifying
+   * its exact class name. This implies that the service is intended only for
+   * application-internal use (since others would not know the class name). So
+   * in this case, the default value is "false". On the other hand, the presence
+   * of at least one filter implies that the service is intended for external use,
    * so the default value is "true".
 
-   * This attribute is not the only way to limit the exposure of a service to other 
-   * applications. You can also use a permission to limit the external entities that 
+   * This attribute is not the only way to limit the exposure of a service to other
+   * applications. You can also use a permission to limit the external entities that
    * can interact with the service.
    *
    * @return  the service exported attribute
    */
-  String exported() default "";
+  String exported() default "true";
 
   /**
    * An icon representing the service. This attribute must be set as
@@ -148,10 +148,10 @@ public @interface ServiceElement {
   String icon() default "";
 
   /**
-   * A name for the service that can be displayed to users. If this attribute 
+   * A name for the service that can be displayed to users. If this attribute
    * is not set, the label set for the application as a whole is used instead.
-   * 
-   * The service's label — whether set here or by the <application> element — 
+   *
+   * The service's label — whether set here or by the <application> element —
    * is also the default label for all the service's intent filters.
    *
    * @return  the service label attribute
@@ -159,13 +159,13 @@ public @interface ServiceElement {
   String label() default "";
 
   /**
-   * The name of a permission that an entity must have in order to launch the 
-   * service or bind to it. If a caller of startService(), bindService(), or 
-   * stopService(), has not been granted this permission, the method will not 
+   * The name of a permission that an entity must have in order to launch the
+   * service or bind to it. If a caller of startService(), bindService(), or
+   * stopService(), has not been granted this permission, the method will not
    * work and the Intent object will not be delivered to the service.
-   * 
-   * If this attribute is not set, the permission set by the <application> 
-   * element's permission attribute applies to the service. If neither attribute 
+   *
+   * If this attribute is not set, the permission set by the <application>
+   * element's permission attribute applies to the service. If neither attribute
    * is set, the service is not protected by a permission.
    *
    * @return  the service permission attribute

@@ -1217,6 +1217,8 @@ public final class Compiler {
         } else if (isMain && isForCompanion) {
           out.write("android:launchMode=\"singleTop\" ");
         }
+        // The line below is required for Android 12+
+        out.write("android:exported=\"true\" ");
 
         out.write("android:windowSoftInputMode=\"stateHidden\" ");
 
@@ -1273,7 +1275,7 @@ public final class Compiler {
 
         // Companion display a splash screen... define it's activity here
         if (isMain && isForCompanion) {
-          out.write("    <activity android:name=\"com.google.appinventor.components.runtime.SplashActivity\" android:screenOrientation=\"behind\" android:configChanges=\"keyboardHidden|orientation\">\n");
+          out.write("    <activity android:name=\"com.google.appinventor.components.runtime.SplashActivity\" android:exported=\"false\" android:screenOrientation=\"behind\" android:configChanges=\"keyboardHidden|orientation\">\n");
           out.write("      <intent-filter>\n");
           out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
           out.write("      </intent-filter>\n");
@@ -1290,8 +1292,8 @@ public final class Compiler {
       subelements.addAll(contentProvidersNeeded.entrySet());
 
 
-      // If any component needs to register additional activities, 
-      // broadcast receivers, services or content providers, insert 
+      // If any component needs to register additional activities,
+      // broadcast receivers, services or content providers, insert
       // them into the manifest here.
       if (!subelements.isEmpty()) {
         for (Map.Entry<String, Set<String>> componentSubElSetPair : subelements) {
@@ -1342,7 +1344,7 @@ public final class Compiler {
           }
         }
         out.write(
-            "<receiver android:name=\"" + brNameAndActions[0] + "\" >\n");
+            "<receiver android:name=\"" + brNameAndActions[0] + "\" android:exported=\"true\">\n");
         if (brNameAndActions.length > 1) {
           out.write("  <intent-filter>\n");
           for (int i = 1; i < brNameAndActions.length; i++) {

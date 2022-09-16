@@ -2882,6 +2882,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "InstantInTime";
     }
 
+    // Only components can be data sources in the block language
+    if (typeString.startsWith("com.google.appinventor.components.runtime.DataSource")) {
+      return "component";
+    }
+
     if (typeString.equals("java.lang.Object")) {
       return "any";
     }

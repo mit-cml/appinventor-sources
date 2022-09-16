@@ -790,6 +790,10 @@
 	"Blockly.Msg.DIALOG_SUBMIT": "Submit",
 	"Blockly.Msg.DIALOG_ENTER_VALUES": "Enter values for:",
 
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_HELPURL": "/reference/components/storage.html#Spreadsheet",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_PROPERTIES_HELPURL": "/reference/components/storage.html#Spreadsheet",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_EVENTS_HELPURL": "/reference/components/storage.html#Spreadsheet",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_METHODS_HELPURL": "/reference/components/storage.html#Spreadsheet",
 
 	"Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS": "/reference/blocks/text.html#contains",
 	"Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL": "/reference/blocks/text.html#containsall",
@@ -1090,6 +1094,9 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL": "/reference/components/maps.html#Navigation",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL": "/reference/components/maps.html#Polygon",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL": "/reference/components/maps.html#Rectangle",
+
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL": "/reference/components/charts.html#Chart",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL": "/reference/components/charts.html#ChartData2D",
 
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",
