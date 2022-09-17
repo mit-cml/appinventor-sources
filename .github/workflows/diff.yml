@@ -1,0 +1,54 @@
+name: Diff
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+          
+      - name: Install 32-bit dependencies
+        run: sudo apt-get install -y libc6-i386 lib32z1 lib32stdc++6
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: current
+          submodules: recursive
+
+      - name: Checkout master
+        uses: actions/checkout@v3
+        with:
+            ref: master
+            path: master
+            submodules: recursive
+            
+      - name: Build current
+        run: |
+          ant MakeAuthKey
+          ant noplay
+        working-directory: current/appinventor
+        
+      - name: Build master
+        run: |
+          ant MakeAuthKey
+          ant noplay
+        working-directory: master/appinventor
+
+      - name: Diff simple_components.json
+        run: diff --unified master/appinventor/build/components/simple_components.json current/appinventor/build/components/simple_components.json
+
+      - name: Diff simple_components.txt
+        run: diff --unified master/appinventor/build/components/simple_components.txt current/appinventor/build/components/simple_components.txt
+
+      - name: Diff simple_components_build_info.json
+        run: diff --unified master/appinventor/build/components/simple_components_build_info.json current/appinventor/build/components/simple_components_build_info.json
