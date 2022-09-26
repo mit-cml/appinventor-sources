@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -45,6 +45,8 @@ import com.google.appinventor.components.runtime.repackaged.org.json.XML;
 
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
+import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
+import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.GingerbreadUtil;
@@ -76,8 +78,13 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -100,7 +107,8 @@ import org.xml.sax.InputSource;
 @SimpleObject
 @UsesPermissions({INTERNET})
 @UsesLibraries(libraries = "json.jar")
-public class Web extends AndroidNonvisibleComponent implements Component {
+public class Web extends AndroidNonvisibleComponent implements Component,
+    ObservableDataSource<YailList, Future<YailList>> {
   /**
    * InvalidRequestHeadersException can be thrown from processRequestHeaders.
    * It is thrown if the list passed to processRequestHeaders contains an item that is not a list.
@@ -219,7 +227,20 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   private boolean haveReadPermission = false;
   private boolean haveWritePermission = false;
 
+  // Used to keep track of the last executed AsyncTask.
+  // Used when retrieving Data Values for Chart data importing.
+  // This allows to retrieve a recently updated value after
+  // it has been retrieved asynchronously. Instead of running
+  // regular Runnables on each asynchronous operation, the
+  // lastTask variable is instead constructed and ran.
+  private FutureTask<Void> lastTask = null;
 
+  // Store a List of columns parsed from the latest response (JSON/CSV).
+  // The columns are used for Chart Data importing.
+  private YailList columns = new YailList();
+
+  // Set of observers
+  private HashSet<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   /**
    * Creates a new Web component.
@@ -425,12 +446,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         performRequest(webProps, null, null, "GET", METHOD);
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /**
@@ -509,12 +532,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         performRequest(webProps, null, path, "POST", METHOD);
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
   
   /**
@@ -677,12 +702,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         performRequest(webProps, null, path, "PUT", METHOD);
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /**
@@ -706,12 +733,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         performRequest(webProps, null, null, "DELETE", METHOD);
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /*
@@ -739,7 +768,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         // Convert text to bytes using the encoding.
@@ -758,7 +787,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
         performRequest(webProps, requestData, null, httpVerb, functionName);
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /**
@@ -1219,8 +1250,22 @@ public class Web extends AndroidNonvisibleComponent implements Component {
                   GotText(webProps.urlString, responseCode, responseType, responseContent);
                 }
               });
-          }
 
+            // Update the locally stored columns list with the contents of the
+            // retrieved response & response type.
+            // TODO: Optimizations are possible here. Currently for projects which
+            // TODO: do not make use of Chart components, this will create extra overhead
+            // TODO: due to JSON/CSV parsing.
+            updateColumns(responseContent, responseType);
+
+            // Notify all data observers with null key and null value.
+            // Key and value are unused, hence it does not matter here.
+            // TODO: Since the Web component is rather irregular in the
+            // TODO: sense that the key and value do not matter for notification,
+            // TODO: perhaps it would be worthwhile for the Web component to
+            // TODO: have a different interface?
+            notifyDataObservers(null, null);
+          }
         } catch (SocketTimeoutException e) {
           // Dispatch timeout event.
           activity.runOnUiThread(new Runnable() {
@@ -1549,5 +1594,140 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       form.dispatchErrorOccurredEvent(this, functionName, e.errorNumber, e.index);
     }
     return null;
+  }
+
+  @Override
+  public Future<YailList> getDataValue(final YailList key) {
+    // Record the last running asynchronous task. The FutureTask's
+    // calculations will wait for the completion of the task.
+    final FutureTask<Void> currentTask = lastTask;
+
+    // Construct a new FutureTask which handles returning the appropriate data
+    // value after the currently recorded last task is processed.
+    FutureTask<YailList> getDataValueTask = new FutureTask<>(
+        new Callable<YailList>() {
+          @Override
+          public YailList call() throws Exception {
+            // If the last recorded GET task is not yet done/cancelled, then the get()
+            // method is invoked to wait for completion of the task.
+            if (currentTask != null && !currentTask.isDone() && !currentTask.isCancelled()) {
+              try {
+                currentTask.get();
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              } catch (ExecutionException e) {
+                e.printStackTrace();
+              }
+            }
+
+            // Return resulting columns
+            return getColumns(key);
+          }
+        });
+
+    // Run and return the getDataValue FutureTask
+    AsynchUtil.runAsynchronously(getDataValueTask);
+    return getDataValueTask;
+  }
+
+  /**
+   * Updates the local Columns List based on the specified response content
+   * and type. Columns are parsed either from JSON or CSV, depending on
+   * the response type. On invalid response types, parsing is simply skipped.
+   *
+   * <p>Currently supported MIME types are all types which have 'json' in the name,
+   * types which have 'csv' in the name, as well as types which start with 'text/'</p>
+   *
+   * @param responseContent  Content of the response
+   * @param responseType  Type of the response
+   */
+  private void updateColumns(final String responseContent, final String responseType) {
+    // Check whether the response type is a JSON type (by checking
+    // whether the response type contains the String 'json')
+    // If this is not the case, CSV parsing is attempted if the
+    // response type contains the 'csv' String or the type starts
+    // with 'text/'.
+    if (responseType.contains("json")) {
+      // Proceed with JSON parsing
+      try {
+        columns = JsonUtil.getColumnsFromJson(responseContent);
+      } catch (JSONException e) {
+        // Json importing unsuccessful
+      }
+    } else if (responseType.contains("csv") || responseType.startsWith("text/")) {
+      try {
+        columns = CsvUtil.fromCsvTable(responseContent);
+        columns = ChartDataSourceUtil.getTranspose(columns);
+      } catch (Exception e) {
+        // Set columns to empty List (failed parsing)
+        columns = new YailList();
+      }
+    }
+  }
+
+  /**
+   * Gets the column identified by the specified String from
+   * the locally stored columns List.
+   * @param column  name of the Column to retrieve
+   * @return  YailList representation of the column (empty List if not found)
+   */
+  public YailList getColumn(String column) {
+    // Iterate through all the columns
+    for (int i = 0; i < columns.size(); ++i) {
+      YailList list = (YailList)columns.getObject(i);
+
+      // If column has first entry, and the entry is equal to the
+      // queried column, then this is our resulting column.
+      if (!list.isEmpty() && list.getString(0).equals(column)) {
+        return list;
+      }
+    }
+
+    // Column not found; Return empty YailList.
+    return new YailList();
+  }
+
+  /**
+   * Returns a List of the specified columns stored internally
+   * in the Web component (as data of the last request).
+   *
+   * <p>If a column is not found, it is substituted by an empty List.</p>
+   *
+   * @param keyColumns  List of columns to return
+   * @return  List of the specified columns
+   */
+  public YailList getColumns(YailList keyColumns) {
+    // Construct a List of columns to return as a result
+    ArrayList<YailList> resultingColumns = new ArrayList<YailList>();
+
+    // Iterate over the specified column names
+    for (int i = 0; i < keyColumns.size(); ++i) {
+      // Get and add the specified column to the resulting columns list
+      String columnName = keyColumns.getString(i);
+      YailList column = getColumn(columnName);
+      resultingColumns.add(column);
+    }
+
+    // Return result as YailList
+    return YailList.makeList(resultingColumns);
+  }
+
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(YailList key, Object newValue) {
+    for (DataSourceChangeListener dataComponent : dataSourceObservers) {
+      // Notify Data Component observer with the new columns value (and null key,
+      // since key does not matter in the case of the Web component)
+      dataComponent.onDataSourceValueChange(this, null, columns);
+    }
   }
 }

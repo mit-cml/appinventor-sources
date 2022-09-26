@@ -677,10 +677,15 @@ Blockly.ReplMgr.putYail = (function() {
                 var allcode = "";
                 var chunked = false;
                 var lastblock;
+                var first = true;
                 while ((chunk = rs.phoneState.phoneQueue.shift())) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        console.log("We did chunk!");
+                        chunked = true;
+                    }
                     rs.phoneState.ioRunning = true; // Indicate that we are doing i/o
-                    console.log("We did chunk!");
-                    chunked = true;
                     allcode += chunk.code; // We can concatonate because AppInvHTTPD runs us
                                            // in a (begin) block
                     lastblock = chunk.block;
@@ -1461,7 +1466,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
-                rs.android = (json.os || 'Android').toLowerCase() !== 'ios';
+                rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
                 rs.hasfetchassets = rs.android;
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
@@ -1511,7 +1516,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
         // Rendezvous server. Note: Only post 2.47 Companions provide this
         // information. So if it isn't present we will assume it is old and
         // say that an update is advisable (or needed)
-        if (!rs.version || !Blockly.ReplMgr.acceptableVersion(rs.version)) {
+        if (!rs.version || (rs.android && !Blockly.ReplMgr.acceptableVersion(rs.version))) {
             if (top.COMPANION_UPDATE_URL1 && !rs.isUSB) {
                 var url = top.location.origin + top.COMPANION_UPDATE_URL1;
                 var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
@@ -1548,10 +1553,11 @@ Blockly.ReplMgr.rendezvousDone = function() {
     var startwebrtc = function() {
         top.usewebrtc = true;
         rs.state = me.rsState.ASSET;
-        me.putYail();
+        me.putYail();           // Sets up the context
     };
     var startproxy = function() {
         rs.proxy_ready = false;
+        me.putYail();           // Sets up the context
         var promise = new Promise(function(resolve, reject) {
             var w = 600;
             var h = 500
@@ -1622,6 +1628,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
         // are loaded over https. If we are, then Legacy Mode will fail. So
         // shutdown the whole thing here and put up a dialog box explaining
         // the problem.
+        me.putYail();           // Sets up the context
         if (window.location.protocol === 'https:') {
             // Reset State to initial
             rs.state = Blockly.ReplMgr.rsState.IDLE;
