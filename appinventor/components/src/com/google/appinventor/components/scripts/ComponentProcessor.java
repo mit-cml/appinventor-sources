@@ -9,6 +9,7 @@ package com.google.appinventor.components.scripts;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.PermissionConstraint;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -63,6 +64,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1083,10 +1086,21 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> permissions;
 
     /**
+     * Permission constraints required by this component.
+     */
+    protected final Map<String, PermissionConstraint> permissionConstraints;
+
+    /**
      * Mapping of component block names to permissions that should be included
      * if the block is used.
      */
     protected final Map<String, String[]> conditionalPermissions;
+
+    /**
+     * Mapping of component block names to permissions constraints that should
+     * be included if the block is used.
+     */
+    protected final Map<String, Map<String, PermissionConstraint>> conditionalPermissionConstraints;
 
     /**
      * Mapping of component block names to broadcast receivers that should be
@@ -1236,6 +1250,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
       conditionalBroadcastReceivers = Maps.newTreeMap();
       conditionalContentProviders = Maps.newTreeMap();
+      conditionalPermissionConstraints = Maps.newTreeMap();
       conditionalPermissions = Maps.newTreeMap();
       conditionalQueries = Maps.newTreeMap();
       conditionalServices = Maps.newTreeMap();
@@ -1249,6 +1264,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       libraries = Sets.newHashSet();
       metadata = Sets.newHashSet();
       nativeLibraries = Sets.newHashSet();
+      permissionConstraints = Maps.newTreeMap();
       permissions = Sets.newHashSet();
       queries = Sets.newHashSet();
       services = Sets.newHashSet();
@@ -1646,6 +1662,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         updateWithNonEmptyValue(componentInfo.permissions, permission);
       }
       Collections.addAll(componentInfo.permissions, usesPermissions.value());
+      for (PermissionConstraint constraint : usesPermissions.constraints()) {
+        componentInfo.permissions.add(constraint.name());
+        componentInfo.permissionConstraints.put(constraint.name(), constraint);
+      }
     }
 
     // Gather library names.
@@ -2739,7 +2759,20 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // Conditional UsesPermissions
     UsesPermissions usesPermissions = element.getAnnotation(UsesPermissions.class);
     if (usesPermissions != null) {
-      componentInfo.conditionalPermissions.put(blockName, usesPermissions.value());
+      Set<String> permissions = new TreeSet<>();
+      Collections.addAll(permissions, usesPermissions.value());
+      for (PermissionConstraint constraint : usesPermissions.constraints()) {
+        permissions.add(constraint.name());
+        if (componentInfo.conditionalPermissionConstraints.containsKey(constraint.name())) {
+          componentInfo.conditionalPermissionConstraints.get(blockName)
+              .put(constraint.name(), constraint);
+        } else {
+          Map<String, PermissionConstraint> constraints = new TreeMap<>();
+          constraints.put(constraint.name(), constraint);
+          componentInfo.conditionalPermissionConstraints.put(blockName, constraints);
+        }
+      }
+      componentInfo.conditionalPermissions.put(blockName, permissions.toArray(new String[0]));
     }
 
     UsesBroadcastReceivers broadcastReceiver = element.getAnnotation(UsesBroadcastReceivers.class);
