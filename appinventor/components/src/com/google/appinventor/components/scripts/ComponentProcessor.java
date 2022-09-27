@@ -1760,7 +1760,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesQueries != null) {
       try {
         for (String packageName : usesQueries.packageNames()) {
-          componentInfo.queries.add("<package android:name=\\\"" + packageName + "\\\" />");
+          componentInfo.queries.add("<package android:name=\"" + packageName + "\" />");
         }
         for (IntentFilterElement intent : usesQueries.intents()) {
           updateWithNonEmptyValue(componentInfo.queries, intentFilterElementToIntentString(intent));
@@ -2237,14 +2237,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // receiver element attributes.
     StringBuilder elementString = new StringBuilder("    <activity ");
     elementString.append(elementAttributesToString(element));
-    elementString.append(">\\n");
+    elementString.append(">\n");
 
     // Now, we collect any <activity> subelements.
     elementString.append(subelementsToString(element.metaDataElements()));
     elementString.append(subelementsToString(element.intentFilters()));
 
     // Finally, we close the <activity> element and create its String.
-    return elementString.append("    </activity>\\n").toString();
+    return elementString.append("    </activity>\n").toString();
   }
 
   // Transform a @ReceiverElement into an XML element String for use later
@@ -2255,14 +2255,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // receiver element attributes.
     StringBuilder elementString = new StringBuilder("    <receiver ");
     elementString.append(elementAttributesToString(element));
-    elementString.append(">\\n");
+    elementString.append(">\n");
 
     // Now, we collect any <receiver> subelements.
     elementString.append(subelementsToString(element.metaDataElements()));
     elementString.append(subelementsToString(element.intentFilters()));
 
     // Finally, we close the <receiver> element and create its String.
-    return elementString.append("    </receiver>\\n").toString();
+    return elementString.append("    </receiver>\n").toString();
   }
 
   // Transform a @ServiceElement into an XML element String for use later
@@ -2273,14 +2273,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // service element attributes.
     StringBuilder elementString = new StringBuilder("    <service ");
     elementString.append(elementAttributesToString(element));
-    elementString.append(">\\n");
+    elementString.append(">\n");
 
     // Now, we collect any <service> subelements.
     elementString.append(subelementsToString(element.metaDataElements()));
     elementString.append(subelementsToString(element.intentFilters()));
 
     // Finally, we close the <service> element and create its String.
-    return elementString.append("    </service>\\n").toString();
+    return elementString.append("    </service>\n").toString();
   }
 
   // Transform a @ProviderElement into an XML element String for use later
@@ -2291,7 +2291,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // content provider element attributes.
     StringBuilder elementString = new StringBuilder("    <provider ");
     elementString.append(elementAttributesToString(element));
-    elementString.append(">\\n");
+    elementString.append(">\n");
 
     // Now, we collect any <provider> subelements.
     elementString.append(subelementsToString(element.metaDataElements()));
@@ -2299,7 +2299,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     elementString.append(subelementsToString(element.grantUriPermissionElement()));
 
     // Finally, we close the <provider> element and create its String.
-    return elementString.append("    </provider>\\n").toString();
+    return elementString.append("    </provider>\n").toString();
   }
 
   // Transform a @MetaDataElement into an XML element String for use later
@@ -2311,7 +2311,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     StringBuilder elementString = new StringBuilder("      <meta-data ");
     elementString.append(elementAttributesToString(element));
     // Finally, we close the <meta-data> element and create its String.
-    return elementString.append("/>\\n").toString();
+    return elementString.append("/>\n").toString();
   }
 
   // Transform an @IntentFilterElement into an XML element String for use later
@@ -2322,7 +2322,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // receiver element attributes.
     StringBuilder elementString = new StringBuilder("      <intent-filter ");
     elementString.append(elementAttributesToString(element));
-    elementString.append(">\\n");
+    elementString.append(">\n");
 
     // Now, we collect any <intent-filter> subelements.
     elementString.append(subelementsToString(element.actionElements()));
@@ -2330,14 +2330,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     elementString.append(subelementsToString(element.dataElements()));
 
     // Finally, we close the <intent-filter> element and create its String.
-    return elementString.append("    </intent-filter>\\n").toString();
+    return elementString.append("    </intent-filter>\n").toString();
   }
 
   private static String intentFilterElementToIntentString(IntentFilterElement element)
       throws IllegalAccessException, InvocationTargetException {
     // First, we build the <intent-filter> element's opening tag including any
     // receiver element attributes.
-    StringBuilder elementString = new StringBuilder("      <intent>\\n");
+    StringBuilder elementString = new StringBuilder("      <intent>\n");
 
     // Now, we collect any <intent-filter> subelements.
     elementString.append(subelementsToString(element.actionElements()));
@@ -2345,7 +2345,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     elementString.append(subelementsToString(element.dataElements()));
 
     // Finally, we close the <intent-filter> element and create its String.
-    return elementString.append("    </intent>\\n").toString();
+    return elementString.append("    </intent>\n").toString();
   }
 
   // Transform an @ActionElement into an XML element String for use later
@@ -2357,7 +2357,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     StringBuilder elementString = new StringBuilder("        <action ");
     elementString.append(elementAttributesToString(element));
     // Finally, we close the <action> element and create its String.
-    return elementString.append("/>\\n").toString();
+    return elementString.append("/>\n").toString();
   }
 
   // Transform a @CategoryElement into an XML element String for use later
@@ -2369,7 +2369,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     StringBuilder elementString = new StringBuilder("        <category ");
     elementString.append(elementAttributesToString(element));
     // Finally, we close the <category> element and create its String.
-    return elementString.append("/>\\n").toString();
+    return elementString.append("/>\n").toString();
   }
 
   // Transform a @DataElement into an XML element String for use later
@@ -2381,7 +2381,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     StringBuilder elementString = new StringBuilder("        <data ");
     elementString.append(elementAttributesToString(element));
     // Finally, we close the <data> element and create its String.
-    return elementString.append("/>\\n").toString();
+    return elementString.append("/>\n").toString();
   }
 
   // Transform a @PathPermissionElement into an XML element String for use later
@@ -2393,7 +2393,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     StringBuilder elementString = new StringBuilder("        <path-permission ");
     elementString.append(elementAttributesToString(element));
     // Finally, we close the <path-permission> element and create its String.
-    return elementString.append("/>\\n").toString();
+    return elementString.append("/>\n").toString();
   }
 
   // Transform a @GrantUriPermissionElement into an XML element String for use later
@@ -2405,7 +2405,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     StringBuilder elementString = new StringBuilder("        <grant-uri-permission ");
     elementString.append(elementAttributesToString(element));
     // Finally, we close the <grant-uri-permission> element and create its String.
-    return elementString.append("/>\\n").toString();
+    return elementString.append("/>\n").toString();
   }
 
   // Build the attribute String for a given XML element modeled by an
@@ -2430,9 +2430,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
             attributeString.append(attributeSeparator);
             attributeString.append("android:");
             attributeString.append(method.getName());
-            attributeString.append("=\\\"");
+            attributeString.append("=\"");
             attributeString.append(attributeValue);
-            attributeString.append("\\\"");
+            attributeString.append("\"");
             attributeSeparator = " ";
           }
         }
@@ -2761,7 +2761,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       try {
         Set<String> queries = new HashSet<>();
         for (String packageName : usesQueries.packageNames()) {
-          updateWithNonEmptyValue(queries, "<package android:name=\\\"" + packageName + "\\\" />");
+          updateWithNonEmptyValue(queries, "<package android:name=\"" + packageName + "\" />");
         }
         for (IntentFilterElement intent : usesQueries.intents()) {
           updateWithNonEmptyValue(queries, intentFilterElementToIntentString(intent));
