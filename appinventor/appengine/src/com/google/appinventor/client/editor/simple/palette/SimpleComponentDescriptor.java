@@ -30,6 +30,7 @@ import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockHorizontalRadioGroup;
 import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
 import com.google.appinventor.client.editor.simple.components.MockImageSprite;
@@ -55,6 +56,7 @@ import com.google.appinventor.client.editor.simple.components.MockTextBox;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockTranslator;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockVerticalRadioGroup;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
 
@@ -148,6 +150,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/phoneip.png", images.phonestatusComponent());
     bundledImages.put("images/phoneCall.png", images.phonecall());
     bundledImages.put("images/player.png", images.player());
+    bundledImages.put("images/radiobutton.png", images.radiobutton());
     bundledImages.put("images/soundEffect.png", images.soundeffect());
     bundledImages.put("images/soundRecorder.png", images.soundRecorder());
     bundledImages.put("images/speechRecognizer.png", images.speechRecognizer());
@@ -485,10 +488,14 @@ public final class SimpleComponentDescriptor {
       return new MockHorizontalArrangement(editor);
     } else if (name.equals(MockScrollHorizontalArrangement.TYPE)) {
       return new MockScrollHorizontalArrangement(editor);
+    } else if (name.equals(MockHorizontalRadioGroup.TYPE)) {
+      return new MockHorizontalRadioGroup(editor);
     } else if (name.equals(MockVerticalArrangement.TYPE)) {
       return new MockVerticalArrangement(editor);
     } else if (name.equals(MockScrollVerticalArrangement.TYPE)) {
       return new MockScrollVerticalArrangement(editor);
+    } else if (name.equals(MockVerticalRadioGroup.TYPE)) {
+      return new MockVerticalRadioGroup(editor);
     } else if (name.equals(MockTableArrangement.TYPE)) {
       return new MockTableArrangement(editor);
     } else if (name.equals(MockImageSprite.TYPE)) {

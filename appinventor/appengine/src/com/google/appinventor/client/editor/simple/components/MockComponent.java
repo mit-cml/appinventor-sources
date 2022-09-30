@@ -511,18 +511,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public final void addProperty(String name, String defaultValue, String caption,
       PropertyEditor editor) {
-
-    int type = EditableProperty.TYPE_NORMAL;
-    if (!isPropertyPersisted(name)) {
-      type |= EditableProperty.TYPE_NONPERSISTED;
-    }
-    if (!isPropertyVisible(name)) {
-      type |= EditableProperty.TYPE_INVISIBLE;
-    }
-    if (isPropertyforYail(name)) {
-      type |= EditableProperty.TYPE_DOYAIL;
-    }
-    properties.addProperty(name, defaultValue, caption, editor, type, "", null);
+    properties.addProperty(name, defaultValue, caption, editor, getPropertyType(name),
+      "", null);
   }
 
   /**
@@ -537,18 +527,17 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public final void addProperty(String name, String defaultValue, String caption,
       String editorType, String[] editorArgs, PropertyEditor editor) {
+    properties.addProperty(name, defaultValue, caption, editor, getPropertyType(name), 
+      editorType, editorArgs);
+  }
 
-    int type = EditableProperty.TYPE_NORMAL;
-    if (!isPropertyPersisted(name)) {
-      type |= EditableProperty.TYPE_NONPERSISTED;
-    }
-    if (!isPropertyVisible(name)) {
-      type |= EditableProperty.TYPE_INVISIBLE;
-    }
-    if (isPropertyforYail(name)) {
-      type |= EditableProperty.TYPE_DOYAIL;
-    }
-    properties.addProperty(name, defaultValue, caption, editor, type, editorType, editorArgs);
+  /**
+   * Removes a existing property from the component.
+   *
+   * @param name  property name
+   */
+  public final void removeProperty(String name) {
+    properties.removeProperty(name);
   }
 
   /**
@@ -570,6 +559,26 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public boolean hasProperty(String name) {
     return properties.getProperty(name) != null;
+  }
+
+  /**
+   * Returns the property's type.
+   *
+   * @param name  property name
+   * @return property type
+   */
+  public int getPropertyType(String name) {
+    int type = EditableProperty.TYPE_NORMAL;
+    if (!isPropertyPersisted(name)) {
+      type |= EditableProperty.TYPE_NONPERSISTED;
+    }
+    if (!isPropertyVisible(name)) {
+      type |= EditableProperty.TYPE_INVISIBLE;
+    }
+    if (isPropertyforYail(name)) {
+      type |= EditableProperty.TYPE_DOYAIL;
+    }
+    return type;
   }
 
   /**

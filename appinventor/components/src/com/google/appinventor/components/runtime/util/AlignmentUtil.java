@@ -20,91 +20,104 @@ import com.google.appinventor.components.runtime.LinearLayout;
 public class AlignmentUtil {
   LinearLayout viewLayout;
 
+  public AlignmentUtil() {
+  }
+
   public AlignmentUtil(LinearLayout viewLayout) {
     this.viewLayout = viewLayout;
   }
 
   /**
-   * Set the horizontal alignment (gravity) of the alignment
-   * Throws an IllegalArgumentException if alignment has illegal value.
+   * Sets the horizontal alignment (gravity) of the alignment
    * @param alignment
    */
-  public void setHorizontalAlignment(int alignment) throws IllegalArgumentException {
-    switch (alignment) {
-      case ComponentConstants.GRAVITY_LEFT:
-        viewLayout.setHorizontalGravity(Gravity.LEFT);
-        break;
-      case ComponentConstants.GRAVITY_RIGHT:
-        viewLayout.setHorizontalGravity(Gravity.RIGHT);
-        break;
-      case ComponentConstants.GRAVITY_CENTER_HORIZONTAL:
-        viewLayout.setHorizontalGravity(Gravity.CENTER_HORIZONTAL);
-        break;
-      default:
-        throw new IllegalArgumentException("Bad value to setHorizontalAlignment: " + alignment);
-    }
+  public void setHorizontalAlignment(int alignment){
+    viewLayout.setHorizontalGravity(getHorizontalAlignment(alignment));
   }
 
-  /**
-   * Sets the horizontal alignment of the view layout.
-   * @param alignment the alignment to set the view layout to.
-   */
-  public void setHorizontalAlignment(HorizontalAlignment alignment) {
-    switch (alignment) {
-      case Left:
-        viewLayout.setHorizontalGravity(Gravity.LEFT);
-        break;
-      case Center:
-        viewLayout.setHorizontalGravity(Gravity.CENTER_HORIZONTAL);
-        break;
-      case Right:
-        viewLayout.setHorizontalGravity(Gravity.RIGHT);
-        break;
-      default:
-        throw new IllegalArgumentException("Bad value to setHorizontalAlignment: " + alignment);
-    }
-  }
-
-  /**
-   * Set the vertical alignment (gravity) of the alignment
-   * Throws an IllegalArgumentException if alignment has illegal value.
-   * @param alignment
-   */
-  public void setVerticalAlignment(int alignment) throws IllegalArgumentException {
-    switch (alignment) {
-      case ComponentConstants.GRAVITY_TOP:
-        viewLayout.setVerticalGravity(Gravity.TOP);
-        break;
-      case ComponentConstants.GRAVITY_CENTER_VERTICAL:
-        viewLayout.setVerticalGravity(Gravity.CENTER_VERTICAL);
-        break;
-      case ComponentConstants.GRAVITY_BOTTOM:
-        viewLayout.setVerticalGravity(Gravity.BOTTOM);
-        break;
-      default:
-        throw new IllegalArgumentException("Bad value to setVerticalAlignment: " + alignment);
-    }
+  public void setHorizontalAlignment(HorizontalAlignment alignment){
+    viewLayout.setHorizontalGravity(getHorizontalAlignment(alignment));
   }
 
   /**
    * Sets the vertical alignment of the view layout.
-   * @param alignment the alignment to set the view layout to.
+   * @param alignment
    */
+  public void setVerticalAlignment(int alignment){
+    viewLayout.setVerticalGravity(getVerticalAlignment(alignment));
+  }
+
   public void setVerticalAlignment(VerticalAlignment alignment) {
+    viewLayout.setVerticalGravity(getVerticalAlignment(alignment));
+  }
+
+  /**
+   * These getters are used in case someone's
+   * viewlayout object is not of LinearLayout type. Used in RadioGroup component.
+   */
+  
+  /**
+   * Gets the horizontal alignment (gravity) of the alignment
+   * Throws an IllegalArgumentException if alignment has illegal value.
+   * @param alignment
+   */
+  public int getHorizontalAlignment(int alignment) throws IllegalArgumentException {
     switch (alignment) {
-      case Top:
-        viewLayout.setVerticalGravity(Gravity.TOP);
-        break;
-      case Center:
-        viewLayout.setVerticalGravity(Gravity.CENTER_VERTICAL);
-        break;
-      case Bottom:
-        viewLayout.setVerticalGravity(Gravity.BOTTOM);
-        break;
+      case ComponentConstants.GRAVITY_LEFT:
+        return Gravity.LEFT;
+      case ComponentConstants.GRAVITY_RIGHT:
+        return Gravity.RIGHT;
+      case ComponentConstants.GRAVITY_CENTER_HORIZONTAL:
+        return Gravity.CENTER_HORIZONTAL;
       default:
-        throw new IllegalArgumentException("Bad value to setVerticalAlignment: " + alignment);
+        throw new IllegalArgumentException("Bad value to setHorizontalAlignment: " + alignment);
     }
   }
+
+  public int getHorizontalAlignment(HorizontalAlignment alignment) throws IllegalArgumentException {
+    switch (alignment) {
+      case Left:
+        return Gravity.LEFT;
+      case Right:
+        return Gravity.RIGHT;
+      case Center:
+        return Gravity.CENTER_HORIZONTAL;
+      default:
+        throw new IllegalArgumentException("Bad value to setHorizontalAlignment: " + alignment);
+    }
+  }
+
+  /**
+   * Gets the vertical alignment (gravity) of the alignment
+   * Throws an IllegalArgumentException if alignment has illegal value.
+   * @param alignment
+   */
+  public int getVerticalAlignment(int alignment) throws IllegalArgumentException {
+    switch (alignment) {
+      case ComponentConstants.GRAVITY_TOP:
+        return Gravity.TOP;
+      case ComponentConstants.GRAVITY_CENTER_VERTICAL:
+        return Gravity.CENTER_VERTICAL;
+      case ComponentConstants.GRAVITY_BOTTOM:
+        return Gravity.BOTTOM;
+      default:
+        throw new IllegalArgumentException("Bad value to setHorizontalAlignment: " + alignment);
+    }
+  }
+
+  public int getVerticalAlignment(VerticalAlignment alignment) throws IllegalArgumentException {
+    switch (alignment) {
+      case Top:
+        return Gravity.TOP;
+      case Center:
+        return Gravity.CENTER_VERTICAL;
+      case Bottom:
+        return Gravity.BOTTOM;
+      default:
+        throw new IllegalArgumentException("Bad value to setHorizontalAlignment: " + alignment);
+    }
+  }
+  
 }
 
 
