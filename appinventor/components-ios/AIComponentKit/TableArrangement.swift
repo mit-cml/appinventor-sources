@@ -356,6 +356,8 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
     }
   }
 
+  // MARK: ComponentContainer implementation
+
   open var container: ComponentContainer? {
     get {
       return _container
@@ -386,5 +388,9 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
 
   public func setVisible(component: ViewComponent, to visibility: Bool) {
     component.view.isHidden = !visibility
+  }
+
+  open func getChildren() -> [Component] {
+    return []
   }
 }

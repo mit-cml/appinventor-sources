@@ -1042,6 +1042,8 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
     EventDispatcher.dispatchEvent(of: self, called: "GotFeatures", arguments: url as NSString, features as NSArray)
   }
 
+  // MARK: ComponentContainer implementation
+
   public var container: ComponentContainer? {
     get {
       return _container
@@ -1060,6 +1062,10 @@ open class Map: ViewComponent, MKMapViewDelegate, UIGestureRecognizerDelegate, M
 
   public func setVisible(component: ViewComponent, to visibility: Bool) {
     component.view.isHidden = !visibility
+  }
+
+  open func getChildren() -> [Component] {
+    return _features as [Component]
   }
 
 #if MEMDEBUG

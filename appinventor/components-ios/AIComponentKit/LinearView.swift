@@ -35,6 +35,11 @@ public class Length: Equatable {
   fileprivate let view: UIView!
   fileprivate var constraint: NSLayoutConstraint? = nil
 
+  public init(_ other: Length) {
+    rawValue = other.rawValue
+    view = other.view
+  }
+
   private init(_ fixed: Int32) {
     rawValue = fixed
     self.view = nil
@@ -70,6 +75,7 @@ public class Length: Equatable {
 let UILayoutPriorityDefaultMedium = (Int(UILayoutPriority.defaultHigh.rawValue + UILayoutPriority.defaultLow.rawValue)) / 2
 let TightSizingPriority = UILayoutPriority(10)
 let ConstraintPriority = UILayoutPriority(8)
+let HuggingPriority = UILayoutPriority(7)
 let DefaultSizingPriority = UILayoutPriority(6)
 let FillParentHuggingPriority = UILayoutPriority(5)
 let AutomaticHuggingPriority = UILayoutPriority.defaultLow  //UILayoutPriority(26)  // Needs to be greater than 25 otherwise intrinsic content size overrides
@@ -332,8 +338,8 @@ public class LinearView: UIView {
 
     // Add new constraint
     if length == .FillParent {
+      widthFillParent += 1
       if orientation == .horizontal {
-        widthFillParent += 1
         if widthFillParent == 1 {
           widthFillParentConstraint = _inner.widthAnchor.constraint(equalTo: widthAnchor)
           widthFillParentConstraint?.isActive = true
@@ -389,8 +395,8 @@ public class LinearView: UIView {
 
     // Add new constraint
     if length == .FillParent {
+      heightFillParent += 1
       if orientation == .vertical {
-        heightFillParent += 1
         if heightFillParent == 1 {
           heightFillParentConstraint = _inner.heightAnchor.constraint(equalTo: heightAnchor)
           heightFillParentConstraint?.isActive = true

@@ -54,6 +54,7 @@
 		0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650F5171F1F1B7A00D4E6FA /* HMAC.swift */; };
 		0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0653CBD71F9719920052065A /* RuntimeTests.swift */; };
 		0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0653CBD91F971BA70052065A /* TestFailure.swift */; };
+		0655BED82614CCD000EBE3F6 /* Form+Debugging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0655BED72614CCD000EBE3F6 /* Form+Debugging.swift */; };
 		0655BEFB261E4BE600EBE3F6 /* Dictionary+Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0655BEFA261E4BE600EBE3F6 /* Dictionary+Json.swift */; };
 		0658E9BD20126FFA009D6A15 /* control.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BB20126FFA009D6A15 /* control.yail */; };
 		0658E9BE20126FFA009D6A15 /* logic.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BC20126FFA009D6A15 /* logic.yail */; };
@@ -285,6 +286,7 @@
 		0650F5171F1F1B7A00D4E6FA /* HMAC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HMAC.swift; sourceTree = "<group>"; };
 		0653CBD71F9719920052065A /* RuntimeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeTests.swift; sourceTree = "<group>"; };
 		0653CBD91F971BA70052065A /* TestFailure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestFailure.swift; sourceTree = "<group>"; };
+		0655BED72614CCD000EBE3F6 /* Form+Debugging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Form+Debugging.swift"; sourceTree = "<group>"; };
 		0655BEFA261E4BE600EBE3F6 /* Dictionary+Json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Json.swift"; sourceTree = "<group>"; };
 		0658E9BB20126FFA009D6A15 /* control.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = control.yail; sourceTree = "<group>"; };
 		0658E9BC20126FFA009D6A15 /* logic.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = logic.yail; sourceTree = "<group>"; };
@@ -481,6 +483,8 @@
 			isa = PBXGroup;
 			children = (
 				06A623832507BC3200961743 /* Array+AIHelpers.swift */,
+				0655BEFA261E4BE600EBE3F6 /* Dictionary+Json.swift */,
+				0655BED72614CCD000EBE3F6 /* Form+Debugging.swift */,
 				06925558228B01B60091057E /* NSLock+Synchronized.swift */,
 				041758522009417D007D2C31 /* String+ChopAffix.swift */,
 				06009FF1227CF5D400E4EC4A /* String+Format.swift */,
@@ -489,7 +493,6 @@
 				703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */,
 				061DC7B72241574D00539213 /* UIImage+Tint.swift */,
 				06500853208E331900AC1327 /* UIView+AIHelpers.swift */,
-				0655BEFA261E4BE600EBE3F6 /* Dictionary+Json.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1217,6 +1220,7 @@
 				068E0EB91DC251E90086FFDA /* Texting.swift in Sources */,
 				06DA9F511D8CFBA200389B04 /* Component.swift in Sources */,
 				06DA9F611D8D0DFC00389B04 /* ReplForm.swift in Sources */,
+				0655BED82614CCD000EBE3F6 /* Form+Debugging.swift in Sources */,
 				0846B64820BBBF9C008FB20C /* ImageSprite.swift in Sources */,
 				C4D38CC7230DCDF300D09FE3 /* VerticalScrollArrangement.swift in Sources */,
 				0417585720098EE0007D2C31 /* LinkedList.swift in Sources */,

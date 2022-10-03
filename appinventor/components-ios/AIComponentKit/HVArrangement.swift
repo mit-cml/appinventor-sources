@@ -102,6 +102,10 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     }
   }
 
+  open func getChildren() -> [Component] {
+    return _components as [Component]
+  }
+
   // MARK: HVArrangement Properties
   @objc open var AlignHorizontal: Int32 {
     get {

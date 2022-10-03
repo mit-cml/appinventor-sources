@@ -181,9 +181,9 @@ let kMinimumToastWait = 10.0
     if width <= kLengthPercentTag {
       _linearView.setWidth(of: component.view, to: Length(percent: width, of: _scaleFrameLayout))
     } else if width == kLengthPreferred {
-      _linearView.setWidth(of: component.view, to: .Automatic)
+      _linearView.setWidth(of: component.view, to: Length(.Automatic))
     } else if width == kLengthFillParent {
-      _linearView.setWidth(of: component.view, to: .FillParent)
+      _linearView.setWidth(of: component.view, to: Length(.FillParent))
     } else {
       _linearView.setWidth(of: component.view, to: Length(pixels: width))
     }
@@ -194,9 +194,9 @@ let kMinimumToastWait = 10.0
     if height <= kLengthPercentTag {
       _linearView.setHeight(of: component.view, to: Length(percent: height, of: _scaleFrameLayout))
     } else if height == kLengthPreferred {
-      _linearView.setHeight(of: component.view, to: .Automatic)
+      _linearView.setHeight(of: component.view, to: Length(.Automatic))
     } else if height == kLengthFillParent {
-      _linearView.setHeight(of: component.view, to: .FillParent)
+      _linearView.setHeight(of: component.view, to: Length(.FillParent))
     } else {
       _linearView.setHeight(of: component.view, to: Length(pixels: height))
     }

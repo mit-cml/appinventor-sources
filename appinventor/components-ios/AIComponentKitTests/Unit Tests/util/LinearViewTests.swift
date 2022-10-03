@@ -7,10 +7,13 @@ import XCTest
 class LinearViewTests: XCTestCase {
 
   var testForm = ReplForm()
-  var testView = LinearView()
+  var testView: LinearView!
 
   override func setUp() {
     testView = LinearView()
+    let window = UIWindow()
+    window.rootViewController = testForm
+    window.addSubview(testForm.view)
   }
 
   func testAddItem() {
@@ -66,5 +69,131 @@ class LinearViewTests: XCTestCase {
     Label2.Width = -1060
     let Button1 = Button(HorizontalArrangement1)
     Button1.Width = kLengthFillParent
+  }
+
+  func testFillParent() {
+    testForm.clear()
+    let Button1 = Button(testForm)
+    Button1.Text = "Text for Button1"
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+    let oldH = CGFloat(Button1.Height)
+    let oldW = CGFloat(Button1.Width)
+
+    // Switch to fill parent on both axes
+    Button1.Height = kLengthFillParent
+    Button1.Width = kLengthFillParent
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+    XCTAssertEqual(0, Button1.view.frame.origin.x)
+    XCTAssertEqual(0, Button1.view.frame.origin.y)
+    XCTAssertEqual(testForm.view.frame.height, Button1.view.frame.height)
+    XCTAssertEqual(testForm.view.frame.width, Button1.view.frame.width)
+
+    // Switch back to automatic on both axes
+    Button1.Height = kLengthPreferred
+    Button1.Width = kLengthPreferred
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+    XCTAssertEqual(0, Button1.view.frame.origin.x)
+    XCTAssertEqual(0, Button1.view.frame.origin.y)
+    XCTAssertEqual(oldH, Button1.view.frame.size.height)
+    XCTAssertEqual(oldW, Button1.view.frame.size.width)
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+  }
+
+  func testExampleQuadrant() {
+    testForm.clear()
+    let row1 = HorizontalArrangement(testForm)
+    let row2 = HorizontalArrangement(testForm)
+    let cell11 = VerticalArrangement(row1)
+    let cell12 = VerticalArrangement(row1)
+    let cell21 = VerticalArrangement(row2)
+    let cell22 = VerticalArrangement(row2)
+
+    // Make a 2x2 equal size grid filling the screen
+    [row1, row2, cell11, cell12, cell21, cell22].forEach { (arrangement) in
+      arrangement.Height = kLengthFillParent
+      arrangement.Width = kLengthFillParent
+    }
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+    XCTAssertEqual(testForm.view.frame.height, row1.view.frame.height + row2.view.frame.height)
+    XCTAssertEqual(row1.view.frame.height, row2.view.frame.height)
+    XCTAssertEqual(testForm.view.frame.width, row1.view.frame.width)
+    XCTAssertEqual(testForm.view.frame.width, row2.view.frame.width)
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+
+    // Now reset the views
+    [row1, row2, cell11, cell12, cell21, cell22].forEach { (arrangement) in
+      arrangement.Height = kLengthPreferred
+      arrangement.Width = kLengthPreferred
+    }
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+    XCTAssertEqual(100.0, cell11.view.frame.height)
+    XCTAssertEqual(100.0, cell11.view.frame.width)
+    XCTAssertEqual(100.0, cell12.view.frame.height)
+    XCTAssertEqual(100.0, cell12.view.frame.width)
+    XCTAssertEqual(100.0, cell21.view.frame.height)
+    XCTAssertEqual(100.0, cell21.view.frame.width)
+    XCTAssertEqual(100.0, cell22.view.frame.height)
+    XCTAssertEqual(100.0, cell22.view.frame.width)
+    XCTAssertEqual(100.0, row1.view.frame.height)
+    XCTAssertEqual(200.0, row1.view.frame.width)
+    XCTAssertEqual(100.0, row2.view.frame.height)
+    XCTAssertEqual(200.0, row2.view.frame.width)
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+  }
+
+  func testExampleHorizontal() {
+    testForm.clear()
+    let row1 = HorizontalArrangement(testForm)
+    row1.view.accessibilityIdentifier = "row1"
+    let cell1 = VerticalArrangement(row1)
+    cell1.view.accessibilityIdentifier = "cell1"
+    let cell2 = VerticalArrangement(row1)
+    cell2.view.accessibilityIdentifier = "cell2"
+
+    testForm.view.layoutIfNeeded()
+
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
+
+    [row1, cell1, cell2].forEach { (arrangement) in
+      arrangement.Width = kLengthFillParent
+    }
+
+    testForm.view.layoutIfNeeded()
+    XCTAssertEqual(100.0, row1.view.frame.height)
+    XCTAssertEqual(testForm.view.frame.width, row1.view.frame.width)
+    XCTAssertEqual(cell1.view.frame.width, cell2.view.frame.width, accuracy: 1.0)
+    XCTAssertEqual(row1.view.frame.width, cell1.view.frame.width + cell2.view.frame.width)
+
+    [row1, cell1, cell2].forEach { (arrangement) in
+      arrangement.Width = kLengthPreferred
+    }
+
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    XCTAssertEqual(100.0, row1.view.frame.height)
+    XCTAssertEqual(200.0, row1.view.frame.width)
+    #if DEBUG
+    testForm.printViewHierarchy()
+    #endif
   }
 }

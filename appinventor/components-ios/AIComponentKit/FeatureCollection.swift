@@ -139,6 +139,8 @@ import GEOSwift
     _map?.removeFeature(feature)
   }
 
+  // MARK: ComponentContainer implementation
+
   public var container: ComponentContainer? {
     get {
       return _container
