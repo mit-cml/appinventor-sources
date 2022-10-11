@@ -54,12 +54,27 @@ jobs:
 
       - name: Diff simple_components.json
         continue-on-error: true
-        run: diff --unified --color=always <(jq 'del(.[] | .dateBuilt)' master/appinventor/build/components/simple_components.json) <(jq 'del(.[] | .dateBuilt)' current/appinventor/build/components/simple_components.json)
+        run: |
+          diff --unified --color=always <(jq 'del(.[] | .dateBuilt)' master/appinventor/build/components/simple_components.json) <(jq 'del(.[] | .dateBuilt)' current/appinventor/build/components/simple_components.json)
+          echo "### Diff `simple_components.json`" >> $GITHUB_STEP_SUMMARY
+          echo "```diff" >> $GITHUB_STEP_SUMMARY
+          !! > $GITHUB_STEP_SUMMARY
+          echo "```" >> $GITHUB_STEP_SUMMARY
 
       - name: Diff simple_components.txt
         continue-on-error: true
-        run: diff --unified --color=always master/appinventor/build/components/simple_components.txt current/appinventor/build/components/simple_components.txt
+        run: |
+          diff --unified --color=always master/appinventor/build/components/simple_components.txt current/appinventor/build/components/simple_components.txt
+          echo "### Diff `simple_components.txt`" >> $GITHUB_STEP_SUMMARY
+          echo "```diff" >> $GITHUB_STEP_SUMMARY
+          !! > $GITHUB_STEP_SUMMARY
+          echo "```" >> $GITHUB_STEP_SUMMARY
 
       - name: Diff simple_components_build_info.json
         continue-on-error: true
-        run: diff --unified --color=always <(jq . master/appinventor/build/components/simple_components_build_info.json) <(jq . current/appinventor/build/components/simple_components_build_info.json)
+        run: |
+          diff --unified --color=always <(jq . master/appinventor/build/components/simple_components_build_info.json) <(jq . current/appinventor/build/components/simple_components_build_info.json)
+          echo "### Diff `simple_components_build_info.json`" >> $GITHUB_STEP_SUMMARY
+          echo "```diff" >> $GITHUB_STEP_SUMMARY
+          !! > $GITHUB_STEP_SUMMARY
+          echo "```" >> $GITHUB_STEP_SUMMARY
