@@ -41,6 +41,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidCompon
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.simple.ComponentDatabaseChangeListener;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.core.client.Scheduler;
@@ -175,7 +176,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       pos = -pos - 1;
     }
     insertFileEditor(editor, pos);
-    if (isScreen1(formName)) {
+    if (isLastOpened(formName)) {
       screen1BlocksLoaded = true;
       if (readyToShowScreen1()) {
         LOG.info("YaProjectEditor.addBlocksEditor.loadFile.execute: switching to screen "
@@ -228,13 +229,12 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         designToolbar.addScreen(projectRootNode.getProjectId(), formName, editors.formEditor,
             editors.blocksEditor);
 
-        if (isScreen1(formName)) {
+        if (isLastOpened(formName)) {
           screen1Added = true;
           if (readyToShowScreen1()) {  // probably not yet but who knows?
             LOG.info("YaProjectEditor.loadProject: switching to screen " + formName
                 + " for project " + projectRootNode.getProjectId());
-            Ode.getInstance().getDesignToolbar().switchToScreen(projectRootNode.getProjectId(),
-                formName, DesignToolbar.View.DESIGNER);
+            switchToForm(formName, projectRootNode.getProjectId());
           }
         }
       } else if (editors.formEditor == null) {
@@ -260,12 +260,18 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
     FileEditor selectedFileEditor = getSelectedFileEditor();
     if (selectedFileEditor != null) {
+      String fileId = selectedFileEditor.getFileId();
+      String entityName = selectedFileEditor.getEntityName();
+      if (fileId.startsWith("skills/")) {
+        entityName = "alexa:" + entityName;
+      }
+      if (fileId.startsWith("sketches/")) {
+        entityName = "iot:" + entityName;
+      }
       if (selectedFileEditor.getEditorType().equalsIgnoreCase(BlocksEditor.EDITOR_TYPE)) {
-        designToolbar.switchToScreen(projectId, selectedFileEditor.getEntityName(),
-                DesignToolbar.View.BLOCKS);
+        designToolbar.switchToScreen(projectId, entityName, DesignToolbar.View.BLOCKS);
       } else {
-        designToolbar.switchToScreen(projectId, selectedFileEditor.getEntityName(),
-                DesignToolbar.View.DESIGNER);
+        designToolbar.switchToScreen(projectId, entityName, DesignToolbar.View.DESIGNER);
       }
     }
   }
@@ -489,19 +495,18 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           pos = -pos - 1;
         }
         insertFileEditor(newDesigner, pos);
-        if (isScreen1(entityName)) {
+        if (isLastOpened(entityName)) {
           screen1FormLoaded = true;
           if (readyToShowScreen1()) {
             LOG.info("YaProjectEditor.addFormEditor.loadFile.execute: switching to screen "
                 + entityName + " for project " + newDesigner.getProjectId());
-            Ode.getInstance().getDesignToolbar().switchToScreen(newDesigner.getProjectId(),
-                entityName, DesignToolbar.View.DESIGNER);
+            switchToForm(entityName, newDesigner.getProjectId());
           }
         }
         loadBlocksEditor(entityName);
       }
     };
-    if (!isScreen1(entityName) && !screen1FormLoaded) {
+    if (!isLastOpened(entityName) && !screen1FormLoaded) {
       // Defer loading other screens until Screen1 is loaded. Otherwise we can end up in an
       // inconsistent state during project upgrades with Screen1-only properties.
       Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
@@ -755,6 +760,16 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   private static boolean isScreen1(String formName) {
     return formName.equals(YoungAndroidSourceNode.SCREEN1_FORM_NAME);
+  }
+
+  private boolean isLastOpened(String formName) {
+    String lastOpened = this.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED);
+    return lastOpened.equals(formName);
+  }
+
+  private void switchToForm(String entityName, long projectId) {
+    Ode.getInstance().getDesignToolbar().switchToScreen(projectId, entityName, DesignToolbar.View.DESIGNER);
   }
 
   @Override
