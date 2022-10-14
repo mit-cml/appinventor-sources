@@ -81,5 +81,8 @@ public final class YoungAndroidSettings extends Settings {
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, "App",
         EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED, "Screen1",
+        EditableProperty.TYPE_INVISIBLE));
   }
 }

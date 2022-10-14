@@ -15,6 +15,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON;
@@ -51,6 +52,7 @@ public class YoungAndroidSettingsBuilder {
   private String accentColor = "0";
   private String defaultFileScope = "App";
   private String aiVersioning = "";
+  private String lastOpened = "Screen1";
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -93,6 +95,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE));
     aiVersioning = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_AIVERSIONING));
+    lastOpened = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_LAST_OPENED));
   }
 
   /**
@@ -119,6 +123,7 @@ public class YoungAndroidSettingsBuilder {
     accentColor = properties.getProperty("color.accent", "");
     defaultFileScope = properties.getProperty("defaultfilescope", "");
     aiVersioning = properties.getProperty("aiversioning", "");
+    lastOpened = properties.getProperty("lastopened", "");
   }
 
   public YoungAndroidSettingsBuilder setProjectName(String projectName) {
@@ -211,6 +216,11 @@ public class YoungAndroidSettingsBuilder {
     return this;
   }
 
+  public YoungAndroidSettingsBuilder setDefaultLastOpened(String lastOpened) {
+    this.lastOpened = lastOpened;
+    return this;
+  }
+
   /**
    * Convert the internal settings into a JSON structure.
    *
@@ -234,6 +244,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, accentColor);
     object.put(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
     object.put(YOUNG_ANDROID_SETTINGS_AIVERSIONING, aiVersioning);
+    object.put(YOUNG_ANDROID_SETTINGS_LAST_OPENED, lastOpened);
     JSONObject wrapper = new JSONObject();
     wrapper.put(PROJECT_YOUNG_ANDROID_SETTINGS, object);
     return wrapper.toString();
@@ -267,6 +278,7 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, "color.accent", accentColor);
     addPropertyIfSet(result, "defaultfilescope", defaultFileScope);
     addPropertyIfSet(result, "aiversioning", aiVersioning);
+    addPropertyIfSet(result, "lastopened", lastOpened);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       result.store(out, "");
@@ -312,6 +324,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.accentColor.equals(accentColor);
       result &= other.defaultFileScope.equals(defaultFileScope);
       result &= other.aiVersioning.equals(aiVersioning);
+      result &= other.lastOpened.equals(lastOpened);
       return result;
     }
     return false;
