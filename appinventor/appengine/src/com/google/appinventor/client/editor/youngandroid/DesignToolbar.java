@@ -20,6 +20,7 @@ import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.widgets.ToolbarItem;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.GWT;
@@ -237,6 +238,8 @@ public class DesignToolbar extends Toolbar {
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
     screen.blocksEditor.makeActiveWorkspace();
+    projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED, newScreenName);
   }
 
   public void addProject(long projectId, String projectName) {
