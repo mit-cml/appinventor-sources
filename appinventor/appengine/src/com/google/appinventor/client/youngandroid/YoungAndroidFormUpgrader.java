@@ -1372,6 +1372,10 @@ public final class YoungAndroidFormUpgrader {
       // Added ...
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Added TextAlignment Property
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 

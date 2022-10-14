@@ -1105,7 +1105,9 @@ public class YaVersion {
   // - Added SelectionColor Property
   // For LISTVIEW_COMPONENT_VERSION 6:
   // - Added ...
-  public static final int LISTVIEW_COMPONENT_VERSION = 6;
+  // For LISTVIEW_COMPONENT_VERSION 7:
+  // Added TextAlignment Property
+  public static final int LISTVIEW_COMPONENT_VERSION = 7;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.

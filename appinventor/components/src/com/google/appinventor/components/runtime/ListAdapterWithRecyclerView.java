@@ -47,8 +47,10 @@ public class ListAdapterWithRecyclerView
   public Boolean[] isVisible;
   private int textMainColor;
   private float textMainSize;
+  private int textMainAlignment;
   private int textDetailColor;
   private float textDetailSize;
+  private int textDetailAlignment;
   private int textMainFont;
   private int textDetailFont;
 
@@ -119,12 +121,14 @@ public class ListAdapterWithRecyclerView
   private int idImages = -1;
   private int idCard = 1;
 
-  public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, float textMainSize, float textDetailSize, int textMainFont, int textDetailFont, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
+  public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, float textMainSize, float textDetailSize, int textMainFont, int textDetailFont, int textMainAlignment, int textDetailAlignment, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
     this.items = items;
     this.container = container;
     this.textMainSize = textMainSize;
     this.textMainColor = textMainColor;
     this.textDetailColor = textDetailColor;
+    this.textMainAlignment = textMainAlignment;
+    this.textDetailAlignment = textDetailAlignment;
     this.textDetailSize = textDetailSize;
     this.textMainFont = textMainFont;
     this.textDetailFont = textDetailFont;
@@ -142,7 +146,7 @@ public class ListAdapterWithRecyclerView
     Arrays.fill(isVisible, Boolean.TRUE);
   }
 
-  public ListAdapterWithRecyclerView(ComponentContainer container, YailList stringItems, int textMainColor, float textMainSize, int textMainFont, int backgroundColor, int selectionColor) {
+  public ListAdapterWithRecyclerView(ComponentContainer container, YailList stringItems, int textMainColor, float textMainSize, int textMainFont, int backgroundColor, int textMainAlignment, int selectionColor) {
     // Legacy Support
     this.container = container;
     this.textMainSize = textMainSize;
@@ -151,6 +155,8 @@ public class ListAdapterWithRecyclerView
     this.textDetailColor = textMainColor;
     this.textDetailSize = 0;
     this.textDetailFont = 0;
+    this.textMainAlignment = textMainAlignment;
+    this.textDetailAlignment = Component.ALIGNMENT_NORMAL;
     this.layoutType = Component.LISTVIEW_LAYOUT_SINGLE_TEXT;
     this.backgroundColor = backgroundColor;
     this.selectionColor = selectionColor;
@@ -237,6 +243,10 @@ public class ListAdapterWithRecyclerView
     idFirst = ViewCompat.generateViewId();
     textViewFirst.setId(idFirst);
     LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    if(this.textMainAlignment == Component.ALIGNMENT_CENTER || this.textMainAlignment == Component.ALIGNMENT_OPPOSITE)  {
+      layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+      TextViewUtil.setAlignment(textViewFirst, this.textMainAlignment, false);
+    }
     layoutParams1.topMargin = 10;
     textViewFirst.setLayoutParams(layoutParams1);
     textViewFirst.setTextSize(textMainSize);
@@ -266,6 +276,10 @@ public class ListAdapterWithRecyclerView
       idSecond = ViewCompat.generateViewId();
       textViewSecond.setId(idSecond);
       LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+      if(this.textDetailAlignment == Component.ALIGNMENT_CENTER || this.textDetailAlignment == Component.ALIGNMENT_OPPOSITE)  {
+        layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        TextViewUtil.setAlignment(textViewSecond, this.textDetailAlignment, false);
+      }
       textViewSecond.setTextSize(textDetailSize);
       TextViewUtil.setFontTypeface(textViewSecond, textDetailFont, false, false);
       textViewSecond.setTextColor(textDetailColor);
