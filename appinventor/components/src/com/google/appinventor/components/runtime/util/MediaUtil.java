@@ -212,10 +212,7 @@ public class MediaUtil {
    */
 
   public static boolean askFilePermissionIfNeeded(Form form, String path, PermissionResultHandler handler) {
-    boolean needsFilePermission = RUtil.needsFilePermission(form, path, null);
-    Log.i(LOG_TAG, "RUtil, needs file permission = " + needsFilePermission);
-    if (needsFilePermission
-        && MediaUtil.isExternalFile(form, path)
+    if (MediaUtil.isExternalFile(form, path)
         && form.isDeniedPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
       form.askPermission(Manifest.permission.READ_EXTERNAL_STORAGE, handler);
       return true;
