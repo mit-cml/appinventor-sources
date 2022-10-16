@@ -64,18 +64,10 @@ import java.io.IOException;
  * @author halabelson@google.com (Hal Abelson)
  */
 @DesignerComponent(version = YaVersion.PLAYER_COMPONENT_VERSION,
-    description = "Multimedia component that plays audio and " +
-        "controls phone vibration.  The name of a multimedia field is " +
-        "specified in the <code>Source</code> property, which can be set in " +
-        "the Designer or in the Blocks Editor.  The length of time for a " +
-        "vibration is specified in the Blocks Editor in milliseconds " +
-        "(thousandths of a second).\n" +
-        "<p>For supported audio formats, see " +
-        "<a href=\"http://developer.android.com/guide/appendix/media-formats.html\"" +
-        " target=\"_blank\">Android Supported Media Formats</a>.</p>\n" +
-        "<p>This component is best for long sound files, such as songs, " +
-        "while the <code>Sound</code> component is more efficient for short " +
-        "files, such as sound effects.</p>",
+    description = """
+            Multimedia component that plays audio and controls phone vibration.  The name of a multimedia field is specified in the <code>Source</code> property, which can be set in the Designer or in the Blocks Editor.  The length of time for a vibration is specified in the Blocks Editor in milliseconds (thousandths of a second).
+            <p>For supported audio formats, see <a href="http://developer.android.com/guide/appendix/media-formats.html" target="_blank">Android Supported Media Formats</a>.</p>
+            <p>This component is best for long sound files, such as songs, while the <code>Sound</code> component is more efficient for short files, such as sound effects.</p>""",
     category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/player.png")
@@ -88,7 +80,7 @@ public final class Player extends AndroidNonvisibleComponent
   private final Vibrator vibe;
 
   public State playerState;
-  public enum State { INITIAL, PREPARED, PLAYING, PAUSED_BY_USER, PAUSED_BY_EVENT; }
+  public enum State { INITIAL, PREPARED, PLAYING, PAUSED_BY_USER, PAUSED_BY_EVENT}
   private String sourcePath;
 
   // determines if playing should loop
@@ -99,17 +91,14 @@ public final class Player extends AndroidNonvisibleComponent
   // status of audio focus
   private boolean focusOn;
   private AudioManager am;
-  private final Activity activity;
   // Flag if SDK level >= 8
   private static final boolean audioFocusSupported;
   private Object afChangeListener;
 
+  private int playerVol = 50;
+
   static{
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
-      audioFocusSupported = true;
-    } else {
-      audioFocusSupported = false;
-    }
+    audioFocusSupported = SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO;
   }
 
   /*
@@ -137,7 +126,7 @@ public final class Player extends AndroidNonvisibleComponent
    */
   public Player(ComponentContainer container) {
     super(container.$form());
-    activity = container.$context();
+    Activity activity = container.$context();
     sourcePath = "";
     vibe = (Vibrator) form.getSystemService(Context.VIBRATOR_SERVICE);
     form.registerForOnDestroy(this);
@@ -244,6 +233,10 @@ public final class Player extends AndroidNonvisibleComponent
       form.dispatchErrorOccurredEvent(this, "Source",
           ErrorMessages.ERROR_UNABLE_TO_FOCUS_MEDIA, sourcePath);
   }
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public int Volume() {
+    return this.playerVol;
+  }
 
   /**
    * Reports whether the media is playing.
@@ -304,6 +297,7 @@ public final class Player extends AndroidNonvisibleComponent
       if (vol > 100 || vol < 0) {
         form.dispatchErrorOccurredEvent(this, "Volume", ErrorMessages.ERROR_PLAYER_INVALID_VOLUME, vol); 
       } else {
+        playerVol = vol;
         player.setVolume(((float) vol) / 100, ((float) vol) / 100);
       }
     }
@@ -423,7 +417,7 @@ public final class Player extends AndroidNonvisibleComponent
   @SimpleEvent(description = "The PlayerError event is no longer used. " +
       "Please use the Screen.ErrorOccurred event instead.",
       userVisible = false)
-  public void PlayerError(String message) {
+  public void PlayerError() {
   }
 
   private void prepare() {
