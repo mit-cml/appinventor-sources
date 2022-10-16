@@ -473,21 +473,22 @@ Blockly.Blocks['lists_join_with_separator'] = {
 
 // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
 // There are still bugs need to be fixed so this part is commented out.
-Blockly.Blocks['lists_mutatorcontainer'] = {
-  init: function() {
-    this.setColour(Blockly.LIST_CATEGORY_HUE);
-    var group = new Blockly.RadioButtonGroup();
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldRadioButton(group), 'CHANGE_LIST')
-        .appendField("changes existing list");
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldRadioButton(group), 'MAKE_NEW_LIST')
-        .appendField("makes new list");
-    this.contextMenu = false;
-  }
-};
+// Blockly.Blocks['lists_mutatorcontainer'] = {
+//   init: function() {
+//     this.setColour(Blockly.LIST_CATEGORY_HUE);
+//     var group = new Blockly.RadioButtonGroup();
+//     this.appendDummyInput()
+//         .appendField(new Blockly.FieldRadioButton(group), 'CHANGE_LIST')
+//         .appendField("changes existing list");
+//     this.appendDummyInput()
+//         .appendField(new Blockly.FieldRadioButton(group), 'MAKE_NEW_LIST')
+//         .appendField("makes new list");
+//     this.contextMenu = false;
+//   }
+// };
 
 Blockly.Blocks['lists_map'] = {
+  // Map the list with given expression
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_MAP_HELPURL,
   init : function() {
@@ -506,155 +507,137 @@ Blockly.Blocks['lists_map'] = {
       .setAlign(Blockly.ALIGN_RIGHT);
     this.appendIndentedValueInput('TO');
     this.setOutput(true, null);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_MAP_TOOLTIP);
+    this.setInputsInline(false);
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
-    this.setTooltip(Blockly.Msg.LANG_LISTS_MAP_TOOLTIP);
-    this.setMutator(new Blockly.Mutator([]));
-    this.changeList = false;
-    this.setInputsInline(false);
   },
   // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
   // There are still bugs need to be fixed so this part is commented out.
-  updateBlock_: function() {
-	 if (this.changeList) {
-	   if (this.outputConnection && this.outputConnection.targetConnection) {
-	     this.outputConnection.disconnect();
-
-	     var children = this.parentBlock_.childBlocks_;
-	     for (var child, x = 0; child = children[x]; x++) {
-	       if (child == this) {
-	         children.splice(x, 1);
-	         break;
-	       }
-	     }
-	     this.setParent(null);
-	     this.parentBlock_ = null;
-	   }
-
-	   if (this.outputConnection) {
-	     if (this.outputConnection.inDB_) {
-	       this.outputConnection.dbList_[this.outputConnection.type].removeConnection_(this.outputConnection);
-	     }
-	     this.outputConnection.inDB_ = false;
-	     if (Blockly.highlightedConnection_ == this.outputConnection) {
-	       Blockly.highlightedConnection_ = null;
-	     }
-	     if (Blockly.localConnection_ == this.outputConnection) {
-	       Blockly.localConnection_ = null;
-	     }
-	   }
-
-	   this.outputConnection = null;
-	   this.setFieldValue(Blockly.Msg.LANG_LISTS_MAP_DEST_TITLE_MAP, 'TITLE');
-	   this.setPreviousStatement(true);
-	   this.setNextStatement(true);
-	   this.previousConnection.dbList_[this.previousConnection.type].addConnection_(this.previousConnection);
-	   this.nextConnection.dbList_[this.nextConnection.type].addConnection_(this.nextConnection);
-	   this.render();
-
-	 } else {
-	   if (this.previousConnection && this.previousConnection.targetConnection) {
-	     this.previousConnection.disconnect();
-
-	     var children = this.parentBlock_.childBlocks_;
-	     for (var child, x = 0; child = children[x]; x++) {
-	       if (child == this) {
-	         children.splice(x, 1);
-	         break;
-	       }
-	     }
-	     this.setParent(null);
-	     this.parentBlock_ = null;
-	  }
-
-	   if (this.previousConnection) {
-	     if (this.previousConnection.inDB_) {
-	       this.previousConnection.dbList_[this.previousConnection.type].removeConnection_(this.previousConnection);
-	     }
-	     this.previousConnection.inDB_ = false;
-	     if (Blockly.highlightedConnection_ == this.previousConnection) {
-	       Blockly.highlightedConnection_ = null;
-	     }
-	     if (Blockly.localConnection_ == this.previousConnection) {
-	       Blockly.localConnection_ = null;
-	     }
-	   }
-
-	   if (this.nextConnection) {
-	     if (this.nextConnection.inDB_) {
-	       this.nextConnection.dbList_[this.nextConnection.type].removeConnection_(this.nextConnection);
-	     }
-	     this.nextConnection.inDB_ = false;
-	     if (Blockly.highlightedConnection_ == this.nextConnection) {
-	       Blockly.highlightedConnection_ = null;
-	     }
-	     if (Blockly.localConnection_ == this.nextConnection) {
-	       Blockly.localConnection_ = null;
-	     }
-	     if (Blockly.localConnection_ == this.nextConnection) {
-	       Blockly.localConnection_ = null;
-	     }
-	   }
-
-	   this.previousConnection = null;
-	   this.nextConnection = null;
-	   this.setFieldValue(Blockly.Msg.LANG_LISTS_MAP_NONDEST_TITLE_MAP, 'TITLE');
-	   this.setOutput(true, null);
-	   this.outputConnection.dbList_[this.outputConnection.type].addConnection_(this.outputConnection);
-	   this.render();
-     }
-  },
-
-  // Blockly.Blocks['lists_mutatorcontainer'] = {
-  //   init: function() {
-  //     this.setColour(Blockly.LIST_CATEGORY_HUE);
-  //     // var group = new Blockly.RadioButtonGroup();
-  //     this.appendDummyInput()
-  //         .appendField(new Blockly.FieldRadioButton(group), 'CHANGE_LIST')
-  //         .appendField("changes existing list");
-  //     this.appendDummyInput()
-  //         .appendField(new Blockly.FieldRadioButton(group), 'MAKE_NEW_LIST')
-  //         .appendField("makes new list");
-  //     this.contextMenu = false;
+  // updateBlock_: function() {
+	//  if (this.changeList) {
+	//    if (this.outputConnection && this.outputConnection.targetConnection) {
+	//      this.outputConnection.disconnect();
+  //
+	//      var children = this.parentBlock_.childBlocks_;
+	//      for (var child, x = 0; child = children[x]; x++) {
+	//        if (child == this) {
+	//          children.splice(x, 1);
+	//          break;
+	//        }
+	//      }
+	//      this.setParent(null);
+	//      this.parentBlock_ = null;
+	//    }
+  //
+	//    if (this.outputConnection) {
+	//      if (this.outputConnection.inDB_) {
+	//        this.outputConnection.dbList_[this.outputConnection.type].removeConnection_(this.outputConnection);
+	//      }
+	//      this.outputConnection.inDB_ = false;
+	//      if (Blockly.highlightedConnection_ == this.outputConnection) {
+	//        Blockly.highlightedConnection_ = null;
+	//      }
+	//      if (Blockly.localConnection_ == this.outputConnection) {
+	//        Blockly.localConnection_ = null;
+	//      }
+	//    }
+  //
+	//    this.outputConnection = null;
+	//    this.setFieldValue(Blockly.Msg.LANG_LISTS_MAP_DEST_TITLE_MAP, 'TITLE');
+	//    this.setPreviousStatement(true);
+	//    this.setNextStatement(true);
+	//    this.previousConnection.dbList_[this.previousConnection.type].addConnection_(this.previousConnection);
+	//    this.nextConnection.dbList_[this.nextConnection.type].addConnection_(this.nextConnection);
+	//    this.render();
+  //
+	//  } else {
+	//    if (this.previousConnection && this.previousConnection.targetConnection) {
+	//      this.previousConnection.disconnect();
+  //
+	//      var children = this.parentBlock_.childBlocks_;
+	//      for (var child, x = 0; child = children[x]; x++) {
+	//        if (child == this) {
+	//          children.splice(x, 1);
+	//          break;
+	//        }
+	//      }
+	//      this.setParent(null);
+	//      this.parentBlock_ = null;
+	//   }
+  //
+	//    if (this.previousConnection) {
+	//      if (this.previousConnection.inDB_) {
+	//        this.previousConnection.dbList_[this.previousConnection.type].removeConnection_(this.previousConnection);
+	//      }
+	//      this.previousConnection.inDB_ = false;
+	//      if (Blockly.highlightedConnection_ == this.previousConnection) {
+	//        Blockly.highlightedConnection_ = null;
+	//      }
+	//      if (Blockly.localConnection_ == this.previousConnection) {
+	//        Blockly.localConnection_ = null;
+	//      }
+	//    }
+  //
+	//    if (this.nextConnection) {
+	//      if (this.nextConnection.inDB_) {
+	//        this.nextConnection.dbList_[this.nextConnection.type].removeConnection_(this.nextConnection);
+	//      }
+	//      this.nextConnection.inDB_ = false;
+	//      if (Blockly.highlightedConnection_ == this.nextConnection) {
+	//        Blockly.highlightedConnection_ = null;
+	//      }
+	//      if (Blockly.localConnection_ == this.nextConnection) {
+	//        Blockly.localConnection_ = null;
+	//      }
+	//      if (Blockly.localConnection_ == this.nextConnection) {
+	//        Blockly.localConnection_ = null;
+	//      }
+	//    }
+  //
+	//    this.previousConnection = null;
+	//    this.nextConnection = null;
+	//    this.setFieldValue(Blockly.Msg.LANG_LISTS_MAP_NONDEST_TITLE_MAP, 'TITLE');
+	//    this.setOutput(true, null);
+	//    this.outputConnection.dbList_[this.outputConnection.type].addConnection_(this.outputConnection);
+	//    this.render();
+  //    }
+  // },
+  // mutationToDom: function() {
+  //   var container = document.createElement('mutation');
+  //   if (! this.changeList) {
+  //     container.setAttribute('destructive', this.changeList);
   //   }
-  // };
-
-
-  mutationToDom: function() {
-    var container = document.createElement('mutation');
-    if (! this.changeList) {
-      container.setAttribute('destructive', this.changeList);
-    }
-    return container;
-  },
-  domToMutation: function(xmlElement) {
-    if(!xmlElement.getAttribute('destructive')){
-      this.changeList = true;
-    } else {
-      this.changeList = (xmlElement.getAttribute('destructive') === "true");
-    }
-    this.updateBlock_();
-  },
-  decompose: function(workspace) {
-    var containerBlock = workspace.newBlock('lists_mutatorcontainer');
-    containerBlock.initSvg();
-    var changeListButton = containerBlock.getField('CHANGE_LIST');
-    var makeNewListButton = containerBlock.getField('MAKE_NEW_LIST');
-    var group = changeListButton.group;
-    if (this.changeList) {
-      group.setSelected(changeListButton);
-    } else {
-      group.setSelected(makeNewListButton);
-    }
-    return containerBlock;
-  },
-  compose: function(containerBlock) {
-	this.oldChangeList = this.changeList;
-    this.changeList = containerBlock.getFieldValue('CHANGE_LIST') == 'TRUE' ? true : false;
-    if (this.oldChangeList != this.changeList) {
-    	this.updateBlock_();
-    }
-  },
+  //   return container;
+  // },
+  // domToMutation: function(xmlElement) {
+  //   if(!xmlElement.getAttribute('destructive')){
+  //     this.changeList = true;
+  //   } else {
+  //     this.changeList = (xmlElement.getAttribute('destructive') === "true");
+  //   }
+  //   this.updateBlock_();
+  // },
+  // decompose: function(workspace) {
+  //   var containerBlock = workspace.newBlock('lists_mutatorcontainer');
+  //   containerBlock.initSvg();
+  //   var changeListButton = containerBlock.getField('CHANGE_LIST');
+  //   var makeNewListButton = containerBlock.getField('MAKE_NEW_LIST');
+  //   var group = changeListButton.group;
+  //   if (this.changeList) {
+  //     group.setSelected(changeListButton);
+  //   } else {
+  //     group.setSelected(makeNewListButton);
+  //   }
+  //   return containerBlock;
+  // },
+  // compose: function(containerBlock) {
+	// this.oldChangeList = this.changeList;
+  //   this.changeList = containerBlock.getFieldValue('CHANGE_LIST') == 'TRUE' ? true : false;
+  //   if (this.oldChangeList != this.changeList) {
+  //   	this.updateBlock_();
+  //   }
+  // },
   saveConnections: Blockly.saveConnections,
   getVars: function() {
     return [this.getFieldValue('VAR')];
@@ -687,6 +670,7 @@ Blockly.Blocks['lists_map'] = {
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MAP_INPUT_COLLAPSED_TEXT }]
 };
+
 
 // This commented code is a map block that has a dropdown to select a procedure as a mapping function
 // There are still bugs need to be fixed so this part is commented out.
@@ -742,6 +726,7 @@ Blockly.Blocks['lists_map'] = {
 // };
 
 Blockly.Blocks['lists_filter'] = {
+  // Filter the list
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_FILTER_HELPURL,
   init : function() {
@@ -761,12 +746,11 @@ Blockly.Blocks['lists_filter'] = {
     this.appendIndentedValueInput('TEST')
         .appendField(Blockly.Msg.LANG_LISTS_FILTER_INPUT_TEST);
     this.setOutput(true, null);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_FILTER_TOOLTIP);
+    this.setInputsInline(false);
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
     // this.setMutator(new Blockly.Mutator([]));
-    this.setTooltip(Blockly.Msg.LANG_LISTS_FILTER_TOOLTIP);
-    this.changeList = false;
-    this.setInputsInline(false);
   },
   // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
   // There are still bugs need to be fixed so this part is commented out.
@@ -929,6 +913,7 @@ Blockly.Blocks['lists_filter'] = {
 
 
 Blockly.Blocks['lists_reduce'] = {
+  // Reduce the list
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_REDUCE_HELPURL,
   init : function() {
@@ -1143,6 +1128,7 @@ Blockly.Blocks['lists_reduce'] = {
 // };
 
 Blockly.Blocks['lists_sort'] = {
+  // Sort the list in ascending order
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_SORT_HELPURL,
   init : function() {
@@ -1151,12 +1137,11 @@ Blockly.Blocks['lists_sort'] = {
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_SORT_NONDEST_TITLE_SORT, 'TITLE');
     this.setOutput(true, null);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_SORT_TOOLTIP);
+    this.setInputsInline(false);
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
     // this.setMutator(new Blockly.Mutator([]));
-    this.setTooltip(Blockly.Msg.LANG_LISTS_SORT_TOOLTIP);
-    this.changeList = false;
-    this.setInputsInline(false);
   },
   // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
   // There are still bugs need to be fixed so this part is commented out.
@@ -1289,6 +1274,7 @@ Blockly.Blocks['lists_sort'] = {
 };
 
 Blockly.Blocks['lists_sort_comparator'] = {
+  // Sort the list with specified comparator
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_HELPURL,
   init : function() {
@@ -1312,12 +1298,11 @@ Blockly.Blocks['lists_sort_comparator'] = {
       .setAlign(Blockly.ALIGN_RIGHT);
     this.appendIndentedValueInput('COMPARE');
     this.setOutput(true, null);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_TOOLTIP);
+    this.setInputsInline(false);
     // this.setMutator(new Blockly.Mutator([]));
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
-    this.setTooltip(Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_TOOLTIP);
-    this.changeList = false;
-    this.setInputsInline(false);
   },
   // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
   // There are still bugs need to be fixed so this part is commented out.
@@ -1479,6 +1464,7 @@ Blockly.Blocks['lists_sort_comparator'] = {
 };
 
 Blockly.Blocks['lists_sort_key'] = {
+  // Sorting the list using the key, a proxy value user creates with expressions.
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_SORT_KEY_HELPURL,
   init : function() {
@@ -1495,140 +1481,139 @@ Blockly.Blocks['lists_sort_key'] = {
                    'VAR')
       .setAlign(Blockly.ALIGN_RIGHT);
     this.appendIndentedValueInput('KEY');
+    this.setOutput(true, null);
+    this.setTooltip( Blockly.Msg.LANG_LISTS_SORT_KEY_TOOLTIP);
+    this.setInputsInline(false);
     // this.setPreviousStatement(true);
     // this.setNextStatement(true);
     // this.setMutator(new Blockly.Mutator([]));
-    this.setOutput(true, null);
-    this.setTooltip( Blockly.Msg.LANG_LISTS_SORT_KEY_TOOLTIP);
-    this.changeList = false;
-    this.setInputsInline(false);
   },
   // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
   // There are still bugs need to be fixed so this part is commented out.
   // updateBlock_: function() {
-	// 	 if (this.changeList) {
-	// 	   if (this.outputConnection && this.outputConnection.targetConnection) {
-	// 	     this.outputConnection.disconnect();
+  // 	 if (this.changeList) {
+  // 	   if (this.outputConnection && this.outputConnection.targetConnection) {
+  // 	     this.outputConnection.disconnect();
   //
-	// 	     var children = this.parentBlock_.childBlocks_;
-	// 	     for (var child, x = 0; child = children[x]; x++) {
-	// 	       if (child == this) {
-	// 	         children.splice(x, 1);
-	// 	         break;
-	// 	       }
-	// 	     }
-	// 	     this.setParent(null);
-	// 	     this.parentBlock_ = null;
-	// 	   }
+  // 	     var children = this.parentBlock_.childBlocks_;
+  // 	     for (var child, x = 0; child = children[x]; x++) {
+  // 	       if (child == this) {
+  // 	         children.splice(x, 1);
+  // 	         break;
+  // 	       }
+  // 	     }
+  // 	     this.setParent(null);
+  // 	     this.parentBlock_ = null;
+  // 	   }
   //
-	// 	   if (this.outputConnection) {
-	// 	     if (this.outputConnection.inDB_) {
-	// 	       this.outputConnection.dbList_[this.outputConnection.type].removeConnection_(this.outputConnection);
-	// 	     }
-	// 	     this.outputConnection.inDB_ = false;
-	// 	     if (Blockly.highlightedConnection_ == this.outputConnection) {
-	// 	       Blockly.highlightedConnection_ = null;
-	// 	     }
-	// 	     if (Blockly.localConnection_ == this.outputConnection) {
-	// 	       Blockly.localConnection_ = null;
-	// 	     }
-	// 	   }
+  // 	   if (this.outputConnection) {
+  // 	     if (this.outputConnection.inDB_) {
+  // 	       this.outputConnection.dbList_[this.outputConnection.type].removeConnection_(this.outputConnection);
+  // 	     }
+  // 	     this.outputConnection.inDB_ = false;
+  // 	     if (Blockly.highlightedConnection_ == this.outputConnection) {
+  // 	       Blockly.highlightedConnection_ = null;
+  // 	     }
+  // 	     if (Blockly.localConnection_ == this.outputConnection) {
+  // 	       Blockly.localConnection_ = null;
+  // 	     }
+  // 	   }
   //
-	// 	   this.outputConnection = null;
-	// 	   this.setFieldValue(Blockly.Msg.LANG_LISTS_SORT_KEY_DEST_TITLE_SORT, 'TITLE');
-	// 	   this.setPreviousStatement(true);
-	// 	   this.setNextStatement(true);
-	// 	   this.previousConnection.dbList_[this.previousConnection.type].addConnection_(this.previousConnection);
-	// 	   this.nextConnection.dbList_[this.nextConnection.type].addConnection_(this.nextConnection);
-	// 	   this.render();
+  // 	   this.outputConnection = null;
+  // 	   this.setFieldValue(Blockly.Msg.LANG_LISTS_SORT_KEY_DEST_TITLE_SORT, 'TITLE');
+  // 	   this.setPreviousStatement(true);
+  // 	   this.setNextStatement(true);
+  // 	   this.previousConnection.dbList_[this.previousConnection.type].addConnection_(this.previousConnection);
+  // 	   this.nextConnection.dbList_[this.nextConnection.type].addConnection_(this.nextConnection);
+  // 	   this.render();
   //
-	// 	 } else {
-	// 	   if (this.previousConnection && this.previousConnection.targetConnection) {
-	// 	     this.previousConnection.disconnect();
+  // 	 } else {
+  // 	   if (this.previousConnection && this.previousConnection.targetConnection) {
+  // 	     this.previousConnection.disconnect();
   //
-	// 	     var children = this.parentBlock_.childBlocks_;
-	// 	     for (var child, x = 0; child = children[x]; x++) {
-	// 	       if (child == this) {
-	// 	         children.splice(x, 1);
-	// 	         break;
-	// 	       }
-	// 	     }
-	// 	     this.setParent(null);
-	// 	     this.parentBlock_ = null;
-	// 	  }
+  // 	     var children = this.parentBlock_.childBlocks_;
+  // 	     for (var child, x = 0; child = children[x]; x++) {
+  // 	       if (child == this) {
+  // 	         children.splice(x, 1);
+  // 	         break;
+  // 	       }
+  // 	     }
+  // 	     this.setParent(null);
+  // 	     this.parentBlock_ = null;
+  // 	  }
   //
-	// 	   if (this.previousConnection) {
-	// 	     if (this.previousConnection.inDB_) {
-	// 	       this.previousConnection.dbList_[this.previousConnection.type].removeConnection_(this.previousConnection);
-	// 	     }
-	// 	     this.previousConnection.inDB_ = false;
-	// 	     if (Blockly.highlightedConnection_ == this.previousConnection) {
-	// 	       Blockly.highlightedConnection_ = null;
-	// 	     }
-	// 	     if (Blockly.localConnection_ == this.previousConnection) {
-	// 	       Blockly.localConnection_ = null;
-	// 	     }
-	// 	   }
+  // 	   if (this.previousConnection) {
+  // 	     if (this.previousConnection.inDB_) {
+  // 	       this.previousConnection.dbList_[this.previousConnection.type].removeConnection_(this.previousConnection);
+  // 	     }
+  // 	     this.previousConnection.inDB_ = false;
+  // 	     if (Blockly.highlightedConnection_ == this.previousConnection) {
+  // 	       Blockly.highlightedConnection_ = null;
+  // 	     }
+  // 	     if (Blockly.localConnection_ == this.previousConnection) {
+  // 	       Blockly.localConnection_ = null;
+  // 	     }
+  // 	   }
   //
-	// 	   if (this.nextConnection) {
-	// 	     if (this.nextConnection.inDB_) {
-	// 	       this.nextConnection.dbList_[this.nextConnection.type].removeConnection_(this.nextConnection);
-	// 	     }
-	// 	     this.nextConnection.inDB_ = false;
-	// 	     if (Blockly.highlightedConnection_ == this.nextConnection) {
-	// 	       Blockly.highlightedConnection_ = null;
-	// 	     }
-	// 	     if (Blockly.localConnection_ == this.nextConnection) {
-	// 	       Blockly.localConnection_ = null;
-	// 	     }
-	// 	     if (Blockly.localConnection_ == this.nextConnection) {
-	// 	       Blockly.localConnection_ = null;
-	// 	     }
-	// 	   }
+  // 	   if (this.nextConnection) {
+  // 	     if (this.nextConnection.inDB_) {
+  // 	       this.nextConnection.dbList_[this.nextConnection.type].removeConnection_(this.nextConnection);
+  // 	     }
+  // 	     this.nextConnection.inDB_ = false;
+  // 	     if (Blockly.highlightedConnection_ == this.nextConnection) {
+  // 	       Blockly.highlightedConnection_ = null;
+  // 	     }
+  // 	     if (Blockly.localConnection_ == this.nextConnection) {
+  // 	       Blockly.localConnection_ = null;
+  // 	     }
+  // 	     if (Blockly.localConnection_ == this.nextConnection) {
+  // 	       Blockly.localConnection_ = null;
+  // 	     }
+  // 	   }
   //
-	// 	   this.previousConnection = null;
-	// 	   this.nextConnection = null;
-	// 	   this.setFieldValue(Blockly.Msg.LANG_LISTS_SORT_KEY_NONDEST_TITLE_SORT, 'TITLE');
-	// 	   this.setOutput(true, null);
-	// 	   this.outputConnection.dbList_[this.outputConnection.type].addConnection_(this.outputConnection);
-	// 	   this.render();
-	//      }
-	//   },
-	//   mutationToDom: function() {
-	//     var container = document.createElement('mutation');
-	//     if (! this.changeList) {
-	//       container.setAttribute('destructive', this.changeList);
-	//     }
-	//     return container;
-	//   },
-	//   domToMutation: function(xmlElement) {
-	//     if(!xmlElement.getAttribute('destructive')){
-	//       this.changeList = true;
-	//     } else {
-	//       this.changeList = (xmlElement.getAttribute('destructive') == "true");
-	//     }
-	//     this.updateBlock_();
-	//   },
-	//   decompose: function(workspace) {
-	//     var containerBlock = Blockly.Block.obtain(workspace,'lists_mutatorcontainer');
-	//     containerBlock.initSvg();
-	//     var changeListButton = containerBlock.getField_('CHANGE_LIST');
-	//     var makeNewListButton = containerBlock.getField_('MAKE_NEW_LIST');
-	//     var group = changeListButton.group;
-	//     if (this.changeList) {
-	//       group.setSelected(changeListButton);
-	//     } else {
-	//       group.setSelected(makeNewListButton);
-	//     }
-	//     return containerBlock;
-	//   },
-	//   compose: function(containerBlock) {
-	// 	this.oldChangeList = this.changeList;
-	//     this.changeList = containerBlock.getFieldValue('CHANGE_LIST') == 'TRUE' ? true : false;
-	//     if (this.oldChangeList != this.changeList) {
-	//     	this.updateBlock_();
-	//     }
-	//   },
+  // 	   this.previousConnection = null;
+  // 	   this.nextConnection = null;
+  // 	   this.setFieldValue(Blockly.Msg.LANG_LISTS_SORT_KEY_NONDEST_TITLE_SORT, 'TITLE');
+  // 	   this.setOutput(true, null);
+  // 	   this.outputConnection.dbList_[this.outputConnection.type].addConnection_(this.outputConnection);
+  // 	   this.render();
+  //      }
+  //   },
+  //   mutationToDom: function() {
+  //     var container = document.createElement('mutation');
+  //     if (! this.changeList) {
+  //       container.setAttribute('destructive', this.changeList);
+  //     }
+  //     return container;
+  //   },
+  //   domToMutation: function(xmlElement) {
+  //     if(!xmlElement.getAttribute('destructive')){
+  //       this.changeList = true;
+  //     } else {
+  //       this.changeList = (xmlElement.getAttribute('destructive') == "true");
+  //     }
+  //     this.updateBlock_();
+  //   },
+  //   decompose: function(workspace) {
+  //     var containerBlock = Blockly.Block.obtain(workspace,'lists_mutatorcontainer');
+  //     containerBlock.initSvg();
+  //     var changeListButton = containerBlock.getField_('CHANGE_LIST');
+  //     var makeNewListButton = containerBlock.getField_('MAKE_NEW_LIST');
+  //     var group = changeListButton.group;
+  //     if (this.changeList) {
+  //       group.setSelected(changeListButton);
+  //     } else {
+  //       group.setSelected(makeNewListButton);
+  //     }
+  //     return containerBlock;
+  //   },
+  //   compose: function(containerBlock) {
+  // 	this.oldChangeList = this.changeList;
+  //     this.changeList = containerBlock.getFieldValue('CHANGE_LIST') == 'TRUE' ? true : false;
+  //     if (this.oldChangeList != this.changeList) {
+  //     	this.updateBlock_();
+  //     }
+  //   },
   saveConnections: Blockly.saveConnections,
   getVars: function() {
     return [this.getFieldValue('VAR')];
@@ -1662,49 +1647,50 @@ Blockly.Blocks['lists_sort_key'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_COLLAPSED_TEXT }]
 };
 
-Blockly.Blocks['lists_minimum'] = {
+Blockly.Blocks['lists_minimum_number'] = {
+  // Minimum value in the list
   category : 'Lists',
-  helpUrl : Blockly.Msg.LANG_LISTS_MIN_HELPURL,
+  helpUrl : Blockly.Msg.LANG_LISTS_MIN_NUMBER_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-      .appendField(Blockly.Msg.LANG_LISTS_MIN_INPUT_MIN);
-    this.setTooltip(Blockly.Msg.LANG_LISTS_MIN_TOOLTIP);
+      .appendField(Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_MIN);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_MIN_NUMBER_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MIN_INPUT_MIN }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_MIN }]
 };
 
-Blockly.Blocks['lists_maximum'] = {
+Blockly.Blocks['lists_maximum_number'] = {
+  // Maximum value in the list
   category : 'Lists',
-  helpUrl : Blockly.Msg.LANG_LISTS_MAX_HELPURL,
+  helpUrl : Blockly.Msg.LANG_LISTS_MAX_NUMBER_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
-      .appendField(Blockly.Msg.LANG_LISTS_MAX_INPUT_MAX);
-    this.setTooltip(Blockly.Msg.LANG_LISTS_MAX_TOOLTIP);
+      .appendField(Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_MAX);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_MAX_NUMBER_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MAX_INPUT_MAX }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_MAX }]
 };
 
 Blockly.Blocks['lists_but_first'] = {
+  // Return the list without the first item
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_BUT_FIRST_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    // this.setPreviousStatement(true);
-    // this.setNextStatement(true);
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_BUT_FIRST_INPUT_BUT_FIRST);
     this.setTooltip(Blockly.Msg.LANG_LISTS_BUT_FIRST_TOOLTIP);
-    // this.setMutator(new Blockly.Mutator([]));
     this.setOutput(true, null);
-    this.changeList = false;
     this.setInputsInline(false);
+    // this.setPreviousStatement(true);
+    // this.setNextStatement(true);
    },
   // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
   // There are still bugs need to be fixed so this part is commented out.
@@ -1835,20 +1821,19 @@ Blockly.Blocks['lists_but_first'] = {
 };
 
 Blockly.Blocks['lists_but_last'] = {
+  // Return the list without the last item
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_BUT_LAST_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    // this.setPreviousStatement(true);
-    // this.setNextStatement(true);
     this.appendValueInput('LIST')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_LISTS_BUT_LAST_INPUT_BUT_LAST);
     this.setTooltip(Blockly.Msg.LANG_LISTS_BUT_LAST_TOOLTIP);
-    // this.setMutator(new Blockly.Mutator([]));
     this.setOutput(true, null);
-    this.changeList = false
     this.setInputsInline(false);
+    // this.setPreviousStatement(true);
+    // this.setNextStatement(true);
   },
   // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
   // There are still bugs need to be fixed so this part is commented out.
@@ -1984,8 +1969,6 @@ Blockly.Blocks['lists_slice'] = {
   helpUrl : Blockly.Msg.LANG_LISTS_SLICE_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    // this.setPreviousStatement(true);
-    // this.setNextStatement(true);
     var checkTypeList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT);
     var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT);
     this.interpolateMsg(Blockly.Msg.LANG_LISTS_SLICE_INPUT,
@@ -1996,9 +1979,9 @@ Blockly.Blocks['lists_slice'] = {
     this.setTooltip(Blockly.Msg.LANG_LISTS_SLICE_TOOLTIP);
     this.setInputsInline(false);
     this.setOutput(true, null);
+    // this.setPreviousStatement(true);
+    // this.setNextStatement(true);
     // this.setMutator(new Blockly.Mutator([]));
-    this.changeList = false;
-    this.setInputsInline(false);
   },
   // This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
   // There are still bugs need to be fixed so this part is commented out.
