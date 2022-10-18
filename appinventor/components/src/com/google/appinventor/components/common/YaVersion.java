@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -549,7 +549,25 @@ public class YaVersion {
   // - VIDEOPLAYER_COMPONENT_VERSION incremented to 7
   // For YOUNG_ANDROID_VERSION 213 (ListView layouts)
   // - LISTVIEW_COMPONENT_VERSION was incremented to 6
-  public static final int YOUNG_ANDROID_VERSION = 213;
+  // For YOUNG_ANDROID_VERSION 214:
+  // - FILE_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 215:
+  // Added Translator
+  // For YOUNG_ANDROID_VERSION 216:
+  // YandexTranslate turned into Translator (and YandexTranslate
+  //   itself stubbed out and placed in INTERNAL
+  // For YOUNG_ANDROID_VERION 217:
+  // - Added GOOGLESHEETS_COMPONENT_VERSION
+  // For YOUNG_ANDROID_VERION 218:
+  // - SPREADSHEET_COMPONENT_VERSION = 1
+  // - Renamed GoogleSheets to Spreadsheet
+  // For YOUNG_ANDROID_VERSION 219:
+  // - CHART_COMPONENT_VERSION was introduced
+  // - CHART_DATA_2D_COMPONENT_VERSION was introduced
+  // - DATA_FILE_COMPONENT_VERSION was introduced
+  // - BLUETOOTH_CLIENT_COMPONENT_VERSION was incremented to 7
+
+  public static final int YOUNG_ANDROID_VERSION = 219;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -640,9 +658,9 @@ public class YaVersion {
 
   // ................................. Target SDK Version Number ..................................
 
-  public static final int TARGET_SDK_VERSION = 29;
+  public static final int TARGET_SDK_VERSION = 31;
 
-  public static final String TARGET_ANDROID_VERSION = "Android 10.0";
+  public static final String TARGET_ANDROID_VERSION = "Android 12.0";
 
   // ................................. Component Version Numbers ..................................
 
@@ -738,7 +756,9 @@ public class YaVersion {
   // - The BluetoothClient.Secure property was added.
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 6:
   // - The BluetoothClient.DisconnectOnError property was added.
-  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 6;
+  // For BLUETOOTH_CLIENT_COMPONENT_VERSION 7:
+  // - The BluuetoothClient.PollingRate property was added.
+  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 7;
 
   // For BLUETOOTHSERVER_COMPONENT_VERSION 2:
   // - The BluetoothServer.Enabled property was added.
@@ -811,6 +831,10 @@ public class YaVersion {
   // - Assets helper block was added.
   public static final int CANVAS_COMPONENT_VERSION = 15;
 
+  public static final int CHART_COMPONENT_VERSION = 1;
+
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
+
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
   public static final int CHECKBOX_COMPONENT_VERSION = 2;
@@ -843,6 +867,8 @@ public class YaVersion {
   // - The ContactUri property was added
   public static final int CONTACTPICKER_COMPONENT_VERSION = 6;
 
+  public static final int DATA_FILE_COMPONENT_VERSION = 1;
+
   // For DATEPICKER_COMPONENT_VERSION 2:
   // The datepicker dialog was updated to show the current date
   // instead of the last set date by default.
@@ -874,7 +900,12 @@ public class YaVersion {
   // - The AfterFileSaved event was added.
   // For FILE_COMPONENT_VERSION 3:
   // - The LegacyMode property was added.
-  public static final int FILE_COMPONENT_VERSION = 3;
+  // For FILE_COMPONENT_VERSION 4:
+  // - The DefaultScope property was added.
+  // - The ReadPermission property was added.
+  // - The WritePermission property was added.
+  // - The LegacyMode property was removed. Use DefaultScope instead.
+  public static final int FILE_COMPONENT_VERSION = 4;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -946,7 +977,9 @@ public class YaVersion {
   // - Adds dropdown block for ScreenOrientation.
   // - Assets helper block was added.
   // - Adds Permission dropdown block.
-  public static final int FORM_COMPONENT_VERSION = 29;
+  // For FORM_COMPONENT_VERSION 30:
+  // - Add DefaultFileScope designer property.
+  public static final int FORM_COMPONENT_VERSION = 30;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -960,6 +993,8 @@ public class YaVersion {
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 4;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
+
+  public static final int SPREADSHEET_COMPONENT_VERSION = 1;
 
   public static final int GYROSCOPESENSOR_COMPONENT_VERSION = 1;
 
@@ -1266,7 +1301,9 @@ public class YaVersion {
   // - The UseLegacy property was added which is set to True by default.
   // - The Stop method was added, which works only when UseLegacy
   //   property is set to False.
-  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 2;
+  // For SPEECHRECOGNIZER_COMPONENT_VERSION 3:
+  // - The Language property was added.
+  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 3;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
@@ -1465,7 +1502,9 @@ public class YaVersion {
   // - Initial version.
   // For YANDEX_COMPONENT_VERSION 2:
   // - Added ApiKey property
-  public static final int YANDEX_COMPONENT_VERSION = 2;
+  // For YANDEX_COMPONENT_VERSION 3:
+  // - Stubbed out: blocks changed to use Translator
+  public static final int YANDEX_COMPONENT_VERSION = 3;
 
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
@@ -1475,6 +1514,9 @@ public class YaVersion {
 
   //For MAGNETICFIELDSENSOR_COMPONENT_VERSION: Initial Version
   public static final int MAGNETICFIELDSENSOR_COMPONENT_VERSION = 1;
+
+  //For TRANSLATE_COMPONENT_VERSION: Initial Version
+  public static final int TRANSLATOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";
@@ -1520,11 +1562,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.60";
+  public static final String PREFERRED_COMPANION = "2.65";
+  public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.60", "2.60u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.65", "2.65u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

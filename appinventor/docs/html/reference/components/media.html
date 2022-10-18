@@ -139,8 +139,8 @@
   <li><a href="#SoundRecorder">SoundRecorder</a></li>
   <li><a href="#SpeechRecognizer">SpeechRecognizer</a></li>
   <li><a href="#TextToSpeech">TextToSpeech</a></li>
+  <li><a href="#Translator">Translator</a></li>
   <li><a href="#VideoPlayer">VideoPlayer</a></li>
-  <li><a href="#YandexTranslate">YandexTranslate</a></li>
 </ul>
 
 <h2 id="Camcorder">Camcorder</h2>
@@ -441,6 +441,14 @@
 <h3 id="SpeechRecognizer-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="SpeechRecognizer.Language" class="text bo"><em>Language</em></dt>
+  <dd>Suggests the language to use for recognizing speech. An empty string (the default) will
+ use the system’s default language.
+
+    <p>Language is specified using a <a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">language tag</a>
+   with an optional region suffix, such as en or es-MX. The set of supported languages will
+   vary by device.</p>
+  </dd>
   <dt id="SpeechRecognizer.Result" class="text ro bo"><em>Result</em></dt>
   <dd>Returns the last text produced by the recognizer.</dd>
   <dt id="SpeechRecognizer.UseLegacy" class="boolean"><em>UseLegacy</em></dt>
@@ -552,6 +560,52 @@
   <dd>Speaks the given message.</dd>
 </dl>
 
+<h2 id="Translator">Translator</h2>
+
+<p>Use this component to translate words and sentences between
+ different languages. This component needs Internet access, as it
+ will request translations from a server at MIT (which in turn will
+ request translations from a commercial translation service).
+ Specify the source and target language in the form source-target
+ using two letter language codes.  So “en-es” will translate from
+ English to Spanish while “es-ru” will translate from Spanish to
+ Russian. If you leave out the source language, the service will
+ attempt to detect the source language. So providing just “es” will
+ attempt to detect the source language and translate it to Spanish.</p>
+
+<p><strong>Note:</strong> Translation happens asynchronously in the background. When the translation is complete,
+ the <a href="#Translator.GotTranslation"><code class="highlighter-rouge">GotTranslation</code></a> event is triggered.</p>
+
+<h3 id="Translator-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Translator.ApiKey" class="text wo"><em>ApiKey</em></dt>
+  <dd>The API Key to use. MIT App Inventor will automatically fill this
+ value in. You should not need to change it.</dd>
+</dl>
+
+<h3 id="Translator-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Translator.GotTranslation">GotTranslation(<em class="text">responseCode</em>,<em class="text">translation</em>)</dt>
+  <dd>Event indicating that a request has finished and has returned data (translation).</dd>
+</dl>
+
+<h3 id="Translator-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Translator.RequestTranslation" class="method"><i></i> RequestTranslation(<em class="text">languageToTranslateTo</em>,<em class="text">textToTranslate</em>)</dt>
+  <dd>By providing a target language to translate to (for instance, ‘es’ for Spanish, ‘en’ for
+ English, or ‘ru’ for Russian), and a word or sentence to translate, this method will request
+ a translation. Once the text is translated by the external
+ service, the event <a href="#Translator.GotTranslation"><code class="highlighter-rouge">GotTranslation</code></a> will be executed.
+
+    <p><strong>Note:</strong> Translator will attempt to detect the source language. You can also specify
+ prepending it to the language translation, e.g., es-ru will specify Spanish to Russian
+ translation.</p>
+  </dd>
+</dl>
+
 <h2 id="VideoPlayer">VideoPlayer</h2>
 
 <p>A multimedia component capable of playing videos. When the application is run, the <code class="highlighter-rouge">VideoPlayer</code>
@@ -621,55 +675,6 @@
   <dd>Plays the media specified by the <a href="#VideoPlayer.Source"><code class="highlighter-rouge">Source</code></a>.</dd>
   <dt id="VideoPlayer.Stop" class="method"><i></i> Stop()</dt>
   <dd>Resets to start of video and pauses it if video was playing.</dd>
-</dl>
-
-<h2 id="YandexTranslate">YandexTranslate</h2>
-
-<p>Use this component to translate words and sentences between different languages. This component
- needs Internet access, as it will request translations to the Yandex.Translate service.
- Specify the source and target language in the form source-target using two letter language codes.
- So “en-es” will translate from English to Spanish while “es-ru” will translate from Spanish to
- Russian. If you leave out the source language, the service will attempt to detect the source
- language. So providing just “es” will attempt to detect the source language and translate it
- to Spanish.</p>
-
-<p>This component is powered by the Yandex translation service. See
- http://api.yandex.com/translate/ for more information, including the list of available languages
- and the meanings of the language codes and status codes.</p>
-
-<p><strong>Note:</strong> Translation happens asynchronously in the background. When the translation is complete,
- the <a href="#YandexTranslate.GotTranslation"><code class="highlighter-rouge">GotTranslation</code></a> event is triggered.</p>
-
-<h3 id="YandexTranslate-Properties">Properties</h3>
-
-<dl class="properties">
-  <dt id="YandexTranslate.ApiKey" class="text wo"><em>ApiKey</em></dt>
-  <dd>The Yandex API Key to use. If set to DEFAULT the platform default key (if any)
- will be used. Otherwise should be set to a valid API key which can be obtained
- from https://tech.yandex.com/translate/. If the platform doesn’t have a default
- key and one isn’t provided here, an error will be raised.</dd>
-</dl>
-
-<h3 id="YandexTranslate-Events">Events</h3>
-
-<dl class="events">
-  <dt id="YandexTranslate.GotTranslation">GotTranslation(<em class="text">responseCode</em>,<em class="text">translation</em>)</dt>
-  <dd>Event indicating that a request has finished and has returned data (translation).</dd>
-</dl>
-
-<h3 id="YandexTranslate-Methods">Methods</h3>
-
-<dl class="methods">
-  <dt id="YandexTranslate.RequestTranslation" class="method"><i></i> RequestTranslation(<em class="text">languageToTranslateTo</em>,<em class="text">textToTranslate</em>)</dt>
-  <dd>By providing a target language to translate to (for instance, ‘es’ for Spanish, ‘en’ for
- English, or ‘ru’ for Russian), and a word or sentence to translate, this method will request
- a translation to the Yandex.Translate service. Once the text is translated by the external
- service, the event <a href="#YandexTranslate.GotTranslation"><code class="highlighter-rouge">GotTranslation</code></a> will be executed.
-
-    <p><strong>Note:</strong> Yandex.Translate will attempt to detect the source language. You can also specify
- prepending it to the language translation, e.g., es-ru will specify Spanish to Russian
- translation.</p>
-  </dd>
 </dl>
 
 </article>

@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import android.widget.LinearLayout;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -33,7 +32,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,9 +42,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a visible component that allows to place a list of text elements in your {@link Form} to
- * display. The list can be set using the {@link #ElementsFromString(String)} property or using the
- * {@link #Elements(YailList)} block in the blocks editor.
+ * This is a visible component that displays a list of text and image elements in your {@link Form} to
+ * display. Simple lists of strings may be set using the {@link #ElementsFromString(String)} property.
+ * More complex lists of elements containing multiple strings and/or images can be created using the
+ * {@link #ListData(String)} and {@link #ListViewLayout(int)} properties.
+ *
+ * [Information on Layouts](../other/advanced-listview.html)
  *
  *   Warning: This component will not work correctly on Screens that are scrollable if its
  * {@link #Height(int)} is set to Fill Parent.
@@ -58,9 +59,10 @@ import java.util.List;
  */
 
 @DesignerComponent(version = YaVersion.LISTVIEW_COMPONENT_VERSION,
-    description = "<p>This is a visible component that displays a list of text elements." +
-        " <br> The list can be set using the ElementsFromString property" +
-        " or using the Elements block in the blocks editor. </p>",
+    description = "<p>This is a visible component that displays a list of text and image elements.</p>" +
+        " <p>Simple lists of strings may be set using the ElementsFromString property." +
+        " More complex lists of elements containing multiple strings and/or images can be created using " +
+        "the ListData and ListViewLayout properties. </p>",
     category = ComponentCategory.USERINTERFACE,
     nonVisible = false,
     iconName = "images/listView.png")
@@ -100,6 +102,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private String fontTypeface;
   private String fontTypeDetail;
 
+  /* for backward compatibility */
+  private static final int DEFAULT_TEXT_SIZE = 22;
+
   private int imageWidth;
   private int imageHeight;
   private static final int DEFAULT_IMAGE_WIDTH = 200;
@@ -126,10 +131,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     layout = ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT;
 
     recyclerView = new RecyclerView(container.$context());
-    LayoutParams paramms = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-    recyclerView.setLayoutParams(paramms);
-    // initialize selectionIndex which also sets selection
-    SelectionIndex(0);
+    LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+    recyclerView.setLayoutParams(params);
 
     txtSearchBox = new EditText(container.$context());
     txtSearchBox.setSingleLine(true);
@@ -137,7 +140,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     txtSearchBox.setPadding(10, 10, 10, 10);
     txtSearchBox.setHint("Search list...");
     if (!AppInventorCompatActivity.isClassicMode()) {
-      txtSearchBox.setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
+      txtSearchBox.setBackgroundColor(COLOR_WHITE);
+    }
+
+    if (container.$form().isDarkTheme())  {
+      txtSearchBox.setTextColor(COLOR_BLACK);
+      txtSearchBox.setHintTextColor(COLOR_BLACK);
     }
 
     //set up the listener
@@ -146,10 +154,14 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       @Override
       public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
         // When user changed the Text
-        if (cs.length() == 0) {
-          setAdapterData();
+        if (cs.length() > 0) {
+          if (!listAdapterWithRecyclerView.hasVisibleItems()) {
+            setAdapterData();
+          }
+          listAdapterWithRecyclerView.getFilter().filter(cs);
+          recyclerView.setAdapter(listAdapterWithRecyclerView);
         } else {
-          listAdapterWithRecyclerView.getFilter().filter(cs.toString());
+          setAdapterData();
         }
       }
 
@@ -175,7 +187,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     // need to have the textColor set first, since they reset the
     // adapter
 
-    Width(Component.LENGTH_FILL_PARENT);
     BackgroundColor(Component.COLOR_BLACK);
     SelectionColor(Component.COLOR_LTGRAY);
     TextColor(Component.COLOR_WHITE);
@@ -194,7 +205,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     linearLayout.addView(recyclerView);
     linearLayout.requestLayout();
     container.$add(this);
+    Width(Component.LENGTH_FILL_PARENT);
     ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
+    // initialize selectionIndex which also sets selection
+    SelectionIndex(0);
   }
 
   @Override
@@ -268,7 +282,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    *
    * @param itemsList a YailList containing the strings to be added to the ListView
    */
-  @SimpleProperty(description = "List of elements to show in the ListView. Depending on the ListView, this may be a list of strings or a list of 3-element sub-lists containing Text, Description, and Image file name of a list with layout.",
+  @SimpleProperty(description = "List of elements to show in the ListView. Depending on the ListView, this may be a list of strings or a list of 3-element sub-lists containing Text, Description, and Image file name.",
           category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
     dictItems.clear();
@@ -315,7 +329,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Set the list of choices from a string of comma-separated values.
+   * Set the list of choices specified as a string with the elements separated by commas
+   * such as: Cheese,Fruit,Bacon,Radish.
    *
    * @param itemstring a string containing a comma-separated list of the strings to be picked from
    */
@@ -338,44 +353,27 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       // if the data is available in AddData property
       listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, dictItems, textColor, detailTextColor, fontSizeMain, fontSizeDetail, fontTypeface, fontTypeDetail, layout, backgroundColor, selectionColor, imageWidth, imageHeight, false);
 
-      listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
-        @Override
-        public void onItemClick(int position, View v) {
-          listAdapterWithRecyclerView.toggleSelection(position);
-          SelectionIndex(position + 1);
-          AfterPicking();
-        }
-      });
-      GridLayoutManager gridlayoutManager;
-
       if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
         layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManager);
       } else { // if (orientation == ComponentConstants.LAYOUT_ORIENTATION_VERTICAL) {
         layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-      } //else {
-//        gridlayoutManager = new GridLayoutManager(container.$context(), gridCount, GridLayoutManager.VERTICAL, false);
-//        recyclerView.setLayoutManager(gridlayoutManager);
-      // TODO: Grid Layout
-      //     }
-      recyclerView.setAdapter(listAdapterWithRecyclerView);
+      }
     } else {
       // Legacy Support: if the data is not available in AddData property but is available in ElementsFromString property
       listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, stringItems, textColor, fontSizeMain, fontTypeface, backgroundColor, selectionColor);
 
-      listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
-        @Override
-        public void onItemClick(int position, View v) {
-          listAdapterWithRecyclerView.toggleSelection(position);
-          SelectionIndex(position + 1);
-          AfterPicking();
-        }
-      });
       layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
-      recyclerView.setLayoutManager(layoutManager);
-      recyclerView.setAdapter(listAdapterWithRecyclerView);
     }
+    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
+      @Override
+      public void onItemClick(int position, View v) {
+        listAdapterWithRecyclerView.toggleSelection(position);
+        SelectionIndex(position + 1);
+        AfterPicking();
+      }
+    });
+    recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setAdapter(listAdapterWithRecyclerView);
   }
 
   /**
@@ -413,14 +411,16 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     if (!dictItems.isEmpty()) {
       selectionIndex = ElementsUtil.selectionIndex(index, YailList.makeList(dictItems));
       selection = dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
-      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get("Text2").toString());
+      selectionDetailText = ElementsUtil.toStringEmptyIfNull(dictItems.get(selectionIndex - 1).get(Component.LISTVIEW_KEY_DESCRIPTION).toString());
     } else {
       selectionIndex = ElementsUtil.selectionIndex(index, stringItems);
       // Now, we need to change Selection to correspond to SelectionIndex.
       selection = ElementsUtil.setSelectionFromIndex(index, stringItems);
       selectionDetailText = "";
     }
-
+    if (listAdapterWithRecyclerView != null) {
+      listAdapterWithRecyclerView.toggleSelection(selectionIndex - 1);
+    }
   }
 
   /**
@@ -453,14 +453,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           break;
         }
         // Not found
-        selection = "";
         selectionIndex = 0;
-        selectionDetailText = "";
       }
     } else {
       selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, stringItems);
-      selectionDetailText = "";
     }
+    SelectionIndex(selectionIndex);
   }
 
   /**
@@ -562,6 +560,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void SelectionColor(int argb) {
     selectionColor = argb;
+    setAdapterData();
   }
 
   /**
@@ -626,11 +625,43 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Returns the listview's text font Size
    *
+   * This property is provided for backwards compatibility
+   * it takes and returns an integer, but in reality it just
+   * updates the FontSize property, which works with floats
+   *
+   * @return text size as an integer
+   */
+  @SimpleProperty(
+      description = "The text size of the listview items.",
+      category = PropertyCategory.APPEARANCE)
+  public int TextSize() {
+    return Math.round(fontSizeMain);
+  }
+
+  /**
+   * Specifies the `ListView` item's text font size
+   *
+   * @param textSize int value for font size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_TEXT_SIZE + "")
+  @SimpleProperty
+  public void TextSize(int textSize) {
+    if (textSize >1000) {
+        textSize = 999;
+    }
+    FontSize(Float.valueOf(textSize));
+  }
+
+  /**
+   * Returns the listview's text font Size
+   *
    * @return text size as an float
    */
   @SimpleProperty(
           description = "The text size of the listview stringItems.",
-          category = PropertyCategory.APPEARANCE)
+          category = PropertyCategory.APPEARANCE,
+          userVisible = false)
   public float FontSize() {
     return fontSizeMain;
   }
@@ -641,8 +672,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param integer value for font size
    */
   @SuppressWarnings("JavadocReference")
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-          defaultValue = "22.0")
+  // Temporarily removed until Companion with support is more prevalent
+  // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  //         defaultValue = "22.0")
   @SimpleProperty
   public void FontSize(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
@@ -823,8 +855,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Returns the style of the button.
    *
-   * @return one of {@link Component#VERTICAL_ORIENTATION},
-   * {@link Component#HORISONTAL_ORIENTATION},
+   * @return one of {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL},
+   * {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL},
    */
   @SimpleProperty(
           category = PropertyCategory.APPEARANCE)
@@ -833,15 +865,17 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Specifies the style the button. This does not check that the argument is a legal value.
+   * Specifies the layout's orientation. This may be: `Vertical`, which displays elements
+   * in rows one after the other; or `Horizontal`, which displays one element at a time and
+   * allows the user to swipe left or right to brows the elements.
    *
-   * @param shape one of {@link Component#VERTICAL_ORIENTATION},
-   *              {@link Component#HORISONTAL_ORIENTATION},
+   * @param orientation one of {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL},
+   *              {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL},
    * @throws IllegalArgumentException if orientation is not a legal value.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION,
-          defaultValue = Component.VERTICAL_ORIENTATION + "")
-  @SimpleProperty(description = "Specifies the layout's orientation (vertical, horisontal). ")
+          defaultValue = ComponentConstants.LAYOUT_ORIENTATION_VERTICAL + "")
+  @SimpleProperty(description = "Specifies the layout's orientation (vertical, horizontal). ")
   public void Orientation(int orientation) {
     this.orientation = orientation;
     setAdapterData();
@@ -858,7 +892,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Specifies data to be displayed in the ListView rows as an ArrayList of JsonObjects. Designer only property.
+   * Specifies data to be displayed in the ListView elements. This property sets the
+   * elements specified in {@link #ListViewLayout(int)}. For example, if the chosen
+   * layout is `Image,MainText` this property will allow any number of elements to be
+   * defined, each containing a filename for Image and a string for MainText.
+   * Designer only property.
    *
    * @param propertyValue string representation of row data (JsonArray of JsonObjects)
    */
@@ -897,7 +935,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param imageName    File name of an image that has been uploaded to media.
    *
    */
-  @SimpleFunction(description = "Create a ListView entry.")
+  @SimpleFunction(description = "Create a ListView entry. MainText is required. DetailText and ImageName are optional.")
   public YailDictionary CreateElement(final String mainText, final String detailText, final String imageName) {
     YailDictionary dictItem = new YailDictionary();
     dictItem.put(Component.LISTVIEW_KEY_MAIN_TEXT, mainText);
@@ -916,7 +954,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     return listElement.get("Text2").toString();
   }
 
-  @SimpleFunction(description = "Get the name of the image of a ListView element.")
+  @SimpleFunction(description = "Get the filename of the image of a ListView element that has been uploaded to Media.")
   public String GetImageName(final YailDictionary listElement) {
     return listElement.get("Image").toString();
   }

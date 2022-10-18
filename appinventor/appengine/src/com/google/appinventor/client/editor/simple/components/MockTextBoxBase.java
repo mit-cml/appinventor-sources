@@ -134,13 +134,10 @@ abstract class MockTextBoxBase extends MockWrapper implements FormChangeListener
    */
   private void setFontSizeProperty(String text) {
     float convertedText = Float.parseFloat(text);
-    if (convertedText == 14.0 || convertedText == 24.0) {
-      MockForm form = ((YaFormEditor) editor).getForm();
-      if (form != null && form.getPropertyValue("BigDefaultText").equals("True")) {
-        MockComponentsUtil.setWidgetFontSize(textBoxWidget, "24");
-      } else {
-        MockComponentsUtil.setWidgetFontSize(textBoxWidget, "14");
-      }
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (convertedText == 14.0 && form != null
+        && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(textBoxWidget, "24");
     } else {
       MockComponentsUtil.setWidgetFontSize(textBoxWidget, text);
     }

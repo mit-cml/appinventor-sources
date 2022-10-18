@@ -52,7 +52,7 @@ import org.json.JSONException;
  * the tag. It also possesses a listener to fire events when stored
  * values are changed.
  *
- * [Additional Information](../other/firebase.html)
+ * [Additional Information](../other/firebaseIntro.html)
  *
  * @author kasmus@mit.edu (Kristin Asmus)
  * @author will2596@gmail.com (William Byrne) (default Firebase partitioning and user authentication)

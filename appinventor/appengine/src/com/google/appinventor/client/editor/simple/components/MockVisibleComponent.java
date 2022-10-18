@@ -68,6 +68,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   // get the length is percent of Screen1
   public static final int LENGTH_PERCENT_TAG = -1000;
 
+  public static final int FONT_DEFAULT_SIZE = 14;
+
   // Useful colors
   protected static final String COLOR_NONE = "00FFFFFF";
   protected static final String COLOR_DEFAULT = "00000000";

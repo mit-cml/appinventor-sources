@@ -5,38 +5,49 @@
 
 package com.google.appinventor.client.editor.youngandroid.properties;
 
-import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
-import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.Ode;
+
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+
+import com.google.appinventor.client.explorer.project.Project;
+
+import com.google.appinventor.client.widgets.properties.PropertyEditor;
+
 import com.google.appinventor.components.common.ComponentConstants;
+
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+
 import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.SelectionCell;
 import com.google.gwt.cell.client.TextInputCell;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 import com.google.gwt.view.client.ListDataProvider;
 
-import javax.xml.ws.handler.MessageContext;
 import java.util.ArrayList;
 import java.util.List;
 

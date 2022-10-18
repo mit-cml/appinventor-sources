@@ -659,15 +659,9 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public void FontSize(float size) {
-    if (Math.abs(size-Component.FONT_DEFAULT_SIZE)<.01 || Math.abs(size-24)<.01) {
-      if (container.$form().BigDefaultText()) {
-        TextViewUtil.setFontSize(view, 24);
-      }
-      else {
-        TextViewUtil.setFontSize(view, Component.FONT_DEFAULT_SIZE);
-      }
-    }
-    else {
+    if (size == FONT_DEFAULT_SIZE && container.$form().BigDefaultText()) {
+      TextViewUtil.setFontSize(view, 24);
+    } else {
       TextViewUtil.setFontSize(view, size);
     }
   }
