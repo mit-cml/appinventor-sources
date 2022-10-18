@@ -58,7 +58,10 @@ import com.google.appinventor.components.runtime.util.YailList;
 
   public boolean isSelected = false;
 
-  private int idFirst = -1, idSecond = -1, idImages = -1, idCard = 1;
+  private int idFirst = -1;
+  private int idSecond = -1;
+  private int idImages = -1;
+  private int idCard = 1;
   public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, float textMainSize, float textDetailSize, String textMainFont, String textDetailFont, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
     this.items = items;
     this.container = container;
