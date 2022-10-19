@@ -71,7 +71,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   private int backgroundColor;
 
   // Backing for font typeface
-  private int fontTypeface;
+  private String fontTypeface;
 
   // Backing for font bold
   private boolean bold;
@@ -158,7 +158,7 @@ public abstract class ButtonBase extends AndroidViewComponent
     Image("");
     Enabled(true);
     fontTypeface = Component.TYPEFACE_DEFAULT;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_DEFAULT);
@@ -570,7 +570,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       category = PropertyCategory.APPEARANCE)
   public void FontBold(boolean bold) {
     this.bold = bold;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -631,7 +631,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       category = PropertyCategory.APPEARANCE)
   public void FontItalic(boolean italic) {
     this.italic = italic;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -667,8 +667,8 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * The text font face of the `%type%`. Valid values are `0` (default), `1` (serif), `2` (sans
-   * serif), or `3` (monospace).
+   * The text font face of the `%type%`. Valid values are default, serif, sans serif, monospace,
+   * and .ttf or .otf font file.
    *
    * @return  one of {@link Component#TYPEFACE_DEFAULT},
    *          {@link Component#TYPEFACE_SERIF},
@@ -679,13 +679,14 @@ public abstract class ButtonBase extends AndroidViewComponent
       category = PropertyCategory.APPEARANCE,
       description = "Font family for %type% text.",
       userVisible = false)
-  public int FontTypeface() {
+  public String FontTypeface() {
     return fontTypeface;
   }
 
   /**
    * Specifies the text font face of the `%type%` as default, serif, sans
-   * serif, or monospace.
+   * serif, monospace, or custom font typeface. To add a custom typeface,
+   * upload a .ttf file to the project's media.
    *
    * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
    *                  {@link Component#TYPEFACE_SERIF},
@@ -696,9 +697,9 @@ public abstract class ButtonBase extends AndroidViewComponent
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
-  public void FontTypeface(int typeface) {
+  public void FontTypeface(String typeface) {
     fontTypeface = typeface;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
