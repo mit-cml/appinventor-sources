@@ -6,7 +6,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.android.tools.r8.t.b.S;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentConstants;
 

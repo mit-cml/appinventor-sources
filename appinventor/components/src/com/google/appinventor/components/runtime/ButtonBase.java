@@ -685,7 +685,8 @@ public abstract class ButtonBase extends AndroidViewComponent
 
   /**
    * Specifies the text font face of the `%type%` as default, serif, sans
-   * serif,monospace, or custom font typeface.
+   * serif, monospace, or custom font typeface. To add a custom typeface,
+   * upload a .ttf file to the project's media.
    *
    * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
    *                  {@link Component#TYPEFACE_SERIF},

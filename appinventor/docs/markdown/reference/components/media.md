@@ -119,9 +119,10 @@ A special-purpose button. When the user taps an `ImagePicker`, the device's imag
 {:id="ImagePicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `ImagePicker`, measured in sp(scale-independent pixels).
 
-{:id="ImagePicker.FontTypeface" .number .do} *FontTypeface*
+{:id="ImagePicker.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `ImagePicker` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="ImagePicker.Height" .number .bo} *Height*
 : Specifies the `ImagePicker`'s vertical height, measured in pixels.
