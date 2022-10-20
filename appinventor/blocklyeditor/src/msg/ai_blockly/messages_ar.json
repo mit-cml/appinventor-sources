@@ -203,5 +203,8 @@
     "Blockly.Msg.LANG_LOGIC_COMPARE_NEQ": "≠",
     "Blockly.Msg.LANG_LOGIC_COMPARE_EQ": "=",
     "Blockly.Msg.LANG_CATEGORY_LOGIC": "منطق",
-    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "فعل"
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "فعل",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE": "لكل عنصر في القاموس",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "قيمة",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "مفتاح"
 }
