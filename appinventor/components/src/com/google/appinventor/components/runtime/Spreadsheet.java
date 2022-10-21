@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2020 MIT, All rights reserved
+// Copyright 2020-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -1608,8 +1608,13 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           sheetsService.spreadsheets().values()
             .clear(spreadsheetID, rangeRef, new ClearValuesRequest())
             .execute();
-        }
-        catch (Exception e) {
+          form.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              FinishedClearRange();
+            }
+          });
+        } catch (Exception e) {
           e.printStackTrace();
           ErrorOccurred("ClearRange: " + e.getMessage());
         }
