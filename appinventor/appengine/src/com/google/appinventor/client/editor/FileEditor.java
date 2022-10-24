@@ -189,6 +189,11 @@ public abstract class FileEditor extends Composite {
    * YaBlockEditor will use Blockly.hideChaff to close tooltips, context menus etc.
    */
   public void hideChaff() {
+  }
 
+  /**
+   * Resize the editor in response to an external event.
+   */
+  public void resize() {
   }
 }
