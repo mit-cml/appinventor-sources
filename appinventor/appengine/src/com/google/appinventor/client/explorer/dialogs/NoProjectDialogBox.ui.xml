@@ -85,7 +85,7 @@
     <h3 class="ode-tutorialsTitle">
       <ui:msg key="getStarted"
               description="The header text instructing the new user to get started.">
-        Get started with some tutorials
+        Get started with some tutorials Vivek Darji...
       </ui:msg>
     </h3>
 
