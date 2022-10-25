@@ -104,6 +104,8 @@ public final class Player extends AndroidNonvisibleComponent
   private static final boolean audioFocusSupported;
   private Object afChangeListener;
 
+  private int volGetter = 50;
+
   static{
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
       audioFocusSupported = true;
