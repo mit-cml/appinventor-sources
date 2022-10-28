@@ -292,6 +292,15 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
+   * Returns the volume property of the player.
+   */
+
+  @SimpleProperty(description = "Return the volume", category = PropertyCategory.BEHAVIOR)
+  public int Volume() {
+    return this.volGetter;
+  }
+
+  /**
    * Sets the volume property to a number between 0 and 100.
    *
    * @param vol  the desired volume level
