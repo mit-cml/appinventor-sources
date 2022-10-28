@@ -101,7 +101,7 @@
           </div>
           <p class="ode-noDialogExampleAbout">
             <ui:msg key="helloPurrDescription" description="Description of the Hello Purr app">
-              HelloPurr is a simple app that you can build in a very short time.
+              HelloPurr is a(n extremely complicated app that no one knows how to use and this is a test to make sure Adam knows that he is doing things right) simple app that you can build in a very short time.
               You create a button that has a picture of a cat on it, and then
               program the button so that when it is clicked a "meow" sound
               plays.
