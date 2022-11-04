@@ -5,11 +5,11 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.util;
 
-import com.google.appinventor.components.runtime.WebViewer;
-
-import android.app.Activity;
+import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
+import com.google.appinventor.components.runtime.PermissionResultHandler;
+import com.google.appinventor.components.runtime.WebViewer;
+import android.app.Activity;
 import android.content.DialogInterface;
 
 import android.text.InputType;
@@ -53,7 +53,8 @@ public class EclairUtil {
    * @param activity - Its containing activity used for placing the dialog box
    */
 
-  public static void setupWebViewGeoLoc(final WebViewer caller, WebView webview, final Activity activity) {
+  public static void setupWebViewGeoLoc(final WebViewer caller, final WebView webview, 
+      final Activity activity) {
     webview.getSettings().setGeolocationDatabasePath(activity.getFilesDir().getAbsolutePath());
     webview.getSettings().setDatabaseEnabled(true);
     webview.setWebChromeClient(new WebChromeClient() {
@@ -62,28 +63,60 @@ public class EclairUtil {
           Callback callback) {
           final Callback theCallback = callback;
           final String theOrigin = origin;
-          if (!caller.PromptforPermission()) { // Don't prompt, assume permission
-            callback.invoke(origin, true, true);
+          final WebViewer theCaller = caller;
+
+          if (!theCaller.UsesLocation()) {
             return;
           }
-          AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
-          alertDialog.setTitle("Permission Request");
-          if (origin.equals("file://"))
-            origin = "This Application";
-          alertDialog.setMessage(origin + " would like to access your location.");
-          alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Allow",
-            new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                theCallback.invoke(theOrigin, true, true);
-              }
-            });
-          alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Refuse",
-            new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                theCallback.invoke(theOrigin, false, true);
-              }
-            });
-          alertDialog.show();
+
+          if (!theCaller.container.$form()
+              .isDeniedPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            // Permission already granted
+            theCallback.invoke(theOrigin, true, true);
+            return;
+          }
+
+
+          theCaller.container.$form().askPermission(Manifest.permission.ACCESS_FINE_LOCATION,
+              new PermissionResultHandler() {
+                @Override
+                public void HandlePermissionResponse(String permission, boolean granted) {
+                  if (granted) {
+                    // Permission granted
+                    if (!theCaller.PromptforPermission()) { // Don't prompt, assume permission
+                      theCallback.invoke(theOrigin, true, true);
+                      return;
+                    }
+                    AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+                    alertDialog.setTitle("Permission Request");
+                    alertDialog.setCancelable(false);
+                    String tempOrigin = theOrigin;
+                    if (theOrigin.equals("file://")) {
+                      tempOrigin = "This Application";
+                    }
+
+                    alertDialog.setMessage(tempOrigin + " would like to access your location.");
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Allow", 
+                        new DialogInterface.OnClickListener() {
+                          public void onClick(DialogInterface dialog, int which) {
+                            theCallback.invoke(theOrigin, true, true);
+                          }
+                        });
+                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Refuse", 
+                        new DialogInterface.OnClickListener() {
+                          public void onClick(DialogInterface dialog, int which) {
+                            theCallback.invoke(theOrigin, false, true);
+                          }
+                        });
+                    alertDialog.show();
+                  } else {
+                    // Permission for location not granted
+                    theCallback.invoke(theOrigin, false, true);
+                    theCaller.container.$form().dispatchPermissionDeniedEvent(theCaller, "HomeUrl",
+                        Manifest.permission.ACCESS_FINE_LOCATION);
+                  }
+                }
+              });
         }
       });
   }
