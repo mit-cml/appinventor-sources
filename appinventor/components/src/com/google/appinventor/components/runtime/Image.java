@@ -6,33 +6,39 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.Manifest;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+
+import android.graphics.drawable.Drawable;
+
+import android.util.Log;
+
+import android.view.View;
+
+import android.widget.ImageView;
+
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.EventDispatcher;
+
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
+
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.QUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
-
-import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageView;
 
 import java.io.IOException;
 
@@ -147,9 +153,13 @@ public final class Image extends AndroidViewComponent {
       defaultValue = "")
   @SimpleProperty
   public void Picture(@Asset final String path) {
-    if (MediaUtil.isExternalFile(container.$context(), path)
-        && container.$form().isDeniedPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-      container.$form().askPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
+    boolean needsPermission = false;
+    if (path.startsWith(QUtil.getExternalStoragePath(container.$form()))) {
+      String fileUri = "file://" + path;
+      needsPermission = FileUtil.needsReadPermission(container.$form(), fileUri);
+    }
+    if (needsPermission && container.$form().isDeniedPermission(READ_EXTERNAL_STORAGE)) {
+      container.$form().askPermission(READ_EXTERNAL_STORAGE,
           new PermissionResultHandler() {
             @Override
             public void HandlePermissionResponse(String permission, boolean granted) {
