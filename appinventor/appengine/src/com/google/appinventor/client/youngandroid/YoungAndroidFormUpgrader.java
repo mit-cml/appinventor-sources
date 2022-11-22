@@ -129,6 +129,11 @@ public final class YoungAndroidFormUpgrader {
 
     String componentType = componentProperties.get("$Type").asString().getString();
 
+    if (srcYaVersion < 218 && "GoogleSheets".equals(componentType)) {
+      componentType = "Spreadsheet";
+      componentProperties.put("$Type", new ClientJsonString("Spreadsheet"));
+    }
+
     // Get the source component version from the componentProperties.
     int srcCompVersion = 0;
     if (componentProperties.containsKey("$Version")) {
@@ -149,6 +154,18 @@ public final class YoungAndroidFormUpgrader {
         componentProperties.put("$Type", new ClientJsonString(componentType));
         componentProperties.put("$Version", new ClientJsonString("" + srcCompVersion));
         upgradeDetails.append(MESSAGES.upgradeDetailLoggerReplacedWithNotifier(
+            componentProperties.get("$Name").asString().getString()));
+      }
+    }
+
+    if (srcYaVersion < 216) {
+      // YandexTranslate deprecated in favor of Translator
+      if (componentType.equals("YandexTranslate")) {
+        componentType = "Translator";
+        srcCompVersion = COMPONENT_DATABASE.getComponentVersion(componentType);
+        componentProperties.put("$Type", new ClientJsonString(componentType));
+        componentProperties.put("$Version", new ClientJsonString("" + srcCompVersion));
+        upgradeDetails.append(MESSAGES.yandexTranslateReplacedwithTranslator(
             componentProperties.get("$Name").asString().getString()));
       }
     }
@@ -591,6 +608,11 @@ public final class YoungAndroidFormUpgrader {
       // The BluetoothClient.DisconnectOnError property was added.
       // No properties need to be modified to upgrade to version 6.
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // The PollingRate property was added.
+      // No properties need to be modified to upgrade to version 7.
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }

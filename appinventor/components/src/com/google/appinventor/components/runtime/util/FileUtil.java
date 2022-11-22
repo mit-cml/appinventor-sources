@@ -51,6 +51,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -141,34 +142,29 @@ public class FileUtil {
    * @return the file's contents as a byte array
    */
   public static byte[] readFile(Form form, String inputFileName) throws IOException {
-    File inputFile = new File(inputFileName);
-    // There are cases where our caller will hand us a file to read that
-    // doesn't exist and is expecting a FileNotFoundException if this is the
-    // case. So we check if the file exists and throw the exception
-    if (!inputFile.isFile()) {
-      throw new FileNotFoundException("Cannot find file: " + inputFileName);
+    if (inputFileName.startsWith("file://")) {
+      // The remainder of this function expects Unix-like paths, not URIs
+      inputFileName = inputFileName.substring(7);
     }
-    FileInputStream inputStream = null;
+    InputStream inputStream = null;
     byte[] content;
     try {
-      inputStream = openFile(form, inputFileName);
-      int fileLength = (int) inputFile.length();
-      content = new byte[fileLength];
-      int offset = 0;
-      int bytesRead;
-      do {
-        bytesRead = inputStream.read(content, offset, fileLength - offset);
-        if (bytesRead > 0) {
-          offset += bytesRead;
+      if (inputFileName.startsWith("/android_asset/")) {
+        // Assets don't live in the file system, so need to be handled separately.
+        inputStream = form.openAsset(inputFileName.substring(inputFileName.lastIndexOf('/') + 1));
+      } else {
+        File inputFile = new File(inputFileName);
+        // There are cases where our caller will hand us a file to read that
+        // doesn't exist and is expecting a FileNotFoundException if this is the
+        // case. So we check if the file exists and throw the exception
+        if (!inputFile.isFile()) {
+          throw new FileNotFoundException("Cannot find file: " + inputFileName);
         }
-        if (offset == fileLength) {
-          break;
-        }
-      } while (bytesRead >= 0);
-    } finally {
-      if (inputStream != null) {
-        inputStream.close();
+        inputStream = openFile(form, inputFileName);
       }
+      content = IOUtils.readStream(inputStream);
+    } finally {
+      IOUtils.closeQuietly(LOG_TAG, inputStream);
     }
     return content;
   }
@@ -216,7 +212,9 @@ public class FileUtil {
    */
   public static FileInputStream openFile(Form form, String fileName) throws IOException,
       PermissionException {
-    if (MediaUtil.isExternalFile(form, fileName)) {
+    // Make fileName a URI for testing permissions
+    String fileUri = fileName.startsWith("/") ? "file://" + fileName : fileName;
+    if (needsReadPermission(form, fileUri)) {
       form.assertPermission(READ_EXTERNAL_STORAGE);
     }
     return new FileInputStream(fileName);
@@ -600,7 +598,12 @@ public class FileUtil {
       throws IOException, FileException {
     String fileName = DOCUMENT_DIRECTORY + category + "/" + FILENAME_PREFIX
         + System.currentTimeMillis() + "." + extension;
-    return getExternalFile(form, fileName);
+    File target = getExternalFile(form, fileName);
+    File parent = target.getParentFile();
+    if (!parent.exists() && !parent.mkdirs()) {
+      throw new IOException("Unable to create directory: " + parent.getAbsolutePath());
+    }
+    return target;
   }
 
   /**
@@ -853,6 +856,18 @@ public class FileUtil {
   }
 
   /**
+   * Check if the given {@code fileUri} will need READ permission to be accessed.
+   *
+   * @param form the Form to serve as an Android context
+   * @param fileUri the file that will be accessed
+   * @return true if the READ_EXTERNAL_STORAGE will need to be granted before the file can be
+   *     accessed
+   */
+  public static boolean needsReadPermission(Form form, String fileUri) {
+    return needsPermission(form, fileUri);
+  }
+
+  /**
    * Check whether the given scoped file needs the READ_EXTERNAL_STORAGE permission to be
    * granted to the app before the file can be read.
    *
@@ -866,6 +881,25 @@ public class FileUtil {
         return true;
       default:
         return false;
+    }
+  }
+
+  /**
+   * Check if the given {@code fileUri} will need WRITE permission to be accessed.
+   *
+   * @param form the Form to serve as an Android context
+   * @param fileUri the file that will be accessed
+   * @return true if the WRITE_EXTERNAL_STORAGE will need to be granted before the file can be
+   *     accessed
+   */
+  public static boolean needsWritePermission(Form form, String fileUri) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      // WRITE_EXTERNAL_STORAGE is removed starting with Android R
+      // For files the app can write to, write operations will proceed as expected
+      // For file the app cannot write to, write operations will fail
+      return false;
+    } else {
+      return needsPermission(form, fileUri);
     }
   }
 
@@ -1040,7 +1074,7 @@ public class FileUtil {
       // New style. Use Java NIO to move the file, potentially between file system providers
       Path source = Paths.get(src.resolve(form).toURI());
       Path destination = Paths.get(dest.resolve(form).toURI());
-      Files.move(source, destination);
+      Files.move(source, destination, REPLACE_EXISTING);
       return true;
     } else {
       // Old style. Copy the file and then delete the original.

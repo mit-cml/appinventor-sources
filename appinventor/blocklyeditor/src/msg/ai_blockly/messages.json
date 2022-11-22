@@ -31,6 +31,7 @@
 	"Blockly.Msg.EXPAND_ALL": "Expand Blocks",
 	"Blockly.Msg.ARRANGE_H": "Arrange Blocks Horizontally",
 	"Blockly.Msg.ARRANGE_V": "Arrange Blocks Vertically",
+	"Blockly.Msg.REMOVE_UNUSED_BLOCKS": "Remove Unused Blocks",
 	"Blockly.Msg.ARRANGE_S": "Arrange Blocks Diagonally",
 	"Blockly.Msg.SORT_W": "Sort Blocks by Width",
 	"Blockly.Msg.SORT_H": "Sort Blocks by Height",
@@ -762,6 +763,9 @@
 	"Blockly.Msg.REPL_MORE_INFORMATION": "More Information",
 	"Blockly.Msg.REPL_NO_LEGACY": "Legacy Connection mode does not work when MIT App Inventor is loaded over https (secure).",
 	"Blockly.Msg.REPL_SECURE_CONNECTION": "<b>Note:</b> You are on a secure connection, legacy mode on the Companion will not work",
+        "Blockly.Msg.REPL_POPUP_TITLE": "Popup Needed",
+        "Blockly.Msg.REPL_POPUP_MESSAGE": "Please click the \"Continue\" button below",
+        "Blockly.Msg.REPL_POPUP_CONTINUE": "Continue",
 	"Blockly.Msg.WARNING_DELETE_X_BLOCKS": "Are you sure you want to delete all %1 of these blocks?",
 	"Blockly.Msg.GENERATE_YAIL": "Generate Yail",
 	"Blockly.Msg.DO_IT": "Do It",
@@ -786,6 +790,10 @@
 	"Blockly.Msg.DIALOG_SUBMIT": "Submit",
 	"Blockly.Msg.DIALOG_ENTER_VALUES": "Enter values for:",
 
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_HELPURL": "/reference/components/storage.html#Spreadsheet",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_PROPERTIES_HELPURL": "/reference/components/storage.html#Spreadsheet",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_EVENTS_HELPURL": "/reference/components/storage.html#Spreadsheet",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_SPREADSHEET_METHODS_HELPURL": "/reference/components/storage.html#Spreadsheet",
 
 	"Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS": "/reference/blocks/text.html#contains",
 	"Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL_CONTAINS_ALL": "/reference/blocks/text.html#containsall",
@@ -1086,6 +1094,9 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_NAVIGATION_HELPURL": "/reference/components/maps.html#Navigation",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_POLYGON_HELPURL": "/reference/components/maps.html#Polygon",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_MAPS_RECTANGLE_HELPURL": "/reference/components/maps.html#Rectangle",
+
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_CHART_HELPURL": "/reference/components/charts.html#Chart",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_CHARTDATA2D_HELPURL": "/reference/components/charts.html#ChartData2D",
 
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL": "/reference/components/sensors.html#AccelerometerSensor",

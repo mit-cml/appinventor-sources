@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2013-2019 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2013-2022 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -150,6 +150,13 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
   var blocksRep = dom; // Initial blocks rep is dom
   blocksRep = upgradeComponentType("Language", preUpgradeLanguageVersion, systemLanguageVersion, blocksRep);
 
+  if ((versionTags.length === 0 ||
+       parseInt(versionTags[0].getAttribute('ya-version'), 10) <= 217) &&
+      systemYoungAndroidVersion >= 218) {
+    // Spreadsheet was introduced as GoogleSheets in 217 but renamed in 218
+    blocksRep = Blockly.Versioning.renameComponentType("GoogleSheets", "Spreadsheet")(blocksRep);
+  }
+
   // --------------------------------------------------------------------------------
   // Upgrade components based on pre-upgrade version numbers
   var preUpgradeComponentVersionDict = Blockly.Versioning.makeComponentVersionDict(preUpgradeFormJsonObject);
@@ -160,6 +167,11 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
     if (Blockly.Versioning.isExternal(componentType, opt_workspace)) continue;
 
     var preUpgradeVersion = preUpgradeComponentVersionDict[componentType];
+    if (componentType == "GoogleSheets") { // This is a kludge, GoogleSheets is now Spreadsheet
+                                           // we renamed it above, but we are looking at the
+                                           // pre-upgraded name here, so just skip it here
+      continue;
+    }
     var systemVersion = Blockly.Versioning.getSystemComponentVersion(componentType, opt_workspace);
     blocksRep = upgradeComponentType(componentType, preUpgradeVersion, systemVersion, blocksRep);
   }
@@ -1350,6 +1362,31 @@ Blockly.Versioning.findAllPropertyBlocks = function (dom, componentType, propert
 };
 
 /**
+ * @param dom: DOM for XML workspace
+ * @param componentType: component type to rename
+ * @param newComponentType: New component type name
+ *
+ * @author jis@mit.edu (Jeffrey I. Schiller>
+ *
+ */
+
+Blockly.Versioning.renameComponentType = function(componentType, newComponentType) {
+  return function(blocksRep) {
+    var dom = Blockly.Versioning.ensureDom(blocksRep);
+    var allBlocks = dom.getElementsByTagName('block');
+    for (var b = 0, block; block = allBlocks[b]; b++) {
+      var mutation = Blockly.Versioning.firstChildWithTagName(block, "mutation");
+      if (mutation) {
+        if (mutation.getAttribute("component_type") == componentType) {
+          mutation.setAttribute("component_type", newComponentType);
+        }
+      }
+    }
+    return dom;
+  }
+};
+
+/**
  * @param elem: an HTML element
  * @param tag: string thats a tag name
  * @returns the first child of elem with the given tag name (case insensitive)
@@ -1563,9 +1600,13 @@ Blockly.Versioning.AllUpgradeMaps =
     // No blocks need to be modified to upgrade to version 5.
     5: "noUpgrade",
 
+    // The BluetoothClient.PollingRate property was added.
+    // No blocks need to be modified to upgrade to version 6.
+    6: "noUpgrade",
+
     // The BluetoothClient.DisconnectOnError property was added.
-    // No blocks need to be modified to upgrade to version 5.
-    6: "noUpgrade"
+    // No blocks need to be modified to upgrade to version 7.
+    7: "noUpgrade"
 
   }, // End BluetoothClient upgraders
 
@@ -1726,6 +1767,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End Canvas upgraders
 
+  "Chart": {
+
+  }, // End Chart upgraders
+
+  "ChartData2D": {
+
+  }, // End ChartData2D upgraders
+
   "CheckBox": {
 
     // AI2: The Value property was renamed to Checked.
@@ -1794,6 +1843,10 @@ Blockly.Versioning.AllUpgradeMaps =
     6: "noUpgrade"
 
   }, // End ContactPicker upgraders
+
+  "DataFile": {
+
+  }, // End DataFile upgraders
 
 
   "DatePicker": {
@@ -3250,8 +3303,19 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     // AI2: ApiKey property added
-    2: "noUpgrade"
+    2: "noUpgrade",
 
-  } // End YandexTranslate upgraders
+    // YandexTranslate to be removed, rename blocks to Translator
+    // which has identical set of blocks
+    3: [
+      Blockly.Versioning.renameComponentType("YandexTranslate", "Translator"),
+      ]
+
+  }, // End YandexTranslate upgraders
+
+  "Translator": {
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+  } // End Translate upgraders
 
 };

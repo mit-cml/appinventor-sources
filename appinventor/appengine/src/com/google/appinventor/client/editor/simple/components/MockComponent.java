@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -1238,6 +1238,26 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public void upgradeComplete() {
     this.componentDefinition = COMPONENT_DATABASE.getComponentDefinition(this.type); //Update ComponentDefinition
+  }
+
+  /**
+   * Hides or shows the specified property of the Component.
+   *
+   * @param property  Property key
+   * @param show  will show the property if set to true, will hide it otherwise
+   */
+  protected void showProperty(String property, boolean show) {
+    // Get the current type flags of the Property
+    int type = properties.getProperty(property).getType();
+
+    if (show) {
+      type &= ~EditableProperty.TYPE_INVISIBLE; // AND with all bits except INVISIBLE flag
+    } else {
+      type |= EditableProperty.TYPE_INVISIBLE; // OR with INVISIBLE flag to add invisibility
+    }
+
+    // Set the new type
+    properties.getProperty(property).setType(type);
   }
 
   public native void setShouldCancel(Event event, boolean cancelable)/*-{

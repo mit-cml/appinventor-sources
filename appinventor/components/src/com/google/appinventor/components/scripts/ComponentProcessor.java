@@ -78,6 +78,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
@@ -1759,7 +1760,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesQueries != null) {
       try {
         for (String packageName : usesQueries.packageNames()) {
-          componentInfo.queries.add("<package android:name=\"" + packageName + "\" />");
+          componentInfo.queries.add("<package android:name=\\\"" + packageName + "\\\" />");
         }
         for (IntentFilterElement intent : usesQueries.intents()) {
           updateWithNonEmptyValue(componentInfo.queries, intentFilterElementToIntentString(intent));
@@ -2026,7 +2027,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   /**
    * Returns the OptionList HelperKey associated with the given element.
-   * @param element the Element describing a class which implements the OptionList interface.
+   * @param optionList the Element describing a class which implements the OptionList interface.
    * @return the HelperKey associated with the given element.
    */
   private HelperKey optionListToHelperKey(Element optionList) {
@@ -2071,21 +2072,26 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           + "method.");
     }
 
-    // Get the fromUnderlyingValue method. This is not used, we just need to require it.
-    java.lang.reflect.Method fromValueMethod;
-    Type genericType = null;
-    try {
-      ParameterizedType optionListType = (ParameterizedType) clazz.getGenericInterfaces()[0];
-      genericType = optionListType.getActualTypeArguments()[0];
-      Class<?> typeClass = (Class<?>) genericType;
-      fromValueMethod = clazz.getDeclaredMethod("fromUnderlyingValue", typeClass);
-    } catch (NoSuchMethodException e) {
-      throw new IllegalArgumentException("Class: " + className + " must have a static "
-          + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
-    }
-    if (!java.lang.reflect.Modifier.isStatic(fromValueMethod.getModifiers())) {
-      throw new IllegalArgumentException("Class: " + className + " must have a static "
-          + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
+    // Get the "fromUnderlyingValue" static method if this class falls under the "com.google.appinventor.components"
+    // package. We don't use this method here, but we require the built-in helpers to have it for providing backward
+    // compatibility.
+    final PackageElement packageElem = processingEnv.getElementUtils().getPackageOf(optionElem);
+    if (packageElem.getQualifiedName().toString().startsWith("com.google.appinventor.components.")) {
+      java.lang.reflect.Method fromValueMethod;
+      Type genericType = null;
+      try {
+        ParameterizedType optionListType = (ParameterizedType) clazz.getGenericInterfaces()[0];
+        genericType = optionListType.getActualTypeArguments()[0];
+        Class<?> typeClass = (Class<?>) genericType;
+        fromValueMethod = clazz.getDeclaredMethod("fromUnderlyingValue", typeClass);
+      } catch (NoSuchMethodException e) {
+        throw new IllegalArgumentException("Class: " + className + " must have a static "
+                + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
+      }
+      if (!java.lang.reflect.Modifier.isStatic(fromValueMethod.getModifiers())) {
+        throw new IllegalArgumentException("Class: " + className + " must have a static "
+                + "fromUnderlyingValue(" + genericType.getTypeName() + ") method.");
+      }
     }
   
     // Create a map of enum const names -> values. This is used to filter the below elements
@@ -2755,7 +2761,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       try {
         Set<String> queries = new HashSet<>();
         for (String packageName : usesQueries.packageNames()) {
-          updateWithNonEmptyValue(queries, "<package android:name=\"" + packageName + "\" />");
+          updateWithNonEmptyValue(queries, "<package android:name=\\\"" + packageName + "\\\" />");
         }
         for (IntentFilterElement intent : usesQueries.intents()) {
           updateWithNonEmptyValue(queries, intentFilterElementToIntentString(intent));
@@ -2874,6 +2880,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // Calendar -> InstantInTime
     if (typeString.equals("java.util.Calendar")) {
       return "InstantInTime";
+    }
+
+    // Only components can be data sources in the block language
+    if (typeString.startsWith("com.google.appinventor.components.runtime.DataSource")) {
+      return "component";
     }
 
     if (typeString.equals("java.lang.Object")) {

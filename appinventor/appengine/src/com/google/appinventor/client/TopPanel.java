@@ -175,7 +175,10 @@ public class TopPanel extends Composite {
 
     // Sign Out
     userItems.add(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
-    userItems.add(new DropDownItem(WIDGET_NAME_DELETE_ACCOUNT, MESSAGES.deleteAccountLink(), new DeleteAccountAction(), "ode-ContextMenuItem-Red"));
+    // if we are allowed to delete accounts
+    if (ode.getDeleteAccountAllowed()) {
+      userItems.add(new DropDownItem(WIDGET_NAME_DELETE_ACCOUNT, MESSAGES.deleteAccountLink(), new DeleteAccountAction(), "ode-ContextMenuItem-Red"));
+    }
 
     accountButton = new DropDownButton(WIDGET_NAME_USER, " " , userItems, true);
     accountButton.setStyleName("ode-TopPanelButton");
