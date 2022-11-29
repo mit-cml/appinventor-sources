@@ -595,5 +595,12 @@
     "Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT": "Divide el texto en piezas usando el texto 'at' como puntos divisorios y produce una lista de resultados.  \nDividir 'uno,dos,tres,cuatro' en la ',' (coma) retorna la lista '(uno dos tres cuatro)'. \nDividir 'una-papa,dos-papa,tres-papa,cuatro' en '-papa', retorna la lista '(uno dos tres cuatro)'.",
     "Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE": "Texto Oculto",
     "Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP": "Produce texto, como bloque de texto.  La diferencia es que el \ntexto no puede descubrirse fácilmente examinando el APK de\nla app.  Usa esto cuando crees apps para distribuir que incluyan\ninformación confidencial, por ejemplo, claves de API.\nAdvertencia: Esto solo provee un muy bajo nivel de seguridad\ncontra adversarios expertos.",
-    "Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ": "Comprueba si las cadenas de texto son distintas, es decir, si no\ntienen los mismos caracteres en el mismo orden. Esto difiere\ndel ≠ común en el caso en que las cadenas de texto son números:\n123 y 0123 son ≠ como texto pero matemáticamente son =."
+    "Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_NEQ": "Comprueba si las cadenas de texto son distintas, es decir, si no\ntienen los mismos caracteres en el mismo orden. Esto difiere\ndel ≠ común en el caso en que las cadenas de texto son números:\n123 y 0123 son ≠ como texto pero matemáticamente son =.",
+    "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "Este bloque no contiene un número válido",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP": "Ejecuta los bloques en la sección 'haz' por cada par llave-valor en el diccionario. Usa los nombres de variable dados para referir el par llave/valor del elemento actual del diccionario.",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE": "por cada en el diccionario",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "valor",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_KEY": "llave",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_DO": "haz",
+    "Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT": "por cada %1 con %2 en el diccionario %3"
 }
