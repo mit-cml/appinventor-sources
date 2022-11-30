@@ -566,8 +566,12 @@ public class YaVersion {
   // - CHART_DATA_2D_COMPONENT_VERSION was introduced
   // - DATA_FILE_COMPONENT_VERSION was introduced
   // - BLUETOOTH_CLIENT_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 220:
+  // - TEXTBOX_COMPONENT_VERSION was incremented to 7
+  // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 6
+  // - EMAILPICKER_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 219;
+  public static final int YOUNG_ANDROID_VERSION = 220;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -885,7 +889,9 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   // For EMAILPICKER_COMPONENT_VERSION 3:
   // - RequestFocus function was added (via TextBoxBase)
-  public static final int EMAILPICKER_COMPONENT_VERSION = 3;
+  // For EMAILPICKER_COMPONENT_VERSION 4:
+  // - TextChanged event was added (via TextBoxBase)
+  public static final int EMAILPICKER_COMPONENT_VERSION = 4;
 
   // For FEATURE_COLLECTION_COMPONENT_VERSION 1:
   // - Initial FeatureCollection implementation for Maps
@@ -1217,7 +1223,9 @@ public class YaVersion {
   // - Added PasswordVisible property
   // For For PASSWORDTEXTBOX_COMPONENT_VERSION 5:
   // - Added NumbersOnly property
-  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 5;
+  // For For PASSWORDTEXTBOX_COMPONENT_VERSION 6:
+  // - TextChanged event was added (via TextBoxBase)
+  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 6;
 
   // For PEDOMETER_COMPONENT_VERSION 2:
   // - The step sensing algorithm was updated to be more accurate.
@@ -1322,7 +1330,9 @@ public class YaVersion {
   // - RequestFocus method was added
   // For TEXTBOX_COMPONENT_VERSION 6:
   // - ReadOnly property was added
-  public static final int TEXTBOX_COMPONENT_VERSION = 6;
+  // For TEXTBOX_COMPONENT_VERSION 7:
+  // - TextChanged event was added (via TextBoxBase)
+  public static final int TEXTBOX_COMPONENT_VERSION = 7;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
