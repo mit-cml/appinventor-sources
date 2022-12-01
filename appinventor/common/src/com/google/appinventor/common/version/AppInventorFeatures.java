@@ -119,4 +119,11 @@ public final class AppInventorFeatures {
     return false;
   }
 
+  /**
+   * If set to true, the Blockly XML will be prettified for human readability.
+   * If false, the XML is serialized to a more compact form with minimal whitespace.
+   */
+  public static boolean doPrettifyXml() {
+    return false;
+  }
 }

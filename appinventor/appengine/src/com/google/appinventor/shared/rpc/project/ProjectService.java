@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -196,6 +196,21 @@ public interface ProjectService extends RemoteService {
   String load(long projectId, String fileId);
 
   /**
+   * Loads the file information associated with a node in the project tree. After
+   * loading the file, the contents of it are parsed.
+   *
+   * <p>Expected format is either JSON or CSV. If the first character of the
+   * file's contents is a left curly bracket ( { ), then JSON parsing is
+   * attempted. Otherwise, CSV parsing is done.
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  List of parsed columns (each column is a List of Strings)
+   */
+  List<List<String>> loadDataFile(long projectId, String fileId);
+
+  /**
    * Loads the file information associated with a node in the project tree. The
    * actual return value depends on the file kind. Source (text) files should
    * typically return their contents. Image files will be more likely to return
@@ -315,7 +330,7 @@ public interface ProjectService extends RemoteService {
    *
    * @return  results of invoking the build command
    */
-  RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver);
+  RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab);
 
   /**
    * Gets the result of a build command for the project from the back-end.

@@ -15,7 +15,7 @@
 exports.execute =  function (){
 
   var fs = require('fs');
-  var messages = fs.read('src/msg/messages.json');
+  var messages = fs.read('../build/blocklyeditor/msg/messages.json');
 
   // Open the actual page and load all the JavaScript in it
   // if success is true, all went well

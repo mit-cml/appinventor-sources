@@ -4,7 +4,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 var fs = require('fs'); //Always required to read from files
-var messages = fs.read('src/msg/messages.json');
+var messages = fs.read('../build/blocklyeditor/msg/messages.json');
 
 // PhantomJS page object to open and load an URL
 var page = require('webpage').create();
@@ -66,9 +66,9 @@ page.open('src/demos/yail/yail_testing_index.html', function(status) {
       'EVENT-TranslatedEvent': 'SuccessfulEvent',
       'METHOD-TranslatedMethod': 'SuccessfulMethod',
       'PROPERTY-TranslatedProperty': 'SuccessfulProperty',
-      'EVENTDESC-TranslatedEvent': 'Successfully translated event test.',
-      'METHODDESC-TranslatedMethod': 'Successfully translated method test.',
-      'PROPDESC-TranslatedProperty': 'Successfully translated property test.'
+      'EVENTDESC-TranslatedEventEventDescriptions': 'Successfully translated event test.',
+      'METHODDESC-TranslatedMethodMethodDescriptions': 'Successfully translated method test.',
+      'PROPDESC-TranslatedPropertyPropertyDescriptions': 'Successfully translated property test.'
     });
 
     var block;

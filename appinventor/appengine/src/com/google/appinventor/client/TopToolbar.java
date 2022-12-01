@@ -39,8 +39,12 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_SAVE = "Save";
   private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
   private static final String WIDGET_NAME_CHECKPOINT = "Checkpoint";
-  private static final String WIDGET_NAME_BUILD_BARCODE2 = "Barcode2";
-  private static final String WIDGET_NAME_BUILD_DOWNLOAD2 = "Download2";
+  private static final String WIDGET_NAME_MY_PROJECTS = "MyProjects";
+  private static final String WIDGET_NAME_BUILD = "Build";
+  private static final String WIDGET_NAME_BUILD_ANDROID_APK = "BuildApk";
+  private static final String WIDGET_NAME_BUILD_ANDROID_AAB = "BuildAab";
+  private static final String WIDGET_NAME_BUILD_ANDROID_APK2 = "BuildApk2";
+  private static final String WIDGET_NAME_BUILD_ANDROID_AAB2 = "BuildAab2";
   private static final String WIDGET_NAME_BUILD_YAIL = "Yail";
   private static final String WIDGET_NAME_LIBRARY = "Library";
   private static final String WIDGET_NAME_GETSTARTED = "GetStarted";
@@ -52,6 +56,13 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
+
+  private static final String WIDGET_NAME_ADMIN = "Admin";
+  private static final String WIDGET_NAME_USER_ADMIN = "UserAdmin";
+  private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
+  private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
+  private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+  private static final String WINDOW_OPEN_LOCATION = "_blank";
 
   private static final boolean iamChromebook = isChromeBook();
 
@@ -126,6 +137,9 @@ public class TopToolbar extends Composite {
       fileDropDown.removeItemById(WIDGET_NAME_CHECKPOINT);
       fileDropDown.removeItemById(WIDGET_NAME_UPLOAD_KEYSTORE);
       fileDropDown.removeItemById(WIDGET_NAME_DELETE_KEYSTORE);
+      // TODO: Are these implemented?
+      fileDropDown.removeItemById(WIDGET_NAME_BUILD_ANDROID_APK);
+      fileDropDown.removeItemById(WIDGET_NAME_BUILD_ANDROID_AAB);
     }
     fileDropDown.removeUnneededSeparators();
 
@@ -142,9 +156,11 @@ public class TopToolbar extends Composite {
     // much older devices. The second buildserver will package applications with a target
     // SDK of 26 for those MIT App Inventor users who wish to put their applications in
     // the Play Store after 8/1/2018.
+    // TODO: This is probably wrong. Need to review how this functionality works with uibinder
+    // template.
     if (!Ode.getInstance().hasSecondBuildserver()) {
-      buildDropDown.removeItemById(WIDGET_NAME_BUILD_BARCODE2);
-      buildDropDown.removeItemById(WIDGET_NAME_BUILD_DOWNLOAD2);
+      buildDropDown.removeItemById(WIDGET_NAME_BUILD_ANDROID_APK2);
+      buildDropDown.removeItemById(WIDGET_NAME_BUILD_ANDROID_AAB2);
     }
     if (!AppInventorFeatures.hasYailGenerationOption()
         || !Ode.getInstance().getUser().getIsAdmin()) {
@@ -305,8 +321,12 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
-      buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
-      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
+      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), false);
+      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), false);
+      if (Ode.getInstance().hasSecondBuildserver()) {
+        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk2(), false);
+        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), false);
+      }
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
@@ -316,8 +336,12 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);
-      buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), true);
-      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), true);
+      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), true);
+      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), true);
+      if (Ode.getInstance().hasSecondBuildserver()) {
+        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk2(), true);
+        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), true);
+      }
     }
     updateKeystoreFileMenuButtons(true);
   }

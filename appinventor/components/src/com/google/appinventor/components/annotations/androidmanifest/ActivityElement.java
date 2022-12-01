@@ -295,7 +295,7 @@ public @interface ActivityElement {
    *
    * @return  the activity exported attribute
    */
-  String exported() default "";
+  String exported() default "true";
 
   /**
    * Whether or not an existing instance of the activity should be shut down

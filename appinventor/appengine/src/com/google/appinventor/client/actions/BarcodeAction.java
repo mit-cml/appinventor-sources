@@ -17,6 +17,7 @@ import com.google.gwt.user.client.Command;
 public class BarcodeAction implements Command {
 
   private boolean secondBuildserver = false;
+  private boolean isAab = false;
 
   public BarcodeAction() {
     this(false);
@@ -26,8 +27,17 @@ public class BarcodeAction implements Command {
     this.secondBuildserver = secondBuildserver;
   }
 
+  public BarcodeAction(boolean secondBuildserver, boolean isAab)
+  {
+    this.secondBuildserver = secondBuildserver;
+    this.isAab = isAab;
+  }
+
   public void setSecond(boolean second) {
     secondBuildserver = second;
+  }
+  public void setIsAab(boolean isAab_p) {
+    isAab = isAab_p;
   }
 
   @Override
@@ -37,10 +47,7 @@ public class BarcodeAction implements Command {
       String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
       ChainableCommand cmd = new SaveAllEditorsCommand(
           new GenerateYailCommand(
-              new BuildCommand(target, secondBuildserver,
-                new ShowProgressBarCommand(target,
-                  new WaitForBuildResultCommand(target,
-                    new ShowBarcodeCommand(target)), "BarcodeAction"))));
+              new BuildCommand(target, secondBuildserver, isAab)));
       if (!Ode.getInstance().getWarnBuild(secondBuildserver)) {
         cmd = new WarningDialogCommand(target, secondBuildserver, cmd);
         Ode.getInstance().setWarnBuild(secondBuildserver, true);

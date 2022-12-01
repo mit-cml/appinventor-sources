@@ -74,7 +74,7 @@ public class ReplFormTest extends FormTest {
    * @param target the target asset path
    */
   public static void copyAssetToReplAssets(Form form, String source, String target) {
-    java.io.File targetFile = new java.io.File(QUtil.getReplAssetPath(form) + target);
+    java.io.File targetFile = new java.io.File(QUtil.getReplAssetPath(form, true) + target);
     if (!targetFile.getParentFile().exists() && !targetFile.getParentFile().mkdirs()) {
       throw new IllegalStateException("Could not configure REPL assets in setup");
     }

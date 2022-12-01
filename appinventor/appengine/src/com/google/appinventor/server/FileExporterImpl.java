@@ -6,7 +6,6 @@
 
 package com.google.appinventor.server;
 
-import com.google.common.base.Strings;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
@@ -48,7 +47,7 @@ public final class FileExporterImpl implements FileExporter {
     // There should never be more than one .apk file.
 
     for (String fileName : files) {
-      if (fileName.endsWith(".apk")) {
+      if (fileName.endsWith(".apk") || fileName.endsWith(".aab")) {
         byte[] content = storageIo.downloadRawFile(userId, projectId, fileName);
         return new RawFile(StorageUtil.basename(fileName), content);
       }

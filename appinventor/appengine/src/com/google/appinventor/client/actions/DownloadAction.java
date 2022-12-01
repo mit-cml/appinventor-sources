@@ -35,12 +35,10 @@ public class DownloadAction implements Command {
     ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
     if (projectRootNode != null) {
       String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
+      // TODO: Implement aab boolean
       ChainableCommand cmd = new SaveAllEditorsCommand(
           new GenerateYailCommand(
-              new BuildCommand(target, secondBuildserver,
-                new ShowProgressBarCommand(target,
-                  new WaitForBuildResultCommand(target,
-                    new DownloadProjectOutputCommand(target)), "DownloadAction"))));
+              new BuildCommand(target, secondBuildserver, false)));
       if (!Ode.getInstance().getWarnBuild(secondBuildserver)) {
         cmd = new WarningDialogCommand(target, secondBuildserver, cmd);
         Ode.getInstance().setWarnBuild(secondBuildserver, true);

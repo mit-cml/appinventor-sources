@@ -75,7 +75,8 @@ public class BlocklyPanel extends HTMLPanel {
         MESSAGES.useCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.PREFERRED_COMPANION + "u"),
         YaVersion.COMPANION_UPDATE_URL,
         YaVersion.COMPANION_UPDATE_URL1,
-        YaVersion.COMPANION_UPDATE_EMULATOR_URL);
+        YaVersion.COMPANION_UPDATE_EMULATOR_URL,
+        YaVersion.EMULATOR_UPDATE_URL);
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }
@@ -140,6 +141,7 @@ public class BlocklyPanel extends HTMLPanel {
     getElement().addClassName("svg");
     getElement().setId(formName);
     this.formName = formName;
+
     /* Blockly initialization now occurs in three stages. This is due to the fact that certain
      * Blockly objects rely on SVG methods such as getScreenCTM(), which are not properly
      * initialized and/or null prior to the svg element being attached to the DOM. The first
@@ -700,7 +702,27 @@ public class BlocklyPanel extends HTMLPanel {
    */
   public native String getBlocksContent() /*-{
     return this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
-      .saveBlocksFile();
+      .saveBlocksFile(@com.google.appinventor.common.version.AppInventorFeatures::doPrettifyXml()());
+  }-*/;
+
+  public native void addScreen(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .addScreen(name);
+  }-*/;
+
+  public native void removeScreen(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .removeScreen(name);
+  }-*/;
+
+  public native void addAsset(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .addAsset(name);
+  }-*/;
+
+  public native void removeAsset(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .removeAsset(name);
   }-*/;
 
   /**
@@ -858,11 +880,12 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.PREFERRED_COMPANION;
   }-*/;
 
-  static native void setPreferredCompanion(String comp, String url, String url1, String url2) /*-{
+  static native void setPreferredCompanion(String comp, String url, String url1, String url2, String url3) /*-{
     $wnd.PREFERRED_COMPANION = comp;
     $wnd.COMPANION_UPDATE_URL = url;
     $wnd.COMPANION_UPDATE_URL1 = url1;
     $wnd.COMPANION_UPDATE_EMULATOR_URL = url2;
+    $wnd.EMULATOR_UPDATE_URL = url3;
   }-*/;
 
   static native void addAcceptableCompanionPackage(String comp) /*-{

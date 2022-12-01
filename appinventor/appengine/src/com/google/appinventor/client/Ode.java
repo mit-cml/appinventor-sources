@@ -38,21 +38,25 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
+import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
+import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
+import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
 import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
-import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthService;
-import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthServiceAsync;
-import com.google.appinventor.shared.rpc.component.ComponentService;
-import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
@@ -181,7 +185,7 @@ public class Ode implements EntryPoint {
   public static final int PROJECTS = 1;
   public static final int USERADMIN = 2;
   public static final int TRASHCAN = 3;
-  public static int currentView = DESIGNER;
+  public static int currentView = PROJECTS;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
@@ -239,8 +243,8 @@ public class Ode implements EntryPoint {
   private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
   private final AdminInfoServiceAsync adminInfoService = GWT.create(AdminInfoService.class);
 
-  //Web service for CloudDB authentication operations
-  private final CloudDBAuthServiceAsync cloudDBAuthService = GWT.create(CloudDBAuthService.class);
+  //Web service for Token authentication operations
+  private final TokenAuthServiceAsync tokenAuthService = GWT.create(TokenAuthService.class);
 
   private boolean windowClosing;
 
@@ -767,10 +771,6 @@ public class Ode implements EntryPoint {
               @Override
               public void onProjectsLoaded() {
                 projectManager.removeProjectManagerEventListener(this);
-                if (!handleQueryString() && shouldAutoloadLastProject()) {
-                  openPreviousProject();
-                }
-
                 // This handles any built-in templates stored in /war
                 // Retrieve template data stored in war/templates folder and
                 // and save it for later use in TemplateUploadWizard
@@ -782,6 +782,10 @@ public class Ode implements EntryPoint {
                       public void onSuccess(String json) {
                         // Save the templateData
                         TemplateUploadWizard.initializeBuiltInTemplates(json);
+
+                        if (!handleQueryString() && shouldAutoloadLastProject()) {
+                          openPreviousProject();
+                        }
                       }
                     };
                 Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
@@ -1087,12 +1091,12 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Get an instance of the CloudDBAuth web service.
+   * Get an instance of the TokenAuth web service.
    *
-   * @return CloudDBAuth web service instance
+   * @return TokenAuth web service instance
    */
-  public CloudDBAuthServiceAsync getCloudDBAuthService(){
-    return cloudDBAuthService;
+  public TokenAuthServiceAsync getTokenAuthService(){
+    return tokenAuthService;
   }
 
   /**
@@ -1376,6 +1380,9 @@ public class Ode implements EntryPoint {
         public void run() {
         }
       }, true);                 // Wait for i/o!!!
+
+    doCloseProxy();
+
   }
 
   /**
@@ -2104,7 +2111,7 @@ public class Ode implements EntryPoint {
    * @return nonce
    */
   public String generateNonce() {
-    int v = random.nextInt(1000000);
+    int v = random.nextInt(10000000);
     nonce = Integer.toString(v, 36); // Base 36 string
     return nonce;
   }
@@ -2266,11 +2273,14 @@ public class Ode implements EntryPoint {
       bindDesignToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
     } else {
+      String[] urlSplits = newURL.split("//"); // [protocol, rest]
+      boolean isHttps = Window.Location.getProtocol() == "https:" || urlSplits[0] == "https:";
       String locale = Window.Location.getParameter("locale");
       if (locale != null) {
         newURL += (newURL.contains("?") ? "&" : "?") + "locale=" + locale;
       }
-      tutorialPanel.setUrl(newURL);
+      String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1];
+      tutorialPanel.setUrl(effectiveUrl);
       bindDesignToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);
     }
@@ -2314,6 +2324,10 @@ public class Ode implements EntryPoint {
 
   public boolean getGalleryReadOnly() {
     return config.getGalleryReadOnly();
+  }
+
+  public boolean getDeleteAccountAllowed() {
+    return config.getDeleteAccountAllowed();
   }
 
   /**
@@ -2381,6 +2395,12 @@ public class Ode implements EntryPoint {
 
   public static native void CLog(String message) /*-{
     console.log(message);
+  }-*/;
+
+  private static native void doCloseProxy() /*-{
+    if (top.proxy) {
+      top.proxy.close();
+    }
   }-*/;
 
 }

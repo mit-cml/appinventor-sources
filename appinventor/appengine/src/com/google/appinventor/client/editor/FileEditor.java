@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.editor;
 
+import com.google.appinventor.client.AssetManager;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.shared.rpc.project.FileNode;
@@ -13,6 +14,7 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
+import java.util.logging.Logger;
 
 /**
  * Abstract superclass for all file editors.
@@ -20,6 +22,7 @@ import com.google.gwt.user.client.ui.Composite;
  * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class FileEditor extends Composite {
+  private static final Logger LOG = Logger.getLogger(FileEditor.class.getName());
 
   // The project editor that contains this file editor.
   protected final ProjectEditor projectEditor;

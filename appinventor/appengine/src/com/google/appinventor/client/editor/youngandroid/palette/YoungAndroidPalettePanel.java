@@ -237,7 +237,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   /**
-   *  Users press escapte button, results and searchText will be cleared
+   *  Users press escape button, results and searchText will be cleared
    */
   private class EscapeKeyDownHandler implements KeyDownHandler {
     @Override

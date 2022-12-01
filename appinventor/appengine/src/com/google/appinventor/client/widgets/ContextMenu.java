@@ -64,6 +64,19 @@ public final class ContextMenu {
    * @return  menu item
    */
   public MenuItem addItem(String text, boolean asHtml, final Command command) {
+    return addItem(text, asHtml, command, null);
+  }
+
+  /**
+   * Adds a menu item to the context menu.
+   *
+   * @param text  caption of menu item
+   * @param asHtml whether to treat text as html
+   * @param command   command to execute when menu item is chosen
+   * @param style CSS Style to use or null for default
+   * @return  menu item
+   */
+  public MenuItem addItem(String text, boolean asHtml, final Command command, final String style) {
     MenuItem menuItem = new MenuItem(text, asHtml, new Command() {
       @Override
       public void execute() {
@@ -71,7 +84,11 @@ public final class ContextMenu {
         command.execute();
       }
     });
-    menuItem.setStylePrimaryName("ode-ContextMenuItem");
+    if (style != null) {
+      menuItem.setStylePrimaryName(style);
+    } else {
+      menuItem.setStylePrimaryName("ode-ContextMenuItem");
+    }
     menuBar.addItem(menuItem);
     return menuItem;
   }

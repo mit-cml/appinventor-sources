@@ -13,7 +13,7 @@ var expected = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/
 var formJson = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/pictureCycle/Screen1.scm');
 formJson = formJson.substring(9, formJson.length-2); // Cut off Leading $JSON
 var blocks = fs.read(path + '/tests/com/google/appinventor/blocklyeditor/data/pictureCycle/Screen1.bky');
-var messages = fs.read('src/msg/messages.json');
+var messages = fs.read('../build/blocklyeditor/msg/messages.json');
 
 // PhantomJS page object to open and load an URL
 var page = require('webpage').create();

@@ -315,13 +315,13 @@ Blockly.Blocks['dictionaries_getters'] = {
     });
   },
   typeblock: [{
-    translatedName: Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TITLE,
+    translatedName: Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TYPEBLOCK,
     dropDown: {
       titleName: 'OP',
       value: 'KEYS'
     }
   }, {
-    translatedName: Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TITLE,
+    translatedName: Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK,
     dropDown: {
       titleName: 'OP',
       value: 'VALUES'

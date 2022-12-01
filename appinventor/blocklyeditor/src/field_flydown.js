@@ -141,7 +141,8 @@ Blockly.FieldFlydown.prototype.showFlydownMaker_ = function() {
   var field = this; // Name receiver in variable so can close over this variable in returned thunk
   return function() {
     if (Blockly.FieldFlydown.showPid_ !== 0 &&
-        Blockly.dragMode_ === Blockly.DRAG_NONE) {
+        Blockly.dragMode_ === Blockly.DRAG_NONE && 
+        !Blockly.FieldTextInput.htmlInput_) {
       try {
         field.showFlydown_();
       } catch (e) {

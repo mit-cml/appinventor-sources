@@ -12,6 +12,7 @@ import static com.google.appinventor.client.Ode.getSystemConfig;
 import com.google.appinventor.client.actions.SelectLanguage;
 
 import com.google.appinventor.client.boxes.MotdBox;
+import com.google.appinventor.client.boxes.ProjectListBox;
 
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
@@ -40,6 +41,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.List;
 import java.util.MissingResourceException;
@@ -68,6 +73,7 @@ public class TopPanel extends Composite {
   @UiField DropDownButton accountButton;
   @UiField FlowPanel links;
   private static final String WIDGET_NAME_LANGUAGE = "Language";
+  private final String WIDGET_NAME_DELETE_ACCOUNT = "DeleteAccount";
 
   private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
   private static final String WINDOW_OPEN_LOCATION = "_ai2";
@@ -203,6 +209,5 @@ public class TopPanel extends Composite {
       Window.open(url, WINDOW_OPEN_LOCATION, WINDOW_OPEN_FEATURES);
     }
   }
-
 }
 

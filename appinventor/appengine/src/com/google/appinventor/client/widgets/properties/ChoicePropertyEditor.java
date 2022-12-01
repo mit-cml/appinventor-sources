@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -103,7 +103,7 @@ public class ChoicePropertyEditor extends PropertyEditor {
 
   /**
    * Creates a new instance of the property editor with choice names.
-   * Each choice name is treated as both the captain and the value of a choice.
+   * Each choice name is treated as both the caption and the value of a choice.
    *
    * @param choiceNames  array of choice names to choose from
    */

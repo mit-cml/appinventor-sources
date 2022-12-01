@@ -170,6 +170,7 @@
   <macrodef name="ai.dojunit">
     <attribute name="aij-testingtarget" />
     <attribute name="aij-dir" />
+    <attribute name="aij-forkmode" default="once" />
     <attribute name="aij-prod" default="false" />
     <!-- The following element is used to workaround a bug in older JDKs that prevents
          Robolectric's annotations from being read by javac -->
@@ -207,9 +208,9 @@
       <junit printsummary="yes"
              fork="true"
              dir="${basedir}"
-             forkmode="once"
+             forkmode="@{aij-forkmode}"
              haltonfailure="no"
-             maxmemory="925m"
+             maxmemory="2000m"
              showoutput="no">
         <jvmarg value="-XX:MaxPermSize=128m"/>
         <sysproperty key="gwt.args" value="-prod -gen ${local.build.dir}/gen -war ${local.build.dir}/build/war" if:true="@{aij-prod}"/>
@@ -224,6 +225,7 @@
         <batchtest todir="${reports.dir}/raw/" unless="test_name">
           <fileset dir="${tests.dir}">
             <include name="@{aij-dir}/**/*Test.java" />
+            <exclude name="@{aij-dir}/**/Abstract*Test.java" />
           </fileset>
         </batchtest>
       </junit>

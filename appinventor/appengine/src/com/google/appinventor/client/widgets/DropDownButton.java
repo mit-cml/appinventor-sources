@@ -36,15 +36,16 @@ public class DropDownButton extends TextButton {
   private final List<MenuItem> items = new ArrayList<MenuItem>();
   private final List<UIObject> allItems = new ArrayList<UIObject>();
   private boolean rightAlign = false;
-
   private String align = "left";
+
 
   /**
    * A subclass of PZAwarePositionCallback designed to position the ContextMenu
    * of a DropDownButton.
    */
   private class DropDownPositionCallback extends PZAwarePositionCallback {
-    public DropDownPositionCallback(Element elem) {
+    public DropDownPositionCallback(Element elem)
+    {
       super(elem);
     }
 

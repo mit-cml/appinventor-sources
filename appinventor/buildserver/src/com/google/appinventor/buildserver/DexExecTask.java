@@ -21,7 +21,9 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +31,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Dex task, modified from the Android SDK to run in BuildServer.
@@ -67,6 +71,7 @@ public class DexExecTask {
     public void setVerbose(boolean verbose) {
         mVerbose = verbose;
     }
+
 
     public void setMainDexClassesFile(String classList) {
         mainDexFile = classList;

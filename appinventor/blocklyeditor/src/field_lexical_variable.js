@@ -443,7 +443,7 @@ Blockly.FieldLexicalVariable.nameNotIn = function(name, nameList) {
  * Split name into digit suffix and prefix before it.
  * Return two-element list of prefix and suffix strings. Suffix is empty if no digits.
  * @param {string} name Input string
- * @return {string list} Two-element list of prefix and suffix
+ * @return {string[]} Two-element list of prefix and suffix
  */
 Blockly.FieldLexicalVariable.prefixSuffix = function(name) {
   var prefix = name;
@@ -475,7 +475,7 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
     // this.sourceBlock excludes block being renamed from consideration
   // Potentially rename declaration against other occurrences
   newName = Blockly.FieldLexicalVariable.nameNotIn(newName, globals);
-  if ((! (newName === oldName)) && this.sourceBlock_.rendered) {
+  if (this.sourceBlock_.rendered) {
     // Rename getters and setters
     if (Blockly.mainWorkspace) {
       var blocks = Blockly.mainWorkspace.getAllBlocks();
@@ -484,8 +484,10 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
         var renamingFunction = block.renameLexicalVar;
         if (renamingFunction) {
             renamingFunction.call(block,
-                                  Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + oldName,
-                                  Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + newName);
+              Blockly.GLOBAL_KEYWORD + Blockly.menuSeparator + oldName,
+              Blockly.GLOBAL_KEYWORD + Blockly.menuSeparator + newName,
+              Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + oldName,
+              Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + newName);
         }
       }
     }

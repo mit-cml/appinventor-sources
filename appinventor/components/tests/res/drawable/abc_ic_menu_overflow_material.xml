@@ -23,4 +23,4 @@
     <path
             android:pathData="M12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2c-1.1,0 -2,0.9 -2,2S10.9,8 12,8zM12,10c-1.1,0 -2,0.9 -2,2s0.9,2 2,2c1.1,0 2,-0.9 2,-2S13.1,10 12,10zM12,16c-1.1,0 -2,0.9 -2,2s0.9,2 2,2c1.1,0 2,-0.9 2,-2S13.1,16 12,16z"
             android:fillColor="@android:color/white"/>
-</vector>
+</vector><!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/drawable/abc_ic_menu_overflow_material.xml -->

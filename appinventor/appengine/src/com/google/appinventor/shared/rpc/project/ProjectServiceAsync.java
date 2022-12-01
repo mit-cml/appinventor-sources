@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,7 +16,6 @@ import java.util.List;
  * Interface for the service providing project information. All declarations
  * in this interface are mirrored in {@link ProjectService}. For further
  * information see {@link ProjectService}.
- *
  */
 public interface ProjectServiceAsync {
 
@@ -122,6 +121,13 @@ public interface ProjectServiceAsync {
   void load(long projectId, String fileId, AsyncCallback<String> callback);
 
   /**
+   * Loads a data file asynchronously from the server.
+   *
+   * @see ProjectService#loadDataFile(long, String)
+   */
+  void loadDataFile(long projectId, String fileId, AsyncCallback<List<List<String>>> callback);
+
+  /**
    * @see ProjectService#load2(long, String)
    */
   void load2(long projectId, String fileId, AsyncCallback<ChecksumedLoadFile> callback);
@@ -134,7 +140,7 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#loadraw(long, String)
    */
-  void loadraw(long projectId, String fileId, AsyncCallback<byte []> callback);
+  void loadraw(long projectId, String fileId, AsyncCallback<byte[]> callback);
 
   /**
    * @see ProjectService#loadraw2(long, String)
@@ -171,7 +177,7 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#build(long, String, String, boolean)
    */
-  void build(long projectId, String nonce, String target, boolean secondBuildserver, AsyncCallback<RpcResult> callback);
+  void build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab, AsyncCallback<RpcResult> callback);
 
   /**
    * @see ProjectService#getBuildResult(long, String)

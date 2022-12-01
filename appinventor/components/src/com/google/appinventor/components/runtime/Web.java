@@ -1,12 +1,15 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import android.Manifest;
+import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 import android.app.Activity;
 
 import android.text.TextUtils;
@@ -33,6 +36,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 
+import com.google.appinventor.components.runtime.errors.DispatchableError;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.RequestTimeoutException;
@@ -41,6 +45,8 @@ import com.google.appinventor.components.runtime.repackaged.org.json.XML;
 
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
+import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
+import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.GingerbreadUtil;
@@ -71,8 +77,14 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -93,13 +105,10 @@ import org.xml.sax.InputSource;
     nonVisible = true,
     iconName = "images/web.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-  "android.permission.WRITE_EXTERNAL_STORAGE," +
-  "android.permission.READ_EXTERNAL_STORAGE")
+@UsesPermissions({INTERNET})
 @UsesLibraries(libraries = "json.jar")
-
-
-public class Web extends AndroidNonvisibleComponent implements Component {
+public class Web extends AndroidNonvisibleComponent implements Component,
+    ObservableDataSource<YailList, Future<YailList>> {
   /**
    * InvalidRequestHeadersException can be thrown from processRequestHeaders.
    * It is thrown if the list passed to processRequestHeaders contains an item that is not a list.
@@ -213,11 +222,25 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   private String responseFileName = "";
   private int timeout = 0;
 
-  // wether or not we have permission to manipulate external storage
+  // whether we have permission to manipulate external storage (read and write, separately)
+  // requests may need different combinations of permissions, so consider these independently.
+  private boolean haveReadPermission = false;
+  private boolean haveWritePermission = false;
 
-  private boolean havePermission = false;
+  // Used to keep track of the last executed AsyncTask.
+  // Used when retrieving Data Values for Chart data importing.
+  // This allows to retrieve a recently updated value after
+  // it has been retrieved asynchronously. Instead of running
+  // regular Runnables on each asynchronous operation, the
+  // lastTask variable is instead constructed and ran.
+  private FutureTask<Void> lastTask = null;
 
+  // Store a List of columns parsed from the latest response (JSON/CSV).
+  // The columns are used for Chart Data importing.
+  private YailList columns = new YailList();
 
+  // Set of observers
+  private HashSet<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   /**
    * Creates a new Web component.
@@ -423,12 +446,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         performRequest(webProps, null, null, "GET", METHOD);
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /**
@@ -445,11 +470,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @param text the text data for the POST request
    */
   @SimpleFunction(description = "Performs an HTTP POST request using the Url property and " +
-      "the specified text.<br>" +
-      "The characters of the text are encoded using UTF-8 encoding.<br>" +
+      "the specified text.\n" +
+      "The characters of the text are encoded using UTF-8 encoding.\n" +
       "If the SaveResponse property is true, the response will be saved in a file and the " +
       "GotFile event will be triggered. The responseFileName property can be used to specify " +
-      "the name of the file.<br>" +
+      "the name of the file.\n" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
   public void PostText(final String text) {
     requestTextImpl(text, "UTF-8", "PostText", "POST");
@@ -471,11 +496,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    *                 encoding is empty or null, UTF-8 encoding will be used.
    */
   @SimpleFunction(description = "Performs an HTTP POST request using the Url property and " +
-      "the specified text.<br>" +
-      "The characters of the text are encoded using the given encoding.<br>" +
+      "the specified text.\n" +
+      "The characters of the text are encoded using the given encoding.\n" +
       "If the SaveResponse property is true, the response will be saved in a file and the " +
       "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
-      "the name of the file.<br>" +
+      "the name of the file.\n" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
   public void PostTextWithEncoding(final String text, final String encoding) {
     requestTextImpl(text, encoding, "PostTextWithEncoding", "POST");
@@ -493,10 +518,10 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @param path the path of the file for the POST request
    */
   @SimpleFunction(description = "Performs an HTTP POST request using the Url property and " +
-      "data from the specified file.<br>" +
+      "data from the specified file.\n" +
       "If the SaveResponse property is true, the response will be saved in a file and the " +
       "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
-      "the name of the file.<br>" +
+      "the name of the file.\n" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
   public void PostFile(final String path) {
     final String METHOD = "PostFile";
@@ -507,10 +532,96 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         performRequest(webProps, null, path, "POST", METHOD);
+      }
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
+  }
+  
+  /**
+   * Performs an HTTP PATCH request using the Url property and the specified text.
+   *
+   *   The characters of the text are encoded using UTF-8 encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The responseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
+   *
+   * @param text the text data for the PATCH request
+   */
+  @SimpleFunction(description = "Performs an HTTP PATCH request using the Url property and " +
+      "the specified text.<br>" +
+      "The characters of the text are encoded using UTF-8 encoding.<br>" +
+      "If the SaveResponse property is true, the response will be saved in a file and the " +
+      "GotFile event will be triggered. The responseFileName property can be used to specify " +
+      "the name of the file.<br>" +
+      "If the SaveResponse property is false, the GotText event will be triggered.")
+  public void PatchText(final String text) {
+    requestTextImpl(text, "UTF-8", "PatchText", "PATCH");
+  }
+
+  /**
+   * Performs an HTTP PATCH request using the Url property and the specified text.
+   *
+   *   The characters of the text are encoded using the given encoding.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a
+   * file and the GotFile event will be triggered. The ResponseFileName property
+   * can be used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
+   *
+   * @param text the text data for the PATCH request
+   * @param encoding the character encoding to use when sending the text. If
+   *                 encoding is empty or null, UTF-8 encoding will be used.
+   */
+  @SimpleFunction(description = "Performs an HTTP PATCH request using the Url property and " +
+      "the specified text.<br>" +
+      "The characters of the text are encoded using the given encoding.<br>" +
+      "If the SaveResponse property is true, the response will be saved in a file and the " +
+      "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
+      "the name of the file.<br>" +
+      "If the SaveResponse property is false, the GotText event will be triggered.")
+  public void PatchTextWithEncoding(final String text, final String encoding) {
+    requestTextImpl(text, encoding, "PatchTextWithEncoding", "PATCH");
+  }
+
+  /**
+   * Performs an HTTP PATCH request using the Url property and data from the specified file.
+   *
+   *   If the SaveResponse property is true, the response will be saved in a file
+   * and the GotFile event will be triggered. The ResponseFileName property can be
+   * used to specify the name of the file.
+   *
+   *   If the SaveResponse property is false, the GotText event will be triggered.
+   *
+   * @param path the path of the file for the PATCH request
+   */
+  @SimpleFunction(description = "Performs an HTTP PATCH request using the Url property and " +
+      "data from the specified file.<br>" +
+      "If the SaveResponse property is true, the response will be saved in a file and the " +
+      "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
+      "the name of the file.<br>" +
+      "If the SaveResponse property is false, the GotText event will be triggered.")
+  public void PatchFile(final String path) {
+    final String METHOD = "PatchFile";
+    // Capture property values before running asynchronously.
+    final CapturedProperties webProps = capturePropertyValues(METHOD);
+    if (webProps == null) {
+      // capturePropertyValues has already called form.dispatchErrorOccurredEvent
+      return;
+    }
+
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        performRequest(webProps, null, path, "PATCH", METHOD);
       }
     });
   }
@@ -591,12 +702,14 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         performRequest(webProps, null, path, "PUT", METHOD);
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /**
@@ -620,16 +733,18 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         performRequest(webProps, null, null, "DELETE", METHOD);
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /*
-   * Performs an HTTP GET, POST, PUT or DELETE request using the Url property and the specified
+   * Performs an HTTP GET, POST, PATCH, PUT or DELETE request using the Url property and the specified
    * text, and retrieves the response asynchronously.<br>
    * The characters of the text are encoded using the given encoding.<br>
    * If the SaveResponse property is true, the response will be saved in a file
@@ -638,11 +753,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * If the SaveResponse property is false, the GotText event will be
    * triggered.
    *
-   * @param text the text data for the POST or PUT request
+   * @param text the text data for the POST, PATCH, or PUT request
    * @param encoding the character encoding to use when sending the text. If
    *                 encoding is empty or null, UTF-8 encoding will be used.
    * @param functionName the name of the function, used when dispatching errors
-   * @param httpVerb the HTTP operation to be performed: GET, POST, PUT or DELETE
+   * @param httpVerb the HTTP operation to be performed: GET, POST, PATCH, PUT or DELETE
    */
   private void requestTextImpl(final String text, final String encoding,
       final String functionName, final String httpVerb) {
@@ -653,7 +768,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return;
     }
 
-    AsynchUtil.runAsynchronously(new Runnable() {
+    lastTask = new FutureTask<Void>(new Runnable() {
       @Override
       public void run() {
         // Convert text to bytes using the encoding.
@@ -672,7 +787,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
         performRequest(webProps, requestData, null, httpVerb, functionName);
       }
-    });
+    }, null);
+
+    AsynchUtil.runAsynchronously(lastTask);
   }
 
   /**
@@ -1016,8 +1133,8 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @return the decoded text
    */
   @SimpleFunction(description = "Decodes the given HTML text value. HTML character entities " +
-      "such as &amp;amp;, &amp;lt;, &amp;gt;, &amp;apos;, and &amp;quot; are changed to " +
-      "&amp;, &lt;, &gt;, &#39;, and &quot;. Entities such as &amp;#xhhhh, and &amp;#nnnn " +
+      "such as `&`, `<`, `>`, `'`, and `\"` are changed to " +
+      "&, <, >, ', and \". Entities such as &#xhhhh, and &#nnnn " +
       "are changed to the appropriate characters.")
   public String HtmlTextDecode(String htmlText) {
     try {
@@ -1052,16 +1169,37 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @throws IOException
    */
   private void performRequest(final CapturedProperties webProps, final byte[] postData,
-    final String postFile, final String httpVerb, final String method) {
+      final String postFile, final String httpVerb, final String method) {
+
+    final List<String> neededPermissions = new ArrayList<>();
+
+    // Check if we need permission to read the postFile, if any
+    if (postFile != null && FileUtil.needsPermission(form, postFile) && !haveReadPermission) {
+      neededPermissions.add(READ_EXTERNAL_STORAGE);
+    }
+
+    // Check if we need permission to write to the response file
+    if (saveResponse) {
+      String target = FileUtil.resolveFileName(form, webProps.responseFileName,
+          form.DefaultFileScope());
+      if (FileUtil.needsPermission(form, target) && !haveWritePermission) {
+        neededPermissions.add(WRITE_EXTERNAL_STORAGE);
+      }
+    }
 
     // Make sure we have permissions we may need
-    if (saveResponse & !havePermission) {
+    if (neededPermissions.size() > 0 && !haveReadPermission) {
       final Web me = this;
-      form.askPermission(new BulkPermissionRequest(this, "Web",
-          Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+      form.askPermission(new BulkPermissionRequest(this, method,
+          neededPermissions.toArray(new String[0])) {
           @Override
           public void onGranted() {
-            me.havePermission = true;
+            if (neededPermissions.contains(READ_EXTERNAL_STORAGE)) {
+              me.haveReadPermission = true;
+            }
+            if (neededPermissions.contains(WRITE_EXTERNAL_STORAGE)) {
+              me.haveWritePermission = true;
+            }
             // onGranted is running on the UI thread, and we are about to do network i/o, so
             // we have to run this asynchronously to get off the UI thread!
             AsynchUtil.runAsynchronously(new Runnable() {
@@ -1112,8 +1250,22 @@ public class Web extends AndroidNonvisibleComponent implements Component {
                   GotText(webProps.urlString, responseCode, responseType, responseContent);
                 }
               });
-          }
 
+            // Update the locally stored columns list with the contents of the
+            // retrieved response & response type.
+            // TODO: Optimizations are possible here. Currently for projects which
+            // TODO: do not make use of Chart components, this will create extra overhead
+            // TODO: due to JSON/CSV parsing.
+            updateColumns(responseContent, responseType);
+
+            // Notify all data observers with null key and null value.
+            // Key and value are unused, hence it does not matter here.
+            // TODO: Since the Web component is rather irregular in the
+            // TODO: sense that the key and value do not matter for notification,
+            // TODO: perhaps it would be worthwhile for the Web component to
+            // TODO: have a different interface?
+            notifyDataObservers(null, null);
+          }
         } catch (SocketTimeoutException e) {
           // Dispatch timeout event.
           activity.runOnUiThread(new Runnable() {
@@ -1132,6 +1284,8 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     } catch (FileUtil.FileException e) {
       form.dispatchErrorOccurredEvent(Web.this, method,
           e.getErrorMessageNumber());
+    } catch (DispatchableError e) {
+      form.dispatchErrorOccurredEvent(Web.this, method, e.getErrorCode(), e.getArguments());
     } catch (RequestTimeoutException e) {
       form.dispatchErrorOccurredEvent(Web.this, method,
           ErrorMessages.ERROR_WEB_REQUEST_TIMED_OUT, webProps.urlString);
@@ -1145,11 +1299,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       } else if (method.equals("Delete")) {
         message = ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE;
         args = new String[] { webProps.urlString };
-      } else if (method.equals("PostFile") || method.equals("PutFile")) {
-        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE;
+      } else if (method.equals("PostFile") || method.equals("PutFile") || method.equals("PatchFile")) {
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE_FILE;
         args = new String[] { postFile, webProps.urlString };
       } else {
-        message = ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT;
+        message = ErrorMessages.ERROR_WEB_UNABLE_TO_MODIFY_RESOURCE;
         String content = "";
         try {
           if (postData != null) {
@@ -1183,7 +1337,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     connection.setConnectTimeout(webProps.timeout);
     connection.setReadTimeout(webProps.timeout);
 
-    if (httpVerb.equals("PUT") || httpVerb.equals("DELETE")){
+    if (httpVerb.equals("PUT") || httpVerb.equals("PATCH") || httpVerb.equals("DELETE")){
       // Set the Request Method; GET is the default, and if it is a POST, it will be marked as such
       // with setDoOutput in writeRequestFile or writeRequestData
       connection.setRequestMethod(httpVerb);
@@ -1303,6 +1457,13 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   private String saveResponseContent(HttpURLConnection connection,
       String responseFileName, String responseType) throws IOException {
     File file = createFile(responseFileName, responseType);
+
+    // Ensure the parent directory exists
+    File parent = file.getParentFile();
+    if (!parent.exists() && !parent.mkdirs()) {
+      throw new DispatchableError(ErrorMessages.ERROR_CANNOT_MAKE_DIRECTORY,
+          parent.getAbsolutePath());
+    }
 
     BufferedInputStream in = new BufferedInputStream(getConnectionStream(connection), 0x1000);
     try {
@@ -1433,5 +1594,140 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       form.dispatchErrorOccurredEvent(this, functionName, e.errorNumber, e.index);
     }
     return null;
+  }
+
+  @Override
+  public Future<YailList> getDataValue(final YailList key) {
+    // Record the last running asynchronous task. The FutureTask's
+    // calculations will wait for the completion of the task.
+    final FutureTask<Void> currentTask = lastTask;
+
+    // Construct a new FutureTask which handles returning the appropriate data
+    // value after the currently recorded last task is processed.
+    FutureTask<YailList> getDataValueTask = new FutureTask<>(
+        new Callable<YailList>() {
+          @Override
+          public YailList call() throws Exception {
+            // If the last recorded GET task is not yet done/cancelled, then the get()
+            // method is invoked to wait for completion of the task.
+            if (currentTask != null && !currentTask.isDone() && !currentTask.isCancelled()) {
+              try {
+                currentTask.get();
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              } catch (ExecutionException e) {
+                e.printStackTrace();
+              }
+            }
+
+            // Return resulting columns
+            return getColumns(key);
+          }
+        });
+
+    // Run and return the getDataValue FutureTask
+    AsynchUtil.runAsynchronously(getDataValueTask);
+    return getDataValueTask;
+  }
+
+  /**
+   * Updates the local Columns List based on the specified response content
+   * and type. Columns are parsed either from JSON or CSV, depending on
+   * the response type. On invalid response types, parsing is simply skipped.
+   *
+   * <p>Currently supported MIME types are all types which have 'json' in the name,
+   * types which have 'csv' in the name, as well as types which start with 'text/'</p>
+   *
+   * @param responseContent  Content of the response
+   * @param responseType  Type of the response
+   */
+  private void updateColumns(final String responseContent, final String responseType) {
+    // Check whether the response type is a JSON type (by checking
+    // whether the response type contains the String 'json')
+    // If this is not the case, CSV parsing is attempted if the
+    // response type contains the 'csv' String or the type starts
+    // with 'text/'.
+    if (responseType.contains("json")) {
+      // Proceed with JSON parsing
+      try {
+        columns = JsonUtil.getColumnsFromJson(responseContent);
+      } catch (JSONException e) {
+        // Json importing unsuccessful
+      }
+    } else if (responseType.contains("csv") || responseType.startsWith("text/")) {
+      try {
+        columns = CsvUtil.fromCsvTable(responseContent);
+        columns = ChartDataSourceUtil.getTranspose(columns);
+      } catch (Exception e) {
+        // Set columns to empty List (failed parsing)
+        columns = new YailList();
+      }
+    }
+  }
+
+  /**
+   * Gets the column identified by the specified String from
+   * the locally stored columns List.
+   * @param column  name of the Column to retrieve
+   * @return  YailList representation of the column (empty List if not found)
+   */
+  public YailList getColumn(String column) {
+    // Iterate through all the columns
+    for (int i = 0; i < columns.size(); ++i) {
+      YailList list = (YailList)columns.getObject(i);
+
+      // If column has first entry, and the entry is equal to the
+      // queried column, then this is our resulting column.
+      if (!list.isEmpty() && list.getString(0).equals(column)) {
+        return list;
+      }
+    }
+
+    // Column not found; Return empty YailList.
+    return new YailList();
+  }
+
+  /**
+   * Returns a List of the specified columns stored internally
+   * in the Web component (as data of the last request).
+   *
+   * <p>If a column is not found, it is substituted by an empty List.</p>
+   *
+   * @param keyColumns  List of columns to return
+   * @return  List of the specified columns
+   */
+  public YailList getColumns(YailList keyColumns) {
+    // Construct a List of columns to return as a result
+    ArrayList<YailList> resultingColumns = new ArrayList<YailList>();
+
+    // Iterate over the specified column names
+    for (int i = 0; i < keyColumns.size(); ++i) {
+      // Get and add the specified column to the resulting columns list
+      String columnName = keyColumns.getString(i);
+      YailList column = getColumn(columnName);
+      resultingColumns.add(column);
+    }
+
+    // Return result as YailList
+    return YailList.makeList(resultingColumns);
+  }
+
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(YailList key, Object newValue) {
+    for (DataSourceChangeListener dataComponent : dataSourceObservers) {
+      // Notify Data Component observer with the new columns value (and null key,
+      // since key does not matter in the case of the Web component)
+      dataComponent.onDataSourceValueChange(this, null, columns);
+    }
   }
 }

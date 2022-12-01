@@ -9,6 +9,7 @@ package com.google.appinventor.client.editor.simple.components;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -27,7 +28,6 @@ import java.util.logging.Logger;
  */
 abstract class MockButtonBase extends MockVisibleComponent {
   private static final Logger LOG = Logger.getLogger(MockButtonBase.class.getName());
-
   // Property names
   private static final String PROPERTY_NAME_IMAGE = "Image";
 
@@ -78,6 +78,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
     deckPanel.add(image);
     deckPanel.showWidget(0);
     initComponent(deckPanel);
+
   }
 
   /**
@@ -162,7 +163,12 @@ abstract class MockButtonBase extends MockVisibleComponent {
       return;
     }
     if (MockComponentsUtil.isDefaultColor(text)) {
-      MockComponentsUtil.resetWidgetBackgroundColor(buttonWidget);
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
+        MockComponentsUtil.setWidgetBackgroundColor(buttonWidget, "&HFF000000");
+      } else {
+        MockComponentsUtil.resetWidgetBackgroundColor(buttonWidget);
+      }
     } else {
       MockComponentsUtil.setWidgetBackgroundColor(buttonWidget, text);
     }
@@ -195,7 +201,14 @@ abstract class MockButtonBase extends MockVisibleComponent {
    * Sets the button's FontSize property to a new value.
    */
   private void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(buttonWidget, text);
+    float convertedText = Float.parseFloat(text);
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (convertedText == FONT_DEFAULT_SIZE && form != null
+        && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(buttonWidget, "24");
+    } else {
+      MockComponentsUtil.setWidgetFontSize(buttonWidget, text);
+    }
     updatePreferredSizeOfButton();
   }
 
@@ -245,7 +258,12 @@ abstract class MockButtonBase extends MockVisibleComponent {
    */
   private void setTextColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
-      MockComponentsUtil.resetWidgetTextColor(buttonWidget);
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
+        MockComponentsUtil.setWidgetTextColor(buttonWidget, "&HFFFFFFFF");
+      } else {
+        MockComponentsUtil.resetWidgetTextColor(buttonWidget);
+      }
     } else {
       MockComponentsUtil.setWidgetTextColor(buttonWidget, text);
     }
@@ -323,6 +341,8 @@ abstract class MockButtonBase extends MockVisibleComponent {
       setTextColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_BUTTONSHAPE)){
       setShapeProperty(newValue);
+
     }
   }
+
 }
