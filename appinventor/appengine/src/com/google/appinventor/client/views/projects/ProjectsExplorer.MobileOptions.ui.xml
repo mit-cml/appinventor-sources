@@ -1,0 +1,19 @@
+<!-- MobileOptions.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ai:Dropdown ui:field="dropdown">
+    <g:FlowPanel>
+      <ai:DropdownItem ui:field='exportButton' text='Export' hasDivider='true' />
+      <ai:DropdownItem ui:field='apkButton' text='Build APK' />
+      <ai:DropdownItem ui:field='aabButton' text='Build AAB' />
+      <ai:DropdownItem ui:field='publishButton' text='Publish' hasDivider='true' />
+      <ai:DropdownItem ui:field='moveButton' text='Move' />
+      <ai:DropdownItem ui:field='viewTrashButton' text='View trash' />
+      <ai:DropdownItem ui:field='trashButton' text='Trash' />
+    </g:FlowPanel>
+  </ai:Dropdown>
+</ui:UiBinder>

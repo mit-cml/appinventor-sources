@@ -1,0 +1,16 @@
+@external gwt-TreeItem, gwt-TreeItem-selected;
+
+.item > table > tbody > tr > td:first-child {
+  width: 0;
+}
+
+.item .gwt-TreeItem.gwt-TreeItem-selected {
+  background: c-highlight;
+}
+
+.item .gwt-TreeItem {
+  display: flex !important;
+  align-items: center;
+  height: 30px;
+  cursor: pointer;
+}

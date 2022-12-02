@@ -212,6 +212,15 @@ public interface StorageIo {
   String getProjectName(String userId, long projectId);
 
   /**
+   * Sets a project name.
+   *
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId project id
+   * @param name new name
+   */
+	void setProjectName(String userId, long projectId, String name);
+
+  /**
    * Returns the date the project was last modified.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId  project id
@@ -219,6 +228,25 @@ public interface StorageIo {
    * @return long milliseconds
    */
   long getProjectDateModified(String userId, long projectId);
+
+  /**
+   * Returns the date the project was last exported.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   *
+   * @return long milliseconds
+   */
+  long getProjectDateBuilt(String userId, long projectId);
+
+  /**
+   * Sets the date the project was last exported.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   * @long  builtDate the date to set
+   *
+   * @return long milliseconds
+   */
+  long updateProjectBuiltDate(String userId, long projectId, long builtDate);
 
   /**
    * Returns the specially formatted list of project history.

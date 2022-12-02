@@ -1,0 +1,53 @@
+<!-- ProjectsExplorer.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             xmlns:aiv="urn:import:com.google.appinventor.client.views.projects"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <ui:with field="style" />
+  <g:FlowPanel styleName='{style.container}'>
+    <ai:TitleBar />
+
+    <g:FlowPanel ui:field='projectsViewActions' styleName='{style.projectActions}'>
+      <g:Label styleName='{style.viewTitle}'>My Projects</g:Label>
+      <g:FlowPanel styleName='{style.actionGroup} {style.newProjectActions}'>
+        <ai:Button ui:field='newProjectButton' text='{messages.newProjectMenuItem}' icon='add' groupPosition='LEFT' type='PRIMARY' raised='true' title='{messages.newProjectMenuItem}' />
+        <ai:Button ui:field='importProjectButton' icon='file_upload' groupPosition='CENTER' type='PRIMARY' raised='true' title='{messages.importProjectMenuItem}' />
+        <ai:Button ui:field='importFromTemplateButton' icon='cloud_upload' groupPosition='CENTER' type='PRIMARY' raised='true' title='{messages.importTemplateButton}' />
+        <ai:Button ui:field='newFolderButton' icon='create_new_folder' groupPosition='RIGHT' type='PRIMARY' raised='true' />
+      </g:FlowPanel>
+
+      <g:FlowPanel styleName='{style.actionGroup}'>
+        <ai:Button ui:field='renameButton' text='Rename' icon='edit' groupPosition='LEFT' raised='true' enabled='false' />
+        <ai:Button ui:field='exportButton' text='Export' icon='file_download' groupPosition='CENTER' raised='true' enabled='false' />
+        <ai:DropdownButton ui:field='buildButton' text='Build' icon='system_security_update' groupPosition='CENTER' raised='true' enabled='false' />
+        <ai:Button ui:field='publishButton' text='Publish' icon='public' groupPosition='RIGHT' raised='true' enabled='false' />
+      </g:FlowPanel>
+
+      <g:FlowPanel styleName='{style.actionGroup}'>
+        <ai:Button ui:field='moveButton' text='Move' icon='drive_file_move' groupPosition='LEFT' raised='true' enabled='false' />
+        <ai:Button ui:field='viewTrashButton' text='View trash' groupPosition='CENTER' raised='true' />
+        <ai:Button ui:field='trashButton' text='Trash' icon='delete' type='DANGER' groupPosition='RIGHT' raised='true' enabled='false' />
+      </g:FlowPanel>
+
+      <g:FlowPanel styleName='{style.actionGroup} {style.overflowButton}'>
+        <ai:Button ui:field='mobileOverflowButton' icon='more_vert' groupPosition='NONE' raised='true' />
+      </g:FlowPanel>
+    </g:FlowPanel>
+
+    <g:FlowPanel ui:field='trashViewActions' styleName='{style.projectActions} {style.trashActions}'>
+      <g:Label styleName='{style.viewTitle}'>Trash</g:Label>
+
+      <g:FlowPanel styleName='{style.actionGroup}'>
+        <ai:Button ui:field='restoreButton' text='Restore' icon='restore' groupPosition='LEFT' raised='true' enabled='false' />
+        <ai:Button ui:field='viewProjectsButton' text='View projects' groupPosition='CENTER' raised='true' />
+        <ai:Button ui:field='deleteButton' text='Delete' type='DANGER' icon='delete_forever' groupPosition='RIGHT' raised='true' enabled='false' />
+      </g:FlowPanel>
+    </g:FlowPanel>
+
+    <aiv:ProjectsList ui:field='projectsList' />
+  </g:FlowPanel>
+</ui:UiBinder>
