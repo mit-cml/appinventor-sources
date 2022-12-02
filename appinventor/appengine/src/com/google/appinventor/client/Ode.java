@@ -962,7 +962,8 @@ public class Ode implements EntryPoint {
     debuggingTabIndex = 3;
 
     //Commenting out for now to gain more space for the blocks editor
-    RootPanel.get().add(mainPanel);
+//    RootPanel.get().add(mainPanel);
+    RootPanel.get().add(ModuleController.get().wrapAroundLegacyLayout(mainPanel));
 
     // Add a handler to the RootPanel to keep track of Google Chrome Pinch Zooming and
     // handle relevant bugs. Chrome maps a Pinch Zoom to a MouseWheelEvent with the
