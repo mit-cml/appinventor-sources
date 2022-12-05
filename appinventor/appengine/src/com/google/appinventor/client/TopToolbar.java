@@ -59,6 +59,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_AUTOLOAD = "Autoload Last Project";
   private static final String WIDGET_NAME_DYSLEXIC_FONT = "DyslexicFont";
   private static final String WIDGET_NAME_NEW_LAYOUT = "NewLayout";
+  private static final String WIDGET_NAME_OLD_LAYOUT = "OldLayout";
   private static final String WIDGET_NAME_DARK_THEME_ENABLED = "DarkThemeEnabled";
   private static final String WIDGET_NAME_HELP = "Help";
   private static final String WIDGET_NAME_ABOUT = "About";
@@ -191,6 +192,13 @@ public class TopToolbar extends Composite {
     if (!Ode.getUserDyslexicFont()) {
       settingsDropDown.setItemHtmlById("DyslexicFont", MESSAGES.enableOpenDyslexic());
       settingsDropDown.setCommandById("DyslexicFont", new SetFontDyslexicAction());
+    }
+    if (Ode.getUserNewLayout()) {
+      settingsDropDown.setItemVisible(MESSAGES.disableNewLayout(), true);
+      settingsDropDown.setItemVisible(MESSAGES.enableNewLayout(), false);
+    } else {
+      settingsDropDown.setItemVisible(MESSAGES.disableNewLayout(), false);
+      settingsDropDown.setItemVisible(MESSAGES.enableNewLayout(), true);
     }
 
     Config config = Ode.getSystemConfig();
