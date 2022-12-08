@@ -98,6 +98,7 @@ static NSString *_popup = @"<!DOCTYPE html><html><body><h1>No Page Provided</h1>
   [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
   [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
   [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+  [response setValue:@"true" forAdditionalHeader:@"Access-Control-Allow-Private-Network"];
   return response;
 }
 
