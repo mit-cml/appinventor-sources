@@ -6,6 +6,10 @@
 
 package com.google.appinventor.client.widgets;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.uibinder.client.ElementParserToUse;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Image;
 
@@ -14,6 +18,8 @@ import com.google.gwt.user.client.ui.Image;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
+
+@ElementParserToUse(className = "com.google.appinventor.client.widgets.TextButtonParser")
 public class TextButton extends PushButton {
 
   public TextButton() {
@@ -30,4 +36,18 @@ public class TextButton extends PushButton {
     super(image);
     setStylePrimaryName("ode-TextButton");
   }
+
+  public void setCommand(Command command) {
+    this.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        command.execute();
+      }
+    });
+  }
+
+  public void setImage(Image image) {
+    getUpFace().setImage(image);
+  }
+
 }
