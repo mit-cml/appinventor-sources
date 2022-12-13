@@ -65,18 +65,14 @@ public class TopPanel extends Composite {
   @UiField ImageElement logo;
   @UiField Label readOnly;
   @UiField FlowPanel rightPanel;
-  @UiField TextButton myProjects;
-  @UiField TextButton viewTrash;
-  @UiField TextButton guideLink;
-  @UiField TextButton feedbackLink;
   @UiField DropDownButton languageDropDown;
   @UiField DropDownButton accountButton;
   @UiField FlowPanel links;
   private static final String WIDGET_NAME_LANGUAGE = "Language";
   private final String WIDGET_NAME_DELETE_ACCOUNT = "DeleteAccount";
 
-  private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-  private static final String WINDOW_OPEN_LOCATION = "_ai2";
+  public static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+  public static final String WINDOW_OPEN_LOCATION = "_ai2";
 
   final Ode ode = Ode.getInstance();
 
@@ -121,21 +117,6 @@ public class TopPanel extends Composite {
 
     if (!Ode.getInstance().isReadOnly()) {
       readOnly.removeFromParent();
-    }
-
-    String guideUrl = config.getGuideUrl();
-    if (!Strings.isNullOrEmpty(guideUrl)) {
-      guideLink.addClickHandler(new WindowOpenClickHandler(guideUrl));
-    } else {
-      guideLink.removeFromParent();
-    }
-
-    // Feedback Link
-    String feedbackUrl = config.getFeedbackUrl();
-    if (!Strings.isNullOrEmpty(feedbackUrl)) {
-      feedbackLink.addClickHandler(new WindowOpenClickHandler(feedbackUrl));
-    } else {
-      feedbackLink.removeFromParent();
     }
 
     // Language

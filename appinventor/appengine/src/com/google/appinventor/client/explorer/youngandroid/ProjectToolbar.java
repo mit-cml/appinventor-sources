@@ -6,28 +6,26 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.actions.DeleteForeverProjectAction;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.widgets.ToolbarItem;
-import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
-import com.google.appinventor.shared.rpc.RpcResult;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import java.util.logging.Logger;
 
-import java.util.List;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * The project toolbar houses command buttons in the Young Android Project tab.
  *
  */
 public class ProjectToolbar extends Toolbar {
+  private static final Logger LOG = Logger.getLogger(ProjectToolbar.class.getName());
+  interface ProjectToolbarUiBinder extends UiBinder<Toolbar, ProjectToolbar> {}
+  private static final ProjectToolbar.ProjectToolbarUiBinder UI_BINDER =
+      GWT.create(ProjectToolbar.ProjectToolbarUiBinder.class);
+
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_TRASH = "Trash";
@@ -37,7 +35,12 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_SENDTONG = "Send to Gallery";
   private static final String WIDGET_NAME_LOGINTOGALLERY = "Login to Gallery";
 
-  private final boolean isReadOnly;
+//  @UiField(provided=true)
+  public final boolean isReadOnly;
+//  @UiField(provided=true)
+  public final boolean galleryEnabled;
+
+  @UiField ToolbarItem newProjectItem;
 
   private static volatile boolean lockPublishButton = false; // To prevent double clicking
 
@@ -48,27 +51,13 @@ public class ProjectToolbar extends Toolbar {
     super();
     isReadOnly = Ode.getInstance().isReadOnly();
     // Is the new gallery enabled
-    boolean galleryEnabled = Ode.getSystemConfig().getGalleryEnabled();
+    galleryEnabled = Ode.getSystemConfig().getGalleryEnabled();
+    populateToolbar(UI_BINDER.createAndBindUi(this));
 
-    add(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
-        new NewAction(this)));
-
-    add(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
-        new MoveToTrashAction()));
-    add(new ToolbarItem(WIDGET_NAME_TRASH,MESSAGES.trashButton(),
-        new TrashAction()));
-    add(new ToolbarItem(WIDGET_NAME_PROJECT,MESSAGES.myProjectsButton(),
-        new BackToProjectViewAction()));
-    add(new ToolbarItem(WIDGET_NAME_RESTORE,MESSAGES.restoreProjectButton(),
-        new RestoreProjectAction()));
-    add(new ToolbarItem(WIDGET_NAME_DELETE_FROM_TRASH,MESSAGES.deleteFromTrashButton(),
-        new DeleteForeverProjectAction()));
     if (galleryEnabled) {
-      add(new ToolbarItem(WIDGET_NAME_LOGINTOGALLERY, MESSAGES.loginToGallery(),
-          new LoginToGalleryAction()));
+      setButtonVisible(WIDGET_NAME_LOGINTOGALLERY, true);
       if (!Ode.getInstance().getGalleryReadOnly()) {
-        add(new ToolbarItem(WIDGET_NAME_SENDTONG, MESSAGES.publishToGalleryButton(),
-            new SendToGalleryAction()));
+        setButtonVisible(WIDGET_NAME_SENDTONG, true);
       }
     }
 
@@ -87,189 +76,6 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible(WIDGET_NAME_NEW, visible);
     setButtonVisible(WIDGET_NAME_TRASH,visible);
     setButtonVisible(WIDGET_NAME_DELETE,visible);
-  }
-
-  private static class NewAction implements Command {
-    ProjectToolbar parent;
-
-    public NewAction(ProjectToolbar parent) {
-      this.parent = parent;
-    }
-
-    @Override
-    public void execute() {
-      if (Ode.getInstance().screensLocked()) {
-        return;                 // Refuse to switch if locked (save file happening)
-      }
-      // Disabled the Start New Project button. We do this because on slow machines people
-      // click it multiple times while the wizard (below) is starting. This then causes
-      // a second wizard to start and a very confused user experience.
-      // We will enable the button again when we re-visit the Project List page
-      parent.setButtonEnabled(WIDGET_NAME_NEW, false);
-      new NewYoungAndroidProjectWizard(parent).center();
-      // The wizard will switch to the design view when the new
-      // project is created.
-    }
-  }
-
-  private static class MoveToTrashAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
-        @Override
-        public void execute() {
-          List<Project> selectedProjects =
-              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-          if (selectedProjects.size() > 0) {
-            // Show one confirmation window for selected projects.
-            if (deleteConfirmation(selectedProjects)) {
-              for (Project project : selectedProjects) {
-                project.moveToTrash();
-              }
-              Ode.getInstance().switchToProjectsView();
-            }
-            Ode.getInstance().switchToProjectsView();
-          } else {
-            // The user can select a project to resolve the
-            // error.
-            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
-          }
-        }
-      });
-    }
-
-    private boolean deleteConfirmation(List<Project> projects) {
-      String message;
-      if (projects.size() == 1) {
-        message = MESSAGES.confirmMoveToTrashSingleProject(projects.get(0).getProjectName());
-      } else {
-        StringBuilder sb = new StringBuilder();
-        String separator = "";
-        for (Project project : projects) {
-          sb.append(separator).append(project.getProjectName());
-          separator = ", ";
-        }
-        String projectNames = sb.toString();
-        message = MESSAGES.confirmMoveToTrash(projectNames);
-      }
-      return Window.confirm(message);
-    }
-  }
-
-  //implementing trash method this method will show the Trash Tab
-  private static class TrashAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
-        @Override
-        public void execute() {
-          Ode.getInstance().switchToTrash();
-        }
-      });
-    }
-  }
-
-  //Moving Back From Trash Tab To Projects Tab
-  private static class BackToProjectViewAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
-        @Override
-        public void execute() {
-          Ode.getInstance().getTopToolbar().updateMoveToTrash("Move To Trash");
-          Ode.getInstance().switchToProjectsView();
-        }
-      });
-    }
-  }
-
-  //Restoring the project back to My Projects from Trash Can
-  private static class RestoreProjectAction implements Command {
-    @Override
-    public void execute() {
-      List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      if (selectedProjects.size() > 0) {
-        for (Project project : selectedProjects) {
-          project.restoreFromTrash();
-        }
-        Ode.getInstance().switchToTrash();
-      } else {
-        // The user can select a project to resolve the
-        // error.
-        ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForRestore());
-      }
-    }
-  }
-
-  // Login to the New Gallery
-  private static class LoginToGalleryAction implements Command {
-    @Override
-      public void execute() {
-      Ode.getInstance().getProjectService().loginToGallery(
-        new OdeAsyncCallback<RpcResult>(
-          MESSAGES.GalleryLoginError()) {
-          @Override
-          public void onSuccess(RpcResult result) {
-            if (result.getResult() == RpcResult.SUCCESS) {
-              Window.open(result.getOutput(), "_blank", "");
-            } else {
-              ErrorReporter.reportError(result.getError());
-            }
-          }
-        });
-    }
-  }
-
-  // Send to the New Gallery
-  private static class SendToGalleryAction implements Command {
-    @Override
-    public void execute() {
-      List<Project> selectedProjects =
-        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      if (selectedProjects.size() != 1) {
-        ErrorReporter.reportInfo(MESSAGES.selectOnlyOneProject());
-      } else {
-        if (!lockPublishButton) {
-          lockPublishButton = true;
-          Project project = selectedProjects.get(0);
-          Ode.getInstance().getProjectService().sendToGallery(project.getProjectId(),
-            new OdeAsyncCallback<RpcResult>(
-              MESSAGES.GallerySendingError()) {
-              @Override
-              public void onSuccess(RpcResult result) {
-                lockPublishButton = false;
-                if (result.getResult() == RpcResult.SUCCESS) {
-                  Window.open(result.getOutput(), "_blank", "");
-                } else {
-                  ErrorReporter.reportError(result.getError());
-                }
-              }
-              @Override
-              public void onFailure(Throwable t) {
-                lockPublishButton = false;
-                super.onFailure(t);
-              }
-            });
-        }
-      }
-    }
-  }
-
-  private boolean deleteConfirmation(List<Project> projects) {
-    String message;
-    if (projects.size() == 1) {
-      message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
-    } else {
-      StringBuilder sb = new StringBuilder();
-      String separator = "";
-      for (Project project : projects) {
-        sb.append(separator).append(project.getProjectName());
-        separator = ", ";
-      }
-      String projectNames = sb.toString();
-      message = MESSAGES.confirmDeleteManyProjects(projectNames);
-    }
-    return Window.confirm(message);
   }
 
   /**

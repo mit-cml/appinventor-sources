@@ -9,6 +9,7 @@ package com.google.appinventor.client.explorer.youngandroid;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
@@ -43,6 +44,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+
 
 /**
  * The project list shows all projects in a table.
@@ -52,6 +55,8 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 public class ProjectList extends Composite implements ProjectManagerEventListener {
+  private static final Logger LOG = Logger.getLogger(ProjectList.class.getName());
+
   private enum SortField {
     NAME,
     DATE_CREATED,

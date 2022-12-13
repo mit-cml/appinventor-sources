@@ -18,14 +18,18 @@
         <g:FlowPanel styleName="ode-TopPanelLinks" ui:field="links">
           <g:Label text="{messages.readOnlyMode}" styleName="ode-TopPanelWarningLabel"
                    ui:field="readOnly"/>
-          <ai:TextButton text="{messages.myProjectsTabName}" styleName="ode-TopPanelButton"
-                         ui:field="myProjects" />
-          <ai:TextButton text="{messages.viewTrashTabName}" styleName="ode-TopPanelButton"
-                         ui:field="viewTrash" />
-          <ai:TextButton text="{messages.guideTabName}" styleName="ode-TopPanelButton"
-                         ui:field="guideLink" />
-          <ai:TextButton text="{messages.feedbackTabName}" styleName="ode-TopPanelButton"
-                         ui:field="feedbackLink" />
+          <ai:TextButton text="{messages.myProjectsTabName}" styleName="ode-TopPanelButton" ui:field="myProjects" >
+            <actions:SwitchToProjectAction />
+          </ai:TextButton>
+          <ai:TextButton text="{messages.viewTrashTabName}" styleName="ode-TopPanelButton" ui:field="viewTrash" >
+            <actions:TrashAction />
+          </ai:TextButton>
+          <ai:TextButton text="{messages.guideTabName}" styleName="ode-TopPanelButton">
+            <actions:OpenGuideAction />
+          </ai:TextButton>
+          <ai:TextButton text="{messages.feedbackTabName}" styleName="ode-TopPanelButton">
+            <actions:OpenFeedbackAction />
+          </ai:TextButton>
         </g:FlowPanel>
         <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
                            ui:field="languageDropDown" />
