@@ -591,6 +591,31 @@
     </uptodate>
   </target>
 
+  <path id="YaClientApp.classpath">
+    <pathelement location="src"/>
+    <pathelement location="${build.dir}/components/ComponentTranslation/src"/>
+    <pathelement location="${build.war.dir}/WEB-INF/classes"/>
+    <pathelement location="${local.build.dir}/AiRebindLib.jar" />
+    <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
+    <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
+    <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
+    <!-- external libs -->
+    <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
+    <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+    <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
+    <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
+    <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+    <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+    <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
+    <!-- gwt libs -->
+    <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+    <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+  </path>
+
   <target name="YaClientApp"
           description="GWT compile to JavaScript"
           depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
@@ -598,28 +623,7 @@
     <mkdir dir="${build.extra.dir}" />
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
       <classpath>
-        <pathelement location="src"/>
-        <pathelement location="${build.dir}/components/ComponentTranslation/src"/>
-        <pathelement location="${build.war.dir}/WEB-INF/classes"/>
-        <pathelement location="${local.build.dir}/AiRebindLib.jar" />
-        <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
-        <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
-        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
-        <!-- external libs -->
-        <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
-        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
-        <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
-        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
-        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
-        <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
-        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
-        <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
-        <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
-        <!-- gwt libs -->
-        <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
-        <pathelement location="${gwt.sdk}/gwt-user.jar"/>
-        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
-        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+        <path refid="YaClientApp.classpath" />
       </classpath>
       <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
       <jvmarg value="-Xmx2G"/>
@@ -639,29 +643,8 @@
           description="Run development mode">
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.codeserver.CodeServer">
       <classpath>
-        <pathelement location="src" />
-        <pathelement location="${build.dir}/components/ComponentTranslation/src" />
-        <pathelement location="${build.war.dir}/WEB-INF/classes" />
-        <pathelement location="${local.build.dir}/AiRebindLib.jar" />
-        <pathelement location="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
-        <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
-        <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
-        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
-        <!-- external libs -->
-        <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
-        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
-        <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
-        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
-        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
-        <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
-        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
-        <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
-        <!-- gwt libs -->
+        <path refid="YaClientApp.classpath" />
         <pathelement location="${gwt.sdk}/gwt-codeserver.jar" />
-        <pathelement location="${gwt.sdk}/gwt-dev.jar" />
-        <pathelement location="${gwt.sdk}/gwt-user.jar" />
-        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
-        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
       </classpath>
       <jvmarg value="-Xmx1G" />
       <arg line="-style PRETTY -logLevel INFO" />
