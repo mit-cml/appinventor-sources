@@ -62,7 +62,6 @@ public class ProjectToolbar extends Toolbar {
     }
 
     setTrashTabButtonsVisible(false);
-    updateButtons();
   }
 
   public void setTrashTabButtonsVisible(boolean visible) {

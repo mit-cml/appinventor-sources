@@ -218,15 +218,13 @@ public class Ode implements EntryPoint {
   @UiField FlowPanel workColumns;
   @UiField FlowPanel structureAndAssets;
   @UiField ProjectToolbar bindProjectToolbar;
+  @UiField (provided = true) ProjectListBox bindProjectListbox;
   @UiField DesignToolbar bindDesignToolbar;
   @UiField PaletteBox paletteBox;
   @UiField ViewerBox bindViewerBox = ViewerBox.getViewerBox();
   @UiField AssetListBox bindAssetListBox = AssetListBox.getAssetListBox();
   @UiField SourceStructureBox bindSourceStructureBox;
   @UiField PropertiesBox bindPropertiesBox = PropertiesBox.getPropertiesBox();
-
-  @UiField FlowPanel projectPanel;
-  private HorizontalPanel projectListPanel = new HorizontalPanel();
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -827,7 +825,7 @@ public class Ode implements EntryPoint {
               }
             });
             editorManager = new EditorManager();
-
+            bindProjectListbox = ProjectListBox.getProjectListBox();
 
             // Initialize UI
             initializeUi();
