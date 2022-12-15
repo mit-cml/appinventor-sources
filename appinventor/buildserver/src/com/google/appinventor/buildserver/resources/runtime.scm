@@ -964,6 +964,16 @@
     ((_ lambda-arg1-name lambda-arg2-name body-form list)
       (yail-list-sort-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
 
+(define-syntax mincomparator_nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-min-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax maxcomparator_nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-max-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
 (define-syntax sortkey_nondest
   (syntax-rules ()
     ((_ lambda-arg-name body-form list)
@@ -2777,6 +2787,11 @@ list, use the make-yail-list constructor with no arguments.
     ((is-leq? (car lst) (list-min (cdr lst))) (car lst))
     (else (list-min (cdr lst)))))
 
+(define (yail-list-min-comparator lessthan? y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (yail-list-but-last (kawa-list->yail-list (mergesort lessthan? (yail-list-contents y1)))))))
+
 (define (yail-list-minimum-number yail-list)
   (let ((contents (yail-list-contents yail-list)))
     (if (null? contents)
@@ -2791,6 +2806,11 @@ list, use the make-yail-list constructor with no arguments.
     ((null? (cdr lst)) (car lst))
     ((is-leq? (list-max (cdr lst)) (car lst)) (car lst))
     (else (list-max (cdr lst)))))
+
+(define (yail-list-max-comparator lessthan? y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (yail-list-but-first (kawa-list->yail-list (mergesort lessthan? (yail-list-contents y1)))))))
 
 (define (yail-list-maximum-number yail-list)
   (let ((contents (yail-list-contents yail-list)))

@@ -422,7 +422,19 @@ Blockly.Yail['lists_sort_key'] = function() {
 
 Blockly.Yail['lists_minimum_number'] = function() {
   // Minimum number in the list
-  var argument0 = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.emptyListCode;
+  var emptyListCode = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-list" + Blockly.Yail.YAIL_SPACER;
+  	emptyListCode += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
+  	emptyListCode += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
+  	emptyListCode += Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  	emptyListCode += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "minimum number of list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  	var loopIndexName1 = Blockly.Yail.YAIL_LOCAL_VAR_TAG + this.getFieldValue('VAR1');
+  	var loopIndexName2 = Blockly.Yail.YAIL_LOCAL_VAR_TAG + this.getFieldValue('VAR2');
+  	var listCode = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || emptyListCode;
+  	var bodyCode = Blockly.Yail.valueToCode(this, 'COMPARE', Blockly.Yail.ORDER_NONE) ||  Blockly.Yail.YAIL_FALSE;
+  	var code = "(mincomparator_nondest " + loopIndexName1 + Blockly.Yail.YAIL_SPACER + loopIndexName2 + Blockly.Yail.YAIL_SPACER + bodyCode + Blockly.Yail.YAIL_SPACER
+      	+ listCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+      return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  /*var argument0 = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.emptyListCode;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-minimum-number" + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
   code = code + argument0;
@@ -430,12 +442,24 @@ Blockly.Yail['lists_minimum_number'] = function() {
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
   code = code + "list" + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "minimum number of list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];*/
 };
 
 Blockly.Yail['lists_maximum_number'] = function() {
   // Maximum number in the list
-  var argument0 = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.emptyListCode;
+  var emptyListCode = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-maximum-number" + Blockly.Yail.YAIL_SPACER;
+  	emptyListCode += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
+  	emptyListCode += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
+  	emptyListCode += Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  	emptyListCode += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "maximum number of list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  	var loopIndexName1 = Blockly.Yail.YAIL_LOCAL_VAR_TAG + this.getFieldValue('VAR1');
+  	var loopIndexName2 = Blockly.Yail.YAIL_LOCAL_VAR_TAG + this.getFieldValue('VAR2');
+  	var listCode = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || emptyListCode;
+  	var bodyCode = Blockly.Yail.valueToCode(this, 'COMPARE', Blockly.Yail.ORDER_NONE) ||  Blockly.Yail.YAIL_FALSE;
+  	var code = "(maxcomparator_nondest " + loopIndexName1 + Blockly.Yail.YAIL_SPACER + loopIndexName2 + Blockly.Yail.YAIL_SPACER + bodyCode + Blockly.Yail.YAIL_SPACER
+      	+ listCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+      return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  /*var argument0 = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.emptyListCode;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-maximum-number" + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
   code = code + argument0;
@@ -443,7 +467,7 @@ Blockly.Yail['lists_maximum_number'] = function() {
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
   code = code + "list" + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "maximum number of list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];*/
 };
 
 Blockly.Yail['lists_but_first'] = function() {
