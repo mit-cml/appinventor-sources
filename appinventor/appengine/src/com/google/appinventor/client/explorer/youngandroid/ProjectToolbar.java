@@ -41,6 +41,7 @@ public class ProjectToolbar extends Toolbar {
   public final boolean galleryEnabled;
 
   @UiField ToolbarItem newProjectItem;
+  @UiField ToolbarItem newFolderItem;
 
   private static volatile boolean lockPublishButton = false; // To prevent double clicking
 

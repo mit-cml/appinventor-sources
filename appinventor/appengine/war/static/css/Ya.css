@@ -250,43 +250,61 @@ div.StatusPanel {
   font-size: small;
   color: #555;
   cursor: pointer;
+  vertical-align: top;
+  padding-right: 10px;
+  text-align: left;
 }
 
 .ode-ProjectTable {
   padding: 0;
   margin: 0;
   border: 1px;
+  overflow: auto;
+  /*display: grid;*/
+  grid-auto-rows: max-content;
+  text-align: left;
 }
 
-.ode-ProjectTable td {
-  border-collapse: collapse;
-  font-size: small;
-  color: #555;
-  text-align: left;
-  margin: 0;
-}
+/*.ode-ProjectTable td {*/
+/*  border-collapse: collapse;*/
+/*  font-size: small;*/
+/*  color: #555;*/
+/*  text-align: left;*/
+/*  margin: 0;*/
+/*}*/
 
 .ode-ProjectRowHighlighted {
+  vertical-align: center;
   border-bottom: 1px solid #ddd;
   background-color: #fff6c3;
   border-collapse: collapse;
+  width: 100%;
+  vertical-align: top;
 }
 
 .ode-ProjectRowUnHighlighted {
-  border-bottom: 1px solid #ddd;
-  background-color: white
+  border-bottom: 0px;
+  background-color: white;
+  width: 100%;
+  vertical-align: top;
 }
 
 .ode-ProjectHeaderRow {
   background: url(../images/toolbarBG.png) repeat;
   border: 1px;
   border-bottom: 1px solid #bbccff;
+  display: table;
+  grid-template-columns: auto 1fr auto auto;
+  position: relative;
+  width: 100%;
 }
 
 .ode-ProjectHeaderLabel {
+  text-indent: initial;
   color: #112abb;
   font-size: 11px;
   cursor: pointer;
+  text-align: left;
 }
 
 .ode-CheckpointProjectTable {

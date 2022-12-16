@@ -53,11 +53,6 @@ public final class AddFolderCommand implements Command {
   public AddFolderCommand() {
     style.ensureInjected();
     UI_BINDER.createAndBindUi(this);
-
-    manager = Ode.getInstance().getFolderManager();
-    FolderTreeItem root = renderFolder(manager.getGlobalFolder());
-    tree.addItem(root);
-    tree.setSelectedItem(root);
   }
 
   private FolderTreeItem renderFolder(Folder folder) {
@@ -88,6 +83,10 @@ public final class AddFolderCommand implements Command {
 
   @Override
   public void execute() {
+    manager = Ode.getInstance().getFolderManager();
+    FolderTreeItem root = renderFolder(manager.getGlobalFolder());
+    tree.addItem(root);
+    tree.setSelectedItem(root);
     addDialog.center();
   }
 
