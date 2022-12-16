@@ -438,7 +438,7 @@ Blockly.Yail['lists_minimum_number'] = function() {
 
 Blockly.Yail['lists_maximum_number'] = function() {
   // Maximum number in the list
-  var emptyListCode = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-maximum-number" + Blockly.Yail.YAIL_SPACER;
+  var emptyListCode = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-list" + Blockly.Yail.YAIL_SPACER;
   	emptyListCode += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
   	emptyListCode += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
   	emptyListCode += Blockly.Yail.YAIL_CLOSE_COMBINATION;
