@@ -6,45 +6,30 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.explorer.folder.Folder;
+import com.google.appinventor.client.explorer.folder.FolderManagerEventListener;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-import com.google.appinventor.client.views.projects.ProjectSelectionChangeHandler;
-import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.client.explorer.folder.ProjectsFolder;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-
-import com.google.gwt.i18n.client.DateTimeFormat;
 
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ComplexPanel;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -55,10 +40,11 @@ import java.util.logging.Logger;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public class ProjectList extends Composite implements ProjectManagerEventListener {
+public class ProjectList extends ProjectsFolder implements FolderManagerEventListener,
+    ProjectManagerEventListener {
   private static final Logger LOG = Logger.getLogger(ProjectList.class.getName());
   interface ProjectListUiBinder extends UiBinder<FlowPanel, ProjectList> {}
-  private static final ProjectList.ProjectListUiBinder UI_BINDER = GWT.create(ProjectList.ProjectListUiBinder.class);
+  private static final ProjectListUiBinder UI_BINDER = GWT.create(ProjectListUiBinder.class);
   private enum SortField {
     NAME,
     DATE_CREATED,
@@ -72,7 +58,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private final List<Project> selectedProjects;
   private final List<ProjectListItem> selectedProjectListItems = new ArrayList<>();
   private final List<ProjectListItem> projectListItems = new ArrayList<>();
-//  private final Map<Project, ProjectWidgets> projectWidgets;
   private SortField sortField;
   private SortOrder sortOrder;
 
@@ -84,6 +69,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   CheckBox selectAllCheckBox;
   @UiField
   FlowPanel container;
+  boolean projectsLoaded = false;
 //  private final Label nameSortIndicator;
 //  private final Label dateCreatedSortIndicator;
 //  private final Label dateModifiedSortIndicator;
@@ -92,34 +78,25 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    * Creates a new ProjectList
    */
   public ProjectList() {
+    LOG.info("Creating Project-legacy List");
     projects = new ArrayList<Project>();
     selectedProjects = new ArrayList<Project>();
-//    projectWidgets = new HashMap<Project, ProjectWidgets>();
 
     sortField = SortField.DATE_MODIFIED;
     sortOrder = SortOrder.DESCENDING;
 
-    // Initialize UI
-//    table = new Grid(3, 4); // The table initially contains just the header row.
-//    table.addStyleName("ode-ProjectTable");
-//    table.setWidth("100%");
-//    table.setCellSpacing(0);
+
 //    nameSortIndicator = new Label("");
 //    dateCreatedSortIndicator = new Label("");
 //    dateModifiedSortIndicator = new Label("");
 //    refreshSortIndicators();
-//    selectAllCheckBox = new CheckBox();
-//    setHeaderRow();
-//
-//    VerticalPanel panel = new VerticalPanel();
-//    panel.setWidth("100%");
-//
-//    panel.add(table);
-//    initWidget(panel);
     initWidget(UI_BINDER.createAndBindUi(this));
+    Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
+    LOG.info("Added legacy project manager event listener");
 
     // It is important to listen to project manager events as soon as possible.
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
+    setDepth(0);
   }
 
   /**
@@ -213,7 +190,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         sortOrder = SortOrder.ASCENDING;
       }
     }
-    refreshTable(true);
+    refresh(true);
   }
 
 //  private void refreshSortIndicators() {
@@ -239,60 +216,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 //    }
 //  }
 
-//  private class ProjectWidgets {
-//    final CheckBox checkBox;
-//    final Label nameLabel;
-//    final Label dateCreatedLabel;
-//    final Label dateModifiedLabel;
-//
-//    private ProjectWidgets(final Project project) {
-//      checkBox = new CheckBox();
-//      checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//        @Override
-//        public void onValueChange(ValueChangeEvent<Boolean> event) {
-//          boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-//          int row = Integer.valueOf(checkBox.getName());
-//          if (isChecked) {
-//            table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-//            selectedProjects.add(project);
-//            if (isAllProjectsSelected()) {
-//              selectAllCheckBox.setValue(true);
-//            }
-//          } else {
-//            table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-//            selectedProjects.remove(project);
-//            if (selectAllCheckBox.getValue()) {
-//              selectAllCheckBox.setValue(false);
-//            }
-//          }
-//          Ode.getInstance().getBindProjectToolbar().updateButtons();
-//        }
-//      });
-//
-//      nameLabel = new Label(project.getProjectName());
-//      nameLabel.addClickHandler(new ClickHandler() {
-//        @Override
-//        public void onClick(ClickEvent event) {
-//          Ode ode = Ode.getInstance();
-//          // If the screens are locked, don't take this action. Also
-//          // do not open the project if it is in the trash!
-//          if (ode.screensLocked() || project.isInTrash()) {
-//            return;
-//          }
-//          ode.openYoungAndroidProjectInDesigner(project);
-//        }
-//      });
-//      nameLabel.addStyleName("ode-ProjectNameLabel");
-//
-//      DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
-//
-//      Date dateCreated = new Date(project.getDateCreated());
-//      dateCreatedLabel = new Label(dateTimeFormat.format(dateCreated));
-//
-//      Date dateModified = new Date(project.getDateModified());
-//      dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
-//    }
-//  }
+  @Override
+  public void refresh() {
+    refresh(false);
+  }
 
   // TODO(user): This method was made public so it can be called
   // directly from from Ode when the Project List View is selected
@@ -301,15 +228,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   // correct thing do to. The alternative is to add a call to the
   // ProjectManagerEventListener interface that this is the
   // implementation of.
-  public void refreshTable(boolean needToSort) {
-    if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN) {
-      refreshTable(needToSort, true);
-    } else {
-      refreshTable(needToSort, false);
-    }
-  }
 
-  public void refreshTable(boolean needToSort, boolean isInTrash) {
+  public void refresh(boolean needToSort) {
+    LOG.warning("Refreshing");
     if (needToSort) {
       // Sort the projects.
       Comparator<Project> comparator;
@@ -336,93 +257,85 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
 //    refreshSortIndicators();
 
-    // Refill the table.
-//    int previous_rowmax = table.getRowCount() - 1;
-//    table.resizeRows(Integer.max(3, previous_rowmax + 1));
-//    int row = 0;
-    projectListItems.clear();;
     container.clear();
-    for (Project project : projects) {
-      if (project.isInTrash() == isInTrash) {
-//        row++;
-        createProjectListItem(project, container, isInTrash);
-
-//        ProjectWidgets pw = projectWidgets.get(project);
-//        if (selectedProjects.contains(project)) {
-//          table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-//          pw.checkBox.setValue(true);
-//        } else {
-//          table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-//          pw.checkBox.setValue(false);
-//          table.getRowFormatter().getElement(row).setAttribute("data-exporturl",
-//              "application/octet-stream:" + project.getProjectName() + ".aia:"
-//                  + GWT.getModuleBaseURL() + ServerLayout.DOWNLOAD_SERVLET_BASE
-//                  + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
-//          configureDraggable(table.getRowFormatter().getElement(row));
+    selectedProjectListItems.clear();
+    projectListItems.clear();
+    for (final Folder childFolder : folder.getChildFolders()) {
+      if ("*trash*".equals(childFolder.getName())) {
+//        if (childFolder.getProjects().size() == 0) {
+//          Ode.getInstance().createEmptyTrashDialog(true);
 //        }
-//        pw.checkBox.setName(String.valueOf(row));
-//        if (row >= previous_rowmax) {
-//          table.insertRow(row + 1);
-//        }
-//        table.setWidget(row, 0, pw.checkBox);
-//        table.setWidget(row, 1, pw.nameLabel);
-//        table.setWidget(row, 2, pw.dateCreatedLabel);
-//        table.setWidget(row, 3, pw.dateModifiedLabel);
+        continue;
       }
+      createProjectsFolder(childFolder, container);
+    }
+    for(final Project project : folder.getProjects()) {
+      createProjectListItem(project, container);
     }
     selectAllCheckBox.setValue(false);
-//    table.resizeRows( row + 1);
-
-//    if (isInTrash && table.getRowCount() == 1) {
-//      Ode.getInstance().createEmptyTrashDialog(true);
-//    }
     Ode.getInstance().getBindProjectToolbar().updateButtons();
   }
 
-  protected void createProjectListItem(final Project project, final ComplexPanel container
-      , boolean isTrash) {
-    final ProjectListItem projectListItem = new ProjectListItem(project, 1);
-//      new ProjectListItem(project, depth + 1);
-    projectListItem.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
-      @Override
-      public void onSelectionChange(boolean selected) {
-        if (selected) {
-          selectedProjectListItems.add(projectListItem);
-        } else {
-          selectedProjectListItems.remove(projectListItem);
-        }
+//  protected void createProjectListItem(final Project project, final ComplexPanel container) {
+//    final ProjectListItem projectListItem = new ProjectListItem(project, depth + 1);
+//    projectListItem.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
+//      @Override
+//      public void onSelectionChange(boolean selected) {
+//        if (selected) {
+//          selectedProjectListItems.add(projectListItem);
+//        } else {
+//          selectedProjectListItems.remove(projectListItem);
+//        }
 //        fireSelectionChangeEvent();
-      }
-    });
+//      }
+//    });
+//
+//    if(!isTrash) {
+//      projectListItem.setClickHandler(new ClickHandler() {
+//        @Override
+//        public void onClick(ClickEvent e) {
+//          if(!project.isInTrash())
+//            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+//        }
+//      });
+//    }
+//    projectListItems.add(projectListItem);
+//    container.add(projectListItem);
+//  }
 
-    if(!isTrash) {
-      projectListItem.setClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent e) {
-          if(!project.isInTrash())
-            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-        }
-      });
+  public void setSelected(boolean selected) {
+    selectAllCheckBox.setValue(selected);
+    selectedProjectListItems.clear();
+    for(ProjectListItem item : projectListItems) {
+      item.setSelected(selected);
+      if(selected) {
+        selectedProjectListItems.add(item);
+      }
     }
-    projectListItems.add(projectListItem);
-    container.add(projectListItem);
+    for(ProjectsFolder item : projectsFolders) {
+      item.setSelected(selected);
+    }
   }
 
-//  protected void fireSelectionChangeEvent() {
-//    if (getFolders().size() == getSelectedFolders().size() &&
-//            getProjects().size() == getSelectedProjects().size()) {
-//      checkBox.setValue(true);
-//    } else {
-//      checkBox.setValue(false);
-//    }
-//    super.fireSelectionChangeEvent();
-//  }
-//
-//  @UiHandler("checkBox")
-//  void toggleItemSelection(ClickEvent e) {
-//    setSelected(checkBox.getValue());
-//    fireSelectionChangeEvent();
-//  }
+  public boolean isSelected() {
+    return selectAllCheckBox.getValue();
+  }
+
+  protected void fireSelectionChangeEvent() {
+    if (getFolders().size() == getSelectedFolders().size() &&
+            getProjects().size() == getSelectedProjects().size()) {
+      selectAllCheckBox.setValue(true);
+    } else {
+      selectAllCheckBox.setValue(false);
+    }
+    super.fireSelectionChangeEvent();
+  }
+
+  @UiHandler("selectAllCheckBox")
+  void toggleItemSelection(ClickEvent e) {
+    setSelected(selectAllCheckBox.getValue());
+    fireSelectionChangeEvent();
+  }
   /**
    * Gets the number of selected projects
    *
@@ -475,44 +388,94 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   public List<Project> getSelectedProjects() {
     return selectedProjects;
   }
+  public void setIsTrash(boolean isTrash) {
+    LOG.info("setIsTrash " + isTrash);
+    this.isTrash = isTrash;
+    if (isTrash) {
+      setFolder(Ode.getInstance().getFolderManager().getTrashFolder());
+    } else {
+      setFolder(Ode.getInstance().getFolderManager().getGlobalFolder());
+    }
+    if (folder != null) {
+      refresh();
+    }
+  }
+  // FolderManagerEventListener implementation
+  @Override
+  public void onFolderAdded(Folder folder) {
+    refresh();
+  }
 
-  //  ProjectManagerEventListener implementation
+  @Override
+  public void onFolderRemoved(Folder folder) {
+    refresh();
+  }
+
+  @Override
+  public void onFolderRenamed(Folder folder) {
+    refresh();
+  }
+
+  @Override
+  public void onFoldersChanged() {
+    refresh();
+  }
+
+  @Override
+  public void onFoldersLoaded() {
+    setIsTrash(isTrash);
+  }
 
   @Override
   public void onProjectAdded(Project project) {
-    projects.add(project);
-//    projectWidgets.put(project, new ProjectWidgets(project));
-    if (!projectListLoading) {
-      refreshTable(true);
+    LOG.info("On project added " + project.getProjectName() + " projectsLoaded=" + projectsLoaded);
+    if (folder == null) {
+      LOG.info("Folder is null ");
+    } else {
+      LOG.info("Folder is: ");
+      LOG.info(folder.getName());
+    }
+
+    if (projectsLoaded) {
+      folder.addProject(project);
+      Ode.getInstance().getFolderManager().saveAllFolders();
+      refresh();
     }
   }
 
   @Override
   public void onTrashProjectRestored(Project project) {
-    selectedProjects.remove(project);
-    refreshTable(false);
-    Ode.getInstance().getBindProjectToolbar().updateButtons();
+    Ode.getInstance().getFolderManager().getGlobalFolder().addProject(project);
+    Ode.getInstance().getFolderManager().getTrashFolder().removeProject(project);
+    Ode.getInstance().getFolderManager().saveAllFolders();
+    refresh();
   }
 
   @Override
   public void onProjectTrashed(Project project) {
-    selectedProjects.remove(project);
-    refreshTable(false);
-    Ode.getInstance().getBindProjectToolbar().updateButtons();
+    folder.removeProject(project);
+    Ode.getInstance().getFolderManager().getTrashFolder().addProject(project);
+    Ode.getInstance().getFolderManager().saveAllFolders();
+    refresh();
+  }
+
+  public void onProjectMoved(Project project) {
+    refresh();
   }
 
   @Override
   public void onProjectDeleted(Project project) {
-    projects.remove(project);
-//    projectWidgets.remove(project);
-    refreshTable(false);
-    Ode.getInstance().getBindProjectToolbar().updateButtons();
+    folder.removeProject(project);
+    Ode.getInstance().getFolderManager().saveAllFolders();
+    refresh();
   }
 
   @Override
   public void onProjectsLoaded() {
+    LOG.info("ProjectList.onProjectsLoaded");
+    projectsLoaded = true;
     projectListLoading = false;
-    refreshTable(true);
+    refresh();
   }
 
   private static native void configureDraggable(Element el)/*-{

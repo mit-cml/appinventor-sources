@@ -1,6 +1,5 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.views.projects.ProjectSelectionChangeHandler;
@@ -60,7 +59,7 @@ public class ProjectListItem extends Composite {
     dateCreatedLabel.setText(dateTimeFormat.format(dateCreated));
     this.project = project;
     this.depth = depth;
-//    checkBox.getElement().setAttribute("style", "margin-left: " + ((depth-1) * 40) + "px");
+    checkBox.getElement().setAttribute("style", "margin-left: " + ((depth-1) * 40) + "px");
   }
 
   public void setSelectionChangeHandler(ProjectSelectionChangeHandler changeHandler) {
@@ -74,11 +73,9 @@ public class ProjectListItem extends Composite {
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
     if(selected) {
-//      container.addStyleName(style.selected());
       container.addStyleName("ode-ProjectRowHighlighted");
     } else {
-//      container.removeStyleName(style.selected());
-      container.removeStyleName("ode-ProjectRowUnHighlighted");
+      container.removeStyleName("ode-ProjectRowHighlighted");
     }
   }
 

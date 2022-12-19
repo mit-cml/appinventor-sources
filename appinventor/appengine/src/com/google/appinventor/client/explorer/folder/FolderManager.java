@@ -70,7 +70,6 @@ public final class FolderManager {
     globalFolder = new Folder(folderJSON, null);
     LOG.info("Creating Trash Folder");
     trashFolder = globalFolder.getChildFolder(FolderJSONKeys.TRASH_FOLDER);
-    LOG.info("Checking for projects with no folder");
     checkForUnassignedProjects();
     fireFoldersLoaded();
   }

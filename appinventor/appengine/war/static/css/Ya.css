@@ -274,19 +274,22 @@ div.StatusPanel {
 /*}*/
 
 .ode-ProjectRowHighlighted {
-  vertical-align: center;
+  /*vertical-align: center;*/
   border-bottom: 1px solid #ddd;
-  background-color: #fff6c3;
-  border-collapse: collapse;
-  width: 100%;
-  vertical-align: top;
+  background-color: #fff6c3 !important;
+  /*border-collapse: collapse;*/
+  /*width: 100%;*/
 }
 
 .ode-ProjectRowUnHighlighted {
-  border-bottom: 0px;
+  border-bottom: 0;
   background-color: white;
   width: 100%;
-  vertical-align: top;
+  vertical-align: center;
+}
+
+.ode-ProjectRowHidden {
+  display:none;
 }
 
 .ode-ProjectHeaderRow {
