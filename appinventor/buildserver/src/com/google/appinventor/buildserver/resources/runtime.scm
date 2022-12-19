@@ -2781,16 +2781,16 @@ list, use the make-yail-list constructor with no arguments.
     ((number? (car lst)) (cons (car lst) (list-number-only (cdr lst))))
     (else (list-number-only (cdr lst)))))
 
-(define (list-min lst)
+(define (list-min  lst)
   (cond ((null? lst) '())
     ((null? (cdr lst)) (car lst))
-    ((is-leq? (car lst) (list-min (cdr lst))) (car lst))
+    ((is-leq? (car lst) (list-min  (cdr lst))) (car lst))
     (else (list-min (cdr lst)))))
 
 (define (yail-list-min-comparator lessthan? y1)
   (cond ((yail-list-empty? y1) (make YailList))
     ((not (pair? y1)) y1)
-    (else (yail-list-but-last (kawa-list->yail-list (mergesort lessthan? (yail-list-contents y1)))))))
+    (else (yail-list-first (kawa-list->yail-list (mergesort lessthan? (yail-list-contents y1)))))))
 
 (define (yail-list-minimum-number yail-list)
   (let ((contents (yail-list-contents yail-list)))
@@ -2810,7 +2810,7 @@ list, use the make-yail-list constructor with no arguments.
 (define (yail-list-max-comparator lessthan? y1)
   (cond ((yail-list-empty? y1) (make YailList))
     ((not (pair? y1)) y1)
-    (else (yail-list-but-first (kawa-list->yail-list (mergesort lessthan? (yail-list-contents y1)))))))
+    (else (yail-list-first (yail-list-reverse (kawa-list->yail-list (mergesort lessthan? (yail-list-contents y1))))))))
 
 (define (yail-list-maximum-number yail-list)
   (let ((contents (yail-list-contents yail-list)))
@@ -2829,6 +2829,15 @@ list, use the make-yail-list constructor with no arguments.
                               "Bad list argument to but-first"))
       ((null? (cdr contents)) '())
       (else (kawa-list->yail-list (cdr contents))))))
+
+(define (yail-list-first yail-list)
+  (let ((contents (yail-list-contents yail-list)))
+    (cond ((null? contents) (signal-runtime-error
+                              (format #f
+                                "The list cannot be empty")
+                              "Bad list argument to but-first"))
+      ((null? (cdr contents)) '())
+      (else (kawa-list->yail-list (car contents))))))
 
 (define (but-last lst)
   (cond ((null? lst) '())
