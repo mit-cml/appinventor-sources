@@ -9,20 +9,23 @@
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
         <!-- Projects Menu -->
         <ai:Toolbar>
-            <ai:ToolbarItem name="New" caption="{messages.newProjectMenuItem}" ui:field="newProjectItem" >
+            <ai:ToolbarItem name="New" caption="{messages.newProjectButton}" ui:field="newProjectItem" >
                 <actions:NewAction />
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" >
+                <actions:SwitchToProjectAction />
             </ai:ToolbarItem>
             <ai:ToolbarItem name="Folder" caption="{messages.newProjectFolderMenuItem}" ui:field="newFolderItem" >
                 <expactions:AddFolderCommand />
             </ai:ToolbarItem>
+            <ai:ToolbarItem name="Move" caption="Move Project" >
+                <actions:MoveProjectsAction />
+            </ai:ToolbarItem>
             <ai:ToolbarItem name="Delete" caption="{messages.deleteProjectButton}">
                 <actions:DeleteAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Trash" caption="{messages.trashButton}">
+            <ai:ToolbarItem name="Trash" caption="{messages.viewTrashButton}">
                 <actions:TrashAction />
-            </ai:ToolbarItem>
-            <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" >
-                <actions:SwitchToProjectAction />
             </ai:ToolbarItem>
             <ai:ToolbarItem name="Restore" caption="{messages.restoreProjectButton}">
                 <actions:RestoreProjectAction />

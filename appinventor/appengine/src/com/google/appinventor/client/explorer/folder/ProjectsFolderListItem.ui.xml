@@ -7,14 +7,14 @@
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <g:FlowPanel>
-    <g:HorizontalPanel ui:field="container" styleName="ode-ProjectRowUnHighlighted">
+    <g:FlowPanel ui:field="container" styleName="ode-ProjectRowUnHighlighted">
       <g:CheckBox ui:field='checkBox' styleName='gwt-CheckBox'/>
       <ai:Icon ui:field='toggleButton' icon='chevron_right' />
       <ai:Icon icon='folder' />
       <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectNameLabel'/>
       <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label'/>
       <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label'/>
-    </g:HorizontalPanel>
-    <g:HorizontalPanel ui:field='childrenContainer' styleName='ode-ProjectRowHidden ode-ProjectRowUnHighlighted' />
+    </g:FlowPanel>
+    <g:FlowPanel ui:field='childrenContainer' styleName='ode-ProjectRowHidden ode-ProjectRowUnHighlighted' />
   </g:FlowPanel>
 </ui:UiBinder>

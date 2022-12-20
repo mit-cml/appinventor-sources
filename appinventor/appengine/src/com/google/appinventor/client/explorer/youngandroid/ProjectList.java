@@ -17,13 +17,11 @@ import com.google.appinventor.client.explorer.folder.ProjectsFolder;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 import java.util.ArrayList;
@@ -342,7 +340,7 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
    * @return the number of selected projects
    */
   public int getSelectedProjectsCount() {
-    return selectedProjects.size();
+    return selectedProjectListItems.size();
   }
 
   public int getMyProjectsCount() {
@@ -385,11 +383,7 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
    *
    * @return the selected projects
    */
-  public List<Project> getSelectedProjects() {
-    return selectedProjects;
-  }
   public void setIsTrash(boolean isTrash) {
-    LOG.info("setIsTrash " + isTrash);
     this.isTrash = isTrash;
     if (isTrash) {
       setFolder(Ode.getInstance().getFolderManager().getTrashFolder());

@@ -29,8 +29,8 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   interface ProjectsFolderListItemUiBinder extends UiBinder<FlowPanel, ProjectsFolderListItem> {}
   private static final ProjectsFolderListItemUiBinder UI_BINDER = GWT.create(ProjectsFolderListItemUiBinder.class);
 
-  @UiField HorizontalPanel container;
-  @UiField HorizontalPanel childrenContainer;
+  @UiField FlowPanel container;
+  @UiField FlowPanel childrenContainer;
   @UiField Label nameLabel;
   @UiField Label dateModifiedLabel;
   @UiField Label dateCreatedLabel;

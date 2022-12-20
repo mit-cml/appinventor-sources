@@ -134,5 +134,6 @@ public abstract class ProjectsFolder extends Composite {
     if (changeHandler != null) {
       changeHandler.onSelectionChange(isSelected());
     };
+    Ode.getInstance().getBindProjectToolbar().updateButtons();
   }
 }

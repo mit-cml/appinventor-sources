@@ -102,7 +102,9 @@ public final class FolderManager {
   }
 
   public void moveProjectsToFolder(List<Project> projects, Folder destination) {
+    LOG.info("Moving projects count " + projects.size() + " to " + destination.getName());
     for (Project project : projects) {
+      LOG.info("Moving project " + project.getProjectName()  + "to " + destination.getName());
       destination.addProject(project);
     }
     saveAllFolders();

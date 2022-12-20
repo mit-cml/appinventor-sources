@@ -260,25 +260,14 @@ div.StatusPanel {
   margin: 0;
   border: 1px;
   overflow: auto;
-  /*display: grid;*/
-  grid-auto-rows: max-content;
+  display: flex;
   text-align: left;
+  flex-direction: column;
 }
 
-/*.ode-ProjectTable td {*/
-/*  border-collapse: collapse;*/
-/*  font-size: small;*/
-/*  color: #555;*/
-/*  text-align: left;*/
-/*  margin: 0;*/
-/*}*/
-
 .ode-ProjectRowHighlighted {
-  /*vertical-align: center;*/
   border-bottom: 1px solid #ddd;
   background-color: #fff6c3 !important;
-  /*border-collapse: collapse;*/
-  /*width: 100%;*/
 }
 
 .ode-ProjectRowUnHighlighted {
@@ -286,6 +275,8 @@ div.StatusPanel {
   background-color: white;
   width: 100%;
   vertical-align: center;
+  display: flex;
+  flex-direction: row;
 }
 
 .ode-ProjectRowHidden {
@@ -294,11 +285,12 @@ div.StatusPanel {
 
 .ode-ProjectHeaderRow {
   background: url(../images/toolbarBG.png) repeat;
+  display: flex;
   border: 1px;
   border-bottom: 1px solid #bbccff;
-  display: table;
   grid-template-columns: auto 1fr auto auto;
   position: relative;
+  flex-direction: row;
   width: 100%;
 }
 

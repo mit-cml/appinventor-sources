@@ -6,10 +6,10 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <g:HorizontalPanel styleName="ode-ProjectRowUnHighlighted"  ui:field="container">
+  <g:FlowPanel styleName="ode-ProjectRowUnHighlighted"  ui:field="container">
     <g:CheckBox ui:field='checkBox' styleName='gwt-CheckBox'/>
-    <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectNameLabel'></g:Label>
-    <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label'></g:Label>
-    <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label'></g:Label>
-  </g:HorizontalPanel>
+    <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectNameLabel' />
+    <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label' />
+    <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label' />
+  </g:FlowPanel>
 </ui:UiBinder>

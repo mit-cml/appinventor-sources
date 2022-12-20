@@ -432,8 +432,8 @@ public class Ode implements EntryPoint {
     Ode.getInstance().getTopToolbar().updateMoveToTrash("Delete From Trash");
     hideChaff();
     hideTutorials();
-    ProjectListBox.getProjectListBox().loadTrashList();
     currentView = TRASHCAN;
+    ProjectListBox.getProjectListBox().loadTrashList();
     bindProjectToolbar.enableStartButton();
     bindProjectToolbar.setProjectTabButtonsVisible(false);
     bindProjectToolbar.setTrashTabButtonsVisible(true);
