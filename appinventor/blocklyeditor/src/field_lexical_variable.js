@@ -326,13 +326,13 @@ Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
             var loopName = parent.getFieldValue('VAR');
             rememberName(loopName, loopNames, Blockly.loopParameterPrefix);
           } else if ( (parent.type === "lists_minimum_number")
-                  && (parent.getInputTargetBlock('COMPARE') == child)) {// Only DO is in scope, not other inputs!
+                  && (parent.getInputTargetBlock('COMPARE') == child)) {
             var loopName1 = parent.getFieldValue('VAR1');
             var loopName2 = parent.getFieldValue('VAR2');
             rememberName(loopName1, loopNames, Blockly.loopParameterPrefix);
             rememberName(loopName2, loopNames, Blockly.loopParameterPrefix);
           } else if ( (parent.type === "lists_maximum_number")
-                 && (parent.getInputTargetBlock('COMPARE') == child)) {// Only DO is in scope, not other inputs!
+                 && (parent.getInputTargetBlock('COMPARE') == child)) {
             var loopName1 = parent.getFieldValue('VAR1');
             var loopName2 = parent.getFieldValue('VAR2');
             rememberName(loopName1, loopNames, Blockly.loopParameterPrefix);

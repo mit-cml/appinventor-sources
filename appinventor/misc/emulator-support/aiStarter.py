@@ -14,7 +14,7 @@ VERSION = '%d.%d.%d%s' % (config.ANDROID_PLATFORM, config.COMPANION_VERSION, con
 PLATDIR = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 # Path to executables
-ADB = "/Users/davidkim/Library/Android/sdk/platform-tools/adb"
+ADB = os.path.join(PLATDIR, 'from-Android-SDK', 'platform-tools', 'adb')
 RUN_EMULATOR = os.path.join(PLATDIR, 'run-emulator')
 RESET_EMULATOR = os.path.join(PLATDIR, 'reset-emulator')
 KILL_EMULATOR = os.path.join(PLATDIR, 'kill-emulator')

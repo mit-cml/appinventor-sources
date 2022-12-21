@@ -964,12 +964,12 @@
     ((_ lambda-arg1-name lambda-arg2-name body-form list)
       (yail-list-sort-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
 
-(define-syntax mincomparator_nondest
+(define-syntax mincomparator-nondest
   (syntax-rules ()
     ((_ lambda-arg1-name lambda-arg2-name body-form list)
       (yail-list-min-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
 
-(define-syntax maxcomparator_nondest
+(define-syntax maxcomparator-nondest
   (syntax-rules ()
     ((_ lambda-arg1-name lambda-arg2-name body-form list)
       (yail-list-max-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
