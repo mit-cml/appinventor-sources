@@ -583,7 +583,7 @@
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_AND": "precedes",
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_VAR2": "item2",
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_COMPARATOR2": "if",
-	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_COLLAPSED_TEXT": "minimum using comparator",
+	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_TYPEBLOCK": "minimum using comparator",
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_TOOLTIP": "Returns minimum number in the list",
 
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#maxnumber",
@@ -593,7 +593,7 @@
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_AND": "precedes",
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_VAR2": "item2",
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_COMPARATOR2": "if",
-	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_COLLAPSED_TEXT": "maximum using comparator",
+	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_TYPEBLOCK": "maximum using comparator",
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_TOOLTIP": "Returns maximum number in the list",
 
 	"Blockly.Msg.LANG_LISTS_BUT_FIRST_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#butfirst",

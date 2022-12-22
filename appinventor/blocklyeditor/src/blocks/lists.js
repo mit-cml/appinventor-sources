@@ -840,10 +840,10 @@ Blockly.Blocks['lists_minimum_number'] = {
     if (result.isEmpty()) {
       return result;
     } else {
-      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
+      throw Error("Violation of invariant: procedure declaration has nonempty free variables: " + result.toString());
     }
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_COLLAPSED_TEXT }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MIN_NUMBER_TYPEBLOCK }]
 };
 
 Blockly.Blocks['lists_maximum_number'] = {
@@ -901,10 +901,10 @@ Blockly.Blocks['lists_maximum_number'] = {
     if (result.isEmpty()) {
       return result;
     } else {
-      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
+      throw Error("Violation of invariant: procedure declaration has nonempty free variables: " + result.toString());
     }
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MAX_NUMBER_COLLAPSED_TEXT }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MAX_NUMBER_TYPEBLOCK }]
 };
 
 Blockly.Blocks['lists_but_first'] = {
