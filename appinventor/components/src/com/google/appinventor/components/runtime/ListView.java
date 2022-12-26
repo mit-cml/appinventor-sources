@@ -99,8 +99,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   private float fontSizeMain;
   private float fontSizeDetail;
-  private String fontTypeface;
-  private String fontTypeDetail;
+  private int fontTypeface;
+  private int fontTypeDetail;
 
   /* for backward compatibility */
   private static final int DEFAULT_TEXT_SIZE = 22;
@@ -424,6 +424,19 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
+   */
+   @SimpleFunction(
+      description = "Removes Item from list at a given idnex")
+    public void RemoveItemAtIndex(int index) {
+      if (!dictItems.isEmpty()) {
+        dictItems.remove(index);
+      } else {
+        stringItems.remove(index);
+      }
+      setAdapterData();
+    }
+
+  /**
    * Returns the text in the `ListView` at the position of {@link #SelectionIndex(int)}.
    */
   @SimpleProperty(description = "Returns the text last selected in the ListView.",
@@ -724,7 +737,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
           category = PropertyCategory.APPEARANCE,
           userVisible = false)
-  public String FontTypeface() {
+  public int FontTypeface() {
     return fontTypeface;
   }
 
@@ -741,7 +754,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
           userVisible = false)
-  public void FontTypeface(String typeface) {
+  public void FontTypeface(int typeface) {
     fontTypeface = typeface;
     setAdapterData();
   }
@@ -758,7 +771,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
           category = PropertyCategory.APPEARANCE,
           userVisible = false)
-  public String FontTypefaceDetail() {
+  public int FontTypefaceDetail() {
     return fontTypeDetail;
   }
 
@@ -775,7 +788,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
           defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
           userVisible = false)
-  public void FontTypefaceDetail(String typeface) {
+  public void FontTypefaceDetail(int typeface) {
     fontTypeDetail = typeface;
     setAdapterData();
   }
