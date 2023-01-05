@@ -1509,7 +1509,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
     var RefreshAssets = top.AssetManager_refreshAssets; // This is where GWT puts this
 
     var usewebrtc = rs.webrtc && rs.webrtc == "true";
-    var useproxy = rs.useproxy; // Only checked if webrtc is false
+    var useproxy = rs.useproxy && rs.useproxy == 'true'; // Only checked if webrtc is false
 
     var checkversion = new Promise(function (resolve, reject) {
         // Time to check the version of the Companion that we get from the
