@@ -239,7 +239,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       let newColor = backgroundColor != Int32(bitPattern: Color.default.rawValue) ? backgroundColor : Int32(bitPattern: Color.white.rawValue)
       if newColor != _backgroundColor {
         _backgroundImageView.backgroundColor = argbToColor(newColor)
-        _backgroundImageView.layer.zPosition = -CGFloat.infinity
+        _backgroundImageView.layer.zPosition = CGFloat(-Float.greatestFiniteMagnitude)
       }
     }
   }

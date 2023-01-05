@@ -50,6 +50,10 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
   
   @objc open func Initialize() {
+    guard !_initialized else {
+      print("Sprite \(self) is already initialized")
+      return
+    }
     _initialized = true
     _canvas.registerChange(self)
     if Enabled {
@@ -272,17 +276,23 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       return
     }
     _registeredCollisions.insert(other)
-    EventDispatcher.dispatchEvent(of: self, called: "CollidedWith", arguments: other as AnyObject)
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "CollidedWith", arguments: other as AnyObject)
+    }
   }
   
   // Handler called when a pair of sprites cease colliding.
   @objc open func NoLongerCollidingWith(_ other: Sprite) {
     _registeredCollisions.remove(other)
-    EventDispatcher.dispatchEvent(of: self, called: "NoLongerCollidingWith", arguments: other as AnyObject)
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "NoLongerCollidingWith", arguments: other as AnyObject)
+    }
   }
   
   @objc open func EdgeReached(_ edge: Direction) {
-    EventDispatcher.dispatchEvent(of: self, called: "EdgeReached", arguments: edge.rawValue as NSNumber)
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "EdgeReached", arguments: edge.rawValue as NSNumber)
+    }
   }
   
   //MARK: Methods
@@ -417,29 +427,39 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
   
   @objc open func Touched(_ x: Float, _ y: Float) {
-    EventDispatcher.dispatchEvent(of: self, called: "Touched", arguments: x as NSNumber, y as NSNumber)
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "Touched", arguments: x as NSNumber, y as NSNumber)
+    }
   }
 
   @objc open func TouchDown(_ x: Float, _ y: Float) {
-    EventDispatcher.dispatchEvent(of: self, called: "TouchDown", arguments: x as NSNumber, y as NSNumber)
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "TouchDown", arguments: x as NSNumber, y as NSNumber)
+    }
   }
 
   @objc open func TouchUp(_ x: Float, _ y: Float) {
-    EventDispatcher.dispatchEvent(of: self, called: "TouchUp", arguments: x as NSNumber, y as NSNumber)
+    DispatchQueue.main.async{
+      EventDispatcher.dispatchEvent(of: self, called: "TouchUp", arguments: x as NSNumber, y as NSNumber)
+    }
   }
 
   @objc open func Flung(_ flingStartX: Float, _ flingStartY: Float, _ speed: Float, _ heading: Float,
                   _ velocityX: Float, _ velocityY: Float) {
-    EventDispatcher.dispatchEvent(of: self, called: "Flung", arguments: flingStartX as NSNumber,
-                                  flingStartY as NSNumber, speed as NSNumber, heading as NSNumber,
-                                  velocityX as NSNumber, velocityY as NSNumber)
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "Flung", arguments: flingStartX as NSNumber,
+                                    flingStartY as NSNumber, speed as NSNumber, heading as NSNumber,
+                                    velocityX as NSNumber, velocityY as NSNumber)
+    }
   }
   
   @objc open func Dragged(_ startX: Float, _ startY: Float, _ prevX: Float, _ prevY: Float,
                     _ currentX: Float, _ currentY: Float) {
-    EventDispatcher.dispatchEvent(of: self, called: "Dragged", arguments: startX as NSNumber,
-                                  startY as NSNumber, prevX as NSNumber, prevY as NSNumber,
-                                  currentX as NSNumber, currentY as NSNumber)
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "Dragged", arguments: startX as NSNumber,
+                                    startY as NSNumber, prevX as NSNumber, prevY as NSNumber,
+                                    currentX as NSNumber, currentY as NSNumber)
+    }
   }
 
   // To be overriden in sub-classes (ImageSprite and Ball)
@@ -448,14 +468,11 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   // Notifies canvas of a sprite change and raises any EdgeReached events.
   @objc func registerChanges() {
     if _initialized {
-      // Schedule the updates asynchronously, otherwise we can create a stack overflow situation
-      DispatchQueue.main.async {
-        let edge = self.hitEdge()
-        if edge != Direction.none {
-          self.EdgeReached(edge)
-        }
-        self._canvas.registerChange(self)
+      let edge = self.hitEdge()
+      if edge != Direction.none {
+        self.EdgeReached(edge)
       }
+      self._canvas.registerChange(self)
     }
   }
   

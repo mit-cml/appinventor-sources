@@ -12,8 +12,8 @@ open class ImageSprite: Sprite {
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
-    Width = _width
-    Height = _height
+    Width = kLengthPreferred
+    Height = kLengthPreferred
     DisplayLayer.transform = CATransform3DMakeRotation(HeadingRadians, 0, 0, 1.0)
   }
   
@@ -27,6 +27,12 @@ open class ImageSprite: Sprite {
         _image = image
         _picturePath = path
         self.DisplayLayer.contents = image.cgImage
+        if _lastSetHeight == kLengthPreferred {
+          updateHeight()
+        }
+        if _lastSetWidth == kLengthPreferred {
+          updateWidth()
+        }
         registerChanges()
       }
     }
@@ -69,7 +75,7 @@ open class ImageSprite: Sprite {
       return _width
     }
     set(width) {
-      _width = width
+      _lastSetWidth = width
       updateWidth()
     }
   }
@@ -79,7 +85,7 @@ open class ImageSprite: Sprite {
       return _height
     }
     set(height) {
-      _height = height
+      _lastSetHeight = height
       updateHeight()
     }
   }
@@ -90,10 +96,13 @@ open class ImageSprite: Sprite {
       return
     }
     let canvasHeight = _canvas.canvasView.bounds.height
-    if _height == kLengthPreferred {
-      Height = Int32(min(_image.size.height, canvasHeight))
+    if _lastSetHeight == kLengthPreferred {
+      _height = Int32(min(_image.size.height, canvasHeight))
     } else if _height == kLengthFillParent {
-      Height = Int32(canvasHeight)
+      _height = Int32(canvasHeight)
+    } else {
+      // pixels
+      _height = _lastSetHeight
     }
     updateDisplayLayer()
   }
@@ -103,10 +112,12 @@ open class ImageSprite: Sprite {
       return
     }
     let canvasWidth = _canvas.canvasView.bounds.width
-    if _width == kLengthPreferred {
-      Width = Int32(min(_image.size.width, canvasWidth))
-    } else if _width == kLengthFillParent {
-      Width = Int32(canvasWidth)
+    if _lastSetWidth == kLengthPreferred {
+      _width = Int32(min(_image.size.width, canvasWidth))
+    } else if _lastSetWidth == kLengthFillParent {
+      _width = Int32(canvasWidth)
+    } else {
+      _width = _lastSetWidth
     }
     updateDisplayLayer()
   }

@@ -725,14 +725,10 @@
               *the-null-value*)))))))
 
 (define (init-runtime)
-  (let ((component-names (filter string? (map (lambda (name)
-                                (if (component? (lookup-in-current-form-environment name)) name #f))
-                              (yail-dictionary-get-keys (yail:invoke *this-form* 'environment))))))
-    (apply call-Initialize-of-components (map string->symbol component-names))))
+  (set-this-form))
 
 (define (set-this-form)
-  ; no-op
-  '())
+  (set! *this-form* (SimpleForm:getActiveForm)))
 
 (define (set-form-name name)
   (yail:invoke *this-form* 'setName name))
