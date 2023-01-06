@@ -953,6 +953,13 @@ let kMinimumToastWait = 10.0
       let navbar = parent.navigationBar
       navbar.tintColor = UIColor.white
       navbar.backgroundColor = argbToColor(_primaryColor)
+      if #available(iOS 13.0, *) {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = argbToColor(_primaryColor)
+        navbar.standardAppearance = appearance
+        navbar.scrollEdgeAppearance = navbar.standardAppearance
+      }
       navbar.titleTextAttributes = convertToOptionalNSAttributedStringKeyDictionary([NSAttributedString.Key.foregroundColor.rawValue:UIColor.white])
       switch _theme {
       case .Classic, .DeviceDefault:
