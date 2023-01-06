@@ -2265,6 +2265,12 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Add screen names dropdown block.
     34: Blockly.Versioning.makeScreenNamesBeDropdowns,
 
+    // AI2: Added List Mathematical Operations
+    35:"noUpgrade",
+
+    // AI2: Added mode on List Mathematical Operations
+    36:"noUpgrade",
+
   }, // End Language upgraders
 
 
