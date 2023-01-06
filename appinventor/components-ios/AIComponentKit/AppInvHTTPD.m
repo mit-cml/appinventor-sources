@@ -36,7 +36,7 @@ static NSString *stringFromResult(unsigned char *result, int length) {
 static NSString *_hmacKey = nil;
 static int _hmacSeq = 1;
 static NSString *kMimeJson = @"application/json";
-static NSString *_popup = @"No Page Provided";
+static NSString *_popup = @"<!DOCTYPE html><html><body><h1>No Page Provided</h1></body></html>";
 
 @implementation AppInvHTTPD
 

@@ -206,14 +206,14 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     request.httpMethod = "POST"
     request.httpBody = values.data(using: String.Encoding.utf8)
     URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
-      var responseContent: NSString = ""
+      var responseContent: String = ""
       if let data = data {
         guard let responseContentStr = String(data: data, encoding: .utf8) else {
           return
         }
-        responseContent = responseContentStr as NSString
+        responseContent = responseContentStr as String
       }
-      self.setPopup(popup: responseContent as String)
+      self.setPopup(popup: responseContent)
     }
     ).resume()
   }
