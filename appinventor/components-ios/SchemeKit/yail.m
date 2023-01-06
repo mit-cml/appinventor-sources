@@ -415,13 +415,11 @@ yail_make_native_instance_internal(pic_state *pic, id object, int type) {
   ValueHolder *wrappedValue = nil;
   CopyableReference *ref = [CopyableReference referenceWithObject:object];
   if ((wrappedValue = [objects objectForKey:ref])) {
-#ifdef MEMDEBUG
-    NSLog(@"Returning existing reference for %@", [object debugDescription]);
-#endif
     return wrappedValue.value;
   }
 #ifdef MEMDEBUG
-  NSLog(@"Allocating picrin object for %@", [object debugDescription]);
+  NSLog(@"Allocating picrin object for <%@ %p> %@",
+        NSStringFromClass([object class]), object, [object debugDescription]);
 #endif
   size_t ai = pic_enter(pic);  // prevent this from turning into a strong reference
   native_instance *native = (native_instance *)pic_obj_alloc(pic,
@@ -492,7 +490,9 @@ yail_native_instance_dtor(pic_state *pic, struct native_instance *instance) {
   ValueHolder *value = objects[ref];
   if (value) {
 #ifdef MEMDEBUG
-    NSLog(@"Deallocating picrin object for %@", [instance->object_ debugDescription]);
+    NSLog(@"Deallocating picrin object for <%@ %p> %@",
+          NSStringFromClass([instance->object_ class]), (void *)instance,
+          [instance->object_ debugDescription]);
 #endif
     [objects removeObjectForKey:ref];
     instance->object_ = nil;

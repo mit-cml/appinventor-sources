@@ -10,12 +10,14 @@
   pic_state *_pic;
   NSException *exception_;
   NSMutableDictionary<NSString *, SCMSymbol *> *symbolTable_;
+  NSMutableArray *protected_;
 }
 
 - (pic_value)wrapObject:(nullable id<SCMValue>)object;
 - (pic_value)internObject:(nonnull id<SCMObject>)object;
 - (nullable id<SCMValue>)unwrapValue:(pic_value)value;
 - (pic_value)makeConsWithCar:(nullable id<SCMValue>)car cdr:(nullable id<SCMValue>)cdr;
+- (void)mark;
 
 /**
  * Mark a picrin value as in-use during the mark phase of a garbage collection cycle.

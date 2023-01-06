@@ -205,6 +205,7 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
     _keys = [keys mutableCopy];
     _mutations = 0;
     _value = [interpreter internObject:self];
+    assert(pic_type(interpreter.state, _value) == YAIL_TYPE_DICT);
     _retainArray = nil;
   }
   return self;
@@ -216,6 +217,7 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
     _backend = [[NSMutableDictionary alloc] init];
     _keys = [[NSMutableArray alloc] init];
     _value = [interpreter internObject:self];
+    assert(pic_type(interpreter.state, _value) == YAIL_TYPE_DICT);
     _mutations = 0;
     _retainArray = nil;
   }
@@ -242,6 +244,7 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
     _keys = [NSMutableArray array];
     _mutations = 0;
     _value = [_interpreter internObject:self];
+    assert(pic_type(_interpreter.state, _value) == YAIL_TYPE_DICT);
     _retainArray = nil;
   }
   return self;
@@ -443,7 +446,8 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
     _backend = [[NSMutableDictionary alloc] initWithObjects:objects forKeys:keys count:count];
     _keys = [[NSMutableArray alloc] initWithObjects:keys count:count];
     _interpreter = SCMInterpreter.shared;
-    _value = [_interpreter wrapObject:self];
+    _value = [_interpreter internObject:self];
+    assert(pic_type(_interpreter.state, _value) == YAIL_TYPE_DICT);
   }
   return self;
 }
@@ -453,8 +457,9 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
     _backend = [[NSMutableDictionary alloc] initWithDictionary:otherDictionary];
     _keys = [[otherDictionary allKeys] mutableCopy];
     _interpreter = SCMInterpreter.shared;
-    _value = [_interpreter wrapObject:self];
-  }
+    _value = [_interpreter internObject:self];
+    assert(pic_type(_interpreter.state, _value) == YAIL_TYPE_DICT);
+}
   return self;
 }
 
@@ -564,6 +569,7 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 #ifdef MEMDEBUG
   NSLog(@"YailDictionary.mark");
 #endif
+  assert(pic_type(_interpreter.state, _value) == YAIL_TYPE_DICT);
   [_interpreter mark:_value];
   for (id key in _keys) {
     if ([key respondsToSelector:@selector(mark)]) {
@@ -589,6 +595,7 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
   copy->_backend = [_backend mutableCopyWithZone:zone];
   copy->_keys = [_keys mutableCopyWithZone:zone];
   copy->_value = [_interpreter internObject:copy];
+  assert(pic_type(_interpreter.state, _value) == YAIL_TYPE_DICT);
   return copy;
 }
 
@@ -650,7 +657,6 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
 #ifdef MEMDEBUG
 - (void)dealloc {
   NSLog(@"Deallocating YailDictionary");
-  [super dealloc];
 }
 #endif
 

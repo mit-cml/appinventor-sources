@@ -169,10 +169,13 @@ static SCMInterpreter *_defaultInterpreter = nil;
     pic_value e;
     exception_ = nil;
     symbolTable_ = [[NSMutableDictionary alloc] init];
+    protected_ = [[NSMutableArray alloc] init];
     pic_try {
       pic_init_picrin(pic);
       SCMSymbol *listHeader = [[SCMSymbol alloc] initWithSymbol:pic_intern(_pic, pic_cstr_value(_pic, "*list*")) inInterpreter:self];
       [symbolTable_ setValue:listHeader forKey:@"*list*"];
+      pic_value selfref = yail_make_native_instance(pic, self);
+      pic_protect(pic, selfref);  // Protect the interpreter's state from GC
     } pic_catch(e) {
       exception_ = exception_from_pic_error(pic, e);
     }
@@ -403,6 +406,22 @@ static SCMInterpreter *_defaultInterpreter = nil;
 
 - (void)runGC {
   pic_gc(_pic);
+}
+
+- (void)protect:(id)object {
+  [protected_ addObject:object];
+}
+
+- (void)unprotect:(id)object {
+  [protected_ removeObject:object];
+}
+
+- (void)mark {
+  for (id item in self->protected_) {
+    if ([item respondsToSelector:@selector(mark)]) {
+      [item mark];
+    }
+  }
 }
 
 #ifdef MEMDEBUG

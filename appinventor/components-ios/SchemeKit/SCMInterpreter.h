@@ -22,6 +22,8 @@
 - (void)setTimeZone:(nonnull NSTimeZone *)tz;
 - (nonnull SCMSymbol *)makeSymbol:(nonnull NSString *)name;
 - (nonnull id<SCMValue>)valueForObject:(nullable id)object;
+- (void)protect:(nonnull id)object;
+- (void)unprotect:(nonnull id)object;
 
 /**
  * Run a garbage collection cycle of the Scheme memory.

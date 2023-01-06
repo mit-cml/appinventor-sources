@@ -64,8 +64,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   public override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
-    //barcodeScanner = BarcodeScanner(parent: self)
-    //pushViewController(form, animated: false);
+    SCMInterpreter.shared.protect(self)
     ViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
   }
@@ -266,6 +265,14 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       return false
     }
     return true
+  }
+
+  @objc func mark() {
+    for vc in self.viewControllers {
+      if let form = vc as? Form {
+        form.mark()
+      }
+    }
   }
 
   fileprivate func reset() {
