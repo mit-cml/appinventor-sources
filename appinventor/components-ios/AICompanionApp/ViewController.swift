@@ -189,16 +189,16 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     var request = URLRequest(url: url!)
     let values = [
       "key": code,
-      "ipaddr": NetworkUtils.getIPAddress()!,
+      "ipaddr": NetworkUtils.getIPAddress(),
       "port": "9987",
-      "webrtc": String(describing: phoneStatus.WebRTC),
+      "webrtc": phoneStatus.WebRTC ? "true" : "false",
       "version": phoneStatus.GetVersionName(),
       "api": phoneStatus.SdkLevel(),
       "installer": phoneStatus.GetInstaller(),
       "os": form.Platform,
       "aid": phoneStatus.InstallationId(),
       "r2": "true",
-      "useproxy": String(describing: phoneStatus.UseProxy)
+      "useproxy": phoneStatus.UseProxy ? "true" : "false"
     ].map({ (key: String, value: String) -> String in
       return "\(key)=\(value)"
     }).joined(separator: "&")

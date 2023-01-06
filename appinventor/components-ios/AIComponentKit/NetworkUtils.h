@@ -10,6 +10,6 @@
 
 @interface NetworkUtils : NSObject
 
-+ (NSString *)getIPAddress;
++ (NSString * _Nonnull) getIPAddress;
 
 @end
