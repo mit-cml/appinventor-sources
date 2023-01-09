@@ -15,6 +15,21 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
+NSString *getInstaller(void);
+
+NSString *getInstaller() {
+#if DEBUG
+  return @"XCode";
+#else
+  NSURL *receiptUrl = [NSBundle mainBundle].appStoreReceiptURL;
+  if (receiptUrl) {
+    return [receiptUrl.path containsString:@"sandboxReceipt"] ? @"TestFlight" : @"App Store";
+  } else {
+    return @"Not Known";
+  }
+#endif
+}
+
 static NSString *stringFromResult(unsigned char *result, int length) {
   NSMutableString *hash = [[NSMutableString alloc] initWithCapacity:2*length];
   for (int i = 0; i < length; i++) {
@@ -91,9 +106,9 @@ static NSString *_popup = @"<!DOCTYPE html><html><body><h1>No Page Provided</h1>
   NSDictionary *dict = @{
     @"fingerprint": [NSString stringWithFormat:@"%@/%@:%@", device.model, device.systemName, device.systemVersion],
     @"fqcn": @true,
-    @"installer": @"unknown",
+    @"installer": getInstaller(),
     @"package": @"edu.mit.appinventor.aicompanion3",
-    @"version": @"2.57"
+    @"version": [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]
   };
   NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
   GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithData:data contentType:@"application/json"];
