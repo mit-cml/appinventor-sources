@@ -7,7 +7,7 @@
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <g:FlowPanel styleName='ode-ProjectTable'>
-      <g:FlowPanel styleName='ode-ProjectHeaderRow'>
+    <g:FlowPanel styleName='ode-ProjectHeaderRow'>
         <g:CheckBox ui:field='selectAllCheckBox' styleName="gwt-CheckBox" />
         <g:FlowPanel >
           <g:Label text='{messages.projectNameHeader}' styleName="gwt-Label ode-ProjectHeaderLabel" />
@@ -21,8 +21,8 @@
           <g:Label text='{messages.projectDateModifiedHeader}' styleName="gwt-Label ode-ProjectHeaderLabel"  />
           <!-- <ai:Icon icon='arrow_downward' styleName='{style.sortIndicator}' /> -->
         </g:FlowPanel>
-      </g:FlowPanel>
-    <g:FlowPanel  styleName='ode-ProjectTable'  ui:field='container'>
+    </g:FlowPanel>
+    <g:FlowPanel styleName="ode-ProjectRowList" ui:field='container'>
 
     </g:FlowPanel>
   </g:FlowPanel>

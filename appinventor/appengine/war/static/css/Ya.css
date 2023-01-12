@@ -251,7 +251,15 @@ div.StatusPanel {
   color: #555;
   cursor: pointer;
   vertical-align: top;
-  padding-right: 10px;
+  padding-left: 10px;
+  text-align: left;
+}
+
+.ode-ProjectFieldLabel {
+  font-size: small;
+  color: #555;
+  vertical-align: top;
+  padding-left: 10px;
   text-align: left;
 }
 
@@ -260,35 +268,52 @@ div.StatusPanel {
   margin: 0;
   border: 1px;
   overflow: auto;
-  display: flex;
+  /*display: flex;*/
   text-align: left;
-  flex-direction: column;
+  /*flex-direction: column;*/
+  display: grid;
+  grid-auto-rows: max-content;
+  grid-template-columns: auto 1fr auto auto;
 }
 
 .ode-ProjectRowHighlighted {
+  display: grid;
+  grid-template-columns: subgrid;
   border-bottom: 1px solid #ddd;
   background-color: #fff6c3 !important;
 }
 
 .ode-ProjectRowUnHighlighted {
+  display: grid;
+  grid-column: 1 / 5;
+  grid-template-columns: subgrid;
   border-bottom: 0;
   background-color: white;
   width: 100%;
   vertical-align: center;
-  display: flex;
-  flex-direction: row;
+  /*display: flex;*/
+  /*flex-direction: row;*/
 }
 
 .ode-ProjectRowHidden {
   display:none;
 }
 
+.ode-ProjectRowList {
+  display:grid;
+  grid-column: 1 / 5;
+  grid-template-columns: subgrid;
+}
+
 .ode-ProjectHeaderRow {
   background: url(../images/toolbarBG.png) repeat;
-  display: flex;
+  /*display: flex;*/
+  display: grid;
   border: 1px;
   border-bottom: 1px solid #bbccff;
-  grid-template-columns: auto 1fr auto auto;
+  grid-column: 1 / 5;
+  grid-template-columns: subgrid;
+  /*grid-template-columns: auto 1fr auto auto;*/
   position: relative;
   flex-direction: row;
   width: 100%;
@@ -300,6 +325,7 @@ div.StatusPanel {
   font-size: 11px;
   cursor: pointer;
   text-align: left;
+  padding-left: 10px;
 }
 
 .ode-CheckpointProjectTable {

@@ -6,11 +6,13 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <g:FlowPanel>
+  <g:FlowPanel  styleName="ode-ProjectRowList">
     <g:FlowPanel ui:field="container" styleName="ode-ProjectRowUnHighlighted">
+      <g:FlowPanel>
       <g:CheckBox ui:field='checkBox' styleName='gwt-CheckBox'/>
       <ai:Icon ui:field='toggleButton' icon='chevron_right' />
       <ai:Icon icon='folder' />
+    </g:FlowPanel>
       <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectNameLabel'/>
       <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label'/>
       <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label'/>
