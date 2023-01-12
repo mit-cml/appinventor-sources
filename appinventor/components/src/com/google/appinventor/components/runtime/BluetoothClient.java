@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -28,6 +28,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Use `BluetoothClient` to connect your device to other devices using Bluetooth. This component
@@ -45,12 +48,28 @@ import java.util.UUID;
 @SimpleObject
 @UsesPermissions(permissionNames =
                  "android.permission.BLUETOOTH, " +
-                 "android.permission.BLUETOOTH_ADMIN")
-public final class BluetoothClient extends BluetoothConnectionBase {
+                 "android.permission.BLUETOOTH_ADMIN," +
+                 "android.permission.BLUETOOTH_SCAN," +
+                 "android.permission.BLUETOOTH_CONNECT"
+  )
+public final class BluetoothClient extends BluetoothConnectionBase
+    implements RealTimeDataSource<String, String> {
   private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
 
   private final List<Component> attachedComponents = new ArrayList<Component>();
   private Set<Integer> acceptableDeviceClasses;
+
+  // Set of observers
+  private HashSet<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
+
+  // Executor Service to poll data continuously from the Input Stream
+  // which holds data sent by Bluetooth connections. Used for sending
+  // data to Data listeners, and only initialized as soon as an observer
+  // is added to this component.
+  private ScheduledExecutorService dataPollService;
+
+  // Fixed polling rate for the Data Polling Service (in milliseconds)
+  private int pollingRate = 10;
 
   /**
    * Creates a new BluetoothClient.
@@ -193,6 +212,33 @@ public final class BluetoothClient extends BluetoothConnectionBase {
   }
 
   /**
+   * The polling rate in milliseconds when the Bluetooth Client is used as a Data Source in a
+   * Chart Data component. The minimum value is 1.
+   *
+   * @param rate the rate in milliseconds
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @DesignerProperty(defaultValue = "10")
+  public void PollingRate(int rate) {
+    // Resolve polling rate values that are too small to the smallest possible value.
+    if (rate < 1) {
+      this.pollingRate = 1;
+    } else {
+      this.pollingRate = rate;
+    }
+  }
+
+  /**
+   * Returns the configured polling rate value of the Bluetooth Client.
+   *
+   * @return  polling rate value
+   */
+  @SimpleProperty
+  public int PollingRate() {
+    return this.pollingRate;
+  }
+
+  /**
    * Returns true if the class of the given device is acceptable.
    *
    * @param bluetoothDevice the Bluetooth device
@@ -326,5 +372,87 @@ public final class BluetoothClient extends BluetoothConnectionBase {
     Log.i(logTag, "Connected to Bluetooth device " +
         BluetoothReflection.getBluetoothDeviceAddress(bluetoothDevice) + " " +
         BluetoothReflection.getBluetoothDeviceName(bluetoothDevice) + ".");
+  }
+
+  /**
+   * Starts the scheduled Data Polling Service that
+   * continuously reads data and notifies all the
+   * observers with the new data.
+   */
+  private void startBluetoothDataPolling() {
+    // Create a new Scheduled Executor. The executor is made single
+    // threaded to prevent race conditions between consequent
+    // Bluetooth reading as well as due to performance (since the
+    // chosen polling interval is chosen to be quite small)
+    dataPollService = Executors.newSingleThreadScheduledExecutor();
+
+    // Execute runnable task at a fixed millisecond rate
+    dataPollService.scheduleWithFixedDelay(new Runnable() {
+      @Override
+      public void run() {
+        // Retrieve data value (with a null key, since
+        // key value does not matter for BluetoothClient)
+        String value = getDataValue(null);
+
+        // Notify data observers of the retrieved value if it is
+        // non-empty
+        if (!value.equals("")) {
+          notifyDataObservers(null, value);
+        }
+      }
+    }, 0, pollingRate, TimeUnit.MILLISECONDS);
+  }
+
+  @Override
+  public synchronized void addDataObserver(DataSourceChangeListener dataComponent) {
+    // Data Polling Service has not been initialized yet; Initialize it
+    // (since Data Component is added)
+    if (dataPollService == null) {
+      startBluetoothDataPolling();
+    }
+
+    // Add the Data Component as an observer
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public synchronized void removeDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+
+    // No more Data Source observers exist;
+    // Shut down polling service and null it
+    // (the reason for nulling is so that a new
+    // service could be created upon adding a new
+    // observer)
+    if (dataSourceObservers.isEmpty()) {
+      dataPollService.shutdown();
+      dataPollService = null;
+    }
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object newValue) {
+    for (DataSourceChangeListener observer : dataSourceObservers) {
+      observer.onReceiveValue(this, key, newValue);
+    }
+  }
+
+  @Override
+  public String getDataValue(String key) {
+    String value = "";
+
+    // Ensure that the BluetoothClient is connected
+    if (IsConnected()) {
+      // Check how many bytes can be received
+      int bytesReceivable = BytesAvailableToReceive();
+
+      // At least one byte can be received
+      if (bytesReceivable > 0) {
+        // Read contents from the Bluetooth connection until delimiter
+        value = ReceiveText(-1);
+      }
+    }
+
+    return value;
   }
 }

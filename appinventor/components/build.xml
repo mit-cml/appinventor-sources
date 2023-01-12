@@ -12,7 +12,7 @@
     App Inventor component libraries
   </description>
 
-  <property name="android.sdk.version" value="30"/>
+  <property name="android.sdk.version" value="31"/>
 
   <target name="all"
           depends="CommonConstants,AndroidRuntime">
@@ -123,7 +123,6 @@
           depends="Barcode"
           description="Copies libraries needed for components into the public build directory">
     <property name="support.dir" location="${lib.dir}/android/support" />
-    <property name="support.version" value="28.0.0" />
     <copy toFile="${public.deps.dir}/osmdroid.aar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.aar" />
     <copy toFile="${public.deps.dir}/osmdroid.jar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
     <copy toFile="${public.deps.dir}/webrtc.jar"
@@ -143,21 +142,34 @@
     <copy toFile="${public.deps.dir}/httpmime.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
     <copy toFile="${public.deps.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${public.deps.dir}/firebase.jar" file="${lib.dir}/firebase/firebase-client-android-2.5.0.jar" />
-    <copy toFile="${public.deps.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
-    <copy toFile="${public.deps.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
+    <!-- Google Sheets Component -->
+    <copy toFile="${public.deps.dir}/googlesheets.jar" file="${lib.dir}/googlesheets/googlesheets.jar" />
+    <copy toFile="${public.deps.dir}/opencensus.jar" file="${lib.dir}/googlesheets/opencensus-api-0.26.0.jar" />
+    <copy toFile="${public.deps.dir}/opencensus-contrib-http-util.jar" file="${lib.dir}/googlesheets/opencensus-contrib-http-util-0.26.0.jar" />
+    <copy toFile="${public.deps.dir}/grpc-context.jar" file="${lib.dir}/googlesheets/grpc-context-1.29.0.jar" />
+    <copy toFile="${public.deps.dir}/jetty.jar" file="${lib.dir}/googlesheets/jetty-6.1.26.jar" />
+    <copy toFile="${public.deps.dir}/jetty-util.jar" file="${lib.dir}/googlesheets/jetty-util-6.1.26.jar" />
+    <copy toFile="${public.deps.dir}/google-http-client.jar" file="${lib.dir}/oauth/google-http-client-1.35.0.jar" />
+    <copy toFile="${public.deps.dir}/google-api-client.jar" file="${lib.dir}/oauth/google-api-client-1.30.2.jar" />
+    <copy toFile="${public.deps.dir}/google-api-client-jackson2.jar" file="${lib.dir}/gcs/google-api-client-jackson2-1.20.0.jar" />
     <copy toFile="${public.deps.dir}/google-api-client-android2-beta.jar" file="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
     <copy toFile="${public.deps.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
     <copy toFile="${public.deps.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
+    <copy toFile="${public.deps.dir}/google-http-client-jackson2.jar" file="${lib.dir}/oauth/google-http-client-jackson2-1.33.0.jar" />
+    <copy toFile="${public.deps.dir}/google-oauth-client.jar" file="${lib.dir}/oauth/google-oauth-client-1.30.4.jar" />
+    <copy toFile="${public.deps.dir}/google-oauth-client-java6.jar" file="${lib.dir}/oauth/google-oauth-client-java6-1.30.4.jar" />
+    <copy toFile="${public.deps.dir}/google-oauth-client-jetty.jar" file="${lib.dir}/oauth/google-oauth-client-jetty-1.30.4.jar" />
     <copy toFile="${public.deps.dir}/gson-2.1.jar" file="${lib.dir}/gson/gson-2.1.jar" />
     <copy toFile="${public.deps.dir}/json.jar" file="${lib.dir}/json/json-android.jar" />
-    <copy toFile="${public.deps.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+    <copy toFile="${public.deps.dir}/jackson-core.jar" file="${lib.dir}/gcs/jackson-core-2.1.3.jar" />
     <copy toFile="${public.deps.dir}/jedis.jar" file="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
     <copy toFile="${public.deps.dir}/commons-pool.jar" file="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
-    <copy toFile="${public.deps.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
+    <copy toFile="${public.deps.dir}/guava.jar" file="${lib.dir}/guava/guava-27.1-android.jar" />
     <copy toFile="${public.deps.dir}/QRGenerator.jar" file="${lib.dir}/QRGenerator/core.jar" />
     <copy toFile="${public.deps.dir}/physicaloid.jar" file="${lib.dir}/physicaloid/physicaloid-library.jar" />
     <!-- Protocol Buf Support (used by the Translation Component) -->
     <copy toFile="${public.deps.dir}/protobuf-java-3.0.0.jar" file="${lib.dir}/protobuf/protobuf-java-3.0.0.jar" />    
+    <copy toFile="${public.deps.dir}/mpandroidchart.jar" file="${lib.dir}/mpandroidchart/mpandroidchart.jar" />
     <!-- BEGIN Android Support Libraries -->
     <copy todir="${public.deps.dir}/">
       <fileset dir="${support.dir}/" includes="*.aar,*.jar" excludes="testing-support-R-classes.jar" />
@@ -295,6 +307,7 @@
           depends="AndroidRuntime"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AndroidRuntimeTests"
+                aij-forkmode="perTest"
                 aij-dir="${components.pkg}/runtime" >
       <!-- Include extra classes from Robolectric that need to be compiled with the sources -->
       <aij-supplemental-includes>
@@ -325,7 +338,7 @@
       <classpath>
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
         <pathelement location="${build.dir}/common/CommonUtils.jar" />
-        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-27.1-android.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
       </classpath>
     </ai.javac>
@@ -340,7 +353,7 @@
          destfile="${local.build.dir}/AnnotationProcessors.jar" >
       <zipfileset src="${public.build.dir}/CommonConstants.jar"/>
       <zipfileset src="${build.dir}/common/CommonUtils.jar" />
-      <zipfileset src="${lib.dir}/guava/guava-14.0.1.jar" />
+      <zipfileset src="${lib.dir}/guava/guava-27.1-android.jar" />
       <zipfileset src="${lib.dir}/json/json.jar" />
       <fileset dir="${src.dir}">
         <include name="META-INF/**/*"/>
@@ -532,73 +545,22 @@
       <injar  file="${ExternalComponent-class.dir}/${extensionClassFolder}.jar" />
       <outjar file="${ExternalComponent-class.dir}/${extensionClassFolder}_p.jar" />
 
+      <libraryjar>
+        <fileset dir="${public.deps.dir}">
+          <include name="**/*.jar" />
+          <include name="**/*.aar"/>
+          <exclude name="*/dx.jar"/>
+          <exclude name="*/apksigner.jar"/>
+        </fileset>
+      </libraryjar>
+
+      <!-- Android Runtime -->
+      <libraryjar file="${public.build.dir}/AndroidRuntime.jar" />
+
       <!-- FOR DEVELOPER: Add the needed libraries for your extension right here
                           like the ones above, just after copying them to the deps
                           directory.
       <libraryjar file="${public.deps.dir}/my-awesome-library.jar" /> -->
-      <!-- Core libraries -->
-      <libraryjar file="${public.deps.dir}/http-legacy.jar" />
-      <libraryjar file="${public.deps.dir}/android.jar" />
-      <libraryjar file="${public.deps.dir}/CommonVersion.jar" />
-      <!-- Android Support -->
-      <libraryjar file="${public.deps.dir}/annotation.jar" />
-      <libraryjar file="${public.deps.dir}/appcompat.jar" />
-      <libraryjar file="${public.deps.dir}/asynclayoutinflater.jar" />
-      <libraryjar file="${public.deps.dir}/collection.jar" />
-      <libraryjar file="${public.deps.dir}/constraintlayout.jar" />
-      <libraryjar file="${public.deps.dir}/constraintlayout-solver.jar" />
-      <libraryjar file="${public.deps.dir}/coordinatorlayout.jar" />
-      <libraryjar file="${public.deps.dir}/core.jar" />
-      <libraryjar file="${public.deps.dir}/core-common.jar" />
-      <libraryjar file="${public.deps.dir}/core-runtime.jar" />
-      <libraryjar file="${public.deps.dir}/cursoradapter.jar" />
-      <libraryjar file="${public.deps.dir}/customview.jar" />
-      <libraryjar file="${public.deps.dir}/documentfile.jar" />
-      <libraryjar file="${public.deps.dir}/drawerlayout.jar" />
-      <libraryjar file="${public.deps.dir}/fragment.jar" />
-      <libraryjar file="${public.deps.dir}/interpolator.jar" />
-      <libraryjar file="${public.deps.dir}/legacy-support-core-ui.jar" />
-      <libraryjar file="${public.deps.dir}/lifecycle-common.jar" />
-      <libraryjar file="${public.deps.dir}/lifecycle-livedata.jar" />
-      <libraryjar file="${public.deps.dir}/lifecycle-livedata-core.jar" />
-      <libraryjar file="${public.deps.dir}/lifecycle-runtime.jar" />
-      <libraryjar file="${public.deps.dir}/lifecycle-viewmodel.jar" />
-      <libraryjar file="${public.deps.dir}/loader.jar" />
-      <libraryjar file="${public.deps.dir}/localbroadcastmanager.jar" />
-      <libraryjar file="${public.deps.dir}/print.jar" />
-      <libraryjar file="${public.deps.dir}/slidingpanelayout.jar" />
-      <libraryjar file="${public.deps.dir}/swiperefreshlayout.jar" />
-      <libraryjar file="${public.deps.dir}/vectordrawable.jar" />
-      <libraryjar file="${public.deps.dir}/vectordrawable-animated.jar" />
-      <libraryjar file="${public.deps.dir}/versionedparcelable.jar" />
-      <libraryjar file="${public.deps.dir}/viewpager.jar" />
-      <!-- Components Libraries -->
-      <libraryjar file="${public.deps.dir}/osmdroid.jar" />
-      <libraryjar file="${public.deps.dir}/webrtc.jar" />
-      <libraryjar file="${public.deps.dir}/jts.jar" />
-      <libraryjar file="${public.deps.dir}/androidsvg.jar" />
-      <libraryjar file="${public.deps.dir}/kawa.jar" />
-      <libraryjar file="${public.deps.dir}/acra-4.4.0.jar" />
-      <libraryjar file="${public.deps.dir}/twitter4j.jar" />
-      <libraryjar file="${public.deps.dir}/twitter4jmedia.jar" />
-      <libraryjar file="${public.deps.dir}/httpmime.jar" />
-      <libraryjar file="${public.deps.dir}/fusiontables.jar" />
-      <libraryjar file="${public.deps.dir}/firebase.jar" />
-      <libraryjar file="${public.deps.dir}/google-api-client-beta.jar" />
-      <libraryjar file="${public.deps.dir}/google-http-client-beta.jar" />
-      <libraryjar file="${public.deps.dir}/google-api-client-android2-beta.jar" />
-      <libraryjar file="${public.deps.dir}/google-http-client-android2-beta.jar" />
-      <libraryjar file="${public.deps.dir}/google-http-client-android3-beta.jar" />
-      <libraryjar file="${public.deps.dir}/gson-2.1.jar" />
-      <libraryjar file="${public.deps.dir}/json.jar" />
-      <libraryjar file="${public.deps.dir}/google-oauth-client-beta.jar" />
-      <libraryjar file="${public.deps.dir}/jedis.jar" />
-      <libraryjar file="${public.deps.dir}/commons-pool.jar" />
-      <libraryjar file="${public.deps.dir}/guava-14.0.1.jar" />
-      <libraryjar file="${public.deps.dir}/Barcode.jar" />
-      <libraryjar file="${public.deps.dir}/QRGenerator.jar" />
-      <!-- Android Runtime -->
-      <libraryjar file="${public.build.dir}/AndroidRuntime.jar" />
 
       <dontnote filter="proguard.configuration.ConfigurationLogger" />
       <adaptresourcefilecontents filter="proguard/ant/task.properties" />

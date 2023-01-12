@@ -132,7 +132,9 @@
 
 <ul>
   <li><a href="#CloudDB">CloudDB</a></li>
+  <li><a href="#DataFile">DataFile</a></li>
   <li><a href="#File">File</a></li>
+  <li><a href="#Spreadsheet">Spreadsheet</a></li>
   <li><a href="#TinyDB">TinyDB</a></li>
   <li><a href="#TinyWebDB">TinyWebDB</a></li>
 </ul>
@@ -209,6 +211,49 @@
   <dt id="CloudDB.StoreValue" class="method"><i></i> StoreValue(<em class="text">tag</em>,<em class="any">valueToStore</em>)</dt>
   <dd>Asks <code class="highlighter-rouge">CloudDB</code> to store the given <code class="variable block highlighter-rouge">value</code> under the given
  <code class="text block highlighter-rouge">tag</code>.</dd>
+</dl>
+
+<h2 id="DataFile">DataFile</h2>
+
+<p>Component for DataFile</p>
+
+<h3 id="DataFile-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="DataFile.ColumnNames" class="list ro bo"><em>ColumnNames</em></dt>
+  <dd>Retrieve the column names of the currently loaded Source file.
+ For CSV files, this will return a List of entries in the first row.
+ For JSON files, this will return a List of keys in the JSON object.</dd>
+  <dt id="DataFile.Columns" class="list ro bo"><em>Columns</em></dt>
+  <dd>Retrieve a List of columns of the currently loaded Source file.</dd>
+  <dt id="DataFile.DefaultScope" class="com google appinventor components common FileScopeEnum wo do"><em>DefaultScope</em></dt>
+  <dd>Specifies the default scope for files accessed using the File component. The App scope should
+ work for most apps. Legacy mode can be used for apps that predate the newer constraints in
+ Android on app file access.</dd>
+  <dt id="DataFile.Rows" class="list ro bo"><em>Rows</em></dt>
+  <dd>Retrieve a List of rows of the currently loaded Source file.</dd>
+  <dt id="DataFile.SourceFile" class="text wo do"><em>SourceFile</em></dt>
+  <dd>Sets the source file to parse data from, and then parses the
+ file asynchronously. The results are stored in the <a href="#DataFile.Columns"><code class="highlighter-rouge">Columns</code></a>,
+ <a href="#DataFile.Rows"><code class="highlighter-rouge">Rows</code></a> and <a href="#DataFile.ColumnNames"><code class="highlighter-rouge">ColumnNames</code></a> properties.
+ The expected formatting of the file is either the CSV or JSON format.</dd>
+</dl>
+
+<h3 id="DataFile-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="DataFile-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="DataFile.ReadFile" class="method"><i></i> ReadFile(<em class="text">fileName</em>)</dt>
+  <dd>Indicates source file to load data from. The expected format of the contents of the file
+ are either CSV or JSON. Prefix the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">/</code> to read from a
+ specific file on the SD card (for example, <code class="highlighter-rouge">/myFile.txt</code> will read the file
+ <code class="highlighter-rouge">/sdcard/myFile.txt</code>). To read assets packaged with an application (also works for the
+ Companion) start the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">//</code> (two slashes). If a
+ <code class="text block highlighter-rouge">fileName</code> does not start with a slash, it will be read from the application’s
+ private storage (for packaged apps) and from <code class="highlighter-rouge">/sdcard/AppInventor/data</code> for the Companion.</dd>
 </dl>
 
 <h2 id="File">File</h2>
@@ -333,6 +378,167 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
     <p>Note that this block will overwrite a file if it already exists. If you want to add content
  to an existing file use the <a href="#File.AppendToFile"><code class="highlighter-rouge">AppendToFile</code></a> method.</p>
   </dd>
+</dl>
+
+<h2 id="Spreadsheet">Spreadsheet</h2>
+
+<p>Spreadsheet is a non-visible component for storing and receiving data from
+ a Google Sheets document using the Google Sheets API.</p>
+
+<p>In order to utilize this component, one must first have a Google Developer
+ Account. Then, one must create a new project under that Google Developer
+ Account, enable the Google Sheets API on that project, and finally create a
+ Service Account for the Sheets API.</p>
+
+<p>Instructions on how to create the Service Account, as well as where to find
+ other relevant information for using the Google Sheets Component, can be
+ found <a href="/reference/other/googlesheets-api-setup.html">here</a>.</p>
+
+<p>Row and column numbers are 1-indexed.</p>
+
+<h3 id="Spreadsheet-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Spreadsheet.ApplicationName" class="text do"><em>ApplicationName</em></dt>
+  <dd>The name of your application, used when making API calls.</dd>
+  <dt id="Spreadsheet.CredentialsJson" class="text"><em>CredentialsJson</em></dt>
+  <dd>The JSON File with credentials for the Service Account</dd>
+  <dt id="Spreadsheet.SpreadsheetID" class="text"><em>SpreadsheetID</em></dt>
+  <dd>The ID for the Google Sheets file you want to edit. You can find the spreadsheetID in the URL of the Google Sheets file.</dd>
+</dl>
+
+<h3 id="Spreadsheet-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Spreadsheet.ErrorOccurred">ErrorOccurred(<em class="text">errorMessage</em>)</dt>
+  <dd>Triggered whenever an API call encounters an error. Details about the error are in <code class="highlighter-rouge">errorMessage</code>.</dd>
+  <dt id="Spreadsheet.FinishedAddCol">FinishedAddCol(<em class="number">columnNumber</em>)</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.AddCol"><code class="highlighter-rouge">AddCol</code></a> block, called once the
+ values on the table have been updated. Additionally, this returns the
+ column number for the new column.</dd>
+  <dt id="Spreadsheet.FinishedAddRow">FinishedAddRow(<em class="number">rowNumber</em>)</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.AddRow"><code class="highlighter-rouge">AddRow</code></a> block, called once the
+ values on the table have been updated. Additionally, this returns the
+ row number for the new row.</dd>
+  <dt id="Spreadsheet.FinishedClearRange">FinishedClearRange()</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.ClearRange"><code class="highlighter-rouge">ClearRange</code></a> block, called once the
+ values on the table have been updated.</dd>
+  <dt id="Spreadsheet.FinishedRemoveCol">FinishedRemoveCol()</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.RemoveCol"><code class="highlighter-rouge">RemoveCol</code></a> block, called once the
+ values on the table have been updated.</dd>
+  <dt id="Spreadsheet.FinishedRemoveRow">FinishedRemoveRow()</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.RemoveRow"><code class="highlighter-rouge">RemoveRow</code></a> block, called once the
+ values on the table have been updated.</dd>
+  <dt id="Spreadsheet.FinishedWriteCell">FinishedWriteCell()</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.WriteCell"><code class="highlighter-rouge">WriteCell</code></a> block, called once the
+ values on the table have been updated.</dd>
+  <dt id="Spreadsheet.FinishedWriteCol">FinishedWriteCol()</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.WriteCol"><code class="highlighter-rouge">WriteCol</code></a> block, called once the
+ values on the table have been updated.</dd>
+  <dt id="Spreadsheet.FinishedWriteRange">FinishedWriteRange()</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.WriteRange"><code class="highlighter-rouge">WriteRange</code></a> block, called once the
+ values on the table have been updated.</dd>
+  <dt id="Spreadsheet.FinishedWriteRow">FinishedWriteRow()</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.WriteRow"><code class="highlighter-rouge">WriteRow</code></a> block, called once the
+ values on the table have been updated.</dd>
+  <dt id="Spreadsheet.GotCellData">GotCellData(<em class="text">cellData</em>)</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.ReadCell"><code class="highlighter-rouge">ReadCell</code></a> block. The <code class="highlighter-rouge">cellData</code> is
+ the text value in the cell.</dd>
+  <dt id="Spreadsheet.GotColData">GotColData(<em class="list">colDataList</em>)</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.ReadCol"><code class="highlighter-rouge">ReadCol</code></a> block. The <code class="highlighter-rouge">colDataList</code> is a
+ list of text cell-values in order of increasing row number.</dd>
+  <dt id="Spreadsheet.GotFilterResult">GotFilterResult(<em class="list">return_rows</em>,<em class="list">return_data</em>)</dt>
+  <dd>The callbeck event for the <a href="#Spreadsheet.ReadWithQuery"><code class="highlighter-rouge">ReadWithQuery</code></a> block. The <code class="highlighter-rouge">response</code>
+ is a list of rows, where each row satisfies the query.</dd>
+  <dt id="Spreadsheet.GotRangeData">GotRangeData(<em class="list">rangeData</em>)</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.ReadRange"><code class="highlighter-rouge">ReadRange</code></a> block. The <code class="highlighter-rouge">rangeData</code> is
+ a list of rows, where the dimensions are the same as the rangeReference.</dd>
+  <dt id="Spreadsheet.GotRowData">GotRowData(<em class="list">rowDataList</em>)</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.ReadRow"><code class="highlighter-rouge">ReadRow</code></a> block. The <code class="highlighter-rouge">rowDataList</code> is a
+ list of text cell-values in order of increasing column number.</dd>
+  <dt id="Spreadsheet.GotSheetData">GotSheetData(<em class="list">sheetData</em>)</dt>
+  <dd>The callback event for the <a href="#Spreadsheet.ReadSheet"><code class="highlighter-rouge">ReadSheet</code></a> block. The <code class="highlighter-rouge">sheetData</code> is a
+ list of rows.</dd>
+</dl>
+
+<h3 id="Spreadsheet-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Spreadsheet.AddCol" class="method"><i></i> AddCol(<em class="text">sheetName</em>,<em class="list">data</em>)</dt>
+  <dd>Given a list of values as <code class="highlighter-rouge">data</code>, appends the values to the next empty
+ column of the sheet. It will always start from the top row and continue
+ downwards. Once complete, it triggers the <a href="#Spreadsheet.FinishedAddCol"><code class="highlighter-rouge">FinishedAddCol</code></a>
+ callback event.</dd>
+  <dt id="Spreadsheet.AddRow" class="method"><i></i> AddRow(<em class="text">sheetName</em>,<em class="list">data</em>)</dt>
+  <dd>Given a list of values as <code class="highlighter-rouge">data</code>, appends the values to the next
+ empty row of the sheet. It will always start from the left most column and
+ continue to the right. Once complete, it triggers the <a href="#Spreadsheet.FinishedAddRow"><code class="highlighter-rouge">FinishedAddRow</code></a>
+ callback event. Additionally, this returns the row number for the new row.</dd>
+  <dt id="Spreadsheet.ClearRange" class="method"><i></i> ClearRange(<em class="text">sheetName</em>,<em class="text">rangeReference</em>)</dt>
+  <dd>Empties the cells in the given range. Once complete, this block triggers
+ the <a href="#Spreadsheet.FinishedClearRange"><code class="highlighter-rouge">FinishedClearRange</code></a> callback event.</dd>
+  <dt id="Spreadsheet.GetCellReference" class="method returns text"><i></i> GetCellReference(<em class="number">row</em>,<em class="number">col</em>)</dt>
+  <dd>Converts the integer representation of rows and columns to A1-Notation used
+ in Google Sheets for a single cell. For example, row 1 and col 2
+ corresponds to the string "B1".</dd>
+  <dt id="Spreadsheet.GetRangeReference" class="method returns text"><i></i> GetRangeReference(<em class="number">row1</em>,<em class="number">col1</em>,<em class="number">row2</em>,<em class="number">col2</em>)</dt>
+  <dd>Converts the integer representation of rows and columns for the corners of
+ the range to A1-Notation used in Google Sheets. For example, selecting the
+ range from row 1, col 2 to row 3, col 4 corresponds to the string “B1:D3”.</dd>
+  <dt id="Spreadsheet.ReadCell" class="method"><i></i> ReadCell(<em class="text">sheetName</em>,<em class="text">cellReference</em>)</dt>
+  <dd>On the page with the provided sheetName, reads the cell at the given
+ cellReference and triggers the <a href="#Spreadsheet.GotCellData"><code class="highlighter-rouge">GotCellData</code></a> callback event. The
+ cellReference can be either a text block with A1-Notation, or the result of
+ the <a href="#Spreadsheet.getCellReference"><code class="highlighter-rouge">getCellReference</code></a> block.</dd>
+  <dt id="Spreadsheet.ReadCol" class="method"><i></i> ReadCol(<em class="text">sheetName</em>,<em class="number">colNumber</em>)</dt>
+  <dd>On the page with the provided sheetName, reads the column at the given
+ colNumber and triggers the <a href="#Spreadsheet.GotColData"><code class="highlighter-rouge">GotColData</code></a> callback event.</dd>
+  <dt id="Spreadsheet.ReadRange" class="method"><i></i> ReadRange(<em class="text">sheetName</em>,<em class="text">rangeReference</em>)</dt>
+  <dd>On the page with the provided sheetName, reads the cells at the given
+ rangeReference and triggers the <a href="#Spreadsheet.GotRangeData"><code class="highlighter-rouge">GotRangeData</code></a> callback event. The
+ rangeReference can be either a text block with A1-Notation, or the result
+ of the <a href="#Spreadsheet.getRangeReference"><code class="highlighter-rouge">getRangeReference</code></a> block.</dd>
+  <dt id="Spreadsheet.ReadRow" class="method"><i></i> ReadRow(<em class="text">sheetName</em>,<em class="number">rowNumber</em>)</dt>
+  <dd>On the page with the provided sheetName, reads the row at the given
+ rowNumber and triggers the <a href="#Spreadsheet.GotRowData"><code class="highlighter-rouge">GotRowData</code></a> callback event.</dd>
+  <dt id="Spreadsheet.ReadSheet" class="method"><i></i> ReadSheet(<em class="text">sheetName</em>)</dt>
+  <dd>Reads the <b>entire</b> Google Sheets document and triggers the
+ <a href="#Spreadsheet.GotSheetData"><code class="highlighter-rouge">GotSheetData</code></a> callback event.</dd>
+  <dt id="Spreadsheet.ReadWithExactFilter" class="method"><i></i> ReadWithExactFilter(<em class="text">sheetName</em>,<em class="number">colID</em>,<em class="text">value</em>)</dt>
+  <dd>Filters a Google Sheet for rows where the given column number matches the provided value.</dd>
+  <dt id="Spreadsheet.ReadWithPartialFilter" class="method"><i></i> ReadWithPartialFilter(<em class="text">sheetName</em>,<em class="number">colID</em>,<em class="text">value</em>)</dt>
+  <dd>Filters a Google Sheet for rows where the given column number contains the provided value string.</dd>
+  <dt id="Spreadsheet.RemoveCol" class="method"><i></i> RemoveCol(<em class="text">sheetName</em>,<em class="number">colNumber</em>)</dt>
+  <dd>Deletes the column with the given column number from the table. This does
+ not clear the column, but removes it entirely. The sheet’s grid id can be
+ found at the end of the url of the Google Sheets document, right after the
+ “gid=”. Once complete, it triggers the <a href="#Spreadsheet.FinishedRemoveCol"><code class="highlighter-rouge">FinishedRemoveCol</code></a>
+ callback event.</dd>
+  <dt id="Spreadsheet.RemoveRow" class="method"><i></i> RemoveRow(<em class="text">sheetName</em>,<em class="number">rowNumber</em>)</dt>
+  <dd>Deletes the row with the given row number (1-indexed) from the table. This
+ does not clear the row, but removes it entirely. The sheet’s grid id can be
+ found at the end of the url of the Google Sheets document, right after the
+ “gid=”. Once complete, it triggers the <a href="#Spreadsheet.FinishedRemoveRow"><code class="highlighter-rouge">FinishedRemoveRow</code></a>
+ callback event.</dd>
+  <dt id="Spreadsheet.WriteCell" class="method"><i></i> WriteCell(<em class="text">sheetName</em>,<em class="text">cellReference</em>,<em class="any">data</em>)</dt>
+  <dd>Given text or a number as <code class="highlighter-rouge">data</code>, writes the value to the cell. It will
+ override any existing data in the cell with the one provided. Once complete,
+ it triggers the <a href="#Spreadsheet.FinishedWriteCell"><code class="highlighter-rouge">FinishedWriteCell</code></a> callback event.</dd>
+  <dt id="Spreadsheet.WriteCol" class="method"><i></i> WriteCol(<em class="text">sheetName</em>,<em class="number">colNumber</em>,<em class="list">data</em>)</dt>
+  <dd>Given a list of values as <code class="highlighter-rouge">data</code>, writes the values to the column with the
+ given column number, overriding existing values from top down. (Note: It
+ will not erase the entire column.) Once complete, it triggers the
+ <a href="#Spreadsheet.FinishedWriteCol"><code class="highlighter-rouge">FinishedWriteCol</code></a> callback event.</dd>
+  <dt id="Spreadsheet.WriteRange" class="method"><i></i> WriteRange(<em class="text">sheetName</em>,<em class="text">rangeReference</em>,<em class="list">data</em>)</dt>
+  <dd>Given list of lists as <code class="highlighter-rouge">data</code>, writes the values to cells in the range. The
+ number of rows and columns in the range must match the dimensions of your
+ data. This method will override existing data in the range. Once complete,
+ it triggers the <a href="#Spreadsheet.FinishedWriteRange"><code class="highlighter-rouge">FinishedWriteRange</code></a> callback event.</dd>
+  <dt id="Spreadsheet.WriteRow" class="method"><i></i> WriteRow(<em class="text">sheetName</em>,<em class="number">rowNumber</em>,<em class="list">data</em>)</dt>
+  <dd>Given a list of values as <code class="highlighter-rouge">data</code>, writes the values to the row  with the
+ given row number, overriding existing values from left to right. (Note: It
+ will not erase the entire row.) Once complete, it triggers the
+ <a href="#Spreadsheet.FinishedWriteRow"><code class="highlighter-rouge">FinishedWriteRow</code></a> callback event.</dd>
 </dl>
 
 <h2 id="TinyDB">TinyDB</h2>

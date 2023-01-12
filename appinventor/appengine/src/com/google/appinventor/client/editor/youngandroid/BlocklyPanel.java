@@ -74,7 +74,8 @@ public class BlocklyPanel extends HTMLPanel {
         MESSAGES.useCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.PREFERRED_COMPANION + "u"),
         YaVersion.COMPANION_UPDATE_URL,
         YaVersion.COMPANION_UPDATE_URL1,
-        YaVersion.COMPANION_UPDATE_EMULATOR_URL);
+        YaVersion.COMPANION_UPDATE_EMULATOR_URL,
+        YaVersion.EMULATOR_UPDATE_URL);
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }
@@ -820,6 +821,11 @@ public class BlocklyPanel extends HTMLPanel {
     Blockly.hideChaff();
   }-*/;
 
+  public native void resize()/*-{
+    Blockly.svgResize(
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
+  }-*/;
+
   public native void toggleWarning()/*-{
     var handler =
       this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
@@ -880,11 +886,12 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.PREFERRED_COMPANION;
   }-*/;
 
-  static native void setPreferredCompanion(String comp, String url, String url1, String url2) /*-{
+  static native void setPreferredCompanion(String comp, String url, String url1, String url2, String url3) /*-{
     $wnd.PREFERRED_COMPANION = comp;
     $wnd.COMPANION_UPDATE_URL = url;
     $wnd.COMPANION_UPDATE_URL1 = url1;
     $wnd.COMPANION_UPDATE_EMULATOR_URL = url2;
+    $wnd.EMULATOR_UPDATE_URL = url3;
   }-*/;
 
   static native void addAcceptableCompanionPackage(String comp) /*-{

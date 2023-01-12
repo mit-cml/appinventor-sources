@@ -671,6 +671,11 @@ public final class YaBlocksEditor extends FileEditor
    */
   public void hideChaff () {blocksArea.hideChaff();}
 
+  @Override
+  public void resize() {
+    blocksArea.resize();
+  }
+
   // Static Function. Find the associated editor for formName and
   // set its "damaged" bit. This will cause the editor manager's scheduleAutoSave
   // method to ignore this blocks file and not save it out.

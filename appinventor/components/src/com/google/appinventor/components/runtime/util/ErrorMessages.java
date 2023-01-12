@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -292,8 +292,13 @@ public final class ErrorMessages {
   public static final int ERROR_ROUTING_SERVICE_ERROR = 4003;
   public static final int ERROR_NO_ROUTE_FOUND = 4004;
 
+  //ChartData Errors
+  public static final int ERROR_INVALID_CHART_ENTRY_VALUES = 4101;
+  public static final int ERROR_NULL_CHART_ENTRY_VALUES = 4102;
+  public static final int ERROR_INSUFFICIENT_CHART_ENTRY_VALUES = 4103;
+  public static final int ERROR_INVALID_CHART_DATA_COLOR = 4104;
 
-  // Start the next group of errors at 4100
+  // Start the next group of errors at 4200
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -719,6 +724,15 @@ public final class ErrorMessages {
         "Unable to request directions. Reason: %s");
     errorMessages.put(ERROR_ROUTING_SERVICE_ERROR, "Routing service failed with status %d %s");
     errorMessages.put(ERROR_NO_ROUTE_FOUND, "No route returned by the routing service.");
+
+    //ChartData Errors
+    errorMessages.put(ERROR_INVALID_CHART_ENTRY_VALUES, "Invalid Chart Entry Value(s): %1$s, %2$s");
+    errorMessages.put(ERROR_NULL_CHART_ENTRY_VALUES, "Undefined value was present in Chart Entry");
+    errorMessages.put(ERROR_INSUFFICIENT_CHART_ENTRY_VALUES, "Chart entry did not contain enough "
+        + "values; Expected %1$d, but was %2$d");
+    errorMessages.put(ERROR_INVALID_CHART_DATA_COLOR, "Invalid Chart Data color parameter "
+        + "specified: %1$s");
+
   }
 
   private ErrorMessages() {
