@@ -1030,6 +1030,7 @@
 (define-alias Short <java.lang.Short>)
 (define-alias String <java.lang.String>)
 (define-alias Pattern <java.util.regex.Pattern>)
+(define-alias Matcher <java.util.regex.Matcher>)
 (define-alias ContinuationUtil <com.google.appinventor.components.runtime.util.ContinuationUtil>)
 (define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
 (define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
@@ -3308,7 +3309,7 @@ Dictionary implementation.
 ;;; It seems simpler for users to not use regexp patterns here, even though
 ;;; some people might want that feature.
 (define (string-replace-all text substring replacement)
-  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (replacement:toString)))
+  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (Matcher:quoteReplacement (replacement:toString))))
 
 (define (string-empty? text)
   (= 0 (string-length text)))
