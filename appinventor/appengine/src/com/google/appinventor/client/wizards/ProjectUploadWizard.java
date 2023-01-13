@@ -30,6 +30,9 @@ public class ProjectUploadWizard extends Wizard {
   // Project archive extension
   private static final String PROJECT_ARCHIVE_EXTENSION = ".aia";
 
+  // for checking that uploading is in process or not
+  public boolean isUploading = false;
+
   /**
    * Creates a new project upload wizard.
    */
@@ -81,10 +84,11 @@ public class ProjectUploadWizard extends Wizard {
   }
   
   private void upload(FileUpload upload, String filename) {
+    isUploading = true;
     String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/"
         + ServerLayout.UPLOAD_PROJECT + "/" + filename;
     Uploader.getInstance().upload(upload, uploadUrl,
-        new OdeAsyncCallback<UploadResponse>(
+      new OdeAsyncCallback<UploadResponse>(
         // failure message
         MESSAGES.projectUploadError()) {
           @Override
@@ -109,8 +113,16 @@ public class ProjectUploadWizard extends Wizard {
                 ErrorReporter.reportError(MESSAGES.projectUploadError());
                 break;
             }
+            isUploading = false;
           }
-      });
+
+          @Override
+          public void onFailure(Throwable caught) {
+            ErrorReporter.reportError(MESSAGES.projectUploadError());
+            isUploading = false;
+          };
+        }
+      );
   }
 
   @Override
