@@ -2052,4 +2052,15 @@ public final class YoungAndroidFormUpgrader {
     dialogBox.center();
     dialogBox.show();
   }
+
+  private static int upgradeChart2DProperties(
+          Map<String, JSONValue> componentProperties,
+          int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The ShowAsIntegers property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
 }

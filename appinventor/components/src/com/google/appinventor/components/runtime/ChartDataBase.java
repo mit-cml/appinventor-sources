@@ -93,6 +93,8 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   private int color;
   private YailList colors;
 
+  private boolean isInt;
+
   private DataSource<?, ?> dataSource; // Attached Chart Data Source
 
   /**
@@ -147,6 +149,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
     // Set default values
     Color(Component.COLOR_BLACK);
     Label("");
+    ShowAsIntegers(false);
     chartDataModel.view.chart.setOnChartGestureListener(this);
     chartDataModel.view.chart.setOnChartValueSelectedListener(this);
   }
@@ -334,6 +337,24 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
       }
     });
   }
+
+  @SimpleProperty
+  public boolean ShowAsIntegers() {
+    return this.isInt;
+  }
+
+  /**
+   * If checked the x-axis labels and point labels are interpreted as integers
+   *
+   * @param isInt set to true if the user desires to interpret data as integers
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
+  public void ShowAsIntegers(boolean isInt){
+    this.isInt=isInt;
+    chartDataModel.ShowAsInt(isInt);
+  }
+
 
   /**
    * If checked, the first row of the spreadsheet will be used to interpret the x and y column

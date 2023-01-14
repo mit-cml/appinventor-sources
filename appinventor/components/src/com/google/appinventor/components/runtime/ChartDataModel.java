@@ -10,6 +10,7 @@ import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -128,6 +129,26 @@ public abstract class ChartDataModel<
     if (dataset instanceof DataSet) {
       ((DataSet<?>) dataset).setColors(colors);
     }
+  }
+
+  /**
+   *
+   * @param isInt indicates whether the data should be interpretted as integers or not
+   */
+  public void ShowAsInt(final boolean isInt){
+
+    //for rendering point labels as integers
+    dataset.setValueFormatter(new ValueFormatter() {
+      @Override
+      public String getFormattedValue(float value) {
+        if(isInt)
+          return ""+((int)(value));
+        else
+          return super.getFormattedValue(value);
+      }
+    });
+    //for rendering x-axis labels as integers
+    ((AxisChartView<?, ?, ?, ?, ?>) view).ShowAsInt(isInt);
   }
 
   /**

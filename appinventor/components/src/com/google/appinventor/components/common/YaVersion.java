@@ -566,8 +566,9 @@ public class YaVersion {
   // - CHART_DATA_2D_COMPONENT_VERSION was introduced
   // - DATA_FILE_COMPONENT_VERSION was introduced
   // - BLUETOOTH_CLIENT_COMPONENT_VERSION was incremented to 7
-
-  public static final int YOUNG_ANDROID_VERSION = 219;
+  // For YOUNG_ANDROID_VERSION 220:
+  // - CHART_DATA_2D_COMPONENT_VERSION was incremented to 2
+  public static final int YOUNG_ANDROID_VERSION = 220;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -833,7 +834,9 @@ public class YaVersion {
 
   public static final int CHART_COMPONENT_VERSION = 1;
 
-  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
+  // For CHART_DATA_2D_COMPONENT_VERSION 2
+  // - The ShowAsIntegers property was added.
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 2;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.

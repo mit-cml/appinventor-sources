@@ -38,6 +38,8 @@ public abstract class AxisChartView<
   // an x value of 1, and so on.
   private List<String> axisLabels = new ArrayList<>();
 
+  private boolean isInt;
+
   /**
    * Creates a new Axis Chart View with the specified Chart component
    * instance as the parent of the View.
@@ -84,10 +86,24 @@ public abstract class AxisChartView<
           return axisLabels.get(integerValue);
         } else {
           // Custom axis label not present; Use the usual value
-          return super.getFormattedValue(value);
+          if(isInt) {
+            //labels are displayed as integer
+            return "" + ((int) value);
+          }
+          else {
+            return super.getFormattedValue(value);
+          }
         }
       }
     });
+  }
+
+  /**
+   *
+   * @param isInt indicates whether the data should be interpreted as integers or not
+   */
+  public void ShowAsInt(boolean isInt){
+    this.isInt=isInt;
   }
 
   /**
