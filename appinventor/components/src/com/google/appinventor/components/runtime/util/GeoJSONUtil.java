@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.appinventor.components.runtime.Component.*;
+import static com.google.appinventor.components.runtime.util.YailDictionary.checkListForDicts;
 
 /**
  * Utility class to process data from GeoJSON.
@@ -276,10 +277,12 @@ public final class GeoJSONUtil {
   }
 
   public static MapFactory.MapFeature processGeoJSONFeature(final String logTag,
-      final MapFactory.MapFeatureContainer container, final YailList descriptions) {
+      final MapFactory.MapFeatureContainer container, final YailList desc) {
     String type = null;
     YailList geometry = null;
     YailList properties = null;
+    //Converting descriptions dictionary from featureFromDescriptions method to Yaillist
+    YailList descriptions = checkListForDicts(desc);
     for (Object o : (LList) descriptions.getCdr()) {
       YailList keyvalue = (YailList)o;
       String key = keyvalue.getString(0);
