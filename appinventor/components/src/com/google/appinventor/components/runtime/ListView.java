@@ -123,7 +123,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     super(container);
     this.container = container;
     stringItems = new ArrayList<>();
-    // stringItems = YailList.makeEmptyList();
     dictItems = new ArrayList<>();
 
     linearLayout = new LinearLayout(container.$context());
@@ -288,7 +287,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   public void Elements(YailList itemsList) {
     dictItems.clear();
     stringItems = new ArrayList<>();
-    // stringItems = YailList.makeEmptyList();
     if (itemsList.size() > 0) {
       Object firstitem = itemsList.getObject(0);
       // Check to see if this is a list of strings (backward compatibility) or a list of Dictionaries

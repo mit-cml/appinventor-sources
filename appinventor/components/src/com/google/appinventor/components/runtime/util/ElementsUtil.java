@@ -28,6 +28,12 @@ public class ElementsUtil {
     return items;
   }
 
+  /** Check a Yail list of items to verify that they are all strings
+   *
+   * @param itemList
+   * @param componentName
+   * @return the original list
+   */
   public static List<String> elementsStrings(YailList itemList, String componentName){
     Object[] objects = itemList.toStringArray();
     for (int i = 0; i < objects.length; i++) {
@@ -42,6 +48,11 @@ public class ElementsUtil {
     return ans;
   }
 
+  /**
+   * Returns a list of string from a comma-separated string
+   * @param itemString
+   * @return items
+   */
   public static List<String> elementsListFromString(String itemString){
     List<String> items;
     if (itemString.length() > 0) {
@@ -53,6 +64,11 @@ public class ElementsUtil {
     return items;
   }
 
+  /**
+   * Converts a List of string to YailList
+   * @param stringItems
+   * @return YailList
+   */
   public static YailList makeYailListFromList(List<String> stringItems) {
     if (stringItems == null || stringItems.size() == 0) return YailList.makeEmptyList();
     return YailList.makeList(stringItems);
