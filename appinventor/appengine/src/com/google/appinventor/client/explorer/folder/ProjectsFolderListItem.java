@@ -153,12 +153,12 @@ public class ProjectsFolderListItem extends ProjectsFolder {
     if (isExpanded) {
       toggleButton.setIcon("expand_more");
       childrenContainer.removeStyleName("ode-ProjectRowHidden");
-      checkBox.addStyleName("ode-ProjectRowHidden");
+      checkBox.addStyleName("ode-ProjectElementHidden");
       checkBox.setValue(false);
     } else {
       toggleButton.setIcon("chevron_right");
       childrenContainer.addStyleName("ode-ProjectRowHidden");
-      checkBox.removeStyleName("ode-ProjectRowHidden");
+      checkBox.removeStyleName("ode-ProjectElementHidden");
     }
   }
 

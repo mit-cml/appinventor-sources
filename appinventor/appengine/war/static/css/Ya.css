@@ -244,6 +244,9 @@ div.StatusPanel {
 /*
  * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
  */
+.ode-ProjectFieldSpan {
+  display: flex;
+}
 
 .ode-ProjectNameLabel {
   font-weight: bold;
@@ -297,6 +300,10 @@ div.StatusPanel {
 
 .ode-ProjectRowHidden {
   display:none;
+}
+
+.ode-ProjectElementHidden {
+  visibility: hidden;
 }
 
 .ode-ProjectRowList {
