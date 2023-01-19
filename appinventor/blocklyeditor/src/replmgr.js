@@ -1467,12 +1467,12 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
-                rs.hasfetchassets = rs.android;
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
                                           // HTTP
-                rs.webrtc = json.webrtc;
-                rs.useproxy = json.useproxy;
+                rs.webrtc = json.webrtc === "true";
+                rs.useproxy = json.useproxy === "true";
+                rs.hasfetchassets = rs.android || rs.webrtc;
 
                 // Let's see if the Rendezvous server gave us a second level to contact
                 // as well as a list of ice servers to override our defaults
@@ -1508,8 +1508,8 @@ Blockly.ReplMgr.rendezvousDone = function() {
     var rs = top.ReplState;
     var RefreshAssets = top.AssetManager_refreshAssets; // This is where GWT puts this
 
-    var usewebrtc = rs.webrtc && rs.webrtc == "true";
-    var useproxy = rs.useproxy && rs.useproxy == 'true'; // Only checked if webrtc is false
+    var usewebrtc = rs.webrtc;
+    var useproxy = rs.useproxy; // Only checked if webrtc is false
 
     var checkversion = new Promise(function (resolve, reject) {
         // Time to check the version of the Companion that we get from the
