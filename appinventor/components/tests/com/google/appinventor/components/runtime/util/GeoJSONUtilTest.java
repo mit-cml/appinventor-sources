@@ -308,7 +308,7 @@ public class GeoJSONUtilTest extends MapTestBase {
     assertEquals(6, json.getJSONArray("features").length());
     // Consider inspecting the objects more deeply to ensure correctness in the future
     //Checking for polygon
-    //ensures that the polygon has five coordinates while parsing as geojson (first and last coordinates are repeated)
+    //ensures that the polygon has five coordinates while saving as geojson for it to be parsable (first and last coordinates are same)
     assertEquals(5,  json.getJSONArray("features").getJSONObject(1).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0).length());
   }
 
