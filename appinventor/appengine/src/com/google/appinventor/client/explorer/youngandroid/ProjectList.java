@@ -258,6 +258,7 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
     container.clear();
     selectedProjectListItems.clear();
     projectListItems.clear();
+    projectsFolders.clear();
     for (final Folder childFolder : folder.getChildFolders()) {
       if ("*trash*".equals(childFolder.getName())) {
 //        if (childFolder.getProjects().size() == 0) {
@@ -265,10 +266,12 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
 //        }
         continue;
       }
-      createProjectsFolder(childFolder, container);
+      ProjectsFolder item = createProjectsFolder(childFolder, container);
+      projectsFolders.add(item);
     }
     for(final Project project : folder.getProjects()) {
-      createProjectListItem(project, container);
+      ProjectListItem item = createProjectListItem(project, container);
+      projectListItems.add(item);
     }
     selectAllCheckBox.setValue(false);
     Ode.getInstance().getBindProjectToolbar().updateButtons();
@@ -302,9 +305,10 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
 //  }
 
   public void setSelected(boolean selected) {
-    selectAllCheckBox.setValue(selected);
+    LOG.info("Setselected: " + selected + ". ProjectListItems count: " + projectListItems.size());
     selectedProjectListItems.clear();
     for(ProjectListItem item : projectListItems) {
+      LOG.info("ProjectListItem name: " + item.getProject().getProjectName());
       item.setSelected(selected);
       if(selected) {
         selectedProjectListItems.add(item);
@@ -320,10 +324,15 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
   }
 
   protected void fireSelectionChangeEvent() {
+    LOG.info("fireSelectionChangedEvent: getFolders().size = " + getFolders().size() +
+                " getSelectedFolders().size() = " + getSelectedFolders().size() +
+                " getProjects().size() = " + getProjects().size() + " getSelectedProjects().size() = " +
+                getSelectedProjects().size());
     if (getFolders().size() == getSelectedFolders().size() &&
             getProjects().size() == getSelectedProjects().size()) {
       selectAllCheckBox.setValue(true);
     } else {
+      LOG.info("fireSelectionChangedEvent: false");
       selectAllCheckBox.setValue(false);
     }
     super.fireSelectionChangeEvent();
@@ -331,8 +340,8 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
 
   @UiHandler("selectAllCheckBox")
   void toggleItemSelection(ClickEvent e) {
+    LOG.warning("toggleItemSelection");
     setSelected(selectAllCheckBox.getValue());
-    fireSelectionChangeEvent();
   }
   /**
    * Gets the number of selected projects

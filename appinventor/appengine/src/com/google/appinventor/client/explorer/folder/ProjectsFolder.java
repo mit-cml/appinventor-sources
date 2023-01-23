@@ -2,6 +2,7 @@ package com.google.appinventor.client.explorer.folder;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.appinventor.client.views.projects.ProjectSelectionChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -11,8 +12,10 @@ import com.google.gwt.user.client.ui.Composite;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public abstract class ProjectsFolder extends Composite {
+  private static final Logger LOG = Logger.getLogger(ProjectsFolder.class.getName());
   protected Folder folder;
   protected boolean isTrash = false;
   protected int depth;
@@ -91,7 +94,7 @@ public abstract class ProjectsFolder extends Composite {
     return folders;
   }
 
-  protected void createProjectsFolder(final Folder folder, final ComplexPanel container) {
+  protected ProjectsFolder createProjectsFolder(final Folder folder, final ComplexPanel container) {
     final ProjectsFolder projectsFolder = new ProjectsFolderListItem(folder, depth + 1);
     projectsFolder.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
       @Override
@@ -99,18 +102,20 @@ public abstract class ProjectsFolder extends Composite {
         fireSelectionChangeEvent();
       }
     });
-    projectsFolders.add(projectsFolder);
     container.add(projectsFolder);
+    return projectsFolder;
   }
 
-  protected void createProjectListItem(final Project project, final ComplexPanel container) {
+  protected ProjectListItem createProjectListItem(final Project project, final ComplexPanel container) {
     final ProjectListItem projectListItem = new ProjectListItem(project, depth + 1);
     projectListItem.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
       @Override
       public void onSelectionChange(boolean selected) {
         if (selected) {
+          LOG.warning("ADD project list item: " + project.getProjectName());
           selectedProjectListItems.add(projectListItem);
         } else {
+          LOG.warning("REMOVE project list item: " + project.getProjectName());
           selectedProjectListItems.remove(projectListItem);
         }
         fireSelectionChangeEvent();
@@ -126,8 +131,9 @@ public abstract class ProjectsFolder extends Composite {
         }
       });
     }
-    projectListItems.add(projectListItem);
+//    projectListItems.add(projectListItem);
     container.add(projectListItem);
+    return projectListItem;
   }
 
   protected void fireSelectionChangeEvent() {

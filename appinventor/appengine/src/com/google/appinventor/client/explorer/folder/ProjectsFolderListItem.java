@@ -51,10 +51,12 @@ public class ProjectsFolderListItem extends ProjectsFolder {
     childrenContainer.clear();
     selectedProjectListItems.clear();
     for (final Folder childFolder : folder.getChildFolders()) {
-      createProjectsFolder(childFolder, childrenContainer);
+      ProjectsFolder item = createProjectsFolder(childFolder, childrenContainer);
+      projectsFolders.add(item);
     }
     for(final Project project : folder.getProjects()) {
-      createProjectListItem(project, childrenContainer);
+      ProjectListItem item = createProjectListItem(project, childrenContainer);
+      projectListItems.add(item);
     }
   }
 
