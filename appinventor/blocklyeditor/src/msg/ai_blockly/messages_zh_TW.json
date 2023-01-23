@@ -512,7 +512,7 @@
 	"Blockly.Msg.REPL_ERROR_FROM_COMPANION": "AI Companion 出現錯誤",
 	"Blockly.Msg.REPL_NETWORK_CONNECTION_ERROR": "網路連線故障",
 	"Blockly.Msg.REPL_NETWORK_ERROR": "網路故障",
-	"Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "與 AI Companion 通訊故障，<br />試試看重新啟動 AI Companion 並再次連線",
+	"Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "與 AI Companion 連線故障, <a href=\"http://explore.appinventor.mit.edu/ai2/connection-help\" target=\"_blank\">更多連線說明請點我</a>",
 	"Blockly.Msg.REPL_OK": "確定",
 	"Blockly.Msg.REPL_COMPANION_VERSION_CHECK": "檢查 AI Companion 的程式版本",
 	"Blockly.Msg.REPL_COMPANION_OUT_OF_DATE": "AI Companion 程式版本太舊，點選「OK」來升級。 ",
@@ -530,7 +530,7 @@
 	"Blockly.Msg.REPL_UPDATE_INFO": "正在安裝更新套件，請在裝置（或模擬器）上檢查確認。<br /><br />注意：升級完成後，請選擇'完成'（不要選擇'開啟'）。然後在瀏覽器中開啟 App Inventor 網站，在\"連線\"選單中點選\"重置連線\" 來再次連線。",
 	"Blockly.Msg.REPL_UPDATE_NO_UPDATE": "無可用更新",
 	"Blockly.Msg.REPL_UPDATE_NO_CONNECTION": "請先與AI Companion連線才能開始更新",
-	"Blockly.Msg.REPL_UNABLE_TO_UPDATE": "無法將升級套件發送給裝置或模擬器",
+	"Blockly.Msg.REPL_UNABLE_TO_UPDATE": "無法將升級套件發送給裝置或模擬器, 從 2017 年 12月 27 日開始, 您可能需要從我們的網站下載 aistarter 2.4 版本。",
 	"Blockly.Msg.REPL_UNABLE_TO_LOAD": "無法從 App Inventor 伺服器下載更新套件",
 	"Blockly.Msg.REPL_UNABLE_TO_LOAD_NO_RESPOND": "無法從 App Inventor 伺服器取得更新套件（伺服器無回應）",
 	"Blockly.Msg.REPL_NOW_DOWNLOADING": "正在從 App Inventor 伺服器下載更新套件，請耐心等待。",
@@ -717,5 +717,8 @@
 	"Blockly.Msg.LANG_TEXT_REVERSE_INPUT": "反向",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_TITLE": "取代所有的對應結果",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_DICTIONARY_ORDER": "字典",
-	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST": "最長的字串在前"
+	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_OPERATOR_LONGEST_STRING_FIRST": "最長的字串在前",
+	"Blockly.Msg.REPL_CODE_PREAMBLE": "<tr><td colspan=2>請在裝置上啟動 MIT AI Companion <br/> 然後掃描條形碼或輸入代碼<br/>進行連接以對您的程式進行實時測試。<br /> <a href=\"http://appinventor.mit.edu/explore/ai2/setup-device-wifi\" target=\"_blank\">需要幫助查找 Companion 程式?</a></td></tr>\n ",
+	"Blockly.Msg.REPL_ERROR_SETUPTOOLS_2_3_NOT_SUPPORTED": "與 MIT App Inventor aiStarter 2.3 捆綁在一起的模擬器不適用於 Mac OS X 10.13 High Sierra。對於給您帶來的不便，我們深表歉意，並正在努力修復。 請查看我們的網站<a href=\"http://appinventor.mit.edu\">http://appinventor.mit.edu/</a>獲取 aiStarter 發佈公告。",
+       "Blockly.Msg.REPL_ERROR_UNABLE_TO_GET_SETUPTOOLS_VERSION": "無法檢索計算機上安裝的 aiStarter 版本。連接將繼續，但可能會出現錯誤。"
 }
