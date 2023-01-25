@@ -117,6 +117,26 @@ public class ChartData2DTest extends RobolectricTestBase {
 
   /**
    * Test case to ensure that setting the Colors List property
+   * of the Data component with multiple color values represented
+   * as Java longs results in the correct coercion to int.
+   */
+  @Test
+  public void testSetColorsMultipleColorsLongs() {
+    YailList colors = YailList.makeList(
+        Arrays.asList(0xFFAABBCCL, 0xFFBBCCDDL, 0xAABBCCDDL, 0xAABBCC)
+    );
+    YailList colorsExpected = YailList.makeList(
+        Arrays.asList(0xFFAABBCC, 0xFFBBCCDD, 0xAABBCCDD, 0xAABBCC)
+    );
+
+    data.Colors(colors);
+
+    assertEquals(colorsExpected, data.Colors());
+    assertEquals(4, model.getDataset().getColors().size());
+  }
+
+  /**
+   * Test case to ensure that setting the Colors List property
    * to the Data component with a List that contains invalid color
    * entries skips the invalid entries, and imports the valid
    * color values.
