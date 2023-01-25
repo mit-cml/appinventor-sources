@@ -16,9 +16,15 @@ import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import gnu.mapping.Symbol;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+
+import static com.google.appinventor.components.runtime.Component.CHART_VALUE_DECIMAL;
 
 /**
  * Base class to represent Chart Data Models. The class (and subclasses)
@@ -133,22 +139,23 @@ public abstract class ChartDataModel<
 
   /**
    *
-   * @param isInt indicates whether the data should be interpretted as integers or not
+   * @param valueType indicates the type of values Decimal, Integer, Date
    */
-  public void ShowAsInt(final boolean isInt){
+  public void chartValueType(final int valueType){
 
     //for rendering point labels as integers
     dataset.setValueFormatter(new ValueFormatter() {
       @Override
       public String getFormattedValue(float value) {
-        if(isInt)
-          return ""+((int)(value));
-        else
+        if(valueType==CHART_VALUE_DECIMAL){
           return super.getFormattedValue(value);
+        }
+          //integer type
+          return "" + ((int) (value));
       }
     });
     //for rendering x-axis labels as integers
-    ((AxisChartView<?, ?, ?, ?, ?>) view).ShowAsInt(isInt);
+    ((AxisChartView<?, ?, ?, ?, ?>) view).setValueType(valueType);
   }
 
   /**

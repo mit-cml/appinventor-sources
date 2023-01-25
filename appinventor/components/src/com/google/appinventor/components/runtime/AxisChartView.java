@@ -12,8 +12,14 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import com.github.mikephil.charting.interfaces.datasets.IBarLineScatterCandleBubbleDataSet;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static com.google.appinventor.components.runtime.Component.*;
 
 /**
  * Base class for Chart Views (Chart UI) for Charts types that
@@ -38,7 +44,7 @@ public abstract class AxisChartView<
   // an x value of 1, and so on.
   private List<String> axisLabels = new ArrayList<>();
 
-  private boolean isInt;
+  private int valueType;
 
   /**
    * Creates a new Axis Chart View with the specified Chart component
@@ -86,9 +92,23 @@ public abstract class AxisChartView<
           return axisLabels.get(integerValue);
         } else {
           // Custom axis label not present; Use the usual value
-          if(isInt) {
+          if(valueType == CHART_VALUE_INTEGER) {
             //labels are displayed as integer
             return "" + ((int) value);
+          }
+          else if(valueType == CHART_VALUE_DATE){
+            //display x-axis labels as Date
+            Date mDate = new Date((long) value);
+            DateFormat dateFormat= new SimpleDateFormat("dd/MM/yyyy");
+            chart.getXAxis().setLabelRotationAngle(-90);
+            return dateFormat.format(mDate);
+          }
+          else if(valueType==CHART_VALUE_TIME){
+            //display x-axis labels as Time
+            Date mDate = new Date((long) value);
+            DateFormat dateFormat= new SimpleDateFormat("HH:mm:ss");
+            chart.getXAxis().setLabelRotationAngle(-90);
+            return dateFormat.format(mDate);
           }
           else {
             return super.getFormattedValue(value);
@@ -100,10 +120,10 @@ public abstract class AxisChartView<
 
   /**
    *
-   * @param isInt indicates whether the data should be interpreted as integers or not
+   * @param valueType indicates whether the data should be interpreted as integers or not
    */
-  public void ShowAsInt(boolean isInt){
-    this.isInt=isInt;
+  public void setValueType(int valueType){
+    this.valueType=valueType;
   }
 
   /**

@@ -835,7 +835,7 @@ public class YaVersion {
   public static final int CHART_COMPONENT_VERSION = 1;
 
   // For CHART_DATA_2D_COMPONENT_VERSION 2
-  // - The ShowAsIntegers property was added.
+  // - The ChartValueType property was added.
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 2;
 
   // For CHECKBOX_COMPONENT_VERSION 2:

@@ -93,8 +93,6 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   private int color;
   private YailList colors;
 
-  private boolean isInt;
-
   private DataSource<?, ?> dataSource; // Attached Chart Data Source
 
   /**
@@ -110,6 +108,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
   private int tick = 0;
 
+  private int valueType;
   /**
    * Creates a new Chart Data component.
    */
@@ -120,7 +119,7 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
     // Set default properties and instantiate Chart Data Model
     initChartData();
     DataSourceKey("");
-
+    ChartValueType(0);
     threadRunner = Executors.newSingleThreadExecutor();
   }
 
@@ -149,7 +148,6 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
     // Set default values
     Color(Component.COLOR_BLACK);
     Label("");
-    ShowAsIntegers(false);
     chartDataModel.view.chart.setOnChartGestureListener(this);
     chartDataModel.view.chart.setOnChartValueSelectedListener(this);
   }
@@ -339,20 +337,20 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
   }
 
   @SimpleProperty
-  public boolean ShowAsIntegers() {
-    return this.isInt;
+  public int ChartValueType() {
+    return this.valueType;
   }
 
   /**
    * If checked the x-axis labels and point labels are interpreted as integers
    *
-   * @param isInt set to true if the user desires to interpret data as integers
+   * @param valuetype set to true if the user desires to interpret data as integers
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_VALUE_TYPE)
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
-  public void ShowAsIntegers(boolean isInt){
-    this.isInt=isInt;
-    chartDataModel.ShowAsInt(isInt);
+  public void ChartValueType(int valuetype){
+    this.valueType=valuetype;
+    chartDataModel.chartValueType(valuetype);
   }
 
 

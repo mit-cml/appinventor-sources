@@ -2057,7 +2057,7 @@ public final class YoungAndroidFormUpgrader {
           Map<String, JSONValue> componentProperties,
           int srcCompVersion) {
     if (srcCompVersion < 2) {
-      // The ShowAsIntegers property was added.
+      // The ChartValueType property was added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }

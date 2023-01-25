@@ -397,4 +397,11 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_CHART_LINE_TYPE = "chart_line_type";
 
+    /**
+     * Chart Value type for x-axis values.
+     *
+     * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLabelValueTypeChoicePropertyEditor
+     */
+  public static final String PROPERTY_TYPE_CHART_VALUE_TYPE = "chart_value_type";
+
 }
