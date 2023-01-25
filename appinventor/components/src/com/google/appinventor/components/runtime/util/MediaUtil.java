@@ -26,6 +26,9 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.VideoView;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGParseException;
+
 import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
@@ -431,6 +434,56 @@ public class MediaUtil {
   public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
        final AsyncCallbackPair<BitmapDrawable> continuation) {
     getBitmapDrawableAsync(form, mediaPath, -1, -1, continuation);
+  }
+
+  /**
+   * Loads the image specified by mediaPath and returns a Drawable.
+   */
+  public static void getSVGAsync(final Form form, final String mediaPath, final AsyncCallbackPair<SVG> continuation) {
+    Log.d(LOG_TAG, mediaPath + "");
+    if (mediaPath == null || mediaPath.length() == 0) {
+      continuation.onSuccess(null);
+      return;
+    }
+
+    final MediaSource mediaSource = determineMediaSource(form, mediaPath);
+    Runnable runnable = new Runnable() {
+      @Override
+      public void run() {
+        InputStream is = null;
+        try {
+          Log.d(LOG_TAG, "inside of try block " + mediaSource);
+          is = openMedia(form, mediaPath, mediaSource);
+          Log.d(LOG_TAG, "input stream opened ");
+          SVG svg = SVG.getFromInputStream(is);
+          Log.d(LOG_TAG, "SVG load complete " + (svg == null));
+          continuation.onSuccess(svg);
+        } catch (IOException e) {
+          e.printStackTrace();
+          continuation.onFailure(e.getMessage());
+          return;
+        } catch (PermissionException e) {
+          e.printStackTrace();
+          continuation.onFailure("PERMISSION_DENIED:" + e.getPermissionNeeded());
+          return;
+        } catch (SVGParseException e) {
+          e.printStackTrace();
+          continuation.onFailure(e.getMessage());
+          return;
+        } finally {
+          if (is != null) {
+            try {
+              is.close();
+            } catch (IOException e) {
+              // suppress error on close
+              Log.w(LOG_TAG, "Unexpected error on close", e);
+            }
+          }
+          is = null;
+        }
+      }
+    };
+    AsynchUtil.runAsynchronously(runnable);
   }
 
   /**
