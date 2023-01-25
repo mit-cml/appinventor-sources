@@ -1001,53 +1001,6 @@ class NativeOpenStreetMapController implements MapController, MapListener {
             
           }
         });
-
-    // if (markerAsset != null && markerAsset.length() != 0) {
-    //   try {
-    //     markerSvg = SVG.getFromAsset(view.getContext().getAssets(), markerAsset);
-    //   } catch (SVGParseException e) {
-    //     Log.e(TAG, "Invalid SVG in Marker asset", e);
-    //   } catch (IOException e) {
-    //     Log.e(TAG, "Unable to read Marker asset", e);
-    //   }
-    //   if (markerSvg == null) {
-    //     // Attempt to retrieve asset from ReplForm storage location or internet
-    //     InputStream is = null;
-    //     try {
-    //       if (markerAsset.startsWith("http")) {
-    //         isLoadingFromWeb = true;
-    //         // Run on background thread
-    //         Runnable runnable = new Runnable() {
-    //           @Override
-    //           public void run() {
-    //             is = MediaUtil.openMedia(form, markerAsset);
-    //             markerSvg = SVG.getFromInputStream(is);
-    //           }
-    //         };
-    //         AsynchUtil.runAsynchronously(loadImage);
-    //       } else {
-    //         is = MediaUtil.openMedia(form, markerAsset);
-    //         markerSvg = SVG.getFromInputStream(is);
-    //       }
-    //     } catch (SVGParseException e) {
-    //       Log.e(TAG, "Invalid SVG in Marker asset", e);
-    //     } catch (IOException e) {
-    //       Log.e(TAG, "Unable to read Marker asset", e);
-    //     } finally {
-    //       IOUtils.closeQuietly(TAG, is);
-    //     }
-    //   }
-    // }
-    // if (markerSvg == null &&  !isLoadingFromWeb) {
-    //   markerSvg = defaultMarkerSVG;
-    // } else if (isLoadingFromWeb) {
-    //   return;
-    // }
-    // try {
-    //   callback.onSuccess(rasterizeSVG(aiMarker, markerSvg));
-    // } catch(Exception e) {
-    //   callback.onFailure(e.getMessage());
-    // }
   }
 
   private void getMarkerDrawableRaster(final MapMarker aiMarker,
