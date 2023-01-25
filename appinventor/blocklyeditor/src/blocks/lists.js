@@ -785,7 +785,7 @@ Blockly.Blocks['lists_sort_key'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_COLLAPSED_TEXT }]
 };
 
-Blockly.Blocks['lists_minimum_number'] = {
+Blockly.Blocks['lists_minimum_value'] = {
   // Minimum value in the list
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_MIN_NUMBER_HELPURL,
@@ -846,7 +846,7 @@ Blockly.Blocks['lists_minimum_number'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_MIN_NUMBER_TYPEBLOCK }]
 };
 
-Blockly.Blocks['lists_maximum_number'] = {
+Blockly.Blocks['lists_maximum_value'] = {
   // Maximum value in the list
   category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_MAX_NUMBER_HELPURL,

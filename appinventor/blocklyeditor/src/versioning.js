@@ -2266,10 +2266,11 @@ Blockly.Versioning.AllUpgradeMaps =
     34: Blockly.Versioning.makeScreenNamesBeDropdowns,
 
     // AI2: Added List Mathematical Operations
-    35:"noUpgrade",
+    35: "noUpgrade",
 
     // AI2: Added mode on List Mathematical Operations
-    36:"noUpgrade",
+    36: [Blockly.Versioning.renameBlockType('lists_minimum_number', 'lists_minimum_value'),
+         Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')]
 
   }, // End Language upgraders
 

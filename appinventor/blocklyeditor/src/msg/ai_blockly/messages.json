@@ -592,7 +592,7 @@
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_TOOLTIP": "Sorts list using a key function that is applied to each list item prior to sorting. The value returned by the key function is used for sorting.",
 
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#minnumber",
-	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_MIN": "minimum number in the list",
+	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_MIN": "minimum value in the list",
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_COMPARATOR": "where ",
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_VAR1": "item1",
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_INPUT_AND": "precedes",
@@ -602,7 +602,7 @@
 	"Blockly.Msg.LANG_LISTS_MIN_NUMBER_TOOLTIP": "Returns minimum number in the list",
 
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#maxnumber",
-	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_MAX": "maximum number in the list",
+	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_MAX": "maximum value in the list",
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_COMPARATOR": "where ",
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_VAR1": "item1",
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_INPUT_AND": "precedes",
