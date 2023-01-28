@@ -18,12 +18,14 @@ target 'SchemeKit' do
 
     use_frameworks!
 
+    pod 'Base58Swift', '~> 2.1.0'
     pod "GCDWebServer", "~> 3.4.1"
     pod "ZXingObjC", :git => 'https://github.com/TheLevelUp/ZXingObjC.git', :commit => '47704a8'
     pod "Toast-Swift", '~> 4.0.0'
     pod 'SQLite.swift', '~> 0.11.5'
     pod 'Alamofire', '~> 4.8'
     pod "KTVJSONWebToken", :git => 'https://github.com/kreactive/JSONWebToken.git', :commit => 'd2e37fa'
+    pod 'SwiftProtobuf', '~> 1.0'
     pod 'SwiftSVG', '~> 2.0'
     pod 'GEOSwift', '~> 3.1.0'
     pod 'PSSRedisClient', :git => 'git@github.com:mit-cml/PSSRedisClient.git', :commit => '344302b'
@@ -37,12 +39,14 @@ target 'SchemeKit' do
 
       inherit! :search_paths
 
+      pod 'Base58Swift', '~> 2.1.0'
       pod "GCDWebServer", "~> 3.4.1"
       pod "ZXingObjC", :git => 'https://github.com/TheLevelUp/ZXingObjC.git', :commit => '47704a8'
       pod "KTVJSONWebToken", :git => 'https://github.com/kreactive/JSONWebToken.git', :commit => 'd2e37fa'
       pod "Toast-Swift", '~> 4.0.0'
       pod 'SQLite.swift', '~> 0.11.5'
       pod 'Alamofire', '~> 4.8'
+      pod 'SwiftProtobuf', '~> 1.0'
       pod 'SwiftSVG', '~> 2.0'
       pod 'GEOSwift', '~> 3.1.0'
       pod 'PSSRedisClient', :git => 'git@github.com:mit-cml/PSSRedisClient.git', :commit => '344302b'
