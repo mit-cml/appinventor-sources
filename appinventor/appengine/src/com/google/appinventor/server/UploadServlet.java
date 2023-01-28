@@ -20,7 +20,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.util.logging.Logger;
 
