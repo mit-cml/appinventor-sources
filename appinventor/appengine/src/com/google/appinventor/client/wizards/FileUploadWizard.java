@@ -103,11 +103,7 @@ public class FileUploadWizard extends Wizard {
         String uploadFilename = upload.getFilename();
         if (!uploadFilename.isEmpty()) {
           final String filename = makeValidFilename(uploadFilename);
-          if(!TextValidators.isValidCharFilename(filename)){
-            createErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(),
-              Error.NOFILESELECETED, folderNode, acceptableTypes, fileUploadedCallback);
-            return;
-          } else if (!TextValidators.isValidLengthFilename(filename)){
+          if (!TextValidators.isValidLengthFilename(filename)){
             createErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(),
               Error.FILENAMEBADSIZE, folderNode, acceptableTypes, fileUploadedCallback);
             return;

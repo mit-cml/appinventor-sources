@@ -20,6 +20,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -108,6 +110,7 @@ public class UploadServlet extends OdeServlet {
           uploadResponse = e.uploadResponse;
         }
       } else if (uploadKind.equals(ServerLayout.UPLOAD_FILE)) {
+        uri = URLDecoder.decode(uri, "UTF-8");
         uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
         long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         String fileName = uriComponents[FILE_PATH_INDEX];
