@@ -15,7 +15,7 @@ fileprivate func readScript(_ filename: String) -> String {
   }
 }
 
-fileprivate func readCert(_ cert: String) -> SecCertificate? {
+internal func readCert(_ cert: String) -> SecCertificate? {
   if let path = Bundle(for: CloudDB.self).url(forResource: cert, withExtension: "der"), let data = try? Data(contentsOf: path) {
     return SecCertificateCreateWithData(nil, data as CFData)
   } else {
