@@ -6,6 +6,9 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.content.Context;
+import android.content.Intent;
+
+import android.net.Uri;
 
 import android.util.Log;
 
@@ -82,28 +85,28 @@ public class AssetFetcher {
 
   public static void upgradeCompanion(final String cookieValue, final String inputUri) {
     // The code below is commented out because of issues with the Google Play Store
-    //
-    // background.submit(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //       String [] parts = inputUri.split("/", 0);
-    //       String asset = parts[parts.length-1];
-    //       File assetFile = getFile(inputUri, cookieValue, asset, 0);
-    //       if (assetFile != null) {
-    //         try {
-    //           Form form = Form.getActiveForm();
-    //           Intent intent = new Intent(Intent.ACTION_VIEW);
-    //           Uri packageuri = NougatUtil.getPackageUri(form, assetFile);
-    //           intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
-    //           intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    //           form.startActivity(intent);
-    //         } catch (Exception e) {
-    //           Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
-    //           RetValManager.sendError("Unable to Install new Companion Package.");
-    //         }
-    //       }
-    //     }
-    //   });
+
+    background.submit(new Runnable() {
+        @Override
+        public void run() {
+          String [] parts = inputUri.split("/", 0);
+          String asset = parts[parts.length-1];
+          File assetFile = getFile(inputUri, cookieValue, asset, 0);
+          if (assetFile != null) {
+            try {
+              Form form = Form.getActiveForm();
+              Intent intent = new Intent(Intent.ACTION_VIEW);
+              Uri packageuri = NougatUtil.getPackageUri(form, assetFile);
+              intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
+              intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+              form.startActivity(intent);
+            } catch (Exception e) {
+              Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
+              RetValManager.sendError("Unable to Install new Companion Package.");
+            }
+          }
+        }
+      });
     return;
   }
 
