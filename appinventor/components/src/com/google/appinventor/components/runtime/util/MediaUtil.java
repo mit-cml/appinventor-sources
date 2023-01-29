@@ -33,6 +33,7 @@ import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -440,7 +441,6 @@ public class MediaUtil {
    * Loads the image specified by mediaPath and returns a Drawable.
    */
   public static void getSVGAsync(final Form form, final String mediaPath, final AsyncCallbackPair<SVG> continuation) {
-    Log.d(LOG_TAG, mediaPath + "");
     if (mediaPath == null || mediaPath.length() == 0) {
       continuation.onSuccess(null);
       return;
@@ -452,34 +452,20 @@ public class MediaUtil {
       public void run() {
         InputStream is = null;
         try {
-          Log.d(LOG_TAG, "inside of try block " + mediaSource);
           is = openMedia(form, mediaPath, mediaSource);
-          Log.d(LOG_TAG, "input stream opened ");
           SVG svg = SVG.getFromInputStream(is);
-          Log.d(LOG_TAG, "SVG load complete " + (svg == null));
           continuation.onSuccess(svg);
         } catch (IOException e) {
-          e.printStackTrace();
           continuation.onFailure(e.getMessage());
           return;
         } catch (PermissionException e) {
-          e.printStackTrace();
           continuation.onFailure("PERMISSION_DENIED:" + e.getPermissionNeeded());
           return;
         } catch (SVGParseException e) {
-          e.printStackTrace();
           continuation.onFailure(e.getMessage());
           return;
         } finally {
-          if (is != null) {
-            try {
-              is.close();
-            } catch (IOException e) {
-              // suppress error on close
-              Log.w(LOG_TAG, "Unexpected error on close", e);
-            }
-          }
-          is = null;
+          IOUtils.closeQuietly(LOG_TAG, is);
         }
       }
     };

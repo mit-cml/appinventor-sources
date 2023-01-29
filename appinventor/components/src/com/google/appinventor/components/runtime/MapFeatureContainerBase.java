@@ -426,8 +426,7 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
       reader.close();
       return content.toString();
     } catch(MalformedURLException e) {
-      e.printStackTrace();
-      Log.e("MapFeatureContainerBase", e.getMessage()+"");
+      Log.e(LOG_TAG, "Unable to parse URL", e);
       $form().runOnUiThread(new Runnable() {
         public void run() {
           MapFeatureContainerBase.this.LoadError(url, ERROR_CODE_MALFORMED_URL,
@@ -451,7 +450,6 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
   protected void processGeoJSON(final String url, final String content) throws JSONException {
     String type = getGeoJSONType(content, GEOJSON_TYPE);
     if (!GEOJSON_FEATURECOLLECTION.equals(type) && !GEOJSON_GEOMETRYCOLLECTION.equals(type)) {
-      Log.d("MaoFeatureContainerbase", "none of the above json");
       $form().runOnUiThread(new Runnable() {
         public void run() {
           MapFeatureContainerBase.this.LoadError(url, ERROR_CODE_MALFORMED_GEOJSON,

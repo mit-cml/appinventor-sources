@@ -964,12 +964,10 @@ class NativeOpenStreetMapController implements MapController, MapListener {
       }
     }
     final String markerAsset = aiMarker.ImageAsset();
-    Log.d(TAG, markerAsset + " Marker Asset");
 
     if (markerAsset == null || markerAsset.length() == 0) {
       try {
         // Passes the defaultMarkerSVG
-        Log.d(TAG, "PASSING DEFAULT before async");
         callback.onSuccess(rasterizeSVG(aiMarker, defaultMarkerSVG));
       } catch (Exception e) {
         callback.onFailure(e.getMessage());
@@ -982,7 +980,6 @@ class NativeOpenStreetMapController implements MapController, MapListener {
           public void onFailure(String message) {
             try {
               // Passes the defaultMarkerSVG
-              Log.d(TAG, "PASSING DEFAULT");
               callback.onSuccess(rasterizeSVG(aiMarker, defaultMarkerSVG));
             } catch (Exception e) {
               callback.onFailure(e.getMessage());
@@ -992,10 +989,8 @@ class NativeOpenStreetMapController implements MapController, MapListener {
           @Override
           public void onSuccess(SVG result) {
             try {
-              Log.d(TAG, "PASSING LOADED result " + (result == null));
               callback.onSuccess(rasterizeSVG(aiMarker, result));  
             } catch (Exception e) {
-              e.printStackTrace();
               callback.onFailure(e.getMessage());
             }
             
