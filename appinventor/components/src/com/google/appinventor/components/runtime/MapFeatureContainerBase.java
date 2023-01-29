@@ -435,7 +435,6 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
       });
     } catch (IOException e) {
       e.printStackTrace();
-      Log.e("MapFeatureContainerBase", e.getMessage()+" IOEXception");
       $form().runOnUiThread(new Runnable() {
         public void run() {
           MapFeatureContainerBase.this.LoadError(url, ERROR_CODE_IO_EXCEPTION,
