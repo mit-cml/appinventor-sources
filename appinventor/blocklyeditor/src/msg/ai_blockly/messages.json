@@ -142,7 +142,7 @@
 	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "value",
 	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE": "for each in dictionary",
 	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP": "Runs the blocks in the 'do' section for each key-value entry in the dictionary. Use the given variable names to refer to the key/value of the current dictionary item.",
-	
+
 	"Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_INPUT_OFLOOP": "of loop",
 	"Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK": "break out",
 	"Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE": "continue with next iteration",
@@ -525,6 +525,7 @@
 
 	"Blockly.Msg.LANG_LISTS_MAP_HELPURL" : "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#map",
 	"Blockly.Msg.LANG_LISTS_MAP_NONDEST_TITLE_MAP" : "make new list from",
+	"Blockly.Msg.LANG_LISTS_MAP_DEST_TITLE_MAP" : "change existing list",
 	"Blockly.Msg.LANG_LISTS_MAP_INPUT_ITEM" : "mapping each",
 	"Blockly.Msg.LANG_LISTS_MAP_INPUT_VAR" : "item",
 	"Blockly.Msg.LANG_LISTS_MAP_INPUT_TO" : "to",
@@ -533,6 +534,7 @@
 
 	"Blockly.Msg.LANG_LISTS_FILTER_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#filter",
 	"Blockly.Msg.LANG_LISTS_FILTER_NONDEST_TITLE_FILTER": "make new filtered list from ",
+	"Blockly.Msg.LANG_LISTS_FILTER_DEST_TITLE_FILTER": "filter existing list ",
 	"Blockly.Msg.LANG_LISTS_FILTER_INPUT_ITEM": "keeping each ",
 	"Blockly.Msg.LANG_LISTS_FILTER_INPUT_VAR": "item",
 	"Blockly.Msg.LANG_LISTS_FILTER_INPUT_PASSING": "passing ",
@@ -553,11 +555,13 @@
 
 	"Blockly.Msg.LANG_LISTS_SORT_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sort",
 	"Blockly.Msg.LANG_LISTS_SORT_NONDEST_TITLE_SORT": "make new sorted list from",
+	"Blockly.Msg.LANG_LISTS_SORT_DEST_TITLE_SORT": "sort existing list ",
 	"Blockly.Msg.LANG_LISTS_SORT_TOOLTIP": "Sorts list in ascending order.",
 	"Blockly.Msg.LANG_LISTS_SORT_TYPEBLOCK": "sort list",
 
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sortwithcomparator",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_NONDEST_TITLE_SORT": "make new sorted list from",
+	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_DEST_TITLE_SORT": "sort existing list",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_COMPARATOR": "where ",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_VAR1": "item1",
 	"Blockly.Msg.LANG_LISTS_SORT_COMPARATOR_INPUT_AND": "precedes",
@@ -568,6 +572,7 @@
 
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#sortwithkey",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_NONDEST_TITLE_SORT": "make new sorted list from",
+	"Blockly.Msg.LANG_LISTS_SORT_KEY_DEST_TITLE_SORT": "sort existing list",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_KEY": "using key called on each ",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_VAR": "item",
 	"Blockly.Msg.LANG_LISTS_SORT_KEY_INPUT_COLLAPSED_TEXT": "sort list using key",
@@ -593,7 +598,7 @@
 	"Blockly.Msg.LANG_LISTS_SLICE_INPUT": "slice list %1 index1 %2 index2 %3",
 	"Blockly.Msg.LANG_LISTS_SLICE_TITLE_SLICE": "slice list",
 	"Blockly.Msg.LANG_LISTS_SLICE_TOOLTIP": "Returns list values from index1 up to but not including index2",
-
+	
 	"Blockly.Msg.LANG_CATEGORY_DICTIONARIES": "Dictionaries",
 	"Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE": "create empty dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_EMPTY_HELPURL": "/reference/blocks/dictionaries.html#create-empty-dictionary",

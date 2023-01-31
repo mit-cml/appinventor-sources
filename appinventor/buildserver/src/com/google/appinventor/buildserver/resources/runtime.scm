@@ -942,6 +942,55 @@
   ;;      (begin (display x) (display " "))
   ;;      )
   ;;  '(100 200 17 300))
+;;(define-syntax map_proc
+;;  (syntax-rules ()
+;;    ((_ _ proc list)
+;;      (yail-list-map proc list))))
+
+(define-syntax map_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+     (yail-list-map (lambda (lambda-arg-name) body-form) list))))
+
+;;(define-syntax map_dest
+;;  (syntax-rules ()
+;;    ((_ lambda-arg-name body-form list)
+;;      (yail-list-map! (lambda (lambda-arg-name) body-form) list))))
+
+(define-syntax filter_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+     (yail-list-filter (lambda (lambda-arg-name) body-form) list))))
+
+;;(define-syntax filter_dest
+;;  (syntax-rules ()
+;;    ((_ lambda-arg-name body-form list)
+;;     (yail-list-filter! (lambda (lambda-arg-name) body-form) list))))
+
+(define-syntax reduceovereach
+  (syntax-rules ()
+    ((_ initialAnswer lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-reduce initialAnswer (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax sortcomparator_nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-sort-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+;;(define-syntax sortcomparator_dest
+;;  (syntax-rules ()
+;;    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+;;      (yail-list-sort-comparator! (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax sortkey_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+      (yail-list-sort-key (lambda (lambda-arg-name) body-form) list))))
+
+;;(define-syntax sortkey_dest
+;;  (syntax-rules ()
+;;    ((_ lambda-arg-name body-form list)
+;;      (yail-list-sort-key! (lambda (lambda-arg-name) body-form) list))))
 
 (define-syntax map_nondest
   (syntax-rules ()
@@ -2542,6 +2591,25 @@ list, use the make-yail-list constructor with no arguments.
          "Bad list argument to map")
          (kawa-list->yail-list (map proc (yail-list-contents verified-list))))))
 
+;; This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
+;; There are still bugs need to be fixed so this part is commented out.
+;;(define (map-destructive proc lst)
+;;  (cond ((null? lst) *the-null-value*)
+;;    (begin
+;;     (set-car! lst (proc (car lst)))
+;;      (map-destructive proc (cdr lst))
+;;      *the-null-value*)))
+
+;;(define (yail-list-map! proc yail-list)
+;;  (let ((verified-list (coerce-to-yail-list yail-list)))
+;;    (if (eq? verified-list *non-coercible-value*)
+;;      (signal-runtime-error
+;;       (format #f
+;;          "The second argument to map is not a list.  The second argument is: ~A"
+;;        (get-display-representation yail-list))
+;;      "Bad list argument to map")
+;;    (map-destructive proc (yail-list-contents verified-list)))))
+
 ;; Throws "unbound location filter", hence defined own filter_ function
 (define (yail-list-filter pred yail-list)
   (define filter_
@@ -2558,6 +2626,18 @@ list, use the make-yail-list constructor with no arguments.
          "Bad list argument to filter")
         (kawa-list->yail-list (filter_ pred (yail-list-contents verified-list))))))
 
+;; This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
+;; There are still bugs need to be fixed so this part is commented out.
+;;(define (yail-list-filter! pred yail-list)
+;; (let ((verified-list (coerce-to-yail-list yail-list)))
+;;    (if (eq? verified-list *non-coercible-value*)
+;;     (signal-runtime-error
+;;      (format #f
+;;        "The second argument to filter is not a list.  The second argument is: ~A"
+;;        (get-display-representation yail-list))
+;;      "Bad list argument to map")
+;;    (set-cdr! verified-list (filter pred (yail-list-contents verified-list))))))
+
 (define (yail-list-reduce ans binop yail-list)
   (define (reduce accum func lst)
     (cond ((null? lst) accum)
@@ -2570,6 +2650,19 @@ list, use the make-yail-list constructor with no arguments.
           (get-display-representation yail-list))
         "Bad list argument to reduce")
       (kawa-list->yail-list (reduce ans binop (yail-list-contents verified-list))))))
+
+;; This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
+;; There are still bugs need to be fixed so this part is commented out.
+;(define (reverse-list lst)
+;  (cond ((null? lst) lst)
+;    ((null? (cdr lst)) lst)
+;    (else (append (reverse-list (cdr lst)) (list (car lst))))))
+;
+;(define (yail-list-reverse yl)
+;  (kawa-list->yail-list (reverse-list (yail-list-contents yl))))
+;
+;(define (yail-list-reverse! y1)
+;  (set-cdr! y1 (reverse-list (yail-list-contents y1))))
 
 ;;Implements a generic sorting procedure that works on lists of any type.
 
@@ -2771,6 +2864,14 @@ list, use the make-yail-list constructor with no arguments.
     ((number? (car lst)) (cons (car lst) (list-number-only (cdr lst))))
     (else (list-number-only (cdr lst)))))
 
+;; This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
+;; There are still bugs need to be fixed so this part is commented out.
+;;(define (yail-list-sort-key! key y1)
+;; (cond ((yail-list-empty? y1) (make YailList))
+;;  ((not (pair? y1)) y1)
+;;  (else
+;;    (set-cdr! y1 (mergesort-key is-leq? key (yail-list-contents y1))))))
+
 (define (list-min lst)
   (cond ((null? lst) '())
     ((null? (cdr lst)) (car lst))
@@ -2810,6 +2911,17 @@ list, use the make-yail-list constructor with no arguments.
       ((null? (cdr contents)) '())
       (else (kawa-list->yail-list (cdr contents))))))
 
+;; This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
+;; There are still bugs need to be fixed so this part is commented out.
+;;(define (yail-list-but-first! yail-list)
+;;(let ((contents (yail-list-contents yail-list)))
+;;  (cond ((null? contents) (signal-runtime-error
+;;                            (format #f
+;;                              "The list cannot be empty")
+;;                            "Bad list argument to but-first"))
+;;    ((null? (cdr contents)) '())
+;;    (else (set-cdr! yail-list (cdr contents))))))
+
 (define (but-last lst)
   (cond ((null? lst) '())
     ((null? (cdr lst)) '())
@@ -2822,6 +2934,16 @@ list, use the make-yail-list constructor with no arguments.
                                 "The list cannot be empty")
                               "Bad list argument to but-last"))
       (else  (kawa-list->yail-list (but-last (yail-list-contents yail-list)))))))
+
+;; This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
+;; There are still bugs need to be fixed so this part is commented out.
+;;(define (yail-list-but-last! yail-list)
+;;(let ((contents (yail-list-contents yail-list)))
+;;  (cond ((null? contents) (signal-runtime-error
+;;                            (format #f
+;;                              "The list cannot be empty")
+;;                            "Bad list argument to but-last"))
+;;    (else  (set-cdr! yail-list (but-last (yail-list-contents yail-list)))))))
 
 (define (front lst n)
   (cond ((= n 1) lst)
@@ -2859,6 +2981,37 @@ list, use the make-yail-list constructor with no arguments.
             len+1)
           "List index too large"))
       (kawa-list->yail-list (take (- verified-index2 verified-index1) (drop (- verified-index1 1) (yail-list-contents yail-list)))))))
+
+;; This commented code is used in the PHOLO blocks to switch between non-destructive and destructive version.
+;; There are still bugs need to be fixed so this part is commented out.
+;;(define (yail-list-slice! yail-list index1 index2)
+;;(let ((verified-index1 (coerce-to-number index1))
+;;       (verified-index2 (coerce-to-number index2)))
+;;  (if (eq? verified-index1 *non-coercible-value*)
+;;    (signal-runtime-error
+;;      (format #f "Insert list item: index (~A) is not a number" (get-display-representation verified-index1))
+;;      "Bad list verified-index1"))
+;;  (if (eq? verified-index2 *non-coercible-value*)
+;;    (signal-runtime-error
+;;      (format #f "Insert list item: index (~A) is not a number" (get-display-representation verified-index2))
+;;      "Bad list verified-index2"))
+;;  (if (< verified-index1 1)
+;;    (signal-runtime-error
+;;      (format #f
+;;        "Slice list: Attempt to slice list ~A at index ~A. The minimum valid index number is 1."
+;;        (get-display-representation yail-list)
+;;        verified-index2)
+;;      "List index smaller than 1"))
+;;  (let ((len+1 (+ (yail-list-length yail-list) 1)))
+;;    (if (> verified-index2 len+1)
+;;      (signal-runtime-error
+;;        (format #f
+;;          "Slice list: Attempt to slice list ~A at index ~A.  The maximum valid index number is ~A."
+;;          (get-display-representation yail-list)
+;;          verified-index2
+;;          len+1)
+;;        "List index too large"))
+;;      (set-cdr! yail-list (front (back (yail-list-contents yail-list) 0 verified-index2) verified-index1)))))
 
 ;; yail-for-range needs to check that its args are numeric
 ;; because the blocks editor can't guarantee this
