@@ -191,6 +191,12 @@
   <dt id="Chart.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
   <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Chart</code> as a percentage
  of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+  <dt id="Chart.XFromZero" class="boolean"><em>XFromZero</em></dt>
+  <dd>Determines whether the X axis origin is set at 0 or the minimum X value
+ across all data series.</dd>
+  <dt id="Chart.YFromZero" class="boolean"><em>YFromZero</em></dt>
+  <dd>Determines whether the Y axis origin is set at 0 or the minimum y value
+ across all data series.</dd>
 </dl>
 
 <h3 id="Chart-Events">Events</h3>
@@ -203,7 +209,12 @@
 
 <h3 id="Chart-Methods">Methods</h3>
 
-<p class="methods">None</p>
+<dl class="methods">
+  <dt id="Chart.SetDomain" class="method"><i></i> SetDomain(<em class="number">minimum</em>,<em class="number">maximum</em>)</dt>
+  <dd>Sets the minimum and maximum for the domain of the X axis.</dd>
+  <dt id="Chart.SetRange" class="method"><i></i> SetRange(<em class="number">minimum</em>,<em class="number">maximum</em>)</dt>
+  <dd>Sets the minimum and maximum for the range of the Y axis.</dd>
+</dl>
 
 <h2 id="ChartData2D">ChartData2D</h2>
 
@@ -382,7 +393,7 @@ numerical values are returned.</li>
  list element is expected to have 2 values, the first one being
  the x value, and the second one being the y value.
  Invalid list entries are simply skipped. Existing data are not cleared.</dd>
-  <dt id="ChartData2D.ImportFromSpreadsheet" class="method"><i></i> ImportFromSpreadsheet(<em class="component">sheet</em>,<em class="text">xColumn</em>,<em class="text">yColumn</em>,<em class="boolean">useHeaders</em>)</dt>
+  <dt id="ChartData2D.ImportFromSpreadsheet" class="method"><i></i> ImportFromSpreadsheet(<em class="component">spreadsheet</em>,<em class="text">xColumn</em>,<em class="text">yColumn</em>,<em class="boolean">useHeaders</em>)</dt>
   <dd>Imports data from the specified Spreadsheet component by taking the specified x column
  for the x values, and the specified y column for the y values. Prior to calling this function,
  the Spreadsheet component’s ReadSheet method has to be called to load the data. The usage of

@@ -265,6 +265,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Canvas")) {
         srcCompVersion = upgradeCanvasProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Chart")) {
+        srcCompVersion = upgradeChartProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("CheckBox")) {
         srcCompVersion = upgradeCheckBoxProperties(componentProperties, srcCompVersion);
 
@@ -341,6 +344,9 @@ public final class YoungAndroidFormUpgrader {
 
       } else if (componentType.equals("SpeechRecognizer")) {
         srcCompVersion = upgradeSpeechRecognizerProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("Spreadsheet")) {
+        srcCompVersion = upgradeSpreadsheetProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("TimePicker")) {
         srcCompVersion = upgradeTimePickerProperties(componentProperties, srcCompVersion);
@@ -803,6 +809,15 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 15) {
       // Assets helper block was added.
       srcCompVersion = 15;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeChartProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The XFromZero and YFromZero properties were added.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
@@ -1536,6 +1551,14 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeSpreadsheetProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Various methods were renamed in the blocks editor.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
 
   private static int upgradeTimePickerProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
