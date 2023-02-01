@@ -456,6 +456,7 @@
             ((list? arg)
              (let ((pieces (map get-json-display-representation arg)))
               (string-append "[" (join-strings pieces ", ") "]")))
+            ((yail-dictionary? arg) (yail:invoke arg 'toString))
             (else (call-with-output-string (lambda (port) (display arg port))))))))
 
 (define (join-strings list-of-strings separator)

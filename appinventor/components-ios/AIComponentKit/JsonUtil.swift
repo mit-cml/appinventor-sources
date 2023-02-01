@@ -18,12 +18,15 @@ func getJsonRepresentation(_ object: AnyObject?) throws -> String {
 }
 
 func getObjectFromJson(_ json: String?) throws -> AnyObject? {
-  if json == nil || json == "" {
+  guard let jsonString = json else {
+    return "" as NSString
+  }
+  guard !jsonString.isEmpty else {
     return "" as NSString
   }
   // NSJSONSerialization can only parse arrays and objects at the top level, so we wrap value here
-  let json = "[\(json!)]"
-  let result = try JSONSerialization.jsonObject(with: json.data(using: .utf8)!,
+  let jsonArray = "[\(jsonString)]"
+  let result = try JSONSerialization.jsonObject(with: jsonArray.data(using: .utf8)!,
                                                 options: JSONSerialization.ReadingOptions.mutableContainers)
   if let array = result as? Array<AnyObject> {
     return array[0]
@@ -42,8 +45,8 @@ func getObjectFromJson(_ json: String?) throws -> AnyObject? {
  * - Throws: If `json` does not represent valid JSON, then an error will be thrown.
  */
 func getYailObjectFromJson(_ json: String?, _ useDicts: Bool) throws -> AnyObject {
-  let json = try getObjectFromJson(json)
-  return convertJsonItem(json, useDicts)
+  let root = try getObjectFromJson(json)
+  return convertJsonItem(root, useDicts)
 }
 
 fileprivate func getListFromJsonObject(_ json: NSDictionary) -> YailList<YailList<AnyObject>> {
