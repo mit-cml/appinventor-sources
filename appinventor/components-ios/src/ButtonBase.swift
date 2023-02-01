@@ -116,6 +116,9 @@ open class ButtonBase: ViewComponent {
   fileprivate static var MODERN_DEFAULT_PIPELINE = [ButtonStylePipeline:PipelineStep]()
   fileprivate var _stylePipeline: [ButtonStylePipeline:PipelineStep]
   fileprivate var _needsStyleApplied = true
+  fileprivate var _isHighContrast = false
+  fileprivate var _isBigText = false
+  fileprivate var _hintColorDefault: Int32 = Color.default.int32
 
   static func loadClassicButton() {
     let bundle = Bundle(for: ButtonBase.self)
@@ -309,7 +312,27 @@ open class ButtonBase: ViewComponent {
       return Float32((_view.titleLabel?.font.pointSize)!)
     }
     set(size) {
-      _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: size)
+      //_view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: size)
+      if size == kFontSizeDefault && form?.BigDefaultText == true {
+        _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: 28)
+      } else{
+        _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: size)
+      }
+    }
+  }
+  
+  @objc open var HighContrast: Bool {
+    get {
+      return _isHighContrast
+    }
+    set {
+      _isHighContrast = newValue
+      
+      if (_textColor == Int32(bitPattern: Color.default.rawValue)) {
+        _view.setTitleColor(_defaultTextColor, for: .normal)
+      } else {
+        _view.setTitleColor(argbToColor(Color.white.rawValue), for: .normal)
+      }
     }
   }
 

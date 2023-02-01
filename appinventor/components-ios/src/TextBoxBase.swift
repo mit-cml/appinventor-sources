@@ -40,6 +40,9 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   fileprivate var _italic: Bool = false
   fileprivate var _hint: String = ""
   fileprivate var _textColor: Int32 = 0
+  fileprivate var _isHighContrast = false
+  fileprivate var _isBigText = false
+  fileprivate var _hintColorDefault: Int32 = Color.default.int32
 
   public init(_ parent: ComponentContainer, _ delegate: AbstractMethodsForTextBox) {
     super.init(parent)
@@ -127,7 +130,11 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       }
     }
     set(size) {
-      _delegate.font = getFontSize(font: _delegate?.font, size: size) ?? _delegate.font
+      if size == 24 && form?.BigDefaultText == true {
+        _delegate.font = getFontSize(font: _delegate?.font, size: 28) ?? _delegate.font
+      } else{
+        _delegate.font = getFontSize(font: _delegate?.font, size: size) ?? _delegate.font
+      }
     }
   }
   

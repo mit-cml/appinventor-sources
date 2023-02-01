@@ -15,6 +15,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _htmlContent: String = ""
   fileprivate var _htmlFormat = false
   fileprivate var _fontSize: Float64 = 0
+  fileprivate var _isBigText = false
   
   public override init(_ parent: ComponentContainer) {
     _view = UILabel()
@@ -121,11 +122,15 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
       return _fontSize
     }
     set(size) {
-      _fontSize = size
       if _htmlFormat {
         updateFormattedContent()
       } else {
-        _view.font = _view.font.withSize(CGFloat(size))
+        if size == 24 && ((form?.BigDefaultText) != nil) {
+          _view.font = _view.font.withSize(CGFloat(28))
+        } else{
+            _view.font = _view.font.withSize(CGFloat(size))
+        }
+        //_view.font = _view.font.withSize(CGFloat(size))
       }
       _view.sizeToFit()
     }
