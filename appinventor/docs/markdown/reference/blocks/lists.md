@@ -137,7 +137,7 @@ If *thing* is a list, returns true; otherwise, returns false.
 
 ![](images/lists/reverse.png)
 
-Reverses a copy of the list with items in the reverse order. For example reverse([1,2,3]) returns [3,2,1]
+Returns a copy of the list with items in the reverse order. For example reverse([1,2,3]) returns [3,2,1]
 
 ### list to csv row   {#listtocsvrow}
 
