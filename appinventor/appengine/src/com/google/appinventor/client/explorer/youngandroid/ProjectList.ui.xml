@@ -8,7 +8,7 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <g:FlowPanel styleName='ode-ProjectTable'>
     <g:FlowPanel styleName='ode-ProjectHeaderRow'>
-        <g:CheckBox ui:field='selectAllCheckBox' styleName="gwt-CheckBox" />
+        <g:CheckBox ui:field='selectAllCheckBox' styleName="gwt-CheckBox ode-ProjectCheckBox" />
         <g:FlowPanel >
           <g:Label text='{messages.projectNameHeader}' styleName="gwt-Label ode-ProjectHeaderLabel" />
 <!--          <ai:Icon icon='arrow_downward' styleName='{style.sortIndicator}' /> -->

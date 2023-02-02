@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:c="urn:import:com.google.appinventor.client.components"
              xmlns:actions="urn:import:com.google.appinventor.client.actions"
              xmlns:expactions="urn:import:com.google.appinventor.client.explorer.commands"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
@@ -8,32 +9,59 @@
              ui:generateLocales="default">
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
         <!-- Projects Menu -->
-        <ai:Toolbar>
-            <ai:ToolbarItem name="New" caption="{messages.newProjectButton}" ui:field="newProjectItem" >
+        <ai:Toolbar styleName="ya-ProjectToolbar">
+            <g:Label text="{messages.projectListBoxCaption}" styleName="ya-ProjectName" />
+            <ai:ToolbarItem name="New" caption="{messages.newProjectButton}" icon='add' ui:field="newProjectItem" align="left">
                 <actions:NewAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" >
-                <actions:SwitchToProjectAction />
+            <ai:ToolbarItem name="ImportProject" icon="file_upload"  align="left">
+                <actions:ImportProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Folder" caption="{messages.newProjectFolderMenuItem}" ui:field="newFolderItem" >
+            <ai:ToolbarItem name="ImportTemplate"  icon="cloud_upload"  align="left">
+                <actions:ImportTemplateAction />
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Folder" icon="create_new_folder" ui:field="newFolderItem"  align="left" >
                 <expactions:AddFolderCommand />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Move" caption="Move Project" >
+            <ai:ToolbarItem name="Move" caption='Move' icon='drive_file_move' align="left" >
                 <actions:MoveProjectsAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Delete" caption="{messages.deleteProjectButton}">
-                <actions:DeleteAction />
+            <ai:ToolbarItem name="ExportProject" caption="Export" icon="file_download" align="center">
+                <actions:ExportProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Trash" caption="{messages.viewTrashButton}">
-                <actions:TrashAction />
+            <ai:DropDownButton name="Build" caption="Build" align="center" icon='system_security_update'>
+                <ai:DropDownItem name="Barcode" caption="{messages.showExportAndroidApk}">
+                    <actions:BarcodeAction second="false" isAab="false" />
+                </ai:DropDownItem>
+                <ai:DropDownItem name="Download" caption="{messages.showExportAndroidAab}">
+                    <actions:BarcodeAction second="false" isAab="true" />
+                </ai:DropDownItem>
+                <ai:DropDownItem name="Barcode2" caption="{messages.showExportAndroidApk2}">
+                    <actions:BarcodeAction second="true" isAab="false" />
+                </ai:DropDownItem>
+                <ai:DropDownItem name="Download2" caption="{messages.showExportAndroidAab2}">
+                    <actions:BarcodeAction second="true" isAab="true" />
+                </ai:DropDownItem>
+            </ai:DropDownButton>
+            <ai:ToolbarItem name="Download" caption="Publish"  icon='public' align="center">
+                <actions:ExportProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Restore" caption="{messages.restoreProjectButton}">
+            <ai:ToolbarItem name="Restore" caption="{messages.restoreProjectButton}" align="right">
                 <actions:RestoreProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Delete From Trash" caption="{messages.deleteFromTrashButton}">
+            <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" align="right" >
+                <actions:SwitchToProjectAction />
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Trash" caption="{messages.viewTrashButton}" align="right">
+                <actions:TrashAction />
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Delete" icon='delete' caption="{messages.deleteProjectButton}" align="right">
+                <actions:DeleteAction />
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Delete From Trash" caption="{messages.deleteFromTrashButton}" align="right">
                 <actions:DeleteForeverProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Login to Gallery" caption="{messages.loginToGallery}" visible="false">
+            <ai:ToolbarItem name="Login to Gallery" caption="{messages.loginToGallery}" visible="false" >
                 <actions:LoginToGalleryAction />
             </ai:ToolbarItem>
             <ai:ToolbarItem name="Send to Gallery" caption="{messages.publishToGalleryButton}" visible="false">

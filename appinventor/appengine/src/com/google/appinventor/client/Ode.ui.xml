@@ -8,6 +8,7 @@
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <g:FlowPanel styleName="ode-Root">
     <ode:TopPanel ui:field="topPanel" />
     <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">

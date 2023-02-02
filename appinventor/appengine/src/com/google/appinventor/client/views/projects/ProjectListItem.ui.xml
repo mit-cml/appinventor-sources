@@ -9,7 +9,7 @@
   <ui:with field="style" />
   <g:FlowPanel ui:field="container" styleName="{style.listItem}">
     <g:CheckBox ui:field='checkBox' styleName='{style.selection}'/>
-    <g:Label ui:field='nameLabel' styleName='{style.field} {style.projectName}'></g:Label>
+    <g:Label ui:field='nameLabel' styleName='{style.field} {style.projectName}'/>
     <g:Label ui:field='dateModifiedLabel' styleName='{style.field}'></g:Label>
     <g:Label ui:field='dateCreatedLabel' styleName='{style.field}'></g:Label>
   </g:FlowPanel>

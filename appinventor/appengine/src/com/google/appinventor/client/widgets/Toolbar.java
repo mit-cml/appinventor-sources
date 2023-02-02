@@ -98,7 +98,7 @@ public class Toolbar extends FlowPanel {
   }
 
   public void add(final ToolbarItem item) {
-    TextButton button = new TextButton(item.getCaption());
+    TextButton button = new TextButton(item.getCaption(), item.getIcon());
     button.addClickHandler(event -> item.getCommand().execute());
     if ("right".equals(item.getAlign())) {
       rightButtons.add(button);
@@ -130,6 +130,9 @@ public class Toolbar extends FlowPanel {
     }
   }
 
+  public void setStylename (String styleName) {
+    setStylePrimaryName(styleName);
+  }
 
   protected void populateToolbar(Toolbar other) {
     leftButtons.clear();

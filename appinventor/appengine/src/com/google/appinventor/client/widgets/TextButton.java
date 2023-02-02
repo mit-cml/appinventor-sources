@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.ElementParserToUse;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Image;
+import com.google.appinventor.client.components.Icon;
 
 /**
  * A PushButton that has a specific style.
@@ -37,6 +38,11 @@ public class TextButton extends PushButton {
     setStylePrimaryName("ode-TextButton");
   }
 
+  public TextButton(String caption, Icon icon) {
+    super();
+    super.setHTML(makeText(caption, icon));
+  }
+
   public void setCommand(Command command) {
     this.addClickHandler(new ClickHandler() {
       @Override
@@ -46,8 +52,12 @@ public class TextButton extends PushButton {
     });
   }
 
-  public void setImage(Image image) {
-    getUpFace().setImage(image);
+  protected String makeText(String caption, Icon icon) {
+    String text = "";
+    if(icon != null) {
+      text += icon.toString();
+    }
+    text+= caption;
+    return text;
   }
-
 }

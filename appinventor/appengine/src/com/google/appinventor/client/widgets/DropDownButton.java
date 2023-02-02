@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.widgets;
 
+import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -15,6 +16,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.UIObject;
+
+import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +40,9 @@ public class DropDownButton extends TextButton {
   private final List<UIObject> allItems = new ArrayList<UIObject>();
   private boolean rightAlign = false;
   private String align = "left";
+  private Icon icon = null;
+  boolean hasTriangle = false;
+  private String caption = "";
 
 
   /**
@@ -136,7 +142,6 @@ public class DropDownButton extends TextButton {
     this(name, caption, toolbarItems, rightAlign);
 
     if (hasHtmlCaption) {
-
       // Set the button's caption as an HTML String with or without a dropdown triangle
       if (hasTriangle) {
         setCaption(caption);
@@ -145,12 +150,31 @@ public class DropDownButton extends TextButton {
       }
     }
   }
-
+  protected String makeText(String caption, Icon icon, boolean hasTriangle) {
+    String text = "";
+    if(icon != null) {
+      text += icon.toString();
+    }
+    text+= caption;
+    if (hasTriangle) {
+      text+= " \u25BE ";
+    }
+    return text;
+  }
   public String getAlign() {
     return align;
   }
   public void setAlign(String align) {
     this.align = align;
+  }
+
+  public Icon getIcon() { return icon; }
+  public void setIcon(String iconName) {
+    setIcon(new com.google.appinventor.client.components.Icon(iconName));
+  }
+  public void setIcon(Icon icon) {
+    this.icon = icon;
+    setHTML(makeText(caption, icon, true));
   }
 
   public void clearAllItems() {
@@ -307,7 +331,8 @@ public class DropDownButton extends TextButton {
   }
 
   public void setCaption(String caption) {
-    this.setText(caption + " \u25BE ");
+    this.caption = caption;
+    this.setHTML(makeText(caption, icon, true));
   }
 
   @SuppressWarnings("unused")  // Invoked by GWT

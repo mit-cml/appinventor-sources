@@ -495,31 +495,56 @@ a, a:visited, a:hover {
 .gwt-PushButton-down,
 .gwt-PushButton-down-hovering,
 .gwt-PushButton-down-disabled {
-  margin: 0;
-  text-decoration: none;
-  background: url("../images/hborder.png") repeat-x 0px -27px;
+  border: 1px solid;
+  position: relative;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  vertical-align: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 4px 10px;
+  transition: background 0.2s, opacity 0.1s;
+  background-color: #A5CF47;
+  border-color: #444444;
+  font-family: 'Poppins', 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 1.06em;
+  white-space: nowrap;
+  /*margin: 0;*/
+  /*text-decoration: none;*/
+  /*background: url("../images/hborder.png") repeat-x 0px -27px;*/
 }
-.gwt-PushButton-up,
-.gwt-PushButton-up-hovering,
-.gwt-PushButton-up-disabled {
-  padding: 3px 5px 3px 5px;
+/*.gwt-PushButton-up,*/
+/*.gwt-PushButton-up-hovering,*/
+/*.gwt-PushButton-up-disabled {*/
+/*  padding: 3px 5px 3px 5px;*/
+/*}*/
+
+/*.gwt-PushButton-up {*/
+/*  border: 1px outset #ccc;*/
+/*}*/
+
+.gwt-ButtonLeft {
+  border-radius: 4px 0 0 4px;
 }
-.gwt-PushButton-up {
-  border: 1px outset #ccc;
-  cursor: pointer;
-  cursor: hand;
+
+.gwt-ButtonRight {
+  border-radius: 0 4px 4px 0;
 }
+
+.gwt-ButtonCenter {
+  border-radius: 0;
+  border-width: 1px 0;
+}
+
 .gwt-PushButton-up-hovering {
-  border: 1px outset;
-  border-color: #9cf #69e #69e #7af;
-  cursor: pointer;
+  background-color: #7D9D36;
   cursor: hand;
 }
 .gwt-PushButton-up-disabled {
-  border: 1px outset #ccc;
   cursor: default;
   opacity: .5;
-  filter: alpha(opacity=40);
   zoom: 1;
 }
 .gwt-PushButton-down,

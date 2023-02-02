@@ -67,7 +67,7 @@ body {
   padding: 16px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.065);
   text-align: center;
-  border: 1px #262626;
+  border: 1px #444444;
 }
 
 .ode-Root {
@@ -78,6 +78,7 @@ body {
   left: 0;
   display: flex;
   flex-flow: column;
+  background: #FFFFFF;
 }
 
 div.TopToolbar {
@@ -172,35 +173,19 @@ div.StatusPanel {
 }
 
 .ode-Box-content {
-  font-size: 13px;
-  background-color: #f7f9f2;
-  /* TODO(opensource): Delete the background-image line below once we're ready */
-  background-image: url(../images/watermark.png);
-  color: #555;
-  border-left: 1px solid #d2d2d2;
-  border-bottom: 1px solid #d2d2d2;
-  border-right: 1px solid #d2d2d2;
-  margin: 4px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.065);
 }
 
 .ode-Box-header {
-  background: rgba(102, 153, 0, 0.3);
-  height: 31px;
-  border: 1px solid;
-  border-color: #d2d2d2 #d2d2d2 #b0b2a7 #d2d2d2;
+  display: none;
 }
 
 .ode-Box-header-caption,
 .ode-Box-header-caption-highlighted {
-  font-size: 13px;
-  font-weight: bold;
-  padding-top: 7px;
-  padding-left: 9px;
+  display: none;
 }
 
 .ode-Box-header-caption {
-  color: #555;
+  display: none;
 }
 
 .ode-Box-header-caption-highlighted {
@@ -211,7 +196,6 @@ div.StatusPanel {
 }
 
 .ode-Box-body-padding {
-  padding: 6px;
 }
 
 .ode-BoxResizeControl {
@@ -249,41 +233,30 @@ div.StatusPanel {
 }
 
 .ode-ProjectNameLabel {
-  font-weight: bold;
-  font-size: small;
-  color: #555;
+  white-space: nowrap;
+  width: fit-content;
   cursor: pointer;
-  vertical-align: top;
-  padding-left: 10px;
-  text-align: left;
 }
 
 .ode-ProjectFieldLabel {
-  font-size: small;
-  color: #555;
-  vertical-align: top;
-  padding-left: 10px;
-  text-align: left;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 1.1em;
+  color: #000000;
+  min-width: 200px;
 }
 
 .ode-ProjectTable {
-  padding: 0;
-  margin: 0;
-  border: 1px;
+  border: 1px solid #DDDDDD;
+  border-radius: 4px;
   overflow: auto;
-  /*display: flex;*/
-  text-align: left;
-  /*flex-direction: column;*/
   display: grid;
   grid-auto-rows: max-content;
   grid-template-columns: auto 1fr auto auto;
 }
 
 .ode-ProjectRowHighlighted {
-  display: grid;
-  grid-template-columns: subgrid;
-  border-bottom: 1px solid #ddd;
-  background-color: #fff6c3 !important;
+  background-color: rgba(167, 36, 122, 0.21) !important;
 }
 
 .ode-ProjectRowUnHighlighted {
@@ -294,8 +267,8 @@ div.StatusPanel {
   background-color: white;
   width: 100%;
   vertical-align: center;
-  /*display: flex;*/
-  /*flex-direction: row;*/
+  height: 30px;
+  align-items: center;
 }
 
 .ode-ProjectRowHidden {
@@ -313,26 +286,41 @@ div.StatusPanel {
 }
 
 .ode-ProjectHeaderRow {
-  background: url(../images/toolbarBG.png) repeat;
-  /*display: flex;*/
   display: grid;
-  border: 1px;
-  border-bottom: 1px solid #bbccff;
+  align-items: center;
+  height: 40px;
+  grid-gap: 10px;
+  position: relative;
+  border-bottom: 1px solid #DDDDDD;
+  border-radius: 4px;
+  background: #FFFFFF;
+  font-weight: 600;
+  font-size: 1.15em;
   grid-column: 1 / 5;
   grid-template-columns: subgrid;
-  /*grid-template-columns: auto 1fr auto auto;*/
-  position: relative;
-  flex-direction: row;
+}
+
+.ode-ProjectHeaderRow:after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 0;
+  z-index: -1;
   width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: #DDDDDD;
+}
+
+.ode-ProjectCheckBox {
+  padding-right: 10px;
+  padding-left: 20px;
 }
 
 .ode-ProjectHeaderLabel {
-  text-indent: initial;
-  color: #112abb;
-  font-size: 11px;
-  cursor: pointer;
-  text-align: left;
-  padding-left: 10px;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
 }
 
 .ode-CheckpointProjectTable {
@@ -397,19 +385,10 @@ div.StatusPanel {
   margin-bottom: 4px;
   padding-right: 4px;
   padding-left: 4px;
-  background-color: #f2f2f2;
-  background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
-  background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
-  background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
-  background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
-  background-repeat: repeat-x;
-  border: 1px solid #d4d4d4;
+  background-color: #FFFFFF;
+  border: 1px solid #DDDDDD;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
   *zoom: 1;
-  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
-  -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
   position: relative;
   box-sizing: border-box;
 }
@@ -559,7 +538,7 @@ div.StatusPanel {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  padding: 4px 8px 8px;
+  padding: 4px 20px 8px;
   position: relative;
   height: 100%;
   width: 100%;
@@ -740,70 +719,40 @@ div.StatusPanel {
 /* Young Android Toolbar */
 
 .ya-Toolbar {
-  background-color: #8fc202;
+  background-color: #FFFFFF;
   margin-bottom: 4px;
   padding: 2px;
 }
 
 .ya-Toolbar .ya-ProjectName {
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
+  font-family: "Poppins", "Roboto", sans-serif;
+  color: #000000;
+  font-weight: 500;
+  font-size: 1.25em;
   padding-top: 2px;
-  padding-left: 8px;
-  text-shadow: 0 0 1px #404040;
+  padding-right: 20px
 }
-
 .ode-TextButton,
 .gwt-Button {
-  display: inline-block;
-  *display: inline;
-  padding: 2px 6px;
-  margin-bottom: 0;
-  *margin-left: .3em;
-  font-size: 14px;
-  line-height: 20px;
-  color: #333333;
-  text-align: center;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
-  vertical-align: middle;
-  cursor: pointer;
-  background-color: #f5f5f5;
-  *background-color: #e6e6e6;
-  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
-  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
-  background-repeat: repeat-x;
-  border: 1px solid #cccccc;
-  *border: 0;
-  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  border-bottom-color: #b3b3b3;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-  *zoom: 1;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 4px 10px;
+  transition: background 0.2s, opacity 0.1s;
+  color: #444444;
+  font-family: 'Poppins', 'Roboto', sans-serif;;
+  font-weight: 500;
+  font-size: 1.06em;
+  white-space: nowrap;
+  background-color: #A5CF47;
+  border: 1px solid #444444;
 }
 
 .ode-TextButton-up-disabled,
 .gwt-Button-up-disabled {
-  color: #333333;
-  background-color: #e6e6e6;
-  *background-color: #d9d9d9;
-  cursor: default;
-  background-image: none;
-  opacity: 0.65;
-  filter: alpha(opacity=65);
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
+  opacity: 0.5;
 }
 
 .ode-TextButton:hover,
@@ -2865,20 +2814,24 @@ div.dropdiv p {
 
 .ya-Toolbar .left {
   min-width: 220px;
-  text-align: left;
+  justify-content: flex-start;
+  display:flex;
 }
 
 .ya-Toolbar .right {
   min-width: 410px;
-  text-align: right;
+  justify-content: flex-end;
+  display:flex;
 }
 
 .ya-Toolbar .center {
   text-align: center;
+  display:flex;
 }
 
 .ya-Toolbar>div>div {
   margin: 2px;
+  justify-content: center;
 }
 
 .ya-ProjectName {
