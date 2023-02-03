@@ -25,3 +25,4 @@
     <item android:state_focused="false"                               android:state_pressed="true" android:drawable="@drawable/abc_list_selector_background_transition_holo_dark" />
     <item android:state_focused="true"                                                             android:drawable="@drawable/abc_list_focused_holo" />
 </selector>
+<!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/drawable/abc_list_selector_holo_dark.xml -->

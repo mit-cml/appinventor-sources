@@ -163,7 +163,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
 
   @Override
   protected void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(toggleWidget.getWidget(0), text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, toggleWidget.getWidget(0), text);
     updatePreferredSize();
   }
 
@@ -189,6 +189,9 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
       paintSwitch();
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(switchLabel, newValue);
       refreshForm();
     }
   }

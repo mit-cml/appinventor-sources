@@ -190,7 +190,7 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
   description = "Sets the language for TextToSpeech. This changes the way that words are " +
       "pronounced, not the actual language that is spoken.  For example setting the language to " +
-      "and speaking English text with sound like someone speaking English with a Frernch accent.")
+      "and speaking English text with sound like someone speaking English with a French accent.")
   public void Language(String language) {
     Locale locale;
     switch (language.length()) {

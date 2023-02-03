@@ -74,6 +74,7 @@ body {
   background-color: white;
 }
 
+.ode-ContextMenuItem-Red,
 .ode-ContextMenuItem,
 .ode-CurrentColor {
   color: #555;
@@ -85,6 +86,18 @@ body {
 }
 
 .ode-ContextMenuItem {
+  min-width: 50px;
+  padding: 4px 12px;
+  -o-transition:color .1s ease-out, background .1s ease-in;
+  -ms-transition:color .1s ease-out, background .1s ease-in;
+  -moz-transition:color .1s ease-out, background .1s ease-in;
+  -webkit-transition:color .1s ease-out, background .1s ease-in;
+  /* ...and now override with proper CSS property */
+  transition:color .1s ease-out, background .1s ease-in;
+}
+
+.ode-ContextMenuItem-Red {
+  color: #ff0000;
   min-width: 50px;
   padding: 4px 12px;
   -o-transition:color .1s ease-out, background .1s ease-in;
@@ -111,6 +124,11 @@ body {
 
 .ode-ContextMenuItem-selected {
   color: #ffffff;
+  background: #99CC00;
+}
+
+.ode-ContextMenuItem-Red-selected {
+  color: #ff0000;
   background: #99CC00;
 }
 
@@ -1841,7 +1859,6 @@ textarea::-webkit-input-placeholder {
 .ode-UserProfileWrapper .gallery-card {
   height: 160px;
 }
-
 .ode-UserProfileWrapper .app-image {
   margin-top: 15px;
   margin-left: 15px;

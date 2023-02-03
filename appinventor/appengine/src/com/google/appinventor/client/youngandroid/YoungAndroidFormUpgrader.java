@@ -129,6 +129,11 @@ public final class YoungAndroidFormUpgrader {
 
     String componentType = componentProperties.get("$Type").asString().getString();
 
+    if (srcYaVersion < 218 && "GoogleSheets".equals(componentType)) {
+      componentType = "Spreadsheet";
+      componentProperties.put("$Type", new ClientJsonString("Spreadsheet"));
+    }
+
     // Get the source component version from the componentProperties.
     int srcCompVersion = 0;
     if (componentProperties.containsKey("$Version")) {
@@ -149,6 +154,18 @@ public final class YoungAndroidFormUpgrader {
         componentProperties.put("$Type", new ClientJsonString(componentType));
         componentProperties.put("$Version", new ClientJsonString("" + srcCompVersion));
         upgradeDetails.append(MESSAGES.upgradeDetailLoggerReplacedWithNotifier(
+            componentProperties.get("$Name").asString().getString()));
+      }
+    }
+
+    if (srcYaVersion < 216) {
+      // YandexTranslate deprecated in favor of Translator
+      if (componentType.equals("YandexTranslate")) {
+        componentType = "Translator";
+        srcCompVersion = COMPONENT_DATABASE.getComponentVersion(componentType);
+        componentProperties.put("$Type", new ClientJsonString(componentType));
+        componentProperties.put("$Version", new ClientJsonString("" + srcCompVersion));
+        upgradeDetails.append(MESSAGES.yandexTranslateReplacedwithTranslator(
             componentProperties.get("$Name").asString().getString()));
       }
     }
@@ -891,6 +908,17 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // AccessMode was added.
+      // LegacyMode was removed.
+      // If LegacyMode was set, AccessMode should be set to "2", which is Legacy.
+      if (componentProperties.containsKey("LegacyMode")) {
+        componentProperties.remove("LegacyMode");
+        // LegacyMode maps to AccessMode 2 (Legacy)
+        componentProperties.put("DefaultScope", new ClientJsonString("Legacy"));
+      }
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -1102,6 +1130,10 @@ public final class YoungAndroidFormUpgrader {
       // Adds Permission dropdown block.
       srcCompVersion = 29;
     }
+    if (srcCompVersion < 30) {
+      // The DefaultFileScope property was added.
+      srcCompVersion = 30;
+    }
 
     return srcCompVersion;
   }
@@ -1188,7 +1220,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 6) {
       // Assets helper block was added.
-      srcCompVersion = 5;
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
@@ -1336,6 +1368,10 @@ public final class YoungAndroidFormUpgrader {
       // Added the SelectionColor property
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Added ...
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -1378,6 +1414,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 4) {
       // Added PasswordVisible Property
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // Added NumbersOnly property
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -1487,6 +1527,11 @@ public final class YoungAndroidFormUpgrader {
       // The Stop method was added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The Language property was added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1747,10 +1792,10 @@ public final class YoungAndroidFormUpgrader {
       // of XML using dictionaries.
       srcCompVersion = 7;
     }
-    if (srcCompVersion < 8)  {
-    	// The methods PatchText, PatchTextWithEncoding, and PatchFile were added.
-        // No properties need to be modified to upgrade to version 8.
-        srcCompVersion = 8;
+    if (srcCompVersion < 8) {
+      // The methods PatchText, PatchTextWithEncoding, and PatchFile were added.
+      // No properties need to be modified to upgrade to version 8.
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -1958,6 +2003,7 @@ public final class YoungAndroidFormUpgrader {
       int srcCompVersion) {
     if (srcCompVersion < 2) {
       // Adds dropdown blocks.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }

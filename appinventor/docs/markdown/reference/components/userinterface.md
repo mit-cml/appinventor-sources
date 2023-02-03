@@ -56,9 +56,10 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 {:id="Button.FontSize" .number} *FontSize*
 : Specifies the text font size of the `Button`, measured in sp(scale-independent pixels).
 
-{:id="Button.FontTypeface" .number .do} *FontTypeface*
+{:id="Button.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `Button` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="Button.Height" .number .bo} *Height*
 : Specifies the `Button`'s vertical height, measured in pixels.
@@ -170,7 +171,7 @@ None
 {:id="CheckBox.FontSize" .number} *FontSize*
 : Specifies the text font size of the `CheckBox`, measured in sp(scale-independent pixels).
 
-{:id="CheckBox.FontTypeface" .number .do} *FontTypeface*
+{:id="CheckBox.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `CheckBox` as default, serif, sans
  serif, or monospace.
 
@@ -253,9 +254,10 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 {:id="DatePicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `DatePicker`, measured in sp(scale-independent pixels).
 
-{:id="DatePicker.FontTypeface" .number .do} *FontTypeface*
+{:id="DatePicker.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `DatePicker` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="DatePicker.Height" .number .bo} *Height*
 : Specifies the `DatePicker`'s vertical height, measured in pixels.
@@ -446,7 +448,7 @@ Labels are components used to show text.
 {:id="Label.FontSize" .number} *FontSize*
 : Specifies the label's text's font size, measured in sp(scale-independent pixels).
 
-{:id="Label.FontTypeface" .number .do} *FontTypeface*
+{:id="Label.FontTypeface" .text .do} *FontTypeface*
 : Specifies the label's text's font face as default, serif, sans
  serif, or monospace.
 
@@ -549,9 +551,10 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 {:id="ListPicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `ListPicker`, measured in sp(scale-independent pixels).
 
-{:id="ListPicker.FontTypeface" .number .do} *FontTypeface*
+{:id="ListPicker.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `ListPicker` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="ListPicker.Height" .number .bo} *Height*
 : Specifies the `ListPicker`'s vertical height, measured in pixels.
@@ -653,9 +656,12 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 
 ## ListView  {#ListView}
 
-This is a visible component that allows to place a list of text elements in your [`Screen`](#Screen) to
- display. The list can be set using the [`ElementsFromString`](#ListView.ElementsFromString) property or using the
- [`Elements`](#ListView.Elements) block in the blocks editor.
+This is a visible component that displays a list of text and image elements in your [`Screen`](#Screen) to
+ display. Simple lists of strings may be set using the [`ElementsFromString`](#ListView.ElementsFromString) property.
+ More complex lists of elements containing multiple strings and/or images can be created using the
+ [`ListData`](#ListView.ListData) and [`ListViewLayout`](#ListView.ListViewLayout) properties.
+
+ [Information on Layouts](../other/advanced-listview.html)
 
    Warning: This component will not work correctly on Screens that are scrollable if its
  [`Height`](#ListView.Height) is set to Fill Parent.
@@ -673,7 +679,19 @@ This is a visible component that allows to place a list of text elements in your
 : Specifies the list of choices to display.
 
 {:id="ListView.ElementsFromString" .text .wo} *ElementsFromString*
-: Set the list of choices from a string of comma-separated values.
+: Set the list of choices specified as a string with the elements separated by commas
+ such as: Cheese,Fruit,Bacon,Radish.
+
+{:id="ListView.FontSizeDetail" .number} *FontSizeDetail*
+: Specifies the `ListView` item's text font size
+
+{:id="ListView.FontTypeface" .text .do} *FontTypeface*
+: Specifies the label's text's font face as default, serif, sans
+ serif, or monospace.
+
+{:id="ListView.FontTypefaceDetail" .text .do} *FontTypefaceDetail*
+: Specifies the label's text's font face as default, serif, sans
+ serif, or monospace.
 
 {:id="ListView.Height" .number .bo} *Height*
 : Specifies the `ListView`'s vertical height, measured in pixels.
@@ -682,11 +700,35 @@ This is a visible component that allows to place a list of text elements in your
 : Specifies the `ListView`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="ListView.ImageHeight" .number} *ImageHeight*
+: Specifies the image height of ListView layouts containing images
+
+{:id="ListView.ImageWidth" .number} *ImageWidth*
+: Specifies the image width of ListView layouts containing images
+
+{:id="ListView.ListData" .text .do} *ListData*
+: Specifies data to be displayed in the ListView elements. This property sets the
+ elements specified in [`ListViewLayout`](#ListView.ListViewLayout). For example, if the chosen
+ layout is `Image,MainText` this property will allow any number of elements to be
+ defined, each containing a filename for Image and a string for MainText.
+ Designer only property.
+
+{:id="ListView.ListViewLayout" .number .do} *ListViewLayout*
+: Specifies type of layout for ListView row. Designer only property.
+
+{:id="ListView.Orientation" .number} *Orientation*
+: Specifies the layout's orientation. This may be: `Vertical`, which displays elements
+ in rows one after the other; or `Horizontal`, which displays one element at a time and
+ allows the user to swipe left or right to brows the elements.
+
 {:id="ListView.Selection" .text} *Selection*
 : Returns the text in the `ListView` at the position of [`SelectionIndex`](#ListView.SelectionIndex).
 
 {:id="ListView.SelectionColor" .color} *SelectionColor*
 : The color of the item when it is selected.
+
+{:id="ListView.SelectionDetailText" .text .ro .bo} *SelectionDetailText*
+: Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex
 
 {:id="ListView.SelectionIndex" .number .bo} *SelectionIndex*
 : The index of the currently selected item, starting at `1`. If no item is selected, the value
@@ -700,6 +742,9 @@ This is a visible component that allows to place a list of text elements in your
 
 {:id="ListView.TextColor" .color} *TextColor*
 : The text color of the `ListView` items.
+
+{:id="ListView.TextColorDetail" .color} *TextColorDetail*
+: Specifies the color of the secondary text in a ListView layout
 
 {:id="ListView.TextSize" .number} *TextSize*
 : Specifies the `ListView` item's text font size
@@ -726,8 +771,21 @@ This is a visible component that allows to place a list of text elements in your
 ### Methods  {#ListView-Methods}
 
 {:.methods}
-None
 
+{:id="ListView.CreateElement" class="method returns dictionary"} <i/> CreateElement(*mainText*{:.text},*detailText*{:.text},*imageName*{:.text})
+: Creates a
+
+{:id="ListView.GetDetailText" class="method returns text"} <i/> GetDetailText(*listElement*{:.dictionary})
+: Get the Detail Text of a ListView element.
+
+{:id="ListView.GetImageName" class="method returns text"} <i/> GetImageName(*listElement*{:.dictionary})
+: Get the filename of the image of a ListView element that has been uploaded to Media.
+
+{:id="ListView.GetMainText" class="method returns text"} <i/> GetMainText(*listElement*{:.dictionary})
+: Get the Main Text of a ListView element.
+
+{:id="ListView.Refresh" class="method"} <i/> Refresh()
+: Reload the ListView to reflect any changes in the data.
 
 ## Notifier  {#Notifier}
 
@@ -766,7 +824,6 @@ The Notifier component displays alert messages and creates Android log entries t
 
 {:id="Notifier.TextInputCanceled"} TextInputCanceled()
 : Event raised when the user cancels
- [`ShowChooseDialog`](#Notifier.ShowChooseDialog),
  [`ShowPasswordDialog`](#Notifier.ShowPasswordDialog), or
  [`ShowTextDialog`](#Notifier.ShowTextDialog).
 
@@ -863,7 +920,7 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.FontSize" .number} *FontSize*
 : Specifies the text font size of the `PasswordTextBox`, measured in sp(scale-independent pixels).
 
-{:id="PasswordTextBox.FontTypeface" .number .do} *FontTypeface*
+{:id="PasswordTextBox.FontTypeface" .text .do} *FontTypeface*
 : The text font face of the `PasswordTextBox`. Valid values are `0` (default), `1` (serif), `2` (sans
  serif), or `3` (monospace).
 
@@ -876,6 +933,12 @@ Users enter passwords in a password text box component, which hides the text tha
 
 {:id="PasswordTextBox.Hint" .text} *Hint*
 : `PasswordTextBox` hint for the user.
+
+{:id="PasswordTextBox.NumbersOnly" .boolean} *NumbersOnly*
+: If true, then this `PasswordTextBox`` accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if `NumbersOnly` is true, you can set the text to anything at all using the
+ [`Text`](#PasswordTextBox.Text) property.
 
 {:id="PasswordTextBox.PasswordVisible" .boolean .bo} *PasswordVisible*
 : Specifies whether the password is hidden (default) or shown.
@@ -975,6 +1038,10 @@ Top-level component containing all other components in the program.
 {:id="Screen.CloseScreenAnimation" .text} *CloseScreenAnimation*
 : Sets the animation type for the transition of this form closing and returning
  to a form behind it in the activity stack.
+
+{:id="Screen.DefaultFileScope" .com.google.appinventor.components.common.FileScopeEnum .wo .do} *DefaultFileScope*
+: Specifies the default scope used when components access files. Note that the [`File`](#File)
+ component has its own property for controlling file scopes.
 
 {:id="Screen.Height" .number .ro .bo} *Height*
 : Returns the Screen height in pixels (y-size).
@@ -1303,7 +1370,7 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 {:id="Switch.FontSize" .number} *FontSize*
 : Specifies the text font size of the `Switch`, measured in sp(scale-independent pixels).
 
-{:id="Switch.FontTypeface" .number .do} *FontTypeface*
+{:id="Switch.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `Switch` as default, serif, sans
  serif, or monospace.
 
@@ -1416,7 +1483,7 @@ Users enter text in a text box component.
 {:id="TextBox.FontSize" .number} *FontSize*
 : Specifies the text font size of the `TextBox`, measured in sp(scale-independent pixels).
 
-{:id="TextBox.FontTypeface" .number .do} *FontTypeface*
+{:id="TextBox.FontTypeface" .text .do} *FontTypeface*
 : The text font face of the `TextBox`. Valid values are `0` (default), `1` (serif), `2` (sans
  serif), or `3` (monospace).
 
@@ -1524,9 +1591,10 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 {:id="TimePicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `TimePicker`, measured in sp(scale-independent pixels).
 
-{:id="TimePicker.FontTypeface" .number .do} *FontTypeface*
+{:id="TimePicker.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `TimePicker` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="TimePicker.Height" .number .bo} *Height*
 : Specifies the `TimePicker`'s vertical height, measured in pixels.

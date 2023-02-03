@@ -25,6 +25,7 @@ import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.StoredData.AllowedTutorialUrls;
 import com.google.appinventor.server.storage.StoredData.Backpack;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
@@ -39,6 +40,10 @@ import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
 import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONParser;
+import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
@@ -116,6 +121,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   private static final String DEFAULT_ENCODING = "UTF-8";
 
   private static final long MOTD_ID = 1;
+  private static final long ALLOWEDURL_ID = 1;
   private static final long SPLASHDATA_ID = 1;
 
   // TODO(user): need a way to modify this. Also, what is really a good value?
@@ -152,6 +158,9 @@ public class ObjectifyStorageIo implements  StorageIo {
   //                  doing so permits Objectify to use its global
   //                  cache (memcache) in a way that helps
   //                  performance.
+
+  // used for getting the allowed tutorial urls
+  private static final JSONParser JSON_PARSER = new ServerJsonParser();
 
   @VisibleForTesting
   abstract class JobRetryHelper {
@@ -195,6 +204,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(PWData.class);
     ObjectifyService.register(SplashData.class);
     ObjectifyService.register(Backpack.class);
+    ObjectifyService.register(AllowedTutorialUrls.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
     String gcsBucket = Flag.createFlag("gcs.bucket", "").get();
@@ -233,6 +243,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     gcsService = GcsServiceFactory.createGcsService(retryParams);
     memcache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
     initMotd();
+    initAllowedTutorialUrls();
   }
 
   @Override
@@ -2130,6 +2141,25 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+  private void initAllowedTutorialUrls() {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          AllowedTutorialUrls allowedUrls = datastore.find(AllowedTutorialUrls.class, ALLOWEDURL_ID);
+          if (allowedUrls == null) {
+            AllowedTutorialUrls firstAllowedUrls = new AllowedTutorialUrls();
+            firstAllowedUrls.id = ALLOWEDURL_ID;
+            firstAllowedUrls.allowedUrls = "[\"http://appinventor.mit.edu/\",\"https://appinventor.mit.edu/\",\"http://appinv.us/\"]";
+            datastore.put(firstAllowedUrls);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, "Initing Allowed Urls", e);
+    }
+  }
+
   private void initMotd() {
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -2765,6 +2795,72 @@ public class ObjectifyStorageIo implements  StorageIo {
       }, false);
     } catch(ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public List<String> getTutorialsUrlAllowed() {
+    final Result<String> result = new Result<String>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            AllowedTutorialUrls allowedUrls = datastore.find(AllowedTutorialUrls.class, ALLOWEDURL_ID);
+            if (allowedUrls != null) { // This shouldn't be
+              result.t = allowedUrls.allowedUrls;
+            } else {
+              result.t = "[]";
+            }
+          }
+        }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    JSONArray parsedUrls = (JSONArray) JSON_PARSER.parse(result.t);
+    List<JSONValue> jsonList = parsedUrls.getElements();
+    List<String> returnValue = new ArrayList();
+    for (JSONValue v : jsonList) {
+      returnValue.add(v.asString().getString());
+    }
+    return returnValue;
+  }
+
+  @Override
+  public boolean deleteAccount(final String userId) {
+    List<Long> projectIds = getProjects(userId);
+    // We iterate over the projects in two loops The first loop is
+    // just to determine that all remaining projects are in the trash.
+    // The second loop actually removes such projects.  We do it this
+    // way so that no projects are removed if any projects
+    // exist. Otherwise some trashed projects may get removed before
+    // we discover a live project.
+    for (long projectId : projectIds) {
+      ProjectData projectData = getProject(projectId);
+      if (!projectData.projectMovedToTrashFlag) {
+        return false;           // Have a live project
+      }
+    }
+    // Got here, no live projects, remove the remainders
+    for (long projectId : projectIds) {
+      deleteProject(userId, projectId);
+    }
+
+    // Now flush the user data object both from the datastore and the
+    // cache.
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            // Delete the UserData object
+            datastore.delete(userKey(userId));
+            // And remove it from memcache
+            String cachekey = User.usercachekey + "|" + userId;
+            memcache.delete(cachekey);
+          }
+        }, true);
+      return true;
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
   }
 }

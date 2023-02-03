@@ -42,6 +42,7 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 
+import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
@@ -55,8 +56,8 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 
 import com.google.appinventor.components.common.YaVersion;
 
-import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthService;
-import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthServiceAsync;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
 
 import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
@@ -256,8 +257,8 @@ public class Ode implements EntryPoint {
   private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
   private final AdminInfoServiceAsync adminInfoService = GWT.create(AdminInfoService.class);
 
-  //Web service for CloudDB authentication operations
-  private final CloudDBAuthServiceAsync cloudDBAuthService = GWT.create(CloudDBAuthService.class);
+  //Web service for Token authentication operations
+  private final TokenAuthServiceAsync tokenAuthService = GWT.create(TokenAuthService.class);
 
   private boolean windowClosing;
 
@@ -889,6 +890,10 @@ public class Ode implements EntryPoint {
     Window.setTitle(MESSAGES.titleYoungAndroid());
     Window.enableScrolling(true);
 
+    if (config.getServerExpired()) {
+      RootPanel.get().add(new ExpiredServiceOverlay());
+    }
+
     topPanel = new TopPanel();
     statusPanel = new StatusPanel();
 
@@ -1270,12 +1275,12 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Get an instance of the CloudDBAuth web service.
+   * Get an instance of the TokenAuth web service.
    *
-   * @return CloudDBAuth web service instance
+   * @return TokenAuth web service instance
    */
-  public CloudDBAuthServiceAsync getCloudDBAuthService(){
-    return cloudDBAuthService;
+  public TokenAuthServiceAsync getTokenAuthService(){
+    return tokenAuthService;
   }
 
   /**
@@ -1540,6 +1545,9 @@ public class Ode implements EntryPoint {
         public void run() {
         }
       }, true);                 // Wait for i/o!!!
+
+    doCloseProxy();
+
   }
 
   /**
@@ -2429,11 +2437,20 @@ public class Ode implements EntryPoint {
   }
 
   public void setTutorialURL(String newURL) {
-    boolean isUrlAllowed = !newURL.isEmpty()
-          && (newURL.startsWith("http://appinventor.mit.edu/")
-          || newURL.startsWith("https://appinventor.mit.edu/")
-          || newURL.startsWith("http://appinv.us/"));
-    
+    if (newURL.isEmpty()) {
+      designToolbar.setTutorialToggleVisible(false);
+      setTutorialVisible(false);
+      return;
+    }
+
+    boolean isUrlAllowed = false;
+    for (String candidate : config.getTutorialsUrlAllowed()) {
+      if (newURL.startsWith(candidate)) {
+        isUrlAllowed = true;
+        break;
+      }
+    }
+
     if (!isUrlAllowed) {
       designToolbar.setTutorialToggleVisible(false);
       setTutorialVisible(false);
@@ -2444,7 +2461,7 @@ public class Ode implements EntryPoint {
       if (locale != null) {
         newURL += (newURL.contains("?") ? "&" : "?") + "locale=" + locale;
       }
-      String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1]; 
+      String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1];
       tutorialPanel.setUrl(effectiveUrl);
       designToolbar.setTutorialToggleVisible(true);
       setTutorialVisible(true);
@@ -2489,6 +2506,10 @@ public class Ode implements EntryPoint {
 
   public boolean getGalleryReadOnly() {
     return config.getGalleryReadOnly();
+  }
+
+  public boolean getDeleteAccountAllowed() {
+    return config.getDeleteAccountAllowed();
   }
 
   /**
@@ -2556,6 +2577,12 @@ public class Ode implements EntryPoint {
 
   public static native void CLog(String message) /*-{
     console.log(message);
+  }-*/;
+
+  private static native void doCloseProxy() /*-{
+    if (top.proxy) {
+      top.proxy.close();
+    }
   }-*/;
 
 }

@@ -5,6 +5,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.ACCESS_NETWORK_STATE;
+import static android.Manifest.permission.ACCESS_WIFI_STATE;
+
 import android.app.Activity;
 
 import android.content.Context;
@@ -18,8 +21,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 
-import android.os.Build;
-
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -32,18 +33,16 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesNativeLibraries;
 
+import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
-import com.google.appinventor.components.runtime.Form;
-import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
 
@@ -65,12 +64,13 @@ import java.util.Formatter;
                    iconName = "images/phoneip.png")
 @SimpleObject
 @UsesLibraries(libraries = "webrtc.jar," +
-    "google-http-client-beta.jar," +
+    "google-http-client.jar," +
     "google-http-client-android2-beta.jar," +
     "google-http-client-android3-beta.jar")
 @UsesNativeLibraries(v7aLibraries = "libjingle_peerconnection_so.so",
   v8aLibraries = "libjingle_peerconnection_so.so",
   x86_64Libraries = "libjingle_peerconnection_so.so")
+@UsesPermissions({ACCESS_NETWORK_STATE, ACCESS_WIFI_STATE})
 public class PhoneStatus extends AndroidNonvisibleComponent implements Component {
 
   private static Activity activity;
@@ -80,6 +80,7 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   private static boolean useWebRTC = false;
   private String firstSeed = null;
   private String firstHmacSeed = null;
+  private static String popup = "No Page Provided!";
 
   public PhoneStatus(ComponentContainer container) {
     super(container.$form());
@@ -350,6 +351,16 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(description = "Return the ACRA Installation ID")
   public String InstallationId() {
     return org.acra.util.Installation.id(form);
+  }
+
+  @SimpleFunction(description = "Set the content of the Pop-Up page used for the new legacy connection")
+  public void SetPopup(String page) {
+    popup = page;
+  }
+
+  // get the pop-up page, called from AppInvHTTPD
+  public static String getPopup() {
+    return popup;
   }
 
   /* Static context way to get the useWebRTC flag */

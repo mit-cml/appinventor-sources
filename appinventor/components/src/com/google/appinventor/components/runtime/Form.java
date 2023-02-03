@@ -6,12 +6,9 @@
 
 package com.google.appinventor.components.runtime;
 
-import static android.Manifest.permission.ACCESS_NETWORK_STATE;
-import static android.Manifest.permission.ACCESS_WIFI_STATE;
 import static android.Manifest.permission.INTERNET;
 import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -46,8 +43,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.appinventor.common.version.AppInventorFeatures;
-
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -61,6 +56,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.common.HorizontalAlignment;
 import com.google.appinventor.components.common.Permission;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -129,7 +125,7 @@ import org.json.JSONException;
     description = "Top-level component containing all other components in the program",
     showOnPalette = false)
 @SimpleObject
-@UsesPermissions({INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE})
+@UsesPermissions({INTERNET})
 public class Form extends AppInventorCompatActivity
     implements Component, ComponentContainer, HandlesEventDispatching,
     OnGlobalLayoutListener {
@@ -221,6 +217,8 @@ public class Form extends AppInventorCompatActivity
   private static boolean showListsAsJson;
 
   private final Set<String> permissions = new HashSet<String>();
+
+  private FileScope defaultFileScope = FileScope.App;
 
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
@@ -376,42 +374,6 @@ public class Form extends AppInventorCompatActivity
 
     populatePermissions();
 
-    // Check to see if we need to ask for WRITE_EXTERNAL_STORAGE
-    // permission.  We look at the application manifest to see if it
-    // is declared there. If it is, then we need to ask the user to
-    // approve it here. Otherwise we don't need to and we can
-    // continue. Because the asking process is asynchronous
-    // we have to have yet another continuation of the onCreate
-    // process (onCreateFinish2). Sigh.
-
-    boolean needSdcardWrite = doesAppDeclarePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
-        // Only ask permission if we are in the REPL and not using the splash screen
-        isRepl() && !AppInventorFeatures.doCompanionSplashScreen();
-    if (needSdcardWrite) {
-      askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        new PermissionResultHandler() {
-          @Override
-          public void HandlePermissionResponse(String permission, boolean granted) {
-            if (granted) {
-              onCreateFinish2();
-            } else {
-              Log.i(LOG_TAG, "WRITE_EXTERNAL_STORAGE Permission denied by user");
-              onCreateFinish2();
-              androidUIHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                  PermissionDenied(Form.this, "Initialize", Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                }
-              });
-            }
-          }
-        });
-    } else {
-      onCreateFinish2();
-    }
-  }
-
-  private void onCreateFinish2() {
     defaultPropertyValues();
 
     // Get startup text if any before adding components
@@ -480,6 +442,7 @@ public class Form extends AppInventorCompatActivity
     BackgroundColor(Component.COLOR_DEFAULT);
     OpenScreenAnimationAbstract(ScreenAnimation.Default);
     CloseScreenAnimationAbstract(ScreenAnimation.Default);
+    DefaultFileScope(FileScope.App);
   }
 
   @Override
@@ -1400,6 +1363,23 @@ public class Form extends AppInventorCompatActivity
       backgroundDrawable = null;
     }
     setBackground(frameLayout);
+  }
+
+  /**
+   * Specifies the default scope used when components access files. Note that the {@link File}
+   * component has its own property for controlling file scopes.
+   *
+   * @param scope the desired scope to use by default during file accesses
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FILESCOPE,
+      defaultValue = "App")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
+  public void DefaultFileScope(FileScope scope) {
+    this.defaultFileScope = scope;
+  }
+
+  public FileScope DefaultFileScope() {
+    return defaultFileScope;
   }
 
   /**
@@ -2560,17 +2540,11 @@ public class Form extends AppInventorCompatActivity
         doNothing);
   }
 
-  private String yandexTranslateTagline = "";
-
-  void setYandexTranslateTagline(){
-    yandexTranslateTagline = "<p><small>Language translation powered by Yandex.Translate</small></p>";
-  }
-
   private void showAboutApplicationNotification() {
     String title = "About this app";
     String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
     // Users can hide the taglines by including an HTML open comment <!-- in the about screen message
-    String message = aboutScreen + MITtagline + yandexTranslateTagline;
+    String message = aboutScreen + MITtagline;
     message = message.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
@@ -2922,6 +2896,25 @@ public class Form extends AppInventorCompatActivity
    */
   public String getAssetPath(String asset) {
     return ASSETS_PREFIX + asset;
+  }
+
+  public String getCachePath(String cache) {
+    return "file://" + new java.io.File(getCacheDir(), cache).getAbsolutePath();
+  }
+
+  public String getDefaultPath(String name) {
+    return FileUtil.resolveFileName(this, name, defaultFileScope);
+  }
+
+  /**
+   * Gets the path to an app-private data file identified by {@code fileName}.
+   *
+   * @param fileName the file name
+   * @return an absolute file: URI to the app-private file name
+   * @see ReplForm#getPrivatePath(String)
+   */
+  public String getPrivatePath(String fileName) {
+    return "file://" + new java.io.File(getFilesDir(), fileName).getAbsolutePath();
   }
 
   /**

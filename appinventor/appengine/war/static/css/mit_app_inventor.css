@@ -455,3 +455,23 @@ span.ro { background-color: #f88; color: black; }
 span.wo { background-color: #8f8; color: black; }
 span.bo { background-color: #88f; color: black; }
 span.do { background-color: #ff8; color: black; }
+dt.FileScopeEnum i:after,
+dt span.FileScopeEnum i:after,
+dt.FileScopeEnum em:after,
+em.FileScopeEnum:before
+{ background-color: #BF4343; content: "FileScope"; }
+dt.ChartTypeEnum i:after,
+dt span.ChartTypeEnum i:after,
+dt.ChartTypeEnum em:after,
+em.ChartTypeEnum:before
+{ background-color: #BF4343; content: "ChartType"; }
+dt.LineTypeEnum i:after,
+dt span.LineTypeEnum i:after,
+dt.LineTypeEnum em:after,
+em.LineTypeEnum:before
+{ background-color: #BF4343; content: "LineType"; }
+dt.PointStyleEnum i:after,
+dt span.PointStyleEnum i:after,
+dt.PointStyleEnum em:after,
+em.PointStyleEnum:before
+{ background-color: #BF4343; content: "PointStyle"; }

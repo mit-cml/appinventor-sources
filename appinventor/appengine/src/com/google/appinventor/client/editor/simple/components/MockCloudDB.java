@@ -160,7 +160,7 @@ public class MockCloudDB extends MockNonVisibleComponent {
   }
 
   private void getTokenFromServer() {
-    Ode.getInstance().getCloudDBAuthService().getToken(new OdeAsyncCallback<String>() {
+    Ode.getInstance().getTokenAuthService().getCloudDBToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
         EditableProperty tokenProperty = MockCloudDB.this.properties.getProperty(PROPERTY_NAME_TOKEN);
