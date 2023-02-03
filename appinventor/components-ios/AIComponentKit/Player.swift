@@ -1,5 +1,5 @@
 /* -*- mode: swift; swift-mode:basic-offset: 2; -*- */
-/* Copyright © 2017-2021 Massachusetts Institute of Technology, All rights reserved. */
+/* Copyright © 2017-2023 Massachusetts Institute of Technology, All rights reserved. */
 /**
  * @file Player.swift Implementation of the MIT App Inventor Player
  * component for iOS.
@@ -11,65 +11,85 @@ import AVKit
 private let kMaxPlayDelayRetries: Int32 = 10
 private let kPlayDelayLength = TimeInterval(0.050)
 
+enum PlayerState {
+  case Initial
+  case Prepared
+  case Playing
+  case PausedByUser
+  case PausedByEvent
+  case Error
+}
+
 /**
  * Multimedia component that plays audio and optionally vibrate. It is built on top of AVKit.
  *
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
-open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate {
+open class Player: NonvisibleComponent, LifecycleDelegate {
   fileprivate var _sourcePath: String = ""
-  fileprivate var _audioPlayer: AVAudioPlayer?
+  private var _player: AVPlayer? = nil
   fileprivate var _loop: Bool = false
   fileprivate var _playOnlyInForeground: Bool = false
   fileprivate var _wasPlaying = false
-  
+  private var state = PlayerState.Initial
+  private var observer: NSObjectProtocol? = nil
+  private var pendingPlay = false
+  private var context = 0
+
   public override init(_ container: ComponentContainer) {
     super.init(container)
-    if #available(iOS 10.0, *) {
-      // We need to switch the audiosession to playback mode in case the phone is in silent mode
-      // Otherwise, no sound will play.
-      try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-    }
   }
-  
+
+  // MARK: Properties
+
   @objc open var Source: String {
     get {
       return _sourcePath
     }
     set(path) {
       _sourcePath = path
-      if (path.isEmpty) {
-        _audioPlayer?.stop()
-        _audioPlayer = nil
+      state = .Initial
+      if let player = _player, let observer = observer {
+        NotificationCenter.default.removeObserver(observer, name: .AVPlayerItemDidPlayToEndTime,
+            object: player.currentItem)
+      }
+      guard !path.isEmpty else {
+        _player?.pause()
+        _player = nil
+        return
+      }
+      var resourceUrl: URL!
+      if path.starts(with: "http:") || path.starts(with: "https:") {
+        guard let url = URL(string: path) else {
+          _form?.dispatchErrorOccurredEvent(self, "Source",
+              ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA, path)
+          return
+        }
+        resourceUrl = url
+      } else if let path = Bundle.main.path(forResource: path, ofType: nil) {
+        resourceUrl = URL(fileURLWithPath: path)
       } else {
-        if let path = Bundle.main.path(forResource: path, ofType: nil) {
-          let url = URL(fileURLWithPath: path)
-          do {
-            _audioPlayer = try AVAudioPlayer(contentsOf:url)
-            _audioPlayer?.prepareToPlay()
-          } catch {
-            _audioPlayer = nil
-            _form?.dispatchErrorOccurredEvent(self, "Source",
-                ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
-          }
+        let path = AssetManager.shared.pathForExistingFileAsset(path)
+        guard !path.isEmpty else {
+          _form?.dispatchErrorOccurredEvent(self, "Source",
+              ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
+          return
+        }
+        resourceUrl = URL(fileURLWithPath: path)
+      }
+      let player = AVPlayer(url: resourceUrl)
+      observer = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
+          object: player.currentItem, queue: .main) { [weak self] _ in
+        self?.Completed()
+        if self?._loop == true {
+          self?._player?.seek(to: CMTime.zero)
+          self?._player?.play()
         } else {
-          let path = AssetManager.shared.pathForExistingFileAsset(path)
-          if !path.isEmpty {
-            do {
-              let url = URL(fileURLWithPath: path)
-              _audioPlayer = try AVAudioPlayer(contentsOf:url)
-              _audioPlayer?.prepareToPlay()
-            } catch {
-              _audioPlayer = nil
-              _form?.dispatchErrorOccurredEvent(self, "Source",
-                  ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
-            }
-          } else {
-            _form?.dispatchErrorOccurredEvent(self, "Source",
-                ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
-          }
+          self?._wasPlaying = false
         }
       }
+      _player = player
+      player.addObserver(self, forKeyPath: #keyPath(AVPlayer.status), options: [.new], context: &self.context)
     }
   }
 
@@ -84,7 +104,12 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
 
   @objc open var IsPlaying: Bool {
     get {
-      return _audioPlayer?.isPlaying ?? false
+      if #available(iOS 10.0, *) {
+        return _player?.timeControlStatus == AVPlayer.TimeControlStatus.playing
+      } else {
+        // Fallback on earlier versions
+        return _wasPlaying
+      }
     }
   }
 
@@ -99,7 +124,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
 
   @objc open var Volume: Int32 {
     get {
-      if let fVolume = _audioPlayer?.volume {
+      if let fVolume = _player?.volume {
         return Int32(fVolume * 100.0)
       } else {
         return 0
@@ -112,28 +137,68 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
       } else if (vol > 100) {
         vol = 100
       }
-      _audioPlayer?.volume = Float(vol) / 100.0
+      _player?.volume = Float(vol) / 100.0
     }
   }
 
+  // MARK: Methods
+
   @objc open func Start() {
-    _audioPlayer?.numberOfLoops = _loop ? -1 : 0
-    _audioPlayer?.delegate = self
+    guard let player = _player else {
+      return
+    }
+    guard state == .Prepared || state == .PausedByUser || state == .PausedByEvent else {
+      if let error = player.error {
+        state = .Error
+        print("Unable to prepare to play audio: \(error)")
+        _form?.dispatchErrorOccurredEvent(self, "Start", ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA,
+            _sourcePath)
+      } else {
+        self.pendingPlay = true
+      }
+      return
+    }
+    if #available(iOS 10.0, *) {
+      // We need to switch the audiosession to playback mode in case the phone is in silent mode
+      // Otherwise, no sound will play.
+      try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+    }
+    pendingPlay = false
     _wasPlaying = true
-    _audioPlayer?.play()
+    player.play()
+    state = .Playing
   }
   
   @objc open func Pause() {
-    _audioPlayer?.pause()
+    guard state == .Playing || state == .PausedByUser || state == .PausedByEvent else {
+      return
+    }
+    guard let player = _player else {
+      return
+    }
+    player.pause()
+    _wasPlaying = false
+    state = .PausedByUser
   }
   
   @objc open func Stop() {
-    _audioPlayer?.stop()
+    guard state == .Playing || state == .PausedByUser || state == .PausedByEvent else {
+      return
+    }
+    guard let player = _player else {
+      return
+    }
+    player.pause()
+    player.seek(to: CMTime.zero)
+    _wasPlaying = false
+    state = .PausedByUser
   }
   
   @objc open func Vibrate(_ duration: Int32) {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
   }
+
+  // MARK: Events
   
   @objc open func PlayerError(_ message: String) {
     // deprecated
@@ -147,25 +212,54 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
     EventDispatcher.dispatchEvent(of: self, called: "OtherPlayerStarted")
   }
 
-  public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-    _wasPlaying = false
-    Completed()
+  // MARK: Key-Value Observation Implementation
+
+  open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    guard context == &self.context else {
+      super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+      return
+    }
+    if keyPath == #keyPath(AVPlayer.status) {
+      let status: AVPlayer.Status
+      if let statusNumber = change?[.newKey] as? NSNumber {
+        status = AVPlayer.Status(rawValue: statusNumber.intValue)!
+      } else {
+        status = .unknown
+      }
+      switch status {
+      case .readyToPlay:
+        self.state = .Prepared
+        if self.pendingPlay {
+          DispatchQueue.main.async {
+            self.Start()
+          }
+        }
+        break
+      case .failed:
+        self.state = .Error
+        _form?.dispatchErrorOccurredEvent(self, "Source",
+            ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA, _sourcePath)
+        break
+      default:
+        self.state = .Initial
+        break
+      }
+    }
   }
 
-  public func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
-    _form?.dispatchErrorOccurredEvent(self, "Source",
-        ErrorMessage.ERROR_UNABLE_TO_PREPARE_MEDIA.code, _sourcePath)
-  }
+  // MARK: LifecycleDelegate Implementation
 
   @objc open func onResume() {
-    if _wasPlaying && _playOnlyInForeground {
-      _audioPlayer?.play()
+    if _wasPlaying && _playOnlyInForeground, let player = _player {
+      player.play()
+      state = .Playing
     }
   }
 
   @objc open func onPause() {
-    if _playOnlyInForeground {
-      _audioPlayer?.pause()
+    if _playOnlyInForeground, let player = _player {
+      player.pause()
+      state = .PausedByEvent
     }
   }
 
@@ -173,10 +267,18 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
   }
 
   @objc open func onDelete() {
+    if let player = _player {
+      player.pause()
+      state = .PausedByEvent
+    }
   }
 
   private func prepareToDie() {
-    _audioPlayer?.stop()
-    _audioPlayer = nil
+    guard let player = _player else {
+      return
+    }
+    player.pause()
+    state = .PausedByEvent
+    _player = nil
   }
 }
