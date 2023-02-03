@@ -654,7 +654,12 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 34
   // - The helpers_screen_names block was added.
   // - Add sanitizing concrete values to OptionLists.
-  public static final int BLOCKS_LANGUAGE_VERSION = 34;
+  // For BLOCKS_LANGUAGE_VERSION 35
+  // - Add PHOLO blocks
+  // For BLOCKS_LANGUAGE_VERSION 36
+  // - Add stats blocks
+  // - Rename lists_*_number to lists_*_value
+  public static final int BLOCKS_LANGUAGE_VERSION = 36;
 
   // ................................. Target SDK Version Number ..................................
 
