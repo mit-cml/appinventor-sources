@@ -505,9 +505,9 @@
 	"Blockly.Msg.LANG_LISTS_IS_LIST_TITLE_IS_LIST": "is a list?",
 	"Blockly.Msg.LANG_LISTS_IS_LIST_INPUT_THING": "thing",
 	"Blockly.Msg.LANG_LISTS_IS_LIST_TOOLTIP": "Tests if something is a list.",
-	"Blockly.Msg.LANG_LISTS_REVERSE_TITLE_REVERSE": "reverse list",
+	"Blockly.Msg.LANG_LISTS_REVERSE_TITLE_REVERSE": "reverse",
 	"Blockly.Msg.LANG_LISTS_REVERSE_INPUT_LIST": "list",
-	"Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP": "Reverses the order of input list and returns it as a new list.",
+	"Blockly.Msg.LANG_LISTS_REVERSE_TOOLTIP": "Return a new list with its contents in the reverse order of the given list.",
 	"Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TITLE_TO_CSV": "list to csv row",
 	"Blockly.Msg.LANG_LISTS_TO_CSV_ROW_INPUT_LIST": "list",
 	"Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TOOLTIP": "Interprets the list as a row of a table and returns a CSV (comma-separated value) text representing the row. Each item in the row list is considered to be a field, and is quoted with double-quotes in the resulting CSV text. Items are separated by commas. The returned row text does not have a line separator at the end.",
@@ -612,11 +612,11 @@
 	"Blockly.Msg.LANG_LISTS_MAX_NUMBER_TOOLTIP": "Returns maximum number in the list",
 
 	"Blockly.Msg.LANG_LISTS_BUT_FIRST_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#butfirst",
-	"Blockly.Msg.LANG_LISTS_BUT_FIRST_INPUT_BUT_FIRST": "butFirst of list",
+	"Blockly.Msg.LANG_LISTS_BUT_FIRST_INPUT_BUT_FIRST": "all but first of list",
 	"Blockly.Msg.LANG_LISTS_BUT_FIRST_TOOLTIP": "Returns everything except the first value of the list",
 
 	"Blockly.Msg.LANG_LISTS_BUT_LAST_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#butlast",
-	"Blockly.Msg.LANG_LISTS_BUT_LAST_INPUT_BUT_LAST": "butLast of list",
+	"Blockly.Msg.LANG_LISTS_BUT_LAST_INPUT_BUT_LAST": "all but last of list",
 	"Blockly.Msg.LANG_LISTS_BUT_LAST_TOOLTIP": "Returns everything except the last value of the list",
 
 	"Blockly.Msg.LANG_LISTS_SLICE_HELPURL": "http://appinventor.mit.edu/explore/ai2/support/blocks/lists#slices",
