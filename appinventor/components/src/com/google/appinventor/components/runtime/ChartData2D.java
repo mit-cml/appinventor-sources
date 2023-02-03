@@ -13,6 +13,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -199,4 +200,41 @@ public final class ChartData2D extends ChartDataBase {
 
     importFromWebAsync(web, columns);
   }
+
+  /**
+   * Adds the line of best fit
+   *
+   * @param x - x value of entry
+   * @param y - y value of entry
+   */
+  @SimpleFunction(description = "Draws the line of best fit.")
+  public void DrawLineOfBestFit(final double [] x, final double []  y) {
+    if (x.length!= y.length)
+      throw new IllegalStateException("Must have equal X and Y data points");
+
+    int n = x.length;
+
+    double sumx = 0.0, sumy = 0.0, sumx2 = 0.0;
+    for (int i = 0; i < n; i++) {
+      sumx  += x[i];
+      sumx2 += x[i]*x[i];
+      sumy  += y[i];
+    }
+    double xmean = sumx / n;
+    double ymean = sumy / n;
+
+    double xxmean = 0.0, yymean = 0.0, xymean = 0.0; ArrayList<Double> predictions = new ArrayList<Double>();
+    for (int i = 0; i < n; i++) {
+      xxmean += (x[i] - xmean) * (x[i] - xmean);
+      yymean += (y[i] - ymean) * (y[i] - ymean);
+      xymean += (x[i] - xmean) * (y[i] - ymean);
+    }
+    double slope  = xymean / xxmean;
+    double intercept = ymean - slope * xmean;
+
+    for (int i = 0; i < n; i++) {
+      predictions.add(slope*x[i] + intercept);
+    }
+  }
 }
+
