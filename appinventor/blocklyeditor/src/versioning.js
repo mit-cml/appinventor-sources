@@ -2263,13 +2263,13 @@ Blockly.Versioning.AllUpgradeMaps =
     33:"noUpgrade",
 
     // AI2: Add screen names dropdown block.
-    // AI2: Added "every component" block.
     34: Blockly.Versioning.makeScreenNamesBeDropdowns,
 
     // AI2: Added List Mathematical Operations
     35: "noUpgrade",
 
     // AI2: Added mode on List Mathematical Operations
+    // AI2: Added "every component" block.
     36: [Blockly.Versioning.renameBlockType('lists_minimum_number', 'lists_minimum_value'),
          Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')]
 
