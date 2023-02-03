@@ -17,6 +17,7 @@ public class ToolbarItem {
   private String align;
   private boolean visible = true;
   private Icon icon = null;
+  private String styleName = null;
 
 
   @SuppressWarnings("unused")  // Used by UiBinder
@@ -55,6 +56,12 @@ public class ToolbarItem {
   }
   public void setIcon(Icon icon) {
     this.icon = icon;
+  }
+
+  public String getStyleName() { return styleName; }
+
+  public void setStyleName(String styleName) {
+    this.styleName = styleName;
   }
 
   public void setName(String name) {

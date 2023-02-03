@@ -176,16 +176,13 @@ div.StatusPanel {
 }
 
 .ode-Box-header {
-  display: none;
 }
 
 .ode-Box-header-caption,
 .ode-Box-header-caption-highlighted {
-  display: none;
 }
 
 .ode-Box-header-caption {
-  display: none;
 }
 
 .ode-Box-header-caption-highlighted {
@@ -228,6 +225,103 @@ div.StatusPanel {
 /*
  * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
  */
+.ode-ProjectListButton {
+  border: 1px solid;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 4px 10px;
+  transition: background 0.2s, opacity 0.1s;
+  color: #444444;
+  font-family: 'Poppins', 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 1.06em;
+  white-space: nowrap;
+}
+
+.ode-ProjectListButton:disabled {
+  opacity: 0.5;
+}
+
+.bleft {
+  border-radius: 4px 0 0 4px;
+  flex-basis: 0;
+}
+
+.bright {
+  border-radius: 0 4px 4px 0;
+}
+
+.bcenter {
+  border-radius: 0;
+  border-width: 1px 0;
+}
+
+.bcenter + .bcenter {
+  border-left-width: 1px;
+}
+
+.none {
+  border-radius: 4px;
+}
+
+.primary {
+  background-color: #A5CF47;
+  border-color: #444444;
+}
+
+.primary:enabled:hover {
+  background-color: #7D9D36;
+}
+
+.danger {
+  background-color: #FF7D7D;
+  border-color: #444444;
+}
+
+.danger:enabled:hover {
+  background-color: #C25F5F;
+}
+
+.inline {
+  background-color: rgba(150, 150, 150, 0.1);
+  border-color: transparent;
+}
+
+.action {
+  background-color: #FFFFFF;
+  border-color: #DDDDDD;
+}
+
+.inline:enabled:hover,
+.action:enabled:hover {
+  background-color: #DDDDDD;
+}
+
+.raised:after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: #DDDDDD;
+}
+
+.raised:disabled:after {
+  opacity: 0;
+}
+
+.primary.raised:after,
+.danger.raised:after {
+  background-color: #444444;
+}
+
+
 .ode-ProjectFieldSpan {
   display: flex;
 }
@@ -416,12 +510,36 @@ div.StatusPanel {
 
 .ode-TopToolbar {
   flex-grow: 1;
+  padding-top: 5px;
+}
+
+.ode-TopToolbar .right {
+  float: right;
+  flex-direction: row;
+  display: flex;
+  gap: 4px;
+}
+
+.ode-TopToolbar .left {
+  float: left;
+  flex-direction: row;
+  display: flex;
+  gap: 4px;
+}
+
+.ode-TopToolbar .center {
+  flex-direction: row;
+  display: flex;
+  gap: 4px;
 }
 
 .ode-TopPanelAccount {
-  font-size: 15px;
-  color: grey;
-  padding-right: 8px;
+  flex-direction: row;
+  display: flex;
+  gap: 4px;
+  margin-left: 4px;
+  padding-top: 5px
+;
 }
 
 .ode-TopPanelAccount a {
@@ -433,8 +551,10 @@ div.StatusPanel {
 }
 
 .ode-TopPanelLinks {
-  display: table-cell;
-}
+  float: right;
+  flex-direction: row;
+  display: flex;
+  gap: 4px;}
 
 .ode-TopPanelLinks .gwt-Label,
 .ode-TopPanelLinks .gwt-Anchor,
@@ -479,29 +599,27 @@ div.StatusPanel {
 .ode-TopPanelButton,
 .ActionDropDown-Default,
 .ActionDropDown-Options {
-  display: table-cell;
-  vertical-align: middle;
-  font-size: 12px;
-  cursor: pointer;
-  margin: -12px 0;
-  padding: 0 12px;
-  height: 46px;
-  border: transparent;
-  background: transparent;
-  color: grey;
-  -o-transition:color .2s ease-out, background .2s ease-in;
-  -ms-transition:color .2s ease-out, background .2s ease-in;
-  -moz-transition:color .2s ease-out, background .2s ease-in;
-  -webkit-transition:color .2s ease-out, background .2s ease-in;
-  /* ...and now override with proper CSS property */
-  transition:color .2s ease-out, background .2s ease-in;
+  background-color: rgba(150, 150, 150, 0.1);
+  border-color: transparent;
+  border-radius: 4px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 4px 10px;
+  transition: background 0.2s, opacity 0.1s;
+  color: #444;
+  font-family: "Poppins", "Roboto", sans-serif;
+  font-weight: 500;
+  font-size: 1.06em;
+  white-space: nowrap;
 }
 
 .ode-TopPanelButton:hover,
 .ActionDropDown-Default:hover,
 .ActionDropDown-Options:hover {
-  background: #E6E6E6;
-  color: #5B5B5B;
+  background-color: #DDDDDD;
 }
 
 .ode-TopPanelButton:active,
@@ -2829,10 +2947,6 @@ div.dropdiv p {
   display:flex;
 }
 
-.ya-Toolbar>div>div {
-  margin: 2px;
-  justify-content: center;
-}
 
 .ya-ProjectName {
   display: inline-block;

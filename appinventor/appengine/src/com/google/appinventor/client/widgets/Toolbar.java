@@ -98,7 +98,7 @@ public class Toolbar extends FlowPanel {
   }
 
   public void add(final ToolbarItem item) {
-    TextButton button = new TextButton(item.getCaption(), item.getIcon());
+    TextButton button = new TextButton(item.getCaption(), item.getIcon(), item.getStyleName());
     button.addClickHandler(event -> item.getCommand().execute());
     if ("right".equals(item.getAlign())) {
       rightButtons.add(button);

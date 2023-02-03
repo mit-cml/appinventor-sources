@@ -498,11 +498,8 @@ a, a:visited, a:hover {
   border: 1px solid;
   position: relative;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  text-align: center;
-  vertical-align: center;
-  justify-content: center;
-  gap: 5px;
   padding: 4px 10px;
   transition: background 0.2s, opacity 0.1s;
   background-color: #A5CF47;
@@ -511,19 +508,7 @@ a, a:visited, a:hover {
   font-weight: 500;
   font-size: 1.06em;
   white-space: nowrap;
-  /*margin: 0;*/
-  /*text-decoration: none;*/
-  /*background: url("../images/hborder.png") repeat-x 0px -27px;*/
 }
-/*.gwt-PushButton-up,*/
-/*.gwt-PushButton-up-hovering,*/
-/*.gwt-PushButton-up-disabled {*/
-/*  padding: 3px 5px 3px 5px;*/
-/*}*/
-
-/*.gwt-PushButton-up {*/
-/*  border: 1px outset #ccc;*/
-/*}*/
 
 .gwt-ButtonLeft {
   border-radius: 4px 0 0 4px;

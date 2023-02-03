@@ -140,19 +140,6 @@ public class TopPanel extends Composite {
     return topToolbar;
   }
 
-  @SuppressWarnings("unused")
-  @UiHandler("myProjects")
-  public void switchToMyProjects(ClickEvent e) {
-    topToolbar.updateMoveToTrash("Move To Trash");
-    ode.switchToProjectsView();
-  }
-
-  @SuppressWarnings("unused")
-  @UiHandler("viewTrash")
-  public void switchToTrash(ClickEvent e) {
-    ode.switchToTrash();
-  }
-
   private String getDisplayName(String localeName){
     String nativeName=LocaleInfo.getLocaleNativeDisplayName(localeName);
     try {

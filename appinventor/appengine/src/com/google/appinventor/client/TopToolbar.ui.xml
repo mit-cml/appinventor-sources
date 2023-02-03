@@ -8,10 +8,13 @@
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
 
-  <g:FlowPanel styleName="ode-TopToolbar">
+  <ai:Toolbar styleName="ode-TopToolbar">
+    <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" align="right"
+                    styleName="ode-TopPanelButton">
+      <actions:SwitchToProjectAction />
+    </ai:ToolbarItem>
     <!-- Projects Menu -->
-    <ai:DropDownButton name="Project" caption="{messages.projectsTabName}"
-                       styleName="ode-TopPanelButton" ui:field="fileDropDown">
+    <ai:DropDownButton name="Project" caption="{messages.projectsTabName}" styleName="ode-TopPanelButton" ui:field="fileDropDown" align="right" visible="false">
       <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}">
         <actions:SwitchToProjectAction />
       </ai:DropDownItem>
@@ -58,8 +61,7 @@
     </ai:DropDownButton>
 
     <!-- Connect Menu -->
-    <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}"
-                       styleName="ode-TopPanelButton" ui:field="connectDropDown">
+    <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}" styleName="ode-TopPanelButton" ui:field="connectDropDown"  icon="settings_remote"  align="right">
       <ai:DropDownItem name="Wireless" caption="{messages.AICompanionMenuItem}">
         <yaactions:WirelessAction />
       </ai:DropDownItem>
@@ -83,8 +85,8 @@
     </ai:DropDownButton>
 
     <!-- Build Menu -->
-    <ai:DropDownButton name="Build" caption="{messages.buildTabName}"
-                       styleName="ode-TopPanelButton" ui:field="buildDropDown">
+    <ai:DropDownButton name="Build" caption="{messages.buildTabName}" styleName="ode-TopPanelButton"
+                       ui:field="buildDropDown" icon="build" align="right">
       <ai:DropDownItem name="Barcode" caption="{messages.showExportAndroidApk}">
         <actions:BarcodeAction second="false" isAab="false" />
       </ai:DropDownItem>
@@ -105,8 +107,8 @@
     </ai:DropDownButton>
 
     <!-- Settings Menu -->
-    <ai:DropDownButton name="Settings" caption="{messages.settingsTabName}"
-                       styleName="ode-TopPanelButton" ui:field="settingsDropDown">
+    <ai:DropDownButton name="Settings" styleName="ode-TopPanelButton"
+                       ui:field="settingsDropDown" align="right" icon="settings">
       <ai:DropDownItem name="AutoloadLastProject" caption="{messages.disableAutoload}">
         <actions:DisableAutoloadAction />
       </ai:DropDownItem>
@@ -119,32 +121,31 @@
       <ai:DropDownItem name="OldLayout" caption="{messages.disableNewLayout}">
         <actions:SetLayoutAction isNewLayout="false"/>
       </ai:DropDownItem>
-    </ai:DropDownButton>
-
-    <!-- Help Menu -->
-    <ai:DropDownButton name="Help" caption="{messages.helpTabName}"
-                       styleName="ode-TopPanelButton" ui:field="helpDropDown">
-      <ai:DropDownItem name="About" caption="{messages.aboutMenuItem}">
-        <actions:AboutAction />
+      <hr />
+      <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}">
+        <actions:SaveAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}">
+        <actions:SaveAsAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}">
+        <actions:CheckpointAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="Library" caption="{messages.libraryMenuItem}" />
-      <ai:DropDownItem name="GetStarted" caption="{messages.getStartedMenuItem}" />
-      <ai:DropDownItem name="Extensions" caption="{messages.extensionsMenuItem}" />
-      <ai:DropDownItem name="Tutorials" caption="{messages.tutorialsMenuItem}" />
-      <ai:DropDownItem name="Troubleshooting" caption="{messages.troubleshootingMenuItem}" />
-      <ai:DropDownItem name="Forums" caption="{messages.forumsMenuItem}" />
-      <hr />
-      <ai:DropDownItem name="ReportIssue" caption="{messages.feedbackMenuItem}" />
-      <hr />
-      <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}" />
-      <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}" />
-      <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" />
+      <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}">
+        <actions:UploadKeystoreAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="DownloadKeystore" caption="{messages.downloadKeystoreMenuItem}">
+        <actions:DownloadKeystoreAction />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}">
+        <actions:DeleteKeystoreAction />
+      </ai:DropDownItem>
     </ai:DropDownButton>
 
     <!-- Admin Menu -->
-    <ai:DropDownButton name="Admin" caption="{messages.adminTabName}"
-                       styleName="ode-TopPanelButton" ui:field="adminDropDown">
+    <ai:DropDownButton name="Admin" styleName="ode-TopPanelButton"
+                       ui:field="adminDropDown" icon="admin_panel_settings" align="right">
       <ai:DropDownItem name="DownloadUserSource" caption="{messages.downloadUserSourceMenuItem}">
         <actions:DownloadUserSourceAction />
       </ai:DropDownItem>
@@ -152,5 +153,6 @@
         <actions:SwitchToUserAdminAction />
       </ai:DropDownItem>
     </ai:DropDownButton>
-  </g:FlowPanel>
+
+  </ai:Toolbar>
 </ui:UiBinder>
