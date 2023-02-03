@@ -202,13 +202,16 @@ public final class ChartData2D extends ChartDataBase {
   }
 
   /**
-   * Adds the line of best fit
+   * Calculates the line of best fit
    *
-   * @param x - x value of entry
-   * @param y - y value of entry
+   * @param xEntries - x value of entry
+   * @param yEntries - y value of entry
+   * @return list of line of best fit prediction values
    */
-  @SimpleFunction(description = "Draws the line of best fit.")
-  public void DrawLineOfBestFit(final double [] x, final double []  y) {
+  @SimpleFunction(description = "Predicts the line of best fit.")
+  public ArrayList PredictLineOfBestFit(YailList xEntries, YailList  yEntries) {
+    Double[] x = (Double[]) xEntries.toArray();
+    Double[] y = (Double[]) yEntries.toArray();
     if (x.length!= y.length)
       throw new IllegalStateException("Must have equal X and Y data points");
 
@@ -223,7 +226,7 @@ public final class ChartData2D extends ChartDataBase {
     double xmean = sumx / n;
     double ymean = sumy / n;
 
-    double xxmean = 0.0, yymean = 0.0, xymean = 0.0; ArrayList<Double> predictions = new ArrayList<Double>();
+    double xxmean = 0.0, yymean = 0.0, xymean = 0.0; ArrayList predictions = new ArrayList();
     for (int i = 0; i < n; i++) {
       xxmean += (x[i] - xmean) * (x[i] - xmean);
       yymean += (y[i] - ymean) * (y[i] - ymean);
@@ -233,8 +236,23 @@ public final class ChartData2D extends ChartDataBase {
     double intercept = ymean - slope * xmean;
 
     for (int i = 0; i < n; i++) {
-      predictions.add(slope*x[i] + intercept);
+      double prediction = slope * x[i] + intercept;
+      predictions.add(prediction);
     }
+    return predictions;
+  }
+  /**
+   * Draws the line of best fit
+   *
+   * @param x - x value of entry
+   * @param y - y value of entry
+   */
+  @SimpleFunction(description = "Draws the line of best fit.")
+  public void DrawLineOfBestFit(final YailList x, final YailList y, final String chartName) {
+    ArrayList predictions = PredictLineOfBestFit(x,y);
+    // ToDo: draw the line of best fit on the given chart
+
+
   }
 }
 
