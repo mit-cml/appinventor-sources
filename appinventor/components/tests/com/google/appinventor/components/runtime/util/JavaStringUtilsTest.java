@@ -31,6 +31,12 @@ public class JavaStringUtilsTest {
     assertEquals(result, text);
   }
 
+  @Test 
+  public void testSplitString() {
+    YailList text = JavaStringUtils.split("abcde", "");
+    assertEquals(5, text.size());
+  }
+
   /**
    * Test case for replacing a String with mappings, but none
    * of the mappings are found in the target String.
