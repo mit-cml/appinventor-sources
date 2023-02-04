@@ -659,6 +659,7 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 36
   // - Add stats blocks
   // - Rename lists_*_number to lists_*_value
+  // - Added "every component" block.
   public static final int BLOCKS_LANGUAGE_VERSION = 36;
 
   // ................................. Target SDK Version Number ..................................
@@ -829,7 +830,7 @@ public class YaVersion {
   // For CANVAS_COMPONENT_VERSION 13
   // - BackgroundImageinBase64 was added
   // For CANVAS_PROPERTY_VERSION 14
-  // -TAP_THRESHOLD was changed from being constant to user settable 
+  // -TAP_THRESHOLD was changed from being constant to user settable
   // -TAP_THRESHOLD renamed to tapThreshold
   // -TapThreshold was added
   // For CANVAS_COMPONENT_VERSION 15

@@ -142,7 +142,7 @@
 	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_INPUT_VALUE": "value",
 	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TITLE": "for each in dictionary",
 	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_TOOLTIP": "Runs the blocks in the 'do' section for each key-value entry in the dictionary. Use the given variable names to refer to the key/value of the current dictionary item.",
-	
+
 	"Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_INPUT_OFLOOP": "of loop",
 	"Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK": "break out",
 	"Blockly.Msg.LANG_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE": "continue with next iteration",
@@ -797,6 +797,7 @@
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO": " to",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT": "of component",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_HELPURL": "",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY": "every",
 	"Blockly.Msg.LANG_SCREENS_TITLE": "Screen Name: ",
 	"Blockly.Msg.LANG_NO_ASSETS": "No available assets",
 	"Blockly.Msg.SHOW_WARNINGS": "Show Warnings",

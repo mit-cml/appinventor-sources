@@ -136,6 +136,13 @@
     ((_ component-name)
      (lookup-in-current-form-environment 'component-name))))
 
+;;; (get-all-components comptype)
+;;; ==> (filter-type-in-current-form-environment 'comptype)
+(define-syntax get-all-components
+  (syntax-rules ()
+    ((_ component-type)
+     (filter-type-in-current-form-environment 'component-type))))
+
 ;; We'd like to do something like the following which could re-use existing components
 ;; and thereore avoid overriding property changes that the user might have made via
 ;; the REPL but it just didn't work.  Some components just wouldn't show up.  It seemed
@@ -814,6 +821,14 @@
     (if (gnu.mapping.Environment:isBound env name)
         (gnu.mapping.Environment:get env name)
         default-value)))
+
+(define (filter-type-in-current-form-environment type :: gnu.mapping.Symbol)
+  (define-alias ComponentUtil <com.google.appinventor.components.runtime.util.ComponentUtil>)
+  (let ((env (if (not (eq? *this-form* #!null))
+                 (*:.form-environment *this-form*)
+                 ;; The following is just for testing. In normal situations *this-form* should be non-null
+                 *test-environment*)))
+  (sanitize-component-data (ComponentUtil:filterComponentsOfType env type))))
 
 (define (delete-from-current-form-environment name :: gnu.mapping.Symbol)
   (if (not (eq? *this-form* #!null))

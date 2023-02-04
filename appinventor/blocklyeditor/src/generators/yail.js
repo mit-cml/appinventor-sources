@@ -68,6 +68,7 @@ Blockly.Yail.YAIL_FILTER = "(filter_nondest ";
 Blockly.Yail.YAIL_FOREACH = "(foreach ";
 Blockly.Yail.YAIL_FORRANGE = "(forrange ";
 Blockly.Yail.YAIL_GET_COMPONENT = "(get-component ";
+Blockly.Yail.YAIL_GET_ALL_COMPONENT = "(get-all-components ";
 Blockly.Yail.YAIL_GET_PROPERTY = "(get-property ";
 Blockly.Yail.YAIL_GET_COMPONENT_TYPE_PROPERTY = "(get-property-and-check  ";
 Blockly.Yail.YAIL_GET_VARIABLE = "(get-var ";
