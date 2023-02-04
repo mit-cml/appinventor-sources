@@ -6,12 +6,24 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.shared.rpc.project.HasAssetsFolder;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.StyleElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.graphics.client.Color;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Helper methods for working with mock components.
@@ -167,32 +179,103 @@ public final class MockComponentsUtil {
   }
 
   /**
+   * Returns the asset node of given name.
+   *
+   * @param editor current project editor
+   * @param name   the name of the asset
+   * @return the asset node
+   */
+  static ProjectNode getAssetNode(SimpleEditor editor, String name) {
+    Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
+    if (project != null) {
+      HasAssetsFolder<YoungAndroidAssetsFolder> hasAssetsFolder =
+        (YoungAndroidProjectNode) project.getRootNode();
+      for (ProjectNode asset : hasAssetsFolder.getAssetsFolder().getChildren()) {
+        if (asset.getName().equals(name)) {
+          return asset;
+        }
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Converts the given font typeface property value to font resource URL
+   *
+   * @param editor the editor
+   * @param text   asset name
+   * @return the string value of font resource URL
+   */
+  static String convertFontPropertyValueToUrl(SimpleEditor editor, String text) {
+    if (text.length() > 0) {
+      ProjectNode asset = getAssetNode(editor, text);
+      if (asset != null) {
+        return StorageUtil.getFileUrl(asset.getProjectId(), asset.getFileId());
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Create font resource into DOM's Head element.
+   *
+   * @param fontFamily      font family name
+   * @param fontResourceURL font resource url
+   * @param resourceId      uniq ID of font resource.
+   */
+  static void createFontResource(String fontFamily, String fontResourceURL, String resourceId)  {
+    StyleElement resourceElement = Document.get().createStyleElement();
+    resourceElement.setId(resourceId);
+    String resource = "@font-face {";
+    resource += "font-family: ";
+    resource += fontFamily + ";";
+    resource += "src: url(\"" + fontResourceURL + "\");";
+    resource += "}";
+    resourceElement.setInnerText(resource);
+    Document.get().getHead().appendChild(resourceElement);
+  }
+  
+  /**
    * Sets the font typeface for the given widget.
    *
+   * @param editor  current project editor
    * @param widget  widget to change font typeface for
-   * @param typeface  "0" for normal, "1" for sans serif, "2" for serif and
-   *                  "3" for monospace
+   * @param typeface  default, sans serif, serif, monospace or font file in case of custom
+   *                  font typeface
    */
-  static void setWidgetFontTypeface(Widget widget, String typeface) {
-    switch (Integer.parseInt(typeface)) {
-      default:
-        // This should never happen
-        throw new IllegalArgumentException("Typeface:" + typeface);
-
-      case 0:
-      case 1:
-        typeface = "sans-serif";
-        break;
-
-      case 2:
-        typeface = "serif";
-        break;
-
-      case 3:
-        typeface = "monospace";
-        break;
+  static void setWidgetFontTypeface(SimpleEditor editor, Widget widget, String typeface) {
+    String fontFamily = "";
+    if (typeface.equals("0") || typeface.equals("1")){
+      fontFamily = "sans-serif";
+    } else if (typeface.equals("2")) {
+      fontFamily = "serif";
+    } else if (typeface.equals("3")) {
+      fontFamily = "monospace";
+    } else {
+      fontFamily = typeface.substring(0, typeface.lastIndexOf("."));
+      String resourceID = typeface.toLowerCase().substring(0, typeface.lastIndexOf("."));
+      String resourceURL = convertFontPropertyValueToUrl(editor, typeface);
+      if (Document.get().getElementById(resourceID) == null)  {
+        createFontResource(fontFamily, resourceURL, resourceID);
+      }
     }
-    DOM.setStyleAttribute(widget.getElement(), "fontFamily", typeface);
+    DOM.setStyleAttribute(widget.getElement(), "fontFamily", fontFamily);
+  }
+
+  /**
+   * Update widget's text content appearances according to width property value.
+   *
+   * @param widget widget to update text appearances for
+   * @param width  widget's width property value -1 for Automatic
+   */
+  static void updateTextAppearances(Widget widget, String width) {
+    if (width.equals("-1")) {
+      // for width = Automatic
+      DOM.setStyleAttribute(widget.getElement(), "whiteSpace", "nowrap");
+    } else {
+      // for width = Fill Parent, Pixels or Percentage
+      DOM.setStyleAttribute(widget.getElement(), "whiteSpace", "normal");
+    }
   }
 
   /**

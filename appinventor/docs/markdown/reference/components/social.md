@@ -75,9 +75,10 @@ A button that, when clicked on, displays a list of the contacts to choose among.
 {:id="ContactPicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `ContactPicker`, measured in sp(scale-independent pixels).
 
-{:id="ContactPicker.FontTypeface" .number .do} *FontTypeface*
+{:id="ContactPicker.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `ContactPicker` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="ContactPicker.Height" .number .bo} *Height*
 : Specifies the `ContactPicker`'s vertical height, measured in pixels.
@@ -212,7 +213,7 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 {:id="EmailPicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `EmailPicker`, measured in sp(scale-independent pixels).
 
-{:id="EmailPicker.FontTypeface" .number .do} *FontTypeface*
+{:id="EmailPicker.FontTypeface" .text .do} *FontTypeface*
 : The text font face of the `EmailPicker`. Valid values are `0` (default), `1` (serif), `2` (sans
  serif), or `3` (monospace).
 
@@ -387,9 +388,10 @@ A button that, when clicked on, displays a list of the contacts' phone numbers t
 {:id="PhoneNumberPicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `PhoneNumberPicker`, measured in sp(scale-independent pixels).
 
-{:id="PhoneNumberPicker.FontTypeface" .number .do} *FontTypeface*
+{:id="PhoneNumberPicker.FontTypeface" .text .do} *FontTypeface*
 : Specifies the text font face of the `PhoneNumberPicker` as default, serif, sans
- serif, or monospace.
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project's media.
 
 {:id="PhoneNumberPicker.Height" .number .bo} *Height*
 : Specifies the `PhoneNumberPicker`'s vertical height, measured in pixels.

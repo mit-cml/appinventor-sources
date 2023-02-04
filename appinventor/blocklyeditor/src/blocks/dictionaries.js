@@ -291,7 +291,7 @@ Blockly.Blocks['dictionaries_recursive_set'] = {
     this.setTooltip(Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TOOLTIP);
     this.setInputsInline(false);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_LOOKUP_TITLE }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_DICTIONARY_RECURSIVE_SET_TITLE }]
 };
 
 Blockly.Blocks['dictionaries_getters'] = {
@@ -315,13 +315,13 @@ Blockly.Blocks['dictionaries_getters'] = {
     });
   },
   typeblock: [{
-    translatedName: Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TITLE,
+    translatedName: Blockly.Msg.LANG_DICTIONARIES_GET_KEYS_TYPEBLOCK,
     dropDown: {
       titleName: 'OP',
       value: 'KEYS'
     }
   }, {
-    translatedName: Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TITLE,
+    translatedName: Blockly.Msg.LANG_DICTIONARIES_GET_VALUES_TYPEBLOCK,
     dropDown: {
       titleName: 'OP',
       value: 'VALUES'

@@ -129,6 +129,11 @@ public final class YoungAndroidFormUpgrader {
 
     String componentType = componentProperties.get("$Type").asString().getString();
 
+    if (srcYaVersion < 218 && "GoogleSheets".equals(componentType)) {
+      componentType = "Spreadsheet";
+      componentProperties.put("$Type", new ClientJsonString("Spreadsheet"));
+    }
+
     // Get the source component version from the componentProperties.
     int srcCompVersion = 0;
     if (componentProperties.containsKey("$Version")) {
@@ -149,6 +154,18 @@ public final class YoungAndroidFormUpgrader {
         componentProperties.put("$Type", new ClientJsonString(componentType));
         componentProperties.put("$Version", new ClientJsonString("" + srcCompVersion));
         upgradeDetails.append(MESSAGES.upgradeDetailLoggerReplacedWithNotifier(
+            componentProperties.get("$Name").asString().getString()));
+      }
+    }
+
+    if (srcYaVersion < 216) {
+      // YandexTranslate deprecated in favor of Translator
+      if (componentType.equals("YandexTranslate")) {
+        componentType = "Translator";
+        srcCompVersion = COMPONENT_DATABASE.getComponentVersion(componentType);
+        componentProperties.put("$Type", new ClientJsonString(componentType));
+        componentProperties.put("$Version", new ClientJsonString("" + srcCompVersion));
+        upgradeDetails.append(MESSAGES.yandexTranslateReplacedwithTranslator(
             componentProperties.get("$Name").asString().getString()));
       }
     }
@@ -273,7 +290,12 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeFusiontablesControlProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("HorizontalArrangement")) {
-        srcCompVersion = upgradeHorizontalArrangementProperties(componentProperties, srcCompVersion);
+        srcCompVersion = upgradeHorizontalArrangementProperties(componentProperties,
+            srcCompVersion);
+
+      } else if (componentType.equals("HorizontalScrollArrangement")) {
+        srcCompVersion = upgradeHorizontalScrollArrangementProperties(componentProperties,
+            srcCompVersion);
 
       } else if (componentType.equals("Image")) {
         srcCompVersion = upgradeImageProperties(componentProperties, srcCompVersion);
@@ -332,6 +354,10 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("VerticalArrangement")) {
         srcCompVersion = upgradeVerticalArrangementProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("VerticalScrollArrangement")) {
+        srcCompVersion = upgradeVerticalScrollArrangementProperties(componentProperties,
+            srcCompVersion);
+
       } else if (componentType.equals("VideoPlayer")) {
         srcCompVersion = upgradeVideoPlayerProperties(componentProperties, srcCompVersion);
 
@@ -370,10 +396,20 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeRectangleProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("FeatureCollection")) {
         srcCompVersion = upgradeFeatureCollection(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Navigation")) {
+        srcCompVersion = upgradeNavigationProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("YandexTranslate")) {
         srcCompVersion = upgradeYandexTranslateProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("CloudDB")) {
         srcCompVersion = upgradeCloudDBProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Ev3ColorSensor")) {
+        srcCompVersion = upgradeEv3ColorSensorProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Ev3GyroSensor")) {
+        srcCompVersion = upgradeEv3GyroSensorProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Ev3UltrasonicSensor")) {
+        srcCompVersion = upgradeEv3UltrasonicSensorProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("NxtDirectCommands")) {
+        srcCompVersion = upgradeNxtDirectCommandsProperties(componentProperties, srcCompVersion);
       }
 
       if (srcCompVersion < sysCompVersion) {
@@ -440,6 +476,10 @@ public final class YoungAndroidFormUpgrader {
       // The LegacyMode property was added
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // Adds Sensitivity dropdown block.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -525,6 +565,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 7) {
       // The MoveToPoint method was added.
       srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
+      // Direction dropdown blocks were added.
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -660,6 +704,10 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 6.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Assets helper block was added.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
@@ -752,6 +800,10 @@ public final class YoungAndroidFormUpgrader {
       // TapThreshold was added
       srcCompVersion = 14;
     }
+    if (srcCompVersion < 15) {
+      // Assets helper block was added.
+      srcCompVersion = 15;
+    }
     return srcCompVersion;
   }
 
@@ -822,6 +874,10 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // Assets helper block was added.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -851,6 +907,17 @@ public final class YoungAndroidFormUpgrader {
       // File.LegacyMode property was added.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // AccessMode was added.
+      // LegacyMode was removed.
+      // If LegacyMode was set, AccessMode should be set to "2", which is Legacy.
+      if (componentProperties.containsKey("LegacyMode")) {
+        componentProperties.remove("LegacyMode");
+        // LegacyMode maps to AccessMode 2 (Legacy)
+        componentProperties.put("DefaultScope", new ClientJsonString("Legacy"));
+      }
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -1051,6 +1118,23 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 27;
     }
 
+    if (srcCompVersion < 28) {
+      // HighContrast and BigDefaultText properties were added.
+      srcCompVersion = 28;
+    }
+    if (srcCompVersion < 29) {
+      // ScreenAnimation dropdown blocks were added.
+      // HorizontalAlignment and VerticalAlignment dropdown blocks were added.
+      // Adds dropdown block for ScreenOrientation.
+      // Assets helper block was added.
+      // Adds Permission dropdown block.
+      srcCompVersion = 29;
+    }
+    if (srcCompVersion < 30) {
+      // The DefaultFileScope property was added.
+      srcCompVersion = 30;
+    }
+
     return srcCompVersion;
   }
 
@@ -1087,6 +1171,22 @@ public final class YoungAndroidFormUpgrader {
       // - Added background color & image
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Assets helper block was added.
+      srcCompVersion = 4;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeHorizontalScrollArrangementProperties(
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Assets helper block was added.
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 
@@ -1113,6 +1213,14 @@ public final class YoungAndroidFormUpgrader {
      // The Click event was added.
      // The Clickable property was added.
      srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // The AlternateText property was added.
+      srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // Assets helper block was added.
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
@@ -1170,6 +1278,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 7) {
       // The MoveToPoint method was added.
       srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
+      // Direction dropdown blocks were added.
+      // Assets helper block was added.
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -1255,6 +1368,10 @@ public final class YoungAndroidFormUpgrader {
       // Added the SelectionColor property
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Added ...
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -1297,6 +1414,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 4) {
       // Added PasswordVisible Property
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // Added NumbersOnly property
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -1382,6 +1503,10 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // Assets helper block was added.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -1403,6 +1528,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The Language property was added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -1418,6 +1548,10 @@ public final class YoungAndroidFormUpgrader {
       // SetTimeToDisplayFromInstant, and Instant property are added.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // Assets helper block was added.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -1451,6 +1585,22 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // - Added background color & image
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Assets helper block was added.
+      srcCompVersion = 4;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeVerticalScrollArrangementProperties(
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+      // Assets helper block was added.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
@@ -1512,6 +1662,10 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 6.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Assets helper block was added.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
@@ -1556,6 +1710,10 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 4) {
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // Adds ReceivingState dropdown block.
+      srcCompVersion = 5;
     }
 
     return srcCompVersion;
@@ -1634,10 +1792,10 @@ public final class YoungAndroidFormUpgrader {
       // of XML using dictionaries.
       srcCompVersion = 7;
     }
-    if (srcCompVersion < 8)  {
-    	// The methods PatchText, PatchTextWithEncoding, and PatchFile were added.
-        // No properties need to be modified to upgrade to version 8.
-        srcCompVersion = 8;
+    if (srcCompVersion < 8) {
+      // The methods PatchText, PatchTextWithEncoding, and PatchFile were added.
+      // No properties need to be modified to upgrade to version 8.
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -1701,6 +1859,20 @@ public final class YoungAndroidFormUpgrader {
       // The ScaleUnits and ShowScale properties were added
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Adds ScaleUnits and MapType dropdowns.
+      srcCompVersion = 6;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeNavigationProperties(
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - Adds TransportMethod dropdown.
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
   
@@ -1734,6 +1906,11 @@ public final class YoungAndroidFormUpgrader {
       // Verison 3
       // The FillOpacity and StrokeOpacity properties were added
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // Add AlignHorizontal and AlignVertical dropdown blocks.
+      // Assets helper block was added.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -1788,6 +1965,49 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeEv3ColorSensorProperties(
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Remove SetAmbientMode, SetColorMode, and SetReflectedMode. Use Mode setter instead.
+      // Add ColorSensorMode dropdown.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeEv3GyroSensorProperties(
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Remove SetAngleMode and SetRateMode. Use Mode setter instead.
+      // Add GyroSensorMode dropdown block.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeEv3UltrasonicSensorProperties(
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Remove SetCmUnit and SetInchUnit. Use Unit setter instead.
+      // Add UnltrasonicSensorMode dropdown block.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeNxtDirectCommandsProperties(
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Adds dropdown blocks.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static void handlePropertyRename(Map<String, JSONValue> componentProperties,
       String oldPropName, String newPropName) {
     if (componentProperties.containsKey(oldPropName)) {
@@ -1827,5 +2047,4 @@ public final class YoungAndroidFormUpgrader {
     dialogBox.center();
     dialogBox.show();
   }
-
 }

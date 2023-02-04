@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,22 +8,27 @@ package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
+import com.google.appinventor.client.editor.simple.components.MockChart;
+import com.google.appinventor.client.editor.simple.components.MockChartData2D;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
-import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockCircle;
 import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
+import com.google.appinventor.client.editor.simple.components.MockDataFile;
 import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
+import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
@@ -44,9 +49,11 @@ import com.google.appinventor.client.editor.simple.components.MockScrollHorizont
 import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockSlider;
 import com.google.appinventor.client.editor.simple.components.MockSpinner;
+import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
 import com.google.appinventor.client.editor.simple.components.MockTextBox;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
+import com.google.appinventor.client.editor.simple.components.MockTranslator;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
@@ -131,6 +138,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/clock.png", images.clock());
     bundledImages.put("images/fusiontables.png", images.fusiontables());
     bundledImages.put("images/gameClient.png", images.gameclient());
+    bundledImages.put("images/spreadsheet.png", images.spreadsheet());
     bundledImages.put("images/locationSensor.png", images.locationSensor());
     bundledImages.put("images/notifier.png", images.notifier());
     bundledImages.put("images/legoMindstormsNxt.png", images.legoMindstormsNxt());
@@ -158,6 +166,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/sharing.png", images.sharingComponent());
     bundledImages.put("images/spinner.png", images.spinner());
     bundledImages.put("images/listView.png", images.listview());
+    bundledImages.put("images/translator.png", images.translator());
     bundledImages.put("images/yandex.png", images.yandex());
     bundledImages.put("images/proximitysensor.png", images.proximitysensor());
     bundledImages.put("images/extension.png", images.extension());
@@ -168,9 +177,13 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/linestring.png", images.linestring());
     bundledImages.put("images/polygon.png", images.polygon());
     bundledImages.put("images/featurecollection.png", images.featurecollection());
+    bundledImages.put("images/recyclerView.png", images.recyclerview());
     bundledImages.put("images/navigation.png", images.navigationComponent());
     bundledImages.put("images/arduino.png", images.arduino());
     bundledImages.put("images/magneticSensor.png", images.magneticSensor());
+    bundledImages.put("images/chart.png", images.chart());
+    bundledImages.put("images/chartData.png", images.chartData2D());
+    bundledImages.put("images/dataFile.png", images.dataFile());
 
     imagesInitialized = true;
   }
@@ -319,6 +332,18 @@ public final class SimpleComponentDescriptor {
   }
 
   /**
+   * Returns the path to the license file used by the component.
+   *
+   * @return path to license file of component
+   */
+  public String getLicense() {
+    String type = COMPONENT_DATABASE.getComponentType(name);
+    return getLicenseURLFromPath(COMPONENT_DATABASE.getLicenseName(name),
+        type.substring(0, type.lastIndexOf('.')),
+        editor.getProjectId());
+  }
+
+  /**
    * Returns a draggable image for the component. Used when dragging a
    * component from the palette onto the form.
    *
@@ -370,6 +395,20 @@ public final class SimpleComponentDescriptor {
     }
   }
 
+  public static String getLicenseURLFromPath(String licensePath, String packageName, long projectId) {
+    if (licensePath.startsWith("aiwebres/") && packageName != null) {
+      // License file is inside aiwebres
+      return StorageUtil.getFileUrl(projectId,
+          "assets/external_comps/" + packageName + "/" + licensePath) + "&inline";
+    } else if(licensePath.startsWith("http:") || licensePath.startsWith("https:")) {
+      // The license is an external URL
+      return licensePath;
+    } else {
+      // No license file specified
+      return "";
+    }
+  }
+
   /**
    * Instantiates mock component by name.
    */
@@ -387,6 +426,19 @@ public final class SimpleComponentDescriptor {
         return new MockFusionTablesControl(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
             null, editor.getProjectId()));
+      } else if(name.equals(MockTranslator.TYPE)) {
+        return new MockTranslator(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if(name.equals(MockSpreadsheet.TYPE)) {
+        return new MockSpreadsheet(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
+      } else if (name.equals(MockDataFile.TYPE)) {
+        return new MockDataFile(editor, name,
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId())
+                    .getIconName(name),
+                null, editor.getProjectId()));
       } else {
         String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
         return new MockNonVisibleComponent(editor, name,
@@ -407,8 +459,10 @@ public final class SimpleComponentDescriptor {
       return new MockLabel(editor);
     } else if (name.equals(MockListView.TYPE)) {
       return new MockListView(editor);
+    } else if (name.equals(MockListView.TYPE)) {
+      return new MockListView(editor);
     } else if (name.equals(MockSlider.TYPE)) {
-        return new MockSlider(editor);
+      return new MockSlider(editor);
     } else if (name.equals(MockPasswordTextBox.TYPE)) {
       return new MockPasswordTextBox(editor);
     } else if (name.equals(MockRadioButton.TYPE)) {
@@ -463,6 +517,10 @@ public final class SimpleComponentDescriptor {
       return new MockRectangle(editor);
     } else if (name.equals(MockFeatureCollection.TYPE)) {
       return new MockFeatureCollection(editor);
+    } else if (name.equals(MockChart.TYPE)) {
+      return new MockChart(editor);
+    } else if (name.equals(MockChartData2D.TYPE)) {
+      return new MockChartData2D(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);

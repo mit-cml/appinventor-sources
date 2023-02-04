@@ -6,9 +6,12 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.text.Normalizer;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -17,10 +20,11 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  * @author srlane@mit.edu (Susan Rati Lane)
  */
-abstract class MockToggleBase<T extends Widget> extends MockWrapper {
+abstract class MockToggleBase<T extends Widget> extends MockWrapper implements FormChangeListener {
 
   // Set toggle widget in child classes
   protected T toggleWidget;
+  protected boolean enabled;
 
   public MockToggleBase(SimpleEditor editor, String type, ImageResource icon) {
     super(editor, type, icon);
@@ -37,6 +41,17 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper {
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
   }
 
+  @Override
+  int getHeightHint() {
+    int hint = super.getHeightHint();
+    if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
+      float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
+      return Math.round(height);
+    } else {
+      return hint;
+    }
+  }
+
   /*
    * Sets the toggle's BackgroundColor property to a new value.
    */
@@ -51,6 +66,7 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper {
    * Sets the toggle's Enabled property to a new value.
    */
   private void setEnabledProperty(String text) {
+    enabled = Boolean.parseBoolean(text);
     MockComponentsUtil.setEnabled(this, text);
   }
 
@@ -70,30 +86,30 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper {
     updatePreferredSize();
   }
 
-  @Override
-  int getHeightHint() {
-    int hint = super.getHeightHint();
-    if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
-      float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
-      return Math.round(height);
-    } else {
-      return hint;
-    }
-  }
-
   /*
    * Sets the toggle's FontSize property to a new value.
    */
   protected void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(toggleWidget, text);
+    float convertedText = Float.parseFloat(text);
+    if (convertedText == 14.0 || convertedText == 24.0) {
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (form != null && form.getPropertyValue("BigDefaultText").equals("True")) {
+        MockComponentsUtil.setWidgetFontSize(toggleWidget, "24");
+      } else {
+        MockComponentsUtil.setWidgetFontSize(toggleWidget, "14");
+      }
+    } else {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget, text);
+    }
     updatePreferredSize();
+
   }
 
   /*
    * Sets the toggle's FontTypeface property to a new value.
    */
   protected void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(toggleWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, toggleWidget, text);
     updatePreferredSize();
   }
 
@@ -138,11 +154,42 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(toggleWidget, newValue);
+      refreshForm();
     }
   }
 
   protected void updatePreferredSize() {
     preferredSize = MockComponentsUtil
         .getPreferredSizeOfElement(DOM.clone(toggleWidget.getElement(), true));
+  }
+
+  @Override
+  public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
+    if (component.getType().equals(MockForm.TYPE) && propertyName.equals("BigDefaultText")) {
+      setFontSizeProperty(getPropertyValue(PROPERTY_NAME_FONTSIZE));
+      refreshForm();
+    }
+  }
+
+  @Override
+  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+
+  }
+
+  @Override
+  public void onComponentAdded(MockComponent component) {
+
+  }
+
+  @Override
+  public void onComponentRenamed(MockComponent component, String oldName) {
+
+  }
+
+  @Override
+  public void onComponentSelectionChange(MockComponent component, boolean selected) {
+
   }
 }

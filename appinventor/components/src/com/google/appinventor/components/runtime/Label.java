@@ -37,7 +37,7 @@ import android.widget.TextView;
     "the appearance and placement of the text.",
     category = ComponentCategory.USERINTERFACE)
 @SimpleObject
-public final class Label extends AndroidViewComponent {
+public final class Label extends AndroidViewComponent implements AccessibleComponent{
 
   // default margin around a label in DPs
   // note that the spacing between adjacent labels will be twice this value
@@ -59,7 +59,7 @@ public final class Label extends AndroidViewComponent {
   private int backgroundColor;
 
   // Backing for font typeface
-  private int fontTypeface;
+  private String fontTypeface;
 
   // Backing for font bold
   private boolean bold;
@@ -78,6 +78,9 @@ public final class Label extends AndroidViewComponent {
 
   // HTML content of the label
   private String htmlContent;
+
+  //Whether or not the text should be big
+  private boolean isBigText = false;
 
   /**
    * Creates a new Label component.
@@ -112,7 +115,7 @@ public final class Label extends AndroidViewComponent {
     TextAlignment(Component.ALIGNMENT_NORMAL);
     BackgroundColor(Component.COLOR_NONE);
     fontTypeface = Component.TYPEFACE_DEFAULT;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_DEFAULT);
@@ -222,7 +225,7 @@ public final class Label extends AndroidViewComponent {
       userVisible = false)
   public void FontBold(boolean bold) {
     this.bold = bold;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -251,7 +254,7 @@ public final class Label extends AndroidViewComponent {
       userVisible = false)
   public void FontItalic(boolean italic) {
     this.italic = italic;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -312,7 +315,12 @@ private void setLabelMargins(boolean hasMargins) {
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
   public void FontSize(float size) {
-    TextViewUtil.setFontSize(view, size);
+
+    if (size == FONT_DEFAULT_SIZE && (isBigText || container.$form().BigDefaultText())) {
+      TextViewUtil.setFontSize(view, 24);
+    } else {
+      TextViewUtil.setFontSize(view, size);
+    }
   }
 
   /**
@@ -327,7 +335,7 @@ private void setLabelMargins(boolean hasMargins) {
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       userVisible = false)
-  public int FontTypeface() {
+  public String FontTypeface() {
     return fontTypeface;
   }
 
@@ -344,9 +352,9 @@ private void setLabelMargins(boolean hasMargins) {
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
-  public void FontTypeface(int typeface) {
+  public void FontTypeface(String typeface) {
     fontTypeface = typeface;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -456,5 +464,31 @@ private void setLabelMargins(boolean hasMargins) {
     } else {
       TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK);
     }
+  }
+
+  @Override
+  public void setHighContrast(boolean isHighContrast) {
+
+  }
+
+  @Override
+  public boolean getHighContrast() {
+    return false;
+  }
+
+  @Override
+  public void setLargeFont(boolean isLargeFont) {
+    if (TextViewUtil.getFontSize(view, container.$context()) == 24.0 || TextViewUtil.getFontSize(view, container.$context()) == Component.FONT_DEFAULT_SIZE) {
+      if (isLargeFont) {
+        TextViewUtil.setFontSize(view, 24);
+      } else {
+        TextViewUtil.setFontSize(view, Component.FONT_DEFAULT_SIZE);
+      }
+    }
+  }
+
+  @Override
+  public boolean getLargeFont() {
+    return isBigText;
   }
 }

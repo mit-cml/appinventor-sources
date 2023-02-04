@@ -295,12 +295,44 @@ Blockly.FieldLexicalVariable.getLexicalNamesInScope = function (block) {
                 valueNames, Blockly.loopValueParameterPrefix);
           } else if ((parent.type === "controls_forRange")
                      && (parent.getInputTargetBlock('DO') == child)) {// Only DO is in scope, not other inputs!
-              var rangeName = parent.getFieldValue('VAR');
-              rememberName(rangeName, rangeNames, Blockly.loopRangeParameterPrefix);
-          } else if ((parent.type === "local_declaration_expression"
-                        && parent.getInputTargetBlock('RETURN') == child) // only body is in scope of names
-                      || (parent.type === "local_declaration_statement"
-                           && parent.getInputTargetBlock('STACK') == child) // only body is in scope of names
+            var rangeName = parent.getFieldValue('VAR');
+            rememberName(rangeName, rangeNames, Blockly.loopRangeParameterPrefix);
+          } else if ( (parent.type === "lists_map")
+                     && (parent.getInputTargetBlock('TO') == child)) {// Only DO is in scope, not other inputs!
+            var loopName = parent.getFieldValue('VAR');
+            rememberName(loopName, loopNames, Blockly.loopParameterPrefix);
+          } else if ( (parent.type === "lists_map_destructive")
+                     && (parent.getInputTargetBlock('TO') == child)) {// Only DO is in scope, not other inputs!
+            var loopName = parent.getFieldValue('VAR');
+            rememberName(loopName, loopNames, Blockly.loopParameterPrefix);
+          } else if ( (parent.type === "lists_filter")
+                     && (parent.getInputTargetBlock('TEST') == child)) {// Only DO is in scope, not other inputs!
+            var loopName = parent.getFieldValue('VAR');
+            rememberName(loopName, loopNames, Blockly.loopParameterPrefix);
+          } else if ( (parent.type === "lists_reduce")
+                  && (parent.getInputTargetBlock('COMBINE') == child)) {// Only DO is in scope, not other inputs!
+            var loopName1 = parent.getFieldValue('VAR1');
+            var loopName2 = parent.getFieldValue('VAR2');
+            rememberName(loopName1, loopNames, Blockly.loopParameterPrefix);
+            rememberName(loopName2, loopNames, Blockly.loopParameterPrefix);
+          } else if ( (parent.type === "lists_sort_comparator")
+                  && (parent.getInputTargetBlock('COMPARE') == child)) {// Only DO is in scope, not other inputs!
+            var loopName1 = parent.getFieldValue('VAR1');
+            var loopName2 = parent.getFieldValue('VAR2');
+            rememberName(loopName1, loopNames, Blockly.loopParameterPrefix);
+            rememberName(loopName2, loopNames, Blockly.loopParameterPrefix);
+          } else if ( (parent.type === "lists_sort_key")
+                  && (parent.getInputTargetBlock('KEY') == child)) {// Only DO is in scope, not other inputs!
+           var loopName = parent.getFieldValue('VAR');
+           rememberName(loopName, loopNames, Blockly.loopParameterPrefix);
+          } else if ( (parent.type === "controls_forRange")
+                     && (parent.getInputTargetBlock('DO') == child)) {// Only DO is in scope, not other inputs!
+            var rangeName = parent.getFieldValue('VAR');
+            rememberName(rangeName, rangeNames, Blockly.loopRangeParameterPrefix);
+          } else if ( ( parent.type === "local_declaration_expression"
+                        && parent.getInputTargetBlock('RETURN') == child ) // only body is in scope of names
+                      || ( parent.type === "local_declaration_statement"
+                           && parent.getInputTargetBlock('STACK') == child ) // only body is in scope of names
                            ) {
             params = parent.declaredNames(); // [lyn, 10/13/13] Names from block, not localNames_ instance var
             for (i = 0; i < params.length; i++) {
@@ -443,7 +475,7 @@ Blockly.FieldLexicalVariable.nameNotIn = function(name, nameList) {
  * Split name into digit suffix and prefix before it.
  * Return two-element list of prefix and suffix strings. Suffix is empty if no digits.
  * @param {string} name Input string
- * @return {string list} Two-element list of prefix and suffix
+ * @return {string[]} Two-element list of prefix and suffix
  */
 Blockly.FieldLexicalVariable.prefixSuffix = function(name) {
   var prefix = name;
@@ -475,7 +507,7 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
     // this.sourceBlock excludes block being renamed from consideration
   // Potentially rename declaration against other occurrences
   newName = Blockly.FieldLexicalVariable.nameNotIn(newName, globals);
-  if ((! (newName === oldName)) && this.sourceBlock_.rendered) {
+  if (this.sourceBlock_.rendered) {
     // Rename getters and setters
     if (Blockly.mainWorkspace) {
       var blocks = Blockly.mainWorkspace.getAllBlocks();
@@ -484,8 +516,10 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
         var renamingFunction = block.renameLexicalVar;
         if (renamingFunction) {
             renamingFunction.call(block,
-                                  Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + oldName,
-                                  Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + newName);
+              Blockly.GLOBAL_KEYWORD + Blockly.menuSeparator + oldName,
+              Blockly.GLOBAL_KEYWORD + Blockly.menuSeparator + newName,
+              Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + oldName,
+              Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX + Blockly.menuSeparator + newName);
         }
       }
     }
@@ -1179,4 +1213,3 @@ Blockly.LexicalVariable.eventParameterDict = function (block) {
   }
   return dict;
 }
-

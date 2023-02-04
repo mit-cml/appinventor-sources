@@ -27,7 +27,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  */
 @SimpleObject
 public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewComponent
-        implements OnCheckedChangeListener, OnFocusChangeListener {
+        implements OnCheckedChangeListener, OnFocusChangeListener, AccessibleComponent {
 
   protected T view;
 
@@ -35,7 +35,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   private int backgroundColor;
 
   // Backing for font typeface
-  private int fontTypeface;
+  private String fontTypeface;
 
   // Backing for font bold
   private boolean bold;
@@ -45,6 +45,9 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
 
   // Backing for text color
   private int textColor;
+
+  // Whether the text is big or not
+  private boolean isBigText = false;
 
   /**
    * Creates a new ToggleBase component.
@@ -67,7 +70,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
     BackgroundColor(Component.COLOR_NONE);
     Enabled(true);
     fontTypeface = Component.TYPEFACE_DEFAULT;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_DEFAULT);
@@ -77,6 +80,33 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @Override
   public View getView() {
     return view;
+  }
+
+
+  @Override
+  public void setHighContrast(boolean isHighContrast) {
+
+  }
+
+  @Override
+  public boolean getHighContrast() {
+    return false;
+  }
+
+  @Override
+  public void setLargeFont(boolean isLargeFont) {
+    if (TextViewUtil.getFontSize(view, container.$context()) == 24.0 || TextViewUtil.getFontSize(view, container.$context()) == Component.FONT_DEFAULT_SIZE) {
+      if (isLargeFont) {
+        TextViewUtil.setFontSize(view, 24);
+      } else {
+        TextViewUtil.setFontSize(view, Component.FONT_DEFAULT_SIZE);
+      }
+    }
+  }
+
+  @Override
+  public boolean getLargeFont() {
+    return isBigText;
   }
 
   /**
@@ -172,7 +202,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
       description = "Set to true if the text of the %type% should be bold.")
   public void FontBold(boolean bold) {
     this.bold = bold;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -203,7 +233,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
       description = "Set to true if the text of the %type% should be italic.")
   public void FontItalic(boolean italic) {
     this.italic = italic;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -231,7 +261,17 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @SimpleProperty(description = "Specifies the text font size of the %type% in scale-independent "
       + "pixels.")
   public void FontSize(float size) {
-    TextViewUtil.setFontSize(view, size);
+    if (Math.abs(size-Component.FONT_DEFAULT_SIZE)<.01 || Math.abs(size-24)<.01) {
+      if (isBigText || container.$form().BigDefaultText()) {
+        TextViewUtil.setFontSize(view, 24);
+      }
+      else {
+        TextViewUtil.setFontSize(view, Component.FONT_DEFAULT_SIZE);
+      }
+    }
+    else {
+      TextViewUtil.setFontSize(view, size);
+    }
   }
 
   /**
@@ -260,9 +300,9 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @SimpleProperty(
       description = "Specifies the text font face of the %type%.",
       userVisible = false)
-  public void FontTypeface(int typeface) {
+  public void FontTypeface(String typeface) {
     fontTypeface = typeface;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -278,7 +318,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       userVisible = false)
-  public int FontTypeface() {
+  public String FontTypeface() {
     return fontTypeface;
   }
 

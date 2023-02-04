@@ -17,8 +17,16 @@
     In-browser blocks editor for App Inventor based on Blockly
   </description>
 
+  <property name="release" value="false"/>
+
+  <condition property="blockly.config"
+             value="ploverConfig.js"
+             else="ploverConfig-dev.js">
+    <equals arg1="${release}" arg2="true"/>
+  </condition>
+
   <target name="all"
-          depends="BlocklyCompile">
+          depends="BlocklyTranslationGenerator">
   </target>
 
   <target name="tests"
@@ -41,18 +49,67 @@
 	<property name="run.lib.dir" location="${run.dir}/lib" />
 
 	<property name="blockly.src.dir" location="${lib.dir}/blockly" />
+	<property name="i18n.src.dir" location="${src.dir}/msg" />
+	<property name="ai.i18n.src.dir" location="${i18n.src.dir}/ai_blockly" />
+	<property name="BlocklyTranslator-class.dir" location="${class.dir}/BlocklyTranslator-classes" />
+	<property name="BlocklyTranslations.dir" location="${public.build.dir}/msg" />
 
-	<!-- =====================================================================
+	<property name="gwt.sdk" location="${lib.dir}/gwt/2.8.1-patched" />
+
+
+  <!-- =====================================================================
        Targets
        ===================================================================== -->
+  <target name="CheckBlocklyTranslations">
+    <uptodate property="Blocklyi18n.uptodate">
+      <srcfiles dir="${ai.i18n.src.dir}">
+	<include name="*.json" />
+      </srcfiles>
+      <srcfiles dir="${blockly.src.dir}/msg/json">
+	<include name="en.json" />
+      </srcfiles>
+      <srcfiles dir="${i18n.src.dir}">
+	<include name="*.java"/>
+      </srcfiles>
+      <firstmatchmapper>
+	<globmapper from="*.java" to="${BlocklyTranslator-class.dir}/msg/*.class"/>
+	<globmapper from="en.json" to="${BlocklyTranslations.dir}/messages.json" />
+	<globmapper from="*.json" to="${BlocklyTranslations.dir}/*.json" />
+      </firstmatchmapper>
+    </uptodate>
+  </target>
+
+	<target name="BlocklyTranslationGenerator"
+			description="This is the script for creating combined i18n files from blockly and app inventor"
+			depends="CheckBlocklyTranslations,BlocklyCompile"
+			unless="Blocklyi18n.uptodate">
+		<mkdir dir="${BlocklyTranslator-class.dir}" />
+		<mkdir dir="${BlocklyTranslations.dir}" />
+		<ai.javac destdir="${BlocklyTranslator-class.dir}">
+			<include name="msg/BlocklyTranslationGenerator.java" />
+			<classpath>
+				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+				<pathelement location="${lib.dir}/json/json.jar" />
+			</classpath>
+		</ai.javac>
+		<java failonerror="true" classname="msg.BlocklyTranslationGenerator">
+                      <arg value="${ai.i18n.src.dir}"/>
+                      <arg value="${lib.dir}/blockly/msg/json"/>
+                      <arg value="${BlocklyTranslations.dir}"/>
+			<classpath>
+				<pathelement location="${BlocklyTranslator-class.dir}"/>
+				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+				<pathelement location="${lib.dir}/json/json.jar" />
+			</classpath>
+		</java>
+	</target>
 
         <target name="CheckBlocklyCompile">
           <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
             <srcfiles dir="src/" includes="**/*.js" />
             <srcfiles dir="${blockly.src.dir}/" includes="core/**/*.js" />
             <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
-            <srcfiles dir="${basedir}" includes="ploverConfig.js" />
-            <!-- <mapper type="merge" to="${public.build.dir}/blockly-all.js" /> -->
+            <srcfiles dir="${basedir}" includes="${blockly.config}" />
           </uptodate>
         </target>
 
@@ -61,7 +118,7 @@
 		      depends="init,CheckBlocklyCompile"
                       unless="BlocklyCompile.uptodate">
 		<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
-			<arg line="build ploverConfig.js" />
+			<arg line="build ${blockly.config}" />
 		</java>
 	</target>
 

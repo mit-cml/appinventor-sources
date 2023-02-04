@@ -363,6 +363,9 @@ Blockly.WorkspaceSvg.prototype.render = function(blocks) {
  * @returns {!Blockly.ComponentDatabase}
  */
 Blockly.WorkspaceSvg.prototype.getComponentDatabase = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getComponentDatabase();
+  }
   return this.componentDb_;
 };
 
@@ -371,8 +374,93 @@ Blockly.WorkspaceSvg.prototype.getComponentDatabase = function() {
  * @returns {!Blockly.ProcedureDatabase}
  */
 Blockly.WorkspaceSvg.prototype.getProcedureDatabase = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getProcedureDatabase();
+  }
   return this.procedureDb_;
 };
+
+//noinspection JSUnusedGlobalSymbols Called from BlocklyPanel.java
+/**
+ * Adds a screen name to the list tracked by the workspace.
+ * @param {string} name The name of the new screen.
+ */
+Blockly.WorkspaceSvg.prototype.addScreen = function(name) {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.addScreen(name);
+  }
+  if (this.screenList_.indexOf(name) == -1) {
+    this.screenList_.push(name);
+    this.typeBlock_.needsReload.screens = true;
+  }
+};
+
+//noinspection JSUnusedGlobalSymbols Called from BlocklyPanel.java
+/**
+ * Removes a screen name from the list tracked by the workspace.
+ * @param {string} name The name of the screen to remove.
+ */
+Blockly.WorkspaceSvg.prototype.removeScreen = function(name) {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.removeScreen(name);
+  }
+  var index = this.screenList_.indexOf(name);
+  if (index != -1) {
+    this.screenList_.splice(index, 1);
+    this.typeBlock_.needsReload.screens = true;
+  }
+}
+
+/**
+ * Returns the list of screen names tracked by the workspace.
+ * @return {!Array<string>} The list of screen names.
+ */
+Blockly.WorkspaceSvg.prototype.getScreenList = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getScreenList();
+  }
+  return this.screenList_;
+};
+
+/**
+ * Adds an asset name to the list tracked by the workspace.
+ * @param {string} name The name of the new asset.
+ */
+Blockly.WorkspaceSvg.prototype.addAsset = function(name) {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.addAsset(name);
+  }
+  if (!this.assetList_.includes(name)) {
+    this.assetList_.push(name);
+    this.typeBlock_.needsReload.assets = true;
+  }
+};
+
+/**
+ * Removes an asset name from the list tracked by the workspace.
+ * @param {string} name The name of the asset to remove.
+ */
+Blockly.WorkspaceSvg.prototype.removeAsset = function(name) {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.removeAsset(name);
+  }
+  var index = this.assetList_.indexOf(name);
+  if (index != -1) {  // Make sure it is actually an asset.
+    this.assetList_.splice(index, 1);
+    this.typeBlock_.needsReload.assets = true;
+  }
+};
+
+/**
+ * Returns the list of asset names tracked by the workspace.
+ * @return {!Array<string>} The list of asset names.
+ */
+Blockly.WorkspaceSvg.prototype.getAssetList = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getAssetList();
+  }
+  return this.assetList_;
+}
 
 //noinspection JSUnusedGlobalSymbols Called from BlocklyPanel.java
 /**
@@ -511,10 +599,11 @@ Blockly.WorkspaceSvg.prototype.verifyAllBlocks = function() {
  * Saves the workspace as an XML file and returns the contents as a
  * string.
  *
+ * @param {boolean} prettify Specify true if the resulting workspace should be pretty-printed.
  * @returns {string} XML serialization of the workspace's blocks.
  */
-Blockly.WorkspaceSvg.prototype.saveBlocksFile = function() {
-  return Blockly.SaveFile.get(this);
+Blockly.WorkspaceSvg.prototype.saveBlocksFile = function(prettify) {
+  return Blockly.SaveFile.get(prettify, this);
 };
 
 /**
@@ -566,8 +655,20 @@ Blockly.WorkspaceSvg.prototype.hideChaff = function(opt_allowToolbox) {
   this.setScrollbarsVisible(true);
 };
 
-Blockly.WorkspaceSvg.prototype.activate = function() {
-  Blockly.mainWorkspace = this;
+/**
+ * Mark this workspace as the currently focused main workspace.
+ *
+ * This is the Blockly Core version extended to also reference targetWorkspace,
+ * which is used by App Inventor.
+ */
+Blockly.WorkspaceSvg.prototype.markFocused = function() {
+  if (this.options.parentWorkspace) {
+    this.options.parentWorkspace.markFocused();
+  } else if (this.targetWorkspace) {
+    this.targetWorkspace.markFocused();
+  } else {
+    Blockly.mainWorkspace = this;
+  }
 };
 
 Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, forRepl, compileUnattachedBlocks) {
@@ -1052,6 +1153,41 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   helpOption.text = Blockly.Msg.HELP;
   helpOption.callback = function() {};
   menuOptions.push(helpOption);
+
+  // Clear unused blocks
+  var clearUnusedBlocks = {enabled: true};
+  clearUnusedBlocks.text = Blockly.Msg.REMOVE_UNUSED_BLOCKS;
+  clearUnusedBlocks.callback = function() {
+    var allBlocks = Blockly.getMainWorkspace().getTopBlocks()
+    var removeList = []
+    for (var x = 0, block; block = allBlocks[x]; x++) {
+      if (block.previousConnection || block.outputConnection) {
+          removeList.push(block)
+      }
+    }
+    if (removeList.length == 0) {
+      return;
+    }
+    var msg = Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(removeList.length));
+    var cancelButton = top.BlocklyPanel_getOdeMessage('cancelButton');
+    var deleteButton = top.BlocklyPanel_getOdeMessage('deleteButton');
+    var dialog = new Blockly.Util.Dialog(Blockly.Msg.CONFIRM_DELETE, msg, deleteButton, true, cancelButton, 0, function(button) {
+      dialog.hide();
+      if (button == deleteButton) {
+        try {
+          Blockly.Events.setGroup(true);
+          Blockly.mainWorkspace.playAudio('delete');
+          for (var x = 0; x < removeList.length; x++) {
+            removeList[x].dispose(false);
+          }
+        } finally {
+          Blockly.Events.setGroup(false);
+        }
+      }
+    });
+  };
+  menuOptions.splice(3, 0, clearUnusedBlocks);  
+
 };
 
 Blockly.WorkspaceSvg.prototype.recordDeleteAreas = function() {

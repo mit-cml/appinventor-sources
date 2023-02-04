@@ -6,6 +6,8 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.view.View;
+import com.google.appinventor.components.common.MapType;
+import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.runtime.LocationSensor;
 import com.google.appinventor.components.runtime.util.MapFactory.HasFill;
 import com.google.appinventor.components.runtime.util.MapFactory.HasStroke;
@@ -19,7 +21,6 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
-import com.google.appinventor.components.runtime.util.MapFactory.MapType;
 import org.osmdroid.util.BoundingBox;
 
 class DummyMapController implements MapController {
@@ -56,13 +57,22 @@ class DummyMapController implements MapController {
     throw new UnsupportedOperationException();
   }
 
-  public void setMapType(MapType type) {
+  public void setMapType(MapFactory.MapType type) {
     throw new UnsupportedOperationException();
   }
 
-  public MapType getMapType() {
+  public MapFactory.MapType getMapType() {
     throw new UnsupportedOperationException();
   }
+
+  public void setMapTypeAbstract(MapType type) {
+    throw new UnsupportedOperationException();
+  }
+
+  public MapType getMapTypeAbstract() {
+    throw new UnsupportedOperationException();
+  }
+
 
   public void setCompassEnabled(boolean enabled) {
     throw new UnsupportedOperationException();
@@ -290,6 +300,16 @@ class DummyMapController implements MapController {
 
   @Override
   public MapScaleUnits getScaleUnits() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setScaleUnitsAbstract(ScaleUnits units) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public ScaleUnits getScaleUnitsAbstract() {
     throw new UnsupportedOperationException();
   }
 }

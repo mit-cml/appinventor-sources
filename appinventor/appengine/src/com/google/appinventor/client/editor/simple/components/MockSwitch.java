@@ -10,8 +10,8 @@ import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.InlineHTML;
 
 /**
  * Mock Switch component, inherited from MockToggleBase
@@ -33,7 +33,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
 
   public InlineHTML switchLabel;
   public SVGPanel switchGraphic;
-  public Boolean isInitialized = false;
+  public Boolean isInitialized;
 
   /**
    * Creates a new MockSwitch component.
@@ -163,7 +163,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
 
   @Override
   protected void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(toggleWidget.getWidget(0), text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, toggleWidget.getWidget(0), text);
     updatePreferredSize();
   }
 
@@ -190,6 +190,15 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
     } else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
       paintSwitch();
       refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(switchLabel, newValue);
+      refreshForm();
     }
+  }
+
+  @Override
+  public void onDesignPreviewChanged() {
+    super.onDesignPreviewChanged();
+    paintSwitch();
   }
 }

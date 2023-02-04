@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -92,11 +92,29 @@ public interface ProjectService extends RemoteService {
   UserProject restoreProject(long projectId);
 
   /**
-   * On publish this sets the project's gallery id
-   * @param projectId  project ID
-   * @param galleryId  gallery ID
+   * Facilitate logging into the new gallery by
+   * generating a token which is passed to the gallery
+   * which contains the appropriate login authentication
+   * information
    */
-  void setGalleryId(long projectId, long galleryId);
+
+  public RpcResult loginToGallery();
+
+  /**
+   * Send a project to the new project Gallery
+   * @param projectId  project ID
+   * @return RpcResult will include URL to redirect to
+   */
+
+  public RpcResult sendToGallery(long projectId);
+
+  /**
+   * Load a project from the new Gallery
+   * @param galleryId  The gallery's unique ID for this project
+   * @return UserProject information object for newly loaded project
+   */
+
+  public UserProject loadFromGallery(String galleryId) throws IOException;
 
   /**
    * Returns an array with project IDs.
@@ -176,6 +194,21 @@ public interface ProjectService extends RemoteService {
    * @return  implementation dependent
    */
   String load(long projectId, String fileId);
+
+  /**
+   * Loads the file information associated with a node in the project tree. After
+   * loading the file, the contents of it are parsed.
+   *
+   * <p>Expected format is either JSON or CSV. If the first character of the
+   * file's contents is a left curly bracket ( { ), then JSON parsing is
+   * attempted. Otherwise, CSV parsing is done.
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  List of parsed columns (each column is a List of Strings)
+   */
+  List<List<String>> loadDataFile(long projectId, String fileId);
 
   /**
    * Loads the file information associated with a node in the project tree. The
@@ -297,7 +330,7 @@ public interface ProjectService extends RemoteService {
    *
    * @return  results of invoking the build command
    */
-  RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver);
+  RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab);
 
   /**
    * Gets the result of a build command for the project from the back-end.
@@ -332,17 +365,6 @@ public interface ProjectService extends RemoteService {
    */
   TextFile importMedia(String sessionId, long projectId, String url, boolean save)
     throws InvalidSessionException, IOException;
-
-  /**
-   * creates a new project from a gallery app
-   * @param appName name of the app to open
-   * @param aiaPath the url of the aia file in cloud
-   * @param attributionId id of the gallery app that is being remixed
-   *
-   * @return {@link UserProject} info for new project
-   */
-
-  UserProject newProjectFromGallery(String appName, String aiaPath, long attributionId);
 
   /**
    * Log a string to the server log, always log with

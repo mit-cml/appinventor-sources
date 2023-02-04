@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -92,13 +92,14 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class MockComponent extends Composite implements PropertyChangeListener,
-    SourcesMouseEvents, DragSource, HasAllTouchHandlers {
+    SourcesMouseEvents, DragSource, HasAllTouchHandlers, DesignPreviewChangeListener {
   // Common property names (not all components support all properties).
   public static final String PROPERTY_NAME_NAME = "Name";
   public static final String PROPERTY_NAME_UUID = "Uuid";
   private static final int ICON_IMAGE_WIDTH = 16;
   private static final int ICON_IMAGE_HEIGHT = 16;
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
+  public String currentPreview;
 
   /**
    * This class defines the dialog box for renaming a component.
@@ -413,7 +414,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // TODO(user): Ensure this value is unique within the project using a list of
     // already used UUIDs
     // Set the component's UUID
-    // The default value here can be anything except 0, because YoungAndroidProjectServce
+    // The default value here can be anything except 0, because YoungAndroidProjectService
     // creates forms with an initial Uuid of 0, and Properties.java doesn't encode
     // default values when it generates JSON for a component.
     addProperty(PROPERTY_NAME_UUID, "-1", null, new TextPropertyEditor());
@@ -439,7 +440,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
   protected boolean isPropertyforYail(String propertyName) {
     // By default we use the same criterion as persistance
-    // This method can then be overriden by the invididual
+    // This method can then be overridden by the individual
     // component Mocks
     return isPropertyPersisted(propertyName);
   }
@@ -763,7 +764,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    *
    * @param container  owning component container for this component
    */
-  protected final void setContainer(MockContainer container) {
+  protected void setContainer(MockContainer container) {
     this.container = container;
   }
 
@@ -1103,6 +1104,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
   }
 
+  // Null onDesignPreviewChange implementation
+
+  @Override
+  public void onDesignPreviewChanged() {
+  }
+
   // PropertyChangeListener implementation
 
   @Override
@@ -1231,6 +1238,26 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public void upgradeComplete() {
     this.componentDefinition = COMPONENT_DATABASE.getComponentDefinition(this.type); //Update ComponentDefinition
+  }
+
+  /**
+   * Hides or shows the specified property of the Component.
+   *
+   * @param property  Property key
+   * @param show  will show the property if set to true, will hide it otherwise
+   */
+  protected void showProperty(String property, boolean show) {
+    // Get the current type flags of the Property
+    int type = properties.getProperty(property).getType();
+
+    if (show) {
+      type &= ~EditableProperty.TYPE_INVISIBLE; // AND with all bits except INVISIBLE flag
+    } else {
+      type |= EditableProperty.TYPE_INVISIBLE; // OR with INVISIBLE flag to add invisibility
+    }
+
+    // Set the new type
+    properties.getProperty(property).setType(type);
   }
 
   public native void setShouldCancel(Event event, boolean cancelable)/*-{

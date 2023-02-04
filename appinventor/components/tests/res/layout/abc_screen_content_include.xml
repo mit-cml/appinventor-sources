@@ -16,7 +16,7 @@
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <android.support.v7.internal.widget.ContentFrameLayout
+    <androidx.appcompat.widget.ContentFrameLayout
             android:id="@id/action_bar_activity_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -24,4 +24,4 @@
             android:foreground="?android:attr/windowContentOverlay" />
 
 </merge>
-<!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/lmp-mr1-supportlib-release/frameworks/support/v7/appcompat/res/layout/abc_screen_content_include.xml -->
+<!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/layout/abc_screen_content_include.xml -->
