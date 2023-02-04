@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,7 +40,6 @@ public class JavaStringUtils {
     public void changeOrder(List<String> keys, String text) {
       // Default option: Do nothing (dictionary order)
     }
-
   }
 
   /**
