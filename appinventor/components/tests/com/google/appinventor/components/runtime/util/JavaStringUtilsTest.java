@@ -33,7 +33,7 @@ public class JavaStringUtilsTest {
 
   @Test 
   public void testSplitString() {
-    YailList text = JavaStringUtils.split("abcde","");
+    YailList text = JavaStringUtils.split("abcde", "");
     assertEquals(5, text.size());
   }
 
