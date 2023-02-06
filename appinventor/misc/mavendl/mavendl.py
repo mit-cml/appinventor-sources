@@ -1,8 +1,7 @@
-# Create mavendl to download AAR libs with transitive deps 
-# This stores the files in a "libs" directory relative to this script
-# Usage: mavendl.py <group>:<artifact>:<version>
+#!/usr/bin/env python3
 
 import argparse
+from dataclasses import dataclass
 import os
 import urllib.request
 from io import BytesIO
@@ -10,13 +9,21 @@ from typing import Dict, List, Set, Tuple
 from xml.dom import minidom
 from zipfile import ZipFile
 
-parser = argparse.ArgumentParser()
-parser.add_argument("coord")
+parser = argparse.ArgumentParser(
+    description="Download AAR libs with transitive deps")
+parser.add_argument("-t", "--dry-run", action="store_true",
+                    help="dry run to only print dependency graph")
+parser.add_argument("-d", "--depth", type=int, default=-1,
+                    help="depth of transitive dependencies to traverse")
+parser.add_argument("-o", "--output-dir", required=True,
+                    help="path to output directory")
+parser.add_argument("coord", metavar="G:A:V",
+                    help="maven coordinate (group:artifact:version)")
 
 args = parser.parse_args()
 
 
-maven_repos = [
+MAVEN_REPOS = [
     # google
     'https://maven.google.com',
     # maven central
@@ -24,12 +31,20 @@ maven_repos = [
 ]
 
 
-def maven_url(repo: str, group: str, artifact: str, version: str, type: str) -> str:
-    return '{r}/{gp}/{a}/{v}/{a}-{v}.{t}'.format(r=repo, gp=group.replace('.', '/'), a=artifact, v=version, t=type)
+@dataclass(frozen=True)
+class MavenCoordinate:
+    group: str
+    artifact: str
+    version: str
+    type: str
 
+    def maven_url(self, repo: str, type: str = None) -> str:
+        if not type:
+            type = self.type
+        return '{r}/{gp}/{a}/{v}/{a}-{v}.{t}'.format(r=repo, gp=self.group.replace('.', '/'), a=self.artifact, v=self.version, t=type)
 
-def format_coord(group: str, artifact: str, version: str, type: str) -> str:
-    return '{g}:{a}:{v}@{t}'.format(g=group, a=artifact, v=version, t=type)
+    def __repr__(self):
+        return '{g}:{a}:{v}@{t}'.format(g=self.group, a=self.artifact, v=self.version, t=self.type)
 
 
 def read_file(url):
@@ -44,33 +59,28 @@ def read_file(url):
 # parse the maven coordinate
 group, artifact, version = args.coord.split(':')
 
-COORD = Tuple[str, str, str, str]
+queue: List[Tuple[MavenCoordinate, int]] = [
+    (MavenCoordinate(group, artifact, version, 'aar'), 0)]
+visited: Set[MavenCoordinate] = set()
+source_map: Dict[MavenCoordinate, str] = {}
 
-q: List[COORD] = [(group, artifact, version, 'aar')]
+while queue:
+    coord, depth = queue.pop(0)
 
-v: Set[COORD] = set()
-
-sm: Dict[COORD, str] = {}
-
-while q:
-    coord = q.pop(0)
-
-    if coord in v:
+    if coord in visited or (args.depth != -1 and depth > args.depth):
         continue
 
-    v.add(coord)
+    visited.add(coord)
 
-    print('+', format_coord(*coord))
+    print('  ' * depth + '+', coord)
 
-    for repo in maven_repos:
-        pom = maven_url(repo, *coord[:-1], type='pom')
-
-        pom_file = read_file(pom)
+    for repo in MAVEN_REPOS:
+        pom_file = read_file(coord.maven_url(repo, type='pom'))
 
         if not pom_file:
             continue
 
-        sm[coord] = repo
+        source_map[coord] = repo
 
         pom_xml = minidom.parseString(pom_file)
 
@@ -87,31 +97,37 @@ while q:
             d_type = dep.getElementsByTagName(
                 'type')[0].firstChild.nodeValue if dep.getElementsByTagName('type') else 'jar'
 
-            q.append((d_group, d_artifact, d_version, d_type))
+            queue.append(
+                (MavenCoordinate(d_group, d_artifact, d_version, d_type), depth+1))
 
+        # exit the loop if the dep is resolved
         break
+    else:
+        print('!', "Couldn't resolve", coord)
+        exit(1)
 
+print('*', 'Found', len(visited), 'dependencies')
 
-os.makedirs('libs', exist_ok=True)
+if args.dry_run:
+    exit(0)
 
-for d in sorted(v):
-    print('.', format_coord(*d), sm[d])
+os.makedirs(args.output_dir, exist_ok=True)
 
-    repo = sm[d]
-    aar_or_jar = maven_url(repo, *d)
+for dep in visited:
+    print('.', dep, source_map[dep])
 
-    aar_or_jar_file = read_file(aar_or_jar)
+    repo = source_map[dep]
+
+    aar_or_jar_file = read_file(dep.maven_url(repo))
 
     if not aar_or_jar_file:
         continue
 
-    group, artifact, version, ftype = d
-
-    if ftype == 'aar':
-        aar_path = 'libs/{a}-{v}.{t}'.format(
-            a=artifact, v=version, t=ftype)
-        jar_path = 'libs/{a}-{v}.{t}'.format(
-            a=artifact, v=version, t='jar')
+    if dep.type == 'aar':
+        aar_path = '{o}/{a}-{v}.aar'.format(o=args.output_dir,
+                                            a=dep.artifact, v=dep.version)
+        jar_path = '{o}/{a}-{v}.jar'.format(o=args.output_dir,
+                                            a=dep.artifact, v=dep.version)
 
         with ZipFile(BytesIO(aar_or_jar_file)) as zi, ZipFile(aar_path, 'w') as zo:
             for item in zi.infolist():
@@ -121,8 +137,8 @@ for d in sorted(v):
                 else:
                     zo.writestr(item, zi.read(item))
     else:
-        jar_path = 'libs/{a}-{v}.{t}'.format(
-            a=artifact, v=version, t=ftype)
+        jar_path = '{o}/{a}-{v}.{t}'.format(o=args.output_dir,
+                                            a=dep.artifact, v=dep.version, t=dep.type)
 
         with open(jar_path, 'wb') as f:
             f.write(aar_or_jar_file)
