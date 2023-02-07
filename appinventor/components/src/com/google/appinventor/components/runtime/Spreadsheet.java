@@ -1786,7 +1786,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
                     || (!exact && sheet_row.get(colID - 1).contains(value)))
                     {
                       Log.d(LOG_TAG, "Read with Filter check col: " + rowNum);
-                      return_rows.add(rowNum);
+                      return_rows.add(rowNum + 1);
                       return_data.add(sheet_row);
                     }
                   }
