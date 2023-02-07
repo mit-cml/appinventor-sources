@@ -40,7 +40,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       return view.accessibilityLabel ?? ""
     }
     set {
-      view.accessibilityLabel = newValue
+      //view.accessibilityLabel = newValue
     }
   }
   

@@ -312,10 +312,14 @@ open class ButtonBase: ViewComponent {
       return Float32((_view.titleLabel?.font.pointSize)!)
     }
     set(size) {
-      //_view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: size)
-      if size == kFontSizeDefault && form?.BigDefaultText == true {
-        _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: 28)
-      } else{
+      if size == kFontSizeDefault {
+        if Form?.BigDefaultText == true {
+          _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: 18) //considering kFontSizeDefault is 14 I set it up to 18 randomly
+        } else{
+          _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: kFontSizeDefault)
+        }
+        
+      } else {
         _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: size)
       }
     }
@@ -325,13 +329,12 @@ open class ButtonBase: ViewComponent {
     get {
       return _isHighContrast
     }
-    set {
-      _isHighContrast = newValue
-      
-      if (_textColor == Int32(bitPattern: Color.default.rawValue)) {
-        _view.setTitleColor(_defaultTextColor, for: .normal)
+    set(isHighContrast) {
+      _isHighContrast = isHighContrast
+      if (_textColor == Int32(bitPattern: Color.default.rawValue) && Form?.HighContrast == true) {
+        _view.setTitleColor(argbToColor(Color.white.rawValue), for: .normal) // is thisthe right way to set it as white?
       } else {
-        _view.setTitleColor(argbToColor(Color.white.rawValue), for: .normal)
+        _view.setTitleColor(_defaultTextColor, for: .normal)
       }
     }
   }
@@ -356,6 +359,15 @@ open class ButtonBase: ViewComponent {
         }
       }
       setNeedsStyleApplied()
+    }
+  }
+  
+  @objc open var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      Fontsize(isLargeFont)
     }
   }
 
@@ -426,10 +438,14 @@ open class ButtonBase: ViewComponent {
     }
     set(color) {
       _textColor = color
-      if (color == Int32(bitPattern: Color.default.rawValue)) {
-        _view.setTitleColor(_defaultTextColor, for: .normal)
-      } else {
+      if (color != Int32(bitPattern: Color.default.rawValue)) {
         _view.setTitleColor(argbToColor(color), for: .normal)
+      } else{
+        if Form?.HighContrast == true {
+          _view.setTitleColor(argbToColor(Color.white.rawValue), for: .normal
+        } else {
+          _view.setTitleColor(_defaultTextColor, for: .normal)
+        }
       }
     }
   }

@@ -184,10 +184,9 @@ let kMinimumToastWait = 10.0
   public static func setBigDefaultTextRecursive(of component: ViewComponent ,to enabled: Bool) {
     for child in _components{
       if let child = component as? ComponentContainer{
-        setBigDefaultTextRecursive(child, enabled)
-      }
-      else if let child = component as? AccessibleComponent{
-        child.setLargeFont(to: true)
+        Form.setBigDefaultTextRecursive(child, enabled)
+      } else if let child = component as? AccessibleComponent{
+        child.LargeFont(to: true) // Is this right?
       }
     }
   }
@@ -221,9 +220,8 @@ let kMinimumToastWait = 10.0
   public static func setHighContrastRecursive(of component: ViewComponent ,to enabled: Bool) {
     for child in _components{
       if let child = component as? ComponentContainer{
-        setHighContrastRecursive(child, enabled)
-      }
-      else if let child = component as? AccessibleComponent{
+        Form.setHighContrastRecursive(child, enabled)
+      } else if let child = component as? AccessibleComponent{
         child.setHighContrast(to: true)
       }
     }
@@ -474,7 +472,7 @@ let kMinimumToastWait = 10.0
     }
     set(bigDefaultText) {
       _bigDefaultText = bigDefaultText
-      setBigDefaultTextRecursive(_components ,_bigDefaultText)
+      Form.setBigDefaultTextRecursive(_components ,_bigDefaultText)
       recomputeLayout()
     }
   }
@@ -524,7 +522,7 @@ let kMinimumToastWait = 10.0
     }
     set(highcontrast) {
       _highContrast = highcontrast
-      setHighContrastRecursive(_components ,_highContrast)
+      Form.setHighContrastRecursive(_components ,_highContrast)
       recomputeLayout()
     }
   }
