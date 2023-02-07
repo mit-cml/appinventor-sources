@@ -12,9 +12,11 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
+import gnu.lists.LList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -200,7 +202,21 @@ public final class ChartData2D extends ChartDataBase {
 
     importFromWebAsync(web, columns);
   }
-
+  public List<Double> castToDouble(List list){
+    List<Double> listDoubles = new ArrayList<>();
+    for (Object o : list) {
+      if (o instanceof Number) {
+        listDoubles.add(((Number) o).doubleValue());
+      } else {
+        try {
+          listDoubles.add(Double.parseDouble(o.toString()));
+        } catch (NumberFormatException e) {
+          // Do nothing (value already false)
+        }
+      }
+    }
+    return listDoubles;
+  }
   /**
    * Calculates the line of best fit
    *
@@ -209,34 +225,36 @@ public final class ChartData2D extends ChartDataBase {
    * @return list of line of best fit prediction values
    */
   @SimpleFunction(description = "Predicts the line of best fit.")
-  public ArrayList PredictLineOfBestFit(YailList xEntries, YailList  yEntries) {
-    Double[] x = (Double[]) xEntries.toArray();
-    Double[] y = (Double[]) yEntries.toArray();
-    if (x.length!= y.length)
+  public List PredictLineOfBestFit(final YailList xEntries, final YailList  yEntries) {
+    LList xValues = (LList) xEntries.getCdr();
+    List<Double> x = castToDouble(xValues);
+
+    LList yValues = (LList) yEntries.getCdr();
+    List<Double> y = castToDouble(yValues);
+
+    if (xValues.size()!= yValues.size())
       throw new IllegalStateException("Must have equal X and Y data points");
 
-    int n = x.length;
+    int n = xValues.size();
 
-    double sumx = 0.0, sumy = 0.0, sumx2 = 0.0;
+    double sumx = 0.0, sumy = 0.0;
     for (int i = 0; i < n; i++) {
-      sumx  += x[i];
-      sumx2 += x[i]*x[i];
-      sumy  += y[i];
+      sumx  += x.get(i);
+      sumy  += y.get(i);
     }
     double xmean = sumx / n;
     double ymean = sumy / n;
 
-    double xxmean = 0.0, yymean = 0.0, xymean = 0.0; ArrayList predictions = new ArrayList();
+    double xxmean = 0.0, xymean = 0.0; List predictions = new ArrayList();
     for (int i = 0; i < n; i++) {
-      xxmean += (x[i] - xmean) * (x[i] - xmean);
-      yymean += (y[i] - ymean) * (y[i] - ymean);
-      xymean += (x[i] - xmean) * (y[i] - ymean);
+      xxmean += (x.get(i) - xmean) * (x.get(i) - xmean);
+      xymean += (x.get(i) - xmean) * (y.get(i) - ymean);
     }
     double slope  = xymean / xxmean;
     double intercept = ymean - slope * xmean;
 
     for (int i = 0; i < n; i++) {
-      double prediction = slope * x[i] + intercept;
+      double prediction = slope * x.get(i) + intercept;
       predictions.add(prediction);
     }
     return predictions;
@@ -249,7 +267,7 @@ public final class ChartData2D extends ChartDataBase {
    */
   @SimpleFunction(description = "Draws the line of best fit.")
   public void DrawLineOfBestFit(final YailList x, final YailList y, final String chartName) {
-    ArrayList predictions = PredictLineOfBestFit(x,y);
+    List predictions = PredictLineOfBestFit(x,y);
     // ToDo: draw the line of best fit on the given chart
 
 
