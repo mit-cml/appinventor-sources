@@ -666,7 +666,7 @@ Blockly.Blocks['lists_sort'] = {
     this.setInputsInline(false);
   },
   saveConnections: Blockly.saveConnections,
-  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_SORT_INPUT_COLLAPSED_TEXT }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_SORT_NONDEST_TITLE_SORT }]
 };
 
 Blockly.Blocks['lists_sort_comparator'] = {
