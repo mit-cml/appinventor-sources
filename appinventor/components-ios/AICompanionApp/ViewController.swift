@@ -57,6 +57,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @IBOutlet weak var barcodeButton: UIButton?
   @objc var barcodeScanner: BarcodeScanner?
   @objc var phoneStatus: PhoneStatus!
+  @objc var notifier1: Notifier!
   private var onboardingScreen: OnboardViewController? = nil
 
   private static var _interpreterInitialized = false
@@ -139,7 +140,13 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         NSLog("Exception: \(exception.name) (\(exception))")
       }
       interpreter.evalForm("(add-component Screen1 AIComponentKit.PhoneStatus PhoneStatus1)")
+      interpreter.evalForm("(add-component Screen1 AIComponentKit.Notifier Notifier1)")
+      interpreter.evalForm("""
+        (define-event Notifier1 AfterChoosing($choice)(set-this-form)
+          (if (call-yail-primitive yail-equal? (*list-for-runtime* (lexical-value $choice) "Exit") '(any any) "=") (begin   (call-component-method 'PhoneStatus1 'shutdown (*list-for-runtime*) '()))))
+        """)
       phoneStatus = form.environment["PhoneStatus1"] as? PhoneStatus
+      notifier1 = form.environment["Notifier1"] as? Notifier
       ipAddrLabel = form.view.viewWithTag(1) as! UILabel?
       versionNumber = form.view.viewWithTag(2) as! UILabel?
       connectCode = form.view.viewWithTag(3) as! UITextField?
@@ -157,6 +164,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       navigationBar.isTranslucent = false
       form.updateNavbar()
       form.Initialize()
+      checkWifi()
     }
   }
 
@@ -321,5 +329,13 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     vc.modalPresentationStyle = .fullScreen
     present(vc, animated: true)
     onboardingScreen = vc
+  }
+
+  // Implemented in Swift based on aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail
+  private func checkWifi() {
+    if PhoneStatus.GetWifiIpAddress().hasPrefix("Error") {
+      notifier1.ShowChooseDialog("Your Device does not appear to have a Wifi Connection",
+                                 "No WiFi", "Continue without WiFi", "Exit", false)
+    }
   }
 }

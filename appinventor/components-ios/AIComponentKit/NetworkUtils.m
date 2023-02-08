@@ -9,7 +9,7 @@
 
 + (NSString *)getIPAddress {
   
-  NSString *address = @"error";
+  NSString *address = @"Error: No Wifi Connection";
   struct ifaddrs *interfaces = NULL;
   struct ifaddrs *temp_addr = NULL;
   int success = 0;
