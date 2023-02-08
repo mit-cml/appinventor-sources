@@ -13,6 +13,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
+import gnu.lists.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -266,11 +267,14 @@ public final class ChartData2D extends ChartDataBase {
    * @param y - y value of entry
    */
   @SimpleFunction(description = "Draws the line of best fit.")
-  public void DrawLineOfBestFit(final YailList x, final YailList y, final String chartName) {
+  public void DrawLineOfBestFit(final YailList x, final YailList y) {
     List predictions = PredictLineOfBestFit(x,y);
-    // ToDo: draw the line of best fit on the given chart
-
-
+    List predictionPairs = new ArrayList<Pair>();
+    List xValues = (List) x.getCdr();
+    for(int i = 0; i<xValues.size(); i++){
+      predictionPairs.add(Arrays.asList(xValues.get(i), predictions.get(i)));
+    }
+    chartDataModel.importFromList(predictionPairs);
   }
 }
 
