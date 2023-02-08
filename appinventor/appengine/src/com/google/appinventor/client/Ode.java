@@ -620,8 +620,6 @@ public class Ode implements EntryPoint {
    */
   @Override
   public void onModuleLoad() {
-    Tracking.trackPageview();
-
     // Handler for any otherwise unhandled exceptions
     GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
       @Override
