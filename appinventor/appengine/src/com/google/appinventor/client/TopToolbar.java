@@ -476,6 +476,7 @@ public class TopToolbar extends Composite {
       if (Ode.getInstance().okToConnect()) {
         startRepl(true, false, false, false); // false means we are
                                               // *not* the emulator
+        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_WIFI);
       }
     }
   }
@@ -485,6 +486,7 @@ public class TopToolbar extends Composite {
     public void execute() {
       if (Ode.getInstance().okToConnect()) {
         startRepl(true, true, false, false);
+        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_CHROMEBOOK);
       }
     }
   }
@@ -495,6 +497,7 @@ public class TopToolbar extends Composite {
       if (Ode.getInstance().okToConnect()) {
         startRepl(true, false, true, false); // true means we are the
                                              // emulator
+        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_EMULATOR);
       }
     }
   }
@@ -504,6 +507,7 @@ public class TopToolbar extends Composite {
     public void execute() {
       if (Ode.getInstance().okToConnect()) {
         startRepl(true, false, false, true);
+        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_USB);
       }
     }
   }
@@ -513,6 +517,7 @@ public class TopToolbar extends Composite {
     public void execute() {
       if (Ode.getInstance().okToConnect()) {
         startRepl(false, false, false, false); // We are really stopping the repl here
+        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_RESET);
       }
     }
   }
@@ -522,6 +527,7 @@ public class TopToolbar extends Composite {
     public void execute() {
       if (Ode.getInstance().okToConnect()) {
         replHardReset();
+        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_HARD_RESET);
       }
     }
   }
@@ -531,6 +537,7 @@ public class TopToolbar extends Composite {
     public void execute() {
       if (Ode.getInstance().okToConnect()) {
         replUpdate();
+        Tracking.trackEvent(Tracking.CONNECT_EVENT, Tracking.CONNECT_ACTION_RESEND);
       }
     }
   }
