@@ -8,51 +8,74 @@
 
 import Foundation
 
-open class AssetFetcher: NSObject {
+class AssetLoadError: Error {
+}
+
+@objc open class AssetFetcher: NSObject {
   fileprivate static let lock = DispatchSemaphore(value: 1)
   fileprivate static var inError: Bool = false
   
-  public static func fetchAssets(cookieValue: String, projectId: String, uri: String, asset: String) {
+  @objc public static func fetchAssets(_ cookieValue: String, _ projectId: String, _ uri: String, _ asset: String) {
     DispatchQueue.global(qos: .background).async {
       let fileName = uri + "/ode/download/file/" + projectId + "/" + asset;
-      if (!getFile(fileName: fileName, cookieValue: cookieValue, asset: asset, depth: 0)) {
-        RetValManager.shared().assetTransferred(asset);
+      getFile(fileName: fileName, cookieValue: cookieValue, asset: asset, depth: 0) { success, error in
+        if success {
+          RetValManager.shared().assetTransferred(asset)
+        } else if let error = error {
+          guard let window = UIApplication.shared.keyWindow else {
+            return
+          }
+          let center = CGPoint(x: window.frame.size.width / 2.0, y: window.frame.size.height / 2.0)
+          window.makeToast("Unable to load \(asset) with error \(error)", point: center,
+                           title: nil, image: nil, completion: nil)
+        }
       }
     }
   }
+
+  @objc public static func loadExtensions(_ extensionsJson: String) {
+    // Loading extensions is not supported on iOS
+    RetValManager.shared().extensionsLoaded()
+  }
   
-  private static func getFile(fileName: String, cookieValue: String, asset: String, depth: Int) -> Bool {
-    if (depth > 1) {
+  private static func getFile(fileName: String, cookieValue: String, asset: String, depth: Int, completionHandler: @escaping (Bool, Error?) -> Void) {
+    guard depth <= 1 else {
       lock.wait()
       if (!inError) {
         inError = true
         DispatchQueue.main.async {
-           fatalError("Unable to load file " + fileName)
+          completionHandler(false, AssetLoadError())
         }
       }
       AssetFetcher.lock.signal()
-      return false
+      return
     }
-    var getFileError = false
-    guard let url = URL(string: fileName) else { return false}
+    guard let url = URL(string: fileName) else {
+      return
+    }
     var request = URLRequest(url: url)
-    request.httpMethod = "GET"
-    request.setValue("cookie", forHTTPHeaderField: "AppInventor = " + cookieValue)
-    URLSession.shared.dataTask(with: request, completionHandler: { (data, response, responseerror) in
-      let destination = URL(string: AssetManager.shared.pathForPrivateAsset(asset))
+    request.setValue("AppInventor = " + cookieValue, forHTTPHeaderField: "Cookie")
+    URLSession.shared.dataTask(with: request) { (data, response, responseerror) in
+      let filename = asset.chopPrefix(count: "assets/".count)
+      let destination = URL(fileURLWithPath: AssetManager.shared.pathForPublicAsset(filename),
+                            isDirectory: false)
+      print("Saving asset to \(destination)")
       if let data = data {
         do {
-          try data.write(to: destination!)
+          try FileManager.default.createDirectory(at: destination.deletingLastPathComponent(),
+                                                  withIntermediateDirectories: true)
+          try data.write(to: destination)
+          DispatchQueue.main.async {
+            completionHandler(true, nil)
+          }
         } catch {
-         getFileError =  getFile(fileName: fileName, cookieValue: cookieValue, asset: asset, depth: depth + 1)
+          getFile(fileName: fileName, cookieValue: cookieValue, asset: asset, depth: depth + 1,
+                  completionHandler: completionHandler)
         }
+      } else if let error = responseerror {
+        completionHandler(false, error)
       }
-    }
-    ).resume()
-    if (getFileError) {
-      return getFile(fileName: fileName, cookieValue: cookieValue, asset: asset, depth: depth + 1)
-    }
-   return true
+    }.resume()
   }
 }
 

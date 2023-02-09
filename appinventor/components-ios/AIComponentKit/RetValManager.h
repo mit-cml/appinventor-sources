@@ -11,7 +11,9 @@
 - (void)pushScreen:(nonnull NSString *)screenName withValue:(nonnull NSObject *)value;
 - (void)popScreen:(nonnull NSString *)value;
 - (void)assetTransferred:(nonnull NSString *)name;
-- (void)extensionLoaded;
+- (void)extensionsLoaded;
 - (nonnull NSString *)fetch:(BOOL)block;
+
+@property BOOL usingWebRTC;
 
 @end

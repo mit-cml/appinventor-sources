@@ -2,6 +2,7 @@
 // Copyright © 2016-2018 Massachusetts Institute of Technology, All rights reserved.
 
 #import "RetValManager.h"
+#import <AIComponentKit/AIComponentKit-Swift.h>
 
 #define TENSECONDS 10.0
 
@@ -18,11 +19,14 @@ static RetValManager *_manager = nil;
 
 @implementation RetValManager
 
+@synthesize usingWebRTC;
+
 - (instancetype)init {
   if (self = [super init]) {
     _results = [[NSMutableArray alloc] initWithCapacity:10];
     _semaphore = [[NSLock alloc] init];
     _waitLock = [[NSCondition alloc] init];
+    usingWebRTC = NO;
   }
   return self;
 }
@@ -39,7 +43,14 @@ static RetValManager *_manager = nil;
   @try {
     BOOL sendNotify = _results.count == 0;
     [_results addObject:result];
-    if (sendNotify) {
+    if (usingWebRTC) {
+      NSDictionary *output = @{
+        @"status": @"OK",
+        @"values": [_results copy]
+      };
+      [_results removeAllObjects];
+      [ReplForm returnRetvals:[NSJSONSerialization dataWithJSONObject:output options:0 error:nil]];
+    } else if (sendNotify) {
       [_waitLock broadcast];
     }
   } @catch (NSException *exception) {
@@ -86,7 +97,7 @@ static RetValManager *_manager = nil;
 }
 
 - (void)extensionsLoaded {
-  NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary: @{@"status": @"OK", @"type": @"extensionLoaded"}];
+  NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary: @{@"status": @"OK", @"type": @"extensionsLoaded"}];
   [self addResult:output];
 }
 

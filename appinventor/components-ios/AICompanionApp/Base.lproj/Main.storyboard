@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
     <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -41,17 +41,27 @@
                                 <state key="normal" image="connectwQR.png"/>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Version: Unknown" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aXu-gl-0yY">
-                                <rect key="frame" x="36" y="269.66666666666669" width="342" height="20.666666666666686"/>
+                                <rect key="frame" x="36" y="277.66666666666669" width="342" height="20.666666666666686"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your IP Address is: " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ste-Nv-ksy">
-                                <rect key="frame" x="36" y="249.33333333333334" width="342" height="20.333333333333343"/>
+                                <rect key="frame" x="36" y="257.33333333333331" width="342" height="20.333333333333314"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <view tag="6" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bp2-QU-Qf6" customClass="CheckBoxView" customModule="AIComponentKit">
+                                <rect key="frame" x="87" y="306.33333333333331" width="240" height="30"/>
+                                <accessibility key="accessibilityConfiguration" label="Use Legacy Connection">
+                                    <accessibilityTraits key="traits" button="YES"/>
+                                    <bool key="isElement" value="YES"/>
+                                </accessibility>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="240" id="xGY-yC-SXN"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="0.78814870119094849" green="0.78828507661819458" blue="0.78814005851745605" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -67,8 +77,10 @@
                             <constraint firstItem="QmI-n4-yhD" firstAttribute="top" secondItem="vZO-ch-Rin" secondAttribute="bottom" constant="8" id="SOw-1N-yfn"/>
                             <constraint firstItem="QmI-n4-yhD" firstAttribute="centerX" secondItem="8pV-NU-cQS" secondAttribute="centerX" id="V6J-uB-GXA"/>
                             <constraint firstItem="gxM-wq-OQv" firstAttribute="leading" secondItem="8pV-NU-cQS" secondAttribute="leadingMargin" constant="16" id="Z08-jF-MP0"/>
-                            <constraint firstItem="Ste-Nv-ksy" firstAttribute="top" secondItem="QmI-n4-yhD" secondAttribute="bottom" id="Zyc-T3-4ff"/>
+                            <constraint firstItem="Ste-Nv-ksy" firstAttribute="top" secondItem="QmI-n4-yhD" secondAttribute="bottom" constant="8" id="avV-TV-CYc"/>
                             <constraint firstItem="Ste-Nv-ksy" firstAttribute="leading" secondItem="8pV-NU-cQS" secondAttribute="leadingMargin" constant="16" id="ds2-gY-ASF"/>
+                            <constraint firstItem="Bp2-QU-Qf6" firstAttribute="top" secondItem="aXu-gl-0yY" secondAttribute="bottom" constant="8" id="fbN-YU-1vd"/>
+                            <constraint firstItem="Bp2-QU-Qf6" firstAttribute="centerX" secondItem="8pV-NU-cQS" secondAttribute="centerX" id="fiy-zB-4Sg"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Ste-Nv-ksy" secondAttribute="trailing" constant="16" id="qMb-TK-qVD"/>
                             <constraint firstAttribute="trailingMargin" secondItem="aXu-gl-0yY" secondAttribute="trailing" constant="16" id="uiA-T0-V0i"/>
                         </constraints>

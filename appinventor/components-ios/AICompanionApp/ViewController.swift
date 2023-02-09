@@ -55,6 +55,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @IBOutlet weak var connectCode: UITextField?
   @IBOutlet weak var connectButton: UIButton?
   @IBOutlet weak var barcodeButton: UIButton?
+  @IBOutlet weak var legacyCheckbox: CheckBoxView!
   @objc var barcodeScanner: BarcodeScanner?
   @objc var phoneStatus: PhoneStatus!
   @objc var notifier1: Notifier!
@@ -152,6 +153,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectCode = form.view.viewWithTag(3) as! UITextField?
       connectButton = form.view.viewWithTag(4) as! UIButton?
       barcodeButton = form.view.viewWithTag(5) as! UIButton?
+      legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
+      legacyCheckbox.Text = "Use Legacy Connection"
       let ipaddr: String! = NetworkUtils.getIPAddress()
       let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
       let build = Bundle.main.infoDictionary?["CFBundleVersion"] ?? "?"
@@ -187,6 +190,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   }
   
   @objc func connect(_ sender: UIButton?) {
+    phoneStatus.WebRTC = !(legacyCheckbox?.Checked ?? true)
+    RetValManager.shared().usingWebRTC = phoneStatus.WebRTC
     form.startHTTPD(false)
     form.application?.makeCurrent()
     let code = phoneStatus.setHmacSeedReturnCode((connectCode?.text)!)
@@ -213,14 +218,23 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     request.httpMethod = "POST"
     request.httpBody = values.data(using: String.Encoding.utf8)
     URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
-      var responseContent: String = ""
-      if let data = data {
-        guard let responseContentStr = String(data: data, encoding: .utf8) else {
+      if self.phoneStatus.WebRTC {
+        guard let data = data, let responseContent = String(data: data, encoding: .utf8) else {
           return
         }
-        responseContent = responseContentStr as String
+        DispatchQueue.main.async {
+          self.phoneStatus.startWebRTC("rendezvous.appinventor.mit.edu", responseContent)
+        }
+      } else {
+        var responseContent = ""
+        if let data = data {
+          guard let responseContentStr = String(data: data, encoding: .utf8) else {
+            return
+          }
+          responseContent = responseContentStr
+        }
+        self.setPopup(popup: responseContent)
       }
-      self.setPopup(popup: responseContent)
     }
     ).resume()
   }
@@ -283,11 +297,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   }
 
-  fileprivate func reset() {
+  @objc public func reset() {
     form.stopHTTPD()
     form.clear()
     form.environment.removeAllObjects()
     form.initThunks.removeAllObjects()
+    form.stopWebRTC()
     EventDispatcher.removeDispatchDelegate(form)
     form = nil
     self.viewControllers = []

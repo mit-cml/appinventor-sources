@@ -90,6 +90,7 @@
 		06463F171D95956800B23DCD /* AICompanionAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AICompanionAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463F1B1D95956800B23DCD /* AICompanionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICompanionUITests.swift; sourceTree = "<group>"; };
 		06463F1D1D95956800B23DCD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		066EA0A72979D46C008203B1 /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = "webrtc/out/ios_arm64-Release/WebRTC.framework"; sourceTree = "<group>"; };
 		066FE95625AC9E7300C6193B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = AICompanionApp/Settings.bundle; sourceTree = "<group>"; };
 		066FE95A25ACB94C00C6193B /* SystemVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemVariables.swift; sourceTree = "<group>"; };
 		066FE95E25ACB98100C6193B /* UIFont_Fitting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont_Fitting.swift; sourceTree = "<group>"; };
@@ -237,6 +238,7 @@
 		06EC0A1A1D959648001CD8DC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				066EA0A72979D46C008203B1 /* WebRTC.framework */,
 				06A6869D2225D886006E7F60 /* Alamofire.framework */,
 				06A6869B2225D516006E7F60 /* Alamofire.framework */,
 				06A686962225D3FA006E7F60 /* Foundation.framework */,
@@ -282,6 +284,7 @@
 				06463EF61D95956800B23DCD /* Resources */,
 				170B928B754926C8A96CC2CF /* [CP] Embed Pods Frameworks */,
 				063D67941FA0CEB2002E907D /* Embed Frameworks */,
+				061CEC0E297B4E2300C2879B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -415,6 +418,26 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		061CEC0E297B4E2300C2879B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/WebRTC.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n${PROJECT_DIR}/install-webrtc.sh\n";
+			showEnvVarsInLog = 0;
+		};
 		170B928B754926C8A96CC2CF /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -650,10 +673,13 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "${PROJECT_DIR}/**";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",
+					"${PROJECT_DIR}/**",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -668,7 +694,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -711,10 +738,13 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = "${PROJECT_DIR}/**";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",
+					"${PROJECT_DIR}/**",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
@@ -724,7 +754,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -738,10 +769,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",
+				);
 				INFOPLIST_FILE = AICompanionApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -760,10 +794,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",
+				);
 				INFOPLIST_FILE = AICompanionApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3;
 				PRODUCT_NAME = "$(TARGET_NAME)";

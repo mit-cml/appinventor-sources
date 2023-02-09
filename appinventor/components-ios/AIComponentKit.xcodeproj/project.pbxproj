@@ -73,6 +73,7 @@
 		0680ED591E012A2100732883 /* TableArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0680ED581E012A2100732883 /* TableArrangement.swift */; };
 		0681C4B326024E6800F70BC6 /* WebTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0681C4B226024E6800F70BC6 /* WebTests.swift */; };
 		0685B5B32003C931005153ED /* ThemeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0685B5B22003C931005153ED /* ThemeEnum.swift */; };
+		068A11CC293C309E009D9470 /* WebRTCNativeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068A11CB293C309E009D9470 /* WebRTCNativeManager.swift */; };
 		068AA8191DE61D8E0011CC74 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068AA8181DE61D8E0011CC74 /* Application.swift */; };
 		068AA81B1DE61FE20011CC74 /* ApplicationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */; };
 		068E0E9E1DC243B30086FFDA /* Picker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0E9D1DC243B30086FFDA /* Picker.swift */; };
@@ -263,6 +264,7 @@
 		0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIComponentKitTests.swift; sourceTree = "<group>"; };
 		0618A2931D8CF4EE0013A191 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0618D2741F34DC3400A127A2 /* ListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListView.swift; sourceTree = "<group>"; };
+		061CEC0D297B47B400C2879B /* install-webrtc.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "install-webrtc.sh"; sourceTree = "<group>"; };
 		061DC7AF223C34A900539213 /* classic_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.png; sourceTree = "<group>"; };
 		061DC7B1223C395F00539213 /* classic_button.pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.pressed.png; sourceTree = "<group>"; };
 		061DC7B2223C395F00539213 /* classic_button.disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = classic_button.disabled.png; sourceTree = "<group>"; };
@@ -296,6 +298,7 @@
 		065E429C2866BC5500479153 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
 		06604B722034EFE70066C459 /* CsvUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvUtil.swift; sourceTree = "<group>"; };
 		06678E31233956EE00BD3F19 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		066EA0A32979D44E008203B1 /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = "webrtc/out/ios_arm64-Release/WebRTC.framework"; sourceTree = "<group>"; };
 		067D1B151D9B398E00A6190E /* RetValManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetValManager.h; sourceTree = "<group>"; };
 		067D1B161D9B398E00A6190E /* RetValManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetValManager.m; sourceTree = "<group>"; };
 		067D2BCE2040FB4B00D1EB16 /* variables.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = variables.yail; sourceTree = "<group>"; };
@@ -303,6 +306,7 @@
 		0680ED581E012A2100732883 /* TableArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableArrangement.swift; sourceTree = "<group>"; };
 		0681C4B226024E6800F70BC6 /* WebTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebTests.swift; sourceTree = "<group>"; };
 		0685B5B22003C931005153ED /* ThemeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeEnum.swift; sourceTree = "<group>"; };
+		068A11CB293C309E009D9470 /* WebRTCNativeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCNativeManager.swift; sourceTree = "<group>"; };
 		068AA8181DE61D8E0011CC74 /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationFactory.swift; sourceTree = "<group>"; };
 		068E0E9D1DC243B30086FFDA /* Picker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Picker.swift; sourceTree = "<group>"; };
@@ -520,6 +524,7 @@
 		0618A27A1D8CECAC0013A191 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				066EA0A32979D44E008203B1 /* WebRTC.framework */,
 				06A6869F2225DB95006E7F60 /* Alamofire.framework */,
 				0609147B1DE61B530049B7AB /* SQLite.framework */,
 				0609147C1DE61B530049B7AB /* Toast_Swift.framework */,
@@ -719,6 +724,7 @@
 				061DC7B5224027C900539213 /* ScaleFrameLayout.swift */,
 				06941F3F2603B4A900F8E1B2 /* StringUtil.swift */,
 				0685B5B22003C931005153ED /* ThemeEnum.swift */,
+				068A11CB293C309E009D9470 /* WebRTCNativeManager.swift */,
 				DE4EA34720AE2D2D009681D8 /* XMLUtil.swift */,
 				0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */,
 				064884D521E682EA0086411C /* iOS9Util.swift */,
@@ -857,6 +863,7 @@
 		06EF8CDF1D8CE2F6009FB227 = {
 			isa = PBXGroup;
 			children = (
+				061CEC0D297B47B400C2879B /* install-webrtc.sh */,
 				0618A2851D8CF4EE0013A191 /* AIComponentKit */,
 				0618A2901D8CF4EE0013A191 /* AIComponentKitTests */,
 				06EF8CE91D8CE2F7009FB227 /* Products */,
@@ -1003,6 +1010,7 @@
 				0618A2891D8CF4EE0013A191 /* Frameworks */,
 				0618A28A1D8CF4EE0013A191 /* Resources */,
 				BE02EA76D5DAF6D4DF120F32 /* [CP] Embed Pods Frameworks */,
+				061CEC0C297B46EC00C2879B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1099,6 +1107,26 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		061CEC0C297B46EC00C2879B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/WebRTC.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\n\"${PROJECT_DIR}/install-webrtc.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		069684EE0D28A74072439CF3 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1307,6 +1335,7 @@
 				06DA9F551D8CFBA200389B04 /* ViewComponent.swift in Sources */,
 				DE962F3C20ADC8A3004AA45A /* CloudDB.swift in Sources */,
 				062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */,
+				068A11CC293C309E009D9470 /* WebRTCNativeManager.swift in Sources */,
 				DE4EA34820AE2D2D009681D8 /* XMLUtil.swift in Sources */,
 				06E59EA61D92C6C300C42804 /* NonvisibleComponent.swift in Sources */,
 				086DC63621022E1B00FDA182 /* ByteTools.swift in Sources */,
@@ -1382,16 +1411,70 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/include",
 					"$(inherited)",
+					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers",
 				);
 				INFOPLIST_FILE = AIComponentKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"sqlite3\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AVFoundation\"",
+					"-framework",
+					"\"Alamofire\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"CocoaAsyncSocket\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreMedia\"",
+					"-framework",
+					"\"CoreVideo\"",
+					"-framework",
+					"\"GCDWebServer\"",
+					"-framework",
+					"\"GEOSwift\"",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"KTVJSONWebToken\"",
+					"-framework",
+					"\"MobileCoreServices\"",
+					"-framework",
+					"\"PSSRedisClient\"",
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"SQLite\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"SwiftSVG\"",
+					"-framework",
+					"\"Toast_Swift\"",
+					"-framework",
+					"\"ZXingObjC\"",
+					"-framework",
+					"\"Zip\"",
+					"-framework",
+					"\"geos\"",
+					"-framework",
+					"\"WebRTC\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1416,17 +1499,70 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = "$(inherited)";
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/include",
 					"$(inherited)",
+					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers",
 				);
 				INFOPLIST_FILE = AIComponentKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"sqlite3\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AVFoundation\"",
+					"-framework",
+					"\"Alamofire\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"CocoaAsyncSocket\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreMedia\"",
+					"-framework",
+					"\"CoreVideo\"",
+					"-framework",
+					"\"GCDWebServer\"",
+					"-framework",
+					"\"GEOSwift\"",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"KTVJSONWebToken\"",
+					"-framework",
+					"\"MobileCoreServices\"",
+					"-framework",
+					"\"PSSRedisClient\"",
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"SQLite\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"SwiftSVG\"",
+					"-framework",
+					"\"Toast_Swift\"",
+					"-framework",
+					"\"ZXingObjC\"",
+					"-framework",
+					"\"Zip\"",
+					"-framework",
+					"\"geos\"",
+					"-framework",
+					"\"WebRTC\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1444,9 +1580,78 @@
 			baseConfigurationReference = D5BBCD0FB0908B711892BA4C /* Pods-AIComponentKit-AIComponentKitTests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Alamofire/Alamofire.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CocoaAsyncSocket/CocoaAsyncSocket.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GCDWebServer/GCDWebServer.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GEOSwift/GEOSwift.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/KTVJSONWebToken/KTVJSONWebToken.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/PSSRedisClient/PSSRedisClient.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/SQLite.swift/SQLite.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/SwiftSVG/SwiftSVG.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Toast-Swift/Toast_Swift.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ZXingObjC/ZXingObjC.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Zip/Zip.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/geos/geos.framework/Headers\"",
+					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers",
+				);
 				INFOPLIST_FILE = AIComponentKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"sqlite3\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AVFoundation\"",
+					"-framework",
+					"\"Alamofire\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"CocoaAsyncSocket\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreMedia\"",
+					"-framework",
+					"\"CoreVideo\"",
+					"-framework",
+					"\"GCDWebServer\"",
+					"-framework",
+					"\"GEOSwift\"",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"KTVJSONWebToken\"",
+					"-framework",
+					"\"MobileCoreServices\"",
+					"-framework",
+					"\"PSSRedisClient\"",
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"SQLite\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"SwiftSVG\"",
+					"-framework",
+					"\"Toast_Swift\"",
+					"-framework",
+					"\"ZXingObjC\"",
+					"-framework",
+					"\"Zip\"",
+					"-framework",
+					"\"geos\"",
+					"-weak_framework",
+					"\"WebRTC\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1464,6 +1669,56 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = AIComponentKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"sqlite3\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AVFoundation\"",
+					"-framework",
+					"\"Alamofire\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"CocoaAsyncSocket\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreMedia\"",
+					"-framework",
+					"\"CoreVideo\"",
+					"-framework",
+					"\"GCDWebServer\"",
+					"-framework",
+					"\"GEOSwift\"",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"KTVJSONWebToken\"",
+					"-framework",
+					"\"MobileCoreServices\"",
+					"-framework",
+					"\"PSSRedisClient\"",
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"SQLite\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"SwiftSVG\"",
+					"-framework",
+					"\"Toast_Swift\"",
+					"-framework",
+					"\"ZXingObjC\"",
+					"-framework",
+					"\"Zip\"",
+					"-framework",
+					"\"geos\"",
+					"-weak_framework",
+					"\"WebRTC\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "AIComponentKitTests/AIComponentKitTests-Bridging-Header.h";
@@ -1526,7 +1781,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1580,7 +1835,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

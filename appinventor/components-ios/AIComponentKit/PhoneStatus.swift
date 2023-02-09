@@ -5,6 +5,9 @@ import Foundation
 import CoreFoundation
 
 open class PhoneStatus : NonvisibleComponent {
+  private var firstSeed: String? = nil
+  private var firstHmacSeed = ""
+
   // MARK: PhoneStatus Methods
   @objc open class func GetWifiIpAddress() -> String {
     return NetworkUtils.getIPAddress()
@@ -15,13 +18,29 @@ open class PhoneStatus : NonvisibleComponent {
   }
 
   @objc open func setHmacSeedReturnCode(_ seed: String) -> String {
+    guard firstSeed == nil else {
+      return firstHmacSeed
+    }
+    firstSeed = seed
     AppInvHTTPD.setHmacKey(seed)
-    return seed.sha1
+    firstHmacSeed = seed.sha1
+    return firstHmacSeed
   }
 
   @objc open func isDirect() -> Bool {
     // iOS Companion only runs via Wifi
     return false
+  }
+
+  @objc open func startWebRTC(_ rendezvousServer: String, _ iceServers: String) {
+    guard WebRTC else {
+      return
+    }
+    guard let firstSeed = self.firstSeed else {
+      return
+    }
+    let manager = WebRTCNativeManager(rendezvousServer, iceServers)
+    manager.initiate(_form as! ReplForm, firstSeed)
   }
 
   @objc open func startHTTPD(_ secure: Bool) {

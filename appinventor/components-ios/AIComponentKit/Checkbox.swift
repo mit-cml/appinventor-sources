@@ -62,7 +62,7 @@ func loadCheckBox(completion: @escaping (SVGLayer, SVGLayer) -> Void) {
  * responsible for updating the state of the button and its appearance as a
  * function of user or block interaction with the component.
  */
-class CheckBoxView: UIView {
+public class CheckBoxView: UIView {
   fileprivate var _button = UIButton(frame: .zero)
   fileprivate var _text = UILabel()
   fileprivate var _checked: CAShapeLayer!
@@ -71,6 +71,10 @@ class CheckBoxView: UIView {
 
   public init() {
     super.init(frame: .zero)
+    setupCheckbox()
+  }
+
+  func setupCheckbox() {
     loadCheckBox { (checked, unchecked) in
       self._checked = checked
       self._unchecked = unchecked
@@ -112,6 +116,8 @@ class CheckBoxView: UIView {
         constant: CHECKBOX_TEXT_MARGIN_BOTTOM).isActive = true
     bottomAnchor.constraint(greaterThanOrEqualTo: _text.bottomAnchor,
         constant: CHECKBOX_TEXT_MARGIN_BOTTOM).isActive = true
+    _button.addTarget(self, action: #selector(changeSwitch), for: .touchUpInside)
+    addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(changeSwitch)))
   }
 
   public var Checked: Bool = false {
@@ -167,7 +173,8 @@ class CheckBoxView: UIView {
   }
 
   required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    super.init(coder: aDecoder)
+    setupCheckbox()
   }
 
   // We need to override intrinsicContentSize to allow for automatic and
@@ -179,13 +186,28 @@ class CheckBoxView: UIView {
     return CGSize(width: width, height: max(textHeight, checkboxHeight))
   }
 
-  class override var requiresConstraintBasedLayout: Bool {
+  class public override var requiresConstraintBasedLayout: Bool {
     return true
   }
 
   // Called when dark mode is enabled/disabled (could be time-of-day dependent)
   override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     updateColor()
+  }
+
+  public var Text: String {
+    get {
+      return _text.text ?? ""
+    }
+    set {
+      _text.text = newValue
+    }
+  }
+
+  @objc private func changeSwitch() {
+    if Enabled {
+      Checked = !Checked
+    }
   }
 }
 
@@ -306,7 +328,6 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
 
   @objc fileprivate func changeSwitch(gesture: UITapGestureRecognizer) {
     if _view.Enabled {
-      Checked = !Checked
       Changed()
     }
   }

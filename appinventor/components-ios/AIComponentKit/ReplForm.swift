@@ -4,11 +4,12 @@
 import Foundation
 import SchemeKit
 
-open class ReplForm: Form {
+@objc open class ReplForm: Form {
   @objc internal static weak var topform: ReplForm?
   fileprivate static var _httpdServer: AppInvHTTPD?
   fileprivate var _assetsLoaded = false
   fileprivate var _isScreenClosed = false
+  private static var _webRtcManager: WebRTCNativeManager? = nil
   
   public override init(nibName nibNameOrNil: String?, bundle bundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: bundleOrNil)
@@ -169,6 +170,17 @@ open class ReplForm: Form {
     _assetsLoaded = true
   }
 
+  func setWebRTCManager(_ manager: WebRTCNativeManager) {
+    ReplForm._webRtcManager = manager
+  }
+
+  public func stopWebRTC() {
+    if let manager = ReplForm._webRtcManager {
+      manager.stop()
+    }
+    ReplForm._webRtcManager = nil
+  }
+
   override func doCloseScreen(withValue value: AnyObject? = nil) {
     super.doCloseScreen(withValue: value)
     _isScreenClosed = true
@@ -187,6 +199,23 @@ open class ReplForm: Form {
 
   override open func doCloseApplication() {
     view.makeToast("Closing the application is not allowed in live development mode.")
+  }
+
+  open func evalScheme(_ sexp: String) {
+    if sexp == "#DONE#" {
+      if self.navigationController?.responds(to: Selector("reset")) == true {
+        self.navigationController?.perform(Selector("reset"))
+      }
+    } else {
+      interpreter.evalForm(sexp)
+    }
+  }
+
+  @objc public static func returnRetvals(_ data: Data?) {
+    guard let data = data, let manager = _webRtcManager else {
+      return
+    }
+    manager.sendData(data, isBinary: false)
   }
 
   override open var isRepl: Bool {
