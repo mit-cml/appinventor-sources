@@ -1697,6 +1697,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             activity.runOnUiThread(new Runnable() {
               @Override
               public void run() {
+                updateColumns(parsedCsv);
+                notifyDataObservers(null, null);
                 if (fireEvent) {
                   if (colID >= 0) {
                     try {
@@ -1723,10 +1725,6 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
                     GotSheetData(parsedCsv);
                   }
                 }
-
-                updateColumns(parsedCsv);
-
-                notifyDataObservers(null, null);
               }
             });
             return;
@@ -1767,6 +1765,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+              updateColumns(YailList.makeList(ret));
+              notifyDataObservers(null, null);
               Log.d(LOG_TAG, "RetriveSheet UIThread " );
               if (colID >= 0) {
                 Log.d(LOG_TAG, "RetriveWithFilter: colID " + colID);
@@ -1802,9 +1802,6 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
               } else {
                 GotSheetData(ret);
               }
-
-              updateColumns(YailList.makeList(ret));
-              notifyDataObservers(null, null);
             }
           });
         }
