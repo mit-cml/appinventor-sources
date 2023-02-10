@@ -955,18 +955,14 @@ div.StatusPanel {
 /* Palette */
 
 .gwt-StackPanelItem div {
-  border-top: 1px solid #d2d2d2;
-  border-bottom: 1px solid #d2d2d2;
-  background-color: #eef2e0;
-  font-size: 13px;
-  cursor: pointer;
-  height: 14px;
-  color: #555;
-  padding: 8px 16px;
+  position: relative;
+  border-radius: 4px;
+  background: #FFFFFF;
+  font-weight: 400;
 }
 
 .gwt-StackPanelItem-selected div {
-  font-weight: bold;
+  font-weight: normal;
 }
 
 .gwt-StackPanelContent {
@@ -974,15 +970,20 @@ div.StatusPanel {
   padding-right: 10px;
   padding-top: 10px;
   margin-top: 8px;
+  border-left: 1px;
+  border-right: 1px;
 }
 
 /* Overrides for gwt.css */
 .gwt-StackPanel .gwt-StackPanelContent {
   padding: 8px 4px 8px 8px;
 }
+
 .gwt-StackPanel .gwt-StackPanelItem {
-  padding: 0;
-  border: 0;
+  padding: 10px;
+  font-weight: normal;
+  background: #FFFFFF;
+  font-size: 1.1em;
 }
 
 
