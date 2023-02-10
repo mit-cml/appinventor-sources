@@ -2960,7 +2960,7 @@ list, use the make-yail-list constructor with no arguments.
                               (format #f
                                 "The list cannot be empty")
                               "Bad list argument to but-first"))
-      ((null? (cdr contents)) '())
+      ((null? (cdr contents)) (make-yail-list))
       (else (kawa-list->yail-list (cdr contents))))))
 
 (define (but-last lst)
