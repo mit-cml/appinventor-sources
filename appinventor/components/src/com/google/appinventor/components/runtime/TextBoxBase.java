@@ -24,6 +24,8 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 //import com.google.appinventor.components.runtime.parameters.BooleanReferenceParameter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
@@ -96,6 +98,19 @@ public abstract class TextBoxBase extends AndroidViewComponent
     // Listen to focus changes
     view.setOnFocusChangeListener(this);
 
+    view.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        TextChanged();
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) { }
+
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+    });
+
     defaultTextBoxDrawable = view.getBackground();
 
     // Add a transformation method to provide input validation
@@ -156,6 +171,14 @@ public abstract class TextBoxBase extends AndroidViewComponent
       + "as if the user touches a different text box.")
   public void LostFocus() {
     EventDispatcher.dispatchEvent(this, "LostFocus");
+  }
+
+  /**
+   * Event raised when the text of the `%type%` is changed.
+   */
+  @SimpleEvent(description = "Event raised when the text of the `%type%` is changed.")
+  public void TextChanged() {
+    EventDispatcher.dispatchEvent(this, "TextChanged");
   }
 
   /**
