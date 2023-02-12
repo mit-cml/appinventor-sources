@@ -138,6 +138,7 @@
 		06E59EB31D92D19600C42804 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB21D92D19600C42804 /* Label.swift */; };
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
+		06EF265A2998A94600D6093C /* ComponentUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EF26592998A94600D6093C /* ComponentUtil.swift */; };
 		06F15C0F24059B0100C783E3 /* TextBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F15C0E24059B0100C783E3 /* TextBoxTests.swift */; };
 		06F91464252CE50B00AF8F88 /* BundledApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F91463252CE50B00AF8F88 /* BundledApp.swift */; };
 		06FB67DB247B8EDA00ABEAD6 /* LinearViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */; };
@@ -369,6 +370,7 @@
 		06E59EB41D93345E00C42804 /* ButtonBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonBase.swift; sourceTree = "<group>"; };
 		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
+		06EF26592998A94600D6093C /* ComponentUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentUtil.swift; sourceTree = "<group>"; };
 		06F15C0E24059B0100C783E3 /* TextBoxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextBoxTests.swift; sourceTree = "<group>"; };
 		06F91463252CE50B00AF8F88 /* BundledApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundledApp.swift; sourceTree = "<group>"; };
 		06FB67DA247B8EDA00ABEAD6 /* LinearViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearViewTests.swift; sourceTree = "<group>"; };
@@ -702,6 +704,7 @@
 				06F91463252CE50B00AF8F88 /* BundledApp.swift */,
 				CBC7868520113A3C005363A3 /* CircularBuffer.swift */,
 				06B216071DB954A5000B3366 /* ColorUtil.swift */,
+				06EF26592998A94600D6093C /* ComponentUtil.swift */,
 				06604B722034EFE70066C459 /* CsvUtil.swift */,
 				06AEDC571E04C12900371E72 /* FormatUtil.swift */,
 				06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */,
@@ -1292,6 +1295,7 @@
 				0417585520098566007D2C31 /* File.swift in Sources */,
 				060A83D51E004E1E00C6B7D9 /* JsonUtil.swift in Sources */,
 				DED1129F20E53D940051DEDC /* FeatureCollection.swift in Sources */,
+				06EF265A2998A94600D6093C /* ComponentUtil.swift in Sources */,
 				043ACD8B20104F52002C74DD /* DatePicker.swift in Sources */,
 				0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */,
 				06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */,

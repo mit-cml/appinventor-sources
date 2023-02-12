@@ -2007,6 +2007,21 @@ Dictionary implementation.
     ((_ component-name)
       (lookup-in-current-form-environment 'component-name))))
 
+;;; (get-all-components comptype)
+;;; ==> (filter-type-in-current-form-environment 'comptype)
+(define-syntax get-all-components
+  (syntax-rules ()
+    ((_ component-type)
+     (filter-type-in-current-form-environment 'component-type))))
+
+(define (filter-type-in-current-form-environment type)
+  (define-alias ComponentUtil <com.google.appinventor.components.runtime.util.ComponentUtil>)
+  (let ((env (if (not (eq? *this-form* #!null))
+                 (yail:invoke *this-form* 'environment)
+                 ;; The following is just for testing. In normal situations *this-form* should be non-null
+                 *test-environment*)))
+    (sanitize-component-data (ComponentUtil:filterComponentsOfType env type))))
+
 (define-syntax map_nondest
   (syntax-rules ()
     ((_ lambda-arg-name body-form list)
