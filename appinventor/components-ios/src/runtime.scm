@@ -1688,7 +1688,8 @@ Dictionary implementation.
       (cond ((null? l) l)
             ((equal? "" (car l)) (trim-empties (cdr l)))
             (else l)))
-    (apply make-yail-list (reverse (trim-empties (reverse (chunk -1 0 (- count 1))))))))
+    (let ((result (reverse (trim-empties (reverse (chunk -1 0 (- count 1)))))))
+      (apply make-yail-list (if (and (equal? "" (car ats)) (equal? "" (car result))) (cdr result) result)))))
 
 (define (string-split-at-first text at)
   (string-split-helper text (list at) 2))
