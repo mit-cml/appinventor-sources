@@ -1495,11 +1495,11 @@
 
 (define (coerce-to-number-list l)  ; is this a yail-list? ; do we want to return yail-list
   (cond
-    ((yail-list? l) l)
-      (let ((coerced (map coerce-number (yail-list-contents l))))
+    ((yail-list? l)
+      (let ((coerced (map coerce-to-number (yail-list-contents l))))
         (if (all-coercible? coerced)
           (apply make-yail-list coerced)
-          non-coercible-value))
+          non-coercible-value)))
     (else *non-coercible-value*)))
 
 (define (enum-type? type)
