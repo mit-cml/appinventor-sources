@@ -1600,13 +1600,17 @@ Blockly.Versioning.AllUpgradeMaps =
     // No blocks need to be modified to upgrade to version 5.
     5: "noUpgrade",
 
-    // The BluetoothClient.PollingRate property was added.
+    // The BluetoothClient.DisconnectOnError property was added.
     // No blocks need to be modified to upgrade to version 6.
     6: "noUpgrade",
 
-    // The BluetoothClient.DisconnectOnError property was added.
+    // The BluetoothClient.PollingRate property was added.
     // No blocks need to be modified to upgrade to version 7.
-    7: "noUpgrade"
+    7: "noUpgrade",
+
+    // The BluetoothClient.NoLocationNeeded property was added.
+    // No blocks need to be modified to upgrade to version 8.
+    8: "noUpgrade"
 
   }, // End BluetoothClient upgraders
 

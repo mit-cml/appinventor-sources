@@ -615,6 +615,16 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 6.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // The PollingRate property was added.
+      // No properties need to be modified to upgrade to version 7.
+      srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
+      // The NoLocationNeeded property was added.
+      // No properties need to be modified to upgrade to version 8.
+      srcCompVersion = 8;
+    }
     return srcCompVersion;
   }
 

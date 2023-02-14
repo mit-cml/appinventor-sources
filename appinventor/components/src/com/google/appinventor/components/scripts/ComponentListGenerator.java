@@ -6,6 +6,8 @@
 
 package com.google.appinventor.components.scripts;
 
+import com.google.appinventor.components.annotations.PermissionConstraint;
+
 import com.google.appinventor.components.common.ComponentDescriptorConstants;
 
 import java.io.IOException;
@@ -68,6 +70,8 @@ public final class ComponentListGenerator extends ComponentProcessor {
     json.put("type", component.type);
     appendComponentInfo(json, ComponentDescriptorConstants.PERMISSIONS_TARGET,
         component.permissions);
+    appendPermissionConstraints(json, ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET,
+        component.permissionConstraints);
     appendComponentInfo(json, ComponentDescriptorConstants.LIBRARIES_TARGET, component.libraries);
     appendComponentInfo(json, ComponentDescriptorConstants.NATIVE_TARGET,
         component.nativeLibraries);
@@ -112,6 +116,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
     JSONObject json = new JSONObject();
     appendMap(json, ComponentDescriptorConstants.PERMISSIONS_TARGET,
         component.conditionalPermissions);
+    appendMultimap(json, component.conditionalPermissionConstraints);
     appendMap(json, ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET,
         component.conditionalBroadcastReceivers);
     appendMap(json, ComponentDescriptorConstants.QUERIES_TARGET,
@@ -139,8 +144,56 @@ public final class ComponentListGenerator extends ComponentProcessor {
     parent.put(key, json);
   }
 
+  private static void appendMultimap(JSONObject parent,
+      Map<String, Map<String, PermissionConstraint>> map) {
+    JSONObject json = new JSONObject();
+    for (Map.Entry<String, Map<String, PermissionConstraint>> entry : map.entrySet()) {
+      appendPermissionConstraints(json, entry.getKey(), entry.getValue());
+    }
+    parent.put(ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET, json);
+  }
+
   private static void appendComponentInfo(JSONObject parent,
       String infoName, Set<String> infoEntries) {
     parent.put(infoName, new JSONArray(infoEntries));
+  }
+
+  /**
+   * Inserts the set of permission constraints into the {@code parent} object at the given key
+   * {@code infoName}. If a particular field is not set, it will not be output. If no entries
+   * are provided, then {2code parent} will not be modified. Produces the following structure:
+   * <code><pre>
+   *   {
+   *     infoName: {
+   *       "permissionName": {
+   *         "maxSdkVersion": number,
+   *         "usesPermissionFlags": string
+   *       }, ...
+   *     }
+   *   }
+   * </pre></code>
+   *
+   * @param parent the JSON object receiving the encoded permission constraints
+   * @param infoName the insertion point in the data structure for the constraints
+   * @param entries the permission name-constraint mappings to encode
+   */
+  private static void appendPermissionConstraints(JSONObject parent, String infoName,
+      Map<String, PermissionConstraint> entries) {
+    if (entries == null || entries.isEmpty()) {
+      return;
+    }
+    JSONObject json = new JSONObject();
+    for (Map.Entry<String, PermissionConstraint> entry : entries.entrySet()) {
+      JSONObject child = new JSONObject();
+      PermissionConstraint constraint = entry.getValue();
+      if (constraint.maxSdkVersion() > 0) {
+        child.put("maxSdkVersion", constraint.maxSdkVersion());
+      }
+      if (!constraint.usesPermissionFlags().isEmpty()) {
+        child.put("usesPermissionFlags", constraint.usesPermissionFlags());
+      }
+      json.put(entry.getKey(), child);
+    }
+    parent.put(infoName, json);
   }
 }
