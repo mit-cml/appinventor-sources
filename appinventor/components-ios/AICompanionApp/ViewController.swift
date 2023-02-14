@@ -190,12 +190,23 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   }
   
   @objc func connect(_ sender: UIButton?) {
+    guard let text = connectCode?.text else {
+      return
+    }
+    if text.hasPrefix("https:") {
+      ViewController.gotText(text)
+      return
+    }
+    guard text.count == 6 else {
+      notifier1.ShowAlert("Invalid code: Code must be 6 characters")
+      return
+    }
     phoneStatus.WebRTC = !(legacyCheckbox?.Checked ?? true)
     RetValManager.shared().usingWebRTC = phoneStatus.WebRTC
     form.startHTTPD(false)
     form.application?.makeCurrent()
-    let code = phoneStatus.setHmacSeedReturnCode((connectCode?.text)!)
-    NSLog("Seed = \((connectCode?.text)!)")
+    let code = phoneStatus.setHmacSeedReturnCode(text)
+    NSLog("Seed = \(text)")
     NSLog("Code = \(code)")
     let url = URL(string: "https://rendezvous.appinventor.mit.edu/rendezvous/");
     var request = URLRequest(url: url!)
