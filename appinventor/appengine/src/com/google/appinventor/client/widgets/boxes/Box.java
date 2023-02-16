@@ -391,6 +391,9 @@ public abstract class Box extends HandlerPanel {
     this(caption, height, minimizable, removable, false, true, false);
   }
 
+  public void setStyleName(String styleName) {
+    setStylePrimaryName(styleName);
+  }
   @Override
   public void clear() {
     body.clear();

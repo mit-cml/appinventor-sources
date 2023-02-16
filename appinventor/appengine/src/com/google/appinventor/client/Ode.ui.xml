@@ -15,20 +15,23 @@
       <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
       <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
         <g:FlowPanel styleName="ode-ProjectListView" width="100%" >
-          <ex:ProjectToolbar width="100%" ui:field="bindProjectToolbar" />
-          <box:ProjectListBox width="100%" ui:field="bindProjectListbox" />
+          <ex:ProjectToolbar ui:field="bindProjectToolbar" />
+          <box:ProjectListBox ui:field="bindProjectListbox" />
         </g:FlowPanel>
         <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
           <ed:DesignToolbar ui:field="bindDesignToolbar" />
-          <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
+          <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns" >
             <box:PaletteBox width="240px" ui:field="paletteBox"/>
             <box:ViewerBox ui:field="bindViewerBox" />
             <g:FlowPanel ui:field="structureAndAssets">
               <box:SourceStructureBox ui:field="bindSourceStructureBox" />
               <box:BlockSelectorBox />
-              <box:AssetListBox  ui:field="bindAssetListBox" />
+              <g:FlowPanel>
+                <g:Label text="Assets" styleName="ya-ProjectName" />
+                <box:AssetListBox  ui:field="bindAssetListBox" />
+              </g:FlowPanel>
             </g:FlowPanel>
-            <box:PropertiesBox ui:field="bindPropertiesBox" width="222px" />
+            <box:PropertiesBox ui:field="bindPropertiesBox" width="222px"  />
           </g:FlowPanel>
         </g:FlowPanel>
         <g:FlowPanel width="100%">

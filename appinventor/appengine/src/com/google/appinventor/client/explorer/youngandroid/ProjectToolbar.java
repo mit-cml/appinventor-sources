@@ -14,7 +14,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import java.util.logging.Logger;
-
+import com.google.gwt.user.client.ui.Label;
 
 /**
  * The project toolbar houses command buttons in the Young Android Project tab.
@@ -42,6 +42,8 @@ public class ProjectToolbar extends Toolbar {
 
   @UiField ToolbarItem newProjectItem;
   @UiField ToolbarItem newFolderItem;
+  @UiField Label projectLabel;
+  @UiField Label trashLabel;
 
   private static volatile boolean lockPublishButton = false; // To prevent double clicking
 
@@ -69,6 +71,8 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible(WIDGET_NAME_PROJECT, visible);
     setButtonVisible(WIDGET_NAME_RESTORE, visible);
     setButtonVisible(WIDGET_NAME_DELETE_FROM_TRASH, visible);
+    //TODO: This needs to be refactored to be configurable
+    trashLabel.setVisible(visible);
     updateButtons();
   }
 
@@ -76,6 +80,14 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible(WIDGET_NAME_NEW, visible);
     setButtonVisible(WIDGET_NAME_TRASH,visible);
     setButtonVisible(WIDGET_NAME_DELETE,visible);
+    //TODO: This needs to be refactored to be configurable
+    setButtonVisible("Folder", visible);
+    setButtonVisible("ImportProject", visible);
+    setButtonVisible("ImportTemplate", visible);
+    setButtonVisible("Move", visible);
+    setButtonVisible("Publish", visible);
+    setDropDownButtonVisible("Export", visible);
+    projectLabel.setVisible(visible);
   }
 
   /**

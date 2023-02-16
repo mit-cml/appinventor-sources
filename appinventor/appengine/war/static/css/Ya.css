@@ -176,6 +176,7 @@ div.StatusPanel {
 }
 
 .ode-Box-header {
+  visibility: collapse;
 }
 
 .ode-Box-header-caption,
@@ -239,6 +240,18 @@ div.StatusPanel {
   font-weight: 500;
   font-size: 1.06em;
   white-space: nowrap;
+  background-color: #A5CF47;
+  border-color: #444444;
+  box-shadow: 1px 1px;
+  cursor: pointer;
+}
+
+.ode-ProjectListButton .html-face {
+  display: flex;
+}
+
+.ode-ProjectListButton-up-hovering {
+  background-color: #7D9D36;
 }
 
 .ode-ProjectListButton:disabled {
@@ -267,14 +280,6 @@ div.StatusPanel {
   border-radius: 4px;
 }
 
-.primary {
-  background-color: #A5CF47;
-  border-color: #444444;
-}
-
-.primary:enabled:hover {
-  background-color: #7D9D36;
-}
 
 .danger {
   background-color: #FF7D7D;
@@ -286,8 +291,9 @@ div.StatusPanel {
 }
 
 .inline {
-  background-color: rgba(150, 150, 150, 0.1);
-  border-color: transparent;
+  background-color: #fff;
+  border-color: #ddd;
+  box-shadow: 1px 1px #ddd;
 }
 
 .action {
@@ -324,11 +330,15 @@ div.StatusPanel {
 
 .ode-ProjectFieldSpan {
   display: flex;
+  flex-grow: 1;
 }
 
 .ode-ProjectNameLabel {
   white-space: nowrap;
-  width: fit-content;
+  width: max-content;
+  height: 40px;
+  flex-grow: 1;
+  align-items: center;
   cursor: pointer;
 }
 
@@ -337,16 +347,15 @@ div.StatusPanel {
   font-weight: 400;
   font-size: 1.1em;
   color: #000000;
-  min-width: 200px;
+  width: 200px;
+  height: 30px;
 }
 
 .ode-ProjectTable {
   border: 1px solid #DDDDDD;
   border-radius: 4px;
   overflow: auto;
-  display: grid;
-  grid-auto-rows: max-content;
-  grid-template-columns: auto 1fr auto auto;
+  height: auto;
 }
 
 .ode-ProjectRowHighlighted {
@@ -354,15 +363,12 @@ div.StatusPanel {
 }
 
 .ode-ProjectRowUnHighlighted {
-  display: grid;
-  grid-column: 1 / 5;
-  grid-template-columns: subgrid;
-  border-bottom: 0;
-  background-color: white;
-  width: 100%;
-  vertical-align: center;
-  height: 30px;
+  display: flex;
   align-items: center;
+  height: 30px;
+  grid-gap: 10px;
+  border-radius: 4px;
+  background: #FFFFFF;
 }
 
 .ode-ProjectRowHidden {
@@ -374,46 +380,60 @@ div.StatusPanel {
 }
 
 .ode-ProjectRowList {
-  display:grid;
-  grid-column: 1 / 5;
-  grid-template-columns: subgrid;
+  display:contents;
 }
 
 .ode-ProjectHeaderRow {
-  display: grid;
+  display: flex;
   align-items: center;
   height: 40px;
   grid-gap: 10px;
-  position: relative;
   border-bottom: 1px solid #DDDDDD;
   border-radius: 4px;
   background: #FFFFFF;
   font-weight: 600;
   font-size: 1.15em;
-  grid-column: 1 / 5;
-  grid-template-columns: subgrid;
 }
 
-.ode-ProjectHeaderRow:after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 0;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
-  background-color: #DDDDDD;
+.ode-ProjectHeaderRow>div {
+  display: flex;
 }
+
+/*.ode-ProjectHeaderRow:after {*/
+/*  content: '';*/
+/*  position: absolute;*/
+/*  top: 2px;*/
+/*  left: 0;*/
+/*  z-index: -1;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  border-radius: inherit;*/
+/*  background-color: #DDDDDD;*/
+/*}*/
 
 .ode-ProjectCheckBox {
   padding-right: 10px;
   padding-left: 20px;
+  align-self: center;
+}
+
+.ode-ProjectFolderIcon {
+  padding-right: 10px;
+  padding-left: 5px;
 }
 
 .ode-ProjectHeaderLabel {
-  min-width: 200px;
-  display: flex;
+  width: 200px;
+  /*display: flex;*/
+  align-items: center;
+  height: 40px;
+}
+
+.ode-ProjectHeaderName {
+  white-space: nowrap;
+  width: max-content;
+  height: 40px;
+  flex-grow: 1;
   align-items: center;
 }
 
@@ -473,18 +493,16 @@ div.StatusPanel {
 
 
 .ode-TopPanel {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr repeat(6, auto);
+  align-items: center;
+  padding: 0 20px 4px;
+  border-bottom: 2px solid #ddd;
+  border-radius: 0 0 6px 6px;
+  grid-gap: 5px;
+  overflow: hidden;
   min-height: 48px;
-  height: 48px;
   margin-bottom: 4px;
-  padding-right: 4px;
-  padding-left: 4px;
-  background-color: #FFFFFF;
-  border: 1px solid #DDDDDD;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
-  *zoom: 1;
-  position: relative;
-  box-sizing: border-box;
 }
 
 .ode-Logo {
@@ -616,6 +634,10 @@ div.StatusPanel {
   white-space: nowrap;
 }
 
+.ode-TopPanelButton .html-face {
+  display: flex;
+}
+
 .ode-TopPanelButton:hover,
 .ActionDropDown-Default:hover,
 .ActionDropDown-Options:hover {
@@ -656,7 +678,6 @@ div.StatusPanel {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  padding: 4px 20px 8px;
   position: relative;
   height: 100%;
   width: 100%;
@@ -686,17 +707,18 @@ div.StatusPanel {
   position: relative;
   display: flex;
   flex-flow: row;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   overflow: scroll;
   flex-grow: 1;
+  border-top: 1px solid #bbbbbb;
+  /*border-radius: 4px;*/
 }
 
 .ode-WorkColumns>* {
   max-height: 100%;
   overflow: scroll;
   vertical-align: top;
+  border-right: 1px solid #bbbbbb;
 }
 
 .ViewerBox {
@@ -831,7 +853,7 @@ div.StatusPanel {
 
 .gwt-Tree .gwt-TreeItem span:hover,
 .gwt-Tree .gwt-TreeItem-selected span {
-  background-color: #d2e0a6;
+  background-color: rgba(167, 36, 122, 0.21);
 }
 
 /* Young Android Toolbar */
@@ -839,14 +861,17 @@ div.StatusPanel {
 .ya-Toolbar {
   background-color: #FFFFFF;
   margin-bottom: 4px;
-  padding: 2px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 15px;
+  padding-right: 20px;
 }
 
 .ya-Toolbar .ya-ProjectName {
   font-family: "Poppins", "Roboto", sans-serif;
   color: #000000;
   font-weight: 500;
-  font-size: 1.25em;
+  font-size: 1.4em;
   padding-top: 2px;
   padding-right: 20px
 }
@@ -956,7 +981,6 @@ div.StatusPanel {
 
 .gwt-StackPanelItem div {
   position: relative;
-  border-radius: 4px;
   background: #FFFFFF;
   font-weight: 400;
 }
@@ -992,6 +1016,10 @@ div.StatusPanel {
   height: 15px;
   cursor: pointer;
   padding: 5px;
+}
+
+.ode-SimplePaletteItem-Selected {
+  background-color: rgba(167, 36, 122, 0.21) !important;
 }
 
 .ode-SimplePaletteItem-icon {
@@ -1055,7 +1083,6 @@ div.StatusPanel {
 }
 
 .ode-PropertiesPanel {
-  background-color: #f7f9f2;
   padding-left: 9px;
   padding-right: 9px;
   padding-bottom: 9px;
@@ -1067,9 +1094,9 @@ div.StatusPanel {
 }
 
 .ode-PropertiesComponentName {
-  background-color: #eef2e0;
+  background-color: #FFFFFF;
+  font-size: 1.1em;
   color: #555;
-  font-size: 13px;
   border-bottom: 1px solid #d2d2d2;
   padding: 9px 9px 8px 10px;
 }

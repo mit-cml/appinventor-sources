@@ -631,13 +631,10 @@ a, a:visited, a:hover {
   font-weight: bold;
   font-size: 1.3em;
   padding: 3px;
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
-  background: #d3def6 url(../images/hborder.png) repeat-x 0px -989px;
+  border-bottom: 1px solid #bbbbbb;
 }
 .gwt-StackPanel .gwt-StackPanelContent {
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
+  border-bottom: 1px solid #bbbbbb;
   background: white;
   padding: 2px 2px 10px 5px;
 }
@@ -1106,16 +1103,11 @@ td.datePickerMonth {
   font-weight: bold;
   font-size: 1.3em;
   padding: 3px;
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
-  background: #d3def6 url(../images/hborder.png) repeat-x 0px -989px;
 }
 .gwt-StackLayoutPanel .gwt-StackLayoutPanelHeader-hovering {
   background: #d3def6 url(../images/hborder.png) repeat-x 0px -1464px;
 }
 .gwt-StackLayoutPanel .gwt-StackLayoutPanelContent {
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
   background: white;
   padding: 2px 2px 10px 5px;
 }

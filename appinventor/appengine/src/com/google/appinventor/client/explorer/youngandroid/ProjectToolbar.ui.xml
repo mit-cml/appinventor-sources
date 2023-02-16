@@ -10,24 +10,29 @@
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
         <!-- Projects Menu -->
         <ai:Toolbar styleName="ya-ProjectToolbar">
-            <g:Label text="{messages.projectListBoxCaption}" styleName="ya-ProjectName" />
+            <g:Label text="{messages.projectListBoxCaption}" styleName="ya-ProjectName"
+                     ui:field="projectLabel" />
+            <g:Label text="{messages.trashprojectlistbox}" styleName="ya-ProjectName" visible="false"
+                     ui:field="trashLabel" />
             <ai:ToolbarItem name="New" caption="{messages.newProjectButton}" icon='add' ui:field="newProjectItem"
-                            align="left" styleName="ode-ProjectListButton bleft primary">
+                            align="left" styleName="ode-ProjectListButton bleft">
                 <actions:NewAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="ImportProject" icon="file_upload"  align="left" styleName="ode-ProjectListButton bcenter primary">
+            <ai:ToolbarItem name="ImportProject" icon="file_upload"  align="left"
+                            styleName="ode-ProjectListButton bcenter">
                 <actions:ImportProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="ImportTemplate"  icon="cloud_upload"  align="left" styleName="ode-ProjectListButton bright primary">
+            <ai:ToolbarItem name="ImportTemplate"  icon="cloud_upload"  align="left"
+                            styleName="ode-ProjectListButton bcenter">
                 <actions:ImportTemplateAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Folder" icon="create_new_folder" ui:field="newFolderItem"  align="center" styleName="ode-ProjectListButton inline">
+            <ai:ToolbarItem name="Folder" icon="create_new_folder" ui:field="newFolderItem"  align="left" styleName="ode-ProjectListButton bright">
                 <expactions:AddFolderCommand />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Move" caption='Move' icon='drive_file_move' align="center" styleName="ode-ProjectListButton inline">
+            <ai:ToolbarItem name="Move" caption='Move' icon='drive_file_move' align="center" styleName="ode-ProjectListButton inline bleft">
                 <actions:MoveProjectsAction />
             </ai:ToolbarItem>
-            <ai:DropDownButton name="Export" caption="Export" icon="file_download" align="center" styleName="ode-ProjectListButton inline">
+            <ai:DropDownButton name="Export" caption="Export" icon="file_download" align="center" styleName="ode-ProjectListButton inline bcenter">
                 <ai:DropDownItem name="ExportProject" caption="{messages.exportProjectMenuItem}">
                     <actions:ExportProjectAction />
                 </ai:DropDownItem>
@@ -35,22 +40,22 @@
                     <actions:ExportAllProjectsAction />
                 </ai:DropDownItem>
             </ai:DropDownButton>
-            <ai:ToolbarItem name="Publish" caption="Publish"  icon='public' align="center" styleName="ode-ProjectListButton inline">
+            <ai:ToolbarItem name="Publish" caption="Publish"  icon='public' align="center" styleName="ode-ProjectListButton inline bright">
                 <actions:ExportProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Restore" caption="{messages.restoreProjectButton}" align="right" styleName="ode-ProjectListButton inline">
+            <ai:ToolbarItem name="Restore" icon="restore" caption="{messages.restoreProjectButton}" align="right" styleName="ode-ProjectListButton inline bleft">
                 <actions:RestoreProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" align="right" styleName="ode-ProjectListButton inline">
+            <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" align="right" styleName="ode-ProjectListButton inline bcenter">
                 <actions:SwitchToProjectAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Trash" caption="{messages.viewTrashButton}" align="right" styleName="ode-ProjectListButton inline">
+            <ai:ToolbarItem name="Trash" caption="{messages.viewTrashButton}" align="right" styleName="ode-ProjectListButton inline bleft">
                 <actions:TrashAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Delete" icon='delete' caption="{messages.deleteProjectButton}" align="right" styleName="ode-ProjectListButton danger">
+            <ai:ToolbarItem name="Delete" icon='delete' caption="{messages.deleteProjectButton}" align="right" styleName="ode-ProjectListButton danger bright">
                 <actions:DeleteAction />
             </ai:ToolbarItem>
-            <ai:ToolbarItem name="Delete From Trash" caption="{messages.deleteFromTrashButton}" align="right" styleName="ode-ProjectListButton danger">
+            <ai:ToolbarItem name="Delete From Trash"  icon='delete_forever' caption="{messages.deleteFromTrashButton}" align="right" styleName="ode-ProjectListButton danger bright">
                 <actions:DeleteForeverProjectAction />
             </ai:ToolbarItem>
             <ai:ToolbarItem name="Login to Gallery" caption="{messages.loginToGallery}" visible="false" >

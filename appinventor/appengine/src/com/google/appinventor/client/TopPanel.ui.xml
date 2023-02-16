@@ -49,11 +49,6 @@
           <ai:DropDownItem name="Forums" caption="{messages.forumsMenuItem}" >
             <actions:OpenLinkAction link_name="Forums"/>
           </ai:DropDownItem>
-          <hr />
-          <ai:DropDownItem name="ReportIssue" caption="{messages.feedbackMenuItem}" />
-          <hr />
-          <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}" />
-          <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}" />
           <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}" />
         </ai:DropDownButton>
 

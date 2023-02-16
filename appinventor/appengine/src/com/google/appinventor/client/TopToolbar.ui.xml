@@ -9,10 +9,6 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
 
   <ai:Toolbar styleName="ode-TopToolbar">
-    <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" align="right"
-                    styleName="ode-TopPanelButton">
-      <actions:SwitchToProjectAction />
-    </ai:ToolbarItem>
     <!-- Projects Menu -->
     <ai:DropDownButton name="Project" caption="{messages.projectsTabName}" styleName="ode-TopPanelButton" ui:field="fileDropDown" align="right" visible="false">
       <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}">
@@ -61,7 +57,7 @@
     </ai:DropDownButton>
 
     <!-- Connect Menu -->
-    <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}" styleName="ode-TopPanelButton" ui:field="connectDropDown"  icon="settings_remote"  align="right">
+    <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}" styleName="ode-TopPanelButton" ui:field="connectDropDown"  icon="settings_remote"  align="left">
       <ai:DropDownItem name="Wireless" caption="{messages.AICompanionMenuItem}">
         <yaactions:WirelessAction />
       </ai:DropDownItem>
@@ -75,18 +71,20 @@
       <ai:DropDownItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
         <yaactions:RefreshCompanionAction />
       </ai:DropDownItem>
-      <hr />
       <ai:DropDownItem name="Reset" caption="{messages.resetConnectionsMenuItem}">
         <yaactions:ResetAction />
       </ai:DropDownItem>
       <ai:DropDownItem name="HardReset" caption="{messages.hardResetConnectionsMenuItem}">
         <yaactions:HardResetAction />
       </ai:DropDownItem>
+      <hr />
+      <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}" />
+      <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}" />
     </ai:DropDownButton>
 
     <!-- Build Menu -->
     <ai:DropDownButton name="Build" caption="{messages.buildTabName}" styleName="ode-TopPanelButton"
-                       ui:field="buildDropDown" icon="build" align="right">
+                       ui:field="buildDropDown" icon="system_security_update" align="left">
       <ai:DropDownItem name="Barcode" caption="{messages.showExportAndroidApk}">
         <actions:BarcodeAction second="false" isAab="false" />
       </ai:DropDownItem>
@@ -108,7 +106,7 @@
 
     <!-- Settings Menu -->
     <ai:DropDownButton name="Settings" styleName="ode-TopPanelButton"
-                       ui:field="settingsDropDown" align="right" icon="settings">
+                       ui:field="settingsDropDown" align="left" icon="settings">
       <ai:DropDownItem name="AutoloadLastProject" caption="{messages.disableAutoload}">
         <actions:DisableAutoloadAction />
       </ai:DropDownItem>
@@ -145,7 +143,7 @@
 
     <!-- Admin Menu -->
     <ai:DropDownButton name="Admin" styleName="ode-TopPanelButton"
-                       ui:field="adminDropDown" icon="admin_panel_settings" align="right">
+                       ui:field="adminDropDown" icon="admin_panel_settings" align="left">
       <ai:DropDownItem name="DownloadUserSource" caption="{messages.downloadUserSourceMenuItem}">
         <actions:DownloadUserSourceAction />
       </ai:DropDownItem>
