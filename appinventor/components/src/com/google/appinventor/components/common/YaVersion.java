@@ -12,6 +12,7 @@ package com.google.appinventor.components.common;
  *
  */
 public class YaVersion {
+
   private YaVersion() {
   }
 
@@ -850,6 +851,8 @@ public class YaVersion {
   public static final int CHART_COMPONENT_VERSION = 2;
 
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
+
+  public static final int REGRESSION_COMPONENT_VERSION = 1;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.

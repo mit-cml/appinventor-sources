@@ -1,14 +1,10 @@
 package com.google.appinventor.components.runtime;
 
-import android.content.res.Resources;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
-import gnu.lists.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,28 +14,25 @@ import java.util.List;
  * A machine learning component to apply different ML models
  * The component is attached directly to a Chart component by dragging it onto the Chart.
  */
-@DesignerComponent(version = YaVersion.MachineLearning_COMPONENT_VERSION,
+@DesignerComponent(version = YaVersion.REGRESSION_COMPONENT_VERSION,
         description = "A component that contains machine learning models",
-        category = ComponentCategory.AI,
+        category = ComponentCategory.DATASCIENCE,
         iconName = "images/web.png",
         nonVisible = true)
 @SimpleObject
 @SuppressWarnings("checkstyle:JavadocParagraph")
-public final class MachineLearning extends AndroidNonvisibleComponent {
-    private final Resources resources;
-
-    private boolean enabled;
-
-    private DataSource<?, ?> dataSource; // Attached Chart Data Source
+public final class Regression extends DataCollection {
 
     /**
-     * Creates a new Chart Data component.
      *
+     * Creates a new Chart Data component.
      */
-    protected MachineLearning(ComponentContainer container) {
-        super(container.$form());
-        resources = container.$context().getResources();
-        enabled = true;
+    public Regression(ComponentContainer container) {
+        super();
+        // Construct default dataFileColumns list with 2 entries
+        dataFileColumns = Arrays.asList("", "");
+        sheetsColumns = Arrays.asList("", "");
+        webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
     }
 
     /**
@@ -106,6 +99,7 @@ public final class MachineLearning extends AndroidNonvisibleComponent {
             double prediction = slope * x.get(i) + intercept;
             predictions.add(prediction);
         }
+        // ToDo: return a user a dictionary and let the user extract the parameters they need themselves instead
         ArrayList result = new ArrayList<>();
         result.add(slope);
         result.add(intercept);
@@ -150,6 +144,10 @@ public final class MachineLearning extends AndroidNonvisibleComponent {
         return (Double) ComputeLineOfBestFit(xList, yList).get(2);
     }
 
+    @Override
+    public HandlesEventDispatching getDispatchDelegate() {
+        return null;
+    }
 }
 
 

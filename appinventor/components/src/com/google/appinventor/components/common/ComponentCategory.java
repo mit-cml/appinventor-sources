@@ -53,6 +53,7 @@ public enum ComponentCategory {
   ANIMATION("Drawing and Animation"),
   MAPS("Maps"),
   CHARTS("Charts"),
+  DATASCIENCE("Data Science"),
   SENSORS("Sensors"),
   SOCIAL("Social"),
   STORAGE("Storage"),

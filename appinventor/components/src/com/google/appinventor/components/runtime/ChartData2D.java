@@ -5,7 +5,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.content.ContentProvider;
 import android.util.Log;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -14,7 +13,6 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
-import gnu.lists.LList;
 import gnu.lists.Pair;
 
 import java.util.ArrayList;
@@ -215,7 +213,7 @@ public final class ChartData2D extends ChartDataBase {
      */
     @SimpleFunction(description = "Draws the line of best fit.")
     public void DrawLineOfBestFit(final YailList x, final YailList y) {
-        List predictions = (List) MachineLearning.ComputeLineOfBestFit(x, y).get(3);
+        List predictions = (List) Regression.ComputeLineOfBestFit(x, y).get(3);
         final List predictionPairs = new ArrayList<Pair>();
         List xValues = (List) x.getCdr();
         for (int i = 0; i < xValues.size(); i++) {
