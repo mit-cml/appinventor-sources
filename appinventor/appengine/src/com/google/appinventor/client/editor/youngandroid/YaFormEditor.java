@@ -37,6 +37,7 @@ import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeLis
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
+import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
@@ -258,6 +259,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     OdeLog.log("YaFormEditor: got onShow() for " + getFileId());
     super.onShow();
     loadDesigner();
+    Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_DESIGNER);
   }
 
   @Override

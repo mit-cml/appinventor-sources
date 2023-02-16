@@ -821,6 +821,11 @@ public class BlocklyPanel extends HTMLPanel {
     Blockly.hideChaff();
   }-*/;
 
+  public native void resize()/*-{
+    Blockly.svgResize(
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
+  }-*/;
+
   public native void toggleWarning()/*-{
     var handler =
       this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace

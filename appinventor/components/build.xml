@@ -545,73 +545,22 @@
       <injar  file="${ExternalComponent-class.dir}/${extensionClassFolder}.jar" />
       <outjar file="${ExternalComponent-class.dir}/${extensionClassFolder}_p.jar" />
 
+      <libraryjar>
+        <fileset dir="${public.deps.dir}">
+          <include name="**/*.jar" />
+          <include name="**/*.aar"/>
+          <exclude name="*/dx.jar"/>
+          <exclude name="*/apksigner.jar"/>
+        </fileset>
+      </libraryjar>
+
+      <!-- Android Runtime -->
+      <libraryjar file="${public.build.dir}/AndroidRuntime.jar" />
+
       <!-- FOR DEVELOPER: Add the needed libraries for your extension right here
                           like the ones above, just after copying them to the deps
                           directory.
       <libraryjar file="${public.deps.dir}/my-awesome-library.jar" /> -->
-      <!-- Core libraries -->
-      <libraryjar file="${public.deps.dir}/http-legacy.jar" />
-      <libraryjar file="${public.deps.dir}/android.jar" />
-      <libraryjar file="${public.deps.dir}/CommonVersion.jar" />
-      <!-- Android Support -->
-      <libraryjar file="${public.deps.dir}/annotation.jar" />
-      <libraryjar file="${public.deps.dir}/appcompat.jar" />
-      <libraryjar file="${public.deps.dir}/asynclayoutinflater.jar" />
-      <libraryjar file="${public.deps.dir}/collection.jar" />
-      <libraryjar file="${public.deps.dir}/constraintlayout.jar" />
-      <libraryjar file="${public.deps.dir}/constraintlayout-solver.jar" />
-      <libraryjar file="${public.deps.dir}/coordinatorlayout.jar" />
-      <libraryjar file="${public.deps.dir}/core.jar" />
-      <libraryjar file="${public.deps.dir}/core-common.jar" />
-      <libraryjar file="${public.deps.dir}/core-runtime.jar" />
-      <libraryjar file="${public.deps.dir}/cursoradapter.jar" />
-      <libraryjar file="${public.deps.dir}/customview.jar" />
-      <libraryjar file="${public.deps.dir}/documentfile.jar" />
-      <libraryjar file="${public.deps.dir}/drawerlayout.jar" />
-      <libraryjar file="${public.deps.dir}/fragment.jar" />
-      <libraryjar file="${public.deps.dir}/interpolator.jar" />
-      <libraryjar file="${public.deps.dir}/legacy-support-core-ui.jar" />
-      <libraryjar file="${public.deps.dir}/lifecycle-common.jar" />
-      <libraryjar file="${public.deps.dir}/lifecycle-livedata.jar" />
-      <libraryjar file="${public.deps.dir}/lifecycle-livedata-core.jar" />
-      <libraryjar file="${public.deps.dir}/lifecycle-runtime.jar" />
-      <libraryjar file="${public.deps.dir}/lifecycle-viewmodel.jar" />
-      <libraryjar file="${public.deps.dir}/loader.jar" />
-      <libraryjar file="${public.deps.dir}/localbroadcastmanager.jar" />
-      <libraryjar file="${public.deps.dir}/print.jar" />
-      <libraryjar file="${public.deps.dir}/slidingpanelayout.jar" />
-      <libraryjar file="${public.deps.dir}/swiperefreshlayout.jar" />
-      <libraryjar file="${public.deps.dir}/vectordrawable.jar" />
-      <libraryjar file="${public.deps.dir}/vectordrawable-animated.jar" />
-      <libraryjar file="${public.deps.dir}/versionedparcelable.jar" />
-      <libraryjar file="${public.deps.dir}/viewpager.jar" />
-      <!-- Components Libraries -->
-      <libraryjar file="${public.deps.dir}/osmdroid.jar" />
-      <libraryjar file="${public.deps.dir}/webrtc.jar" />
-      <libraryjar file="${public.deps.dir}/jts.jar" />
-      <libraryjar file="${public.deps.dir}/androidsvg.jar" />
-      <libraryjar file="${public.deps.dir}/kawa.jar" />
-      <libraryjar file="${public.deps.dir}/acra-4.4.0.jar" />
-      <libraryjar file="${public.deps.dir}/twitter4j.jar" />
-      <libraryjar file="${public.deps.dir}/twitter4jmedia.jar" />
-      <libraryjar file="${public.deps.dir}/httpmime.jar" />
-      <libraryjar file="${public.deps.dir}/fusiontables.jar" />
-      <libraryjar file="${public.deps.dir}/firebase.jar" />
-      <libraryjar file="${public.deps.dir}/google-api-client-beta.jar" />
-      <libraryjar file="${public.deps.dir}/google-http-client-beta.jar" />
-      <libraryjar file="${public.deps.dir}/google-api-client-android2-beta.jar" />
-      <libraryjar file="${public.deps.dir}/google-http-client-android2-beta.jar" />
-      <libraryjar file="${public.deps.dir}/google-http-client-android3-beta.jar" />
-      <libraryjar file="${public.deps.dir}/gson-2.1.jar" />
-      <libraryjar file="${public.deps.dir}/json.jar" />
-      <libraryjar file="${public.deps.dir}/google-oauth-client-beta.jar" />
-      <libraryjar file="${public.deps.dir}/jedis.jar" />
-      <libraryjar file="${public.deps.dir}/commons-pool.jar" />
-      <libraryjar file="${public.deps.dir}/guava-27.1-android.jar" />
-      <libraryjar file="${public.deps.dir}/Barcode.jar" />
-      <libraryjar file="${public.deps.dir}/QRGenerator.jar" />
-      <!-- Android Runtime -->
-      <libraryjar file="${public.build.dir}/AndroidRuntime.jar" />
 
       <dontnote filter="proguard.configuration.ConfigurationLogger" />
       <adaptresourcefilecontents filter="proguard/ant/task.properties" />

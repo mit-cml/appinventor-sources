@@ -26,6 +26,7 @@ import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeLis
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
@@ -228,6 +229,7 @@ public final class YaBlocksEditor extends FileEditor
     OdeLog.log("YaBlocksEditor: got onShow() for " + getFileId());
     super.onShow();
     loadBlocksEditor();
+    Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_BLOCKS);
     sendComponentData();  // Send Blockly the component information for generating Yail
   }
 
@@ -670,6 +672,11 @@ public final class YaBlocksEditor extends FileEditor
    * Perform a hideChaff of Blockly
    */
   public void hideChaff () {blocksArea.hideChaff();}
+
+  @Override
+  public void resize() {
+    blocksArea.resize();
+  }
 
   // Static Function. Find the associated editor for formName and
   // set its "damaged" bit. This will cause the editor manager's scheduleAutoSave
