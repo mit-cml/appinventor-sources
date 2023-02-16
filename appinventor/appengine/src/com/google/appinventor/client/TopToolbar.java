@@ -63,13 +63,6 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_DARK_THEME_ENABLED = "DarkThemeEnabled";
   private static final String WIDGET_NAME_HELP = "Help";
   private static final String WIDGET_NAME_ABOUT = "About";
-  private static final String WIDGET_NAME_LIBRARY = "Library";
-  private static final String WIDGET_NAME_GETSTARTED = "GetStarted";
-  private static final String WIDGET_NAME_TUTORIALS = "Tutorials";
-  private static final String WIDGET_NAME_EXTENSIONS = "Extensions";
-  private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
-  private static final String WIDGET_NAME_FORUMS = "Forums";
-  private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
@@ -89,7 +82,6 @@ public class TopToolbar extends Composite {
   @UiField public DropDownButton connectDropDown;
   @UiField public DropDownButton buildDropDown;
   @UiField public DropDownButton settingsDropDown;
-  @UiField public DropDownButton helpDropDown;
   @UiField public DropDownButton adminDropDown;
 
   private final boolean isReadOnly;
@@ -201,15 +193,7 @@ public class TopToolbar extends Composite {
       settingsDropDown.setItemVisible(MESSAGES.enableNewLayout(), true);
     }
 
-    Config config = Ode.getSystemConfig();
-    setOpenUrlCommand(helpDropDown, WIDGET_NAME_LIBRARY, config.getLibraryUrl());
-    setOpenUrlCommand(helpDropDown, WIDGET_NAME_GETSTARTED, config.getGetStartedUrl());
-    setOpenUrlCommand(helpDropDown, WIDGET_NAME_EXTENSIONS, config.getExtensionsUrl());
-    setOpenUrlCommand(helpDropDown, WIDGET_NAME_TUTORIALS, config.getTutorialsUrl());
-    setOpenUrlCommand(helpDropDown, WIDGET_NAME_TROUBLESHOOTING, config.getTroubleshootingUrl());
-    setOpenUrlCommand(helpDropDown, WIDGET_NAME_FORUMS, config.getForumsUrl());
-    setOpenUrlCommand(helpDropDown, WIDGET_NAME_FEEDBACK, config.getFeedbackUrl());
-    helpDropDown.removeUnneededSeparators();
+//    helpDropDown.removeUnneededSeparators();
 
     if (!Ode.getInstance().getUser().getIsAdmin()) {
       adminDropDown.removeFromParent();
@@ -219,14 +203,6 @@ public class TopToolbar extends Composite {
   @UiFactory
   public OdeMessages getMessages() {
     return MESSAGES;
-  }
-
-  private void setOpenUrlCommand(DropDownButton button, String widgetName, String value) {
-    if (!Strings.isNullOrEmpty(value)) {
-      button.setCommandById(widgetName, new WindowOpenAction(value));
-    } else {
-      button.removeItemById(widgetName);
-    }
   }
 
   public void updateKeystoreStatus(boolean present) {

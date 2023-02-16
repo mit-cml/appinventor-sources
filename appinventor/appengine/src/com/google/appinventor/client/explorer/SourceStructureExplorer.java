@@ -35,7 +35,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * This explorer is used to outline the structure of a source file. Note that
- * this explorer is shared by all it's clients. That means that clients (most
+ * this explorer is shared by all its clients. That means that clients (most
  * likely editors) need to update its content upon activation.
  *
  * @author lizlooney@google.com (Liz Looney)
@@ -178,6 +178,10 @@ public class SourceStructureExplorer extends Composite {
     panel.add(buttonPanel);
     panel.setCellHorizontalAlignment(buttonPanel, HorizontalPanel.ALIGN_CENTER);
     initWidget(panel);
+  }
+
+  public void setStyleName (String styleName){
+    setStylePrimaryName(styleName);
   }
 
   private void deleteItemFromTree() {

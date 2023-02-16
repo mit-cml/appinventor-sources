@@ -1,5 +1,6 @@
 package com.google.appinventor.client.widgets;
 
+import com.google.appinventor.client.components.Icon;
 import com.google.gwt.uibinder.client.ElementParserToUse;
 import com.google.gwt.user.client.Command;
 
@@ -15,6 +16,9 @@ public class ToolbarItem {
   private Command command;
   private String align;
   private boolean visible = true;
+  private Icon icon = null;
+  private String styleName = null;
+
 
   @SuppressWarnings("unused")  // Used by UiBinder
   public ToolbarItem() {
@@ -22,6 +26,7 @@ public class ToolbarItem {
     caption = "";
     command = null;
     align = "left";
+    icon = null;
   }
 
   public ToolbarItem(String widgetName, String caption, Command command) {
@@ -29,6 +34,7 @@ public class ToolbarItem {
     this.caption = caption;
     this.command = command;
     align = "left";
+    icon = null;
   }
 
   public String getName() {
@@ -41,6 +47,21 @@ public class ToolbarItem {
 
   public Command getCommand() {
     return command;
+  }
+
+  public Icon getIcon() { return icon; }
+
+  public void setIcon(String iconName) {
+    icon = new com.google.appinventor.client.components.Icon(iconName);
+  }
+  public void setIcon(Icon icon) {
+    this.icon = icon;
+  }
+
+  public String getStyleName() { return styleName; }
+
+  public void setStyleName(String styleName) {
+    this.styleName = styleName;
   }
 
   public void setName(String name) {

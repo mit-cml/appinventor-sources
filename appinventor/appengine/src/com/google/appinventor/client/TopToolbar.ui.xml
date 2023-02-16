@@ -128,14 +128,28 @@
         <actions:AboutAction />
       </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="Library" caption="{messages.libraryMenuItem}" />
-      <ai:DropDownItem name="GetStarted" caption="{messages.getStartedMenuItem}" />
-      <ai:DropDownItem name="Extensions" caption="{messages.extensionsMenuItem}" />
-      <ai:DropDownItem name="Tutorials" caption="{messages.tutorialsMenuItem}" />
-      <ai:DropDownItem name="Troubleshooting" caption="{messages.troubleshootingMenuItem}" />
-      <ai:DropDownItem name="Forums" caption="{messages.forumsMenuItem}" />
+      <ai:DropDownItem name="Library" caption="{messages.libraryMenuItem}" >
+        <actions:OpenLinkAction link_name="Library"/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="GetStarted" caption="{messages.getStartedMenuItem}" >
+        <actions:OpenLinkAction link_name="GetStarted"/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Extensions" caption="{messages.extensionsMenuItem}" >
+        <actions:OpenLinkAction link_name="Extensions"/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Tutorials" caption="{messages.tutorialsMenuItem}" >
+        <actions:OpenLinkAction link_name="Tutorials"/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Troubleshooting" caption="{messages.troubleshootingMenuItem}" >
+        <actions:OpenLinkAction link_name="Troubleshooting"/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Forums" caption="{messages.forumsMenuItem}" >
+        <actions:OpenLinkAction link_name="Forums"/>
+      </ai:DropDownItem>
       <hr />
-      <ai:DropDownItem name="ReportIssue" caption="{messages.feedbackMenuItem}" />
+      <ai:DropDownItem name="ReportIssue" caption="{messages.feedbackMenuItem}" >
+        <actions:OpenFeedbackAction />
+      </ai:DropDownItem>
       <hr />
       <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}" />
       <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}" />
