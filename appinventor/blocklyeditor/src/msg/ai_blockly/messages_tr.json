@@ -281,6 +281,7 @@
     "Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GT": "İlk sayı ikinci numaradan büyükse \n'doğru' döndürür.",
     "Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_COS": "Verilen açının kosinüsünü derece cinsinden verir.",
     "Blockly.Msg.REPL_OK": "OK",
+    "Blockly.Msg.REPL_RESET": "Sıfırla",
     "Blockly.Msg.ENABLE_BLOCK": "Bloğu Etkinleştir",
     "Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE": "Giriş:",
     "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START": "itibaren",
