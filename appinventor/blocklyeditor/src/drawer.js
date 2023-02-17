@@ -235,7 +235,7 @@ Blockly.Drawer.prototype.instanceRecordToXMLArray = function(instanceRecord) {
   if (subsetJsonString.length > 0) {
     // TODO: All of this code should be cleaned up and moved into a separate
     //   function. Logs should be removed.
-    
+
     var subsetArray = [];
     var subsetBlocks = [];
     subsetArray = JSON.parse(subsetJsonString);
@@ -527,6 +527,11 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
     var xml = xmlUtils.helperKeyToXML(helper);
     Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(xml));
   }.bind(this));
+
+  // add the all components getter
+  Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_all_component_block', {
+    component_type: typeName
+  }));
 
   return xmlArray;
 };

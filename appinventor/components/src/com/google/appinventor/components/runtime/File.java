@@ -442,7 +442,25 @@ public class File extends FileBase implements Component {
         .addCommand(new FileOperation.FileInvocation() {
           @Override
           public void call(ScopedFile[] files) {
-            result.wakeup(files[0].resolve(form).exists());
+            if (files[0].getScope() == FileScope.Asset && !form.isRepl()) {
+              boolean success = false;
+              try {
+                String[] items = form.getAssets().list("");
+                if (items != null) {
+                  for (String item : items) {
+                    if (item.equals(files[0].getFileName())) {
+                      success = true;
+                      break;
+                    }
+                  }
+                }
+              } catch (IOException e) {
+                // This can happen if the file doesn't exist
+              }
+              result.wakeup(success);
+            } else {
+              result.wakeup(files[0].resolve(form).exists());
+            }
           }
         }).build().run();
     AsynchUtil.finish(result, continuation);

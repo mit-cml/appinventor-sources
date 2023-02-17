@@ -565,9 +565,14 @@ public class YaVersion {
   // - CHART_COMPONENT_VERSION was introduced
   // - CHART_DATA_2D_COMPONENT_VERSION was introduced
   // - DATA_FILE_COMPONENT_VERSION was introduced
-  // - BLUETOOTH_CLIENT_COMPONENT_VERSION was incremented to 7
+  // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 220:
+  // - CHART_COMPONENT_VERSION was incremented to 2
+  // - SPREADSHEET_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 221;
+  // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 8
 
-  public static final int YOUNG_ANDROID_VERSION = 219;
+  public static final int YOUNG_ANDROID_VERSION = 221;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -654,7 +659,13 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 34
   // - The helpers_screen_names block was added.
   // - Add sanitizing concrete values to OptionLists.
-  public static final int BLOCKS_LANGUAGE_VERSION = 34;
+  // For BLOCKS_LANGUAGE_VERSION 35
+  // - Add PHOLO blocks
+  // For BLOCKS_LANGUAGE_VERSION 36
+  // - Add stats blocks
+  // - Rename lists_*_number to lists_*_value
+  // - Added "every component" block.
+  public static final int BLOCKS_LANGUAGE_VERSION = 36;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -756,9 +767,11 @@ public class YaVersion {
   // - The BluetoothClient.Secure property was added.
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 6:
   // - The BluetoothClient.DisconnectOnError property was added.
-  // For BLUETOOTH_CLIENT_COMPONENT_VERSION 7:
-  // - The BluuetoothClient.PollingRate property was added.
-  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 7;
+  // For BLUETOOTHCLIENT_COMPONENT_VERSION 7:
+  // - The BluetoothClient.PollingRate property was added.
+  // For BLUETOOTHCLIENT_COMPONENT_VERSION 8:
+  // - The BluetoothClient.NoLocationNeeded property was added.
+  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 8;
 
   // For BLUETOOTHSERVER_COMPONENT_VERSION 2:
   // - The BluetoothServer.Enabled property was added.
@@ -824,14 +837,17 @@ public class YaVersion {
   // For CANVAS_COMPONENT_VERSION 13
   // - BackgroundImageinBase64 was added
   // For CANVAS_PROPERTY_VERSION 14
-  // -TAP_THRESHOLD was changed from being constant to user settable 
+  // -TAP_THRESHOLD was changed from being constant to user settable
   // -TAP_THRESHOLD renamed to tapThreshold
   // -TapThreshold was added
   // For CANVAS_COMPONENT_VERSION 15
   // - Assets helper block was added.
   public static final int CANVAS_COMPONENT_VERSION = 15;
 
-  public static final int CHART_COMPONENT_VERSION = 1;
+  // For CHART_COMPONENT_VERSION 2:
+  // - The XFromZero and YFromZero properties were added
+  // - The SetDomain and SetRange methods were added
+  public static final int CHART_COMPONENT_VERSION = 2;
 
   public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
 
@@ -993,8 +1009,6 @@ public class YaVersion {
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 4;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
-
-  public static final int SPREADSHEET_COMPONENT_VERSION = 1;
 
   public static final int GYROSCOPESENSOR_COMPONENT_VERSION = 1;
 
@@ -1304,6 +1318,18 @@ public class YaVersion {
   // For SPEECHRECOGNIZER_COMPONENT_VERSION 3:
   // - The Language property was added.
   public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 3;
+
+  // For SPREADSHEET_COMPONENT_VERSION 2:
+  // - Added the HasHeaders property
+  // - The ReadCol method was renamed to ReadColumn
+  // - The GotColData event was renamed to GotColumnData
+  // - The WriteCol method was renamed to WriteColumn
+  // - The FinishedWriteCol event was renamed to FinishedWriteColumn
+  // - The AddCol method was renamed to AddColumn
+  // - The FinishedAddCol event was renamed to FinishedAddColumn
+  // - The RemoveCol method was renamed to RemoveColumn
+  // - The FinishedRemoveCol event was renamed to FinishedRemoveColumn
+  public static final int SPREADSHEET_COMPONENT_VERSION = 2;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version

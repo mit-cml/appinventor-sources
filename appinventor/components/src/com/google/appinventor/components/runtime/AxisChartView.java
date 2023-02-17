@@ -88,6 +88,49 @@ public abstract class AxisChartView<
         }
       }
     });
+
+    if (chartComponent.XFromZero()) {
+      chart.getXAxis().setAxisMaximum(0);
+    }
+    if (chartComponent.YFromZero()) {
+      chart.getAxisLeft().setAxisMinimum(0);
+    }
+  }
+
+  /**
+   * Sets whether the X origin should be fixed to zero.
+   *
+   * @param zero true if the X origin should be zero
+   */
+  public void setXMinimum(boolean zero) {
+    if (zero) {
+      chart.getXAxis().setAxisMinimum(0);
+    } else {
+      chart.getXAxis().resetAxisMinimum();
+    }
+  }
+
+  /**
+   * Sets whether the Y origin should be fixed to zero.
+   *
+   * @param zero true if the Y origin should be zero
+   */
+  public void setYMinimum(boolean zero) {
+    if (zero) {
+      chart.getAxisLeft().setAxisMinimum(0);
+    } else {
+      chart.getAxisLeft().resetAxisMinimum();
+    }
+  }
+
+  public void setXBounds(double minimum, double maximum) {
+    chart.getXAxis().setAxisMinimum((float) minimum);
+    chart.getXAxis().setAxisMaximum((float) maximum);
+  }
+
+  public void setYBounds(double minimum, double maximum) {
+    chart.getAxisLeft().setAxisMinimum((float) minimum);
+    chart.getAxisLeft().setAxisMaximum((float) maximum);
   }
 
   /**

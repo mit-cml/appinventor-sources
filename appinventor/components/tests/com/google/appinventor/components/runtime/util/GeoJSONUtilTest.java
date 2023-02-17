@@ -42,6 +42,7 @@ import static com.google.appinventor.components.runtime.Component.COLOR_RED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -128,11 +129,20 @@ public class GeoJSONUtilTest extends MapTestBase {
     fail();
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  /**
+   * Tests that processing of a feature with a `null` geometry yields
+   * the expected behavior.
+   *
+   * Previously, the function being tested with throw an
+   * IllegalArgumentException when `null` was encountered. However,
+   * the GeoJSON spec allows for `null` geometries for the purpose of
+   * including metadata properties, so we ended up throwing an error
+   * for an allowed use.
+   */
+  @Test
   public void testProcessGeoJSONFeatureNoGeometry() {
-    GeoJSONUtil.processGeoJSONFeature(LOG_TAG, getMap(),
-        alist("type", "Feature"));
-    fail();
+    assertNull(GeoJSONUtil.processGeoJSONFeature(LOG_TAG, getMap(),
+        alist("type", "Feature")));
   }
 
   public void testProcessGeoJSONWarnUnknownProperty() {
