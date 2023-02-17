@@ -18,6 +18,8 @@ import java.util.Arrays;
 public class MockChartData2D extends MockChartData {
   public static final String TYPE = "ChartData2D";
 
+  public static final String PROPERTY_NAME_SOURCE = "Source";
+
   /**
    * Creates a new MockChartData2D component.
    *
@@ -30,5 +32,13 @@ public class MockChartData2D extends MockChartData {
     // Since ChartData2D consists of 2 entries,
     // the List is initialized with 2 entries.
     dataFileColumns = Arrays.asList("", "");
+  }
+
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+    super.onPropertyChange(propertyName, newValue);
+    if (PROPERTY_NAME_SOURCE.equals(propertyName)) {
+      editor.refreshPropertiesPanel();
+    }
   }
 }

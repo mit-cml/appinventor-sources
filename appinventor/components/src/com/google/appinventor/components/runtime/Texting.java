@@ -1096,7 +1096,8 @@ public class Texting extends AndroidNonvisibleComponent
     int numParts = parts.size();
     ArrayList<PendingIntent> pendingIntents = new ArrayList<PendingIntent>();
     for (int i = 0; i < numParts; i++)
-      pendingIntents.add(PendingIntent.getBroadcast(activity, 0, new Intent(SENT), 0));
+      pendingIntents.add(PendingIntent.getBroadcast(activity, 0, new Intent(SENT),
+          PendingIntent.FLAG_IMMUTABLE));
 
     // Receiver for when the SMS is sent
     BroadcastReceiver sendReceiver = new BroadcastReceiver() {

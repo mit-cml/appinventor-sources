@@ -40,7 +40,7 @@
 		<div class="dropdown-menu">
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
-		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
                     <a class="dropdown-item"
                        href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
@@ -148,6 +148,17 @@
   <li><a href="#listfromcsvtable">list from csv table</a></li>
   <li><a href="#lookupinpairs">lookup in pairs</a></li>
   <li><a href="#joinwithseparator">join with separator</a></li>
+  <li><a href="#mapnondest">make new mapped list</a></li>
+  <li><a href="#filter">make new filtered list</a></li>
+  <li><a href="#reduce">reduce list to a single value</a></li>
+  <li><a href="#sort">sort list in ascending order</a></li>
+  <li><a href="#sortwithcomparator">sort list with a specified comparator</a></li>
+  <li><a href="#sortwithkey">sort list with proxy values</a></li>
+  <li><a href="#minnumber">minimum value in list</a></li>
+  <li><a href="#maximum">maximum value in list</a></li>
+  <li><a href="#butfirst">all but first</a></li>
+  <li><a href="#butlast">all but last</a></li>
+  <li><a href="#slices">list slices</a></li>
 </ul>
 
 <p><em>Need additional help understanding lists? Check out <a href="../concepts/lists.html">making lists</a> on the Concepts page.</em></p>
@@ -250,7 +261,7 @@ the members of the sublists are not themselves members of the list. For example,
 
 <p><img src="images/lists/reverse.png" alt="" /></p>
 
-<p>Reverses a copy of the list with items in the reverse order. For example reverse([1,2,3]) returns [3,2,1]</p>
+<p>Returns a copy of the list with items in the reverse order. For example reverse([1,2,3]) returns [3,2,1]</p>
 
 <h3 id="listtocsvrow">list to csv row</h3>
 
@@ -301,6 +312,103 @@ pairs, then the operation will signal an error.</p>
 <p><img src="images/lists/joinwithseparator.png" alt="" /></p>
 
 <p>Joins all elements in the specified list by the specified separator, producing text as a result.</p>
+
+<h3 id="map">make new mapped list</h3>
+
+<p><img src="images/lists/mapnondest.png" alt="" /></p>
+
+<p>Creates a new list from mapping each item in the input list to a new value using the provided expression.
+The body is an expression that manipulates each item in the list.
+Use the given variable name, item, to refer to the current list item.</p>
+
+<p><a href="../concepts/pholo.html#map">Here</a> is a tutorial on how to use the map block.</p>
+
+<h3 id="filter">make new filtered list</h3>
+
+<p><img src="images/lists/filternondest.png" alt="" /></p>
+
+<p>Create a new list from keeping each item in the input list satisfying the test.
+The body is a boolean expression that checks if an item passes the test.
+If the body returns true, then the item is added to the new filtered list.
+Use the given variable name, item, to refer to the current list item.</p>
+
+<p><a href="../concepts/pholo.html#filter">Here</a> is a tutorial on how to use the filter block.</p>
+
+<h3 id="reduce">reduce list to a single value</h3>
+
+<p><img src="images/lists/reduce.png" alt="" /></p>
+
+<p>Returns an accumulated value by reducing the input list.
+If the input list is empty, then initialAnswer is returned. Otherwise, answerSoFar is initialized to initialAnswer.
+The body block will be evaluated using the accumulated answerSoFar and each item in the input list.</p>
+
+<p><a href="../concepts/pholo.html#reduce">Here</a> is a tutorial on how to use the reduce block.</p>
+
+<h3 id="sort">sort list in ascending order</h3>
+
+<p><img src="images/lists/sort.png" alt="" /></p>
+
+<p>Create a new list from sorting the input list in ascending order.
+This is a generic sorting procedure that works on lists of any type.
+It groups items of the same type together, and then sorts accordingly within the same type group.
+The current order of the types is booleans, numbers, strings, lists and then components.
+For booleans, false is defined as less than true.
+Components are first compared with their class names.
+If they are instances of the same class, their hashcodes are used for comparison.</p>
+
+<p><a href="../concepts/pholo.html#sort">Here</a> is a tutorial on how to use the sort block.</p>
+
+<h3 id="sortwithcomparator">sort list with a specified comparator</h3>
+
+<p><img src="images/lists/sortwithcomparator.png" alt="" /></p>
+
+<p>Create a new list from sorting the input list in an order specified by the body of the block.
+The body of this block is a boolean expression involving item1 and item2 and returns true or false.
+If the body returns true, then item1 is merged prior to item2 in sorting.
+If the body returns false, then item2 is merged prior to item1 in sorting.
+Use the given variable names, item1 and item2, to refer to the two current list items that are being compared.</p>
+
+<p><a href="../concepts/pholo.html#sortwithcomparator">Here</a> is a tutorial on how to use the sort with comparator block.</p>
+
+<h3 id="sortwithkey">sort list with key</h3>
+
+<p><img src="images/lists/sortwithkey.png" alt="" /></p>
+
+<p>Create a new list from sorting the input list with the keys in ascending order.
+The keys are proxy values generated from each item in the list by the body of this block.</p>
+
+<p><a href="../concepts/pholo.html#sortwithkey">Here</a> is a tutorial on how to use the sort with key block.</p>
+
+<h3 id="minnumber">minimum value in list</h3>
+
+<p><img src="images/lists/minnumber.png" alt="" /></p>
+
+<p>Return the minimum number in the input list.</p>
+
+<h3 id="maxnumber">maximum value in list</h3>
+
+<p><img src="images/lists/maxnumber.png" alt="" /></p>
+
+<p>Return the maximum number in the input list.</p>
+
+<h3 id="butfirst">all but first</h3>
+
+<p><img src="images/lists/butfirst.png" alt="" /></p>
+
+<p>Return a list without the first item in the input list.</p>
+
+<h3 id="butlast">all but last</h3>
+
+<p><img src="images/lists/butlast.png" alt="" /></p>
+
+<p>Return a list without the last item in the input list.</p>
+
+<h3 id="slices">list slices</h3>
+
+<p><img src="images/lists/slices.png" alt="" /></p>
+
+<p>Return a list from slicing the input list at the two given index.
+The returned list contains items of the input list that starts from index1 up to but not including index2.</p>
 
 </article>
 <script>
@@ -380,7 +488,7 @@ pairs, then the operation will signal an error.</p>
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2023 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"

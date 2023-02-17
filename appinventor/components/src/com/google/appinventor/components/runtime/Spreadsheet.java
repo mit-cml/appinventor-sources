@@ -1,8 +1,7 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2020 MIT, All rights reserved
+// Copyright 2020-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
-
 
 package com.google.appinventor.components.runtime;
 
@@ -46,6 +45,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.CsvUtil;
+import com.google.appinventor.components.runtime.util.IOUtils;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
@@ -60,16 +60,18 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.regex.Pattern;
 
 /**
  * Spreadsheet is a non-visible component for storing and receiving data from
@@ -138,28 +140,23 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     ObservableDataSource<YailList, Future<YailList>> {
   private static final String LOG_TAG = "SPREADSHEET";
 
+  private static final Pattern INTEGER = Pattern.compile("^[0-9]+$");
   private static final String WEBVIEW_ACTIVITY_CLASS = WebViewActivity.class
-    .getName();
+      .getName();
   private int requestCode;
-  public Spreadsheet(ComponentContainer componentContainer) {
-    super(componentContainer.$form());
-    this.container = componentContainer;
-    this.activity = componentContainer.$context();
-  }
 
   // Designer Properties
   private String apiKey;
   private String credentialsPath;
   private String spreadsheetID = "";
   // This gets changed to the name of the project by MockSpreadsheet by default
-  private String ApplicationName = "App Inventor";
+  private String applicationName = "App Inventor";
 
   // Variables for Authenticating the Spreadsheet Component
   private File cachedCredentialsFile = null;
   private String accessToken = null;
   private Sheets sheetsService = null;
 
-  //   private final Activity activity;
   private final ComponentContainer container;
   private final Activity activity;
 
@@ -167,9 +164,20 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
   private YailList columns = new YailList();
 
-  private Set<DataSourceChangeListener> observers = new HashSet<>();
+  private final Set<DataSourceChangeListener> observers = new HashSet<>();
 
-  private HashMap<String, Integer> sheetIdMap = new HashMap<>();
+  private final Map<String, Integer> sheetIdMap = new HashMap<>();
+
+  /**
+   * Construct a new Spreadsheet component.
+   *
+   * @param componentContainer the containing component
+   */
+  public Spreadsheet(ComponentContainer componentContainer) {
+    super(componentContainer.$form());
+    this.container = componentContainer;
+    this.activity = componentContainer.$context();
+  }
 
   private int getSheetID(Sheets sheetsSvcParam, String sheetName) {
     if (sheetIdMap.containsKey(sheetName)) {
@@ -205,12 +213,10 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     return credentialsPath;
   }
 
-  @DesignerProperty(
-    editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
-    defaultValue = "")
-  @SimpleProperty(
-    description = "The JSON File with credentials for the Service Account")
-  public void CredentialsJson (String credentialsPath) {
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
+      defaultValue = "")
+  @SimpleProperty(description = "The JSON File with credentials for the Service Account")
+  public void CredentialsJson(String credentialsPath) {
     this.credentialsPath = credentialsPath;
   }
 
@@ -219,12 +225,10 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     return spreadsheetID;
   }
 
-  @DesignerProperty(
-    editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-    defaultValue = "")
-  @SimpleProperty(
-    description="The ID for the Google Sheets file you want to edit. You can " +
-      "find the spreadsheetID in the URL of the Google Sheets file.")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "")
+  @SimpleProperty(description = "The ID for the Google Sheets file you want to edit. You can "
+      + "find the spreadsheetID in the URL of the Google Sheets file.")
   public void SpreadsheetID(String spreadsheetID) {
     if (spreadsheetID.startsWith("https:")) {
       // URL: https://docs.google.com/spreadsheets/d/<id>/edit#gid=0
@@ -241,22 +245,18 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    * This is set programmatically
    * in {@link com.google.appinventor.client.editor.simple.components.MockSpreadsheet}
    * and consists of the current App Inventor project name.
-   *
-   * @param ApplicationName the name of the App
    */
   @SimpleProperty(
     userVisible = false)
   public String ApplicationName() {
-    return ApplicationName;
+    return applicationName;
   }
 
-  @DesignerProperty(
-    editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-    defaultValue = "App Inventor")
-  @SimpleProperty(
-    description="The name of your application, used when making API calls.")
-  public void ApplicationName(String ApplicationName) {
-    this.ApplicationName = ApplicationName;
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "App Inventor")
+  @SimpleProperty(description = "The name of your application, used when making API calls.")
+  public void ApplicationName(String applicationName) {
+    this.applicationName = applicationName;
   }
 
   /* Utility Functions for Making Calls */
@@ -270,53 +270,70 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     }
 
     // Convert the above java.io.File -> InputStream
-    InputStream in = new FileInputStream(cachedCredentialsFile);
+    GoogleCredential credential;
+    InputStream in = null;
+    try {
+      in = new FileInputStream(cachedCredentialsFile);
+      // TODO: Catch Malformed Credentials JSON
+      credential = GoogleCredential.fromStream(in)
+          .createScoped(Collections.singletonList(SheetsScopes.SPREADSHEETS));
+      credential.refreshToken();
+      accessToken = credential.getAccessToken();
+    } finally {
+      IOUtils.closeQuietly(LOG_TAG, in);
+    }
 
-    // TODO: Catch Malformed Credentials JSON
-    GoogleCredential credential = GoogleCredential.fromStream(in)
-      .createScoped(Arrays.asList(SheetsScopes.SPREADSHEETS));
-    credential.refreshToken();
-    accessToken = credential.getAccessToken();
     Log.d(LOG_TAG, "Credential after refresh token: " + accessToken);
     return credential;
   }
 
   // Uses the Google Sheets Credentials to create a Google Sheets API instance
   // required for all other Google Sheets API calls
-  private Sheets getSheetsService () throws IOException, GeneralSecurityException {
+  private Sheets getSheetsService() throws IOException, GeneralSecurityException {
     // Generate a new sheets service only if there is not one already created
     if (sheetsService == null) {
       GoogleCredential credential = authorize();
       this.sheetsService = new Sheets.Builder(new NetHttpTransport(),
         JacksonFactory.getDefaultInstance(), credential)
-        .setApplicationName(ApplicationName)
+        .setApplicationName(applicationName)
         .build();
     }
     return sheetsService;
   }
 
   // Yields the A1 notation for the column, e.g. col 1 = A, col 2 = B, etc
-  private String getColString (int colNumber) {
-    if (colNumber == 0)
+  private String getColString(int colNumber) {
+    if (colNumber == 0) {
       return "";
+    }
     String[] alphabet = {
       "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R",
       "S","T","U","V","W","X","Y","Z"};
-    String colReference = "";
+    StringBuilder colReference = new StringBuilder();
     while (colNumber > 0) {
-      String digit = alphabet[(colNumber-1) % 26];
-      colReference = digit + colReference;
-      colNumber = (int) Math.floor((colNumber-1) / 26);
+      String digit = alphabet[(colNumber - 1) % 26];
+      colReference.insert(0, digit);
+      colNumber = (colNumber - 1) / 26;
     }
-    return colReference;
+    return colReference.toString();
+  }
+
+  private int getColNum(String columnRef) {
+    if (columnRef == null || columnRef.isEmpty()) {
+      return -1;
+    }
+    int number = 0;
+    for (char c : columnRef.toCharArray()) {
+      number = number * 26 + (c - 'A') + 1;
+    }
+    return number;
   }
 
   /* Error Catching Handler */
 
-  @SimpleEvent(
-    description="Triggered whenever an API call encounters an error. Details " +
-      "about the error are in `errorMessage`.")
-  public void ErrorOccurred (final String errorMessage) {
+  @SimpleEvent(description = "Triggered whenever an API call encounters an error. Details "
+      + "about the error are in `errorMessage`.")
+  public void ErrorOccurred(final String errorMessage) {
     final Spreadsheet thisInstance = this;
     Log.d(LOG_TAG, errorMessage);
     activity.runOnUiThread(new Runnable() {
@@ -337,17 +354,9 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
     description="Converts the integer representation of rows and columns to " +
       "A1-Notation used in Google Sheets for a single cell.")
-  public String GetCellReference(int row, int col) {
-    String[] alphabet = {
-      "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R",
-      "S","T","U","V","W","X","Y","Z"};
-    String colRange = "";
-    while (col > 0) {
-      String digit = alphabet[(col-1) % 26];
-      colRange = digit + colRange;
-      col = (int) Math.floor((col-1) / 26);
-    }
-    return colRange + Integer.toString(row);
+  public String GetCellReference(int row, int column) {
+    String colRange = getColString(column);
+    return colRange + row;
   }
 
   /**
@@ -358,23 +367,23 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
     description="Converts the integer representation of rows and columns for " +
       "the corners of the range to A1-Notation used in Google Sheets.")
-  public String GetRangeReference(int row1, int col1, int row2, int col2) {
-    return GetCellReference(row1, col1) + ":" + GetCellReference(row2, col2);
+  public String GetRangeReference(int row1, int column1, int row2, int column2) {
+    return GetCellReference(row1, column1) + ":" + GetCellReference(row2, column2);
   }
 
   /* Filters and Methods that Use Filters */
 
   /**
-   * The callbeck event for the {@link #ReadWithQuery()} block. The `response`
+   * The callback event for the {@link #ReadWithQuery} block. The `response`
    * is a list of rows, where each row satisfies the query.
    */
-  @SimpleEvent(
-      description="The callback event for the ReadWithExactQuery or ReadWithPartialQuery block. The " +
-          "`response` is a list of rows numbers and a list of rows containing cell data.")
-  public void GotFilterResult (final List<Integer> return_rows,
-                               List<List<String>> return_data) {
-    Log.d(LOG_TAG, "GotFilterResult got: " + return_rows);
-    EventDispatcher.dispatchEvent(this, "GotFilterResult", return_rows, return_data);
+  @SimpleEvent(description = "The callback event for the ReadWithExactQuery or "
+      + "ReadWithPartialQuery block. The `response` is a list of rows numbers and a list of rows "
+      + "containing cell data.",
+      userVisible = false)
+  public void GotFilterResult(List<Integer> returnRows, List<List<String>> returnData) {
+    Log.d(LOG_TAG, "GotFilterResult got: " + returnRows);
+    EventDispatcher.dispatchEvent(this, "GotFilterResult", returnRows, returnData);
   }
 
   // Helpers for making the HTTP Request for ReadWithQuery
@@ -384,8 +393,9 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     if (encoding == null) {
       encoding = "UTF-8";
     }
-    InputStreamReader reader = new InputStreamReader(getConnectionStream(connection), encoding);
+    InputStreamReader reader = null;
     try {
+      reader = new InputStreamReader(getConnectionStream(connection), encoding);
       int contentLength = connection.getContentLength();
       StringBuilder sb = (contentLength != -1)
           ? new StringBuilder(contentLength)
@@ -397,7 +407,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       }
       return sb.toString();
     } finally {
-      reader.close();
+      IOUtils.closeQuietly(LOG_TAG, reader);
     }
   }
 
@@ -426,7 +436,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   public void ReadWithExactFilter(final String sheetName, final int colID, final String value) {
     Log.d(LOG_TAG, "ReadRowsWithFilter colID " + colID + ", value " + value);
 
-    if (spreadsheetID == "" || spreadsheetID == null) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("ReadWithExactFilter: " + "SpreadsheetID is empty.");
       return;
     }
@@ -443,7 +453,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   public void ReadWithPartialFilter(final String sheetName, final int colID, final String value) {
     Log.d(LOG_TAG, "ReadWithPartialFilter colID " + colID + ", value " + value);
 
-    if (spreadsheetID == "" || spreadsheetID == null) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("ReadWithPartialFilter: " + "SpreadsheetID is empty.");
       return;
     }
@@ -455,7 +465,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
   /**
    * On the page with the provided sheetName, reads the row at the given
-   * rowNumber and triggers the {@link #GotRowData()} callback event.
+   * rowNumber and triggers the {@link #GotRowData} callback event.
    */
   @SimpleFunction(
     description="On the page with the provided sheetName, this method will " +
@@ -565,7 +575,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   /**
-   * The callback event for the {@link #ReadRow()} block. The `rowDataList` is a
+   * The callback event for the {@link #ReadRow} block. The `rowDataList` is a
    * list of text cell-values in order of increasing column number.
    */
   @SimpleEvent(
@@ -636,7 +646,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   /**
-   * The callback event for the {@link #WriteRow()} block, called once the
+   * The callback event for the {@link #WriteRow} block, called once the
    * values on the table have been updated.
    */
   @SimpleEvent(
@@ -649,23 +659,21 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   /**
    * Given a list of values as `data`, appends the values to the next
    * empty row of the sheet. It will always start from the left most column and
-   * continue to the right. Once complete, it triggers the {@link #FinishedAddRow()}
+   * continue to the right. Once complete, it triggers the {@link #FinishedAddRow}
    * callback event. Additionally, this returns the row number for the new row.
    */
   @SimpleFunction(
     description="Given a list of values as `data`, appends the values " +
       "to the next empty row of the sheet. Additionally, this returns " +
       "the row number for the new row.")
-  public void AddRow (final String sheetName, YailList data) {
-    if (spreadsheetID == "" || spreadsheetID == null) {
+  public void AddRow(final String sheetName, YailList data) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("AddRow: " + "SpreadsheetID is empty.");
       return;
-    } else if (credentialsPath == "" || credentialsPath == null) {
+    } else if (credentialsPath == null || credentialsPath.isEmpty()) {
       ErrorOccurred("AddRow: " + "Credentials JSON is required.");
       return;
     }
-
-    final String rangeRef = sheetName;
 
     // Generates the 2D list, which are the values to assign to the range
     LList rowValues = (LList) data.getCdr();
@@ -680,27 +688,25 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     // Run the API call asynchronously
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         try {
           Sheets sheetsService = getSheetsService();
 
           ValueRange readResult = sheetsService.spreadsheets().values()
-              .get(spreadsheetID, rangeRef).execute();
+              .get(spreadsheetID, sheetName).execute();
           // Get the actual data from the response
           List<List<Object>> values = readResult.getValues();
-          // If the data we got is empty, then return so.
-          if (values == null || values.isEmpty())
-            ErrorOccurred("AddRow: No data found");
 
           // nextCol gets mutated, keep addedColumn as a constant
-          int max_row = values.size() + 1;
+          int maxRow = values == null ? 1 : (values.size() + 1);
 
           // Sends the append values request
           AppendValuesResponse response = sheetsService.spreadsheets().values()
-            .append(spreadsheetID, rangeRef + "!A" + max_row, body.setRange(rangeRef + "!A" + max_row))
-            .setValueInputOption("USER_ENTERED") // USER_ENTERED or RAW
-            .setInsertDataOption("INSERT_ROWS") // INSERT_ROWS or OVERRIDE
-            .execute();
+              .append(spreadsheetID, sheetName + "!A" + maxRow,
+                  body.setRange(sheetName + "!A" + maxRow))
+              .setValueInputOption("USER_ENTERED")   // USER_ENTERED or RAW
+              .setInsertDataOption("INSERT_ROWS")    // INSERT_ROWS or OVERRIDE
+              .execute();
 
           // getUpdatedRange returns the range that updates were applied in A1
           String updatedRange = response.getUpdates().getUpdatedRange();
@@ -717,8 +723,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           if (observers.size() > 0) {
             RetrieveSheet(sheetName, -1, null, false, false);
           }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           e.printStackTrace();
           ErrorOccurred("AddRow: " + e.getMessage());
         }
@@ -727,14 +732,14 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   /**
-   * The callback event for the {@link #AddRow()} block, called once the
+   * The callback event for the {@link #AddRow} block, called once the
    * values on the table have been updated. Additionally, this returns the
    * row number for the new row.
    */
   @SimpleEvent(
     description="The callback event for the AddRow block, called once the " +
       "values on the table have been updated.")
-  public void FinishedAddRow (final int rowNumber) {
+  public void FinishedAddRow(final int rowNumber) {
     EventDispatcher.dispatchEvent(this, "FinishedAddRow", rowNumber);
   }
 
@@ -793,13 +798,13 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   /**
-   * The callback event for the {@link #RemoveRow()} block, called once the
+   * The callback event for the {@link #RemoveRow} block, called once the
    * values on the table have been updated.
    */
   @SimpleEvent(
     description="The callback event for the RemoveRow block, called once the" +
       "values on the table have been updated.")
-  public void FinishedRemoveRow () {
+  public void FinishedRemoveRow() {
     EventDispatcher.dispatchEvent(this, "FinishedRemoveRow");
   }
 
@@ -807,15 +812,14 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
   /**
    * On the page with the provided sheetName, reads the column at the given
-   * colNumber and triggers the {@link #GotColData()} callback event.
+   * colNumber and triggers the {@link #GotColumnData} callback event.
    */
-  @SimpleFunction(
-    description="On the page with the provided sheetName, reads the column at " +
-      "the given colNumber and triggers the GotColData callback event.")
-  public void ReadCol (String sheetName, int colNumber) {
+  @SimpleFunction(description = "On the page with the provided sheetName, reads the column at "
+      + "the given index and triggers the GotColumnData callback event.")
+  public void ReadColumn(String sheetName, String column) {
 
-    if (spreadsheetID == "" || spreadsheetID == null) {
-      ErrorOccurred("ReadCol: " + "SpreadsheetID is empty.");
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
+      ErrorOccurred("ReadColumn: " + "SpreadsheetID is empty.");
       return;
     }
     // If there is no credentials file,
@@ -824,13 +828,16 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     //   Use the Google Sheets API
 
     // Converts the col number to the corresponding letter
-    String colReference = getColString(colNumber);
+    String colReference = column;
+    if (Pattern.compile("^[0-9]+$").matcher(column).find()) {
+      colReference = getColString(Integer.parseInt(column));
+    }
     final String rangeRef = sheetName + "!" + colReference + ":" + colReference;
 
     // Asynchronously fetch the data in the cell and trigger the callback
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         try {
           // If no Credentials.json is provided, attempt the HTTP request
           if (credentialsPath == null) {
@@ -839,15 +846,15 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             try {
               cleanRangeReference = URLEncoder.encode(rangeRef, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-              ErrorOccurred("ReadCol: Error occurred encoding the query. UTF-8 is unsupported?");
+              ErrorOccurred("ReadColumn: Error occurred encoding the query. UTF-8 is unsupported?");
               return;
             }
 
             // Formats the data into the URL to read the range
             String getUrl = String.format(
-              "https://docs.google.com/spreadsheets/d/%s/export?format=csv&range=%s",
-              spreadsheetID, cleanRangeReference);
-            Log.d(LOG_TAG, "ReadCol url: " + getUrl);
+                "https://docs.google.com/spreadsheets/d/%s/export?format=csv&range=%s",
+                spreadsheetID, cleanRangeReference);
+            Log.d(LOG_TAG, "ReadColumn url: " + getUrl);
 
             // Make the HTTP Request
             URL url = new URL(getUrl);
@@ -855,7 +862,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
               connection.setRequestMethod("GET");
             // Catch Bad HTTP Request
             if (connection.getResponseCode() == 400) {
-              ErrorOccurred("ReadCol: Bad HTTP Request. Please check the address and try again. " + getUrl);
+              ErrorOccurred("ReadColumn: Bad HTTP Request. Please check the address and try again. "
+                  + getUrl);
               return;
             }
 
@@ -874,7 +882,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             activity.runOnUiThread(new Runnable() {
               @Override
               public void run() {
-                GotColData(col);
+                GotColumnData(col);
               }
             });
             return;
@@ -884,87 +892,87 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           Sheets sheetsService = getSheetsService();
 
           ValueRange readResult = sheetsService.spreadsheets().values()
-            .get(spreadsheetID, rangeRef).execute();
+              .get(spreadsheetID, rangeRef).execute();
           List<List<Object>> values = readResult.getValues();
 
           // If the data we got is empty, then throw an error
           if (values == null || values.isEmpty()) {
-            ErrorOccurred("ReadCol: No data found.");
+            ErrorOccurred("ReadColumn: No data found.");
             return;
           }
 
           // Format the result as a list of strings and run the callback
-          final List<String> ret = new ArrayList<String>();
+          final List<String> ret = new ArrayList<>();
           for (List<Object> row : values) {
-            ret.add(String.format("%s", row.isEmpty() ? "" : row.get(0), ""));
+            ret.add(row.isEmpty() ? "" : row.get(0).toString());
           }
 
           // We need to re-enter the main thread before we can dispatch the event!
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              GotColData(ret);
+              GotColumnData(ret);
             }
           });
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           e.printStackTrace();
-          ErrorOccurred("ReadCol: " + e.getMessage());
+          ErrorOccurred("ReadColumn: " + e.getMessage());
         }
       }
     });
   }
 
   /**
-   * The callback event for the {@link #ReadCol()} block. The `colDataList` is a
+   * The callback event for the {@link #ReadColumn} block. The `columnData` is a
    * list of text cell-values in order of increasing row number.
    */
-  @SimpleEvent(
-    description="After calling the ReadCol method, the data in the column will " +
-      "be stored as a list of text values in `colDataList`.")
-  public void GotColData (final List<String> colDataList) {
-    Log.d(LOG_TAG, "GotColData got: " + colDataList);
-    EventDispatcher.dispatchEvent(this, "GotColData", colDataList);
+  @SimpleEvent(description = "After calling the ReadColumn method, the data in the column will "
+      + "be stored as a list of text values in `columnData`.")
+  public void GotColumnData(final List<String> columnData) {
+    Log.d(LOG_TAG, "GotColumnData got: " + columnData);
+    EventDispatcher.dispatchEvent(this, "GotColumnData", columnData);
   }
 
   /**
    * Given a list of values as `data`, writes the values to the column with the
    * given column number, overriding existing values from top down. (Note: It
    * will not erase the entire column.) Once complete, it triggers the
-   * {@link #FinishedWriteCol()} callback event.
+   * {@link #FinishedWriteColumn()} callback event.
    */
-  @SimpleFunction(
-    description="Given a list of values as `data`, this method will write the " +
-      "values to the column of the sheet and calls the FinishedWriteCol event " +
-      "once complete.")
-  public void WriteCol (String sheetName, int colNumber, YailList data) {
-    if (spreadsheetID == "" || spreadsheetID == null) {
-      ErrorOccurred("WriteCol: " + "SpreadsheetID is empty.");
+  @SimpleFunction(description = "Given a list of values as `data`, this method will write the "
+      + "values to the column of the sheet and calls the FinishedWriteColumn event "
+      + "once complete.")
+  public void WriteColumn(String sheetName, String column, YailList data) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
+      ErrorOccurred("WriteColumn: " + "SpreadsheetID is empty.");
       return;
-    } else if (credentialsPath == "" || credentialsPath == null) {
-      ErrorOccurred("WriteCol: " + "Credentials JSON is required.");
+    } else if (credentialsPath == null || credentialsPath.isEmpty()) {
+      ErrorOccurred("WriteColumn: " + "Credentials JSON is required.");
       return;
     }
 
     // Converts the col number to the corresponding letter
-    String colReference = getColString(colNumber);
+    String colReference = column;
+    if (INTEGER.matcher(column).matches()) {
+      colReference = getColString(Integer.parseInt(column));
+    }
     final String rangeRef = sheetName + "!" + colReference + ":" + colReference;
 
     // Generates the body, which are the values to assign to the range
     List<List<Object>> values = new ArrayList<>();
     for (Object o : (LList) data.getCdr()) {
-      List<Object> r = new ArrayList<Object>(Arrays.asList(o));
+      List<Object> r = new ArrayList<>(Collections.singletonList(o));
       values.add(r);
     }
 
     // Sets the 2D list above to be the values in the body of the API Call
     final ValueRange body = new ValueRange()
-      .setValues(values);
+        .setValues(values);
 
     // Wrap the API Call in an Async Utility
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         // Surround the operation with a try catch statement
         try {
           Sheets sheetsService = getSheetsService();
@@ -977,48 +985,44 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              FinishedWriteCol();
+              FinishedWriteColumn();
             }
           });
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           e.printStackTrace();
-          ErrorOccurred("WriteCol IOException: " + e.getMessage());
-        }
-        catch (GeneralSecurityException e) {
+          ErrorOccurred("WriteColumn IOException: " + e.getMessage());
+        } catch (GeneralSecurityException e) {
           e.printStackTrace();
-          ErrorOccurred("WriteCol GeneralSecurityException: " + e.getMessage());
+          ErrorOccurred("WriteColumn GeneralSecurityException: " + e.getMessage());
         }
       }
     });
   }
 
   /**
-   * The callback event for the {@link #WriteCol()} block, called once the
+   * The callback event for the {@link #WriteColumn} block, called once the
    * values on the table have been updated.
    */
-  @SimpleEvent(
-    description="The callback event for the WriteCol block, called once the" +
-      "values on the table have been updated.")
-  public void FinishedWriteCol () {
-    EventDispatcher.dispatchEvent(this, "FinishedWriteCol");
+  @SimpleEvent(description = "The callback event for the WriteColumn block, called once the"
+      + "values on the table have been updated.")
+  public void FinishedWriteColumn() {
+    EventDispatcher.dispatchEvent(this, "FinishedWriteColumn");
   }
 
   /**
    * Given a list of values as `data`, appends the values to the next empty
    * column of the sheet. It will always start from the top row and continue
-   * downwards. Once complete, it triggers the {@link #FinishedAddCol()}
+   * downwards. Once complete, it triggers the {@link #FinishedAddColumn}
    * callback event.
    */
-  @SimpleFunction(
-    description="Given a list of values as `data`, appends the values to the " +
-      "next empty column of the sheet.")
-  public void AddCol (final String sheetName, YailList data) {
-    if (spreadsheetID == "" || spreadsheetID == null) {
-      ErrorOccurred("AddCol: " + "SpreadsheetID is empty.");
+  @SimpleFunction(description = "Given a list of values as `data`, appends the values to the "
+      + "next empty column of the sheet.")
+  public void AddColumn(final String sheetName, YailList data) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
+      ErrorOccurred("AddColumn: " + "SpreadsheetID is empty.");
       return;
-    } else if (credentialsPath == "" || credentialsPath == null) {
-      ErrorOccurred("AddCol: " + "Credentials JSON is required.");
+    } else if (credentialsPath == null || credentialsPath.isEmpty()) {
+      ErrorOccurred("AddColumn: " + "Credentials JSON is required.");
       return;
     }
 
@@ -1030,12 +1034,12 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       values.add(r);
     }
     final ValueRange body = new ValueRange()
-      .setValues(values);
+        .setValues(values);
 
     // Wrap the API Call in an Async Utility
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         // Surround the operation with a try catch statement
         try {
           Sheets sheetsService = getSheetsService();
@@ -1045,142 +1049,139 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           // Get the actual data from the response
           List<List<Object>> values = readResult.getValues();
           // If the data we got is empty, then return so.
-          if (values == null || values.isEmpty())
-            ErrorOccurred("AddCol: No data found");
+          if (values == null || values.isEmpty()) {
+            ErrorOccurred("AddColumn: No data found");
+            return;
+          }
 
           // nextCol gets mutated, keep addedColumn as a constant
-          int max_col = 0;
-          for (List<Object> list : values){
-            max_col = Math.max(max_col, list.size());
+          int maxCol = 0;
+          for (List<Object> list : values) {
+            maxCol = Math.max(maxCol, list.size());
           }
-          int nextCol = max_col + 1;
+          int nextCol = maxCol + 1;
           final int addedColumn = nextCol;
           // Converts the col number to the corresponding letter
           String[] alphabet = {
             "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R",
             "S","T","U","V","W","X","Y","Z"};
-          String colReference = "";
-          while (nextCol > 0) {
-            String digit = alphabet[(nextCol-1) % 26];
-            colReference = digit + colReference;
-            nextCol = (int) Math.floor((nextCol-1) / 26);
-          }
+          String colReference = getColString(nextCol);
           String rangeRef = sheetName + "!" + colReference + "1";
 
           UpdateValuesResponse response = sheetsService.spreadsheets().values()
-            .update(spreadsheetID, rangeRef, body)
-            .setValueInputOption("USER_ENTERED")
-            .execute();
+              .update(spreadsheetID, rangeRef, body)
+              .setValueInputOption("USER_ENTERED")
+              .execute();
 
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              FinishedAddCol(addedColumn);
+              FinishedAddColumn(addedColumn);
             }
           });
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           e.printStackTrace();
-          ErrorOccurred("AddCol IOException: " + e.getMessage());
-        }
-        catch (GeneralSecurityException e) {
+          ErrorOccurred("AddColumn IOException: " + e.getMessage());
+        } catch (GeneralSecurityException e) {
           e.printStackTrace();
-          ErrorOccurred("AddCol GeneralSecurityException: " + e.getMessage());
+          ErrorOccurred("AddColumn GeneralSecurityException: " + e.getMessage());
         }
       }
     });
   }
 
   /**
-   * The callback event for the {@link #AddCol()} block, called once the
+   * The callback event for the {@link #AddColumn} block, called once the
    * values on the table have been updated. Additionally, this returns the
    * column number for the new column.
    */
-  @SimpleEvent(
-    description="This event will be triggered once the AddCol method has " +
-      "finished executing and the values on the spreadsheet have been updated. " +
-      "Additionally, this returns the column number for the new column.")
-  public void FinishedAddCol (final int columnNumber) {
-    EventDispatcher.dispatchEvent(this, "FinishedAddCol", columnNumber);
+  @SimpleEvent(description = "This event will be triggered once the AddColumn method has "
+      + "finished executing and the values on the spreadsheet have been updated. "
+      + "Additionally, this returns the column number for the new column.")
+  public void FinishedAddColumn(final int columnNumber) {
+    EventDispatcher.dispatchEvent(this, "FinishedAddColumn", columnNumber);
   }
 
   /**
    * Deletes the column with the given column number from the table. This does
    * not clear the column, but removes it entirely. The sheet's grid id can be
    * found at the end of the url of the Google Sheets document, right after the
-   * "gid=". Once complete, it triggers the {@link #FinishedRemoveCol()}
+   * "gid=". Once complete, it triggers the {@link #FinishedRemoveColumn()}
    * callback event.
    */
-  @SimpleFunction(
-    description="Deletes the column with the given column number from the table." +
-      "This does not clear the column, but removes it entirely.")
-  public void RemoveCol (final String sheetName, final int colNumber) {
+  @SimpleFunction(description = "Deletes the column with the given column number from the table."
+      + "This does not clear the column, but removes it entirely.")
+  public void RemoveColumn(final String sheetName, final String column) {
+    final int columnNumber;
+    if (Pattern.compile("^[0-9]+$").matcher(column).find()) {
+      columnNumber = Integer.parseInt(column);
+    } else {
+      columnNumber = getColNum(column);
+    }
 
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
-      public void run () {
-        try{
+      public void run() {
+        try {
           Sheets sheetsService = getSheetsService();
           int gridId = getSheetID(sheetsService, sheetName);
           if (gridId == -1) {
-            ErrorOccurred("RemoveCol: sheetName not found");
+            ErrorOccurred("RemoveColumn: sheetName not found");
             return;
           }
 
           DeleteDimensionRequest deleteRequest = new DeleteDimensionRequest()
-            .setRange(
-              new DimensionRange()
-                .setSheetId(gridId)
-                .setDimension("COLUMNS")
-                .setStartIndex(colNumber-1)
-                .setEndIndex(colNumber)
-            );
+              .setRange(
+                new DimensionRange()
+                  .setSheetId(gridId)
+                  .setDimension("COLUMNS")
+                  .setStartIndex(columnNumber - 1)
+                  .setEndIndex(columnNumber)
+              );
           List<Request> requests = new ArrayList<>();
           requests.add(new Request().setDeleteDimension(deleteRequest));
 
           BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest()
-            .setRequests(requests);
+              .setRequests(requests);
           sheetsService.spreadsheets().batchUpdate(spreadsheetID, body).execute();
           // Run the callback event
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              FinishedRemoveCol();
+              FinishedRemoveColumn();
             }
           });
         }
         catch (Exception e) {
           e.printStackTrace();
-          ErrorOccurred("RemoveCol: " + e.getMessage());
+          ErrorOccurred("RemoveColumn: " + e.getMessage());
         }
       }
     });
   }
 
   /**
-   * The callback event for the {@link #RemoveCol()} block, called once the
+   * The callback event for the {@link #RemoveColumn} block, called once the
    * values on the table have been updated.
    */
-  @SimpleEvent(
-    description="The callback event for the RemoveCol block, called once the " +
-      "values on the table have been updated.")
-  public void FinishedRemoveCol () {
-    EventDispatcher.dispatchEvent(this, "FinishedRemoveCol");
+  @SimpleEvent(description = "The callback event for the RemoveColumn block, called once the "
+      + "values on the table have been updated.")
+  public void FinishedRemoveColumn() {
+    EventDispatcher.dispatchEvent(this, "FinishedRemoveColumn");
   }
 
   /* Cell-wise Operations */
 
   /**
    * On the page with the provided sheetName, reads the cell at the given
-   * cellReference and triggers the {@link #GotCellData()} callback event. The
+   * cellReference and triggers the {@link #GotCellData} callback event. The
    * cellReference can be either a text block with A1-Notation, or the result of
-   * the {@link #getCellReference()} block.
+   * the {@link #GetCellReference} block.
    */
-  @SimpleFunction(
-    description="On the page with the provided sheetName, reads the cell at " +
-      "the given cellReference and triggers the GotCellData callback event.")
-  public void ReadCell (final String sheetName, final String cellReference) {
-    if (spreadsheetID == "" || spreadsheetID == null) {
+  @SimpleFunction(description = "On the page with the provided sheetName, reads the cell at "
+      + "the given cellReference and triggers the GotCellData callback event.")
+  public void ReadCell(final String sheetName, final String cellReference) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("ReadCell: " + "SpreadsheetID is empty.");
       return;
     }
@@ -1198,7 +1199,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     // 2. Asynchronously fetch the data in the cell
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         Log.d(LOG_TAG, "Reading Cell: " + cellReference);
 
         try {
@@ -1215,8 +1216,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
             // Formats the data into the URL to read the range
             String getUrl = String.format(
-              "https://docs.google.com/spreadsheets/d/%s/export?format=csv&range=%s",
-              spreadsheetID, cleanRangeReference);
+                "https://docs.google.com/spreadsheets/d/%s/export?format=csv&range=%s",
+                spreadsheetID, cleanRangeReference);
             Log.d(LOG_TAG, "ReadCell url: " + getUrl);
 
             // Make the HTTP Request
@@ -1225,7 +1226,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
               connection.setRequestMethod("GET");
             // Catch Bad HTTP Request
             if (connection.getResponseCode() == 400) {
-              ErrorOccurred("ReadCell: Bad HTTP Request. Please check the address and try again. " + getUrl);
+              ErrorOccurred("ReadCell: Bad HTTP Request. Please check the address and try again. "
+                  + getUrl);
               return;
             }
 
@@ -1234,8 +1236,9 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             YailList parsedCsv = CsvUtil.fromCsvTable(responseContent);
 
             for (Object elem : (LList) parsedCsv.getCdr()) {
-              if (!(elem instanceof YailList))
+              if (!(elem instanceof YailList)) {
                 continue;
+              }
               YailList row = (YailList) elem;
               final String cellData = String.format("%s", row.isEmpty() ? "" : row.get(1));
               // We need to re-enter the main thread before we can dispatch the event!
@@ -1289,7 +1292,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   /**
-   * The callback event for the {@link #ReadCell()} block. The `cellData` is
+   * The callback event for the {@link #ReadCell} block. The `cellData` is
    * the text value in the cell.
    */
   @SimpleEvent(
@@ -1360,7 +1363,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   /**
-   * The callback event for the {@link #WriteCell()} block, called once the
+   * The callback event for the {@link #WriteCell} block, called once the
    * values on the table have been updated.
    */
   @SimpleEvent(
@@ -1373,9 +1376,9 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
   /**
    * On the page with the provided sheetName, reads the cells at the given
-   * rangeReference and triggers the {@link #GotRangeData()} callback event. The
+   * rangeReference and triggers the {@link #GotRangeData} callback event. The
    * rangeReference can be either a text block with A1-Notation, or the result
-   * of the {@link #getRangeReference()} block.
+   * of the {@link #GetRangeReference} block.
    */
   @SimpleFunction(
     description="On the page with the provided sheetName, reads the cells at " +
@@ -1479,7 +1482,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   /**
-   * The callback event for the {@link #ReadRange()} block. The `rangeData` is
+   * The callback event for the {@link #ReadRange} block. The `rangeData` is
    * a list of rows, where the dimensions are the same as the rangeReference.
    */
   @SimpleEvent(
@@ -1570,7 +1573,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   /**
-   * The callback event for the {@link #WriteRange()} block, called once the
+   * The callback event for the {@link #WriteRange} block, called once the
    * values on the table have been updated.
    */
   @SimpleEvent(
@@ -1608,8 +1611,13 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           sheetsService.spreadsheets().values()
             .clear(spreadsheetID, rangeRef, new ClearValuesRequest())
             .execute();
-        }
-        catch (Exception e) {
+          form.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              FinishedClearRange();
+            }
+          });
+        } catch (Exception e) {
           e.printStackTrace();
           ErrorOccurred("ClearRange: " + e.getMessage());
         }
@@ -1618,7 +1626,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   /**
-   * The callback event for the {@link #ClearRange()} block, called once the
+   * The callback event for the {@link #ClearRange} block, called once the
    * values on the table have been updated.
    */
   @SimpleEvent(
@@ -1631,14 +1639,14 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
   /**
    * Reads the <b>entire</b> Google Sheets document and triggers the
-   * {@link #GotSheetData()} callback event.
+   * {@link #GotSheetData} callback event.
    */
   @SimpleFunction(
     description="Reads the *entire* Google Sheet document and triggers the " +
       "GotSheetData callback event.")
   public void ReadSheet (final String sheetName) {
 
-    if (spreadsheetID == "" || spreadsheetID == null) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("ReadSheet: " + "SpreadsheetID is empty.");
       return;
     }
@@ -1650,7 +1658,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     return new Runnable() {
       @Override
       public void run() {
-        if (spreadsheetID == "" || spreadsheetID == null) {
+        if (spreadsheetID == null || spreadsheetID.isEmpty()) {
           ErrorOccurred("ReadSheet: " + "SpreadsheetID is empty.");
           return;
         }
@@ -1658,8 +1666,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
         try {
           // If no Credentials.json is provided, attempt the HTTP request
-          if (credentialsPath == null)
-          {
+          if (credentialsPath == null) {
             Log.d(LOG_TAG, "Reading Sheet: No credentials");
             // Cleans the formatted url in case the sheetname needs to be cleaned
             String cleanRangeReference = "";
@@ -1692,6 +1699,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             activity.runOnUiThread(new Runnable() {
               @Override
               public void run() {
+                updateColumns(parsedCsv);
+                notifyDataObservers(null, null);
                 if (fireEvent) {
                   if (colID >= 0) {
                     try {
@@ -1718,10 +1727,6 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
                     GotSheetData(parsedCsv);
                   }
                 }
-
-                updateColumns(parsedCsv);
-
-                notifyDataObservers(null, null);
               }
             });
             return;
@@ -1762,6 +1767,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+              updateColumns(YailList.makeList(ret));
+              notifyDataObservers(null, null);
               Log.d(LOG_TAG, "RetriveSheet UIThread " );
               if (colID >= 0) {
                 Log.d(LOG_TAG, "RetriveWithFilter: colID " + colID);
@@ -1781,7 +1788,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
                     || (!exact && sheet_row.get(colID - 1).contains(value)))
                     {
                       Log.d(LOG_TAG, "Read with Filter check col: " + rowNum);
-                      return_rows.add(rowNum);
+                      return_rows.add(rowNum + 1);
                       return_data.add(sheet_row);
                     }
                   }
@@ -1797,9 +1804,6 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
               } else {
                 GotSheetData(ret);
               }
-
-              updateColumns(YailList.makeList(ret));
-              notifyDataObservers(null, null);
             }
           });
         }
@@ -1813,7 +1817,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   }
 
   /**
-   * The callback event for the {@link #ReadSheet()} block. The `sheetData` is a
+   * The callback event for the {@link #ReadSheet} block. The `sheetData` is a
    * list of rows.
    */
   @SimpleEvent(

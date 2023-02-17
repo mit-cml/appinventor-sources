@@ -6,7 +6,8 @@
 
 package com.google.appinventor.components.scripts;
 
-import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.components.annotations.PermissionConstraint;
+
 import com.google.appinventor.components.common.ComponentDescriptorConstants;
 
 import java.io.IOException;
@@ -16,6 +17,9 @@ import java.util.Map;
 import java.util.Set;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Tool to generate a list of the simple component types, permissions, libraries, activities,
@@ -31,70 +35,67 @@ public final class ComponentListGenerator extends ComponentProcessor {
 
   @Override
   protected void outputResults() throws IOException {
+    JSONArray componentBuildInfo = new JSONArray();
     // Build the component list and build info simultaneously.
     StringBuilder componentList = new StringBuilder();
-    StringBuilder componentBuildInfo = new StringBuilder();
-    componentBuildInfo.append("[\n");
 
     // Components are already sorted.
     String listSeparator = "";
-    String jsonSeparator = "";
     for (Map.Entry<String, ComponentInfo> entry : components.entrySet()) {
       ComponentInfo component = entry.getValue();
 
       componentList.append(listSeparator).append(component.type);
       listSeparator = "\n";
 
-      componentBuildInfo.append(jsonSeparator);
-      outputComponentBuildInfo(component, componentBuildInfo);
-      jsonSeparator = ",\n";
+      componentBuildInfo.put(outputComponentBuildInfo(component));
     }
 
-    componentBuildInfo.append("\n]");
-
     FileObject src = createOutputFileObject(COMPONENT_LIST_OUTPUT_FILE_NAME);
-    Writer writer = src.openWriter();
-    try {
+    try (Writer writer = src.openWriter()) {
       writer.write(componentList.toString());
       writer.flush();
-    } finally {
-      writer.close();
     }
     messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
 
     src = createOutputFileObject(COMPONENT_BUILD_INFO_OUTPUT_FILE_NAME);
-    writer = src.openWriter();
-    try {
+    try (Writer writer = src.openWriter()) {
       writer.write(componentBuildInfo.toString());
       writer.flush();
-    } finally {
-      writer.close();
     }
     messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
   }
 
-  private static void outputComponentBuildInfo(ComponentInfo component, StringBuilder sb) {
-    sb.append("{\"type\": \"");
-    sb.append(component.type).append("\"");
-    appendComponentInfo(sb, ComponentDescriptorConstants.PERMISSIONS_TARGET, component.permissions);
-    appendComponentInfo(sb, ComponentDescriptorConstants.LIBRARIES_TARGET, component.libraries);
-    appendComponentInfo(sb, ComponentDescriptorConstants.NATIVE_TARGET, component.nativeLibraries);
-    appendComponentInfo(sb, ComponentDescriptorConstants.ASSETS_TARGET, component.assets);
-    appendComponentInfo(sb, ComponentDescriptorConstants.ACTIVITIES_TARGET, component.activities);
-    appendComponentInfo(sb, ComponentDescriptorConstants.METADATA_TARGET, component.metadata);
-    appendComponentInfo(sb, ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET, component.activityMetadata);
-    appendComponentInfo(sb, ComponentDescriptorConstants.ANDROIDMINSDK_TARGET, Collections.singleton(Integer.toString(component.getAndroidMinSdk())));
-    appendComponentInfo(sb, ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET, component.broadcastReceivers);
-    appendComponentInfo(sb, ComponentDescriptorConstants.QUERIES_TARGET, component.queries);
-    appendComponentInfo(sb, ComponentDescriptorConstants.SERVICES_TARGET, component.services);
-    appendComponentInfo(sb, ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET, component.contentProviders);
-    appendConditionalComponentInfo(component, sb);
+  private static JSONObject outputComponentBuildInfo(ComponentInfo component) {
+    JSONObject json = new JSONObject();
+    json.put("type", component.type);
+    appendComponentInfo(json, ComponentDescriptorConstants.PERMISSIONS_TARGET,
+        component.permissions);
+    appendPermissionConstraints(json, ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET,
+        component.permissionConstraints);
+    appendComponentInfo(json, ComponentDescriptorConstants.LIBRARIES_TARGET, component.libraries);
+    appendComponentInfo(json, ComponentDescriptorConstants.NATIVE_TARGET,
+        component.nativeLibraries);
+    appendComponentInfo(json, ComponentDescriptorConstants.ASSETS_TARGET, component.assets);
+    appendComponentInfo(json, ComponentDescriptorConstants.ACTIVITIES_TARGET, component.activities);
+    appendComponentInfo(json, ComponentDescriptorConstants.METADATA_TARGET, component.metadata);
+    appendComponentInfo(json, ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET,
+        component.activityMetadata);
+    appendComponentInfo(json, ComponentDescriptorConstants.ANDROIDMINSDK_TARGET,
+        Collections.singleton(Integer.toString(component.getAndroidMinSdk())));
+    appendComponentInfo(json, ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET,
+        component.broadcastReceivers);
+    appendComponentInfo(json, ComponentDescriptorConstants.QUERIES_TARGET, component.queries);
+    appendComponentInfo(json, ComponentDescriptorConstants.SERVICES_TARGET, component.services);
+    appendComponentInfo(json, ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET,
+        component.contentProviders);
+    appendConditionalComponentInfo(component, json);
     // TODO(Will): Remove the following call once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
     //             should remain for the time being because otherwise we'll break
     //             extensions currently using @SimpleBroadcastReceiver.
-    appendComponentInfo(sb, ComponentDescriptorConstants.BROADCAST_RECEIVER_TARGET, component.classNameAndActionsBR);
-    sb.append("}");
+    appendComponentInfo(json, ComponentDescriptorConstants.BROADCAST_RECEIVER_TARGET,
+        component.classNameAndActionsBR);
+    return json;
   }
 
   /**
@@ -102,9 +103,9 @@ public final class ComponentListGenerator extends ComponentProcessor {
    * component information dictionary.
    *
    * @param component The component info to process
-   * @param sb Target StringBuilder to receive the conditional description
+   * @param parent Target JSONObject to receive the conditional description
    */
-  private static void appendConditionalComponentInfo(ComponentInfo component, StringBuilder sb) {
+  private static void appendConditionalComponentInfo(ComponentInfo component, JSONObject parent) {
     if (component.conditionalBroadcastReceivers.size()
         + component.conditionalContentProviders.size()
         + component.conditionalPermissions.size()
@@ -112,50 +113,87 @@ public final class ComponentListGenerator extends ComponentProcessor {
         + component.conditionalServices.size() == 0) {
       return;
     }
-    sb.append(", \"" + ComponentDescriptorConstants.CONDITIONALS_TARGET + "\": { ");
-    sb.append("\"" + ComponentDescriptorConstants.PERMISSIONS_TARGET + "\": ");
-    appendMap(sb, component.conditionalPermissions);
-    sb.append(", \"" + ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET + "\": ");
-    appendMap(sb, component.conditionalBroadcastReceivers);
-    sb.append(", \"" + ComponentDescriptorConstants.QUERIES_TARGET + "\": ");
-    appendMap(sb, component.conditionalQueries);
-    sb.append(", \"" + ComponentDescriptorConstants.SERVICES_TARGET + "\": ");
-    appendMap(sb, component.conditionalServices);
-    sb.append(", \"" + ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET + "\": ");
-    appendMap(sb, component.conditionalContentProviders);
-    sb.append("}");
+    JSONObject json = new JSONObject();
+    appendMap(json, ComponentDescriptorConstants.PERMISSIONS_TARGET,
+        component.conditionalPermissions);
+    appendMultimap(json, component.conditionalPermissionConstraints);
+    appendMap(json, ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET,
+        component.conditionalBroadcastReceivers);
+    appendMap(json, ComponentDescriptorConstants.QUERIES_TARGET,
+        component.conditionalQueries);
+    appendMap(json, ComponentDescriptorConstants.SERVICES_TARGET,
+        component.conditionalServices);
+    appendMap(json, ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET,
+        component.conditionalContentProviders);
+    parent.put(ComponentDescriptorConstants.CONDITIONALS_TARGET, json);
   }
 
   /**
    * Outputs a map to a StringBuilder.
    *
-   * @param sb Target StringBuilder to receive the mapping
+   * @param parent Target JSONObject to receive the mapping
+   * @param key Key of {@code parent} which will hold the result
    * @param map Mapping of string to array of strings that should be output to
    *            the StringBuilder
    */
-  private static void appendMap(StringBuilder sb, Map<String, String[]> map) {
-    sb.append("{");
-    boolean first = true;
+  private static void appendMap(JSONObject parent, String key, Map<String, String[]> map) {
+    JSONObject json = new JSONObject();
     for (Map.Entry<String, String[]> entry : map.entrySet()) {
-      if (!first) sb.append(", ");
-      sb.append("\"");
-      sb.append(entry.getKey());
-      sb.append("\": [\"");
-      StringUtils.join(sb, "\", \"", entry.getValue());
-      sb.append("\"]");
-      first = false;
+      json.put(entry.getKey(), new JSONArray(entry.getValue()));
     }
-    sb.append("}");
+    parent.put(key, json);
   }
 
-  private static void appendComponentInfo(StringBuilder sb,
-      String infoName, Set<String> infoEntries) {
-    sb.append(", \"").append(infoName).append("\": [");
-    String separator = "";
-    for (String infoEntry : infoEntries) {
-      sb.append(separator).append("\"").append(infoEntry).append("\"");
-      separator = ", ";
+  private static void appendMultimap(JSONObject parent,
+      Map<String, Map<String, PermissionConstraint>> map) {
+    JSONObject json = new JSONObject();
+    for (Map.Entry<String, Map<String, PermissionConstraint>> entry : map.entrySet()) {
+      appendPermissionConstraints(json, entry.getKey(), entry.getValue());
     }
-    sb.append("]");
+    parent.put(ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET, json);
+  }
+
+  private static void appendComponentInfo(JSONObject parent,
+      String infoName, Set<String> infoEntries) {
+    parent.put(infoName, new JSONArray(infoEntries));
+  }
+
+  /**
+   * Inserts the set of permission constraints into the {@code parent} object at the given key
+   * {@code infoName}. If a particular field is not set, it will not be output. If no entries
+   * are provided, then {2code parent} will not be modified. Produces the following structure:
+   * <code><pre>
+   *   {
+   *     infoName: {
+   *       "permissionName": {
+   *         "maxSdkVersion": number,
+   *         "usesPermissionFlags": string
+   *       }, ...
+   *     }
+   *   }
+   * </pre></code>
+   *
+   * @param parent the JSON object receiving the encoded permission constraints
+   * @param infoName the insertion point in the data structure for the constraints
+   * @param entries the permission name-constraint mappings to encode
+   */
+  private static void appendPermissionConstraints(JSONObject parent, String infoName,
+      Map<String, PermissionConstraint> entries) {
+    if (entries == null || entries.isEmpty()) {
+      return;
+    }
+    JSONObject json = new JSONObject();
+    for (Map.Entry<String, PermissionConstraint> entry : entries.entrySet()) {
+      JSONObject child = new JSONObject();
+      PermissionConstraint constraint = entry.getValue();
+      if (constraint.maxSdkVersion() > 0) {
+        child.put("maxSdkVersion", constraint.maxSdkVersion());
+      }
+      if (!constraint.usesPermissionFlags().isEmpty()) {
+        child.put("usesPermissionFlags", constraint.usesPermissionFlags());
+      }
+      json.put(entry.getKey(), child);
+    }
+    parent.put(infoName, json);
   }
 }

@@ -222,7 +222,8 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
       newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
       // Create the Notification
-      PendingIntent activity = PendingIntent.getActivity(context, 0, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+      PendingIntent activity = PendingIntent.getActivity(context, 0, newIntent,
+          PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
       NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
       Notification note = new NotificationCompat.Builder(context)
           .setSmallIcon(android.R.drawable.sym_call_incoming)

@@ -160,17 +160,17 @@ public final class ChartData2D extends ChartDataBase {
    *
    *   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
    *
-   * @param sheet        Spreadsheet component to import from
+   * @param spreadsheet  Spreadsheet component to import from
    * @param xColumn      x-value column name
    * @param yColumn      y-value column name
    * @param useHeaders   use the first row of values to interpret the column names
    */
   @SimpleFunction
-  public void ImportFromSpreadsheet(final Spreadsheet sheet, String xColumn, String yColumn,
+  public void ImportFromSpreadsheet(final Spreadsheet spreadsheet, String xColumn, String yColumn,
       boolean useHeaders) {
     YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
-    importFromSpreadsheetAsync(sheet, columns, useHeaders);
+    importFromSpreadsheetAsync(spreadsheet, columns, useHeaders);
   }
 
   /**

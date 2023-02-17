@@ -654,8 +654,6 @@ public class Ode implements EntryPoint {
    */
   @Override
   public void onModuleLoad() {
-    Tracking.trackPageview();
-
     // Handler for any otherwise unhandled exceptions
     GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
       @Override
@@ -2371,6 +2369,9 @@ public class Ode implements EntryPoint {
       tutorialPanel.setWidth("300px");
     } else {
       tutorialPanel.setVisible(false);
+    }
+    if (currentFileEditor != null) {
+      currentFileEditor.resize();
     }
   }
 
