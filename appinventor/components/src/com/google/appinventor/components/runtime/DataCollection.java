@@ -90,7 +90,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
     /**
      * Creates a new Chart Data component.
      */
-    protected DataCollection() {
+    public DataCollection() {
 
         // Set default properties
         DataSourceKey("");
