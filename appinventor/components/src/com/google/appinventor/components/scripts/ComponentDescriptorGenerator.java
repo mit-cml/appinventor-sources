@@ -6,7 +6,6 @@
 
 package com.google.appinventor.components.scripts;
 
-import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.annotations.DesignerProperty;
 
 import java.io.IOException;
@@ -16,15 +15,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringJoiner;
 
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  * Tool to generate simple component descriptors as JSON.
  *
- * The output is a sequence of component descriptions enclosed in square
+ * <p>The output is a sequence of component descriptions enclosed in square
  * brackets and separated by commas. Each component description has the
  * following format:
  * { "type": "COMPONENT-TYPE",
@@ -112,102 +113,89 @@ import javax.tools.FileObject;
  *
  * @author lizlooney@google.com (Liz Looney)
  * @author sharon@google.com (Sharon Perl) - added events, methods, non-designer
- *   properties (for use by browser-based blocks editor)
+ *     properties (for use by browser-based blocks editor)
  */
 public final class ComponentDescriptorGenerator extends ComponentProcessor {
   // Where to write results.
   private static final String OUTPUT_FILE_NAME = "simple_components.json";
 
-  private void outputComponent(ComponentInfo component, StringBuilder sb) {
-    sb.append("{ \"type\": \"");
-    sb.append(component.type);
-    sb.append("\",\n  \"name\": \"");
-    sb.append(component.name);
-    sb.append("\",\n  \"external\": \"");
-    sb.append(Boolean.toString(component.external));
-    sb.append("\",\n  \"version\": \"");
-    sb.append(component.getVersion());
-    if (component.getVersionName() != null && !component.getVersionName().equals("")) {
-      sb.append("\",\n  \"versionName\": \"");
-      sb.append(component.getVersionName());
+  private void outputComponent(ComponentInfo component, JSONArray parent) {
+    JSONObject json = new JSONObject();
+    json.put("type", component.type);
+    json.put("name", component.name);
+    json.put("external", Boolean.toString(component.external));
+    json.put("version", Integer.toString(component.getVersion()));
+    if (component.getVersionName() != null && !component.getVersionName().isEmpty()) {
+      json.put("versionName", component.getVersionName());
     }
-    sb.append("\",\n  \"dateBuilt\": \"");
-    sb.append(component.getDateBuilt());
-    sb.append("\",\n  \"categoryString\": \"");
-    sb.append(component.getCategoryString());
-    sb.append("\",\n  \"helpString\": ");
-    sb.append(formatDescription(component.getHelpDescription()));
-    sb.append(",\n  \"helpUrl\": ");
-    sb.append(formatDescription(component.getHelpUrl()));
-    sb.append(",\n  \"showOnPalette\": \"");
-    sb.append(component.getShowOnPalette());
-    sb.append("\",\n  \"nonVisible\": \"");
-    sb.append(component.getNonVisible());
-    sb.append("\",\n  \"iconName\": \"");
-    sb.append(component.getIconName());
-    sb.append("\",\n  \"licenseName\": \"");
-    sb.append(component.getLicenseName());
-    sb.append("\",\n  \"androidMinSdk\": ");
-    sb.append(component.getAndroidMinSdk());
-    outputConditionalAnnotations(component, sb);
-    sb.append(",\n  \"properties\": [");
-    String separator = "";
-    Set<String> alwaysSendProperties = new HashSet<String>();
-    Map<String, String> defaultValues = new HashMap<String, String>();
+    json.put("dateBuilt", component.getDateBuilt());
+    json.put("categoryString", component.getCategoryString());
+    json.put("helpString", component.getHelpDescription());
+    json.put("helpUrl", component.getHelpUrl());
+    json.put("showOnPalette", Boolean.toString(component.getShowOnPalette()));
+    json.put("nonVisible", Boolean.toString(component.getNonVisible()));
+    json.put("iconName", component.getIconName());
+    json.put("licenseName", component.getLicenseName());
+    json.put("androidMinSdk", Integer.toString(component.getAndroidMinSdk()));
+    outputConditionalAnnotations(component, json);
+    outputProperties(component, json);
+    outputEvents(component, json);
+    outputMethods(component, json);
+    if (component.external && component.assets.size() > 0) {
+      outputAssets(component, json);
+    }
+    parent.put(json);
+  }
+
+  private void outputProperties(ComponentInfo component, JSONObject parent) {
+    JSONArray json = new JSONArray();
+    Set<String> alwaysSendProperties = new HashSet<>();
+    Map<String, String> defaultValues = new HashMap<>();
     for (Map.Entry<String, DesignerProperty> entry : component.designerProperties.entrySet()) {
       String propertyName = entry.getKey();
       DesignerProperty dp = entry.getValue();
-      sb.append(separator);
       if (dp.alwaysSend()) {
         alwaysSendProperties.add(propertyName);
         // We need to include the default value since it will be sent if no
         // value is specified (we don't write it in the .scm file).
         defaultValues.put(propertyName, dp.defaultValue());
       }
-      outputProperty(propertyName, dp, sb);
-      separator = ",\n";
+      json.put(outputProperty(propertyName, dp));
     }
+    parent.put("properties", json);
+    json = new JSONArray();
     // We need additional information about properties in the blocks editor,
     // and we need all of them, not just the Designer properties. We output
     // the entire set separately for use by the blocks editor to keep things simple.
-    sb.append("],\n  \"blockProperties\": [");
-    separator = "";
     for (Property prop : component.properties.values()) {
-      sb.append(separator);
       // Output properties that are not user-visible, but mark them as invisible
       // Note: carrying this over from the old Java blocks editor. I'm not sure
       // that we'll actually do anything with invisible properties in the blocks
       // editor. (sharon@google.com)
-      outputBlockProperty(prop.name, prop, alwaysSendProperties.contains(prop.name), defaultValues.get(prop.name), sb);
-      separator = ",\n    ";
+      json.put(outputBlockProperty(prop, alwaysSendProperties.contains(prop.name),
+          defaultValues.get(prop.name)));
     }
-    sb.append("],\n  \"events\": [");
-    separator = "";
+    parent.put("blockProperties", json);
+  }
+
+  private void outputEvents(ComponentInfo component, JSONObject parent) {
+    JSONArray json = new JSONArray();
     for (Event event : component.events.values()) {
-      sb.append(separator);
-      outputBlockEvent(event.name, event, sb, event.userVisible, event.deprecated);
-      separator = ",\n    ";
+      json.put(outputBlockEvent(event));
     }
-    sb.append("],\n  \"methods\": [");
-    separator = "";
+    parent.put("events", json);
+  }
+
+  private void outputMethods(ComponentInfo component, JSONObject parent) {
+    JSONArray json = new JSONArray();
     for (Method method : component.methods.values()) {
-      sb.append(separator);
-      outputBlockMethod(method.name, method, sb, method.userVisible, method.deprecated);
-      separator = ",\n    ";
+      json.put(outputBlockMethod(method));
     }
-    sb.append("]");
-    // Output assets for extensions (consumed by ExternalComponentGenerator and buildserver)
-    if (component.external && component.assets.size() > 0) {
-      sb.append(",\n  \"assets\": [");
-      for (String asset : component.assets) {
-        sb.append("\"");
-        sb.append(asset.replaceAll("\\\\", "\\\\").replaceAll("\"", "\\\""));
-        sb.append("\",");
-      }
-      sb.setLength(sb.length() - 1);
-      sb.append("]");
-    }
-    sb.append("}\n");
+    parent.put("methods", json);
+  }
+
+  private void outputAssets(ComponentInfo component, JSONObject parent) {
+    parent.put("assets", new JSONArray(component.assets));
   }
 
   /**
@@ -215,31 +203,14 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
    * StringBuilder {@code sb}. The multimap is realized as a JSON dictionary
    * mapping to an array of strings.
    *
-   * @param sb The StringBuilder to receive the multimap.
-   * @param indent The indent level for pretty printing. Must not be null.
    * @param map A mapping to output.
    */
-  private static void outputMultimap(StringBuilder sb, String indent, Map<String, String[]> map) {
-    boolean first = true;
-    sb.append("{");
+  private static JSONObject outputMultimap(Map<String, String[]> map) {
+    JSONObject json = new JSONObject();
     for (Map.Entry<String, String[]> entry : map.entrySet()) {
-      if (!first) sb.append(",");
-      sb.append("\n");
-      sb.append(indent);
-      sb.append("  \"");
-      sb.append(entry.getKey());
-      sb.append("\": [\n");
-      sb.append(indent);
-      sb.append("    \"");
-      StringUtils.join(sb, "\",\n" + indent + "    \"", entry.getValue());
-      sb.append("\"\n");
-      sb.append(indent);
-      sb.append("  ]");
-      first = false;
+      json.put(entry.getKey(), new JSONArray(entry.getValue()));
     }
-    sb.append("\n");
-    sb.append(indent);
-    sb.append("}");
+    return json;
   }
 
   /**
@@ -247,9 +218,9 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
    * to the JSON component descriptor.
    *
    * @param component The component information being written.
-   * @param sb The StringBuilder to receive the JSON descriptor.
+   * @param parent The JSONObject to receive the JSON descriptor.
    */
-  private void outputConditionalAnnotations(ComponentInfo component, StringBuilder sb) {
+  private void outputConditionalAnnotations(ComponentInfo component, JSONObject parent) {
     if (component.conditionalBroadcastReceivers.size()
         + component.conditionalContentProviders.size()
         + component.conditionalPermissions.size()
@@ -257,273 +228,170 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
         + component.conditionalServices.size() == 0) {
       return;
     }
-    sb.append(",\n  \"conditionals\":{\n    ");
-    boolean first = true;
+    JSONObject json = new JSONObject();
     if (component.conditionalPermissions.size() > 0) {
-      sb.append("\"permissions\": ");
-      outputMultimap(sb, "    ", component.conditionalPermissions);
-      first = false;
+      json.put("permissions", outputMultimap(component.conditionalPermissions));
     }
     if (component.conditionalBroadcastReceivers.size() > 0) {
-      if (!first) sb.append(",\n    ");
-      sb.append("\"broadcastReceivers\": ");
-      outputMultimap(sb, "    ", component.conditionalBroadcastReceivers);
-      first = false;
+      json.put("broadcastReceivers", outputMultimap(component.conditionalBroadcastReceivers));
     }
     if (component.conditionalQueries.size() > 0) {
-      if (!first) {
-        sb.append(",\n    ");
-      }
-      sb.append("\"queries\": ");
-      outputMultimap(sb, "    ", component.conditionalQueries);
-      first = false;
+      json.put("queries", outputMultimap(component.conditionalQueries));
     }
     if (component.conditionalServices.size() > 0) {
-      if (!first) sb.append(",\n    ");
-      sb.append("\"services\": ");
-      outputMultimap(sb, "    ", component.conditionalServices);
-      first = false;
+      json.put("services", outputMultimap(component.conditionalServices));
     }
     if (component.conditionalContentProviders.size() > 0) {
-      if (!first) sb.append(",\n    ");
-      sb.append("\"contentProviders\": ");
-      outputMultimap(sb, "    ", component.conditionalContentProviders);
-      first = false;
+      json.put("contentProviders", outputMultimap(component.conditionalContentProviders));
     }
     // Add other annotations here as needed
-    sb.append("\n  }");
+    parent.put("conditionals", json);
   }
 
-  private void outputProperty(String propertyName, DesignerProperty dp, StringBuilder sb) {
-    sb.append("{ \"name\": \"");
-    sb.append(propertyName);
-    sb.append("\", \"editorType\": \"");
-    sb.append(dp.editorType());
-    sb.append("\", \"defaultValue\": \"");
-    sb.append(dp.defaultValue().replace("\"", "\\\""));
-
-    sb.append("\", \"editorArgs\": ");
-    String[] editorArgs = dp.editorArgs();
-    for (int idx = 0; idx < editorArgs.length; idx += 1)
-      editorArgs[idx] = "\"" + editorArgs[idx].replace("\"", "\\\"") + "\"";
-
-    StringBuilder listLiteralBuilder = new StringBuilder();
-    listLiteralBuilder.append("[");
-
-    if (editorArgs.length > 0) {
-      listLiteralBuilder.append(editorArgs[0]);
-
-      for (int ind = 1; ind < editorArgs.length; ind += 1) {
-        listLiteralBuilder.append(", ");
-        listLiteralBuilder.append(editorArgs[ind]);
-      }
-    }
-
-    listLiteralBuilder.append("]");
-
-    sb.append(listLiteralBuilder.toString());
+  private JSONObject outputProperty(String propertyName, DesignerProperty dp) {
+    JSONObject json = new JSONObject();
+    json.put("name", propertyName);
+    json.put("editorType", dp.editorType());
+    json.put("defaultValue", dp.defaultValue());
+    json.put("editorArgs", new JSONArray(dp.editorArgs()));
     if (dp.alwaysSend()) {
-      sb.append(", \"alwaysSend\": true");
+      json.put("alwaysSend", true);
     }
-    sb.append("}");
+    return json;
   }
 
   /**
    * Outputs the block description of a property.
    *
-   * @param propertyName The property name
    * @param prop The property description
-   * @param alwaysSend True if the block represents a DesignerProperty that is marked as always needing to be sent
+   * @param alwaysSend True if the block represents a DesignerProperty that is marked as always
+   *                   needing to be sent
    * @param defaultValue The default value of the property (only required if alwaysSend is true).
-   * @param sb The StringBuilder to receive the output JSON
    */
-  private void outputBlockProperty(String propertyName, Property prop, boolean alwaysSend, String defaultValue, StringBuilder sb) {
-    sb.append("{ \"name\": \"");
-    sb.append(propertyName);
-    sb.append("\", \"description\": ");
-    sb.append(formatDescription(prop.getDescription()));
-    sb.append(", \"type\": \"");
-    sb.append(prop.getYailType());
-    sb.append("\"");
-    outputHelper(prop.getHelperKey(), sb);
-    sb.append(", \"rw\": \"");
-    sb.append(prop.isUserVisible() ? prop.getRwString() : "invisible");
-    // [lyn, 2015/12/20] Added deprecated field to JSON.
-    // If we want to save space in simple-components.json,
-    // we could include this field only when it is "true"
-    sb.append("\", \"deprecated\": \"");
-    sb.append(prop.isDeprecated());
-    sb.append("\"");
+  private JSONObject outputBlockProperty(Property prop, boolean alwaysSend, String defaultValue) {
+    JSONObject json = new JSONObject();
+    json.put("name", prop.name);
+    json.put("description", prop.getDescription());
+    json.put("type", prop.getYailType());
+    outputHelper(prop.getHelperKey(), json);
+    json.put("rw", prop.isUserVisible() ? prop.getRwString() : "invisible");
+    json.put("deprecated", Boolean.toString(prop.isDeprecated()));
     if (alwaysSend) {
-      sb.append(", \"alwaysSend\": true, \"defaultValue\": \"");
-      sb.append(defaultValue.replaceAll("\"", "\\\""));
-      sb.append("\"");
+      json.put("alwaysSend", true);
+      json.put("defaultValue", defaultValue);
     }
-    sb.append("}");
+    return json;
   }
 
-  private void outputBlockEvent(String eventName, Event event, StringBuilder sb,
-                                boolean userVisible, boolean deprecated) {
-    sb.append("{ \"name\": \"");
-    sb.append(eventName);
-    sb.append("\", \"description\": ");
-    sb.append(formatDescription(event.description));
-    // [lyn, 2015/12/20] Remove userVisible field from JSON, which is no longer used for events.
-    // sb.append(", \"userVisible\": \"" + userVisible + "\"");
-    // [lyn, 2015/12/20] Added deprecated field to JSON.
-    // If we want to save space in simple-components.json,
-    // we could include this field only when it is "true"
-    sb.append(", \"deprecated\": \"" + deprecated + "\"");
-    sb.append(", \"params\": ");
-    outputParameters(event.parameters, sb);
-    sb.append("}\n");
+  private JSONObject outputBlockEvent(Event event) {
+    JSONObject json = new JSONObject();
+    json.put("name", event.name);
+    json.put("description", event.description);
+    json.put("deprecated", Boolean.toString(event.deprecated));
+    json.put("params", outputParameters(event.parameters));
+    return json;
   }
 
-  private void outputBlockMethod(String methodName, Method method, StringBuilder sb,
-                                 boolean userVisible, boolean deprecated) {
-    sb.append("{ \"name\": \"");
-    sb.append(methodName);
-    sb.append("\", \"description\": ");
-    sb.append(formatDescription(method.description));
-    // [lyn, 2015/12/20] Remove userVisible field from JSON, which is no longer used for methods.
-    // sb.append(", \"userVisible\": \"" + userVisible + "\"");
-    // [lyn, 2015/12/20] Added deprecated field to JSON.
-    // If we want to save space in simple-components.json,
-    // we could include this field only when it is "true"
-    sb.append(", \"deprecated\": \"" + deprecated + "\"");
-    sb.append(", \"params\": ");
-    outputParameters(method.parameters, sb);
+  private JSONObject outputBlockMethod(Method method) {
+    JSONObject json = new JSONObject();
+    json.put("name", method.name);
+    json.put("description", method.description);
+    json.put("deprecated", Boolean.toString(method.deprecated));
+    json.put("params", outputParameters(method.parameters));
     if (method.getReturnType() != null) {
-      sb.append(", \"returnType\": \"");
-      sb.append(method.getYailReturnType());
-      sb.append("\"");
+      json.put("returnType", method.getYailReturnType());
     }
     if (method.isContinuation()) {
-      sb.append(", \"continuation\": true");
+      json.put("continuation", true);
     }
-    outputHelper(method.getReturnHelperKey(), sb);
-    sb.append("}");
+    outputHelper(method.getReturnHelperKey(), json);
+    return json;
   }
 
   /*
    *  Output a parameter list (including surrounding [])
    */
-  private void outputParameters(List<Parameter> params, StringBuilder sb) {
-    sb.append("[");
-    String separator = "";
+  private JSONArray outputParameters(List<Parameter> params) {
+    JSONArray json = new JSONArray();
     for (Parameter p : params) {
-      sb.append(separator);
-      sb.append("{ \"name\": \"");
-      sb.append(p.name);
-      sb.append("\", \"type\": \"");
-      sb.append(p.getYailType());
-      sb.append("\"");
-      outputHelper(p.getHelperKey(), sb);
-      sb.append("}");
-      separator = ",";
+      JSONObject param = new JSONObject();
+      param.put("name", p.name);
+      param.put("type", p.getYailType());
+      outputHelper(p.getHelperKey(), param);
+      json.put(param);
     }
-    sb.append("]");
+    return json;
   }
 
   /**
    * Outputs the json for the given helper key.
    */
-  private void outputHelper(HelperKey helper, StringBuilder sb) {
+  private void outputHelper(HelperKey helper, JSONObject parent) {
     if (helper == null) {
       return;
     }
-    sb.append(", \"helper\": {\n");
-    sb.append("    \"type\": \"");
-    sb.append(helper.getType());
-    sb.append("\",\n");
-    sb.append("    \"data\": {\n");
+    JSONObject json = new JSONObject();
+    json.put("type", helper.getType());
     switch (helper.getType()) {
       case OPTION_LIST:
-        outputOptionList((String)helper.getKey(), sb);
+        json.put("data", outputOptionList((String) helper.getKey()));
         break;
       case ASSET:
-        outputAsset((Integer)helper.getKey(), sb);
+        json.put("data", outputAsset((Integer) helper.getKey()));
         break;
       default:
         throw new UnsupportedOperationException();
     }
-    sb.append("    }\n}");
+    parent.put("helper", json);
   }
 
   /**
    * Outputs the json for the OptionList associated with the given key.
    */
-  private void outputOptionList(String key, StringBuilder sb) {
+  private JSONObject outputOptionList(String key) {
     OptionList optList = optionLists.get(key);
-
-    StringJoiner optsJoiner = new StringJoiner(",\n", "[\n", "\n      ]\n");
+    JSONObject json = new JSONObject();
+    json.put("className", optList.getClassName());
+    json.put("key", key);
+    json.put("tag", optList.getTagName());
+    json.put("defaultOpt", optList.getDefault());
+    json.put("underlyingType", optList.getUnderlyingType().toString());
+    JSONArray options = new JSONArray();
     for (Option opt : optList.asCollection()) {
-      StringJoiner optJoiner = new StringJoiner(", ", "       { ", " }");
-      optJoiner.add("\"name\": \"" +  opt.name + "\"")
-          .add("\"value\": \"" +  opt.getValue() + "\"")
-          .add("\"description\": " + formatDescription(opt.getDescription()))
-          .add("\"deprecated\": \"" + opt.isDeprecated() + "\"");
-      optsJoiner.add(optJoiner.toString());
+      JSONObject option = new JSONObject();
+      option.put("name", opt.name);
+      option.put("value", opt.getValue());
+      option.put("description", opt.getDescription());
+      option.put("deprecated", Boolean.toString(opt.isDeprecated()));
+      options.put(option);
     }
-
-    StringJoiner sj = new StringJoiner(",\n      ", "      ", "");
-    sj.add("\"className\": \"" + optList.getClassName() + "\"")
-        .add("\"key\": \"" + key + "\"")
-        .add("\"tag\": \"" + optList.getTagName() + "\"")
-        .add("\"defaultOpt\": \"" + optList.getDefault() + "\"")
-        .add("\"underlyingType\": \"" + optList.getUnderlyingType().toString() + "\"")
-        .add("\"options\": " + optsJoiner.toString());
-
-    sb.append(sj.toString());
+    json.put("options", options);
+    return json;
   }
 
-  private void outputAsset(int key, StringBuilder sb) {
+  private JSONObject outputAsset(int key) {
+    JSONObject json = new JSONObject();
     List<String> filter = filters.get(key);
-    if (filter == null || filter.size() == 0) {
-      return;
+    if (filter != null && filter.size() != 0) {
+      json.put("filter", new JSONArray(filter));
     }
-    sb.append("      \"filter\": [ ");
-    String prefix = "";
-    for (String s : filter) {
-      sb.append(prefix);
-      sb.append("\"");
-      sb.append(s);
-      sb.append("\"");
-      prefix = ", ";
-    }
-    sb.append(" ]\n");
+    return json;
   }
 
   @Override
   protected void outputResults() throws IOException {
-    StringBuilder sb = new StringBuilder();
-
-    sb.append('[');
-    String separator = "";
+    JSONArray collection = new JSONArray();
 
     // Components are already sorted.
     for (Map.Entry<String, ComponentInfo> entry : components.entrySet()) {
-      ComponentInfo component = entry.getValue();
-      sb.append(separator);
-      outputComponent(component, sb);
-      separator = ",\n";
+      outputComponent(entry.getValue(), collection);
     }
-
-    sb.append(']');
 
     FileObject src = createOutputFileObject(OUTPUT_FILE_NAME);
     Writer writer = src.openWriter();
-    writer.write(sb.toString());
+    writer.write(collection.toString());
     writer.flush();
     writer.close();
     messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
-  }
-
-  /*
-   * Format a description string as a json string. Note that the returned value
-   * include surrounding double quotes.
-   */
-  private static String formatDescription(String description) {
-    return StringUtils.toJson(description);
   }
 }

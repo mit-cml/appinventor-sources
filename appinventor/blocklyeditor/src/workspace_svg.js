@@ -566,6 +566,18 @@ Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent
           self.fireChangeListener(new AI.Events.ForceSave(self));
         });
       }
+      this.getAllBlocks().forEach(function (block) {
+        if (block.type == 'lexical_variable_set' || block.type == 'lexical_variable_get') {
+          if (block.eventparam) {
+            // Potentially apply any new translations for event parameter names
+            var untranslatedEventName = block.eventparam;
+            block.fieldVar_.setValue(untranslatedEventName);
+            block.fieldVar_.setText(block.workspace.getTopWorkspace().getComponentDatabase().getInternationalizedParameterName(untranslatedEventName));
+            block.eventparam = untranslatedEventName;
+            block.workspace.requestErrorChecking(block);
+          }
+        }
+      });
     } finally {
       this.isLoading = false;
       Blockly.Events.enable();

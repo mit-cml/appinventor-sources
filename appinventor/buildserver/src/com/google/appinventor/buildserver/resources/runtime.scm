@@ -1030,6 +1030,7 @@
 (define-alias Short <java.lang.Short>)
 (define-alias String <java.lang.String>)
 (define-alias Pattern <java.util.regex.Pattern>)
+(define-alias Matcher <java.util.regex.Matcher>)
 (define-alias ContinuationUtil <com.google.appinventor.components.runtime.util.ContinuationUtil>)
 (define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
 (define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
@@ -1494,11 +1495,11 @@
 
 (define (coerce-to-number-list l)  ; is this a yail-list? ; do we want to return yail-list
   (cond
-    ((yail-list? l) l)
-      (let ((coerced (map coerce-number (yail-list-contents l))))
+    ((yail-list? l)
+      (let ((coerced (map coerce-to-number (yail-list-contents l))))
         (if (all-coercible? coerced)
           (apply make-yail-list coerced)
-          non-coercible-value))
+          non-coercible-value)))
     (else *non-coercible-value*)))
 
 (define (enum-type? type)
@@ -2959,7 +2960,7 @@ list, use the make-yail-list constructor with no arguments.
                               (format #f
                                 "The list cannot be empty")
                               "Bad list argument to but-first"))
-      ((null? (cdr contents)) '())
+      ((null? (cdr contents)) (make-yail-list))
       (else (kawa-list->yail-list (cdr contents))))))
 
 (define (but-last lst)
@@ -3308,7 +3309,7 @@ Dictionary implementation.
 ;;; It seems simpler for users to not use regexp patterns here, even though
 ;;; some people might want that feature.
 (define (string-replace-all text substring replacement)
-  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (replacement:toString)))
+  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (Matcher:quoteReplacement (replacement:toString))))
 
 (define (string-empty? text)
   (= 0 (string-length text)))

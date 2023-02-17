@@ -1193,16 +1193,6 @@ Blockly.LexicalVariable.eventParamDomToMutation = function (block, xmlElement) {
     if (childNode.nodeName.toLowerCase() == 'eventparam') {
       var untranslatedEventName = childNode.getAttribute('name');
       block.eventparam = untranslatedEventName; // special property viewed by Blockly.LexicalVariable.eventParameterDict
-      if (!Blockly.Events.isEnabled() && !block.isInFlyout) {  // Loading or flyout
-        setTimeout(function() {
-          Blockly.Events.disable();  // we don't want to save this change since it is visual
-          block.fieldVar_.setValue(untranslatedEventName);
-          block.fieldVar_.setText(block.workspace.getTopWorkspace().getComponentDatabase().getInternationalizedParameterName(untranslatedEventName));
-          block.eventparam = untranslatedEventName;
-          block.workspace.requestErrorChecking(block);
-          Blockly.Events.enable();
-        }, 0);
-      }
     }
   }
 }

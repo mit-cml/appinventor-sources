@@ -1600,13 +1600,17 @@ Blockly.Versioning.AllUpgradeMaps =
     // No blocks need to be modified to upgrade to version 5.
     5: "noUpgrade",
 
-    // The BluetoothClient.PollingRate property was added.
+    // The BluetoothClient.DisconnectOnError property was added.
     // No blocks need to be modified to upgrade to version 6.
     6: "noUpgrade",
 
-    // The BluetoothClient.DisconnectOnError property was added.
+    // The BluetoothClient.PollingRate property was added.
     // No blocks need to be modified to upgrade to version 7.
-    7: "noUpgrade"
+    7: "noUpgrade",
+
+    // The BluetoothClient.NoLocationNeeded property was added.
+    // No blocks need to be modified to upgrade to version 8.
+    8: "noUpgrade"
 
   }, // End BluetoothClient upgraders
 
@@ -1768,6 +1772,7 @@ Blockly.Versioning.AllUpgradeMaps =
   }, // End Canvas upgraders
 
   "Chart": {
+    2: "noUpgrade"
 
   }, // End Chart upgraders
 
@@ -2989,6 +2994,22 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade"
 
   }, // End Spinner upgraders
+
+  "Spreadsheet": {
+    2: [
+      Blockly.Versioning.changeMethodName("Spreadsheet", "ReadCol", "ReadColumn"),
+      Blockly.Versioning.changeMethodName("Spreadsheet", "WriteCol", "WriteColumn"),
+      Blockly.Versioning.changeMethodName("Spreadsheet", "AddCol", "AddColumn"),
+      Blockly.Versioning.changeMethodName("Spreadsheet", "RemoveCol", "RemoveColumn"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "GotColData", "GotColumnData"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "FinishedWriteCol", "FinishedWriteColumn"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "FinishedAddCol", "FinishedAddColumn"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "FinishedRemoveCol", "FinishedRemoveColumn"),
+      Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotFilterResult", "return_rows", "returnRows"),
+      Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotFilterResult", "return_data", "returnData"),
+      Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotColumnData", "colDataList", "columnData")
+    ]
+  },
 
   "TableArrangement": {
 

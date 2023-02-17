@@ -211,7 +211,7 @@ public class JavaStringUtils {
   public static YailList split(String text, String at) {
     List<String> parts = new ArrayList<>();
     Collections.addAll(parts, text.split(at));
-    if ("".equals(at) && parts.get(0).equals("")) {
+    if (Pattern.quote("").equals(at) && parts.get(0).equals("")) {
       parts.remove(0);
     }
     return YailList.makeList(parts);
