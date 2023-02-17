@@ -529,6 +529,18 @@ Blockly.WarningHandler.prototype['checkComponentNotExistsError'] = function(bloc
   return false;
 };
 
+// check if there exists at least one component of the type of this block's value
+
+Blockly.WarningHandler.prototype['checkComponentTypeNotExistsError'] = function(block) {
+  var type = this.workspace.componentDb_.getType(block.typeName);
+  if (type == undefined) {
+    var errorMessage = Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST;
+    block.setErrorIconText(errorMessage);
+    return true;
+  }
+  return false;
+};
+
 // [lyn, 12/31/2013] Function that determines which component event handlers
 // in the main workspace are duplicates. Sets the IAmADuplicate property of each
 // duplicate event handler block to true; otherwise sets it to false.

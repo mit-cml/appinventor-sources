@@ -663,6 +663,124 @@ Blockly.Blocks.math_on_list.HELPURLS = function () {
   }
 };
 
+
+Blockly.Blocks['math_on_list2'] = {
+  // Evaluate a list of numbers to return average, min, max, etc.
+  category: 'Math',
+  helpUrl: function () {
+    var mode = this.getFieldValue('OP');
+    return Blockly.Blocks.math_on_list2.HELPURLS()[mode];
+  },
+  init: function () {
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    this.setColour(Blockly.MATH_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('LIST')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT))
+        .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.setTooltip(function () {
+      var mode = thisBlock.getFieldValue('OP');
+      return Blockly.Blocks.math_on_list2.TOOLTIPS()[mode];
+    });
+  },
+  
+  typeblock: [{
+    translatedName: Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_AVG,
+    dropDown: {
+      titleName: 'OP',
+      value: 'AVG'
+    }
+  },{
+    translatedName: Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN_LIST,
+    dropDown: {
+      titleName: 'OP',
+      value: 'MIN'
+    }
+  }, {
+    translatedName: Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX_LIST,
+    dropDown: {
+      titleName: 'OP',
+      value: 'MAX'
+    }
+  },//{
+   // translatedName: Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MODE,
+   // dropDown: {
+   //   titleName: 'OP',
+   //   value: 'MODE'
+   // }
+  //},
+    {
+    translatedName: Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_GM,
+    dropDown: {
+      titleName: 'OP',
+      value: 'GM'
+    }
+  },{
+    translatedName: Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SD,
+    dropDown: {
+      titleName: 'OP',
+      value: 'SD'
+    }
+  },{
+    translatedName: Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SE,
+    dropDown: {
+      titleName: 'OP',
+      value: 'SE'
+    }
+  }]
+};
+
+Blockly.Blocks.math_on_list2.OPERATORS = function () {
+  return [
+      [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_AVG,'AVG'],
+      [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN_LIST, 'MIN'],
+      [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX_LIST, 'MAX'],
+      //[Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MODE,'MODE'],
+      [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_GM,'GM'],
+      [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SD,'SD'],
+      [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SE,'SE']
+  ]
+};
+
+Blockly.Blocks.math_on_list2.TOOLTIPS = function () {
+  return {
+    AVG: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_AVG,
+    MIN: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN_LIST,
+    MAX: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX_LIST,
+    //MODE: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MODE,
+    GM: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_GM,
+    SD: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SD,
+    SE: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SE
+  }
+};
+
+Blockly.Blocks.math_on_list2.HELPURLS = function () {
+  return {
+    AVG: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_AVG,
+    MIN: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MIN_LIST,
+    MAX: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MAX_LIST,
+    //MODE: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MODE,
+    GM: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_GM,
+    SD: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_SD,
+    SE: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_SE
+  }
+};
+
+Blockly.Blocks['math_mode_of_list'] = {
+  category: 'Math',
+  helpUrl: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MODE,
+  init: function () {
+    this.setColour(Blockly.MATH_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('LIST')
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_MATH_LIST_MODE_TITLE)
+    this.setTooltip(Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MODE);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MODE}]
+};
+
 Blockly.Blocks['math_single'] = {
   // Advanced math operators with single operand.
   category: 'Math',

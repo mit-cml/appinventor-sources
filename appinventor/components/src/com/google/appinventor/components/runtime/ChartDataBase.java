@@ -215,8 +215,12 @@ public abstract class ChartDataBase implements Component, DataSourceChangeListen
 
       try {
         // Parse the color value and add it to the results List
-        int colorValue = Integer.parseInt(color);
-        resultColors.add(colorValue);
+        long colorValue = Long.parseLong(color);
+        if (colorValue > Integer.MAX_VALUE) {
+          // Convert from positive long to negative int for AARRGGBB format
+          colorValue = colorValue + 2L * Integer.MIN_VALUE;
+        }
+        resultColors.add((int) colorValue);
       } catch (NumberFormatException e) {
         // Skip invalid entry
         this.container.$form().dispatchErrorOccurredEvent(this.container,

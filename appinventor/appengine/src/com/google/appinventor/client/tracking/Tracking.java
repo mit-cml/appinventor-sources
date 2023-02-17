@@ -1,14 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.tracking;
 
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.common.version.AppInventorFeatures;
-import com.google.gwt.core.client.JavaScriptObject;
 
 /**
  * Methods for tracking/logging with Google Analytics.
@@ -60,33 +58,31 @@ public class Tracking {
   public static final String PROJECT_SUBACTION_BUILD_YA = PROJECT_ACTION_PREFIX +
       "Build-Subcommand-YA";
 
+  public static final String EDITOR_EVENT = "Editor";
+  public static final String EDITOR_ACTION_SHOW_DESIGNER = "ShowDesigner";
+  public static final String EDITOR_ACTION_SHOW_BLOCKS = "ShowBlocks";
+
+  public static final String CONNECT_EVENT = "Connect";
+  public static final String CONNECT_ACTION_WIFI = "Wifi";
+  public static final String CONNECT_ACTION_CHROMEBOOK = "Chromebook";
+  public static final String CONNECT_ACTION_EMULATOR = "Emulator";
+  public static final String CONNECT_ACTION_USB = "Usb";
+  public static final String CONNECT_ACTION_RESEND = "Resend";
+  public static final String CONNECT_ACTION_RESET = "Reset";
+  public static final String CONNECT_ACTION_HARD_RESET = "HardReset";
+
   public static final String USER_EVENT = "User";
   public static final String USER_ACTION_PREFIX = "User_";
   public static final String USER_ACTION_DOWNLOAD_KEYSTORE = USER_ACTION_PREFIX + "DownloadKeystore";
   public static final String USER_ACTION_UPLOAD_KEYSTORE = USER_ACTION_PREFIX + "UploadKeystore";
   public static final String USER_ACTION_DELETE_KEYSTORE = USER_ACTION_PREFIX + "DeleteKeystore";
 
-  // Google Analytics account
-  private static final String GA_ACCOUNT = "UA-5856106-2";
-
-  // Google Analytics tracker object
-  @SuppressWarnings("unused")
-  private static JavaScriptObject gaTracker;
-  static {
-    if (trackingAvailable()) {
-      gaInit(GA_ACCOUNT);
-    }
-  }
-
   private Tracking() {
   }
 
-  /**
-   * Track a page view.
-   */
-  public static void trackPageview() {
+  public static void trackEvent(String event) {
     if (trackingAvailable()) {
-      gaTrackPageview();
+      gaTrackEvent(event);
     }
   }
 
@@ -99,9 +95,6 @@ public class Tracking {
   public static void trackEvent(String event, String action) {
     if (trackingAvailable()) {
       gaTrackEvent(event, action);
-      // Should we continue to log every "event" as a page view (which is how
-      // Herbert set it up) in addition to logging it as an actual event?
-      gaTrackEventAsPage("/event/" + event + '/' + action);
     }
   }
 
@@ -115,9 +108,6 @@ public class Tracking {
   public static void trackEvent(String event, String action, String label) {
     if (trackingAvailable()) {
       gaTrackEvent(event, action, label);
-      // Should we continue to log every "event" as a page view (which is how
-      // Herbert set it up) in addition to logging it as an actual event?
-      gaTrackEventAsPage("/event/" + event + '/' + action);
     }
   }
 
@@ -142,37 +132,9 @@ public class Tracking {
     return AppInventorFeatures.trackClientEvents();
   }
 
-  /*
-   * Initializes the tracker object.
-   */
-  private static native void gaInit(String key) /*-{
-    var _gat = $wnd["Ode.Tracking"];
-    if (_gat != null) {
-      var tracker = _gat._getTracker(key);
-      if (tracker != null) {
-        tracker._initData();
-        @com.google.appinventor.client.tracking.Tracking::gaTracker = tracker;
-      }
-    }
-  }-*/;
-
-  /*
-   * Tracks a page view.
-   */
-  private static native void gaTrackPageview() /*-{
-    var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
-    if (tracker != null) {
-      tracker._trackPageview();
-    }
-  }-*/;
-
-  /*
-   * Track an event as a pageview.  For backwards compatibility purposes only.
-   */
-  private static native void gaTrackEventAsPage(String event) /*-{
-    var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
-    if (tracker != null) {
-      tracker._trackPageview(event);
+  private static native void gaTrackEvent(String event) /*-{
+    if ($wnd.gtag) {
+      $wnd.gtag('event', event);
     }
   }-*/;
 
@@ -180,9 +142,8 @@ public class Tracking {
    * Track an event.
    */
   private static native void gaTrackEvent(String event, String action) /*-{
-    var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
-    if (tracker != null) {
-      tracker._trackEvent(event, action);
+    if ($wnd.gtag) {
+      $wnd.gtag('event', event, {'action': action});
     }
   }-*/;
 
@@ -190,9 +151,8 @@ public class Tracking {
    * Track an event.
    */
   private static native void gaTrackEvent(String event, String action, String label) /*-{
-    var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
-    if (tracker != null) {
-      tracker._trackEvent(event, action, label);
+    if ($wnd.gtag) {
+      $wnd.gtag('event', event, {'action': action, 'label': label});
     }
   }-*/;
 
@@ -200,9 +160,8 @@ public class Tracking {
    * Track an event.
    */
   private static native void gaTrackEvent(String event, String action, String label, int value) /*-{
-    var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
-    if (tracker != null) {
-      tracker._trackEvent(event, action, label, value);
+    if ($wnd.gtag) {
+      $wnd.gtag('event', event, {'action': action, 'label': label, 'value': value});
     }
   }-*/;
 }

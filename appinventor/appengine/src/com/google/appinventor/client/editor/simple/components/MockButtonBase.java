@@ -226,7 +226,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
    * Sets the button's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(buttonWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, buttonWidget, text);
     updatePreferredSizeOfButton();
   }
 
@@ -316,6 +316,19 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
     return height;
   }
 
+  /*
+   * Update widget's text content appearances according to width property value.
+   */
+  private void updateTextAppearances(String width) {
+    if (width.equals("-1")) {
+      // for width = Automatic
+      DOM.setStyleAttribute(buttonWidget.getElement(), "whiteSpace", "nowrap");
+    } else {
+      // for width = Fill Parent, Pixels or Percentage
+      DOM.setStyleAttribute(buttonWidget.getElement(), "whiteSpace", "normal");
+    }
+  }
+
   // PropertyChangeListener implementation
 
   @Override
@@ -351,7 +364,9 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       setTextColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_BUTTONSHAPE)){
       setShapeProperty(newValue);
-
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      updateTextAppearances(newValue);
+      refreshForm();
     }
   }
 
