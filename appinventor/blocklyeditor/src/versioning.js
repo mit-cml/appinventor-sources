@@ -2973,7 +2973,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     4: Blockly.Versioning.makeSetterUseHelper(
-        'Sound', 'Source', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'Sound', 'Source', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // The VibratePattern, SoundNormal, SoundSilent, and SoundVibrate methods were added.
+    5: "noUpgrade"
 
   }, // End Sound upgraders
 
