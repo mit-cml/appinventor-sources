@@ -6,6 +6,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.VIBRATE;
+
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -65,12 +68,12 @@ import java.util.Map;
     "effects, while the <code>Player</code> component is more efficient for " +
     "longer sounds, such as songs.</p>" +
     "<p>You might get an error if you attempt to play a sound " +
-    "immeditely after setting the source.</p>",
+    "immediately after setting the source.</p>",
     category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/soundEffect.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.VIBRATE, android.permission.INTERNET")
+@UsesPermissions({INTERNET, VIBRATE})
 public class Sound extends AndroidNonvisibleComponent
     implements Component, OnResumeListener, OnStopListener, OnDestroyListener, Deleteable {
 
@@ -120,6 +123,7 @@ public class Sound extends AndroidNonvisibleComponent
   private int minimumInterval;            // minimum interval between Play() calls
   private long timeLastPlayed;            // the system time when Play() was last called
   private final Vibrator vibe;
+  private final AudioManager audioManager;
   private final Handler playWaitHandler = new Handler();
 
   //save a pointer to this Sound component to use in the error in postDelayed below
@@ -132,6 +136,7 @@ public class Sound extends AndroidNonvisibleComponent
     soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
     soundMap = new HashMap<String, Integer>();
     vibe = (Vibrator) form.getSystemService(Context.VIBRATOR_SERVICE);
+    audioManager = (AudioManager) form.getSystemService(Context.AUDIO_SERVICE);
     sourcePath = "";
     loadComplete = true;  //nothing to wait for until we attempt to load
     form.registerForOnResume(this);
@@ -206,7 +211,7 @@ public class Sound extends AndroidNonvisibleComponent
           }
         } catch (PermissionException e) {
           form.dispatchPermissionDeniedEvent(this, "Source", e);
-        } catch (IOException e) {
+        } catch (Exception e) {
           form.dispatchErrorOccurredEvent(this, "Source",
               ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, sourcePath);
         }
@@ -298,13 +303,17 @@ public class Sound extends AndroidNonvisibleComponent
   }
 
   private void playAndCheckResult() {
-    streamId = soundPool.play(soundId, VOLUME_FULL, VOLUME_FULL, 0, LOOP_MODE_NO_LOOP,
-        PLAYBACK_RATE_NORMAL);
-  Log.i("Sound", "SoundPool.play returned stream id " + streamId);
-  if (streamId == 0) {
-    form.dispatchErrorOccurredEvent(this, "Play",
-        ErrorMessages.ERROR_UNABLE_TO_PLAY_MEDIA, sourcePath);
-}
+    if (soundPool != null) {
+      streamId = soundPool.play(soundId, VOLUME_FULL, VOLUME_FULL, 0, LOOP_MODE_NO_LOOP,
+          PLAYBACK_RATE_NORMAL);
+    } else {
+      return;
+    }
+    Log.i("Sound", "SoundPool.play returned stream id " + streamId);
+    if (streamId == 0) {
+      form.dispatchErrorOccurredEvent(this, "Play",
+          ErrorMessages.ERROR_UNABLE_TO_PLAY_MEDIA, sourcePath);
+    }
   }
 
 
@@ -353,6 +362,36 @@ public class Sound extends AndroidNonvisibleComponent
     vibe.vibrate(millisecs);
   }
 
+  @SimpleFunction(description = "Vibrate with a given pattern")
+  public void VibratePattern(int vibrate, int delay, boolean repeat) {
+    int times = 0;
+    if (repeat) {
+      times = 0;
+    } else {
+      times = -1;
+    }
+    long[] pattern = {0, vibrate, delay};
+    vibe.vibrate(pattern, times);
+  }
+
+  /* Ringer mode that may be audible and may vibrate */
+  @SimpleFunction(description = "Ringer mode that may be audible and may vibrate.")
+  public void SoundNormal() {
+    audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+  }
+
+  /* Ringer mode that will be silent and will not vibrate */
+  @SimpleFunction(description = "Ringer mode that will be silent and will not vibrate.")
+  public void SoundSilent() {
+    audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+  }
+
+  /* Ringer mode that will be silent and will vibrate */
+  @SimpleFunction(description = "Ringer mode that will be silent and will vibrate.")
+  public void SoundVibrate() {
+    audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+  }
+
   @SimpleEvent(description = "The SoundError event is no longer used. " +
       "Please use the Screen.ErrorOccurred event instead.",
       userVisible = false)
@@ -364,7 +403,7 @@ public class Sound extends AndroidNonvisibleComponent
   @Override
   public void onStop() {
     Log.i("Sound", "Got onStop");
-    if (streamId != 0) {
+    if (streamId != 0 && soundPool != null) {
       soundPool.pause(streamId);
     }
   }
@@ -374,7 +413,7 @@ public class Sound extends AndroidNonvisibleComponent
   @Override
   public void onResume() {
     Log.i("Sound", "Got onResume");
-    if (streamId != 0) {
+    if (streamId != 0 && soundPool != null) {
       soundPool.resume(streamId);
     }
   }

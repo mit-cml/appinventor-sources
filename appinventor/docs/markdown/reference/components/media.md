@@ -316,11 +316,23 @@ None
 {:id="Sound.Resume" class="method"} <i/> Resume()
 : Resumes playing the sound after a pause.
 
+{:id="Sound.SoundNormal" class="method"} <i/> SoundNormal()
+: Ringer mode that may be audible and may vibrate.
+
+{:id="Sound.SoundSilent" class="method"} <i/> SoundSilent()
+: Ringer mode that will be silent and will not vibrate.
+
+{:id="Sound.SoundVibrate" class="method"} <i/> SoundVibrate()
+: Ringer mode that will be silent and will vibrate.
+
 {:id="Sound.Stop" class="method"} <i/> Stop()
 : Stops playing the sound if it is being played.
 
 {:id="Sound.Vibrate" class="method"} <i/> Vibrate(*millisecs*{:.number})
 : Vibrates for the specified number of milliseconds.
+
+{:id="Sound.VibratePattern" class="method"} <i/> VibratePattern(*vibrate*{:.number},*delay*{:.number},*repeat*{:.boolean})
+: Vibrate with a given pattern
 
 ## SoundRecorder  {#SoundRecorder}
 

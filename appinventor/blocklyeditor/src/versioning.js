@@ -1002,7 +1002,7 @@ Blockly.Versioning.makeMethodUseHelper =
           .findAllMethodCalls(dom, componentType, methodName);
       for (var i = 0, method; method = methodNodes[i]; i++) {
         for (var j = 0, child; child = method.children[j]; j++) {
-          if (child.tagName == 'value' && 
+          if (child.tagName == 'value' &&
               child.getAttribute('name') == 'ARG' + argNum) {
             replaceFunc(child, workspace);
             break;
@@ -1177,7 +1177,7 @@ Blockly.Versioning.tryReplaceBlockWithDropdown =
 /**
  * Replaces the block currently attached to the passed value input with a screen
  * names block. The current block is replaced iff it is a constant (eg a text or
- * number block). 
+ * number block).
  * @param {Element} valueNode The node to modify.
  */
 Blockly.Versioning.tryReplaceBlockWithScreen = function(valueNode) {
@@ -2948,7 +2948,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     4: Blockly.Versioning.makeSetterUseHelper(
-        'Sound', 'Source', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'Sound', 'Source', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // The VibratePattern, SoundNormal, SoundSilent, and SoundVibrate methods were added.
+    5: "noUpgrade"
 
   }, // End Sound upgraders
 
@@ -3258,7 +3261,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added methods JsonTextDecodeWithDictionaries and XMLTextDecodeAsDictionary
     7: "noUpgrade",
-	
+
 	// AI2: Added methods PatchText, PatchTextWithEncoding, and PatchFile
     8: "noUpgrade"
 
