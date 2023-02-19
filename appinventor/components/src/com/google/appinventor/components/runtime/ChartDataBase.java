@@ -92,22 +92,13 @@ public abstract class ChartDataBase extends DataCollection implements Component,
   private int color;
   private YailList colors;
 
-  private DataCollection dataCollection;
 
   private DataSource<?, ?> dataSource; // Attached Chart Data Source
-
-  /**
-   * Last seen observed Data Source value. This has to be
-   * kept track of in order to remove old entries whenever the
-   * value is updated.
-   */
-  private Object lastDataSourceValue;
 
   private String elements; // Elements Designer property
 
   private boolean initialized = false; // Keep track whether the Screen has already been initialized
 
-  private int tick = 0;
 
   /**
    * Creates a new Chart Data component.
@@ -380,11 +371,13 @@ public abstract class ChartDataBase extends DataCollection implements Component,
     // on small data sets with regards to Chart refreshing.
     if (dataSource != null) {
       Source(dataSource);
+      refreshChart();
     } else {
       // If no Source is specified, the ElementsFromPairs
       // property can be set instead. Otherwise, this is not
       // set to prevent data overriding.
       ElementsFromPairs(elements);
+      refreshChart();
     }
   }
 

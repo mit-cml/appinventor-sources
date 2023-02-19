@@ -155,6 +155,7 @@ public final class ChartData2D extends ChartDataBase {
         YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
         importFromDataFileAsync(dataFile, columns);
+        refreshChart();
     }
 
     /**
@@ -176,6 +177,7 @@ public final class ChartData2D extends ChartDataBase {
         YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
 
         importFromSpreadsheetAsync(sheet, columns, useHeaders);
+        refreshChart();
     }
 
     /**
@@ -203,6 +205,7 @@ public final class ChartData2D extends ChartDataBase {
         YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
 
         importFromWebAsync(web, columns);
+        refreshChart();
     }
 
     /**

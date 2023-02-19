@@ -30,7 +30,6 @@ import java.util.concurrent.Future;
 /**
  * Data Source that is given to the Data Science component for analysis or directly to the chart component for visualisation
  */
-// ToDo: Clean up ChartDatabase and use DataCollection there
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
 public abstract class DataCollection implements Component, DataSourceChangeListener {
@@ -831,7 +830,6 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
             }
         });
     }
-
     @Override
     public void onReceiveValue(RealTimeDataSource<?, ?> component, final String key, Object value) {
         // Calling component is not the actual Data Source

@@ -99,7 +99,7 @@ public final class Regression extends DataCollection {
             double prediction = slope * x.get(i) + intercept;
             predictions.add(prediction);
         }
-        // ToDo: return a user a dictionary and let the user extract the parameters they need themselves instead
+        // ToDo: return the user a dictionary and let the user extract the parameters they need themselves instead
         ArrayList result = new ArrayList<>();
         result.add(slope);
         result.add(intercept);
