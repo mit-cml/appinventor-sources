@@ -11,11 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A machine learning component to apply different ML models
- * The component is attached directly to a Chart component by dragging it onto the Chart.
+ * A data science component to apply different regression models
+ * The component needs a data source to apply the model on
  */
 @DesignerComponent(version = YaVersion.REGRESSION_COMPONENT_VERSION,
-        description = "A component that contains machine learning models",
+        description = "A component that contains regression models",
         category = ComponentCategory.DATASCIENCE,
         iconName = "images/web.png",
         nonVisible = true)
@@ -25,7 +25,7 @@ public final class Regression extends DataCollection {
 
     /**
      *
-     * Creates a new Chart Data component.
+     * Creates a new Regression component.
      */
     public Regression(ComponentContainer container) {
         super();
@@ -36,7 +36,7 @@ public final class Regression extends DataCollection {
     }
 
     /**
-     * Creates a new Coordinate Data component.
+     * Casts list tems to doubles
      */
     public static List<Double> castToDouble(List list) {
         List<Double> listDoubles = new ArrayList<>();

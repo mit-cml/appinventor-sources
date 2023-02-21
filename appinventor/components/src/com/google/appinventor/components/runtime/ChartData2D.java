@@ -135,80 +135,6 @@ public final class ChartData2D extends ChartDataBase {
     }
 
     /**
-     * Imports data from the specified DataFile component by taking the specified x column
-     * for the x values, and the specified y column for the y values. The DataFile's source file
-     * is expected to be either a CSV or a JSON file.
-     * <p>
-     * Passing in empty test for any of the column parameters will result in the usage of
-     * default values which are the indices of the entries. For the first entry, the default
-     * value would be the 1, for the second it would be 2, and so on.
-     *
-     * @param dataFile     Data File component to import from
-     * @param xValueColumn x-value column name
-     * @param yValueColumn y-value column name
-     */
-    @SuppressWarnings("checkstyle:ParameterName")
-    @SimpleFunction()
-    public void ImportFromDataFile(final DataFile dataFile, String xValueColumn,
-                                   String yValueColumn) {
-        // Construct a YailList of columns from the specified parameters
-        YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
-
-        importFromDataFileAsync(dataFile, columns);
-        refreshChart();
-    }
-
-    /**
-     * Imports data from the specified Spreadsheet component by taking the specified x column
-     * for the x values, and the specified y column for the y values. Prior to calling this function,
-     * the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
-     * the GotSheet event in the Spreadsheet component is unnecessary.
-     * <p>
-     * Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
-     *
-     * @param sheet      Spreadsheet component to import from
-     * @param xColumn    x-value column name
-     * @param yColumn    y-value column name
-     * @param useHeaders use the first row of values to interpret the column names
-     */
-    @SimpleFunction
-    public void ImportFromSpreadsheet(final Spreadsheet sheet, String xColumn, String yColumn,
-                                      boolean useHeaders) {
-        YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
-
-        importFromSpreadsheetAsync(sheet, columns, useHeaders);
-        refreshChart();
-    }
-
-    /**
-     * Imports data from the specified Web component by taking the specified x column
-     * for the x values, and the specified y column for the y values. Prior to calling this function,
-     * the Web component's Get method has to be called to load the data. The usage of the gotValue
-     * event in the Web component is unnecessary.
-     * <p>
-     * The expected response of the Web component is a JSON or CSV formatted
-     * file for this function to work.
-     * <p>
-     * Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
-     *
-     * @param web          Web component to import from
-     * @param xValueColumn x-value column name
-     * @param yValueColumn y-value column name
-     */
-    @SimpleFunction(description = "Imports data from the specified Web component, given the names "
-            + "of the X and Y value columns. Empty columns are filled with default values "
-            + "(1, 2, 3, ... for Entry 1, 2, ...). In order for the data importing to be successful, "
-            + "to load the data, and then this block should be used on that Web component. The usage "
-            + "of the gotValue event in the Web component is unnecessary.")
-    public void ImportFromWeb(final Web web, String xValueColumn, String yValueColumn) {
-        // Construct a YailList of columns from the specified parameters
-        YailList columns = YailList.makeList(Arrays.asList(xValueColumn, yValueColumn));
-
-        importFromWebAsync(web, columns);
-        refreshChart();
-    }
-
-    /**
      * Draws the line of best fit
      *
      * @param x - x value of entry
@@ -232,5 +158,4 @@ public final class ChartData2D extends ChartDataBase {
         refreshChart();
     }
 }
-
 
