@@ -1155,6 +1155,10 @@ Blockly.Versioning.tryReplaceBlockWithDropdown =
       return;
     }
     var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+    if (!field) {
+      // Older projects may use <title> rather than <field> in Blockly XML
+      field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+    }
     var targetValue = field.textContent;
     if (!valueToNameMap[targetValue]) {
       return;
@@ -1197,6 +1201,10 @@ Blockly.Versioning.tryReplaceBlockWithScreen = function(valueNode) {
     return;
   }
   var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+  if (!field) {
+    // Older projects may use <title> rather than <field> in Blockly XML
+    field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+  }
   var targetValue = field.textContent;
 
   valueNode.removeChild(targetNode);
@@ -1232,6 +1240,10 @@ Blockly.Versioning.tryReplaceBlockWithAssets = function(valueNode, workspace) {
     return;
   }
   var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+  if (!field) {
+    // Older projects may use <title> rather than <field> in Blockly XML
+    field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+  }
   var targetValue = field.textContent;
   if (workspace.getAssetList().indexOf(targetValue) == -1) {
     // This is probably an http request or something. Don't upgrade.
