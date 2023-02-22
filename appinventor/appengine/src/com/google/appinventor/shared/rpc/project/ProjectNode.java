@@ -264,4 +264,13 @@ public abstract class ProjectNode implements Serializable, IsSerializable {
   public void setName(String newName) {
     name = newName;
   }
+  
+  /**
+   * checks if project has extension or not.
+   *
+   * @return boolean;
+   */
+  public boolean hasExtensions(){
+    return false;
+  }
 }
