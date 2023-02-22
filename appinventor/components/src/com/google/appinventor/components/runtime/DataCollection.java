@@ -19,6 +19,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -980,6 +981,26 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
     private boolean isKeyValid(String key) {
         // The key should either be equal to the local key, or null.
         return (key == null || key.equals(dataSourceKey));
+    }
+
+
+    /**
+     * Casts list items to doubles
+     */
+    public static List<Double> castToDouble(List list) {
+        List<Double> listDoubles = new ArrayList<>();
+        for (Object o : list) {
+            if (o instanceof Number) {
+                listDoubles.add(((Number) o).doubleValue());
+            } else {
+                try {
+                    listDoubles.add(Double.parseDouble(o.toString()));
+                } catch (NumberFormatException e) {
+                    // Do nothing (value already false)
+                }
+            }
+        }
+        return listDoubles;
     }
 
 }

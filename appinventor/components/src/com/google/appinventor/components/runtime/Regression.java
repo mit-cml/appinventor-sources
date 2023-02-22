@@ -35,24 +35,6 @@ public final class Regression extends DataCollection {
         webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
     }
 
-    /**
-     * Casts list tems to doubles
-     */
-    public static List<Double> castToDouble(List list) {
-        List<Double> listDoubles = new ArrayList<>();
-        for (Object o : list) {
-            if (o instanceof Number) {
-                listDoubles.add(((Number) o).doubleValue());
-            } else {
-                try {
-                    listDoubles.add(Double.parseDouble(o.toString()));
-                } catch (NumberFormatException e) {
-                    // Do nothing (value already false)
-                }
-            }
-        }
-        return listDoubles;
-    }
 
     /**
      * Calculates the line of best fit
