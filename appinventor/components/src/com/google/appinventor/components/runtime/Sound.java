@@ -303,12 +303,11 @@ public class Sound extends AndroidNonvisibleComponent
   }
 
   private void playAndCheckResult() {
-    if (soundPool != null) {
-      streamId = soundPool.play(soundId, VOLUME_FULL, VOLUME_FULL, 0, LOOP_MODE_NO_LOOP,
-          PLAYBACK_RATE_NORMAL);
-    } else {
+    if (soundPool == null) {
       return;
     }
+    streamId = soundPool.play(soundId, VOLUME_FULL, VOLUME_FULL, 0, LOOP_MODE_NO_LOOP,
+        PLAYBACK_RATE_NORMAL);
     Log.i("Sound", "SoundPool.play returned stream id " + streamId);
     if (streamId == 0) {
       form.dispatchErrorOccurredEvent(this, "Play",
