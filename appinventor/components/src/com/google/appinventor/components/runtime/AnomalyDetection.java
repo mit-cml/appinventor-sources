@@ -96,43 +96,6 @@ public final class AnomalyDetection extends DataCollection {
     return anomalies;
   }
 
-  /**
-   * Performs k-means clustering on the data, and then for each cluster, it calculates the maximum distance between the cluster's points and its centroid.
-   * It then checks each point's distance to its cluster centroid, and if the distance exceeds the maximum distance times the threshold, the data point is labeled as anomaly
-   *
-   * @param dataListX - data values
-   * @return List of detected anomaly data points
-   */
-  //ToDo
-  @SimpleFunction(description = "Contextual k-means clustering for anomaly detection.")
-  public List DetectContextualAnomalies(final YailList dataListX, final YailList dataListY) {
-
-    LList xListValues = (LList) dataListX.getCdr();
-    List<Double> dataX = castToDouble(xListValues);
-
-    LList yListValues = (LList) dataListY.getCdr();
-    List<Double> dataY = castToDouble(yListValues);
-
-    if (dataX.size() != dataY.size())
-      throw new IllegalStateException("Must have equal X and Y data points");
-
-    double[][] data = new double[dataX.size()][2];
-    for (int i = 0; i < dataX.size(); i++) {
-      data[i][0] = (double) dataX.get(i);
-      data[i][1] = (double) dataY.get(i);
-    }
-
-    // Initialize k-means clustering algorithm
-    int k = 2;
-    int maxIterations = 100;
-    KMeansClustering kMeans = new KMeansClustering(k, maxIterations);
-
-    // Fit the data set and get the anomalies
-    List<Integer> anomalies = kMeans.fit(data);
-
-    return anomalies;
-  }
-
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
     return null;
