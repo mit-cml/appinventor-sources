@@ -41,28 +41,28 @@ A data science component to apply different anomaly detection models
 {:id="AnomalyDetection.DataSourceKey" .text .wo .do} *DataSourceKey*
 : Sets the Data Source key identifier for the value to import from the
  attached Data Source.
-
-   An example is the tag of the TinyDB component, which identifies the value.
-
-   The property is a Designer-only property, and should be changed after setting the
+ <p>
+ An example is the tag of the TinyDB component, which identifies the value.
+ <p>
+ The property is a Designer-only property, and should be changed after setting the
  Source component of the Chart Data component.
-
-   A complete list of applicable values for each compatible source is as follows:
-
-     * For TinyDB and CloudDB, this is the tag value.
-     * For the AccelerometerSensor, the value should be one of the following: X Y or Z
-     * For the GyroscopeSensor, the value should be one of the following: X Y or Z
-     * For the LocationSensor, the value should be one of the following:
-       latitude, longitude, altitude or speed
-     * For the OrientationSensor, the value should be one of the following:
-       pitch, azimuth or roll
-     * For the Pedometer, the value should be one of the following:
-       WalkSteps, SimpleSteps or Distance
-     * For the ProximitySensor, the value should be distance.
-     * For the BluetoothClient, the value represents the prefix to remove from the value.
-       For instance, if values come in the format "t:12", the prefix can be specified as "t:",
-       and the prefix will then be removed from the data. No value can be specified if purely
-       numerical values are returned.
+ <p>
+ A complete list of applicable values for each compatible source is as follows:
+ <p>
+ * For TinyDB and CloudDB, this is the tag value.
+ * For the AccelerometerSensor, the value should be one of the following: X Y or Z
+ * For the GyroscopeSensor, the value should be one of the following: X Y or Z
+ * For the LocationSensor, the value should be one of the following:
+ latitude, longitude, altitude or speed
+ * For the OrientationSensor, the value should be one of the following:
+ pitch, azimuth or roll
+ * For the Pedometer, the value should be one of the following:
+ WalkSteps, SimpleSteps or Distance
+ * For the ProximitySensor, the value should be distance.
+ * For the BluetoothClient, the value represents the prefix to remove from the value.
+ For instance, if values come in the format "t:12", the prefix can be specified as "t:",
+ and the prefix will then be removed from the data. No value can be specified if purely
+ numerical values are returned.
 
 {:id="AnomalyDetection.ElementsFromPairs" .text .wo .do} *ElementsFromPairs*
 : Comma separated list of Elements to use for the data series. Values are formatted
@@ -77,8 +77,8 @@ A data science component to apply different anomaly detection models
  valid DataSourceValue, WebColumn or DataFileColumn properties,
  depending on the type of the Source attached (the required properties
  show up in the Properties menu after the Source is changed).
-
-   If the data identified by the [`DataSourceKey`](#AnomalyDetection.DataSourceKey) is updated
+ <p>
+ If the data identified by the [`DataSourceKey`](#AnomalyDetection.DataSourceKey) is updated
  in the attached Data Source component, then the data is also updated in
  the Chart Data component.
 
@@ -136,10 +136,6 @@ None
 {:id="AnomalyDetection.DetectAnomaliesWithThreshold" class="method returns list"} <i/> DetectAnomaliesWithThreshold(*dataList*{:.list},*threshold*{:.number})
 : Simple anomaly detection with user defined threshold.
 
-{:id="AnomalyDetection.DetectContextualAnomalies" class="method returns list"} <i/> DetectContextualAnomalies(*dataListX*{:.list},*dataListY*{:.list})
-: Performs k-means clustering on the data, and then for each cluster, it calculates the maximum distance between the cluster's points and its centroid.
- It then checks each point's distance to its cluster centroid, and if the distance exceeds the maximum distance times the threshold, the data point is labeled as anomaly
-
 {:id="AnomalyDetection.GetAllEntries" class="method returns list"} <i/> GetAllEntries()
 : Returns all entries of the data series.
  The returned value is a list, where each element of the list
@@ -156,11 +152,11 @@ None
 {:id="AnomalyDetection.ImportFromCloudDB" class="method"} <i/> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
 : Imports data from the specified CloudDB component by taking the value
  identified by the specified tag value.
-
-   The expected CloudDB value is a list formatted in the same way as described in
+ <p>
+ The expected CloudDB value is a list formatted in the same way as described in
  [`ImportFromList`](#AnomalyDetection.ImportFromList).
-
-   Does not overwrite any data.
+ <p>
+ Does not overwrite any data.
 
 {:id="AnomalyDetection.ImportFromDataFile" class="method"} <i/> ImportFromDataFile(*dataFile*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified DataFile component by taking the specified x column
@@ -189,11 +185,11 @@ None
 {:id="AnomalyDetection.ImportFromTinyDB" class="method"} <i/> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
 : Imports data from the specified TinyDB component by taking the value
  identified by the specified tag value.
-
-   The expected TinyDB value is a list formatted in the same way as described in
+ <p>
+ The expected TinyDB value is a list formatted in the same way as described in
  [`ImportFromList`](#AnomalyDetection.ImportFromList).
-
-   Does not overwrite any data.
+ <p>
+ Does not overwrite any data.
 
 {:id="AnomalyDetection.ImportFromWeb" class="method"} <i/> ImportFromWeb(*web*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified Web component by taking the specified x column
@@ -241,28 +237,28 @@ A data science component to apply different regression models
 {:id="Regression.DataSourceKey" .text .wo .do} *DataSourceKey*
 : Sets the Data Source key identifier for the value to import from the
  attached Data Source.
-
-   An example is the tag of the TinyDB component, which identifies the value.
-
-   The property is a Designer-only property, and should be changed after setting the
+ <p>
+ An example is the tag of the TinyDB component, which identifies the value.
+ <p>
+ The property is a Designer-only property, and should be changed after setting the
  Source component of the Chart Data component.
-
-   A complete list of applicable values for each compatible source is as follows:
-
-     * For TinyDB and CloudDB, this is the tag value.
-     * For the AccelerometerSensor, the value should be one of the following: X Y or Z
-     * For the GyroscopeSensor, the value should be one of the following: X Y or Z
-     * For the LocationSensor, the value should be one of the following:
-       latitude, longitude, altitude or speed
-     * For the OrientationSensor, the value should be one of the following:
-       pitch, azimuth or roll
-     * For the Pedometer, the value should be one of the following:
-       WalkSteps, SimpleSteps or Distance
-     * For the ProximitySensor, the value should be distance.
-     * For the BluetoothClient, the value represents the prefix to remove from the value.
-       For instance, if values come in the format "t:12", the prefix can be specified as "t:",
-       and the prefix will then be removed from the data. No value can be specified if purely
-       numerical values are returned.
+ <p>
+ A complete list of applicable values for each compatible source is as follows:
+ <p>
+ * For TinyDB and CloudDB, this is the tag value.
+ * For the AccelerometerSensor, the value should be one of the following: X Y or Z
+ * For the GyroscopeSensor, the value should be one of the following: X Y or Z
+ * For the LocationSensor, the value should be one of the following:
+ latitude, longitude, altitude or speed
+ * For the OrientationSensor, the value should be one of the following:
+ pitch, azimuth or roll
+ * For the Pedometer, the value should be one of the following:
+ WalkSteps, SimpleSteps or Distance
+ * For the ProximitySensor, the value should be distance.
+ * For the BluetoothClient, the value represents the prefix to remove from the value.
+ For instance, if values come in the format "t:12", the prefix can be specified as "t:",
+ and the prefix will then be removed from the data. No value can be specified if purely
+ numerical values are returned.
 
 {:id="Regression.ElementsFromPairs" .text .wo .do} *ElementsFromPairs*
 : Comma separated list of Elements to use for the data series. Values are formatted
@@ -277,8 +273,8 @@ A data science component to apply different regression models
  valid DataSourceValue, WebColumn or DataFileColumn properties,
  depending on the type of the Source attached (the required properties
  show up in the Properties menu after the Source is changed).
-
-   If the data identified by the [`DataSourceKey`](#Regression.DataSourceKey) is updated
+ <p>
+ If the data identified by the [`DataSourceKey`](#Regression.DataSourceKey) is updated
  in the attached Data Source component, then the data is also updated in
  the Chart Data component.
 
@@ -354,11 +350,11 @@ None
 {:id="Regression.ImportFromCloudDB" class="method"} <i/> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
 : Imports data from the specified CloudDB component by taking the value
  identified by the specified tag value.
-
-   The expected CloudDB value is a list formatted in the same way as described in
+ <p>
+ The expected CloudDB value is a list formatted in the same way as described in
  [`ImportFromList`](#Regression.ImportFromList).
-
-   Does not overwrite any data.
+ <p>
+ Does not overwrite any data.
 
 {:id="Regression.ImportFromDataFile" class="method"} <i/> ImportFromDataFile(*dataFile*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified DataFile component by taking the specified x column
@@ -387,11 +383,11 @@ None
 {:id="Regression.ImportFromTinyDB" class="method"} <i/> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
 : Imports data from the specified TinyDB component by taking the value
  identified by the specified tag value.
-
-   The expected TinyDB value is a list formatted in the same way as described in
+ <p>
+ The expected TinyDB value is a list formatted in the same way as described in
  [`ImportFromList`](#Regression.ImportFromList).
-
-   Does not overwrite any data.
+ <p>
+ Does not overwrite any data.
 
 {:id="Regression.ImportFromWeb" class="method"} <i/> ImportFromWeb(*web*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified Web component by taking the specified x column
