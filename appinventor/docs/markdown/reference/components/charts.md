@@ -308,7 +308,7 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  the x value, and the second one being the y value.
  Invalid list entries are simply skipped. Existing data are not cleared.
 
-{:id="ChartData2D.ImportFromSpreadsheet" class="method"} <i/> ImportFromSpreadsheet(*spreadsheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
+{:id="ChartData2D.ImportFromSpreadsheet" class="method"} <i/> ImportFromSpreadsheet(*sheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
 : Imports data from the specified Spreadsheet component by taking the specified x column
  for the x values, and the specified y column for the y values. Prior to calling this function,
  the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
