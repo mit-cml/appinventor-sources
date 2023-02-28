@@ -1002,7 +1002,7 @@ Blockly.Versioning.makeMethodUseHelper =
           .findAllMethodCalls(dom, componentType, methodName);
       for (var i = 0, method; method = methodNodes[i]; i++) {
         for (var j = 0, child; child = method.children[j]; j++) {
-          if (child.tagName == 'value' && 
+          if (child.tagName == 'value' &&
               child.getAttribute('name') == 'ARG' + argNum) {
             replaceFunc(child, workspace);
             break;
@@ -1155,6 +1155,10 @@ Blockly.Versioning.tryReplaceBlockWithDropdown =
       return;
     }
     var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+    if (!field) {
+      // Older projects may use <title> rather than <field> in Blockly XML
+      field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+    }
     var targetValue = field.textContent;
     if (!valueToNameMap[targetValue]) {
       return;
@@ -1177,7 +1181,7 @@ Blockly.Versioning.tryReplaceBlockWithDropdown =
 /**
  * Replaces the block currently attached to the passed value input with a screen
  * names block. The current block is replaced iff it is a constant (eg a text or
- * number block). 
+ * number block).
  * @param {Element} valueNode The node to modify.
  */
 Blockly.Versioning.tryReplaceBlockWithScreen = function(valueNode) {
@@ -1197,6 +1201,10 @@ Blockly.Versioning.tryReplaceBlockWithScreen = function(valueNode) {
     return;
   }
   var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+  if (!field) {
+    // Older projects may use <title> rather than <field> in Blockly XML
+    field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+  }
   var targetValue = field.textContent;
 
   valueNode.removeChild(targetNode);
@@ -1232,6 +1240,10 @@ Blockly.Versioning.tryReplaceBlockWithAssets = function(valueNode, workspace) {
     return;
   }
   var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+  if (!field) {
+    // Older projects may use <title> rather than <field> in Blockly XML
+    field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+  }
   var targetValue = field.textContent;
   if (workspace.getAssetList().indexOf(targetValue) == -1) {
     // This is probably an http request or something. Don't upgrade.
@@ -1600,13 +1612,17 @@ Blockly.Versioning.AllUpgradeMaps =
     // No blocks need to be modified to upgrade to version 5.
     5: "noUpgrade",
 
-    // The BluetoothClient.PollingRate property was added.
+    // The BluetoothClient.DisconnectOnError property was added.
     // No blocks need to be modified to upgrade to version 6.
     6: "noUpgrade",
 
-    // The BluetoothClient.DisconnectOnError property was added.
+    // The BluetoothClient.PollingRate property was added.
     // No blocks need to be modified to upgrade to version 7.
-    7: "noUpgrade"
+    7: "noUpgrade",
+
+    // The BluetoothClient.NoLocationNeeded property was added.
+    // No blocks need to be modified to upgrade to version 8.
+    8: "noUpgrade"
 
   }, // End BluetoothClient upgraders
 
@@ -1768,6 +1784,7 @@ Blockly.Versioning.AllUpgradeMaps =
   }, // End Canvas upgraders
 
   "Chart": {
+    2: "noUpgrade"
 
   }, // End Chart upgraders
 
@@ -2264,6 +2281,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Add screen names dropdown block.
     34: Blockly.Versioning.makeScreenNamesBeDropdowns,
+
+    // AI2: Added List Mathematical Operations
+    35: "noUpgrade",
+
+    // AI2: Added mode on List Mathematical Operations
+    // AI2: Added "every component" block.
+    36: [Blockly.Versioning.renameBlockType('lists_minimum_number', 'lists_minimum_value'),
+         Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')]
 
   }, // End Language upgraders
 
@@ -2982,6 +3007,22 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End Spinner upgraders
 
+  "Spreadsheet": {
+    2: [
+      Blockly.Versioning.changeMethodName("Spreadsheet", "ReadCol", "ReadColumn"),
+      Blockly.Versioning.changeMethodName("Spreadsheet", "WriteCol", "WriteColumn"),
+      Blockly.Versioning.changeMethodName("Spreadsheet", "AddCol", "AddColumn"),
+      Blockly.Versioning.changeMethodName("Spreadsheet", "RemoveCol", "RemoveColumn"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "GotColData", "GotColumnData"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "FinishedWriteCol", "FinishedWriteColumn"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "FinishedAddCol", "FinishedAddColumn"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "FinishedRemoveCol", "FinishedRemoveColumn"),
+      Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotFilterResult", "return_rows", "returnRows"),
+      Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotFilterResult", "return_data", "returnData"),
+      Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotColumnData", "colDataList", "columnData")
+    ]
+  },
+
   "TableArrangement": {
 
     //This is initial version. Placeholder for future upgrades
@@ -3258,7 +3299,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added methods JsonTextDecodeWithDictionaries and XMLTextDecodeAsDictionary
     7: "noUpgrade",
-	
+
 	// AI2: Added methods PatchText, PatchTextWithEncoding, and PatchFile
     8: "noUpgrade"
 

@@ -24,6 +24,7 @@ public final class ComponentDescriptorConstants {
   public static final String ACTIVITY_METADATA_TARGET = "activityMetadata";
   public static final String LIBRARIES_TARGET = "libraries";
   public static final String NATIVE_TARGET = "native";
+  public static final String PERMISSION_CONSTRAINTS_TARGET = "permissionConstraints";
   public static final String PERMISSIONS_TARGET = "permissions";
   public static final String BROADCAST_RECEIVERS_TARGET = "broadcastReceivers";
   public static final String QUERIES_TARGET = "queries";

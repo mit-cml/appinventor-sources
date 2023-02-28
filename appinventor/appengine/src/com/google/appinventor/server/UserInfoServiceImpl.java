@@ -99,9 +99,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
       }
     }
 
-    // Check to see if we need to upgrade this user's project to GCS
-    storageIo.checkUpgrade(userInfoProvider.getUserId());
-
     // Fetch list of allowed tutorial prefixes from the data store
     List<String> urls = storageIo.getTutorialsUrlAllowed();
     config.setTutorialUrlAllowed(urls);

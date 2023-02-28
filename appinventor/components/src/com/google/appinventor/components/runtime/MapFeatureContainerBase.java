@@ -258,10 +258,15 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
   @SimpleFunction
   public Object FeatureFromDescription(YailList description) {
     try {
-      return processGeoJSONFeature(TAG, this, alistToDict(description));
+      Object feature = processGeoJSONFeature(TAG, this, alistToDict(description));
+      if (feature == null) {
+        return "No valid feature provided";
+      }
+      return feature;
     } catch(IllegalArgumentException e) {
+      Log.e(this.getClass().getSimpleName(), "Unable to create feature", e);
       $form().dispatchErrorOccurredEvent(this, "FeatureFromDescription",
-          ERROR_CODE_MALFORMED_GEOJSON, e.getMessage());
+          ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
       return e.getMessage();
     }
   }
@@ -297,7 +302,7 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
     }
   }
   /**
-   * The `GotFeatures` event is run when when a feature collection is successfully read from the
+   * The `GotFeatures` event is run when a feature collection is successfully read from the
    * given `url`{:.variable.block}. The `features`{:.variable.block} parameter will be a list of
    * feature descriptions that can be converted into components using the
    * {@link #FeatureFromDescription(YailList)} method.

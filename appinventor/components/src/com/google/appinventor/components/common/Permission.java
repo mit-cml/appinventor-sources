@@ -31,7 +31,11 @@ public enum Permission implements OptionList<String> {
   ManageAccounts("MANAGE_ACCOUNTS"),
   GetAccounts("GET_ACCOUNTS"),
   ReadContacts("READ_CONTACTS"),
-  UseCredentials("USE_CREDENTIALS");
+  UseCredentials("USE_CREDENTIALS"),
+  // Added in Android SDK 31
+  BluetoothAdvertise("BLUETOOTH_ADVERTISE"),
+  BluetoothConnect("BLUETOOTH_CONNECT"),
+  BluetoothScan("BLUETOOTH_SCAN");
 
   private final String value;
 

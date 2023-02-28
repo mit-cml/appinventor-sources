@@ -97,10 +97,10 @@ public interface Component {
   /*
    * Typeface constants.
    */
-  static final int TYPEFACE_DEFAULT = 0;
-  static final int TYPEFACE_SANSSERIF = 1;
-  static final int TYPEFACE_SERIF = 2;
-  static final int TYPEFACE_MONOSPACE = 3;
+  static final String TYPEFACE_DEFAULT = "0";
+  static final String TYPEFACE_SANSSERIF = "1";
+  static final String TYPEFACE_SERIF = "2";
+  static final String TYPEFACE_MONOSPACE = "3";
 
   /*
    * Length constants (for width and height).
