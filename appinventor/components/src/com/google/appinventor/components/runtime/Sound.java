@@ -211,7 +211,7 @@ public class Sound extends AndroidNonvisibleComponent
           }
         } catch (PermissionException e) {
           form.dispatchPermissionDeniedEvent(this, "Source", e);
-        } catch (Exception e) {
+        } catch (IOException e) {
           form.dispatchErrorOccurredEvent(this, "Source",
               ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, sourcePath);
         }
