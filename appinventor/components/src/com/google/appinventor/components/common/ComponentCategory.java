@@ -60,6 +60,7 @@ public enum ComponentCategory {
   LEGOMINDSTORMS("LEGO® MINDSTORMS®"),
   EXPERIMENTAL("Experimental"),
   EXTENSION("Extension"),
+  FUTURE("Future"),
   INTERNAL("For internal use only"),
   // UNINITIALIZED is used as a default value so Swing libraries can still compile
   UNINITIALIZED("Uninitialized");
@@ -82,6 +83,7 @@ public enum ComponentCategory {
     DOC_MAP.put("LEGO® MINDSTORMS®", "legomindstorms");
     DOC_MAP.put("Experimental", "experimental");
     DOC_MAP.put("Extension", "extension");
+    DOC_MAP.put("Future", "future");
   }
 
 
