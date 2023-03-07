@@ -493,6 +493,7 @@
 	"Blockly.Msg.LANG_TEXT_APPEND_VARIABLE": "elemento",
 	"Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MULTIPLY": "Retornar o produto dos dois números.",
 	"Blockly.Msg.REPL_OK": "OK",
+	"Blockly.Msg.REPL_RESET": "Reiniciar",
 	"Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN": "resultado",
 	"Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX": "para cada ",
 	"Blockly.Msg.LANG_MATH_TRIG_ATAN2_Y": "y",
