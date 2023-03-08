@@ -571,8 +571,10 @@ public class YaVersion {
   // - SPREADSHEET_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 221;
   // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 222;
+  // - TEXTBOX_COMPONENT_VERSION was incremented to 7
 
-  public static final int YOUNG_ANDROID_VERSION = 221;
+  public static final int YOUNG_ANDROID_VERSION = 222;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1348,7 +1350,9 @@ public class YaVersion {
   // - RequestFocus method was added
   // For TEXTBOX_COMPONENT_VERSION 6:
   // - ReadOnly property was added
-  public static final int TEXTBOX_COMPONENT_VERSION = 6;
+  // For TEXTBOX_COMPONENT_VERSION 7:
+  // - PasswordMode property was added
+  public static final int TEXTBOX_COMPONENT_VERSION = 7;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
