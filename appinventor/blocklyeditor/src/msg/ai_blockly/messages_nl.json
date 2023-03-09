@@ -492,6 +492,7 @@
     "Blockly.Msg.LANG_TEXT_APPEND_VARIABLE": "item",
     "Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MULTIPLY": "Geeft het product van twee getallen terug.",
     "Blockly.Msg.REPL_OK": "OK",
+    "Blockly.Msg.REPL_RESET": "Resetten",
     "Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN": "resultaat",
     "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX": "voor ",
     "Blockly.Msg.LANG_MATH_TRIG_ATAN2_Y": "j",
