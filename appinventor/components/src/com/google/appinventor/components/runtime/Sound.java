@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.ACCESS_NOTIFICATION_POLICY;
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.VIBRATE;
 
@@ -20,15 +21,20 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.RingerMode;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
+import android.app.NotificationManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.provider.Settings;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
@@ -73,7 +79,11 @@ import java.util.Map;
     nonVisible = true,
     iconName = "images/soundEffect.png")
 @SimpleObject
-@UsesPermissions({INTERNET, VIBRATE})
+@UsesPermissions({
+    INTERNET,
+    VIBRATE,
+    ACCESS_NOTIFICATION_POLICY // Needed to let the user enable "Do Not Disturb access" for an app.
+})
 public class Sound extends AndroidNonvisibleComponent
     implements Component, OnResumeListener, OnStopListener, OnDestroyListener, Deleteable {
 
@@ -373,23 +383,69 @@ public class Sound extends AndroidNonvisibleComponent
     vibe.vibrate(pattern, times);
   }
 
+  @SimpleFunction(description = "Sets the Ringer mode to normal, silent, or vibrate. "
+      + "On devices running Android Nougat or later, ringer mode adjustments that toggle "
+      + "Do Not Disturb are not allowed unless the app has been granted Do Not Disturb Access. "
+      + "Use the CanToggleDoNotDisturb block to determine whether the policy has been granted. "
+      + "Use the ShowDoNotDisturbAccessSettings to allow the user update the setting.")
+  public void SetRingerMode(RingerMode ringerMode) {
+    setRingerMode(ringerMode);
+  }
+
   /* Ringer mode that may be audible and may vibrate */
   @SimpleFunction(description = "Ringer mode that may be audible and may vibrate.")
+  @Deprecated
   public void SoundNormal() {
-    audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+    setRingerMode(RingerMode.Normal);
   }
 
   /* Ringer mode that will be silent and will not vibrate */
   @SimpleFunction(description = "Ringer mode that will be silent and will not vibrate.")
+  @Deprecated
   public void SoundSilent() {
-    audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+    setRingerMode(RingerMode.Silent);
   }
 
   /* Ringer mode that will be silent and will vibrate */
   @SimpleFunction(description = "Ringer mode that will be silent and will vibrate.")
+  @Deprecated
   public void SoundVibrate() {
-    audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+    setRingerMode(RingerMode.Vibrate);
   }
+
+  private void setRingerMode(RingerMode mode) {
+    audioManager.setRingerMode(mode.toInt());
+  }
+
+  @SimpleFunction(description = "Returns true if ringer mode adjustments that toggle "
+      + "Do Not Disturb are allowed, false otherwise. "
+      + "On devices running Android Nougat or later, ringer mode adjustments that toggle "
+      + "Do Not Disturb are not allowed unless the app has been granted Do Not Disturb Access. "
+      + "Use the ShowDoNotDisturbAccessSettings to allow the user update the setting.")
+  public boolean CanToggleDoNotDisturb() {
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_NOUGAT) {
+      NotificationManager notificationManager =
+          (NotificationManager) form.getSystemService(Context.NOTIFICATION_SERVICE);
+      return notificationManager.isNotificationPolicyAccessGranted();
+    }
+
+    // Before N, just return true.
+    return true;
+  }
+
+  @SimpleFunction(description = "Show the Do Not Disturb access settings.")
+  public void ShowDoNotDisturbAccessSettings() {
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_MARSHMALLOW) {
+      Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+      try {
+        form.startActivity(intent);
+      } catch (ActivityNotFoundException e) {
+        form.dispatchErrorOccurredEvent(this, "ShowDoNotDisturbAccessSettings",
+            ErrorMessages.ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY);
+      }
+    }
+  }
+
 
   @SimpleEvent(description = "The SoundError event is no longer used. " +
       "Please use the Screen.ErrorOccurred event instead.",
