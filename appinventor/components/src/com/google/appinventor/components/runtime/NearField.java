@@ -90,10 +90,10 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
    * See Compiler.java.
    */
   @SimpleEvent
-  public void TagRead(String message) {
+  public void TagRead(String tagId, String message) {
     Log.d(TAG, "Tag read: got message " + message);
     tagContent = message;
-    EventDispatcher.dispatchEvent(this, "TagRead", message);
+    EventDispatcher.dispatchEvent(this, "TagRead", tagId, message);
   }
 
   /**
@@ -221,5 +221,15 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
   @Override
   public void onStop() {
     // TODO Auto-generated method stub
+  }
+
+  public static String toHexString(byte[] buffer) {
+    StringBuilder sb = new StringBuilder();
+
+    for (byte b: buffer) {
+      sb.append(String.format("%02x", b&0xff));
+    }
+
+    return sb.toString().toUpperCase();
   }
 }

@@ -2454,7 +2454,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "NearField": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Added tagId parameter to TagRead event
+    2: "noUpgrade"
 
   }, // End NearField upgraders
 

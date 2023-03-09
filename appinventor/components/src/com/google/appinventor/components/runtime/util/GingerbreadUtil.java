@@ -127,7 +127,8 @@ public class GingerbreadUtil {
         byte[] payload = msgs[0].getRecords()[0].getPayload();
         //the substring chops off the two language encoding bits at the beginning
         String message = new String(payload).substring(3);
-        nfc.TagRead(message);
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        nfc.TagRead(NearField.toHexString(tag.getId()), message);
       } else {
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         NdefMessage msg = null;
