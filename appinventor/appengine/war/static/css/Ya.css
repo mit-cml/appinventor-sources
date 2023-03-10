@@ -329,10 +329,11 @@ div.StatusPanel {
 .ode-ProjectHeaderLabel {
   text-indent: initial;
   color: #112abb;
-  font-size: 11px;
+  font-size: 11px !important;
   cursor: pointer;
   text-align: left;
   padding-left: 10px;
+  display: inline-flex;
 }
 
 .ode-CheckpointProjectTable {
