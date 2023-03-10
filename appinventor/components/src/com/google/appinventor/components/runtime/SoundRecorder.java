@@ -13,6 +13,7 @@ import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
 import android.media.MediaRecorder.OnInfoListener;
 
+import android.os.Build;
 import android.os.Environment;
 
 import android.util.Log;
@@ -114,6 +115,20 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
       recorder.stop();
       recorder.reset();
       recorder.release();
+    }
+
+    void pause() {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        recorder.pause();
+        PausedRecording();
+      }
+    }
+
+    void resume() {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        recorder.resume();
+        ResumedRecording();
+      }
     }
   }
 
@@ -313,6 +328,26 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
     }
   }
 
+  /**
+   * Pauses recording.
+   */
+  @SimpleFunction(description = "Use this block to pause the sound recorder. Works only on Android 6 and above.")
+  public void Pause() {
+    if (controller != null) {
+      controller.pause();
+    }
+  }
+
+  /**
+   * Resumes recording.
+   */
+  @SimpleFunction(description = "Use this block to resume the sound recorder. Works only on Android 6 and above.")
+  public void Resume() {
+    if (controller != null) {
+      controller.resume();
+    }
+  }
+
   @SimpleEvent(description = "Provides the location of the newly created sound.")
   public void AfterSoundRecorded(final String sound) {
     EventDispatcher.dispatchEvent(this, "AfterSoundRecorded", sound);
@@ -326,5 +361,15 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
   @SimpleEvent(description = "Indicates that the recorder has stopped, and can be started again.")
   public void StoppedRecording() {
     EventDispatcher.dispatchEvent(this, "StoppedRecording");
+  }
+
+  @SimpleEvent(description = "Indicates that the recording has been paused, and can be resumed.")
+  public void PausedRecording() {
+    EventDispatcher.dispatchEvent(this, "PausedRecording");
+  }
+
+  @SimpleEvent(description = "Indicates that the recording has been resumed.")
+  public void ResumedRecording() {
+    EventDispatcher.dispatchEvent(this, "ResumedRecording");
   }
 }

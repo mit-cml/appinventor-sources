@@ -2983,7 +2983,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
     // AI2: The Sound.SavedRecording property was added.
     // No blocks need to be modified to upgrade to version 2.
-    2: "noUpgrade"
+    2: "noUpgrade",
+    // AI2: The Sound.Pause and Sound.Resume methods (and respective events) were added.
+    // No blocks need to be modified to upgrade to version 3.
+    3: "noUpgrade"
 
   }, // End SoundRecorder upgraders
 
