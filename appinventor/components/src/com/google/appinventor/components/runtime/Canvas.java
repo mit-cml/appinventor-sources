@@ -34,6 +34,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import android.widget.Toast;  
+
 import androidx.annotation.RequiresApi;
 
 import com.google.appinventor.components.annotations.Asset;
@@ -445,7 +447,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         int height = getHeight();
         cache = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         android.graphics.Canvas c = new android.graphics.Canvas(cache);
-        layout(0, 0, width, height);
+        //layout(0, 0, width, height);
         draw(c);
       }
       return cache;
