@@ -588,7 +588,11 @@ Blockly.ReplMgr.putYail = (function() {
                     var code = '(set! ' + symbol + ' (string-append ' + symbol + ' "' + item + '"))';
                     retval.push(code);
                 });
-                retval.push('(eval (read (open-input-string ' + symbol + ')))');
+                if (rs.android) {
+                    retval.push('(eval (read (open-input-string ' + symbol + ')))');
+                } else {
+                    retval.push('(eval (read (open-input-string ' + symbol + ')) "yail")');
+                }
                 retval.push('(set! ' + symbol + ' #!null)'); // so memory is gc'd
                 return retval;
             };
