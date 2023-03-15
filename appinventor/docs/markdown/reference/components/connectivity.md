@@ -144,7 +144,8 @@ Use `BluetoothClient` to connect your device to other devices using Bluetooth. T
  ReceiveUnsignedBytes.
 
 {:id="BluetoothClient.DisconnectOnError" .boolean} *DisconnectOnError*
-: Specifies whether BluetoothClient/BluetoothServer should be disconnected automatically when an error occurs.
+: Specifies whether BluetoothClient should be disconnected
+ automatically when an error occurs.
 
 {:id="BluetoothClient.Enabled" .boolean .ro .bo} *Enabled*
 : Returns `true`{:.logic.block} if Bluetooth is enabled, `false`{:.logic.block} otherwise.
