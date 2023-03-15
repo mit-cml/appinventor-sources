@@ -9,11 +9,15 @@ package com.google.appinventor.components.runtime;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import android.content.ContentValues;
 import android.content.Intent;
 
+import android.content.pm.PackageManager;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
 
 import android.os.Build;
@@ -34,6 +38,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
@@ -65,7 +70,7 @@ import java.net.URI;
    nonVisible = true,
    iconName = "images/camera.png")
 @SimpleObject
-@UsesPermissions({CAMERA})
+@UsesPermissions({CAMERA, "android.permission.FLASHLIGHT"})
 public class Camera extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
 
@@ -85,6 +90,12 @@ public class Camera extends AndroidNonvisibleComponent
 
   private boolean havePermission = false;
 
+  private static final String LOG_TAG = "Camera";
+  @SuppressWarnings("deprecation")
+  private android.hardware.Camera camera = null;
+  private boolean lightOn;
+  private boolean hasFlash;
+
   /**
    * Creates a Camera component.
    *
@@ -92,9 +103,13 @@ public class Camera extends AndroidNonvisibleComponent
    *
    * @param container container, component will be placed in
    */
+  @SuppressLint("NewApi")
   public Camera(ComponentContainer container) {
     super(container.$form());
     this.container = container;
+
+    this.lightOn = false;
+    this.hasFlash = container.$context().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
 
     // Default property values
     UseFront(false);
@@ -174,6 +189,56 @@ public class Camera extends AndroidNonvisibleComponent
       form.dispatchErrorOccurredEvent(this, "TakePicture",
           ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_NOT_AVAILABLE);
     }
+  }
+
+  @SuppressLint("NewApi")
+  @SuppressWarnings("deprecation")
+  @SimpleFunction(description = "Toggle the flash of your device to on or off.")
+  public void ToggleLight() {
+    if (!havePermission) {
+      form.askPermission(CAMERA,
+              new PermissionResultHandler() {
+                @Override
+                public void HandlePermissionResponse(String permission, boolean granted) {
+                  if (granted) {
+                    havePermission = true;
+                    ToggleLight();
+                  } else {
+                    form.dispatchPermissionDeniedEvent(Camera.this, "ToggleLight", CAMERA);
+                  }
+                }
+              });
+      return;
+    }
+
+    if (this.lightOn) {
+      if (this.camera != null) {
+        this.camera.stopPreview();
+        this.camera.release();
+        this.camera = null;
+      }
+      this.lightOn = false;
+      return;
+    }
+    try {
+      this.camera = android.hardware.Camera.open();
+      android.hardware.Camera.Parameters p = this.camera.getParameters();
+      p.setFlashMode(android.hardware.Camera.Parameters.FLASH_MODE_TORCH);
+      this.camera.setParameters(p);
+      this.camera.setPreviewTexture(new SurfaceTexture(0));
+      this.camera.startPreview();
+      this.lightOn = true;
+    } catch (PermissionException e) {
+      Log.e(LOG_TAG, "" + e);
+      form.dispatchPermissionDeniedEvent(Camera.this, "ToggleLight", "" + e.getMessage());
+    } catch (Exception e) {
+      Log.e(LOG_TAG, "" + e);
+    }
+  }
+
+  @SimpleFunction(description = "Returns true if your device has a flash.")
+  public boolean HasFlash() {
+    return this.hasFlash;
   }
 
   private void capturePicture(final ScopedFile target) {
