@@ -16,6 +16,8 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _htmlFormat = false
   fileprivate var _fontSize: Float64 = 0
   fileprivate var _isBigText = false
+  fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _userFontSize = kFontSizeDefault
   
   public override init(_ parent: ComponentContainer) {
     _view = UILabel()
@@ -30,6 +32,20 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     parent.add(self)
     Height = kLengthPreferred
     Width = kLengthPreferred
+  }
+  
+  @objc func updateFontSize() {
+    if _htmlFormat {
+      updateFormattedContent()
+    } else {
+      if form?.BigDefaultText == true {
+        _view.font = _view.font.withSize(CGFloat(kFontSizeLargeDefault))
+      } else {
+        _view.font = _view.font.withSize(CGFloat(_userFontSize))
+      }
+      _view.font = _view.font.withSize(CGFloat(_userFontSize))
+    }
+    _view.sizeToFit()
   }
   
   public override var view: UIView {
@@ -122,17 +138,8 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
       return _fontSize
     }
     set(size) {
-      if _htmlFormat {
-        updateFormattedContent()
-      } else {
-        if size == 24 && ((form?.BigDefaultText) != nil) {
-          _view.font = _view.font.withSize(CGFloat(28))
-        } else{
-            _view.font = _view.font.withSize(CGFloat(size))
-        }
-        //_view.font = _view.font.withSize(CGFloat(size))
-      }
-      _view.sizeToFit()
+      _userFontSize = Float(size)
+      updateFontSize()
     }
   }
   
@@ -150,6 +157,16 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
           updateFormattedContent()
         }
       }
+    }
+  }
+  
+  @objc public var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      _isBigText = isLargeFont
+      updateFontSize()
     }
   }
   

@@ -43,6 +43,10 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   fileprivate var _isHighContrast = false
   fileprivate var _isBigText = false
   fileprivate var _hintColorDefault: Int32 = Color.default.int32
+  fileprivate var _hintColor: Int32 = Color.default.int32
+  fileprivate var _userFontSize = kFontSizeDefault
+  fileprivate var _userbackgroundColor: Int32 = Color.default.int32
+  fileprivate var _userTextColor: Int32 = Color.default.int32
 
   public init(_ parent: ComponentContainer, _ delegate: AbstractMethodsForTextBox) {
     super.init(parent)
@@ -59,6 +63,45 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   internal func setDelegate(_ delegate: AbstractMethodsForTextBox) {
     _delegate = delegate
     super.setDelegate(delegate)
+  }
+  
+  @objc func updateFontSize() {
+    if form?.BigDefaultText == true {
+      if _userFontSize == kFontSizeDefault {
+        _delegate.font = getFontSize(font: _delegate?.font, size: kFontSizeLargeDefault) ?? _delegate.font
+      } else {
+        _delegate.font = getFontSize(font: _delegate?.font, size: _userFontSize) ?? _delegate.font
+      }
+    } else {
+      _delegate.font = getFontSize(font: _delegate?.font, size: _userFontSize) ?? _delegate.font
+    }
+  }
+  
+  @objc func updateColor() {
+    if form?.HighContrast == true {
+      if _userTextColor == Color.default.int32  {
+        _textColor = Int32(bitPattern: Color.white.rawValue)
+        _hintColor = Int32(bitPattern: Color.yellow.rawValue)
+      } else {
+        _textColor = _userTextColor
+      }
+      
+      if _userbackgroundColor == Color.default.int32 {
+        _backgroundColor = Int32(bitPattern: Color.black.rawValue)
+      } else {
+        _backgroundColor = _userbackgroundColor
+      }
+    } else {
+      _textColor = _userTextColor
+      _backgroundColor = _userbackgroundColor
+    }
+    
+    _delegate?.backgroundColor = argbToColor(_backgroundColor)
+    if _textColor == Color.default.int32 {
+      _delegate?.textColor = preferredTextColor(_container?.form)
+    } else {
+      _delegate?.textColor = argbToColor(_textColor)
+    }
   }
 
   // MARK: TextboxBase Properties
@@ -87,8 +130,9 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       return _backgroundColor
     }
     set(argb) {
-      _backgroundColor = argb
+      _userbackgroundColor = argb
       _delegate?.backgroundColor = argbToColor(argb)
+      updateColor()
     }
   }
   
@@ -130,16 +174,8 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       }
     }
     set(size) {
-      if size == kFontSizeDefault {
-        if form?.BigDefaultText == true {
-          _delegate.font = getFontSize(font: _delegate?.font, size: 18) ?? _delegate.font //considering kFontSizeDefault is 14 I set it up to 18 randomly
-        } else{
-          _delegate.font = getFontSize(font: _delegate?.font, size: kFontSizeDefault) ?? _delegate.font
-        }
-        
-      } else {
-        _delegate.font = getFontSize(font: _delegate?.font, size: size) ?? _delegate.font
-      }
+      _userFontSize = size
+      updateFontSize()
     }
   }
   
@@ -159,6 +195,16 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
+  @objc open var HighContrast: Bool {
+    get {
+      return _isHighContrast
+    }
+    set(isHighContrast) {
+      _isHighContrast = isHighContrast
+      updateColor()
+    }
+  }
+  
   @objc open var Hint: String {
     get {
       return _hint
@@ -166,6 +212,16 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     set(hint) {
       _hint = hint
       _delegate?.placeholderText = hint
+    }
+  }
+  
+  @objc open var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      _isBigText = isLargeFont
+      updateFontSize()
     }
   }
 
@@ -197,12 +253,8 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       return _textColor
     }
     set(argb) {
-      _textColor = argb
-      if _textColor == Color.default.int32 {
-        _delegate?.textColor = preferredTextColor(_container?.form)
-      } else {
-        _delegate?.textColor = argbToColor(argb)
-      }
+      _userTextColor = argb
+      updateColor()
     }
   }
   
