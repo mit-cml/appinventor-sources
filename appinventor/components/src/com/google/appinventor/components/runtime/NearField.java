@@ -222,14 +222,4 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
   public void onStop() {
     // TODO Auto-generated method stub
   }
-
-  public static String toHexString(byte[] buffer) {
-    StringBuilder sb = new StringBuilder();
-
-    for (byte b: buffer) {
-      sb.append(String.format("%02x", b&0xff));
-    }
-
-    return sb.toString().toUpperCase();
-  }
 }

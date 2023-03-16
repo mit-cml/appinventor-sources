@@ -18,6 +18,7 @@ import android.nfc.tech.NdefFormatable;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.runtime.NearField;
 
 import java.net.CookieHandler;
@@ -128,7 +129,7 @@ public class GingerbreadUtil {
         //the substring chops off the two language encoding bits at the beginning
         String message = new String(payload).substring(3);
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        nfc.TagRead(NearField.toHexString(tag.getId()), message);
+        nfc.TagRead(StringUtils.toHexString(tag.getId()), message);
       } else {
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         NdefMessage msg = null;
