@@ -2,8 +2,6 @@ package com.google.appinventor.client.views.projects;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.components.FolderTreeItem;
-import com.google.appinventor.client.explorer.folder.FolderManager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -46,8 +44,8 @@ import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ProjectsExplorer extends Composite {
@@ -250,7 +248,7 @@ public class ProjectsExplorer extends Composite {
       new MoveProjectsWizard("Test Title").execute(new MoveProjectsWizard.MoveProjectsCallback() {
         @Override
         public void onSuccess(Folder destination) {
-          Ode.getInstance().getFolderManager().moveProjectsToFolder(projectsList.getSelectedProjects(),
+          Ode.getInstance().getFolderManager().moveItemsToFolder(projectsList.getSelectedProjects(), new ArrayList<>(),
               destination);
         }
       });

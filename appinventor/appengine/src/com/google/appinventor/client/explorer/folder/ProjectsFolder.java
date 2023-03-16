@@ -63,8 +63,8 @@ public abstract class ProjectsFolder extends Composite {
     for (ProjectListItem item : selectedProjectListItems) {
       selectedProjects.add(item.getProject());
     }
-    for (ProjectsFolder item : selectedProjectsFolders) {
-      selectedProjects.addAll(item.getProjects());
+    for (ProjectsFolder item : projectsFolders) {
+      selectedProjects.addAll(item.getSelectedProjects());
     }
     return selectedProjects;
   }

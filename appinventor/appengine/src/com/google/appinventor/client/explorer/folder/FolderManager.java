@@ -5,13 +5,8 @@
 
 package com.google.appinventor.client.explorer.folder;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import com.google.gwt.core.client.JavaScriptException;
-import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONString;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
@@ -19,7 +14,6 @@ import com.google.appinventor.shared.settings.SettingsConstants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -101,11 +95,15 @@ public final class FolderManager {
     saveAllFolders();
   }
 
-  public void moveProjectsToFolder(List<Project> projects, Folder destination) {
+  public void moveItemsToFolder(List<Project> projects, List<Folder> folders, Folder destination) {
     LOG.info("Moving projects count " + projects.size() + " to " + destination.getName());
     for (Project project : projects) {
       LOG.info("Moving project " + project.getProjectName()  + "to " + destination.getName());
       destination.addProject(project);
+    }
+    for (Folder folder : folders) {
+      LOG.info("Moving project " + folder.getName()  + "to " + destination.getName());
+      destination.addChildFolder(folder);
     }
     saveAllFolders();
     fireFoldersChanged();
