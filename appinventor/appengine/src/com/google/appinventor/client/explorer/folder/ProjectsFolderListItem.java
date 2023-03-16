@@ -50,6 +50,7 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   public void refresh() {
     childrenContainer.clear();
     selectedProjectListItems.clear();
+    selectedProjectsFolders.clear();
     for (final Folder childFolder : folder.getChildFolders()) {
       ProjectsFolder item = createProjectsFolder(childFolder, childrenContainer);
       projectsFolders.add(item);
@@ -64,6 +65,7 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   public void setSelected(boolean selected) {
     checkBox.setValue(selected);
     selectedProjectListItems.clear();
+    selectedProjectsFolders.clear();
     if (isExpanded) {
       for (ProjectsFolder projectsFolder : projectsFolders) {
         projectsFolder.setSelected(selected);

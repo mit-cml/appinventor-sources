@@ -24,11 +24,13 @@ public abstract class ProjectsFolder extends Composite {
   protected List<ProjectsFolder> projectsFolders;
   protected List<ProjectListItem> projectListItems;
   protected List<ProjectListItem> selectedProjectListItems;
+  protected List<ProjectsFolder> selectedProjectsFolders;
 
   public ProjectsFolder() {
     projectsFolders = new ArrayList<ProjectsFolder>();
     projectListItems = new ArrayList<ProjectListItem>();
     selectedProjectListItems = new ArrayList<ProjectListItem>();
+    selectedProjectsFolders = new ArrayList<ProjectsFolder>();
   }
 
   public abstract void refresh();
@@ -61,7 +63,7 @@ public abstract class ProjectsFolder extends Composite {
     for (ProjectListItem item : selectedProjectListItems) {
       selectedProjects.add(item.getProject());
     }
-    for (ProjectsFolder item : projectsFolders) {
+    for (ProjectsFolder item : selectedProjectsFolders) {
       selectedProjects.addAll(item.getProjects());
     }
     return selectedProjects;
@@ -99,6 +101,13 @@ public abstract class ProjectsFolder extends Composite {
     projectsFolder.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
       @Override
       public void onSelectionChange(boolean selected) {
+        if (selected) {
+          LOG.warning("ADD selected folder list item: " + folder.getName());
+          selectedProjectsFolders.add(projectsFolder);
+        } else {
+          LOG.warning("REMOVE project list item: " + folder.getName());
+          selectedProjectsFolders.remove(projectsFolder);
+        }
         fireSelectionChangeEvent();
       }
     });
