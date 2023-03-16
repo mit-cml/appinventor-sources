@@ -673,7 +673,7 @@ Non-visible component to provide NFC capabilities. For now this component suppor
 
 {:.events}
 
-{:id="NearField.TagRead"} TagRead(*message*{:.text})
+{:id="NearField.TagRead"} TagRead(*tagId*{:.text},*message*{:.text})
 : Indicates that a new tag has been detected.
  Currently this is only a plain text tag, as specified in the
  manifest.
