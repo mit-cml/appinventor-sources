@@ -181,12 +181,12 @@ let kMinimumToastWait = 10.0
 
   private var _dimensions = [Int:NSLayoutConstraint]()
   
-  public static func setBigDefaultTextRecursive(of component: ViewComponent ,to enabled: Bool) {
-    for child in _components{
-      if let child = component as? ComponentContainer{
-        Form.setBigDefaultTextRecursive(child, enabled)
-      } else if let child = component as? AccessibleComponent{
-        child.LargeFont(to: true) // Is this right?
+  public static func setBigDefaultTextRecursive(of container: ComponentContainer ,to enabled: Bool) {
+    for child in container.getChildren() {
+      if let child = child as? ComponentContainer{
+        Form.setBigDefaultTextRecursive(of: child, to: enabled)
+      } else if let child = child as? AccessibleComponent{
+        child.LargeFont = enabled
       }
     }
   }
@@ -217,12 +217,12 @@ let kMinimumToastWait = 10.0
     _linearView.setNeedsLayout()
   }
   
-  public static func setHighContrastRecursive(of component: ViewComponent ,to enabled: Bool) {
-    for child in _components{
-      if let child = component as? ComponentContainer{
-        Form.setHighContrastRecursive(child, enabled)
-      } else if let child = component as? AccessibleComponent{
-        child.setHighContrast(to: true)
+  public static func setHighContrastRecursive(of container: ComponentContainer ,to enabled: Bool) {
+    for child in container.getChildren() {
+      if let child = child as? ComponentContainer{
+        Form.setHighContrastRecursive(of: child, to: enabled)
+      } else if let child = child as? AccessibleComponent{
+        child.HighContrast = enabled
       }
     }
   }
@@ -472,7 +472,7 @@ let kMinimumToastWait = 10.0
     }
     set(bigDefaultText) {
       _bigDefaultText = bigDefaultText
-      Form.setBigDefaultTextRecursive(_components ,_bigDefaultText)
+      Form.setBigDefaultTextRecursive(of: self ,to: _bigDefaultText)
       recomputeLayout()
     }
   }
@@ -522,7 +522,7 @@ let kMinimumToastWait = 10.0
     }
     set(highcontrast) {
       _highContrast = highcontrast
-      Form.setHighContrastRecursive(_components ,_highContrast)
+      Form.setHighContrastRecursive(of: self ,to: _highContrast)
       recomputeLayout()
     }
   }

@@ -131,7 +131,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
     set(size) {
       if size == kFontSizeDefault {
-        if Form?.BigDefaultText == true {
+        if form?.BigDefaultText == true {
           _delegate.font = getFontSize(font: _delegate?.font, size: 18) ?? _delegate.font //considering kFontSizeDefault is 14 I set it up to 18 randomly
         } else{
           _delegate.font = getFontSize(font: _delegate?.font, size: kFontSizeDefault) ?? _delegate.font

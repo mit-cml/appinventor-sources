@@ -9,12 +9,8 @@
 import Foundation
 
 @objc public protocol AccessibleComponent {
-
-  func isHighContrast() -> Bool
-
-  func setHighContrast(to isHighContrast: Bool)
-
-  func isLargeFont() -> Bool
-
-  func setLargeFont(to isLargeFont: Bool)
+  
+  var HighContrast : Bool { get set }
+  
+  var LargeFont : Bool { get set }
 }

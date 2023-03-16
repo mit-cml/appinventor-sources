@@ -118,6 +118,9 @@ open class ButtonBase: ViewComponent {
   fileprivate var _needsStyleApplied = true
   fileprivate var _isHighContrast = false
   fileprivate var _isBigText = false
+  fileprivate var _userFontSize = kFontSizeDefault
+  fileprivate var _userbackgroundColor: Int32 = Color.default.int32
+  fileprivate var _userTextColor: Int32 = Color.default.int32
   fileprivate var _hintColorDefault: Int32 = Color.default.int32
 
   static func loadClassicButton() {
@@ -253,13 +256,46 @@ open class ButtonBase: ViewComponent {
     }
     applyStyle()
   }
+  
+  @objc func updateFontSize() {
+    if form?.BigDefaultText == true {
+      if _userFontSize == kFontSizeDefault {
+        _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: kFontSizeLargeDefault)
+      } else {
+        _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: _userFontSize)
+      }
+    } else {
+      _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: _userFontSize)
+    }
+  }
 
+  @objc func updateColor() {
+    if form?.HighContrast == true {
+      if _userTextColor == Color.default.int32  {
+        _textColor = Int32(bitPattern: Color.white.rawValue)
+      } else {
+        _textColor = _userTextColor
+      }
+      
+      if _userbackgroundColor == Color.default.int32 {
+        _backgroundColor = Int32(bitPattern: Color.black.rawValue)
+      } else {
+        _backgroundColor = _userbackgroundColor
+      }
+      
+    } else {
+      _textColor = _userTextColor
+      _backgroundColor = _userbackgroundColor
+    }
+  }
+  
   @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
     set(argb) {
-      _backgroundColor = argb
+      _userbackgroundColor = argb
+      updateColor()
       setNeedsStyleApplied()
     }
   }
@@ -312,18 +348,11 @@ open class ButtonBase: ViewComponent {
       return Float32((_view.titleLabel?.font.pointSize)!)
     }
     set(size) {
-      if size == kFontSizeDefault {
-        if Form?.BigDefaultText == true {
-          _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: 18) //considering kFontSizeDefault is 14 I set it up to 18 randomly
-        } else{
-          _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: kFontSizeDefault)
-        }
-        
-      } else {
-        _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: size)
-      }
+      _userFontSize = size
+      updateFontSize()
     }
   }
+  
   
   @objc open var HighContrast: Bool {
     get {
@@ -331,11 +360,8 @@ open class ButtonBase: ViewComponent {
     }
     set(isHighContrast) {
       _isHighContrast = isHighContrast
-      if (_textColor == Int32(bitPattern: Color.default.rawValue) && Form?.HighContrast == true) {
-        _view.setTitleColor(argbToColor(Color.white.rawValue), for: .normal) // is thisthe right way to set it as white?
-      } else {
-        _view.setTitleColor(_defaultTextColor, for: .normal)
-      }
+      updateColor()
+      setNeedsStyleApplied()
     }
   }
 
@@ -367,7 +393,8 @@ open class ButtonBase: ViewComponent {
       return _isBigText
     }
     set (isLargeFont){
-      Fontsize(isLargeFont)
+      _isBigText = isLargeFont
+      updateFontSize()
     }
   }
 
@@ -437,16 +464,10 @@ open class ButtonBase: ViewComponent {
       return colorToArgb((_view.titleLabel?.textColor)!)
     }
     set(color) {
-      _textColor = color
-      if (color != Int32(bitPattern: Color.default.rawValue)) {
-        _view.setTitleColor(argbToColor(color), for: .normal)
-      } else{
-        if Form?.HighContrast == true {
-          _view.setTitleColor(argbToColor(Color.white.rawValue), for: .normal
-        } else {
-          _view.setTitleColor(_defaultTextColor, for: .normal)
-        }
-      }
+      //_textColor = color
+      _userTextColor = color
+      updateColor()
+      setNeedsStyleApplied()
     }
   }
 
