@@ -39,13 +39,17 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
       updateFormattedContent()
     } else {
       if form?.BigDefaultText == true {
-        _view.font = _view.font.withSize(CGFloat(kFontSizeLargeDefault))
+        if _userFontSize == kFontSizeDefault {
+          _view.font = _view.font.withSize(CGFloat(kFontSizeLargeDefault))
+        } else {
+          _view.font = _view.font.withSize(CGFloat(_userFontSize))
+        }
       } else {
         _view.font = _view.font.withSize(CGFloat(_userFontSize))
       }
-      _view.font = _view.font.withSize(CGFloat(_userFontSize))
     }
     _view.sizeToFit()
+    updateFormattedContent()
   }
   
   public override var view: UIView {
