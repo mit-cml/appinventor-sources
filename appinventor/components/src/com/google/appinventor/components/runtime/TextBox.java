@@ -52,26 +52,26 @@ import android.widget.EditText;
  * @author halabelson@google.com (Hal Abelson)
  */
 @DesignerComponent(version = YaVersion.TEXTBOX_COMPONENT_VERSION,
-        description = "<p>A box for the user to enter text.  The initial or " +
-                "user-entered text value is in the <code>Text</code> property.  If " +
-                "blank, the <code>Hint</code> property, which appears as faint text " +
-                "in the box, can provide the user with guidance as to what to type.</p>" +
-                "<p>The <code>MultiLine</code> property determines if the text can have" +
-                "more than one line.  For a single line text box, the keyboard will close" +
-                "automatically when the user presses the Done key.  To close the keyboard " +
-                "for multiline text boxes, the app should use  the HideKeyboard method or " +
-                " rely on the user to press the Back key.</p>" +
-                "<p>The <code> NumbersOnly</code> property restricts the keyboard to accept" +
-                "numeric input only.</p>" +
-                "<p>Other properties affect the appearance of the text box " +
-                "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
-                "whether it can be used (<code>Enabled</code>).</p>" +
-                "<p>Text boxes are usually used with the <code>Button</code> " +
-                "component, with the user clicking on the button when text entry is " +
-                "complete.</p>" +
-                "<p>If the text entered by the user should not be displayed, use " +
-                "<code>PasswordTextBox</code> instead.</p>",
-        category = ComponentCategory.USERINTERFACE)
+    description = "<p>A box for the user to enter text.  The initial or " +
+    "user-entered text value is in the <code>Text</code> property.  If " +
+    "blank, the <code>Hint</code> property, which appears as faint text " +
+    "in the box, can provide the user with guidance as to what to type.</p>" +
+    "<p>The <code>MultiLine</code> property determines if the text can have" +
+    "more than one line.  For a single line text box, the keyboard will close" +
+    "automatically when the user presses the Done key.  To close the keyboard " +
+    "for multiline text boxes, the app should use  the HideKeyboard method or " +
+    " rely on the user to press the Back key.</p>" +
+    "<p>The <code> NumbersOnly</code> property restricts the keyboard to accept" +
+    "numeric input only.</p>" +
+    "<p>Other properties affect the appearance of the text box " +
+    "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
+    "whether it can be used (<code>Enabled</code>).</p>" +
+    "<p>Text boxes are usually used with the <code>Button</code> " +
+    "component, with the user clicking on the button when text entry is " +
+    "complete.</p>" +
+    "<p>If the text entered by the user should not be displayed, use " +
+    "<code>PasswordTextBox</code> instead.</p>",
+    category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public final class TextBox extends TextBoxBase {
   /* TODO(user): this code requires Android SDK M5 or newer - we are currently on M3
@@ -137,12 +137,12 @@ public final class TextBox extends TextBoxBase {
    * @return {@code true} indicates that the textbox accepts numbers only, {@code false} indicates
    *         that it accepts any text
    */
-  @SimpleProperty(
-          category = PropertyCategory.BEHAVIOR,
-          description = "If true, then this text box accepts only numbers as keyboard input.  " +
-                  "Numbers can include a decimal point and an optional leading minus sign.  " +
-                  "This applies to keyboard input only.  Even if NumbersOnly is true, you " +
-                  "can use [set Text to] to enter any text at all.")
+   @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR,
+      description = "If true, then this text box accepts only numbers as keyboard input.  " +
+      "Numbers can include a decimal point and an optional leading minus sign.  " +
+      "This applies to keyboard input only.  Even if NumbersOnly is true, you " +
+      "can use [set Text to] to enter any text at all.")
   public boolean NumbersOnly() {
     return acceptsNumbersOnly;
   }
@@ -158,10 +158,10 @@ public final class TextBox extends TextBoxBase {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty(
-          description = "If true, then this text box accepts only numbers as keyboard input.  " +
-                  "Numbers can include a decimal point and an optional leading minus sign.  " +
-                  "This applies to keyboard input only.  Even if NumbersOnly is true, you " +
-                  "can use [set Text to] to enter any text at all.")
+      description = "If true, then this text box accepts only numbers as keyboard input.  " +
+      "Numbers can include a decimal point and an optional leading minus sign.  " +
+      "This applies to keyboard input only.  Even if NumbersOnly is true, you " +
+      "can use [set Text to] to enter any text at all.")
   public void NumbersOnly(boolean acceptsNumbersOnly) {
     if (acceptsNumbersOnly) {
 
@@ -195,11 +195,11 @@ public final class TextBox extends TextBoxBase {
    * keyboard when the users presses the Done key.
    */
   @SimpleFunction(
-          description = "Hide the keyboard.  Only multiline text boxes need this. " +
-                  "Single line text boxes close the keyboard when the users presses the Done key.")
+      description = "Hide the keyboard.  Only multiline text boxes need this. " +
+      "Single line text boxes close the keyboard when the users presses the Done key.")
   public void HideKeyboard() {
     InputMethodManager imm =
-            (InputMethodManager) container.$context().getSystemService(Context.INPUT_METHOD_SERVICE);
+      (InputMethodManager) container.$context().getSystemService(Context.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
 
@@ -210,12 +210,12 @@ public final class TextBox extends TextBoxBase {
    *         {@code false} lines that the textbox  accepts only a single line of input,
    */
   @SimpleProperty(
-          category = PropertyCategory.BEHAVIOR,
-          description = "If true, then this text box accepts multiple lines of input, which are " +
-                  "entered using the return key.  For single line text boxes there is a Done " +
-                  "key instead of a return key, and pressing Done hides the keyboard.  " +
-                  "The app should call the HideKeyboard method to hide the keyboard for " +
-                  "a mutiline text box.")
+      category = PropertyCategory.BEHAVIOR,
+      description = "If true, then this text box accepts multiple lines of input, which are " +
+                    "entered using the return key.  For single line text boxes there is a Done " +
+                    "key instead of a return key, and pressing Done hides the keyboard.  " +
+                    "The app should call the HideKeyboard method to hide the keyboard for " +
+                    "a mutiline text box.")
   public boolean MultiLine() {
     return multiLine;
   }
@@ -237,8 +237,8 @@ public final class TextBox extends TextBoxBase {
   }
 
   @SimpleProperty(
-          category = PropertyCategory.BEHAVIOR,
-          description = "Whether the %type% is read-only. By default, this is true."
+    category = PropertyCategory.BEHAVIOR,
+    description = "Whether the %type% is read-only. By default, this is true."
   )
   public boolean ReadOnly() {
     return readOnly;
@@ -249,8 +249,8 @@ public final class TextBox extends TextBoxBase {
    * @param readOnly
    */
   @DesignerProperty(
-          editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-          defaultValue = "False"
+    editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "False"
   )
   @SimpleProperty
   public void ReadOnly(boolean readOnly) {
@@ -315,4 +315,4 @@ public final class TextBox extends TextBoxBase {
   // active, and that may be the best simple thing.  If we implement show keyboard,
   // note that showSoftInputFromWindow seems to open the keyboard only if it
   // has been previously opened and closed.
-}
+  }
