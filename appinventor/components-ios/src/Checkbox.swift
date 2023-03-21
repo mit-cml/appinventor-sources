@@ -64,13 +64,14 @@ func loadCheckBox(completion: @escaping (SVGLayer, SVGLayer) -> Void) {
  * responsible for updating the state of the button and its appearance as a
  * function of user or block interaction with the component.
  */
-public class CheckBoxView: UIView {
+public class CheckBoxView: UIView{
+  
   fileprivate var _button = UIButton(frame: .zero)
   fileprivate var _text = UILabel()
   fileprivate var _checked: CAShapeLayer!
   fileprivate var _unchecked: CAShapeLayer!
   fileprivate var _layersLoaded = false
-
+  
   public init() {
     super.init(frame: .zero)
     setupCheckbox()
@@ -220,6 +221,10 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _fontTypeface = Typeface.normal
   fileprivate var _italic = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _isBigText = false
+  fileprivate var _userFontSize = kFontSizeDefault
+  public var HighContrast: Bool = false
+  public var LargeFont: Bool = false
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
@@ -231,6 +236,18 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
     Checked = false
     Enabled = true
     FontSize = 14.0
+  }
+  
+  @objc func updateFontSize() {
+    if form?.BigDefaultText == true {
+      if _userFontSize == kFontSizeDefault {
+        _view._text.font = UIFont(descriptor: _view._text.font.fontDescriptor, size: CGFloat(kFontSizeLargeDefault))
+      } else {
+        _view._text.font = UIFont(descriptor: _view._text.font.fontDescriptor, size: CGFloat(_userFontSize))
+      }
+    } else {
+      _view._text.font = UIFont(descriptor: _view._text.font.fontDescriptor, size: CGFloat(_userFontSize))
+    }
   }
 
   open override var view: UIView {
@@ -292,7 +309,8 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
       return Float32(_view._text.font.pointSize)
     }
     set(size) {
-      _view._text.font = UIFont(descriptor: _view._text.font.fontDescriptor, size: CGFloat(size))
+      _userFontSize = size
+      updateFontSize()
     }
   }
 
@@ -309,7 +327,7 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
       }
     }
   }
-
+  
   @objc open var Text: String {
     get {
       return _view._text.text ?? ""

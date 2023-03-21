@@ -21,6 +21,8 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _bold = false
   fileprivate var _italic = false
   fileprivate var _hasMargins = false
+  fileprivate var _userFontSize = kFontSizeDefault
+  fileprivate var _isBigText = false
   
   public override init(_ parent: ComponentContainer) {
     _switch.isOn = false
@@ -56,6 +58,18 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
     _view.clipsToBounds = true
   }
 
+  @objc func updateFontSize() {
+    if form?.BigDefaultText == true {
+      if _userFontSize == kFontSizeDefault {
+        _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(kFontSizeLargeDefault))
+      } else {
+        _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(_userFontSize))
+      }
+    } else {
+      _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(_userFontSize))
+    }
+  }
+  
   open override var view: UIView {
     get {
       return _view
@@ -163,7 +177,9 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
       return Float32(_text.font.pointSize)
     }
     set(size) {
-      _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(size))
+      _userFontSize = size
+      updateFontSize()
+      //_text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(size))
     }
   }
   

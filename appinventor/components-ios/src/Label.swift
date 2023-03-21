@@ -5,7 +5,8 @@
 
 import Foundation
 
-public final class Label: ViewComponent, AbstractMethodsForViewComponent {
+public final class Label: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent {
+  
   fileprivate var _view: UILabel
   fileprivate var _alignment: Int32 = Alignment.normal.rawValue
   fileprivate var _typeface = Typeface.normal
@@ -18,6 +19,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _isBigText = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _userFontSize = kFontSizeDefault
+  public var HighContrast: Bool = false
   
   public override init(_ parent: ComponentContainer) {
     _view = UILabel()
@@ -32,6 +34,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     parent.add(self)
     Height = kLengthPreferred
     Width = kLengthPreferred
+    FontSize = Float64(kFontSizeDefault)
   }
   
   @objc func updateFontSize() {
