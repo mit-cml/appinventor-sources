@@ -45,7 +45,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   fileprivate var _hintColorDefault: Int32 = Color.default.int32
   fileprivate var _hintColor: Int32 = Color.default.int32
   fileprivate var _userFontSize = kFontSizeDefault
-  fileprivate var _userbackgroundColor: Int32 = Color.default.int32
+  fileprivate var _userBackgroundColor: Int32 = Color.default.int32
   fileprivate var _userTextColor: Int32 = Color.default.int32
 
   public init(_ parent: ComponentContainer, _ delegate: AbstractMethodsForTextBox) {
@@ -86,14 +86,14 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
         _textColor = _userTextColor
       }
       
-      if _userbackgroundColor == Color.default.int32 {
+      if _userBackgroundColor == Color.default.int32 {
         _backgroundColor = Int32(bitPattern: Color.black.rawValue)
       } else {
-        _backgroundColor = _userbackgroundColor
+        _backgroundColor = _userBackgroundColor
       }
     } else {
       _textColor = _userTextColor
-      _backgroundColor = _userbackgroundColor
+      _backgroundColor = _userBackgroundColor
     }
     
     _delegate?.backgroundColor = argbToColor(_backgroundColor)
@@ -130,7 +130,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       return _backgroundColor
     }
     set(argb) {
-      _userbackgroundColor = argb
+      _userBackgroundColor = argb
       _delegate?.backgroundColor = argbToColor(argb)
       updateColor()
     }
