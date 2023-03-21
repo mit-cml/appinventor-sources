@@ -20,6 +20,7 @@
 		06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 06463F041D95956800B23DCD /* LaunchScreen.storyboard */; };
 		06463F111D95956800B23DCD /* AICompanionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463F101D95956800B23DCD /* AICompanionTests.swift */; };
 		06463F1C1D95956800B23DCD /* AICompanionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463F1B1D95956800B23DCD /* AICompanionUITests.swift */; };
+		06647F4B29CA1EB90009F29C /* AICompanionApp.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 06647F4A29CA1EB90009F29C /* AICompanionApp.xcconfig */; };
 		066FE95725AC9E7300C6193B /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 066FE95625AC9E7300C6193B /* Settings.bundle */; };
 		066FE95B25ACB94C00C6193B /* SystemVariables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066FE95A25ACB94C00C6193B /* SystemVariables.swift */; };
 		066FE95F25ACB98100C6193B /* UIFont_Fitting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066FE95E25ACB98100C6193B /* UIFont_Fitting.swift */; };
@@ -90,6 +91,7 @@
 		06463F171D95956800B23DCD /* AICompanionAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AICompanionAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463F1B1D95956800B23DCD /* AICompanionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICompanionUITests.swift; sourceTree = "<group>"; };
 		06463F1D1D95956800B23DCD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		06647F4A29CA1EB90009F29C /* AICompanionApp.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AICompanionApp.xcconfig; sourceTree = "<group>"; };
 		066EA0A72979D46C008203B1 /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = "webrtc/out/ios_arm64-Release/WebRTC.framework"; sourceTree = "<group>"; };
 		066FE95625AC9E7300C6193B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = AICompanionApp/Settings.bundle; sourceTree = "<group>"; };
 		066FE95A25ACB94C00C6193B /* SystemVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemVariables.swift; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 		06463EEF1D95956800B23DCD = {
 			isa = PBXGroup;
 			children = (
+				06647F4A29CA1EB90009F29C /* AICompanionApp.xcconfig */,
 				066FE95625AC9E7300C6193B /* Settings.bundle */,
 				063D67911FA0CEB1002E907D /* AIComponentKit.framework */,
 				063D678E1FA0CEB1002E907D /* SchemeKit.framework */,
@@ -396,6 +399,7 @@
 				06B216191DBC5F1B000B3366 /* mooning.png in Resources */,
 				06463F031D95956800B23DCD /* Assets.xcassets in Resources */,
 				06463F011D95956800B23DCD /* Main.storyboard in Resources */,
+				06647F4B29CA1EB90009F29C /* AICompanionApp.xcconfig in Resources */,
 				066FE95725AC9E7300C6193B /* Settings.bundle in Resources */,
 				0693A7BF2575527700256540 /* mooning-dark.png in Resources */,
 			);
@@ -682,9 +686,11 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "$(inherited)";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -746,9 +752,11 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "$(inherited)";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -778,7 +786,6 @@
 			baseConfigurationReference = 917EBEF8E1E3632C01B06EE1 /* Pods-AICompanionApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",
@@ -801,8 +808,6 @@
 			baseConfigurationReference = FE5CAE0EE58EBC32C4E5ADFC /* Pods-AICompanionApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",
@@ -814,6 +819,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "9c96ca04-1d70-4a2b-bb01-28f545b35d28";
 				PROVISIONING_PROFILE_SPECIFIER = "MIT App Inventor Production";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "MIT App Inventor Production";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
