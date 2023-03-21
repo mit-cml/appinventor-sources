@@ -254,16 +254,19 @@ div.StatusPanel {
   color: #555;
   cursor: pointer;
   vertical-align: top;
-  padding-left: 10px;
+  padding-right: 10px;
   text-align: left;
+  flex-grow: 1;
+  min-width: 100px;
 }
 
 .ode-ProjectFieldLabel {
   font-size: small;
   color: #555;
   vertical-align: top;
-  padding-left: 10px;
+  padding-right: 10px;
   text-align: left;
+  width: 200px;
 }
 
 .ode-ProjectTable {
@@ -271,31 +274,22 @@ div.StatusPanel {
   margin: 0;
   border: 1px;
   overflow: auto;
-  /*display: flex;*/
-  text-align: left;
-  /*flex-direction: column;*/
-  display: grid;
-  grid-auto-rows: max-content;
-  grid-template-columns: auto 1fr auto auto;
+  border-radius: 4px;
+  height: auto;
 }
 
 .ode-ProjectRowHighlighted {
-  display: grid;
-  grid-template-columns: subgrid;
-  border-bottom: 1px solid #ddd;
   background-color: #fff6c3 !important;
 }
 
 .ode-ProjectRowUnHighlighted {
-  display: grid;
-  grid-column: 1 / 5;
-  grid-template-columns: subgrid;
+  display: flex;
+  align-items: center;
+  grid-gap: 10px;
   border-bottom: 0;
   background-color: white;
   width: 100%;
   vertical-align: center;
-  /*display: flex;*/
-  /*flex-direction: row;*/
 }
 
 .ode-ProjectRowHidden {
@@ -307,23 +301,24 @@ div.StatusPanel {
 }
 
 .ode-ProjectRowList {
-  display:grid;
-  grid-column: 1 / 5;
-  grid-template-columns: subgrid;
+  display:contents;
 }
 
 .ode-ProjectHeaderRow {
   background: url(../images/toolbarBG.png) repeat;
-  /*display: flex;*/
-  display: grid;
+  display: flex;
+  align-items: center;
+  grid-gap: 10px;
+
   border: 1px;
   border-bottom: 1px solid #bbccff;
-  grid-column: 1 / 5;
-  grid-template-columns: subgrid;
-  /*grid-template-columns: auto 1fr auto auto;*/
   position: relative;
   flex-direction: row;
   width: 100%;
+}
+
+.ode-ProjectHeaderRow>div {
+  display: flex;
 }
 
 .ode-ProjectHeaderLabel {
@@ -332,8 +327,19 @@ div.StatusPanel {
   font-size: 11px !important;
   cursor: pointer;
   text-align: left;
-  padding-left: 10px;
+  padding-right: 10px;
   display: inline-flex;
+
+  align-items: center;
+}
+
+.ode-ProjectListName {
+  min-width: 100px;
+  flex-grow: 1;
+}
+
+.ode-ProjectListDate {
+  width: 200px;
 }
 
 .ode-CheckpointProjectTable {

@@ -9,7 +9,7 @@
   <g:FlowPanel styleName='ode-ProjectTable'>
     <g:FlowPanel styleName='ode-ProjectHeaderRow'>
         <g:CheckBox ui:field='selectAllCheckBox' styleName="gwt-CheckBox" />
-        <g:FlowPanel styleName="ode-ProjectHeaderLabel">
+        <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListName">
           <g:Label text='{messages.projectNameHeader}' ui:field='projectName'
                    styleName="gwt-Label" />
           <ai:Icon ui:field='projectNameSortDec' text="&#x25BC;" visible="false"
@@ -17,7 +17,7 @@
           <ai:Icon ui:field='projectNameSortAsc' text="&#x25B2;" visible="false"
                    styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
         </g:FlowPanel>
-        <g:FlowPanel styleName="ode-ProjectHeaderLabel">
+        <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListDate">
           <g:Label text='{messages.projectDateCreatedHeader}' ui:field='createDate'
                    styleName="gwt-Label ode-ProjectHeaderLabel" />
            <ai:Icon  ui:field='createDateSortDec' text="&#x25BC;" visible="false"
@@ -25,7 +25,7 @@
             <ai:Icon ui:field='createDateSortAsc'  text="&#x25B2;" visible="false"
                      styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
         </g:FlowPanel>
-        <g:FlowPanel styleName="ode-ProjectHeaderLabel">
+        <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListDate">
           <g:Label text='{messages.projectDateModifiedHeader}' ui:field='modDate'
                    styleName="gwt-Label ode-ProjectHeaderLabel"  />
            <ai:Icon  ui:field='modDateSortDec' text="&#x25BC;" visible="false"
