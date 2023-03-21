@@ -17,6 +17,6 @@
       <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label'/>
       <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label'/>
     </g:FlowPanel>
-    <g:FlowPanel ui:field='childrenContainer' styleName='ode-ProjectRowHidden ode-ProjectRowUnHighlighted' />
+    <g:FlowPanel ui:field='childrenContainer' styleName='ode-ProjectRowHidden ode-ProjectRowList' />
   </g:FlowPanel>
 </ui:UiBinder>

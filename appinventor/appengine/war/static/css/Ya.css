@@ -246,6 +246,8 @@ div.StatusPanel {
  */
 .ode-ProjectFieldSpan {
   display: flex;
+  flex-grow: 1;
+  min-width: 100px;
 }
 
 .ode-ProjectNameLabel {
@@ -276,6 +278,7 @@ div.StatusPanel {
   overflow: auto;
   border-radius: 4px;
   height: auto;
+  width: 100%;
 }
 
 .ode-ProjectRowHighlighted {
@@ -293,7 +296,7 @@ div.StatusPanel {
 }
 
 .ode-ProjectRowHidden {
-  display:none;
+  display:none !important;
 }
 
 .ode-ProjectElementHidden {
@@ -319,6 +322,7 @@ div.StatusPanel {
 
 .ode-ProjectHeaderRow>div {
   display: flex;
+  width: 100%;
 }
 
 .ode-ProjectHeaderLabel {
