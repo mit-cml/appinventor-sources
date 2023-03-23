@@ -951,6 +951,10 @@ div.StatusPanel {
   padding: 2px;
 }
 
+.ode-SimplePaletteItem-Selected {
+  background-color: #d2e0a6 !important;
+}
+
 .gwt-SimplePanel {
   border: 1px solid #67A7E3;
   background-color: white;
