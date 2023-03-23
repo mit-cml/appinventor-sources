@@ -1,3 +1,4 @@
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
 // DO NOT EDIT.
 // swift-format-ignore-file
 //

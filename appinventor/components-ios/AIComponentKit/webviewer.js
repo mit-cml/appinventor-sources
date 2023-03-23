@@ -1,3 +1,8 @@
+// -*- mode: Javascript; js-indent-level: 4; -*-
+// Copyright 2018-2023 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 window.AppInventor = (function(){
   var webViewString = "";
   var obj = Object.create(null);

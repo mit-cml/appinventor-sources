@@ -1,3 +1,4 @@
+// -*- mode: objc; c-basic-offset: 2; trunc: 5; -*-
 //
 //  UIView+Toast.h
 //  Toast
