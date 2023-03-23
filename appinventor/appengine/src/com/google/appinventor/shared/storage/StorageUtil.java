@@ -195,6 +195,13 @@ public class StorageUtil {
     if (filePath.endsWith(".keystore")) {
       return "application/octet-stream";
     }
+    
+    if (filePath.endsWith(".ttf")) {
+      return "font/ttf";
+    }
+    if (filePath.endsWith(".otf"))  {
+      return "font/otf";
+    }
 
     // default
     return "text/plain; charset=utf-8";
@@ -230,6 +237,14 @@ public class StorageUtil {
   public static boolean isVideoFile(String filePath) {
     String contentType = getContentTypeForFilePath(filePath);
     return contentType.startsWith("video/");
+  }
+
+  /**
+   * Returns true if the given filePath refers a font file.
+   */
+  public static boolean isFontFile(String filePath)  {
+    String contentType = getContentTypeForFilePath(filePath);
+    return contentType.startsWith("font/");
   }
 
   /**

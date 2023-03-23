@@ -9,12 +9,27 @@
   <g:FlowPanel styleName='ode-ProjectTable'>
     <g:FlowPanel styleName='ode-ProjectHeaderRow'>
         <g:CheckBox ui:field='selectAllCheckBox' styleName="gwt-CheckBox ode-ProjectCheckBox" />
-          <g:Label text='{messages.projectNameHeader}' styleName="gwt-Label ode-ProjectHeaderName" />
-<!--          <ai:Icon icon='arrow_downward' styleName='{style.sortIndicator}' /> -->
-          <g:Label text='{messages.projectDateCreatedHeader}' styleName="gwt-Label ode-ProjectHeaderLabel" />
-          <!-- <ai:Icon icon='arrow_downward' styleName='{style.sortIndicator}' /> -->
-          <g:Label text='{messages.projectDateModifiedHeader}' styleName="gwt-Label ode-ProjectHeaderLabel"  />
-          <!-- <ai:Icon icon='arrow_downward' styleName='{style.sortIndicator}' /> -->
+        <g:FlowPanel styleName="gwt-Label ode-ProjectHeaderName">
+          <g:Label text='{messages.projectNameHeader}' ui:field="projectName" />
+        <ai:Icon ui:field='projectNameSortDec' icon="arrow_downward" visible="false"
+                 styleName="gwt-InlineLabel"/>
+        <ai:Icon ui:field='projectNameSortAsc' icon="arrow_upward" visible="false"
+                 styleName="gwt-InlineLabel"/>
+        </g:FlowPanel>
+        <g:FlowPanel styleName="gwt-Label ode-ProjectHeaderLabel">
+          <g:Label text='{messages.projectDateCreatedHeader}' ui:field="createDate" />
+        <ai:Icon  ui:field='createDateSortDec' icon="arrow_downward" visible="false"
+                  styleName="gwt-InlineLabel"/>
+        <ai:Icon ui:field='createDateSortAsc'  icon="arrow_upward" visible="false"
+                 styleName="gwt-InlineLabel"/>
+        </g:FlowPanel>
+        <g:FlowPanel styleName="gwt-Label ode-ProjectHeaderLabel">
+          <g:Label text='{messages.projectDateModifiedHeader}' ui:field="modDate"  />
+        <ai:Icon  ui:field='modDateSortDec' icon="arrow_downward" visible="false"
+                  styleName="gwt-Label"/>
+        <ai:Icon ui:field='modDateSortAsc'  icon="arrow_upward" visible="false"
+                 styleName="gwt-Label"/>
+        </g:FlowPanel>
     </g:FlowPanel>
     <g:FlowPanel styleName="ode-ProjectRowList" ui:field='container'>
 

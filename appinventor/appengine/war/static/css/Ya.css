@@ -248,6 +248,7 @@ div.StatusPanel {
 
 .ode-ProjectListButton .html-face {
   display: flex;
+  flex-grow: 1;
 }
 
 .ode-ProjectListButton-up-hovering {
@@ -372,7 +373,7 @@ div.StatusPanel {
 }
 
 .ode-ProjectRowHidden {
-  display:none;
+  display:none !important;
 }
 
 .ode-ProjectElementHidden {
@@ -393,10 +394,6 @@ div.StatusPanel {
   background: #FFFFFF;
   font-weight: 600;
   font-size: 1.15em;
-}
-
-.ode-ProjectHeaderRow>div {
-  display: flex;
 }
 
 /*.ode-ProjectHeaderRow:after {*/
@@ -420,6 +417,10 @@ div.StatusPanel {
 .ode-ProjectFolderIcon {
   padding-right: 10px;
   padding-left: 5px;
+}
+
+.ode-ProjectHeaderRow>div {
+  display: flex;
 }
 
 .ode-ProjectHeaderLabel {

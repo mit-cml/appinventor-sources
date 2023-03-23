@@ -15,7 +15,8 @@ public class MoveProjectsAction implements Command {
       @Override
       public void onSuccess(Folder destination) {
         List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-        Ode.getInstance().getFolderManager().moveProjectsToFolder(selectedProjects,
+        List<Folder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
+        Ode.getInstance().getFolderManager().moveItemsToFolder(selectedProjects, selectedFolders,
             destination);
       }
     });

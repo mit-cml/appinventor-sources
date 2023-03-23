@@ -32,6 +32,7 @@ import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
+import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.PropertiesPanel;
@@ -174,6 +175,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     componentsPanel.add(nonVisibleComponentsPanel, DockPanel.SOUTH);
     componentsPanel.setSize("100%", "100%");
 
+    // Create designProperties, which will be used as the content of the PropertiesBox.
+    designProperties = new PropertiesPanel();
+    designProperties.setSize("100%", "100%");
+
     // Create palettePanel, which will be used as the content of the PaletteBox.
     palettePanel = new YoungAndroidPalettePanel(this);
     palettePanel.loadComponents(new DropTargetProvider() {
@@ -191,9 +196,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     palettePanel.setSize("100%", "100%");
     componentDatabaseChangeListeners.add(palettePanel);
 
-    // Create designProperties, which will be used as the content of the PropertiesBox.
-    designProperties = new PropertiesPanel();
-    designProperties.setSize("100%", "100%");
     initWidget(componentsPanel);
     setSize("100%", "100%");
     registerNativeListeners();
@@ -275,6 +277,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     LOG.info("YaFormEditor: got onShow() for " + getFileId());
     super.onShow();
     loadDesigner();
+    Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_DESIGNER);
   }
 
   @Override
@@ -349,6 +352,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   @Override
   public boolean isScreen1() {
     return formNode.isScreen1();
+  }
+
+  @Override
+  public void refreshPropertiesPanel() {
+    designProperties.clear();
+    if (selectedProperties != null) {
+      designProperties.setProperties(selectedProperties);
+    }
   }
 
   // PropertyChangeListener implementation

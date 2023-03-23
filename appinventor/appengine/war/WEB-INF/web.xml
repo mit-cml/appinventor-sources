@@ -35,29 +35,7 @@
     </web-resource-collection>
   </security-constraint>
 
-  <!-- Security constraint: require admin access for the appstats url -->
-  <security-constraint>
-    <web-resource-collection>
-      <url-pattern>/convert/</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>admin</role-name>
-    </auth-constraint>
-  </security-constraint>
-
   <!-- Servlets -->
-
-  <!-- Blob Conversion Servlet -->
-
-  <servlet>
-    <display-name>Blob Conversion Servlet</display-name>
-    <servlet-name>BlobUpgradeServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.BlobUpgradeServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>BlobUpgradeServlet</servlet-name>
-    <url-pattern>/convert</url-pattern>
-  </servlet-mapping>
 
   <!-- Generate Login Page for OpenID -->
 

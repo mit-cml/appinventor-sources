@@ -109,7 +109,7 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper implements F
    * Sets the toggle's FontTypeface property to a new value.
    */
   protected void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(toggleWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, toggleWidget, text);
     updatePreferredSize();
   }
 
@@ -154,6 +154,9 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper implements F
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(toggleWidget, newValue);
+      refreshForm();
     }
   }
 
