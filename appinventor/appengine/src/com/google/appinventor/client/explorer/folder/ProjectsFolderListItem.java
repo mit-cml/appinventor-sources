@@ -73,6 +73,12 @@ public class ProjectsFolderListItem extends ProjectsFolder {
       for (ProjectListItem projectListItem : projectListItems) {
         projectListItem.setSelected(selected);
       }
+    } else {
+      if (selected) {
+        container.addStyleName("ode-ProjectRowHighlighted");
+      } else {
+        container.removeStyleName("ode-ProjectRowHighlighted");
+      }
     }
   }
 
