@@ -11,6 +11,7 @@ public protocol AbstractMethodsForTextBox: AbstractMethodsForViewComponent {
   var textColor: UIColor? { get set }
   var font: UIFont { get set }
   var placeholderText: String? { get set }
+  var placeholderColor: Int32 { get set }
   var text: String? { get set }
   var readOnly: Bool { get set }
   func textFieldDidBeginEditing(_ textField: UITextField)
@@ -42,7 +43,6 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   fileprivate var _textColor: Int32 = 0
   fileprivate var _isHighContrast = false
   fileprivate var _isBigText = false
-  fileprivate var _hintColorDefault: Int32 = Color.default.int32
   fileprivate var _hintColor: Int32 = Color.default.int32
   fileprivate var _userFontSize = kFontSizeDefault
   fileprivate var _userBackgroundColor: Int32 = Color.default.int32
@@ -81,7 +81,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     if form?.HighContrast == true {
       if _userTextColor == Color.default.int32  {
         _textColor = Int32(bitPattern: Color.white.rawValue)
-        _hintColor = Int32(bitPattern: Color.yellow.rawValue)
+        _delegate?.placeholderColor = Int32(bitPattern: Color.yellow.rawValue)
       } else {
         _textColor = _userTextColor
       }

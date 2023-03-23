@@ -111,7 +111,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   }
   
   open func updatePlaceholder(){
-    var newPlaceholder = NSAttributedString(string: placeholderText!, attributes: [NSAttributedString.Key.foregroundColor:argbToColor(_placeholderColor)])
+    var newPlaceholder = NSAttributedString(string: placeholderText ?? "", attributes: [NSAttributedString.Key.foregroundColor:argbToColor(_placeholderColor)])
     _field.attributedPlaceholder = newPlaceholder
     if _empty {
       _view.attributedText = newPlaceholder
