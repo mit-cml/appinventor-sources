@@ -1001,7 +1001,7 @@ div.StatusPanel {
 
 /* Overrides for gwt.css */
 .gwt-StackPanel .gwt-StackPanelContent {
-  padding: 8px 4px 8px 8px;
+  padding: 0px;
 }
 
 .gwt-StackPanel .gwt-StackPanelItem {
@@ -1016,7 +1016,7 @@ div.StatusPanel {
   background-color: white; /* needed on Firefox */
   height: 15px;
   cursor: pointer;
-  padding: 5px;
+  padding: 13px 5px 5px 13px;
 }
 
 .ode-SimplePaletteItem-Selected {
@@ -1024,12 +1024,12 @@ div.StatusPanel {
 }
 
 .ode-SimplePaletteItem-icon {
-  height: 16px;
-  width: 16px;
+  height: 20px;
+  width: 20px;
 }
 
 .ode-SimplePaletteItem-caption {
-  font-size: 12px;
+  font-size: 16px;
   color: #555;
 }
 
