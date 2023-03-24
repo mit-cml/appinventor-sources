@@ -350,6 +350,7 @@ div.StatusPanel {
   color: #000000;
   width: 200px;
   height: 30px;
+  align-self: center;
 }
 
 .ode-ProjectTable {
@@ -836,8 +837,13 @@ div.StatusPanel {
   margin: 0 2px;
 }
 
+.gwt-Tree .gwt-TreeItem span img {
+  height: 20px;
+  width: 20px;
+}
+
 .gwt-Tree .gwt-TreeItem {
-  font-size: 12px;
+  font-size: 14px;
   color: #555;
   cursor: default;
   display: block !important;
@@ -947,6 +953,7 @@ div.StatusPanel {
 
 .ode-PanelButtons .ode-TextButton {
   font-size: 12px;
+  width: fit-content;
 }
 
 .ode-BlocksDesignerButton {
@@ -1029,7 +1036,7 @@ div.StatusPanel {
 }
 
 .ode-SimplePaletteItem-caption {
-  font-size: 16px;
+  font-size: 14px;
   color: #555;
 }
 
@@ -1091,7 +1098,7 @@ div.StatusPanel {
 
 .ode-PropertiesPanel td {
   color: #555;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .ode-PropertiesComponentName {
@@ -1100,6 +1107,16 @@ div.StatusPanel {
   color: #555;
   border-bottom: 1px solid #d2d2d2;
   padding: 9px 9px 8px 10px;
+}
+
+.ode-AssetsTitle {
+  background-color: #FFFFFF;
+  font-size: 1.1em;
+  color: #555;
+  border-bottom: 1px solid #d2d2d2;
+  border-top: 1px solid #d2d2d2;
+  padding: 9px 9px 8px 10px;
+  margin-bottom: 10px;
 }
 
 .ode-PropertyLabel {
