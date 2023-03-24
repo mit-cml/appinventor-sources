@@ -1637,7 +1637,7 @@
 		017B0E60474E5F73A48C2539C5C89F25 /* ZXDetectorResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDetectorResult.h; path = ZXingObjC/common/ZXDetectorResult.h; sourceTree = "<group>"; };
 		01B6EC14CB2BAECC4E4FEC34E97C78C3 /* SnapIfNeededOverlayOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SnapIfNeededOverlayOp.cpp; path = geos/src/operation/overlay/snap/SnapIfNeededOverlayOp.cpp; sourceTree = "<group>"; };
 		020009EA9F1DC4E17938610D2E1ECE9F /* Octant.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = Octant.cpp; path = geos/src/noding/Octant.cpp; sourceTree = "<group>"; };
-		0275D4965406EB88436BCE1D4C8FD89D /* Pods-AICompanionApp */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AICompanionApp"; path = Pods_AICompanionApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0275D4965406EB88436BCE1D4C8FD89D /* Pods_AICompanionApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		02EFCED0798D7CD308A7A89DF5A634AB /* ZXQRCodeDetector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeDetector.h; path = ZXingObjC/qrcode/detector/ZXQRCodeDetector.h; sourceTree = "<group>"; };
 		03506E9B47912290BBC565C639951413 /* ZXSMTPResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXSMTPResultParser.m; path = ZXingObjC/client/result/ZXSMTPResultParser.m; sourceTree = "<group>"; };
 		0365E1B9F9A4CF6410A8999EB697DF2A /* Pods-AICompanionApp-AICompanionAppUITests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-AICompanionApp-AICompanionAppUITests-frameworks.sh"; sourceTree = "<group>"; };
@@ -2094,7 +2094,7 @@
 		628C85CC91957B5D14286CFFF591A72C /* ZXAbstractDoCoMoResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXAbstractDoCoMoResultParser.m; path = ZXingObjC/client/result/ZXAbstractDoCoMoResultParser.m; sourceTree = "<group>"; };
 		62980EB468E9BBBA42CA2B9F70D14818 /* ZXAddressBookDoCoMoResultParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAddressBookDoCoMoResultParser.h; path = ZXingObjC/client/result/ZXAddressBookDoCoMoResultParser.h; sourceTree = "<group>"; };
 		62B9A6A263A046FF73A08F462E98AA30 /* Decoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Decoder.swift; path = Sources/SwiftProtobuf/Decoder.swift; sourceTree = "<group>"; };
-		62CAB37351091A5CEBC90FA704C4030C /* unzip.c */ = {isa = PBXFileReference; includeInIndex = 1; name = unzip.c; path = Zip/minizip/unzip.c; sourceTree = "<group>"; };
+		62CAB37351091A5CEBC90FA704C4030C /* unzip.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = unzip.c; path = Zip/minizip/unzip.c; sourceTree = "<group>"; };
 		62D499B47B03BCC448FDD270A34071F6 /* ZXRSSExpandedFieldParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXRSSExpandedFieldParser.m; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedFieldParser.m; sourceTree = "<group>"; };
 		62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftSVG; path = SwiftSVG.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6307EA3129906117478268AF1F8F2F53 /* ZXMaxiCodeReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXMaxiCodeReader.h; path = ZXingObjC/maxicode/ZXMaxiCodeReader.h; sourceTree = "<group>"; };
@@ -2365,7 +2365,7 @@
 		9D03076E7E9BBE2B66E1FFE3E7DD0571 /* Quadtree.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = Quadtree.cpp; path = geos/src/index/quadtree/Quadtree.cpp; sourceTree = "<group>"; };
 		9D41DE600A43485F2C7F2581CDDAFBC8 /* SVGPolygon.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SVGPolygon.swift; path = SwiftSVG/SVG/Elements/SVGPolygon.swift; sourceTree = "<group>"; };
 		9D569511589CCC02C8F2CCD3DAAEF080 /* Pods-AICompanionAppTests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AICompanionAppTests"; path = Pods_AICompanionAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DD0456FD02A8074EEF55206B5AD55FF /* ZXRSSExpandedGeneralAppIdDecoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXRSSExpandedGeneralAppIdDecoder.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedGeneralAppIdDecoder.h; sourceTree = "<group>"; };
 		9DFD6F19DD4974A3F2631E913CAD76E8 /* ZXDataMatrixDetector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixDetector.h; path = ZXingObjC/datamatrix/detector/ZXDataMatrixDetector.h; sourceTree = "<group>"; };
 		9EF43200CC7379D13BE501D2BBE5A745 /* ZXRSSExpandedDecodedObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXRSSExpandedDecodedObject.m; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedDecodedObject.m; sourceTree = "<group>"; };
@@ -2558,7 +2558,7 @@
 		C202D2638B051941FE3D1E6064DB7DDA /* JSONScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JSONScanner.swift; path = Sources/SwiftProtobuf/JSONScanner.swift; sourceTree = "<group>"; };
 		C23202414A0EDEA0B6BD7CE9CFABF417 /* ZXQRCodeFinderPattern.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeFinderPattern.h; path = ZXingObjC/qrcode/detector/ZXQRCodeFinderPattern.h; sourceTree = "<group>"; };
 		C29FBCC103E59AE3E58CD9C0BDF4047D /* Base58Swift-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Base58Swift-prefix.pch"; sourceTree = "<group>"; };
-		C2D2E7799C28EC314FC05286EFCB73D4 /* ioapi.c */ = {isa = PBXFileReference; includeInIndex = 1; name = ioapi.c; path = Zip/minizip/ioapi.c; sourceTree = "<group>"; };
+		C2D2E7799C28EC314FC05286EFCB73D4 /* ioapi.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = ioapi.c; path = Zip/minizip/ioapi.c; sourceTree = "<group>"; };
 		C3FE39A0AF28B742E95098DDFB59D158 /* ZXVCardResultParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXVCardResultParser.h; path = ZXingObjC/client/result/ZXVCardResultParser.h; sourceTree = "<group>"; };
 		C40A23BF1A51904D7FCAD931995ECDDC /* ZXExpandedProductResultParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXExpandedProductResultParser.h; path = ZXingObjC/client/result/ZXExpandedProductResultParser.h; sourceTree = "<group>"; };
 		C4AB1A0F6D6ECEA8D924E2E955F66B4C /* MCIndexSegmentSetMutualIntersector.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = MCIndexSegmentSetMutualIntersector.cpp; path = geos/src/noding/MCIndexSegmentSetMutualIntersector.cpp; sourceTree = "<group>"; };
@@ -2779,7 +2779,7 @@
 		F1A7F7A1526750ACFEFC3DFA932DABAB /* ZXDataMatrixASCIIEncoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixASCIIEncoder.m; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixASCIIEncoder.m; sourceTree = "<group>"; };
 		F1D064AE2E9695C490F9FD761E3AE983 /* ZXParsedResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXParsedResult.h; path = ZXingObjC/client/result/ZXParsedResult.h; sourceTree = "<group>"; };
 		F1F60CD5744B5896ED29A63F988190E7 /* PreparedPolygonContains.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PreparedPolygonContains.cpp; path = geos/src/geom/prep/PreparedPolygonContains.cpp; sourceTree = "<group>"; };
-		F20358906B821BF2B2B138196159EABB /* zip.c */ = {isa = PBXFileReference; includeInIndex = 1; name = zip.c; path = Zip/minizip/zip.c; sourceTree = "<group>"; };
+		F20358906B821BF2B2B138196159EABB /* zip.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = zip.c; path = Zip/minizip/zip.c; sourceTree = "<group>"; };
 		F21A53375E339AEFD05FBD93827B16ED /* Notifications.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Notifications.swift; path = Source/Notifications.swift; sourceTree = "<group>"; };
 		F251A5EA414A6E47F8589FA4F24CADA2 /* field_mask.pb.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = field_mask.pb.swift; path = Sources/SwiftProtobuf/field_mask.pb.swift; sourceTree = "<group>"; };
 		F2D40C777DDA66FA87A111073EFD7BF4 /* Pods-AIComponentKit-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AIComponentKit-Info.plist"; sourceTree = "<group>"; };
@@ -3083,7 +3083,6 @@
 				3906E250BD91470A9E92C35055C34297 /* Words and Bits.swift */,
 				A66BAB899E51540897D697F40D081C00 /* Support Files */,
 			);
-			name = BigInt;
 			path = BigInt;
 			sourceTree = "<group>";
 		};
@@ -3176,7 +3175,6 @@
 				5052EADAD0BB1B797D776F201333495C /* ZigZag.swift */,
 				945DFFE0267E5BAB6497B6E32DF28359 /* Support Files */,
 			);
-			name = SwiftProtobuf;
 			path = SwiftProtobuf;
 			sourceTree = "<group>";
 		};
@@ -3196,7 +3194,6 @@
 				562C75AEE02983DA2F9BA80DA7C41854 /* SpatialRelations.swift */,
 				2DA3A17FA246540994C5638879AA566E /* Support Files */,
 			);
-			name = GEOSwift;
 			path = GEOSwift;
 			sourceTree = "<group>";
 		};
@@ -3281,7 +3278,6 @@
 				4380A86596939716CBC31F2151ECD9F5 /* Base58.swift */,
 				E4C3723B6F9EA72AEBCB1376DB342F19 /* Support Files */,
 			);
-			name = Base58Swift;
 			path = Base58Swift;
 			sourceTree = "<group>";
 		};
@@ -3805,7 +3801,6 @@
 				E6ED8E1779325702B144D24D9B8D8187 /* ZipUtilities.swift */,
 				51F1389B2E62BFB91B1521538D43A991 /* Support Files */,
 			);
-			name = Zip;
 			path = Zip;
 			sourceTree = "<group>";
 		};
@@ -3833,7 +3828,6 @@
 				CA1D31F5189A9DDEE311C647CB0ECEC3 /* RedisResponseParser.swift */,
 				39D1496893D27F0E8038DE35CF4A7060 /* Support Files */,
 			);
-			name = PSSRedisClient;
 			path = PSSRedisClient;
 			sourceTree = "<group>";
 		};
@@ -3871,7 +3865,6 @@
 				B9452C71505127E5350D626321831DB8 /* TokenValidator.swift */,
 				F305893D814006116514FF8F13564FD9 /* Support Files */,
 			);
-			name = KTVJSONWebToken;
 			path = KTVJSONWebToken;
 			sourceTree = "<group>";
 		};
@@ -3956,7 +3949,6 @@
 				78E97C1C23094A384A0B319A614C306C /* Unown.swift */,
 				931818A271FF9C2B7129C9EA3BC88E26 /* Support Files */,
 			);
-			name = SwiftSVG;
 			path = SwiftSVG;
 			sourceTree = "<group>";
 		};
@@ -4313,7 +4305,6 @@
 				2716E7DBE32DD9B0F632F5D3FB2DC5E3 /* Writer.cpp */,
 				27828121D1347CCD9FA1D127B3161CD1 /* Support Files */,
 			);
-			name = geos;
 			path = geos;
 			sourceTree = "<group>";
 		};
@@ -4426,7 +4417,6 @@
 				8FE0BFC7C36CBE561329F5ABC7A7375C /* Validation.swift */,
 				F400B6B939AD7ACAC00A213EE7358FF0 /* Support Files */,
 			);
-			name = Alamofire;
 			path = Alamofire;
 			sourceTree = "<group>";
 		};
@@ -4439,7 +4429,6 @@
 				D78C950031CA5262F13FDC48E5F8E720 /* GCDAsyncUdpSocket.m */,
 				7879BD7DE52E24BB237EEA86F8AC2F8B /* Support Files */,
 			);
-			name = CocoaAsyncSocket;
 			path = CocoaAsyncSocket;
 			sourceTree = "<group>";
 		};
@@ -4460,7 +4449,6 @@
 				0A7342F130DCB492C8CD29CCCEDF4F68 /* Toast.swift */,
 				AE07A6ECEF4A820676D0A4B061F2BD1B /* Support Files */,
 			);
-			name = "Toast-Swift";
 			path = "Toast-Swift";
 			sourceTree = "<group>";
 		};
@@ -4486,7 +4474,6 @@
 				9F151933C3ADFCD9D1F56F3D1B0A302B /* Core */,
 				963F5F68685698BC6C567EDD410CB338 /* Support Files */,
 			);
-			name = GCDWebServer;
 			path = GCDWebServer;
 			sourceTree = "<group>";
 		};
@@ -4612,7 +4599,7 @@
 				A28AB133538FF4F23492D8B0D05D5035 /* geos */,
 				77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift */,
 				48D031403554BA5789B68E985515041D /* KTVJSONWebToken */,
-				0275D4965406EB88436BCE1D4C8FD89D /* Pods-AICompanionApp */,
+				0275D4965406EB88436BCE1D4C8FD89D /* Pods_AICompanionApp.framework */,
 				38AB1DAD66F2C017F7F66AC804026627 /* Pods-AICompanionApp-AICompanionAppUITests */,
 				9D569511589CCC02C8F2CCD3DAAEF080 /* Pods-AICompanionAppTests */,
 				40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods-AIComponentKit */,
@@ -4651,7 +4638,6 @@
 				44D799C507E5AB2307D6BBFC17362236 /* All */,
 				025B499FEBD8FE46E49E5CD1DC7B286D /* Support Files */,
 			);
-			name = ZXingObjC;
 			path = ZXingObjC;
 			sourceTree = "<group>";
 		};
@@ -4661,7 +4647,6 @@
 				DF19EC77F4227AE555A5E9AF7BFDBE85 /* standard */,
 				F75216AF71330D43CC1F399D39086E85 /* Support Files */,
 			);
-			name = SQLite.swift;
 			path = SQLite.swift;
 			sourceTree = "<group>";
 		};
@@ -5149,7 +5134,7 @@
 			);
 			name = "Pods-AICompanionApp";
 			productName = Pods_AICompanionApp;
-			productReference = 0275D4965406EB88436BCE1D4C8FD89D /* Pods-AICompanionApp */;
+			productReference = 0275D4965406EB88436BCE1D4C8FD89D /* Pods_AICompanionApp.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		09DD83B7D075842A3A5105AD410BD38A /* BigInt */ = {
@@ -8350,8 +8335,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
