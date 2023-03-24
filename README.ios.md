@@ -2,8 +2,8 @@
 
 ## Prerequisites (Mac OS X)
 
-* Xcode 8 or higher
-* Mac OS X 10.12 or higher
+* Xcode 14 or higher
+* macOS 12 or higher
 
 (optional) To automatically install the companion app on a connected, authorized iOS device, install ideviceinstaller via Homebrew:
 
