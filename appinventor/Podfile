@@ -1,7 +1,7 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '9.0'
+platform :ios, '12.0'
 
-workspace 'AIComponentKit.xcworkspace'
+workspace 'AppInventor.xcworkspace'
 
 
 target 'SchemeKit' do

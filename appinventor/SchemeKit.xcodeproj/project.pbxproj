@@ -138,8 +138,8 @@
 		0624073F245352D5005E5BFC /* SCMValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMValue.h; sourceTree = "<group>"; };
 		06240744245355FB005E5BFC /* SCMValue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMValue.m; sourceTree = "<group>"; };
 		0624F4B91DB08148003B2527 /* yail.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yail.h; sourceTree = "<group>"; };
-		0624F4BA1DB33B0D003B2527 /* YailList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YailList.h; path = SchemeKit/YailList.h; sourceTree = "<group>"; };
-		0624F4BB1DB33B0D003B2527 /* YailList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YailList.m; path = SchemeKit/YailList.m; sourceTree = "<group>"; };
+		0624F4BA1DB33B0D003B2527 /* YailList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YailList.h; path = src/YailList.h; sourceTree = "<group>"; };
+		0624F4BB1DB33B0D003B2527 /* YailList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YailList.m; path = src/YailList.m; sourceTree = "<group>"; };
 		0644E91B246064EC00ECD2BD /* YailListTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YailListTests.m; sourceTree = "<group>"; };
 		0644E91D246064F900ECD2BD /* YailDictionaryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YailDictionaryTests.m; sourceTree = "<group>"; };
 		0644E91F2460650A00ECD2BD /* SCMValueTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMValueTests.m; sourceTree = "<group>"; };
@@ -211,7 +211,7 @@
 		0682D1372555881C00015CF1 /* SCMProcedure.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMProcedure.m; sourceTree = "<group>"; };
 		0682D18A255AF67400015CF1 /* SCMWeakReference.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMWeakReference.h; sourceTree = "<group>"; };
 		0682D18B255AF67400015CF1 /* SCMWeakReference.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMWeakReference.m; sourceTree = "<group>"; };
-		068B4F17207553060050A8BE /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = AIComponentKit/runtime.scm; sourceTree = SOURCE_ROOT; };
+		068B4F17207553060050A8BE /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = components-ios/src/runtime.scm; sourceTree = SOURCE_ROOT; };
 		068B4F19207553DF0050A8BE /* HelloPurr.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HelloPurr.yail; sourceTree = "<group>"; };
 		068B4F1F207562880050A8BE /* Screen1.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Screen1.yail; path = ../../aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail; sourceTree = "<group>"; };
 		06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCMInterpreter.h; sourceTree = "<group>"; };
@@ -226,8 +226,8 @@
 		06D0C45C2462EA1B00CDFD2C /* SCMString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMString.h; sourceTree = "<group>"; };
 		06D0C45D2462EA1B00CDFD2C /* SCMString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMString.m; sourceTree = "<group>"; };
 		06D0C4602462EB1300CDFD2C /* SCMString-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SCMString-Private.h"; sourceTree = "<group>"; };
-		06D1518B1DC456C600FC981E /* SCMSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCMSymbol.h; path = SchemeKit/SCMSymbol.h; sourceTree = "<group>"; };
-		06D1518C1DC456C600FC981E /* SCMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCMSymbol.m; path = SchemeKit/SCMSymbol.m; sourceTree = "<group>"; };
+		06D1518B1DC456C600FC981E /* SCMSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCMSymbol.h; path = src/SCMSymbol.h; sourceTree = "<group>"; };
+		06D1518C1DC456C600FC981E /* SCMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCMSymbol.m; path = src/SCMSymbol.m; sourceTree = "<group>"; };
 		06FCDEE01D94383000199DD4 /* SchemeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SchemeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06FCDEE31D94383000199DD4 /* SchemeKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SchemeKit.h; sourceTree = "<group>"; };
 		06FCDEE41D94383000199DD4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -242,7 +242,7 @@
 		811D9C3705A774DF269EC1B7 /* Pods-SchemeKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKit/Pods-SchemeKit.release.xcconfig"; sourceTree = "<group>"; };
 		86762300C9CEB06ADF718048 /* libPods-SchemeKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		987A65C30EAFA15380F02DD8 /* libPods-SchemeKit-SchemeKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKit-SchemeKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F243069F800F441816C960F7 /* Pods-SchemeKit-SchemeKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKit-SchemeKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKit-SchemeKitTests/Pods-SchemeKit-SchemeKitTests.debug.xcconfig"; sourceTree = "<group>"; };
+		F243069F800F441816C960F7 /* Pods-SchemeKit-SchemeKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKit-SchemeKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKit-schemekit/tests/Pods-SchemeKit-SchemeKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -376,8 +376,8 @@
 		06FCDED61D94383000199DD4 = {
 			isa = PBXGroup;
 			children = (
-				06FCDEE21D94383000199DD4 /* SchemeKit */,
-				06FCDEED1D94383000199DD4 /* SchemeKitTests */,
+				06FCDEE21D94383000199DD4 /* schemekit/src */,
+				06FCDEED1D94383000199DD4 /* schemekit/tests */,
 				06FCDEE11D94383000199DD4 /* Products */,
 				9AB41DB0D4140EF00968A0B8 /* Pods */,
 				8C39A63E97D6B0A8A5717726 /* Frameworks */,
@@ -393,7 +393,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		06FCDEE21D94383000199DD4 /* SchemeKit */ = {
+		06FCDEE21D94383000199DD4 /* schemekit/src */ = {
 			isa = PBXGroup;
 			children = (
 				0650B1FA1DABC28000A7846C /* init_contrib.c */,
@@ -438,10 +438,10 @@
 				065ECF431D9459B600C749A1 /* scheme.y */,
 				0624F4B91DB08148003B2527 /* yail.h */,
 			);
-			path = SchemeKit;
+			path = schemekit/src;
 			sourceTree = "<group>";
 		};
-		06FCDEED1D94383000199DD4 /* SchemeKitTests */ = {
+		06FCDEED1D94383000199DD4 /* schemekit/tests */ = {
 			isa = PBXGroup;
 			children = (
 				068B4F1F207562880050A8BE /* Screen1.yail */,
@@ -456,7 +456,7 @@
 				0644E91D246064F900ECD2BD /* YailDictionaryTests.m */,
 				0644E91F2460650A00ECD2BD /* SCMValueTests.m */,
 			);
-			path = SchemeKitTests;
+			path = schemekit/tests;
 			sourceTree = "<group>";
 		};
 		8C39A63E97D6B0A8A5717726 /* Frameworks */ = {
@@ -637,7 +637,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp ${SRCROOT}/../buildserver/src/com/google/appinventor/buildserver/resources/runtime.scm ${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/android-runtime.scm\n";
+			shellScript = "cp ${SRCROOT}/buildserver/src/com/google/appinventor/buildserver/resources/runtime.scm ${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/android-runtime.scm\n";
 		};
 		07633F38ACC56D00BA74B8E6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -909,10 +909,10 @@
 				);
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/SchemeKit/picrin/extlib/benz/include\"",
+					"\"$(SRCROOT)/schemekit/src/picrin/extlib/benz/include\"",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = SchemeKit/Info.plist;
+				INFOPLIST_FILE = schemekit/src/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.SchemeKit;
@@ -936,10 +936,10 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/SchemeKit/picrin/extlib/benz/include\"",
+					"\"$(SRCROOT)/schemekit/src/picrin/extlib/benz/include\"",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = SchemeKit/Info.plist;
+				INFOPLIST_FILE = schemekit/src/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.SchemeKit;
@@ -954,11 +954,11 @@
 			baseConfigurationReference = 204F1FDF05CF92B191E641DC /* Pods-SchemeKitTests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				INFOPLIST_FILE = SchemeKitTests/Info.plist;
+				INFOPLIST_FILE = schemekit/tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.SchemeKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "SchemeKitTests/SchemeKitTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "schemekit/tests/SchemeKitTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 			};
@@ -969,11 +969,11 @@
 			baseConfigurationReference = 63E21421CF316B8F9FF5C8F6 /* Pods-SchemeKitTests.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				INFOPLIST_FILE = SchemeKitTests/Info.plist;
+				INFOPLIST_FILE = schemekit/tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.SchemeKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "SchemeKitTests/SchemeKitTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "schemekit/tests/SchemeKitTests-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 			};
 			name = Release;

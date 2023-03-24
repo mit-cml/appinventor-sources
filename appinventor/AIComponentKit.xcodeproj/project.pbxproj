@@ -338,7 +338,7 @@
 		06B216031DB95146000B3366 /* Notifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifier.swift; sourceTree = "<group>"; };
 		06B216051DB95155000B3366 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		06B216071DB954A5000B3366 /* ColorUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorUtil.swift; sourceTree = "<group>"; };
-		06B2161E1DBDA4B4000B3366 /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = AIComponentKit/runtime.scm; sourceTree = SOURCE_ROOT; };
+		06B2161E1DBDA4B4000B3366 /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = components-ios/src/runtime.scm; sourceTree = SOURCE_ROOT; };
 		06B3747B1DC06F6B003888CB /* GCDWebServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GCDWebServer.framework; path = "Pods/../build/Release-iphoneos/GCDWebServer/GCDWebServer.framework"; sourceTree = "<group>"; };
 		06B3747C1DC06F6B003888CB /* Pods_AIComponentKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_AIComponentKit.framework; path = "Pods/../build/Release-iphoneos/Pods_AIComponentKit.framework"; sourceTree = "<group>"; };
 		06B3747D1DC06F6B003888CB /* SchemeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SchemeKit.framework; path = "build/Release-iphoneos/SchemeKit.framework"; sourceTree = "<group>"; };
@@ -543,7 +543,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		0618A2851D8CF4EE0013A191 /* AIComponentKit */ = {
+		0618A2851D8CF4EE0013A191 /* components-ios/src */ = {
 			isa = PBXGroup;
 			children = (
 				22843756284F89DF00EC3133 /* AssetFetcher.swift */,
@@ -566,10 +566,10 @@
 				DE5CBD271FE36C8B00F5EDDE /* webviewer.js */,
 				06678E31233956EE00BD3F19 /* main.swift */,
 			);
-			path = AIComponentKit;
+			path = components-ios/src;
 			sourceTree = "<group>";
 		};
-		0618A2901D8CF4EE0013A191 /* AIComponentKitTests */ = {
+		0618A2901D8CF4EE0013A191 /* components-ios/tests */ = {
 			isa = PBXGroup;
 			children = (
 				06E2D6001FDB16CC00A1D52A /* yail */,
@@ -587,7 +587,7 @@
 				0653CBD71F9719920052065A /* RuntimeTests.swift */,
 				0653CBD91F971BA70052065A /* TestFailure.swift */,
 			);
-			path = AIComponentKitTests;
+			path = components-ios/tests;
 			sourceTree = "<group>";
 		};
 		06D151911DC4646000FC981E /* ui */ = {
@@ -870,8 +870,8 @@
 			isa = PBXGroup;
 			children = (
 				061CEC0D297B47B400C2879B /* install-webrtc.sh */,
-				0618A2851D8CF4EE0013A191 /* AIComponentKit */,
-				0618A2901D8CF4EE0013A191 /* AIComponentKitTests */,
+				0618A2851D8CF4EE0013A191 /* components-ios/src */,
+				0618A2901D8CF4EE0013A191 /* components-ios/tests */,
 				06EF8CE91D8CE2F7009FB227 /* Products */,
 				0618A27A1D8CECAC0013A191 /* Frameworks */,
 				7474807A747CFE996FC4893A /* Pods */,
@@ -1434,7 +1434,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers",
 				);
-				INFOPLIST_FILE = AIComponentKit/Info.plist;
+				INFOPLIST_FILE = components-ios/src/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1521,7 +1521,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers",
 				);
-				INFOPLIST_FILE = AIComponentKit/Info.plist;
+				INFOPLIST_FILE = components-ios/src/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1612,7 +1612,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/geos/geos.framework/Headers\"",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers",
 				);
-				INFOPLIST_FILE = AIComponentKitTests/Info.plist;
+				INFOPLIST_FILE = components-ios/tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1667,7 +1667,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OBJC_BRIDGING_HEADER = "AIComponentKitTests/AIComponentKitTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "components-ios/tests/AIComponentKitTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -1679,7 +1679,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = AIComponentKitTests/Info.plist;
+				INFOPLIST_FILE = components-ios/tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1733,7 +1733,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "AIComponentKitTests/AIComponentKitTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "components-ios/tests/AIComponentKitTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 			};

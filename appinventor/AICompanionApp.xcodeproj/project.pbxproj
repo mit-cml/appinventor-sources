@@ -93,7 +93,7 @@
 		06463F1D1D95956800B23DCD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		06647F4A29CA1EB90009F29C /* AICompanionApp.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AICompanionApp.xcconfig; sourceTree = "<group>"; };
 		066EA0A72979D46C008203B1 /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = "webrtc/out/ios_arm64-Release/WebRTC.framework"; sourceTree = "<group>"; };
-		066FE95625AC9E7300C6193B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = AICompanionApp/Settings.bundle; sourceTree = "<group>"; };
+		066FE95625AC9E7300C6193B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = aicompanionapp/src/Settings.bundle; sourceTree = "<group>"; };
 		066FE95A25ACB94C00C6193B /* SystemVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemVariables.swift; sourceTree = "<group>"; };
 		066FE95E25ACB98100C6193B /* UIFont_Fitting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont_Fitting.swift; sourceTree = "<group>"; };
 		0693A7BE2575527600256540 /* mooning-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "mooning-dark.png"; path = "../../aiplayapp/assets/mooning-dark.png"; sourceTree = "<group>"; };
@@ -166,9 +166,9 @@
 				066FE95625AC9E7300C6193B /* Settings.bundle */,
 				063D67911FA0CEB1002E907D /* AIComponentKit.framework */,
 				063D678E1FA0CEB1002E907D /* SchemeKit.framework */,
-				06463EFA1D95956800B23DCD /* AICompanionApp */,
-				06463F0F1D95956800B23DCD /* AICompanionAppTests */,
-				06463F1A1D95956800B23DCD /* AICompanionAppUITests */,
+				06463EFA1D95956800B23DCD /* aicompanionapp/src */,
+				06463F0F1D95956800B23DCD /* aicompanionapp/tests */,
+				06463F1A1D95956800B23DCD /* aicompanionapp/uitests */,
 				06463EF91D95956800B23DCD /* Products */,
 				06EC0A1A1D959648001CD8DC /* Frameworks */,
 				9F048C59E0A8D7BC18969732 /* Pods */,
@@ -187,7 +187,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		06463EFA1D95956800B23DCD /* AICompanionApp */ = {
+		06463EFA1D95956800B23DCD /* aicompanionapp/src */ = {
 			isa = PBXGroup;
 			children = (
 				06B2161D1DBC7B4C000B3366 /* resources */,
@@ -204,25 +204,25 @@
 				066FE95E25ACB98100C6193B /* UIFont_Fitting.swift */,
 				06463EFD1D95956800B23DCD /* ViewController.swift */,
 			);
-			path = AICompanionApp;
+			path = aicompanionapp/src;
 			sourceTree = "<group>";
 		};
-		06463F0F1D95956800B23DCD /* AICompanionAppTests */ = {
+		06463F0F1D95956800B23DCD /* aicompanionapp/tests */ = {
 			isa = PBXGroup;
 			children = (
 				06463F101D95956800B23DCD /* AICompanionTests.swift */,
 				06463F121D95956800B23DCD /* Info.plist */,
 			);
-			path = AICompanionAppTests;
+			path = aicompanionapp/tests;
 			sourceTree = "<group>";
 		};
-		06463F1A1D95956800B23DCD /* AICompanionAppUITests */ = {
+		06463F1A1D95956800B23DCD /* aicompanionapp/uitests */ = {
 			isa = PBXGroup;
 			children = (
 				06463F1B1D95956800B23DCD /* AICompanionUITests.swift */,
 				06463F1D1D95956800B23DCD /* Info.plist */,
 			);
-			path = AICompanionAppUITests;
+			path = aicompanionapp/uitests;
 			sourceTree = "<group>";
 		};
 		06B2161D1DBC7B4C000B3366 /* resources */ = {
@@ -790,7 +790,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",
 				);
-				INFOPLIST_FILE = AICompanionApp/Info.plist;
+				INFOPLIST_FILE = aicompanionapp/src/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3;
@@ -812,7 +812,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",
 				);
-				INFOPLIST_FILE = AICompanionApp/Info.plist;
+				INFOPLIST_FILE = aicompanionapp/src/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3;
@@ -831,7 +831,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = AICompanionAppTests/Info.plist;
+				INFOPLIST_FILE = aicompanionapp/tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -846,7 +846,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = AICompanionAppTests/Info.plist;
+				INFOPLIST_FILE = aicompanionapp/tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -860,7 +860,7 @@
 			baseConfigurationReference = 79510811268599A5F3A2E75B /* Pods-AICompanionApp-AICompanionAppUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				INFOPLIST_FILE = AICompanionAppUITests/Info.plist;
+				INFOPLIST_FILE = aicompanionapp/uitests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3UITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -874,7 +874,7 @@
 			baseConfigurationReference = 0B5F0E886334FD3FB7921E2A /* Pods-AICompanionApp-AICompanionAppUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				INFOPLIST_FILE = AICompanionAppUITests/Info.plist;
+				INFOPLIST_FILE = aicompanionapp/uitests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.aicompanion3UITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

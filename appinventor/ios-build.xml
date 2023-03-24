@@ -9,8 +9,8 @@
 
 <project name="components-ios" default="all">
   <property name="build" location="${basedir}/build" />
-  <property name="public.build" location="${basedir}/../build/components-ios" />
-  <property name="archive" location="${build}/release/MIT AI Companion.xcarchive" />
+  <property name="public.build" location="${build}/components-ios" />
+  <property name="archive" location="${build}/ios/MIT AI Companion.xcarchive" />
   <property name="skip.ios" value="false" />
   <condition property="ios.build.run">
     <and>
@@ -26,7 +26,6 @@
 
   <target name="clean">
     <delete dir="DerivedData" quiet="true" />
-    <delete dir="${build}" quiet="true" />
     <delete dir="${public.build}" quiet="true" />
   </target>
 
@@ -43,7 +42,7 @@
         <arg value="-scheme" />
         <arg value="@{scheme}" />
         <arg value="-workspace" />
-        <arg value="AIComponentKit.xcworkspace" />
+        <arg value="AppInventor.xcworkspace" />
         <extra-args />
         <arg value="@{action}" />
       </exec>
@@ -79,7 +78,7 @@
   </target>
 
   <target name="archive" depends="Companion" if="ios.build.run">
-    <mkdir dir="${build}/release" />
+    <mkdir dir="${build}/ios" />
     <ai.xcbuild scheme="AICompanionApp" action="archive">
       <arg value="-archivePath" />
       <arg value="${archive}"/>
