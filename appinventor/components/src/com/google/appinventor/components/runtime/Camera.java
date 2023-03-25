@@ -6,27 +6,16 @@
 
 package com.google.appinventor.components.runtime;
 
-import static android.Manifest.permission.CAMERA;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-
 import android.content.ContentValues;
 import android.content.Intent;
-
 import android.content.pm.PackageManager;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
-
 import android.os.Build;
 import android.os.Environment;
-
 import android.provider.MediaStore;
-
 import android.util.Log;
-
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -34,20 +23,21 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
-
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
-
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.NougatUtil;
 import com.google.appinventor.components.runtime.util.ScopedFile;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import java.io.File;
-
 import java.net.URI;
+
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 /**
  * ![Camera icon](images/camera.png)
@@ -94,7 +84,7 @@ public class Camera extends AndroidNonvisibleComponent
   @SuppressWarnings("deprecation")
   private android.hardware.Camera camera = null;
   private boolean lightOn;
-  private boolean hasFlash;
+  private final boolean hasFlash;
 
   /**
    * Creates a Camera component.
@@ -103,7 +93,6 @@ public class Camera extends AndroidNonvisibleComponent
    *
    * @param container container, component will be placed in
    */
-  @SuppressLint("NewApi")
   public Camera(ComponentContainer container) {
     super(container.$form());
     this.container = container;
@@ -191,7 +180,6 @@ public class Camera extends AndroidNonvisibleComponent
     }
   }
 
-  @SuppressLint("NewApi")
   @SuppressWarnings("deprecation")
   @SimpleFunction(description = "Toggle the flash of your device to on or off.")
   public void ToggleLight() {
@@ -211,28 +199,31 @@ public class Camera extends AndroidNonvisibleComponent
       return;
     }
 
-    if (this.lightOn) {
-      if (this.camera != null) {
-        this.camera.stopPreview();
-        this.camera.release();
-        this.camera = null;
+    if (lightOn) {
+      if (camera != null) {
+        camera.stopPreview();
+        camera.release();
+        camera = null;
       }
-      this.lightOn = false;
+      lightOn = false;
       return;
     }
     try {
-      this.camera = android.hardware.Camera.open();
-      android.hardware.Camera.Parameters p = this.camera.getParameters();
+      camera = android.hardware.Camera.open();
+      android.hardware.Camera.Parameters p = camera.getParameters();
       p.setFlashMode(android.hardware.Camera.Parameters.FLASH_MODE_TORCH);
-      this.camera.setParameters(p);
-      this.camera.setPreviewTexture(new SurfaceTexture(0));
-      this.camera.startPreview();
-      this.lightOn = true;
+      camera.setParameters(p);
+      // Todo: Move this to HoneycombUtils class
+      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+        camera.setPreviewTexture(new SurfaceTexture(0));
+      }
+      camera.startPreview();
+      lightOn = true;
     } catch (PermissionException e) {
-      Log.e(LOG_TAG, "" + e);
-      form.dispatchPermissionDeniedEvent(Camera.this, "ToggleLight", "" + e.getMessage());
+      Log.e(LOG_TAG, "ToggleLight: Failed to obtain CAMERA permission.", e);
+      form.dispatchPermissionDeniedEvent(this, "ToggleLight", e);
     } catch (Exception e) {
-      Log.e(LOG_TAG, "" + e);
+      Log.e(LOG_TAG, "ToggleLight: Unknown error", e);
     }
   }
 
