@@ -15,6 +15,7 @@ to operate their own App Inventor instance and/or contribute to the project.
 This code is tested and known to work with Java 8.
 
 ## Contributors
+
 The best way to go about integrating changes in App Inventor is to start a conversation in the [Open Source forum](https://community.appinventor.mit.edu/c/open-source-development/10) about whatever you intend to change or add.
 
 We use ***very brief and informal*** design documents with descriptions of the proposed changes and screenshots of how the functionality would look like and behave, in order to gather as much feedback from the community, as early as possible. We generally use shared Google docs for this (with permissions to add comments), but any format that is accessible from a web browser (and allows comments) would do.
@@ -23,7 +24,7 @@ If you have skipped this step and have gone ahead and made your changes already,
 
 Check out our open source [site](http://appinventor.mit.edu/appinventor-sources/) to find a lot more information about the project and how to contribute to it.
 
-## Setup instructions (Vagrant)
+## Setup Instructions (Vagrant)
 
 The easiest way to get a development environment up and running is to use the provided Vagrantfile. Install [Vagrant](https://vagrantup.com) and open a terminal in the root directory of this repository. Run the following commands
 
@@ -58,11 +59,37 @@ Note 2: If it seems like none of the dependencies are installed in the VM, run `
 
 For better performance, consider using the manual instructions.
 
-## Setup instructions (manual)
+## Setup Instructions (iOS Support)
+
+Building MIT App Inventor Companion for iOS requires an Apple
+Macintosh computer running macOS 12 or later with Xcode 14 or later
+installed. While earlier versions may work we provide no support for
+building on versions below the ones stated. To install on a device,
+you **must** have a valid Apple Developer account license and have
+added the relevant mobile provisioning profiles from the Developer
+portal to your Xcode organizer (see Apple's website on instructions on
+how to do this).
+
+To build the MIT App Inventor companion, you will need to create a
+file called AICompanionApp.xcconfig in the components-ios directory
+that sets your development team. The easiest way to do this is to copy
+the AICompanionApp.xcconfig.sample file and edit it. Alternatively,
+create a file with the following line:
+
+```conf
+DEVELOPMENT_TEAM = ID
+```
+
+where ID is the development team ID shown in the Apple Developer
+Portal. This ID is unique to your developer account (individual or
+organization).
+
+## Setup Instructions (Manual)
 
 This is a quick guide to get started with the sources. More detailed instructions can be found [here](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc), a slide show can be seen [here](http://josmas.github.io/contributingToAppInventor2/#/), and all the [documentation](http://appinventor.mit.edu/appinventor-sources/#documentation) for the project is available in our [site](http://appinventor.mit.edu/appinventor-sources/).
 
 ### Dependencies
+
 You will need a full Java JDK (version 8, OpenJDK preferred; JRE is not enough) and Python to compile and run the servers.
 
 You will also need a copy of the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/java/download) for Java and [ant](http://ant.apache.org/).
@@ -82,9 +109,11 @@ If you are on an RPM-based distribution(Fedora), use:
 Note 2: Certain Java 8 features, such as lambda expressions, are not supported on Android, so please don't use them in your changes to the source code.
 
 ### Forking or cloning
+
 Consider ***forking*** the project if you want to make changes to the sources. If you simply want to run it locally, you can simply ***clone*** it.
 
 #### Forking
+
 If you decide to fork, follow the [instructions](https://help.github.com/articles/fork-a-repo) given by github. After that you can clone your own copy of the sources with:
 
     $ git clone https://github.com/YOUR_USER_NAME/appinventor-sources.git
@@ -101,6 +130,7 @@ Finally, you will also have to make sure that you are ignoring files that need i
     $ cp sample-.gitignore .gitignore
 
 ### Checkout dependencies
+
 App Inventor uses Blockly, the web-based visual programming editor from Google, as a core part of its editor. Blockly core is made available to App Inventor as a git submodule. The first time after forking or cloning the repository, you will need to perform the following commands:
 
     $ git submodule update --init
@@ -114,19 +144,23 @@ If you need to switch back to a branch that does contains the Blockly and Closur
 to clear out the submodules ___before switching branches___. When switching back, you will need to repeat the initialization and update procedure above.
 
 ### Troubleshooting common installation issues
+
 Run this command to run a self-diagnosis of your environment. This command tries to figure out common installation issues and offers you a solution to fix them yourself. Make sure this passes all the checks before you proceed further.
 
 #### Linux and macOS
+
 ```bash
 ./buildtools doctor
 ```
 
 #### Windows
+
 ```bash
 buildtools doctor
 ```
 
-### Compiling
+## Compiling
+
 Before compiling the code, an [auth key](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc#h.yikyg2e1rfut) is needed. You can create one by running the following commands:
 
     $ cd appinventor
@@ -138,17 +172,49 @@ Once the key is in place, type the following to compile (from the appinventor fo
 
 You will see a lot of stuff in the terminal and after a few minutes (it can take from 2 to 10 minutes, depending on your machine specs) you should see a message saying something like *Build Successful*.
 
-### Running the server(s)
+### Notes on compiling for iOS
+
+If you are compiling on a Mac and **are not** interested in building
+the companion for iOS, you must set the property `skip.ios` to `true`,
+for example:
+
+```bash
+ant -Dskip.ios=true
+```
+
+iOS builds will automatically be skipped on other operating systems.
+
+We generally use Xcode for iOS development. Open the
+AppInventor.xcworkspace file to view the Xcode workspace. This
+workspace includes three projects:
+
+* SchemeKit: A Scheme implementation for iOS built on Picrin with
+  additions to support foreign function calls to Objective-C and
+  Swift. This also implements some basic types from App Inventor
+  including YailList and YailDictionary.
+* AIComponentKit: App Inventor component implementations, mostly
+  written in Swift.
+* AICompanionApp: The App Inventor companion written in Swift.
+
+In Xcode you can run the AICompanionApp on your device by selecting
+the AICompanionApp target's Debug scheme and pressing the Run button.
+
+For more information about iOS support, please see
+[README.ios.md](README.ios.md).
+
+## Running the Server(s)
+
 There are two servers in App Inventor, the main server that deals with project information, and the build server that creates apk files. More detailed information can be found in the [App Inventor Developer Overview](https://docs.google.com/document/d/1hIvAtbNx-eiIJcTA2LLPQOawctiGIpnnt0AvfgnKBok/pub) document.
 
-#### Running the main server
+### Running the main server
 
     $ your-google-cloud-SDK-folder/bin/java_dev_appserver.sh
             --port=8888 --address=0.0.0.0 appengine/build/war/
 
 Make sure you change *your-google-cloud-SDK-folder* to wherever in your hard drive you have placed the Google Cloud SDK.
 
-#### Running the build server
+### Running the build server
+
 The build server can be run from the terminal by typing:
 
     $ cd appinventor/buildserver
@@ -157,6 +223,7 @@ The build server can be run from the terminal by typing:
 Note that you will only need to run the build server if you are going to build an app as an apk. You can do all the layout and programming without having the build server running, but you will need it to download the apk.
 
 ### Accessing your local server
+
 You should now be up and running; you can test this by pointing your browser to:
 
     http://localhost:8888
@@ -164,6 +231,7 @@ You should now be up and running; you can test this by pointing your browser to:
 Before entering or scanning the QR code in the Companion, check the box labeled "Use Legacy Connection".
 
 ### Running tests
+
 The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you install it and add it to your path. After that, you can run all tests by typing the following in a terminal window:
 
     $ ant tests
@@ -183,6 +251,7 @@ The release configuration sets the following additional options:
 - App Engine YaClient module is compiled with optimization tuned to 9 and with 8 threads
 
 ### Hot-reloading GWT code with 'Super Dev Mode'
+
 1. Run `ant devmode`
 2. [Run the main server](#running-the-main-server).
 3. Open http://localhost:9876 (*GWT CodeServer*) and drag the two bookmarklets (*Dev Mode On & Off*) to the bookmarks bar.
@@ -197,5 +266,6 @@ The release configuration sets the following additional options:
 
 Logs can be found at http://localhost:9876/log/ode and SourceMaps at http://localhost:9876/sourcemaps/ode
 
-## Need help?
+## Need Help?
+
 Join [our community](https://community.appinventor.mit.edu/).

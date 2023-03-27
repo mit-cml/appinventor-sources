@@ -68,7 +68,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
   //the main function to be called
     public void execute(final ProjectNode node) {
     final Ode ode = Ode.getInstance();
-    if (counter<1) {
+    if (counter < 1) {
       projectNode = node;
       minPB = new ProgressBarDialogBox(serviceName, node);
       minPB.center();
@@ -76,34 +76,43 @@ public class ShowProgressBarCommand extends ChainableCommand {
     }
     counter++;
     //call back function - dynamic DialogBox
-    OdeAsyncCallback<RpcResult> callback = new OdeAsyncCallback<RpcResult>(MESSAGES.buildError())  // failure message
-      {
-      @Override
-      public void onSuccess(RpcResult result) {
-        addMessages(node.getName(),result);
-        if (result.succeeded()) {
+    OdeAsyncCallback<RpcResult> callback = new OdeAsyncCallback<RpcResult>(MESSAGES.buildError()) {
+        @Override
+        public void onSuccess(RpcResult result) {
+          boolean inProgress = addMessages(result);
+          if (result.succeeded()) {
             minPB.hide();
-        } else if (progressBarShow != 2 ) {
-          // Build isn't done yet
-          Timer timer = new Timer() {
-              @Override
-                public void run() {
-                execute(node); }
-            };
-          // TODO(user): Maybe do an exponential backoff here.
-          timer.schedule(WAIT_INTERVAL_MILLIS);
+          } else if (inProgress && progressBarShow != 2) {
+            // Build isn't done yet
+            Timer timer = new Timer() {
+                @Override
+                  public void run() {
+                  execute(node);
+                }
+              };
+            // TODO(user): Maybe do an exponential backoff here.
+            timer.schedule(WAIT_INTERVAL_MILLIS);
+          }
         }
-      }
-      @Override
-      public void onFailure(Throwable caught) {
-        super.onFailure(caught);
-        executionFailedOrCanceled();}
+
+        @Override
+        public void onFailure(Throwable caught) {
+          super.onFailure(caught);
+          executionFailedOrCanceled();
+        }
     };
     ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);
   }
 
-  public void addMessages(String projectName, RpcResult result) {
+  /**
+   * Sets the progress bar's message based on the given result object.
+   *
+   * @param result the build status result from the server
+   * @return true if the build is still in progress, or false if an error has occurred
+   */
+  public boolean addMessages(RpcResult result) {
     String labelContent;
+    boolean success = true;
     int currentProgress = 0;
     if (result.succeeded()) {
       minPB.show();
@@ -149,9 +158,11 @@ public class ShowProgressBarCommand extends ChainableCommand {
         // show the dismiss button to dismiss error
         minPB.showDismissButton();
         labelContent = MESSAGES.unableToCompile(result.getOutput());
+        success = false;
       }
     }
     minPB.setProgress(currentProgress, labelContent);
+    return success;
   }
 
 }

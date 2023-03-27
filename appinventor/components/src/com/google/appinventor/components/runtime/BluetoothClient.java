@@ -11,6 +11,7 @@ import static android.Manifest.permission.BLUETOOTH_ADMIN;
 import static android.Manifest.permission.BLUETOOTH_CONNECT;
 import static android.Manifest.permission.BLUETOOTH_SCAN;
 
+import android.os.Build;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PermissionConstraint;
@@ -22,7 +23,10 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
 import com.google.appinventor.components.runtime.util.BluetoothReflection;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -53,14 +57,12 @@ import java.util.concurrent.TimeUnit;
     nonVisible = true,
     iconName = "images/bluetooth.png")
 @SimpleObject
-@UsesPermissions(value = { BLUETOOTH_SCAN, BLUETOOTH_CONNECT },
-    constraints = {
-      @PermissionConstraint(name = BLUETOOTH, maxSdkVersion = 30),
-      @PermissionConstraint(name = BLUETOOTH_ADMIN, maxSdkVersion = 30)
-    })
+@UsesPermissions({BLUETOOTH, BLUETOOTH_ADMIN, BLUETOOTH_CONNECT, BLUETOOTH_SCAN})
 public final class BluetoothClient extends BluetoothConnectionBase
     implements RealTimeDataSource<String, String> {
   private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
+  private static final String[] RUNTIME_PERMISSIONS =
+      new String[] { BLUETOOTH_CONNECT, BLUETOOTH_SCAN };
 
   private final List<Component> attachedComponents = new ArrayList<Component>();
   private Set<Integer> acceptableDeviceClasses;
@@ -188,7 +190,9 @@ public final class BluetoothClient extends BluetoothConnectionBase
   /**
    * Returns the list of paired Bluetooth devices. Each element of the returned
    * list is a String consisting of the device's address, a space, and the
-   * device's name.
+   * device's name. On Android 12 or later, if the permissions BLUETOOTH_CONNECT
+   * and BLUETOOTH_SCAN have not been granted to the app, the block will raise
+   * an error via the Screen's PermissionDenied event.
    *
    * @internaldoc
    * This method calls isDeviceClassAcceptable to determine whether to include
@@ -200,6 +204,17 @@ public final class BluetoothClient extends BluetoothConnectionBase
   @SimpleProperty(description = "The addresses and names of paired Bluetooth devices",
       category = PropertyCategory.BEHAVIOR)
   public List<String> AddressesAndNames() {
+    // Because this is a property we can check that we have the right permissions, but without
+    // call/cc or CPS we cannot defer the operation, so we throw PermissionException instead
+    // and the app developer will have to handle it.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      for (String permission : RUNTIME_PERMISSIONS) {
+        if (form.isDeniedPermission(permission)) {
+          throw new PermissionException(permission);
+        }
+      }
+    }
+
     List<String> addressesAndNames = new ArrayList<String>();
 
     Object bluetoothAdapter = BluetoothReflection.getBluetoothAdapter();
