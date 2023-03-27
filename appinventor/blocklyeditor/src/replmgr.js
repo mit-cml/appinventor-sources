@@ -96,7 +96,7 @@ var PROTECT_ENUM_ANDROID = "(define-syntax protect-enum " +
 var PROTECT_ENUM_IOS = "#f))(define-syntax protect-enum " +
   "(syntax-rules () ((_ enum-value number-value) " +
   "(if (equal? \"\" (yail:invoke (yail:invoke AIComponentKit.Form 'getActiveForm) 'VersionName)) " +
-  "#'number-value #'enum-value))))(begin (begin #f";
+  "number-value enum-value))))(begin (begin #f";
 
 // Blockly is only loaded once now, so we can init this here.
 top.ReplState = new Blockly.ReplStateObj();
@@ -588,7 +588,11 @@ Blockly.ReplMgr.putYail = (function() {
                     var code = '(set! ' + symbol + ' (string-append ' + symbol + ' "' + item + '"))';
                     retval.push(code);
                 });
-                retval.push('(eval (read (open-input-string ' + symbol + ')))');
+                if (rs.android) {
+                    retval.push('(eval (read (open-input-string ' + symbol + ')))');
+                } else {
+                    retval.push('(eval (read (open-input-string ' + symbol + ')) "yail")');
+                }
                 retval.push('(set! ' + symbol + ' #!null)'); // so memory is gc'd
                 return retval;
             };
