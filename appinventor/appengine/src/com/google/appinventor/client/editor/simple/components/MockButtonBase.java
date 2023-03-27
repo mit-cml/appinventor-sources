@@ -132,9 +132,6 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
     shape = Integer.parseInt(text);
     // Android Buttons with images take the shape of the image and do not
     // use one of the defined Shapes.
-    if (hasImage) {
-      return;
-    }
     switch(shape) {
       case 0:
         // Default Button
@@ -240,7 +237,6 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       hasImage = false;
       url = "";
       setBackgroundColorProperty(backgroundColor);
-      setShapeProperty(Integer.toString(shape));
     } else {
       hasImage = true;
       // Android Buttons do not show a background color if they have an image.
@@ -251,6 +247,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
           "&H" + COLOR_NONE);
       DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
     }
+    setShapeProperty(Integer.toString(shape));
     MockComponentsUtil.setWidgetBackgroundImage(buttonWidget, url);
     image.setUrl(url);
   }

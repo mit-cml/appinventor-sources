@@ -62,7 +62,14 @@ import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.MapTile;
+import org.osmdroid.tileprovider.MapTileProviderBase;
+import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
+import org.osmdroid.tileprovider.modules.IFilesystemCache;
+import org.osmdroid.tileprovider.modules.MapTileFilesystemProvider;
+import org.osmdroid.tileprovider.modules.MapTileSqlCacheProvider;
+import org.osmdroid.tileprovider.modules.TileWriter;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -266,6 +273,10 @@ class NativeOpenStreetMapController implements MapController, MapListener {
       super(context, null, new MapReadyHandler());
     }
 
+    public CustomMapView(Context context, MapTileProviderBase tileProvider) {
+      super(context, tileProvider, new MapReadyHandler());
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
       scrollTo(getScrollX() + (oldw - w) / 2, getScrollY() + (oldh - h) / 2);
@@ -276,6 +287,24 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     public void onDetach() {
       // Suppress call to parent onDetach
     }
+  }
+
+  private static class CustomMapTileProviderBasic extends MapTileProviderBasic {
+    public CustomMapTileProviderBasic(Context context, ITileSource tileSource,
+        IFilesystemCache cacheWriter) {
+      super(context, tileSource, cacheWriter);
+      for (int i = 0; i < this.mTileProviderList.size(); i++) {
+        if (this.mTileProviderList.get(i) instanceof MapTileSqlCacheProvider) {
+          this.mTileProviderList.set(i,
+              new MapTileFilesystemProvider(mRegisterReceiver, tileSource));
+        }
+      }
+    }
+  }
+
+  CustomMapView createCustomMapView(Context context) {
+    return new CustomMapView(context, new CustomMapTileProviderBasic(context,
+        TileSourceFactory.DEFAULT_TILE_SOURCE, new TileWriter()));
   }
 
   private final AppInventorLocationSensorAdapter locationProvider;
@@ -293,7 +322,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     }
     this.form = form;
     this.touch = new TouchOverlay();
-    view = new CustomMapView(form.getApplicationContext());
+    view = createCustomMapView(form.getApplicationContext());
     locationProvider = new AppInventorLocationSensorAdapter();
     defaultInfoWindow = new OverlayInfoWindow(view);
     view.setTilesScaledToDpi(true);
