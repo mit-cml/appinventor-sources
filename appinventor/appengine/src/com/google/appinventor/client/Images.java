@@ -792,4 +792,10 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/dataFile.png")
   ImageResource dataFile();
+
+  @Source("com/google/appinventor/images/iOSlogo.png")
+  ImageResource iosLogo();
+
+  @Source("com/google/appinventor/images/androidlogo.png")
+  ImageResource androidLogo();
 }

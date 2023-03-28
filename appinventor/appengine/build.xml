@@ -571,7 +571,10 @@
     <copy todir="${build.war.dir}/WEB-INF/classes">
       <fileset dir="src" excludes="**/*.java"/>
     </copy>
+    <get src="http://doesappinventorrunonios.com/coverage.json"
+         dest="${build.war.dir}/WEB-INF/classes/com/google/appinventor/coverage.json"/>
   </target>
+
 
   <!-- =====================================================================
        YaClientApp GWT application

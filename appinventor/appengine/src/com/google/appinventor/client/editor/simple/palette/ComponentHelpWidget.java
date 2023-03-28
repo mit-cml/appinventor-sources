@@ -8,16 +8,16 @@ package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.ComponentCoverage;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.common.base.Strings;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
+
+import java.util.Map;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -28,6 +28,15 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
   private static final ImageResource imageResource = Ode.getImageBundle().help();
+
+  //Getting an instance of ComponentConverge class to get the component platform support information
+  private ComponentCoverage componentCoverage = ComponentCoverage.getInstance();
+
+  //component supports on android
+  private boolean android = false;
+
+  //component supports on iOS
+  private boolean ios = false;
 
   // Keep track of the last time (in milliseconds) of the last closure
   // so we don't reopen a popup too soon after closing it.  Specifically,
@@ -48,6 +57,20 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
       setTitle(scd.getName());
       titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
 
+      Map<String, Integer> androidCount = componentCoverage.getAndroidCount(scd.getName());
+      Map<String, Integer> iosCount = componentCoverage.getIosCount(scd.getName());
+      //check for count of properties, methods and events(if all of these is zero , then component not implemented)
+      for(Map.Entry<String,Integer> entry: androidCount.entrySet()){
+        if(entry.getValue()!=0){
+          android|= true;
+        }
+      }
+      for(Map.Entry<String, Integer> entry: iosCount.entrySet()){
+        if(entry.getValue()!=0){
+          ios|=true;
+        }
+      }
+
       // Create content from help string.
       String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName();
       HTML helpText = new HTML(ComponentsTranslation.getComponentHelpString(helpTextKey));
@@ -57,6 +80,20 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
       // popup's widget.
       VerticalPanel inner = new VerticalPanel();
       inner.add(titleBar);
+
+      if(!android){
+        //display a message in help popup if the component is available only in ios
+        HTML iosCompatibleText = new HTML(Ode.MESSAGES.iOSCompatibleOnly());
+        iosCompatibleText.setStyleName("ode-ComponentHelpPopup-iOS");
+        inner.add(iosCompatibleText);
+      }
+      else if(!ios) {
+        //display a message in help popup if the component is available only in android
+        HTML androidCompatibleText = new HTML(Ode.MESSAGES.androidCompatibleOnly());
+        androidCompatibleText.setStyleName("ode-ComponentHelpPopup-iOS");
+        inner.add(androidCompatibleText);
+      }
+
       inner.add(helpText);
 
       // Create link to more information.  This would be cleaner if

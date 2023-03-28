@@ -1226,6 +1226,13 @@ path.ode-SimpleMockMapFeature-selected {
   font-size: 12px;
 }
 
+.ode-ComponentHelpPopup-iOS {
+  padding: 10px 10px 0px 10px;
+  color: #555;
+  font-size: 12px;
+  font-weight: bold;
+}
+
 .ode-ComponentHelpPopup-Link {
   padding: 0px 10px 10px 10px;
   font-size: 12px;
