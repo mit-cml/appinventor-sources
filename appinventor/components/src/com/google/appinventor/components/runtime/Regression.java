@@ -43,8 +43,8 @@ public final class Regression extends DataCollection {
   /**
    * Calculates the line of best fit
    *
-   * @param xEntries - x value of entry
-   * @param yEntries - y value of entry
+   * @param xEntries - the list of x values
+   * @param yEntries - the list of y values
    * @return list. 1st element of the list is the slope, 2nd element is the intercept, 3 element is the line of best fit prediction values
    */
   public static List ComputeLineOfBestFit(final YailList xEntries, final YailList yEntries) {
@@ -97,8 +97,8 @@ public final class Regression extends DataCollection {
   /**
    * Gets the line of best fit slope
    *
-   * @param xList - x value of entry
-   * @param yList - y value of entry
+   * @param xList - the list of x values
+   * @param yList - the list of y values
    * @return Double slope
    */
   @SimpleFunction(description = "Gets the line of best fit Slope.")
@@ -109,8 +109,8 @@ public final class Regression extends DataCollection {
   /**
    * Gets the line of best fit Intercept
    *
-   * @param xList - x value of entry
-   * @param yList - y value of entry
+   * @param xList - the list of x values
+   * @param yList - the list of y values
    * @return Double intercept
    */
   @SimpleFunction(description = "Gets the line of best fit intercept.")
@@ -121,8 +121,8 @@ public final class Regression extends DataCollection {
   /**
    * Gets the line of best fit correlation coefficient
    *
-   * @param xList - x value of entry
-   * @param yList - y value of entry
+   * @param xList - the list of x values
+   * @param yList - the list of y values
    * @return Double corr
    */
   @SimpleFunction(description = "Gets the line of best fit correlation coefficient.")

@@ -137,14 +137,14 @@ public final class ChartData2D extends ChartDataBase {
   /**
    * Draws the line of best fit
    *
-   * @param x - x value of entry
-   * @param y - y value of entry
+   * @param xList - the list of x values
+   * @param yList - the list of y values
    */
   @SimpleFunction(description = "Draws the line of best fit.")
-  public void DrawLineOfBestFit(final YailList x, final YailList y) {
-    List predictions = (List) Regression.ComputeLineOfBestFit(x, y).get(3);
+  public void DrawLineOfBestFit(final YailList xList, final YailList yList) {
+    List predictions = (List) Regression.ComputeLineOfBestFit(xList, yList).get(3);
     final List predictionPairs = new ArrayList<Pair>();
-    List xValues = (List) x.getCdr();
+    List xValues = (List) xList.getCdr();
     for (int i = 0; i < xValues.size(); i++) {
       predictionPairs.add(Arrays.asList(xValues.get(i), predictions.get(i)));
     }
