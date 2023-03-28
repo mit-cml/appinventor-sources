@@ -246,8 +246,8 @@ div.StatusPanel {
  */
 .ode-ProjectFieldSpan {
   display: flex;
-  flex-grow: 1;
-  min-width: 100px;
+  column-gap: 4px;
+  align-items: center;
 }
 
 .ode-ProjectNameLabel {
@@ -317,11 +317,6 @@ div.StatusPanel {
   border-bottom: 1px solid #bbccff;
   position: relative;
   flex-direction: row;
-  width: 100%;
-}
-
-.ode-ProjectHeaderRow>div {
-  display: flex;
   width: 100%;
 }
 

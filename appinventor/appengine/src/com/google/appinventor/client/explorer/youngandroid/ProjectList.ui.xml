@@ -11,26 +11,26 @@
         <g:CheckBox ui:field='selectAllCheckBox' styleName="gwt-CheckBox" />
         <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListName">
           <g:Label text='{messages.projectNameHeader}' ui:field='projectName'
-                   styleName="gwt-Label" />
-          <ai:Icon ui:field='projectNameSortDec' text="&#x25BC;" visible="false"
+                   styleName="gwt-Label ode-ProjectHeaderLabel" />
+          <g:InlineLabel ui:field='projectNameSortDec' text="&#x25BC;" visible="false"
                    styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
-          <ai:Icon ui:field='projectNameSortAsc' text="&#x25B2;" visible="false"
+          <g:InlineLabel ui:field='projectNameSortAsc' text="&#x25B2;" visible="false"
                    styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
         </g:FlowPanel>
         <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListDate">
           <g:Label text='{messages.projectDateCreatedHeader}' ui:field='createDate'
                    styleName="gwt-Label ode-ProjectHeaderLabel" />
-           <ai:Icon  ui:field='createDateSortDec' text="&#x25BC;" visible="false"
+          <g:InlineLabel  ui:field='createDateSortDec' text="&#x25BC;" visible="false"
                      styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
-            <ai:Icon ui:field='createDateSortAsc'  text="&#x25B2;" visible="false"
+          <g:InlineLabel ui:field='createDateSortAsc'  text="&#x25B2;" visible="false"
                      styleName="gwt-InlineLabel ode-ProjectHeaderLabel"/>
         </g:FlowPanel>
         <g:FlowPanel styleName="ode-ProjectHeaderLabel ode-ProjectListDate">
           <g:Label text='{messages.projectDateModifiedHeader}' ui:field='modDate'
                    styleName="gwt-Label ode-ProjectHeaderLabel"  />
-           <ai:Icon  ui:field='modDateSortDec' text="&#x25BC;" visible="false"
+          <g:InlineLabel  ui:field='modDateSortDec' text="&#x25BC;" visible="false"
                      styleName="gwt-Label ode-ProjectHeaderLabel"/>
-            <ai:Icon ui:field='modDateSortAsc'  text="&#x25B2;" visible="false"
+          <g:InlineLabel ui:field='modDateSortAsc'  text="&#x25B2;" visible="false"
                      styleName="gwt-Label ode-ProjectHeaderLabel"/>
         </g:FlowPanel>
     </g:FlowPanel>

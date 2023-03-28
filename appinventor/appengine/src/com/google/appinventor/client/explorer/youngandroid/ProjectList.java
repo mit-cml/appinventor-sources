@@ -24,6 +24,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,17 +71,17 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
   FlowPanel container;
   boolean projectsLoaded = false;
   @UiField
-  Icon projectNameSortDec;
+  InlineLabel projectNameSortDec;
   @UiField
-  Icon projectNameSortAsc;
+  InlineLabel projectNameSortAsc;
   @UiField
-  Icon createDateSortDec;
+  InlineLabel createDateSortDec;
   @UiField
-  Icon createDateSortAsc;
+  InlineLabel createDateSortAsc;
   @UiField
-  Icon modDateSortDec;
+  InlineLabel modDateSortDec;
   @UiField
-  Icon modDateSortAsc;
+  InlineLabel modDateSortAsc;
 
   /**
    * Creates a new ProjectList
