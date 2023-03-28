@@ -113,12 +113,6 @@
       <ai:DropDownItem name="DyslexicFont" caption="{messages.disableOpenDyslexic}">
         <actions:SetFontRegularAction />
       </ai:DropDownItem>
-      <ai:DropDownItem name="NewLayout" caption="{messages.enableNewLayout}">
-        <actions:SetLayoutAction isNewLayout="true" />
-      </ai:DropDownItem>
-      <ai:DropDownItem name="OldLayout" caption="{messages.disableNewLayout}">
-        <actions:SetLayoutAction isNewLayout="false"/>
-      </ai:DropDownItem>
     </ai:DropDownButton>
 
     <!-- Help Menu -->

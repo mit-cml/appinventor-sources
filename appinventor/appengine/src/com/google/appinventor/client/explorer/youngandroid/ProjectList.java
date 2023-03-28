@@ -7,7 +7,6 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.client.explorer.folder.FolderManagerEventListener;
 import com.google.appinventor.client.explorer.project.Project;
