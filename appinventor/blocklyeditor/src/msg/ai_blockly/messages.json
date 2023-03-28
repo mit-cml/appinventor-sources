@@ -1380,5 +1380,12 @@
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL": "",
 	"Blockly.Msg.LANG_TEXT_REPLACE_ALL_MAPPINGS_HELPURL_LONGEST_STRING_FIRST": "/reference/blocks/text.html#replaceallmappingslongeststring",
 	"Blockly.Msg.LANG_MATH_NUMBER_RADIX_HELPURL": "/reference/blocks/math.html#number-radix",
-	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL": "/reference/blocks/control.html#foreachdict"
+	"Blockly.Msg.LANG_CONTROLS_FOREACH_DICT_HELPURL": "/reference/blocks/control.html#foreachdict",
+
+	"Blockly.Msg.REPL_COMPANION_COMPONENT_CHECK": "Components Compatibility check",
+	"Blockly.Msg.REPL_IOS_COMPANION_COMPONENT_NOT_AVAILABLE": "The Following components are not yet available for iOS companion",
+	"Blockly.Msg.REPL_IOS_COMPANION_PROGRESS_URL": "http://doesappinventorrunonios.com/",
+	"Blockly.Msg.REPL_IOS_COMPANION_PROGRESS_TRACK": "Track Progress of App Inventor for iOS",
+	"Blockly.Msg.REPL_ANDROID_COMPANION_COMPONENT_NOT_AVAILABLE": "The Following components are not yet available for Android companion"
+
 }

@@ -923,6 +923,10 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.ACCEPTABLE_COMPANION_PACKAGE = comp;
   }-*/;
 
+  public native void addComponentCoverage(String jsonComponentsStr) /*-{
+  $wnd.COMPONENT_COVERAGE = jsonComponentsStr
+}-*/;
+
   static native void addAcceptableCompanion(String comp) /*-{
     if ($wnd.ACCEPTABLE_COMPANIONS === null ||
         $wnd.ACCEPTABLE_COMPANIONS === undefined) {
