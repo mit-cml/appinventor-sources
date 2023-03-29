@@ -1,10 +1,7 @@
-//
-//  AccessibleComponent.swift
-//  AIComponentKit
-//
-//  Created by David Kim on 1/30/23.
-//  Copyright © 2023 Massachusetts Institute of Technology. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright 2016-2023 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 import Foundation
 
@@ -13,6 +10,7 @@ import Foundation
    * The component's contrast controller for better visibility
    */
   var HighContrast : Bool { get set }
+  
   /**
    * The component's Font controller for better visibility
    */

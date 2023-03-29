@@ -65,19 +65,19 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     super.setDelegate(delegate)
   }
   
-  @objc func updateFontSize() {
+  func updateFontSize() {
     if form?.BigDefaultText == true {
       if _userFontSize == kFontSizeDefault {
-        _delegate.font = getFontSize(font: _delegate?.font, size: kFontSizeLargeDefault) ?? _delegate.font
+        _delegate.font = getFontSize(font: _delegate.font, size: kFontSizeLargeDefault) ?? _delegate.font
       } else {
-        _delegate.font = getFontSize(font: _delegate?.font, size: _userFontSize) ?? _delegate.font
+        _delegate.font = getFontSize(font: _delegate.font, size: _userFontSize) ?? _delegate.font
       }
     } else {
-      _delegate.font = getFontSize(font: _delegate?.font, size: _userFontSize) ?? _delegate.font
+      _delegate.font = getFontSize(font: _delegate.font, size: _userFontSize) ?? _delegate.font
     }
   }
   
-  @objc func updateColor() {
+  func updateColor() {
     if form?.HighContrast == true {
       if _userTextColor == Color.default.int32  {
         _textColor = Int32(bitPattern: Color.white.rawValue)
@@ -91,16 +91,23 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       } else {
         _backgroundColor = _userBackgroundColor
       }
+      _delegate?.textColor = argbToColor(_textColor)
+      _delegate?.backgroundColor = argbToColor(_backgroundColor)
     } else {
       _textColor = _userTextColor
       _backgroundColor = _userBackgroundColor
-    }
-    
-    _delegate?.backgroundColor = argbToColor(_backgroundColor)
-    if _textColor == Color.default.int32 {
-      _delegate?.textColor = preferredTextColor(_container?.form)
-    } else {
-      _delegate?.textColor = argbToColor(_textColor)
+      
+      if _textColor == Color.default.int32 {
+        _delegate?.textColor = preferredTextColor(_container?.form)
+      } else {
+        _delegate?.textColor = argbToColor(_textColor)
+      }
+      
+      if _userBackgroundColor == Color.default.int32 {
+        _delegate?.backgroundColor = preferredBackgroundColor(_container?.form)
+      } else {
+        _delegate?.backgroundColor = argbToColor(_backgroundColor)
+      }
     }
   }
 

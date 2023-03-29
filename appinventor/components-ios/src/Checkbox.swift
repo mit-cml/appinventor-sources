@@ -64,7 +64,7 @@ func loadCheckBox(completion: @escaping (SVGLayer, SVGLayer) -> Void) {
  * responsible for updating the state of the button and its appearance as a
  * function of user or block interaction with the component.
  */
-public class CheckBoxView: UIView{
+public class CheckBoxView: UIView {
   
   fileprivate var _button = UIButton(frame: .zero)
   fileprivate var _text = UILabel()

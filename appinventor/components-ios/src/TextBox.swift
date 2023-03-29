@@ -100,7 +100,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
   
-  @objc open var placeholderColor: Int32 {
+  open var placeholderColor: Int32 {
     get {
       return _placeholderColor
     }
@@ -110,7 +110,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
   
-  open func updatePlaceholder(){
+  open func updatePlaceholder() {
     var newPlaceholder = NSAttributedString(string: placeholderText ?? "", attributes: [NSAttributedString.Key.foregroundColor:argbToColor(_placeholderColor)])
     _field.attributedPlaceholder = newPlaceholder
     if _empty {

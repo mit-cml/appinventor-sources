@@ -964,7 +964,7 @@ extension Canvas: ComponentContainer {
     // unsupported
   }
   
-  public func getChildren() -> [Component] {
+  open func getChildren() -> [Component] {
     return _sprites as [Component]
   }
 }
