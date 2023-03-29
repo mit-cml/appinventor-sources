@@ -170,10 +170,12 @@ public final class ProjectBuilder {
           Collections.addAll(componentTypes, extraExtensions);
         }
         Map<String, Set<String>> componentBlocks = getComponentBlocks(sourceFiles);
+        Map<String, String> formOrientations = getScreenOrientations(sourceFiles);
 
         // Invoke YoungAndroid compiler
         boolean success =
-            Compiler.compile(project, componentTypes, componentBlocks, console, console, userErrors,
+            Compiler.compile(project, componentTypes, componentBlocks, formOrientations, console,
+                console, userErrors,
                 isForCompanion, isForEmulator, includeDangerousPermissions, keyStorePath,
                 childProcessRam, dexCachePath, outputFileName, reporter, isAab, statReporter);
         console.close();
@@ -248,6 +250,22 @@ public final class ProjectBuilder {
       projectFileNames.add(extractedFile.getPath());
     }
     return projectFileNames;
+  }
+
+  private static Map<String, String> getScreenOrientations(List<String> files)
+      throws IOException, JSONException {
+    Map<String, String> result = new HashMap<>();
+    final int extLength = FORM_PROPERTIES_EXTENSION.length();
+    for (String f : files) {
+      if (f.endsWith(FORM_PROPERTIES_EXTENSION)) {
+        File scmFile = new File(f);
+        String scmContent = new String(Files.toByteArray(scmFile),
+            StandardCharsets.UTF_8);
+        String formName = f.substring(f.lastIndexOf("/") + 1, f.length() - extLength);
+        result.put(formName, FormPropertiesAnalyzer.getFormOrientation(scmContent));
+      }
+    }
+    return result;
   }
 
   private static Set<String> getComponentTypes(List<String> files, File assetsDir)
