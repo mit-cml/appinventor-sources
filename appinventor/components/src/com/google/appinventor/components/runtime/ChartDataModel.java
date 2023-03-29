@@ -11,10 +11,8 @@ import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
-import com.google.appinventor.components.runtime.util.ChartDataSourceUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import gnu.mapping.Symbol;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +34,7 @@ public abstract class ChartDataModel<
     T extends IDataSet<E>,
     D extends ChartData<T>,
     C extends com.github.mikephil.charting.charts.Chart<D>,
-    V extends ChartView<E, T, D, C, V>> {
+    V extends ChartView<E, T, D, C, V>> extends DataModel {
   protected D data;
   protected T dataset;
   protected V view;
@@ -56,15 +54,6 @@ public abstract class ChartDataModel<
    * better to avoid it.
   */
   protected int maximumTimeEntries = 200;
-
-  /**
-   * Enum used to specify the criterion to use for entry filtering/comparing.
-   */
-  public enum EntryCriterion {
-    All, // Return all entries
-    XValue,
-    YValue
-  }
 
   /**
    * Initializes a new ChartDataModel object instance.
@@ -170,152 +159,6 @@ public abstract class ChartDataModel<
       addEntryFromTuple(YailList.makeList(tupleEntries));
     }
   }
-
-  /**
-   * Imports data from a List object.
-   * Valid tuple entries are imported, and the invalid entries are ignored.
-   *
-   * @param list List containing tuples
-   */
-  public void importFromList(List<?> list) {
-    // Iterate over all the entries of the List
-    for (Object entry : list) {
-      YailList tuple = null;
-
-      if (entry instanceof YailList) {
-        // Convert entry to YailList
-        tuple = (YailList) entry;
-      } else if (entry instanceof List) {
-        // List has to be converted to a YailList
-        tuple = YailList.makeList((List<?>) entry);
-      }
-
-      // Entry could be parsed to a YailList; Attempt importing from
-      // the constructed tuple.
-      if (tuple != null) {
-        addEntryFromTuple(tuple);
-      }
-    }
-  }
-
-  /**
-   * Removes the specified List of values, which are expected to be tuples.
-   * Invalid entries are ignored.
-   *
-   * @param values List of values to remove
-   */
-  public void removeValues(List<?> values) {
-    // Iterate all the entries of the generic List)
-    for (Object entry : values) {
-      YailList tuple = null;
-
-      // Entry is a List; Possibly a tuple
-      if (entry instanceof YailList) {
-        tuple = (YailList) entry;
-      } else if (entry instanceof List) {
-        // Create a tuple from the entry
-        tuple = YailList.makeList((List<?>) entry);
-      } else if (entry instanceof Symbol) {
-        continue;  // Skip *list* header
-      }
-
-      if (tuple == null) {
-        continue;
-      }
-
-      // Attempt to remove entry
-      removeEntryFromTuple(tuple);
-    }
-  }
-
-  /**
-   * Imports data from the specified list of columns.
-   * Tuples are formed from the rows of the combined
-   * columns in order of the columns.
-   *
-   * <p>The first element is skipped, since it is assumed that it
-   * is the column name.
-   *
-   * @param columns columns to import data from
-   */
-  public void importFromColumns(YailList columns, boolean hasHeaders) {
-    // Get a YailList of tuples from the specified columns
-    YailList tuples = getTuplesFromColumns(columns, hasHeaders);
-
-    // Use the generated tuple list in the importFromList method to
-    // import the data.
-    importFromList(tuples);
-  }
-
-  /**
-   * Constructs and returns a List of tuples from the specified Columns List.
-   * The Columns List is expected to be a List containing Lists, where each
-   * List corresponds to a column, the first entry of which is the header/name
-   * of the column (hence it is skipped in generating data)
-   *
-   * @param columns List of columns to generate tuples from
-   * @return Generated List of tuples from the columns
-   */
-  public YailList getTuplesFromColumns(YailList columns, boolean hasHeaders) {
-    // Determine the (maximum) row count of the specified columns
-    int rows = ChartDataSourceUtil.determineMaximumListSize(columns);
-
-    List<YailList> tuples = new ArrayList<>();
-
-    // Generate tuples from the columns
-    for (int i = hasHeaders ? 1 : 0; i < rows; ++i) {
-      ArrayList<String> tupleElements = new ArrayList<>();
-
-      // Add entries to the tuple from all i-th values (i-th row)
-      // of the data columns.
-      for (int j = 0; j < columns.size(); ++j) {
-        Object value = columns.getObject(j);
-
-        // Invalid column specified; Add default value (minus one to
-        // compensate for the skipped value)
-        if (!(value instanceof YailList)) {
-          tupleElements.add(getDefaultValue(i - 1));
-          continue;
-        }
-
-        // Safe-cast value to YailList
-        YailList column = (YailList) value;
-
-        if (column.size() > i) { // Entry exists in column
-          // Add entry from column
-          tupleElements.add(column.getString(i));
-        } else if (column.size() == 0) { // Column empty (default value should be used)
-          // Use default value instead (we use an index minus one to componsate
-          // for the skipped initial value)
-          tupleElements.add(getDefaultValue(i - 1));
-        } else { // Column too small
-          // Add blank entry (""), up for the addEntryFromTuple method
-          // to interpret.
-          tupleElements.add("");
-
-          // TODO: Make this a user-configurable flag
-          // Use default value instead
-          //tupleElements.add(getDefaultValue(i));
-        }
-      }
-
-      // Create the YailList tuple representation and add it to the
-      // list of tuples used.
-      YailList tuple = YailList.makeList(tupleElements);
-      tuples.add(tuple);
-    }
-
-    // Return result as YailList
-    return YailList.makeList(tuples);
-  }
-
-  /**
-   * Adds an entry from a specified tuple.
-   *
-   * @param tuple Tuple representing the entry to add
-   */
-  public abstract void addEntryFromTuple(YailList tuple);
-
   /**
    * Removes an entry from the Data Series from the specified
    * tuple (provided the entry exists).
@@ -335,19 +178,6 @@ public abstract class ChartDataModel<
       int index = findEntryIndex(entry);
 
       removeEntry(index);
-    }
-  }
-
-  /**
-   * Removes the entry in the specified index, provided that the
-   * index is within bounds.
-   *
-   * @param index Index of the Entry to remove
-   */
-  public void removeEntry(int index) {
-    // Entry exists; remove it
-    if (index >= 0) {
-      entries.remove(index);
     }
   }
 
@@ -377,7 +207,7 @@ public abstract class ChartDataModel<
    * @param criterion criterion to use for comparison
    * @return YailList of entries represented as tuples matching the specified conditions
    */
-  public YailList findEntriesByCriterion(String value, EntryCriterion criterion) {
+  public YailList findEntriesByCriterion(String value, DataModel.EntryCriterion criterion) {
     List<YailList> entries = new ArrayList<>();
 
     for (Entry entry : this.entries) {
@@ -399,7 +229,7 @@ public abstract class ChartDataModel<
    */
   public YailList getEntriesAsTuples() {
     // Use the All criterion to get all the Entries
-    return findEntriesByCriterion("0", EntryCriterion.All);
+    return findEntriesByCriterion("0", ChartDataModel.EntryCriterion.All);
   }
 
   /**
@@ -410,7 +240,7 @@ public abstract class ChartDataModel<
    * @param value     value to use for comparison (as a String)
    * @return true if the entry matches the criterion
    */
-  protected boolean isEntryCriterionSatisfied(Entry entry, EntryCriterion criterion, String value) {
+  protected boolean isEntryCriterionSatisfied(Entry entry, DataModel.EntryCriterion criterion, String value) {
     boolean criterionSatisfied = false;
 
     switch (criterion) {
@@ -465,23 +295,6 @@ public abstract class ChartDataModel<
 
     return criterionSatisfied;
   }
-
-  /**
-   * Creates an Entry from the specified tuple.
-   *
-   * @param tuple Tuple representing the entry to create
-   * @return new Entry object instance representing the specified tuple
-   */
-  public abstract Entry getEntryFromTuple(YailList tuple);
-
-  /**
-   * Returns a YailList tuple representation of the specified entry.
-   *
-   * @param entry Entry to convert to tuple
-   * @return tuple (YailList) representation of the Entry
-   */
-  public abstract YailList getTupleFromEntry(Entry entry);
-
   /**
    * Finds the index of the specified Entry in the Data Series.
    * Returns -1 if the Entry does not exist.
@@ -493,7 +306,7 @@ public abstract class ChartDataModel<
    * @param entry Entry to find
    * @return index of the entry, or -1 if entry is not found
    */
-  protected int findEntryIndex(Entry entry) {
+  public int findEntryIndex(Entry entry) {
     for (int i = 0; i < entries.size(); ++i) {
       Entry currentEntry = entries.get(i);
 
@@ -507,34 +320,6 @@ public abstract class ChartDataModel<
     }
 
     return -1;
-  }
-
-  /**
-   * Deletes all the entries in the Data Series.
-   */
-  public void clearEntries() {
-    entries.clear();
-  }
-
-  /**
-   * Adds the specified entry as a time entry to the Data Series.
-   *
-   * <p>The method handles additional logic for removing excess values
-   * if the count exceeds the threshold.
-   *
-   * @param tuple tuple representing the time entry
-   */
-  public void addTimeEntry(YailList tuple) {
-    // If the entry count of the Data Series entries exceeds
-    // the maximum allowed time entries, then remove the first one
-    if (entries.size() >= maximumTimeEntries) {
-      entries.remove(0);
-    }
-
-    // Add entry from the specified tuple
-    // TODO: Support for multi-dimensional case (currently tuples always consist
-    // TODO: of two elements)
-    addEntryFromTuple(tuple);
   }
 
   /**

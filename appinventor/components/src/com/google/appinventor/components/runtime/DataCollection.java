@@ -34,8 +34,8 @@ import java.util.concurrent.Future;
  */
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
-public abstract class DataCollection implements Component, DataSourceChangeListener {
-  protected ChartDataModel<?, ?, ?, ?, ?> chartDataModel;
+public abstract class DataCollection< M extends DataModel> implements Component, DataSourceChangeListener {
+  protected M dataModel;
 
   /**
    * Used to queue & execute asynchronous tasks while ensuring
@@ -147,7 +147,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
     threadRunner.execute(new Runnable() {
       @Override
       public void run() {
-        chartDataModel.setElements(elements);
+        dataModel.setElements(elements);
       }
     });
   }
@@ -379,7 +379,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
     threadRunner.execute(new Runnable() {
       @Override
       public void run() {
-        chartDataModel.importFromList(list);
+        dataModel.importFromList(list);
       }
     });
   }
@@ -395,7 +395,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
     threadRunner.execute(new Runnable() {
       @Override
       public void run() {
-        chartDataModel.clearEntries();
+        dataModel.clearEntries();
       }
     });
   }
@@ -520,7 +520,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
         @Override
         public YailList call() {
           // Use X Value as criterion to filter entries
-          return chartDataModel.findEntriesByCriterion(x, ChartDataModel.EntryCriterion.XValue);
+          return dataModel.findEntriesByCriterion(x, ChartDataModel.EntryCriterion.XValue);
         }
       }).get();
     } catch (InterruptedException e) {
@@ -549,7 +549,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
         @Override
         public YailList call() {
           // Use YValue as criterion to filter entries
-          return chartDataModel.findEntriesByCriterion(y, ChartDataModel.EntryCriterion.YValue);
+          return dataModel.findEntriesByCriterion(y, ChartDataModel.EntryCriterion.YValue);
         }
       }).get();
     } catch (InterruptedException e) {
@@ -576,7 +576,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
       return threadRunner.submit(new Callable<YailList>() {
         @Override
         public YailList call() {
-          return chartDataModel.getEntriesAsTuples();
+          return dataModel.getEntriesAsTuples();
         }
       }).get();
     } catch (InterruptedException e) {
@@ -611,7 +611,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
     threadRunner.execute(new Runnable() {
       @Override
       public void run() {
-        chartDataModel.importFromList(list);
+        dataModel.importFromList(list);
       }
     });
   }
@@ -647,7 +647,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
           updateCurrentDataSourceValue(cloudDB, tag, listValue);
 
           // Import the data and refresh the Chart
-          chartDataModel.importFromList(listValue);
+          dataModel.importFromList(listValue);
         } catch (InterruptedException e) {
           Log.e(this.getClass().getName(), e.getMessage());
         } catch (ExecutionException e) {
@@ -691,7 +691,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
         }
 
         // Import from Data file with the specified parameters
-        chartDataModel.importFromColumns(dataResult, true);
+        dataModel.importFromColumns(dataResult, true);
 
       }
     });
@@ -719,7 +719,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
           updateCurrentDataSourceValue(dataSource, null, null);
         }
 
-        chartDataModel.importFromColumns(dataColumns, useHeaders);
+        dataModel.importFromColumns(dataColumns, useHeaders);
 
       }
     });
@@ -759,7 +759,7 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
         }
 
         // Import the data from the retrieved columns
-        chartDataModel.importFromColumns(dataColumns, true);
+        dataModel.importFromColumns(dataColumns, true);
 
       }
     });
@@ -890,14 +890,14 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
         // Old value originating from the Data Source exists and is of type List
         if (lastDataSourceValue instanceof List) {
           // Remove the old values
-          chartDataModel.removeValues((List<?>) lastDataSourceValue);
+          dataModel.removeValues((List<?>) lastDataSourceValue);
         }
 
         updateCurrentDataSourceValue(component, key, newValue);
 
         // New value is a List; Import the value
         if (lastDataSourceValue instanceof List) {
-          chartDataModel.importFromList((List<?>) lastDataSourceValue);
+          dataModel.importFromList((List<?>) lastDataSourceValue);
         }
 
       }
@@ -963,11 +963,11 @@ public abstract class DataCollection implements Component, DataSourceChangeListe
         // Set the current Data Source Value to all the tuples from the columns.
         // This is needed to easily remove values later on when the value changes
         // again.
-        lastDataSourceValue = chartDataModel.getTuplesFromColumns(columns, true);
+        lastDataSourceValue = dataModel.getTuplesFromColumns(columns, true);
       } else if (source instanceof Spreadsheet) {
         YailList columns = ((Spreadsheet) source).getColumns(YailList.makeList(sheetsColumns),
             useSheetHeaders);
-        lastDataSourceValue = chartDataModel.getTuplesFromColumns(columns, useSheetHeaders);
+        lastDataSourceValue = dataModel.getTuplesFromColumns(columns, useSheetHeaders);
       } else {
         // Update current Data Source value
         lastDataSourceValue = newValue;

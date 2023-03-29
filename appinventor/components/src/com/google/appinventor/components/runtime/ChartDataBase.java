@@ -18,7 +18,6 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 
@@ -26,15 +25,12 @@ import com.google.appinventor.components.common.LineType;
 import com.google.appinventor.components.common.PointStyle;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
-import com.google.appinventor.components.runtime.util.CsvUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,10 +45,9 @@ import java.util.concurrent.Future;
  */
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
-public abstract class ChartDataBase extends DataCollection implements Component, DataSourceChangeListener,
+public abstract class ChartDataBase extends DataCollection<ChartDataModel<?, ?, ?, ?, ?>> implements Component, DataSourceChangeListener,
     OnChartGestureListener, OnChartValueSelectedListener {
   protected Chart container;
-  protected ChartDataModel<?, ?, ?, ?, ?> chartDataModel;
 
   /**
    * Used to queue & execute asynchronous tasks while ensuring
@@ -134,13 +129,13 @@ public abstract class ChartDataBase extends DataCollection implements Component,
   public void initChartData() {
     // Creates a ChartDataModel based on the current
     // Chart type being used.
-    chartDataModel = container.createChartModel();
+    dataModel = container.createChartModel();
 
     // Set default values
     Color(Component.COLOR_BLACK);
     Label("");
-    chartDataModel.view.chart.setOnChartGestureListener(this);
-    chartDataModel.view.chart.setOnChartValueSelectedListener(this);
+    dataModel.view.chart.setOnChartGestureListener(this);
+    dataModel.view.chart.setOnChartValueSelectedListener(this);
   }
 
   /*
@@ -168,7 +163,7 @@ public abstract class ChartDataBase extends DataCollection implements Component,
   @SimpleProperty
   public void Color(int argb) {
     color = argb;
-    chartDataModel.setColor(color);
+    dataModel.setColor(color);
     refreshChart();
   }
 
@@ -227,7 +222,7 @@ public abstract class ChartDataBase extends DataCollection implements Component,
 
     // Set the colors from the constructed List of colors
     // and refresh the Chart.
-    chartDataModel.setColors(resultColors);
+    dataModel.setColors(resultColors);
     refreshChart();
   }
 
@@ -251,7 +246,7 @@ public abstract class ChartDataBase extends DataCollection implements Component,
   @SimpleProperty
   public void Label(String text) {
     this.label = text;
-    chartDataModel.setLabel(text);
+    dataModel.setLabel(text);
     refreshChart();
   }
 
@@ -270,8 +265,8 @@ public abstract class ChartDataBase extends DataCollection implements Component,
     // Only change the Point Shape if the Chart Data Model is a
     // ScatterChartDataModel (other models do not support changing
     // the Point Shape)
-    if (chartDataModel instanceof ScatterChartDataModel) {
-      ((ScatterChartDataModel) chartDataModel).setPointShape(shape);
+    if (dataModel instanceof ScatterChartDataModel) {
+      ((ScatterChartDataModel) dataModel).setPointShape(shape);
     }
   }
 
@@ -291,8 +286,8 @@ public abstract class ChartDataBase extends DataCollection implements Component,
     // Only change the Line Type if the Chart Data Model is a
     // LineChartBaseDataModel (other models do not support changing
     // the Line Type)
-    if (chartDataModel instanceof LineChartBaseDataModel) {
-      ((LineChartBaseDataModel<?>) chartDataModel).setLineType(type);
+    if (dataModel instanceof LineChartBaseDataModel) {
+      ((LineChartBaseDataModel<?>) dataModel).setLineType(type);
     }
   }
 
@@ -330,7 +325,7 @@ public abstract class ChartDataBase extends DataCollection implements Component,
         }
 
         // Import from Data file with the specified parameters
-        chartDataModel.importFromColumns(dataResult, true);
+        dataModel.importFromColumns(dataResult, true);
 
         // Refresh the Chart after import
         refreshChart();
@@ -347,7 +342,7 @@ public abstract class ChartDataBase extends DataCollection implements Component,
   protected void refreshChart() {
     // Update the Chart with the Chart Data Model's current
     // data and refresh the Chart itself.
-    container.getChartView().refresh((ChartDataModel) chartDataModel);
+    container.getChartView().refresh((ChartDataModel) dataModel);
   }
 
   @Override
