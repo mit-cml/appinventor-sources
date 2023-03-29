@@ -170,7 +170,6 @@ public class DesignToolbar extends Toolbar {
 
     isReadOnly = Ode.getInstance().isReadOnly();
     galleryEnabled = Ode.getInstance().getSystemConfig().getGalleryEnabled();
-    galleryEnabled = true;
     projectNameLabel = new Label();
     projectNameLabel.setStyleName("ya-ProjectName");
     HorizontalPanel toolbar = (HorizontalPanel) getWidget();
@@ -387,12 +386,11 @@ public class DesignToolbar extends Toolbar {
       }
       // Only do something if we aren't already doing it!
       if (!lockPublishButton) {
-        lockPublishButton = false;
-        if (Ode.getInstance().getCurrentYoungAndroidProjectRootNode().hasExtensions()){
-          Window.alert("cant publish project with extensions");
-        }else{
-          Ode.CLog("good to go");
+        if (Ode.getInstance().getCurrentYoungAndroidProjectRootNode().hasExtensions()) {
+          ErrorReporter.reportError(MESSAGES.HasExtensionError());
+          return;
         }
+        lockPublishButton = true;
         Ode.getInstance().getProjectService().sendToGallery(currentProject.getProjectId(),
           new OdeAsyncCallback<RpcResult>(
             MESSAGES.GallerySendingError()) {

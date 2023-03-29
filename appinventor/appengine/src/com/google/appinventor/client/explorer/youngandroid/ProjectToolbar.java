@@ -230,6 +230,10 @@ public class ProjectToolbar extends Toolbar {
         ErrorReporter.reportInfo(MESSAGES.selectOnlyOneProject());
       } else {
         if (!lockPublishButton) {
+          if (Ode.getInstance().getCurrentYoungAndroidProjectRootNode().hasExtensions()) {
+            ErrorReporter.reportError(MESSAGES.HasExtensionError());
+            return;
+          }
           lockPublishButton = true;
           Project project = selectedProjects.get(0);
           Ode.getInstance().getProjectService().sendToGallery(project.getProjectId(),
