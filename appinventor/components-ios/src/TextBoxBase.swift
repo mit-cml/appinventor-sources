@@ -81,7 +81,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     if form?.HighContrast == true {
       if _userTextColor == Color.default.int32  {
         _textColor = Int32(bitPattern: Color.white.rawValue)
-        _delegate?.placeholderColor = Int32(bitPattern: Color.yellow.rawValue)
+        _delegate.placeholderColor = Int32(bitPattern: Color.yellow.rawValue)
       } else {
         _textColor = _userTextColor
       }
@@ -91,22 +91,22 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       } else {
         _backgroundColor = _userBackgroundColor
       }
-      _delegate?.textColor = argbToColor(_textColor)
-      _delegate?.backgroundColor = argbToColor(_backgroundColor)
+      _delegate.textColor = argbToColor(_textColor)
+      _delegate.backgroundColor = argbToColor(_backgroundColor)
     } else {
       _textColor = _userTextColor
       _backgroundColor = _userBackgroundColor
       
       if _textColor == Color.default.int32 {
-        _delegate?.textColor = preferredTextColor(_container?.form)
+        _delegate.textColor = preferredTextColor(_container?.form)
       } else {
-        _delegate?.textColor = argbToColor(_textColor)
+        _delegate.textColor = argbToColor(_textColor)
       }
       
       if _userBackgroundColor == Color.default.int32 {
-        _delegate?.backgroundColor = preferredBackgroundColor(_container?.form)
+        _delegate.backgroundColor = preferredBackgroundColor(_container?.form)
       } else {
-        _delegate?.backgroundColor = argbToColor(_backgroundColor)
+        _delegate.backgroundColor = argbToColor(_backgroundColor)
       }
     }
   }

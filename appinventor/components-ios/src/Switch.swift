@@ -5,13 +5,13 @@
 
 import Foundation
 
-public class Switch: ViewComponent, AbstractMethodsForViewComponent {
+public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent {
+  public var HighContrast: Bool = false
   fileprivate var _view = UIView()
   fileprivate var _text = UILabel()
   fileprivate var _switch = UISwitch()
   fileprivate var _alignment: Int32 = Alignment.normal.rawValue
   fileprivate var _typeface: Int32 = Typeface.normal.rawValue
-
   fileprivate var _backgroundColor = Color.default.int32
   fileprivate var _trackColorActive = Color.default.int32
   fileprivate var _thumbColorActive = Color.default.int32
@@ -58,7 +58,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
     _view.clipsToBounds = true
   }
 
-  @objc func updateFontSize() {
+  func updateFontSize() {
     if form?.BigDefaultText == true {
       if _userFontSize == kFontSizeDefault {
         _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(kFontSizeLargeDefault))
@@ -179,7 +179,6 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
     set(size) {
       _userFontSize = size
       updateFontSize()
-      //_text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(size))
     }
   }
   
@@ -189,6 +188,16 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(newTypeface) {
       
+    }
+  }
+
+  @objc open var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      _isBigText = isLargeFont
+      updateFontSize()
     }
   }
   

@@ -65,13 +65,12 @@ func loadCheckBox(completion: @escaping (SVGLayer, SVGLayer) -> Void) {
  * function of user or block interaction with the component.
  */
 public class CheckBoxView: UIView {
-  
   fileprivate var _button = UIButton(frame: .zero)
   fileprivate var _text = UILabel()
   fileprivate var _checked: CAShapeLayer!
   fileprivate var _unchecked: CAShapeLayer!
   fileprivate var _layersLoaded = false
-  
+
   public init() {
     super.init(frame: .zero)
     setupCheckbox()
@@ -214,7 +213,8 @@ public class CheckBoxView: UIView {
   }
 }
 
-public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
+public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent{
+  public var HighContrast: Bool = false
   fileprivate var _view = CheckBoxView()
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _bold = false
@@ -223,8 +223,6 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _isBigText = false
   fileprivate var _userFontSize = kFontSizeDefault
-  public var HighContrast: Bool = false
-  public var LargeFont: Bool = false
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
@@ -327,7 +325,17 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent {
       }
     }
   }
-  
+
+  @objc open var LargeFont: Bool {
+    get {
+      return _isBigText
+    }
+    set (isLargeFont){
+      _isBigText = isLargeFont
+      updateFontSize()
+    }
+  }
+
   @objc open var Text: String {
     get {
       return _view._text.text ?? ""
