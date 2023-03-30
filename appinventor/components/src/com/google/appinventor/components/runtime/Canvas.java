@@ -434,13 +434,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
      * (points, lines, circles, text) layer of the view but not any sprites.
      */
     private Bitmap createBitmap() {
-        int width = getWidth();
-        int height = getHeight();
-        Bitmap currentBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        android.graphics.Canvas c = new android.graphics.Canvas(currentBitmap);
-        layout(0, 0, width, height);
-        draw(c);
-        return currentBitmap;
+      int width = getWidth();
+      int height = getHeight();
+      Bitmap currentBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+      android.graphics.Canvas c = new android.graphics.Canvas(currentBitmap);
+      layout(0, 0, width, height);
+      draw(c);
+      return currentBitmap;
     }
 
     @Override
@@ -735,7 +735,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         completeBitmap = createBitmap();
       }
 
-      // Check the complete bitamp.
+      // Check the complete bitmap.
       try {
         return completeBitmap.getPixel(x, y);
       } catch (IllegalArgumentException e) {
