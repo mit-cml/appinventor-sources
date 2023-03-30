@@ -37,7 +37,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
     FontSize = Float64(kFontSizeDefault)
   }
   
-  @objc func updateFontSize() {
+  func updateFontSize() {
     if _htmlFormat {
       updateFormattedContent()
     } else {

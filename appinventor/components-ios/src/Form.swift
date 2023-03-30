@@ -180,16 +180,6 @@ let kMinimumToastWait = 10.0
   }
 
   private var _dimensions = [Int:NSLayoutConstraint]()
-  
-  public static func setBigDefaultTextRecursive(of container: ComponentContainer ,to enabled: Bool) {
-    for child in container.getChildren() {
-      if let child = child as? ComponentContainer {
-        Form.setBigDefaultTextRecursive(of: child, to: enabled)
-      } else if let child = child as? AccessibleComponent {
-        child.LargeFont = enabled
-      }
-    }
-  }
 
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
     if width <= kLengthPercentTag {
@@ -216,7 +206,19 @@ let kMinimumToastWait = 10.0
     }
     _linearView.setNeedsLayout()
   }
-  
+
+  // DAVID: Visual accessibility implementation
+
+  public static func setBigDefaultTextRecursive(of container: ComponentContainer ,to enabled: Bool) {
+    for child in container.getChildren() {
+      if let child = child as? ComponentContainer {
+        Form.setBigDefaultTextRecursive(of: child, to: enabled)
+      } else if let child = child as? AccessibleComponent {
+        child.LargeFont = enabled
+      }
+    }
+  }
+
   public static func setHighContrastRecursive(of container: ComponentContainer, to enabled: Bool) {
     for child in container.getChildren() {
       if let child = child as? ComponentContainer{
@@ -364,15 +366,15 @@ let kMinimumToastWait = 10.0
     BackgroundImage = ""
     AboutScreen = ""
     BackgroundColor = Int32(bitPattern: Color.default.rawValue)
+    BigDefaultText = false
     AlignHorizontal = HorizontalGravity.left.rawValue
     AlignVertical = VerticalGravity.top.rawValue
+    HighContrast = false
     self.title = ""
     ShowStatusBar = true
     TitleVisible = true
     ShowListsAsJson = true
     ScreenOrientation = "unspecified"
-    BigDefaultText = false
-    HighContrast = false
   }
   
   // MARK: Form Properties

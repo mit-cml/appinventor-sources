@@ -30,7 +30,6 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       return _view
     }
   }
-
   
   /**
    * A written description of what the image looks like.

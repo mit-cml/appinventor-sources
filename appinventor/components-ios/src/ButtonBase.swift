@@ -257,19 +257,23 @@ open class ButtonBase: ViewComponent {
     applyStyle()
   }
   
-  @objc func updateFontSize() {
+  func updateFontSize() {
+    guard let titleLabel = _view.titleLabel else {
+      return
+    }
+
     if form?.BigDefaultText == true {
       if _userFontSize == kFontSizeDefault {
-        _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: kFontSizeLargeDefault)
+        titleLabel.font = getFontSize(font: titleLabel.font, size: kFontSizeLargeDefault)
       } else {
-        _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: _userFontSize)
+        titleLabel.font = getFontSize(font: titleLabel.font, size: _userFontSize)
       }
     } else {
-      _view.titleLabel?.font = getFontSize(font: _view.titleLabel?.font, size: _userFontSize)
+      titleLabel.font = getFontSize(font: titleLabel.font, size: _userFontSize)
     }
   }
 
-  @objc func updateColor() {
+  func updateColor() {
     if form?.HighContrast == true {
       if _userTextColor == Color.default.int32  {
         _textColor = Int32(bitPattern: Color.white.rawValue)
@@ -352,7 +356,6 @@ open class ButtonBase: ViewComponent {
       updateFontSize()
     }
   }
-  
   
   @objc open var HighContrast: Bool {
     get {
@@ -465,7 +468,6 @@ open class ButtonBase: ViewComponent {
     set(color) {
       _userTextColor = color
       updateColor()
-      
     }
   }
 
