@@ -175,7 +175,7 @@ public abstract class ProjectNode implements Serializable, IsSerializable {
    *
    * @return iterable
    */
-  public Iterable<ProjectNode> getChildren() {
+  public List<ProjectNode> getChildren() {
     List<ProjectNode> result = children;
     if (result == null) {
       result = Collections.emptyList();
@@ -266,11 +266,11 @@ public abstract class ProjectNode implements Serializable, IsSerializable {
   }
   
   /**
-   * checks if project has extension or not.
+   * Checks if project has extension or not.
    *
    * @return boolean;
    */
-  public boolean hasExtensions(){
+  public boolean hasExtensions() {
     return false;
   }
 }

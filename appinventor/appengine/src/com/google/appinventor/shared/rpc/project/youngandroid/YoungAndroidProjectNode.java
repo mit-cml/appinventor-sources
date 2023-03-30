@@ -102,8 +102,8 @@ public final class YoungAndroidProjectNode extends ProjectRootNode
   }
   
   @Override
-  public boolean hasExtensions(){
-    for (ProjectNode node : getComponentsFolder().getChildren()){
+  public boolean hasExtensions() {
+    if (getComponentsFolder().getChildren().size() > 0) {
       return true;
     }
     return false;
