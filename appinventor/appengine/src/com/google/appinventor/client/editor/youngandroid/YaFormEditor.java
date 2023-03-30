@@ -415,6 +415,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onComponentRenamed(MockComponent component, String oldName) {
     if (loadComplete) {
       onFormStructureChange();
+      Ode.getInstance().refreshSourceStructure();
       Ode.getInstance().refreshProperties();
     } else {
       LOG.severe("onComponentRenamed called when loadComplete is false");
