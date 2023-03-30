@@ -520,6 +520,7 @@
 	"Blockly.Msg.REPL_NETWORK_ERROR": "网络故障",
 	"Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "与AI伴侣通信故障，<br />请尝试重新启动AI伴侣并重新连接",
 	"Blockly.Msg.REPL_OK": "确定",
+	"Blockly.Msg.REPL_RESET": "重置",
 	"Blockly.Msg.REPL_COMPANION_VERSION_CHECK": "检查AI伴侣版本",
 	"Blockly.Msg.REPL_COMPANION_OUT_OF_DATE": "AI伴侣已版本过期，点击“确定”升级。",
 	"Blockly.Msg.REPL_EMULATORS": "查看模拟器",
