@@ -161,6 +161,11 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   @Override
+  public int getSyncedTValue(int dataSeriesT) {
+    return 0;
+  }
+
+  @Override
   public void setChildWidth(final AndroidViewComponent component, int width) {
     setChildWidth(component, width, 0);
   }

@@ -2104,6 +2104,11 @@ public class Form extends AppInventorCompatActivity
     return formHeight;
   }
 
+  @Override
+  public int getSyncedTValue(int dataSeriesT) {
+    return 0;
+  }
+
   /**
    * A URL which will be opened on the left side panel (which can be toggled once it is open). This
    * is intended for projects that have an in-line tutorial as part of the project. For security

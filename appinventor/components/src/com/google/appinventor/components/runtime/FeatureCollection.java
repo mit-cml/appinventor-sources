@@ -131,4 +131,9 @@ public class FeatureCollection extends MapFeatureContainerBase implements MapFea
   public Map getMap() {
     return map;
   }
+
+  @Override
+  public int getSyncedTValue(int dataSeriesT) {
+    return 0;
+  }
 }

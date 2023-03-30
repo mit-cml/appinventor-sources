@@ -145,4 +145,9 @@ public final class AnomalyDetection extends DataCollection {
   public HandlesEventDispatching getDispatchDelegate() {
     return null;
   }
+
+  @Override
+  public void refreshChart() {
+
+  }
 }

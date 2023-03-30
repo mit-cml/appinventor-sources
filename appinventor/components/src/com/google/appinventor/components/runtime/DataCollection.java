@@ -34,8 +34,10 @@ import java.util.concurrent.Future;
  */
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
-public abstract class DataCollection< M extends DataModel> implements Component, DataSourceChangeListener {
+public abstract class DataCollection<C extends ComponentContainer, E, M extends DataModel>
+implements Component, DataSourceChangeListener {
   protected M dataModel;
+  protected C container;
 
   /**
    * Used to queue & execute asynchronous tasks while ensuring
@@ -95,7 +97,6 @@ public abstract class DataCollection< M extends DataModel> implements Component,
 
     // Set default properties
     DataSourceKey("");
-
     threadRunner = Executors.newSingleThreadExecutor();
   }
 
@@ -111,7 +112,12 @@ public abstract class DataCollection< M extends DataModel> implements Component,
     threadRunner = service;
   }
 
-
+  /**
+   * Refreshes the Chart View object with the current up to date
+   * Data Series data.
+   */
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public abstract void refreshChart();
 
   /*
    * SimpleProperties
@@ -148,6 +154,7 @@ public abstract class DataCollection< M extends DataModel> implements Component,
       @Override
       public void run() {
         dataModel.setElements(elements);
+        refreshChart();
       }
     });
   }
@@ -380,6 +387,7 @@ public abstract class DataCollection< M extends DataModel> implements Component,
       @Override
       public void run() {
         dataModel.importFromList(list);
+        refreshChart();
       }
     });
   }
@@ -396,6 +404,7 @@ public abstract class DataCollection< M extends DataModel> implements Component,
       @Override
       public void run() {
         dataModel.clearEntries();
+        refreshChart();
       }
     });
   }
@@ -612,6 +621,7 @@ public abstract class DataCollection< M extends DataModel> implements Component,
       @Override
       public void run() {
         dataModel.importFromList(list);
+        refreshChart();
       }
     });
   }
@@ -648,6 +658,7 @@ public abstract class DataCollection< M extends DataModel> implements Component,
 
           // Import the data and refresh the Chart
           dataModel.importFromList(listValue);
+          refreshChart();
         } catch (InterruptedException e) {
           Log.e(this.getClass().getName(), e.getMessage());
         } catch (ExecutionException e) {
@@ -692,7 +703,8 @@ public abstract class DataCollection< M extends DataModel> implements Component,
 
         // Import from Data file with the specified parameters
         dataModel.importFromColumns(dataResult, true);
-
+        // Refresh the Chart after import
+        refreshChart();
       }
     });
   }
@@ -720,6 +732,7 @@ public abstract class DataCollection< M extends DataModel> implements Component,
         }
 
         dataModel.importFromColumns(dataColumns, useHeaders);
+        refreshChart();
 
       }
     });
@@ -899,7 +912,7 @@ public abstract class DataCollection< M extends DataModel> implements Component,
         if (lastDataSourceValue instanceof List) {
           dataModel.importFromList((List<?>) lastDataSourceValue);
         }
-
+        refreshChart();
       }
     });
   }
@@ -940,6 +953,28 @@ public abstract class DataCollection< M extends DataModel> implements Component,
     if (importData) {
       // Get value as final value to use for the runnable on UI thread
       final Object finalValue = value;
+
+      // Import value in non-async (since this is a real-time value,
+      // the update will come faster than running in async)
+      // Importing the value asynchronously could cause more
+      // race conditions between data series (as well as added tearing)
+      container.$context().runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          // Get the  t value synced across the entire Chart
+          // and update the synced value if necessary
+          tick = container.getSyncedTValue(tick);
+
+          // Create tuple from current t value and the received value
+          final YailList tuple = YailList.makeList(Arrays.asList(tick, finalValue));
+
+          dataModel.addTimeEntry(tuple);
+          refreshChart();
+
+          // Increment t value
+          tick++;
+        }
+      });
 
     }
   }

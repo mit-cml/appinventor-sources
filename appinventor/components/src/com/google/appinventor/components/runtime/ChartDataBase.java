@@ -45,9 +45,9 @@ import java.util.concurrent.Future;
  */
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
-public abstract class ChartDataBase extends DataCollection<ChartDataModel<?, ?, ?, ?, ?>> implements Component, DataSourceChangeListener,
+public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDataModel<?, ?, ?, ?, ?> > implements Component, DataSourceChangeListener,
     OnChartGestureListener, OnChartValueSelectedListener {
-  protected Chart container;
+ //protected Chart container;
 
   /**
    * Used to queue & execute asynchronous tasks while ensuring
@@ -333,13 +333,12 @@ public abstract class ChartDataBase extends DataCollection<ChartDataModel<?, ?, 
     });
   }
 
-
   /**
    * Refreshes the Chart View object with the current up to date
    * Data Series data.
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
-  protected void refreshChart() {
+  public void refreshChart() {
     // Update the Chart with the Chart Data Model's current
     // data and refresh the Chart itself.
     container.getChartView().refresh((ChartDataModel) dataModel);

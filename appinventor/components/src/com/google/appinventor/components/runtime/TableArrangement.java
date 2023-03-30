@@ -141,6 +141,11 @@ public class TableArrangement extends AndroidViewComponent
   }
 
   @Override
+  public int getSyncedTValue(int dataSeriesT) {
+    return 0;
+  }
+
+  @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
 
     System.err.println("TableArrangment.setChildWidth: width = " + width + " component = " + component);

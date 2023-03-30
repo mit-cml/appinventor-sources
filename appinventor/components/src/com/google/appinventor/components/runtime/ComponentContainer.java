@@ -52,4 +52,6 @@ public interface ComponentContainer {
 
   int Height();
 
+  int getSyncedTValue(int dataSeriesT);
+
 }

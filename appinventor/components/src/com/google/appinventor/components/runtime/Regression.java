@@ -134,6 +134,11 @@ public final class Regression extends DataCollection {
   public HandlesEventDispatching getDispatchDelegate() {
     return null;
   }
+
+  @Override
+  public void refreshChart() {
+
+  }
 }
 
 
