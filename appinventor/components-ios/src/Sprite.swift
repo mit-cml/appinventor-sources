@@ -38,7 +38,8 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
 
   public override init(_ parent: ComponentContainer) {
     if !(parent is Canvas) {
-      fatalError("Canvas must be parent of ImageSprite")
+//      fatalError("Canvas must be parent of ImageSprite")
+      showAlert(message: "Canvas must be parent of ImageSprite")
     }
     _view.isUserInteractionEnabled = true
     _view.translatesAutoresizingMaskIntoConstraints = false

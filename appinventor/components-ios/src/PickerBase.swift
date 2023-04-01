@@ -11,9 +11,13 @@ class PickerPadController: UIViewController {
     modalPresentationStyle = .popover
   }
 
-  public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
+//  public required init?(coder aDecoder: NSCoder) {
+//    fatalError("init(coder:) has not been implemented")
+//  }
+  required init?(coder aDecoder: NSCoder) {
+      super.init(coder: aDecoder)
+    showAlert(message: nil)
+    }
 
   open override func viewDidLoad() {
     super.viewDidLoad()

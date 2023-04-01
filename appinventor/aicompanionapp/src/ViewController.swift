@@ -111,7 +111,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         let runtime = try! String(contentsOfFile: url)
         interpreter.evalForm(runtime)
         if interpreter.exception != nil {
-          fatalError("Unable to initialize runtime: \(interpreter.exception!)")
+          //          fatalError("Unable to initialize runtime: \(interpreter.exception!)")
+          let title = "Error"
+          let message = "Unable to initialize runtime: \(interpreter.exception!)"
+          let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+          let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+          alertController.addAction(okAction)
+          if let topController = UIApplication.shared.keyWindow?.rootViewController {
+            topController.present(alertController, animated: true, completion: nil)
+          }
         }
         ViewController._interpreterInitialized = true
       }

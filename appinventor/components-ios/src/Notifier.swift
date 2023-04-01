@@ -183,8 +183,13 @@ fileprivate class CustomAlertView: UIView {
     super.init(frame: frame)
   }
 
+//  required init?(coder aDecoder: NSCoder) {
+//    fatalError("init(coder:) has not been implemented")
+//
+//  }
   required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    super.init(coder: aDecoder)
+    showAlert(message: nil)
   }
 
   func show(animated: Bool, callback: ((Bool) -> Void)? = nil){
@@ -479,5 +484,17 @@ open class Notifier: NonvisibleComponent {
 
   @objc open func TextInputCanceled() {
     EventDispatcher.dispatchEvent(of: self, called: "TextInputCanceled")
+  }
+}
+
+func showAlert(message: String?) {
+  if let emessage = message {
+    let alertController = UIAlertController(title: "Error", message: emessage, preferredStyle: .alert)
+    alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+    UIApplication.shared.keyWindow?.rootViewController?.present(alertController, animated: true, completion: nil)
+  } else {
+    let alertController = UIAlertController(title: "Error", message: "init(coder:) has not been implemented", preferredStyle: .alert)
+    alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+    UIApplication.shared.keyWindow?.rootViewController?.present(alertController, animated: true, completion: nil)
   }
 }

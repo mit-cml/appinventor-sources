@@ -163,9 +163,13 @@ fileprivate enum ConstraintUpdate {
     _emptyConstraints = [heightAnchor.constraint(equalToConstant: 100), widthAnchor.constraint(equalToConstant: 100)]
   }
 
+//  required init?(coder aDecoder: NSCoder) {
+//    fatalError("init(coder:) has not been implemented")
+//  }
   required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
+      super.init(coder: aDecoder)
+      showAlert(message: nil)
+    }
 
   /**
    * Initializes the cells in the table with the corresponding views (if any)

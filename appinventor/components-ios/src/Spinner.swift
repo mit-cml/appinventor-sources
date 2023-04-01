@@ -32,6 +32,7 @@ fileprivate class SpinnerPadController: PickerPadController, SpinnerController {
     fatalError("init(coder:) has not been implemented")
   }
 
+
   @objc public func reloadComponents(){
     _menuView.reloadData()
   }
