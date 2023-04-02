@@ -571,8 +571,9 @@
     <copy todir="${build.war.dir}/WEB-INF/classes">
       <fileset dir="src" excludes="**/*.java"/>
     </copy>
-    <get src="http://doesappinventorrunonios.com/coverage.json"
-         dest="${build.war.dir}/WEB-INF/classes/com/google/appinventor/coverage.json"/>
+<!--    Copying the coverage.json file generated as part of ios unit tests-->
+    <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor"
+          file="${appinventor.dir}/components-ios/coverage.json" />
   </target>
 
 

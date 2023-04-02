@@ -1,0 +1,3779 @@
+{
+  "components" : {
+    "Ball" : {
+      "android" : {
+        "propertyCount" : 11,
+        "methodCount" : 7,
+        "eventCount" : 8
+      },
+      "events" : [
+        "Dragged",
+        "Touched",
+        "EdgeReached",
+        "TouchUp",
+        "Flung",
+        "CollidedWith",
+        "TouchDown",
+        "NoLongerCollidingWith"
+      ],
+      "ios" : {
+        "methodCount" : 6,
+        "eventCount" : 8,
+        "propertyCount" : 11
+      },
+      "methods" : [
+        "MoveIntoBounds",
+        "PointInDirection",
+        "MoveTo",
+        "PointTowards",
+        "CollidingWith",
+        "Bounce"
+      ],
+      "propertyGetters" : [
+        "Speed",
+        "Heading",
+        "Interval",
+        "Y",
+        "PaintColor",
+        "Z",
+        "X",
+        "Radius",
+        "Visible",
+        "Enabled"
+      ],
+      "propertySetters" : [
+        "Interval",
+        "OriginAtCenter",
+        "Z",
+        "Visible",
+        "Speed",
+        "PaintColor",
+        "X",
+        "Y",
+        "Enabled",
+        "Heading",
+        "Radius"
+      ]
+    },
+    "NxtSoundSensor" : {
+      "methods" : [
+
+      ],
+      "ios" : {
+        "eventCount" : 0,
+        "methodCount" : 0,
+        "propertyCount" : 0
+      },
+      "android" : {
+        "propertyCount" : 7,
+        "eventCount" : 3,
+        "methodCount" : 1
+      },
+      "events" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ]
+    },
+    "TextToSpeech" : {
+      "events" : [
+        "BeforeSpeaking",
+        "AfterSpeaking"
+      ],
+      "android" : {
+        "eventCount" : 2,
+        "methodCount" : 1,
+        "propertyCount" : 7
+      },
+      "propertyGetters" : [
+        "Result",
+        "Language",
+        "AvailableCountries",
+        "Country",
+        "Pitch",
+        "SpeechRate",
+        "AvailableLanguages"
+      ],
+      "methods" : [
+        "Speak"
+      ],
+      "propertySetters" : [
+        "Language",
+        "SpeechRate",
+        "Country",
+        "Pitch"
+      ],
+      "ios" : {
+        "methodCount" : 1,
+        "eventCount" : 2,
+        "propertyCount" : 7
+      }
+    },
+    "Marker" : {
+      "methods" : [
+        "BearingToPoint",
+        "HideInfobox",
+        "ShowInfobox",
+        "BearingToFeature",
+        "DistanceToPoint",
+        "DistanceToFeature",
+        "SetLocation"
+      ],
+      "propertyGetters" : [
+        "Title",
+        "Width",
+        "Draggable",
+        "StrokeOpacity",
+        "StrokeWidth",
+        "ImageAsset",
+        "Longitude",
+        "FillOpacity",
+        "Height",
+        "AnchorVertical",
+        "Latitude",
+        "Type",
+        "FillColor",
+        "Description",
+        "Visible",
+        "EnableInfobox",
+        "AnchorHorizontal",
+        "StrokeColor"
+      ],
+      "android" : {
+        "propertyCount" : 20,
+        "eventCount" : 5,
+        "methodCount" : 7
+      },
+      "propertySetters" : [
+        "Visible",
+        "EnableInfobox",
+        "HeightPercent",
+        "Latitude",
+        "Height",
+        "WidthPercent",
+        "Description",
+        "AnchorVertical",
+        "Longitude",
+        "Draggable",
+        "AnchorHorizontal",
+        "ImageAsset",
+        "StrokeWidth",
+        "StrokeColor",
+        "FillOpacity",
+        "FillColor",
+        "Width",
+        "StrokeOpacity",
+        "Title"
+      ],
+      "events" : [
+        "Drag",
+        "StartDrag",
+        "StopDrag",
+        "Click",
+        "LongClick"
+      ],
+      "ios" : {
+        "eventCount" : 5,
+        "methodCount" : 7,
+        "propertyCount" : 20
+      }
+    },
+    "CheckBox" : {
+      "propertySetters" : [
+        "Visible",
+        "Checked",
+        "HeightPercent",
+        "FontTypeface",
+        "FontBold",
+        "Enabled",
+        "BackgroundColor",
+        "Width",
+        "TextColor",
+        "Height",
+        "Text",
+        "FontItalic",
+        "FontSize",
+        "WidthPercent"
+      ],
+      "events" : [
+        "LostFocus",
+        "GotFocus",
+        "Changed"
+      ],
+      "android" : {
+        "eventCount" : 3,
+        "propertyCount" : 14,
+        "methodCount" : 0
+      },
+      "ios" : {
+        "eventCount" : 3,
+        "propertyCount" : 14,
+        "methodCount" : 0
+      },
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+        "Checked",
+        "FontSize",
+        "BackgroundColor",
+        "Text",
+        "Height",
+        "TextColor",
+        "Width",
+        "Visible",
+        "Enabled"
+      ]
+    },
+    "BluetoothServer" : {
+      "propertySetters" : [
+
+      ],
+      "android" : {
+        "propertyCount" : 8,
+        "eventCount" : 2,
+        "methodCount" : 19
+      },
+      "events" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "ios" : {
+        "eventCount" : 0,
+        "propertyCount" : 0,
+        "methodCount" : 0
+      },
+      "propertyGetters" : [
+
+      ]
+    },
+    "Translator" : {
+      "events" : [
+        "GotTranslation"
+      ],
+      "propertySetters" : [
+        "ApiKey"
+      ],
+      "android" : {
+        "propertyCount" : 1,
+        "methodCount" : 1,
+        "eventCount" : 1
+      },
+      "propertyGetters" : [
+
+      ],
+      "methods" : [
+        "RequestTranslation"
+      ],
+      "ios" : {
+        "eventCount" : 1,
+        "propertyCount" : 1,
+        "methodCount" : 1
+      }
+    },
+    "BluetoothClient" : {
+      "ios" : {
+        "propertyCount" : 1,
+        "methodCount" : 3,
+        "eventCount" : 0
+      },
+      "propertyGetters" : [
+        "AddressesAndNames"
+      ],
+      "android" : {
+        "eventCount" : 1,
+        "methodCount" : 19,
+        "propertyCount" : 11
+      },
+      "events" : [
+
+      ],
+      "methods" : [
+        "ConnectWithUUID",
+        "IsDevicePaired",
+        "Connect"
+      ],
+      "propertySetters" : [
+
+      ]
+    },
+    "GyroscopeSensor" : {
+      "methods" : [
+
+      ],
+      "ios" : {
+        "propertyCount" : 5,
+        "methodCount" : 0,
+        "eventCount" : 1
+      },
+      "events" : [
+        "GyroscopeChanged"
+      ],
+      "propertyGetters" : [
+        "Enabled",
+        "XAngularVelocity",
+        "Available",
+        "ZAngularVelocity",
+        "YAngularVelocity"
+      ],
+      "propertySetters" : [
+        "Enabled"
+      ],
+      "android" : {
+        "eventCount" : 1,
+        "methodCount" : 0,
+        "propertyCount" : 5
+      }
+    },
+    "Web" : {
+      "propertySetters" : [
+        "Url",
+        "AllowCookies",
+        "SaveResponse",
+        "ResponseFileName",
+        "RequestHeaders",
+        "Timeout"
+      ],
+      "events" : [
+        "GotFile",
+        "GotText",
+        "TimedOut"
+      ],
+      "ios" : {
+        "eventCount" : 3,
+        "methodCount" : 18,
+        "propertyCount" : 6
+      },
+      "android" : {
+        "eventCount" : 3,
+        "propertyCount" : 6,
+        "methodCount" : 21
+      },
+      "methods" : [
+        "Get",
+        "PutText",
+        "PostFile",
+        "JsonObjectEncode",
+        "PostTextWithEncoding",
+        "UriDecode",
+        "HtmlTextDecode",
+        "PutTextWithEncoding",
+        "UriEncode",
+        "JsonTextDecodeWithDictionaries",
+        "BuildRequestData",
+        "Delete",
+        "ClearCookies",
+        "PutFile",
+        "XMLTextDecodeAsDictionary",
+        "PostText",
+        "XMLTextDecode",
+        "JsonTextDecode"
+      ],
+      "propertyGetters" : [
+        "SaveResponse",
+        "AllowCookies",
+        "RequestHeaders",
+        "Timeout",
+        "ResponseFileName",
+        "Url"
+      ]
+    },
+    "MagneticFieldSensor" : {
+      "android" : {
+        "propertyCount" : 7,
+        "methodCount" : 0,
+        "eventCount" : 1
+      },
+      "methods" : [
+
+      ],
+      "ios" : {
+        "methodCount" : 0,
+        "eventCount" : 0,
+        "propertyCount" : 0
+      },
+      "events" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ]
+    },
+    "Ev3Commands" : {
+      "events" : [
+
+      ],
+      "ios" : {
+        "propertyCount" : 0,
+        "eventCount" : 0,
+        "methodCount" : 0
+      },
+      "propertyGetters" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "android" : {
+        "methodCount" : 8,
+        "propertyCount" : 1,
+        "eventCount" : 0
+      }
+    },
+    "MediaStore" : {
+      "methods" : [
+
+      ],
+      "android" : {
+        "eventCount" : 2,
+        "methodCount" : 1,
+        "propertyCount" : 1
+      },
+      "propertyGetters" : [
+
+      ],
+      "events" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "ios" : {
+        "propertyCount" : 0,
+        "eventCount" : 0,
+        "methodCount" : 0
+      }
+    },
+    "CloudDB" : {
+      "android" : {
+        "eventCount" : 6,
+        "methodCount" : 7,
+        "propertyCount" : 6
+      },
+      "propertySetters" : [
+        "UseSSL",
+        "RedisServer",
+        "Token",
+        "DefaultRedisServer",
+        "ProjectID",
+        "RedisPort"
+      ],
+      "ios" : {
+        "methodCount" : 7,
+        "eventCount" : 5,
+        "propertyCount" : 6
+      },
+      "methods" : [
+        "GetValue",
+        "ClearTag",
+        "RemoveFirstFromList",
+        "CloudConnected",
+        "AppendValueToList",
+        "GetTagList",
+        "StoreValue"
+      ],
+      "events" : [
+        "CloudDBError",
+        "GotValue",
+        "DataChanged",
+        "FirstRemoved",
+        "TagList"
+      ],
+      "propertyGetters" : [
+        "RedisServer",
+        "RedisPort",
+        "ProjectID"
+      ]
+    },
+    "PhoneNumberPicker" : {
+      "methods" : [
+        "ViewContact",
+        "Open"
+      ],
+      "propertyGetters" : [
+        "FontSize",
+        "ShowFeedback",
+        "TextColor",
+        "Picture",
+        "FontBold",
+        "PhoneNumber",
+        "EmailAddress",
+        "Visible",
+        "Width",
+        "BackgroundColor",
+        "EmailAddressList",
+        "Text",
+        "PhoneNumberList",
+        "Height",
+        "Enabled",
+        "Image",
+        "ContactUri",
+        "ContactName",
+        "FontItalic"
+      ],
+      "propertySetters" : [
+        "FontItalic",
+        "HeightPercent",
+        "Text",
+        "TextAlignment",
+        "WidthPercent",
+        "Shape",
+        "ShowFeedback",
+        "FontSize",
+        "TextColor",
+        "Width",
+        "Image",
+        "BackgroundColor",
+        "Height",
+        "FontTypeface",
+        "Enabled",
+        "Visible",
+        "FontBold"
+      ],
+      "events" : [
+        "LostFocus",
+        "BeforePicking",
+        "GotFocus",
+        "AfterPicking",
+        "TouchDown",
+        "TouchUp"
+      ],
+      "android" : {
+        "propertyCount" : 24,
+        "eventCount" : 6,
+        "methodCount" : 2
+      },
+      "ios" : {
+        "eventCount" : 6,
+        "methodCount" : 2,
+        "propertyCount" : 24
+      }
+    },
+    "NxtDrive" : {
+      "ios" : {
+        "eventCount" : 0,
+        "methodCount" : 0,
+        "propertyCount" : 0
+      },
+      "propertySetters" : [
+
+      ],
+      "events" : [
+
+      ],
+      "android" : {
+        "methodCount" : 7,
+        "eventCount" : 0,
+        "propertyCount" : 4
+      },
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ]
+    },
+    "ImagePicker" : {
+      "propertyGetters" : [
+        "Height",
+        "TextColor",
+        "BackgroundColor",
+        "Image",
+        "Text",
+        "FontSize",
+        "FontBold",
+        "Width",
+        "FontItalic",
+        "ShowFeedback",
+        "Visible",
+        "Enabled",
+        "Selection"
+      ],
+      "propertySetters" : [
+        "FontBold",
+        "BackgroundColor",
+        "Enabled",
+        "ShowFeedback",
+        "FontItalic",
+        "TextColor",
+        "TextAlignment",
+        "Text",
+        "Height",
+        "FontSize",
+        "HeightPercent",
+        "WidthPercent",
+        "Visible",
+        "Width",
+        "Shape",
+        "FontTypeface",
+        "Image"
+      ],
+      "android" : {
+        "methodCount" : 1,
+        "eventCount" : 6,
+        "propertyCount" : 18
+      },
+      "ios" : {
+        "methodCount" : 1,
+        "eventCount" : 6,
+        "propertyCount" : 18
+      },
+      "events" : [
+        "TouchDown",
+        "TouchUp",
+        "AfterPicking",
+        "LostFocus",
+        "BeforePicking",
+        "GotFocus"
+      ],
+      "methods" : [
+        "Open"
+      ]
+    },
+    "OrientationSensor" : {
+      "android" : {
+        "methodCount" : 0,
+        "eventCount" : 1,
+        "propertyCount" : 7
+      },
+      "methods" : [
+
+      ],
+      "events" : [
+        "OrientationChanged"
+      ],
+      "propertySetters" : [
+        "Enabled"
+      ],
+      "propertyGetters" : [
+        "Magnitude",
+        "Angle",
+        "Pitch",
+        "Azimuth",
+        "Available",
+        "Roll",
+        "Enabled"
+      ],
+      "ios" : {
+        "eventCount" : 1,
+        "methodCount" : 0,
+        "propertyCount" : 7
+      }
+    },
+    "Navigation" : {
+      "propertyGetters" : [
+        "EndLatitude",
+        "StartLongitude",
+        "EndLongitude",
+        "TransportationMethod",
+        "StartLatitude",
+        "Language",
+        "ResponseContent"
+      ],
+      "ios" : {
+        "eventCount" : 1,
+        "methodCount" : 1,
+        "propertyCount" : 10
+      },
+      "events" : [
+        "GotDirections"
+      ],
+      "android" : {
+        "propertyCount" : 10,
+        "eventCount" : 1,
+        "methodCount" : 1
+      },
+      "propertySetters" : [
+        "EndLocation",
+        "EndLongitude",
+        "StartLatitude",
+        "StartLocation",
+        "EndLatitude",
+        "StartLongitude",
+        "Language",
+        "TransportationMethod",
+        "ApiKey"
+      ],
+      "methods" : [
+        "RequestDirections"
+      ]
+    },
+    "Texting" : {
+      "events" : [
+        "MessageReceived"
+      ],
+      "methods" : [
+        "SendMessageDirect",
+        "SendMessage"
+      ],
+      "ios" : {
+        "methodCount" : 2,
+        "propertyCount" : 4,
+        "eventCount" : 1
+      },
+      "propertyGetters" : [
+        "Message",
+        "ReceivingEnabled",
+        "GoogleVoiceEnabled",
+        "PhoneNumber"
+      ],
+      "android" : {
+        "eventCount" : 1,
+        "methodCount" : 2,
+        "propertyCount" : 4
+      },
+      "propertySetters" : [
+        "Message",
+        "GoogleVoiceEnabled",
+        "PhoneNumber",
+        "ReceivingEnabled"
+      ]
+    },
+    "Thermometer" : {
+      "events" : [
+
+      ],
+      "android" : {
+        "eventCount" : 1,
+        "propertyCount" : 4,
+        "methodCount" : 0
+      },
+      "ios" : {
+        "methodCount" : 0,
+        "propertyCount" : 0,
+        "eventCount" : 0
+      },
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ]
+    },
+    "SoundRecorder" : {
+      "android" : {
+        "eventCount" : 3,
+        "methodCount" : 2,
+        "propertyCount" : 1
+      },
+      "events" : [
+        "StartedRecording",
+        "AfterSoundRecorded",
+        "StoppedRecording"
+      ],
+      "ios" : {
+        "methodCount" : 2,
+        "propertyCount" : 1,
+        "eventCount" : 3
+      },
+      "methods" : [
+        "Start",
+        "Stop"
+      ],
+      "propertySetters" : [
+        "SavedRecording"
+      ],
+      "propertyGetters" : [
+        "SavedRecording"
+      ]
+    },
+    "Spreadsheet" : {
+      "android" : {
+        "propertyCount" : 3,
+        "eventCount" : 16,
+        "methodCount" : 18
+      },
+      "events" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "ios" : {
+        "propertyCount" : 0,
+        "eventCount" : 0,
+        "methodCount" : 0
+      },
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ]
+    },
+    "FusiontablesControl" : {
+      "propertyGetters" : [
+        "Query",
+        "ApiKey",
+        "KeyFile",
+        "UseServiceAuthentication",
+        "ServiceAccountEmail"
+      ],
+      "propertySetters" : [
+        "KeyFile",
+        "ServiceAccountEmail",
+        "UseServiceAuthentication",
+        "Query",
+        "ApiKey"
+      ],
+      "ios" : {
+        "propertyCount" : 5,
+        "eventCount" : 1,
+        "methodCount" : 6
+      },
+      "android" : {
+        "eventCount" : 1,
+        "methodCount" : 6,
+        "propertyCount" : 7
+      },
+      "events" : [
+        "GotResult"
+      ],
+      "methods" : [
+        "ForgetLogin",
+        "DoQuery",
+        "GetRows",
+        "GetRowsWithConditions",
+        "SendQuery",
+        "InsertRow"
+      ]
+    },
+    "Switch" : {
+      "methods" : [
+
+      ],
+      "android" : {
+        "methodCount" : 0,
+        "propertyCount" : 18,
+        "eventCount" : 3
+      },
+      "events" : [
+        "LostFocus",
+        "GotFocus",
+        "Changed"
+      ],
+      "ios" : {
+        "methodCount" : 0,
+        "propertyCount" : 18,
+        "eventCount" : 3
+      },
+      "propertySetters" : [
+        "TrackColorInactive",
+        "Visible",
+        "Width",
+        "On",
+        "Enabled",
+        "FontTypeface",
+        "FontSize",
+        "ThumbColorInactive",
+        "BackgroundColor",
+        "Text",
+        "ThumbColorActive",
+        "FontBold",
+        "Height",
+        "FontItalic",
+        "TrackColorActive",
+        "TextColor",
+        "WidthPercent",
+        "HeightPercent"
+      ],
+      "propertyGetters" : [
+        "Visible",
+        "FontSize",
+        "ThumbColorActive",
+        "On",
+        "BackgroundColor",
+        "Height",
+        "TrackColorActive",
+        "TrackColorInactive",
+        "Width",
+        "Text",
+        "ThumbColorInactive",
+        "TextColor",
+        "Enabled"
+      ]
+    },
+    "HorizontalArrangement" : {
+      "ios" : {
+        "propertyCount" : 9,
+        "eventCount" : 0,
+        "methodCount" : 0
+      },
+      "events" : [
+
+      ],
+      "android" : {
+        "propertyCount" : 9,
+        "methodCount" : 0,
+        "eventCount" : 0
+      },
+      "propertyGetters" : [
+        "Image",
+        "Visible",
+        "AlignHorizontal",
+        "Width",
+        "AlignVertical",
+        "BackgroundColor",
+        "Height"
+      ],
+      "methods" : [
+
+      ],
+      "propertySetters" : [
+        "Width",
+        "Height",
+        "Visible",
+        "WidthPercent",
+        "BackgroundColor",
+        "Image",
+        "AlignVertical",
+        "AlignHorizontal",
+        "HeightPercent"
+      ]
+    },
+    "Rectangle" : {
+      "android" : {
+        "eventCount" : 5,
+        "methodCount" : 7,
+        "propertyCount" : 15
+      },
+      "ios" : {
+        "eventCount" : 5,
+        "methodCount" : 7,
+        "propertyCount" : 15
+      },
+      "propertySetters" : [
+        "Visible",
+        "EastLongitude",
+        "FillColor",
+        "EnableInfobox",
+        "NorthLatitude",
+        "Description",
+        "FillOpacity",
+        "WestLongitude",
+        "StrokeWidth",
+        "StrokeOpacity",
+        "Draggable",
+        "StrokeColor",
+        "SouthLatitude",
+        "Title"
+      ],
+      "methods" : [
+        "Bounds",
+        "DistanceToFeature",
+        "DistanceToPoint",
+        "SetCenter",
+        "HideInfobox",
+        "ShowInfobox",
+        "Center"
+      ],
+      "propertyGetters" : [
+        "StrokeOpacity",
+        "Type",
+        "EastLongitude",
+        "StrokeColor",
+        "SouthLatitude",
+        "Draggable",
+        "Title",
+        "StrokeWidth",
+        "Description",
+        "WestLongitude",
+        "FillColor",
+        "Visible",
+        "NorthLatitude",
+        "EnableInfobox",
+        "FillOpacity"
+      ],
+      "events" : [
+        "Drag",
+        "LongClick",
+        "Click",
+        "StopDrag",
+        "StartDrag"
+      ]
+    },
+    "Spinner" : {
+      "propertyGetters" : [
+        "Visible",
+        "SelectionIndex",
+        "Width",
+        "Selection",
+        "Height",
+        "Prompt",
+        "Elements"
+      ],
+      "propertySetters" : [
+        "WidthPercent",
+        "HeightPercent",
+        "Height",
+        "Elements",
+        "Width",
+        "Visible",
+        "Prompt",
+        "SelectionIndex",
+        "Selection",
+        "ElementsFromString"
+      ],
+      "methods" : [
+        "DisplayDropdown"
+      ],
+      "events" : [
+        "AfterSelecting"
+      ],
+      "ios" : {
+        "eventCount" : 1,
+        "methodCount" : 1,
+        "propertyCount" : 10
+      },
+      "android" : {
+        "eventCount" : 1,
+        "propertyCount" : 10,
+        "methodCount" : 1
+      }
+    },
+    "Camera" : {
+      "events" : [
+        "AfterPicture"
+      ],
+      "ios" : {
+        "methodCount" : 1,
+        "propertyCount" : 1,
+        "eventCount" : 1
+      },
+      "methods" : [
+        "TakePicture"
+      ],
+      "propertySetters" : [
+        "UseFront"
+      ],
+      "android" : {
+        "eventCount" : 1,
+        "methodCount" : 1,
+        "propertyCount" : 1
+      },
+      "propertyGetters" : [
+        "UseFront"
+      ]
+    },
+    "Notifier" : {
+      "android" : {
+        "eventCount" : 4,
+        "methodCount" : 10,
+        "propertyCount" : 3
+      },
+      "propertySetters" : [
+        "NotifierLength",
+        "BackgroundColor",
+        "TextColor"
+      ],
+      "propertyGetters" : [
+        "TextColor"
+      ],
+      "ios" : {
+        "methodCount" : 10,
+        "propertyCount" : 3,
+        "eventCount" : 4
+      },
+      "methods" : [
+        "ShowPasswordDialog",
+        "ShowTextDialog",
+        "ShowChooseDialog",
+        "ShowProgressDialog",
+        "LogWarning",
+        "DismissProgressDialog",
+        "LogError",
+        "LogInfo",
+        "ShowAlert",
+        "ShowMessageDialog"
+      ],
+      "events" : [
+        "AfterChoosing",
+        "AfterTextInput",
+        "ChoosingCanceled",
+        "TextInputCanceled"
+      ]
+    },
+    "ProximitySensor" : {
+      "android" : {
+        "propertyCount" : 5,
+        "eventCount" : 1,
+        "methodCount" : 0
+      },
+      "ios" : {
+        "methodCount" : 0,
+        "eventCount" : 0,
+        "propertyCount" : 0
+      },
+      "methods" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "events" : [
+
+      ],
+      "propertyGetters" : [
+
+      ]
+    },
+    "Image" : {
+      "ios" : {
+        "propertyCount" : 11,
+        "eventCount" : 1,
+        "methodCount" : 0
+      },
+      "android" : {
+        "methodCount" : 0,
+        "propertyCount" : 12,
+        "eventCount" : 1
+      },
+      "methods" : [
+
+      ],
+      "events" : [
+        "Click"
+      ],
+      "propertySetters" : [
+        "Height",
+        "HeightPercent",
+        "Visible",
+        "Scaling",
+        "WidthPercent",
+        "ScalePictureToFit",
+        "Width",
+        "Picture",
+        "Clickable",
+        "RotationAngle",
+        "Animation"
+      ],
+      "propertyGetters" : [
+        "RotationAngle",
+        "Scaling",
+        "Height",
+        "Clickable",
+        "Visible",
+        "Picture",
+        "Width"
+      ]
+    },
+    "WebViewer" : {
+      "android" : {
+        "propertyCount" : 13,
+        "eventCount" : 4,
+        "methodCount" : 12
+      },
+      "ios" : {
+        "propertyCount" : 13,
+        "methodCount" : 8,
+        "eventCount" : 2
+      },
+      "propertySetters" : [
+        "FollowLinks",
+        "WebViewString",
+        "HomeUrl",
+        "WidthPercent",
+        "IgnoreSslErrors",
+        "Width",
+        "Visible",
+        "PromptforPermission",
+        "Height",
+        "UsesLocation",
+        "HeightPercent"
+      ],
+      "methods" : [
+        "CanGoBack",
+        "ClearLocations",
+        "CanGoForward",
+        "GoForward",
+        "ClearCaches",
+        "GoBack",
+        "GoToUrl",
+        "GoHome"
+      ],
+      "events" : [
+        "WebViewStringChange",
+        "PageLoaded"
+      ],
+      "propertyGetters" : [
+        "WebViewString",
+        "Width",
+        "Height",
+        "FollowLinks",
+        "HomeUrl",
+        "CurrentPageTitle",
+        "PromptforPermission",
+        "Visible",
+        "IgnoreSslErrors",
+        "CurrentUrl"
+      ]
+    },
+    "Ev3TouchSensor" : {
+      "ios" : {
+        "methodCount" : 0,
+        "propertyCount" : 0,
+        "eventCount" : 0
+      },
+      "android" : {
+        "eventCount" : 2,
+        "methodCount" : 1,
+        "propertyCount" : 4
+      },
+      "events" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ]
+    },
+    "LocationSensor" : {
+      "ios" : {
+        "methodCount" : 2,
+        "eventCount" : 2,
+        "propertyCount" : 14
+      },
+      "methods" : [
+        "LongitudeFromAddress",
+        "LatitudeFromAddress"
+      ],
+      "propertySetters" : [
+        "Enabled",
+        "DistanceInterval",
+        "TimeInterval",
+        "ProviderLocked",
+        "ProviderName"
+      ],
+      "events" : [
+        "StatusChanged",
+        "LocationChanged"
+      ],
+      "android" : {
+        "propertyCount" : 14,
+        "eventCount" : 2,
+        "methodCount" : 2
+      },
+      "propertyGetters" : [
+        "HasAccuracy",
+        "DistanceInterval",
+        "ProviderLocked",
+        "HasAltitude",
+        "CurrentAddress",
+        "TimeInterval",
+        "HasLongitudeLatitude",
+        "Latitude",
+        "AvailableProviders",
+        "Enabled",
+        "Accuracy",
+        "Longitude",
+        "Altitude",
+        "ProviderName"
+      ]
+    },
+    "Ev3Motors" : {
+      "events" : [
+
+      ],
+      "ios" : {
+        "propertyCount" : 7,
+        "eventCount" : 0,
+        "methodCount" : 12
+      },
+      "android" : {
+        "eventCount" : 1,
+        "methodCount" : 12,
+        "propertyCount" : 7
+      },
+      "methods" : [
+        "GetTachoCount",
+        "RotateSyncInTachoCounts",
+        "ResetTachoCount",
+        "RotateSyncInDuration",
+        "RotateInDuration",
+        "RotateInTachoCounts",
+        "RotateSyncIndefinitely",
+        "RotateInDistance",
+        "Stop",
+        "RotateIndefinitely",
+        "RotateSyncInDistance",
+        "ToggleDirection"
+      ],
+      "propertySetters" : [
+        "WheelDiameter",
+        "StopBeforeDisconnect",
+        "BluetoothClient",
+        "MotorPorts",
+        "ReverseDirection",
+        "TachoCountChangedEventEnabled",
+        "EnableSpeedRegulation"
+      ],
+      "propertyGetters" : [
+        "EnableSpeedRegulation",
+        "TachoCountChangedEventEnabled",
+        "ReverseDirection",
+        "BluetoothClient",
+        "StopBeforeDisconnect"
+      ]
+    },
+    "PhoneCall" : {
+      "ios" : {
+        "propertyCount" : 1,
+        "methodCount" : 2,
+        "eventCount" : 3
+      },
+      "methods" : [
+        "MakePhoneCall",
+        "MakePhoneCallDirect"
+      ],
+      "propertyGetters" : [
+        "PhoneNumber"
+      ],
+      "events" : [
+        "IncomingCallAnswered",
+        "PhoneCallStarted",
+        "PhoneCallEnded"
+      ],
+      "propertySetters" : [
+        "PhoneNumber"
+      ],
+      "android" : {
+        "eventCount" : 3,
+        "methodCount" : 2,
+        "propertyCount" : 1
+      }
+    },
+    "Polygon" : {
+      "events" : [
+        "StartDrag",
+        "StopDrag",
+        "LongClick",
+        "Drag",
+        "Click"
+      ],
+      "propertyGetters" : [
+        "Draggable",
+        "Visible",
+        "Title",
+        "Points",
+        "StrokeOpacity",
+        "EnableInfobox",
+        "HolePoints",
+        "Type",
+        "StrokeWidth",
+        "StrokeColor",
+        "Description",
+        "FillColor",
+        "FillOpacity"
+      ],
+      "android" : {
+        "methodCount" : 5,
+        "eventCount" : 5,
+        "propertyCount" : 15
+      },
+      "propertySetters" : [
+        "StrokeOpacity",
+        "PointsFromString",
+        "EnableInfobox",
+        "HolePointsFromString",
+        "Description",
+        "Visible",
+        "StrokeColor",
+        "FillOpacity",
+        "HolePoints",
+        "Draggable",
+        "Points",
+        "Title",
+        "StrokeWidth",
+        "FillColor"
+      ],
+      "methods" : [
+        "DistanceToPoint",
+        "DistanceToFeature",
+        "Centroid",
+        "HideInfobox",
+        "ShowInfobox"
+      ],
+      "ios" : {
+        "propertyCount" : 15,
+        "eventCount" : 5,
+        "methodCount" : 5
+      }
+    },
+    "DataFile" : {
+      "propertySetters" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "events" : [
+
+      ],
+      "android" : {
+        "propertyCount" : 5,
+        "eventCount" : 0,
+        "methodCount" : 1
+      },
+      "ios" : {
+        "eventCount" : 0,
+        "methodCount" : 0,
+        "propertyCount" : 0
+      }
+    },
+    "VerticalArrangement" : {
+      "android" : {
+        "methodCount" : 0,
+        "eventCount" : 0,
+        "propertyCount" : 9
+      },
+      "ios" : {
+        "eventCount" : 0,
+        "methodCount" : 0,
+        "propertyCount" : 9
+      },
+      "propertySetters" : [
+        "AlignVertical",
+        "Height",
+        "Image",
+        "Width",
+        "AlignHorizontal",
+        "HeightPercent",
+        "WidthPercent",
+        "BackgroundColor",
+        "Visible"
+      ],
+      "methods" : [
+
+      ],
+      "events" : [
+
+      ],
+      "propertyGetters" : [
+        "BackgroundColor",
+        "AlignVertical",
+        "Height",
+        "AlignHorizontal",
+        "Image",
+        "Visible",
+        "Width"
+      ]
+    },
+    "PasswordTextBox" : {
+      "methods" : [
+        "RequestFocus"
+      ],
+      "propertyGetters" : [
+        "Hint",
+        "NumbersOnly",
+        "Height",
+        "FontSize",
+        "Text",
+        "Enabled",
+        "TextColor",
+        "Visible",
+        "Width",
+        "BackgroundColor",
+        "PasswordVisible"
+      ],
+      "events" : [
+        "GotFocus",
+        "LostFocus"
+      ],
+      "android" : {
+        "methodCount" : 1,
+        "eventCount" : 2,
+        "propertyCount" : 17
+      },
+      "propertySetters" : [
+        "FontItalic",
+        "FontBold",
+        "Width",
+        "TextColor",
+        "WidthPercent",
+        "Text",
+        "FontTypeface",
+        "PasswordVisible",
+        "BackgroundColor",
+        "TextAlignment",
+        "Hint",
+        "Visible",
+        "NumbersOnly",
+        "HeightPercent",
+        "FontSize",
+        "Enabled",
+        "Height"
+      ],
+      "ios" : {
+        "propertyCount" : 17,
+        "methodCount" : 1,
+        "eventCount" : 2
+      }
+    },
+    "Circle" : {
+      "android" : {
+        "propertyCount" : 14,
+        "eventCount" : 5,
+        "methodCount" : 5
+      },
+      "methods" : [
+        "HideInfobox",
+        "DistanceToFeature",
+        "DistanceToPoint",
+        "SetLocation",
+        "ShowInfobox"
+      ],
+      "events" : [
+        "Drag",
+        "Click",
+        "LongClick",
+        "StopDrag",
+        "StartDrag"
+      ],
+      "propertyGetters" : [
+        "Radius",
+        "Type",
+        "StrokeColor",
+        "Longitude",
+        "Latitude",
+        "FillColor",
+        "FillOpacity",
+        "Title",
+        "EnableInfobox",
+        "Description",
+        "Draggable",
+        "StrokeWidth",
+        "StrokeOpacity",
+        "Visible"
+      ],
+      "ios" : {
+        "eventCount" : 5,
+        "methodCount" : 5,
+        "propertyCount" : 14
+      },
+      "propertySetters" : [
+        "FillColor",
+        "StrokeWidth",
+        "Longitude",
+        "StrokeColor",
+        "Draggable",
+        "Description",
+        "Title",
+        "Latitude",
+        "StrokeOpacity",
+        "Radius",
+        "Visible",
+        "FillOpacity",
+        "EnableInfobox"
+      ]
+    },
+    "ListView" : {
+      "propertyGetters" : [
+        "ShowFilterBar",
+        "TextSize",
+        "Height",
+        "SelectionIndex",
+        "TextColor",
+        "Width",
+        "SelectionColor",
+        "Selection",
+        "Visible",
+        "BackgroundColor",
+        "Elements"
+      ],
+      "methods" : [
+
+      ],
+      "propertySetters" : [
+        "TextColor",
+        "SelectionIndex",
+        "HeightPercent",
+        "WidthPercent",
+        "Height",
+        "Width",
+        "Visible",
+        "ElementsFromString",
+        "Elements",
+        "ShowFilterBar",
+        "TextSize",
+        "Selection",
+        "SelectionColor",
+        "BackgroundColor"
+      ],
+      "android" : {
+        "eventCount" : 1,
+        "propertyCount" : 24,
+        "methodCount" : 5
+      },
+      "ios" : {
+        "eventCount" : 1,
+        "methodCount" : 0,
+        "propertyCount" : 14
+      },
+      "events" : [
+        "AfterPicking"
+      ]
+    },
+    "Clock" : {
+      "propertyGetters" : [
+        "TimerInterval",
+        "TimerEnabled",
+        "TimerAlwaysFires"
+      ],
+      "android" : {
+        "eventCount" : 1,
+        "propertyCount" : 3,
+        "methodCount" : 34
+      },
+      "events" : [
+        "Timer"
+      ],
+      "propertySetters" : [
+        "TimerAlwaysFires",
+        "TimerEnabled",
+        "TimerInterval"
+      ],
+      "ios" : {
+        "propertyCount" : 3,
+        "eventCount" : 1,
+        "methodCount" : 33
+      },
+      "methods" : [
+        "MakeInstant",
+        "AddMonths",
+        "FormatDate",
+        "DurationToMinutes",
+        "DurationToHours",
+        "Duration",
+        "FormatDateTime",
+        "DayOfMonth",
+        "AddMinutes",
+        "Month",
+        "MakeInstantFromParts",
+        "WeekdayName",
+        "GetMillis",
+        "AddHours",
+        "Second",
+        "Minute",
+        "FormatTime",
+        "Year",
+        "AddDays",
+        "AddWeeks",
+        "MonthName",
+        "AddSeconds",
+        "SystemTime",
+        "Hour",
+        "DurationToSeconds",
+        "MakeTime",
+        "DurationToDays",
+        "AddYears",
+        "DurationToWeeks",
+        "Weekday",
+        "Now",
+        "AddDuration",
+        "MakeDate"
+      ]
+    },
+    "FeatureCollection" : {
+      "propertySetters" : [
+        "Features",
+        "Width",
+        "WidthPercent",
+        "Source",
+        "HeightPercent",
+        "Visible",
+        "Height"
+      ],
+      "android" : {
+        "propertyCount" : 8,
+        "methodCount" : 2,
+        "eventCount" : 7
+      },
+      "ios" : {
+        "eventCount" : 7,
+        "methodCount" : 2,
+        "propertyCount" : 7
+      },
+      "events" : [
+        "FeatureStartDrag",
+        "GotFeatures",
+        "LoadError",
+        "FeatureDrag",
+        "FeatureClick",
+        "FeatureStopDrag",
+        "FeatureLongClick"
+      ],
+      "methods" : [
+        "FeatureFromDescription",
+        "LoadFromURL"
+      ],
+      "propertyGetters" : [
+        "Visible",
+        "Features",
+        "Source",
+        "Width",
+        "Height"
+      ]
+    },
+    "Ev3Sound" : {
+      "ios" : {
+        "propertyCount" : 0,
+        "eventCount" : 0,
+        "methodCount" : 0
+      },
+      "android" : {
+        "propertyCount" : 1,
+        "eventCount" : 0,
+        "methodCount" : 2
+      },
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "events" : [
+
+      ]
+    },
+    "Chart" : {
+      "android" : {
+        "methodCount" : 2,
+        "propertyCount" : 15,
+        "eventCount" : 1
+      },
+      "ios" : {
+        "propertyCount" : 0,
+        "eventCount" : 0,
+        "methodCount" : 0
+      },
+      "propertyGetters" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "events" : [
+
+      ],
+      "propertySetters" : [
+
+      ]
+    },
+    "NxtTouchSensor" : {
+      "android" : {
+        "methodCount" : 1,
+        "propertyCount" : 4,
+        "eventCount" : 2
+      },
+      "ios" : {
+        "methodCount" : 0,
+        "eventCount" : 0,
+        "propertyCount" : 0
+      },
+      "events" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "propertySetters" : [
+
+      ]
+    },
+    "Ev3GyroSensor" : {
+      "methods" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "ios" : {
+        "propertyCount" : 0,
+        "methodCount" : 0,
+        "eventCount" : 0
+      },
+      "android" : {
+        "methodCount" : 3,
+        "eventCount" : 1,
+        "propertyCount" : 4
+      },
+      "propertyGetters" : [
+
+      ],
+      "events" : [
+
+      ]
+    },
+    "ActivityStarter" : {
+      "android" : {
+        "propertyCount" : 12,
+        "methodCount" : 2,
+        "eventCount" : 3
+      },
+      "events" : [
+        "ActivityCanceled",
+        "ActivityError",
+        "AfterActivity"
+      ],
+      "methods" : [
+        "ResolveActivity",
+        "StartActivity"
+      ],
+      "propertyGetters" : [
+        "ResultName",
+        "DataUri",
+        "DataType",
+        "ExtraValue",
+        "ExtraKey",
+        "Action",
+        "ActivityPackage",
+        "ActivityClass"
+      ],
+      "ios" : {
+        "methodCount" : 2,
+        "eventCount" : 3,
+        "propertyCount" : 8
+      },
+      "propertySetters" : [
+        "DataUri",
+        "ResultName",
+        "ActivityClass",
+        "ExtraKey",
+        "ExtraValue",
+        "DataType",
+        "Action",
+        "ActivityPackage"
+      ]
+    },
+    "PhoneStatus" : {
+      "events" : [
+        "OnSettings"
+      ],
+      "ios" : {
+        "eventCount" : 1,
+        "methodCount" : 10,
+        "propertyCount" : 1
+      },
+      "methods" : [
+        "SdkLevel",
+        "isDirect",
+        "setHmacSeedReturnCode",
+        "GetVersionName",
+        "shutdown",
+        "setAssetsLoaded",
+        "InstallationId",
+        "startHTTPD",
+        "startWebRTC",
+        "GetInstaller"
+      ],
+      "propertyGetters" : [
+        "WebRTC"
+      ],
+      "propertySetters" : [
+        "WebRTC"
+      ],
+      "android" : {
+        "propertyCount" : 1,
+        "methodCount" : 15,
+        "eventCount" : 1
+      }
+    },
+    "Form" : {
+      "propertySetters" : [
+        "Title",
+        "Scrollable",
+        "AccentColor",
+        "BlocksToolkit",
+        "Theme",
+        "TitleVisible",
+        "BackgroundColor",
+        "OpenScreenAnimation",
+        "ActionBar",
+        "Sizing",
+        "BackgroundImage",
+        "AboutScreen",
+        "TutorialURL",
+        "AlignHorizontal",
+        "ShowStatusBar",
+        "PrimaryColor",
+        "ShowListsAsJson",
+        "VersionCode",
+        "PrimaryColorDark",
+        "CloseScreenAnimation",
+        "AlignVertical",
+        "AppName",
+        "Icon",
+        "VersionName",
+        "ScreenOrientation"
+      ],
+      "methods" : [
+        "AskForPermission",
+        "HideKeyboard"
+      ],
+      "android" : {
+        "propertyCount" : 32,
+        "methodCount" : 2,
+        "eventCount" : 7
+      },
+      "events" : [
+        "ErrorOccurred",
+        "Initialize",
+        "PermissionDenied",
+        "BackPressed",
+        "ScreenOrientationChanged",
+        "OtherScreenClosed",
+        "PermissionGranted"
+      ],
+      "propertyGetters" : [
+        "Scrollable",
+        "TitleVisible",
+        "Height",
+        "OpenScreenAnimation",
+        "Title",
+        "Width",
+        "PlatformVersion",
+        "AlignHorizontal",
+        "AlignVertical",
+        "AboutScreen",
+        "ScreenOrientation",
+        "Platform",
+        "CloseScreenAnimation",
+        "BackgroundImage",
+        "ShowStatusBar",
+        "BackgroundColor"
+      ],
+      "ios" : {
+        "methodCount" : 2,
+        "eventCount" : 7,
+        "propertyCount" : 29
+      }
+    },
+    "Camcorder" : {
+      "ios" : {
+        "eventCount" : 1,
+        "methodCount" : 1,
+        "propertyCount" : 0
+      },
+      "methods" : [
+        "RecordVideo"
+      ],
+      "propertySetters" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "android" : {
+        "eventCount" : 1,
+        "methodCount" : 1,
+        "propertyCount" : 0
+      },
+      "events" : [
+        "AfterRecording"
+      ]
+    },
+    "NxtUltrasonicSensor" : {
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "events" : [
+
+      ],
+      "ios" : {
+        "eventCount" : 0,
+        "propertyCount" : 0,
+        "methodCount" : 0
+      },
+      "methods" : [
+
+      ],
+      "android" : {
+        "propertyCount" : 7,
+        "eventCount" : 3,
+        "methodCount" : 1
+      }
+    },
+    "VerticalScrollArrangement" : {
+      "propertyGetters" : [
+        "BackgroundColor",
+        "Image",
+        "AlignVertical",
+        "AlignHorizontal",
+        "Visible",
+        "Height",
+        "Width"
+      ],
+      "android" : {
+        "propertyCount" : 9,
+        "eventCount" : 0,
+        "methodCount" : 0
+      },
+      "propertySetters" : [
+        "AlignHorizontal",
+        "Visible",
+        "Height",
+        "AlignVertical",
+        "Width",
+        "HeightPercent",
+        "BackgroundColor",
+        "Image",
+        "WidthPercent"
+      ],
+      "events" : [
+
+      ],
+      "ios" : {
+        "methodCount" : 0,
+        "eventCount" : 0,
+        "propertyCount" : 9
+      },
+      "methods" : [
+
+      ]
+    },
+    "TimePicker" : {
+      "events" : [
+        "TouchDown",
+        "TouchUp",
+        "AfterTimeSet",
+        "GotFocus",
+        "LostFocus"
+      ],
+      "propertySetters" : [
+        "Visible",
+        "TextAlignment",
+        "Image",
+        "Height",
+        "Shape",
+        "HeightPercent",
+        "FontSize",
+        "Width",
+        "FontBold",
+        "FontItalic",
+        "FontTypeface",
+        "Enabled",
+        "BackgroundColor",
+        "ShowFeedback",
+        "TextColor",
+        "Text",
+        "WidthPercent"
+      ],
+      "methods" : [
+        "LaunchPicker",
+        "SetTimeToDisplay",
+        "SetTimeToDisplayFromInstant"
+      ],
+      "android" : {
+        "methodCount" : 3,
+        "eventCount" : 5,
+        "propertyCount" : 20
+      },
+      "propertyGetters" : [
+        "FontItalic",
+        "BackgroundColor",
+        "Visible",
+        "Width",
+        "Text",
+        "Height",
+        "Image",
+        "ShowFeedback",
+        "TextColor",
+        "FontBold",
+        "FontSize",
+        "Minute",
+        "Instant",
+        "Enabled",
+        "Hour"
+      ],
+      "ios" : {
+        "methodCount" : 3,
+        "eventCount" : 5,
+        "propertyCount" : 20
+      }
+    },
+    "Pedometer" : {
+      "android" : {
+        "methodCount" : 6,
+        "propertyCount" : 9,
+        "eventCount" : 7
+      },
+      "events" : [
+        "GPSAvailable",
+        "StoppedMoving",
+        "SimpleStep",
+        "WalkStep",
+        "CalibrationFailed",
+        "StartedMoving",
+        "GPSLost"
+      ],
+      "methods" : [
+        "Resume",
+        "Reset",
+        "Stop",
+        "Pause",
+        "Save",
+        "Start"
+      ],
+      "propertyGetters" : [
+        "Distance",
+        "StopDetectionTimeout",
+        "ElapsedTime",
+        "SimpleSteps",
+        "CalibrateStrideLength",
+        "StrideLength",
+        "WalkSteps",
+        "Moving"
+      ],
+      "ios" : {
+        "eventCount" : 7,
+        "methodCount" : 6,
+        "propertyCount" : 9
+      },
+      "propertySetters" : [
+        "UseGPS",
+        "StopDetectionTimeout",
+        "StrideLength"
+      ]
+    },
+    "LightSensor" : {
+      "ios" : {
+        "propertyCount" : 0,
+        "eventCount" : 0,
+        "methodCount" : 0
+      },
+      "methods" : [
+
+      ],
+      "android" : {
+        "methodCount" : 0,
+        "propertyCount" : 5,
+        "eventCount" : 1
+      },
+      "events" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ]
+    },
+    "Ev3UI" : {
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "ios" : {
+        "methodCount" : 0,
+        "eventCount" : 0,
+        "propertyCount" : 0
+      },
+      "events" : [
+
+      ],
+      "android" : {
+        "methodCount" : 6,
+        "propertyCount" : 1,
+        "eventCount" : 0
+      },
+      "propertySetters" : [
+
+      ]
+    },
+    "TextBox" : {
+      "ios" : {
+        "eventCount" : 2,
+        "methodCount" : 2,
+        "propertyCount" : 18
+      },
+      "android" : {
+        "eventCount" : 2,
+        "methodCount" : 2,
+        "propertyCount" : 18
+      },
+      "propertyGetters" : [
+        "TextColor",
+        "MultiLine",
+        "BackgroundColor",
+        "Visible",
+        "Height",
+        "FontSize",
+        "Width",
+        "ReadOnly",
+        "Enabled",
+        "Hint",
+        "NumbersOnly",
+        "Text"
+      ],
+      "events" : [
+        "LostFocus",
+        "GotFocus"
+      ],
+      "methods" : [
+        "RequestFocus",
+        "HideKeyboard"
+      ],
+      "propertySetters" : [
+        "FontTypeface",
+        "FontSize",
+        "Hint",
+        "BackgroundColor",
+        "FontItalic",
+        "ReadOnly",
+        "NumbersOnly",
+        "Visible",
+        "Height",
+        "Enabled",
+        "TextAlignment",
+        "TextColor",
+        "MultiLine",
+        "FontBold",
+        "Text",
+        "Width",
+        "HeightPercent",
+        "WidthPercent"
+      ]
+    },
+    "TableArrangement" : {
+      "ios" : {
+        "eventCount" : 0,
+        "methodCount" : 0,
+        "propertyCount" : 7
+      },
+      "propertySetters" : [
+        "Rows",
+        "Columns",
+        "WidthPercent",
+        "HeightPercent",
+        "Height",
+        "Visible",
+        "Width"
+      ],
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+        "Width",
+        "Height",
+        "Visible"
+      ],
+      "events" : [
+
+      ],
+      "android" : {
+        "methodCount" : 0,
+        "propertyCount" : 7,
+        "eventCount" : 0
+      }
+    },
+    "Map" : {
+      "methods" : [
+        "FeatureFromDescription",
+        "LoadFromURL",
+        "PanTo",
+        "CreateMarker",
+        "Save"
+      ],
+      "propertySetters" : [
+        "EnableZoom",
+        "MapType",
+        "Width",
+        "WidthPercent",
+        "EnableRotation",
+        "Height",
+        "ShowZoom",
+        "ShowUser",
+        "EnablePan",
+        "ShowScale",
+        "Visible",
+        "CenterFromString",
+        "HeightPercent",
+        "BoundingBox",
+        "Rotation",
+        "ZoomLevel",
+        "ScaleUnits",
+        "LocationSensor",
+        "ShowCompass",
+        "Features"
+      ],
+      "events" : [
+        "FeatureClick",
+        "FeatureStartDrag",
+        "FeatureStopDrag",
+        "Ready",
+        "InvalidPoint",
+        "FeatureDrag",
+        "GotFeatures",
+        "TapAtPoint",
+        "ZoomChange",
+        "LongPressAtPoint",
+        "BoundsChange",
+        "LoadError",
+        "DoubleTapAtPoint",
+        "FeatureLongClick"
+      ],
+      "propertyGetters" : [
+        "Rotation",
+        "EnablePan",
+        "UserLatitude",
+        "ShowUser",
+        "ScaleUnits",
+        "ZoomLevel",
+        "BoundingBox",
+        "Features",
+        "ShowCompass",
+        "Longitude",
+        "EnableRotation",
+        "UserLongitude",
+        "Visible",
+        "Width",
+        "MapType",
+        "Height",
+        "ShowScale",
+        "Latitude",
+        "ShowZoom",
+        "EnableZoom"
+      ],
+      "android" : {
+        "propertyCount" : 24,
+        "methodCount" : 5,
+        "eventCount" : 14
+      },
+      "ios" : {
+        "methodCount" : 5,
+        "propertyCount" : 24,
+        "eventCount" : 14
+      }
+    },
+    "Label" : {
+      "propertyGetters" : [
+        "Text",
+        "Height",
+        "HasMargins",
+        "HTMLContent",
+        "TextColor",
+        "Visible",
+        "BackgroundColor",
+        "Width",
+        "FontSize"
+      ],
+      "events" : [
+
+      ],
+      "android" : {
+        "eventCount" : 0,
+        "methodCount" : 0,
+        "propertyCount" : 16
+      },
+      "ios" : {
+        "methodCount" : 0,
+        "eventCount" : 0,
+        "propertyCount" : 16
+      },
+      "methods" : [
+
+      ],
+      "propertySetters" : [
+        "HeightPercent",
+        "FontBold",
+        "HasMargins",
+        "Visible",
+        "BackgroundColor",
+        "FontTypeface",
+        "TextColor",
+        "FontSize",
+        "Width",
+        "TextAlignment",
+        "FontItalic",
+        "HTMLFormat",
+        "Text",
+        "Height",
+        "WidthPercent"
+      ]
+    },
+    "AccelerometerSensor" : {
+      "ios" : {
+        "propertyCount" : 8,
+        "methodCount" : 0,
+        "eventCount" : 2
+      },
+      "propertySetters" : [
+        "Enabled",
+        "MinimumInterval",
+        "Sensitivity",
+        "LegacyMode"
+      ],
+      "events" : [
+        "AccelerationChanged",
+        "Shaking"
+      ],
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+        "ZAccel",
+        "Available",
+        "Enabled",
+        "MinimumInterval",
+        "YAccel",
+        "XAccel",
+        "Sensitivity"
+      ],
+      "android" : {
+        "propertyCount" : 8,
+        "eventCount" : 2,
+        "methodCount" : 0
+      }
+    },
+    "NxtLightSensor" : {
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "events" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "android" : {
+        "eventCount" : 3,
+        "methodCount" : 1,
+        "propertyCount" : 8
+      },
+      "ios" : {
+        "methodCount" : 0,
+        "propertyCount" : 0,
+        "eventCount" : 0
+      }
+    },
+    "Serial" : {
+      "android" : {
+        "eventCount" : 0,
+        "methodCount" : 6,
+        "propertyCount" : 4
+      },
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "ios" : {
+        "propertyCount" : 0,
+        "methodCount" : 0,
+        "eventCount" : 0
+      },
+      "events" : [
+
+      ]
+    },
+    "EmailPicker" : {
+      "events" : [
+        "GotFocus",
+        "LostFocus"
+      ],
+      "methods" : [
+        "RequestFocus"
+      ],
+      "propertyGetters" : [
+        "Enabled",
+        "Hint",
+        "FontSize",
+        "Height",
+        "BackgroundColor",
+        "Text",
+        "TextColor",
+        "Visible",
+        "Width"
+      ],
+      "propertySetters" : [
+        "TextColor",
+        "Enabled",
+        "HeightPercent",
+        "TextAlignment",
+        "FontBold",
+        "FontTypeface",
+        "Width",
+        "Text",
+        "Hint",
+        "FontItalic",
+        "WidthPercent",
+        "FontSize",
+        "BackgroundColor",
+        "Height",
+        "Visible"
+      ],
+      "android" : {
+        "eventCount" : 2,
+        "methodCount" : 1,
+        "propertyCount" : 15
+      },
+      "ios" : {
+        "propertyCount" : 15,
+        "methodCount" : 1,
+        "eventCount" : 2
+      }
+    },
+    "Barometer" : {
+      "ios" : {
+        "propertyCount" : 0,
+        "methodCount" : 0,
+        "eventCount" : 0
+      },
+      "android" : {
+        "eventCount" : 1,
+        "propertyCount" : 4,
+        "methodCount" : 0
+      },
+      "methods" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "events" : [
+
+      ]
+    },
+    "Player" : {
+      "methods" : [
+        "Vibrate",
+        "Start",
+        "Pause",
+        "Stop"
+      ],
+      "propertySetters" : [
+        "Volume",
+        "PlayOnlyInForeground",
+        "Source",
+        "Loop"
+      ],
+      "android" : {
+        "propertyCount" : 5,
+        "methodCount" : 4,
+        "eventCount" : 3
+      },
+      "propertyGetters" : [
+        "PlayOnlyInForeground",
+        "IsPlaying",
+        "Loop",
+        "Source"
+      ],
+      "ios" : {
+        "eventCount" : 3,
+        "methodCount" : 4,
+        "propertyCount" : 5
+      },
+      "events" : [
+        "Completed",
+        "OtherPlayerStarted",
+        "PlayerError"
+      ]
+    },
+    "Ev3ColorSensor" : {
+      "events" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "ios" : {
+        "propertyCount" : 0,
+        "eventCount" : 0,
+        "methodCount" : 0
+      },
+      "android" : {
+        "methodCount" : 6,
+        "eventCount" : 4,
+        "propertyCount" : 9
+      }
+    },
+    "DatePicker" : {
+      "propertyGetters" : [
+        "Day",
+        "MonthInText",
+        "BackgroundColor",
+        "Enabled",
+        "FontItalic",
+        "Image",
+        "Text",
+        "Height",
+        "ShowFeedback",
+        "Instant",
+        "FontSize",
+        "Width",
+        "TextColor",
+        "Visible",
+        "Month",
+        "FontBold",
+        "Year"
+      ],
+      "propertySetters" : [
+        "FontSize",
+        "Text",
+        "Visible",
+        "TextColor",
+        "FontBold",
+        "HeightPercent",
+        "Height",
+        "Image",
+        "WidthPercent",
+        "TextAlignment",
+        "BackgroundColor",
+        "FontItalic",
+        "Enabled",
+        "ShowFeedback",
+        "Width",
+        "Shape",
+        "FontTypeface"
+      ],
+      "events" : [
+        "TouchDown",
+        "TouchUp",
+        "LostFocus",
+        "AfterDateSet",
+        "GotFocus"
+      ],
+      "android" : {
+        "methodCount" : 3,
+        "propertyCount" : 22,
+        "eventCount" : 5
+      },
+      "ios" : {
+        "propertyCount" : 22,
+        "eventCount" : 5,
+        "methodCount" : 3
+      },
+      "methods" : [
+        "SetDateToDisplayFromInstant",
+        "LaunchPicker",
+        "SetDateToDisplay"
+      ]
+    },
+    "BarcodeScanner" : {
+      "propertyGetters" : [
+        "Result",
+        "UseExternalScanner"
+      ],
+      "events" : [
+        "AfterScan"
+      ],
+      "methods" : [
+        "DoScan"
+      ],
+      "ios" : {
+        "propertyCount" : 2,
+        "eventCount" : 1,
+        "methodCount" : 1
+      },
+      "android" : {
+        "eventCount" : 1,
+        "methodCount" : 1,
+        "propertyCount" : 2
+      },
+      "propertySetters" : [
+        "UseExternalScanner"
+      ]
+    },
+    "Sharing" : {
+      "android" : {
+        "eventCount" : 0,
+        "methodCount" : 3,
+        "propertyCount" : 0
+      },
+      "propertyGetters" : [
+
+      ],
+      "events" : [
+
+      ],
+      "ios" : {
+        "eventCount" : 0,
+        "methodCount" : 3,
+        "propertyCount" : 0
+      },
+      "methods" : [
+        "ShareFileWithMessage",
+        "ShareMessage",
+        "ShareFile"
+      ],
+      "propertySetters" : [
+
+      ]
+    },
+    "HorizontalScrollArrangement" : {
+      "propertySetters" : [
+        "Image",
+        "WidthPercent",
+        "AlignVertical",
+        "AlignHorizontal",
+        "Visible",
+        "HeightPercent",
+        "Height",
+        "Width",
+        "BackgroundColor"
+      ],
+      "ios" : {
+        "methodCount" : 0,
+        "propertyCount" : 9,
+        "eventCount" : 0
+      },
+      "events" : [
+
+      ],
+      "android" : {
+        "methodCount" : 0,
+        "propertyCount" : 9,
+        "eventCount" : 0
+      },
+      "propertyGetters" : [
+        "AlignHorizontal",
+        "Image",
+        "Visible",
+        "Height",
+        "BackgroundColor",
+        "AlignVertical",
+        "Width"
+      ],
+      "methods" : [
+
+      ]
+    },
+    "YandexTranslate" : {
+      "propertyGetters" : [
+
+      ],
+      "events" : [
+        "GotTranslation"
+      ],
+      "propertySetters" : [
+        "ApiKey"
+      ],
+      "android" : {
+        "propertyCount" : 1,
+        "eventCount" : 1,
+        "methodCount" : 1
+      },
+      "ios" : {
+        "eventCount" : 1,
+        "methodCount" : 1,
+        "propertyCount" : 1
+      },
+      "methods" : [
+        "RequestTranslation"
+      ]
+    },
+    "NxtColorSensor" : {
+      "propertyGetters" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "events" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "android" : {
+        "methodCount" : 2,
+        "eventCount" : 4,
+        "propertyCount" : 10
+      },
+      "ios" : {
+        "methodCount" : 0,
+        "eventCount" : 0,
+        "propertyCount" : 0
+      }
+    },
+    "ChartData2D" : {
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "ios" : {
+        "propertyCount" : 0,
+        "methodCount" : 0,
+        "eventCount" : 0
+      },
+      "events" : [
+
+      ],
+      "android" : {
+        "eventCount" : 1,
+        "methodCount" : 15,
+        "propertyCount" : 15
+      }
+    },
+    "Voting" : {
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "android" : {
+        "propertyCount" : 6,
+        "methodCount" : 2,
+        "eventCount" : 4
+      },
+      "ios" : {
+        "eventCount" : 0,
+        "methodCount" : 0,
+        "propertyCount" : 0
+      },
+      "events" : [
+
+      ]
+    },
+    "Slider" : {
+      "events" : [
+        "PositionChanged"
+      ],
+      "ios" : {
+        "propertyCount" : 10,
+        "methodCount" : 0,
+        "eventCount" : 1
+      },
+      "methods" : [
+
+      ],
+      "android" : {
+        "propertyCount" : 10,
+        "eventCount" : 1,
+        "methodCount" : 0
+      },
+      "propertyGetters" : [
+        "ColorLeft",
+        "ThumbPosition",
+        "MinValue",
+        "Visible",
+        "Width",
+        "MaxValue",
+        "ColorRight",
+        "ThumbEnabled"
+      ],
+      "propertySetters" : [
+        "ThumbPosition",
+        "Width",
+        "ColorRight",
+        "ThumbEnabled",
+        "HeightPercent",
+        "MinValue",
+        "ColorLeft",
+        "Visible",
+        "WidthPercent",
+        "MaxValue"
+      ]
+    },
+    "VideoPlayer" : {
+      "propertySetters" : [
+        "Source",
+        "HeightPercent",
+        "WidthPercent",
+        "Width",
+        "FullScreen",
+        "Height",
+        "Volume",
+        "Visible"
+      ],
+      "ios" : {
+        "propertyCount" : 8,
+        "methodCount" : 5,
+        "eventCount" : 2
+      },
+      "methods" : [
+        "GetDuration",
+        "Pause",
+        "Stop",
+        "SeekTo",
+        "Start"
+      ],
+      "propertyGetters" : [
+        "FullScreen",
+        "Height",
+        "Width",
+        "Visible"
+      ],
+      "events" : [
+        "Completed",
+        "VideoPlayerError"
+      ],
+      "android" : {
+        "methodCount" : 5,
+        "eventCount" : 2,
+        "propertyCount" : 8
+      }
+    },
+    "ImageSprite" : {
+      "propertyGetters" : [
+        "Picture",
+        "Interval",
+        "Height",
+        "Enabled",
+        "Visible",
+        "Z",
+        "Heading",
+        "Rotates",
+        "Speed",
+        "X",
+        "Width",
+        "Y"
+      ],
+      "ios" : {
+        "propertyCount" : 12,
+        "eventCount" : 8,
+        "methodCount" : 6
+      },
+      "propertySetters" : [
+        "Rotates",
+        "Enabled",
+        "Heading",
+        "Y",
+        "Interval",
+        "X",
+        "Height",
+        "Visible",
+        "Z",
+        "Speed",
+        "Picture",
+        "Width"
+      ],
+      "events" : [
+        "Flung",
+        "TouchDown",
+        "CollidedWith",
+        "TouchUp",
+        "Dragged",
+        "NoLongerCollidingWith",
+        "EdgeReached",
+        "Touched"
+      ],
+      "methods" : [
+        "PointTowards",
+        "Bounce",
+        "MoveIntoBounds",
+        "MoveTo",
+        "PointInDirection",
+        "CollidingWith"
+      ],
+      "android" : {
+        "methodCount" : 7,
+        "eventCount" : 8,
+        "propertyCount" : 12
+      }
+    },
+    "SpeechRecognizer" : {
+      "propertyGetters" : [
+        "Result",
+        "UseLegacy"
+      ],
+      "propertySetters" : [
+        "UseLegacy"
+      ],
+      "android" : {
+        "methodCount" : 2,
+        "propertyCount" : 3,
+        "eventCount" : 2
+      },
+      "methods" : [
+        "Stop",
+        "GetText"
+      ],
+      "events" : [
+        "BeforeGettingText",
+        "AfterGettingText"
+      ],
+      "ios" : {
+        "methodCount" : 2,
+        "propertyCount" : 2,
+        "eventCount" : 2
+      }
+    },
+    "LineString" : {
+      "propertyGetters" : [
+        "EnableInfobox",
+        "Points",
+        "StrokeColor",
+        "Title",
+        "Type",
+        "Visible",
+        "Draggable",
+        "StrokeWidth",
+        "StrokeOpacity",
+        "Description"
+      ],
+      "propertySetters" : [
+        "Draggable",
+        "PointsFromString",
+        "StrokeWidth",
+        "Description",
+        "EnableInfobox",
+        "Points",
+        "StrokeColor",
+        "Visible",
+        "StrokeOpacity",
+        "Title"
+      ],
+      "android" : {
+        "methodCount" : 4,
+        "propertyCount" : 11,
+        "eventCount" : 5
+      },
+      "events" : [
+        "StartDrag",
+        "LongClick",
+        "Click",
+        "Drag",
+        "StopDrag"
+      ],
+      "ios" : {
+        "propertyCount" : 11,
+        "eventCount" : 5,
+        "methodCount" : 4
+      },
+      "methods" : [
+        "ShowInfobox",
+        "DistanceToFeature",
+        "DistanceToPoint",
+        "HideInfobox"
+      ]
+    },
+    "File" : {
+      "events" : [
+        "AfterFileSaved",
+        "GotText"
+      ],
+      "methods" : [
+        "SaveFile",
+        "ReadFrom",
+        "AppendToFile",
+        "Delete"
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "android" : {
+        "methodCount" : 12,
+        "propertyCount" : 4,
+        "eventCount" : 2
+      },
+      "ios" : {
+        "eventCount" : 2,
+        "methodCount" : 4,
+        "propertyCount" : 0
+      }
+    },
+    "Sound" : {
+      "events" : [
+        "SoundError"
+      ],
+      "propertySetters" : [
+        "MinimumInterval",
+        "Source"
+      ],
+      "android" : {
+        "methodCount" : 5,
+        "eventCount" : 1,
+        "propertyCount" : 2
+      },
+      "methods" : [
+        "Play",
+        "Resume",
+        "Pause",
+        "Vibrate",
+        "Stop"
+      ],
+      "propertyGetters" : [
+        "Source",
+        "MinimumInterval"
+      ],
+      "ios" : {
+        "propertyCount" : 2,
+        "eventCount" : 1,
+        "methodCount" : 5
+      }
+    },
+    "NxtDirectCommands" : {
+      "events" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "android" : {
+        "methodCount" : 25,
+        "propertyCount" : 1,
+        "eventCount" : 0
+      },
+      "methods" : [
+
+      ],
+      "ios" : {
+        "eventCount" : 0,
+        "propertyCount" : 0,
+        "methodCount" : 0
+      },
+      "propertySetters" : [
+
+      ]
+    },
+    "ContactPicker" : {
+      "ios" : {
+        "methodCount" : 2,
+        "propertyCount" : 24,
+        "eventCount" : 6
+      },
+      "events" : [
+        "AfterPicking",
+        "LostFocus",
+        "TouchDown",
+        "BeforePicking",
+        "TouchUp",
+        "GotFocus"
+      ],
+      "propertySetters" : [
+        "FontBold",
+        "WidthPercent",
+        "Visible",
+        "TextAlignment",
+        "TextColor",
+        "Image",
+        "Width",
+        "Shape",
+        "FontTypeface",
+        "FontSize",
+        "Height",
+        "Enabled",
+        "FontItalic",
+        "Text",
+        "ShowFeedback",
+        "BackgroundColor",
+        "HeightPercent"
+      ],
+      "methods" : [
+        "ViewContact",
+        "Open"
+      ],
+      "android" : {
+        "propertyCount" : 24,
+        "eventCount" : 6,
+        "methodCount" : 2
+      },
+      "propertyGetters" : [
+        "ContactUri",
+        "EmailAddress",
+        "Enabled",
+        "Height",
+        "FontItalic",
+        "Image",
+        "PhoneNumberList",
+        "ShowFeedback",
+        "Text",
+        "FontBold",
+        "TextColor",
+        "PhoneNumber",
+        "Visible",
+        "ContactName",
+        "FontSize",
+        "Picture",
+        "BackgroundColor",
+        "Width",
+        "EmailAddressList"
+      ]
+    },
+    "Twitter" : {
+      "android" : {
+        "eventCount" : 6,
+        "methodCount" : 14,
+        "propertyCount" : 9
+      },
+      "events" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "ios" : {
+        "eventCount" : 0,
+        "methodCount" : 0,
+        "propertyCount" : 0
+      },
+      "propertySetters" : [
+
+      ],
+      "methods" : [
+
+      ]
+    },
+    "ListPicker" : {
+      "propertySetters" : [
+        "ShowFeedback",
+        "Visible",
+        "Height",
+        "Enabled",
+        "HeightPercent",
+        "Title",
+        "Elements",
+        "SelectionIndex",
+        "TextAlignment",
+        "Selection",
+        "TextColor",
+        "ItemBackgroundColor",
+        "Text",
+        "FontBold",
+        "ElementsFromString",
+        "FontSize",
+        "Shape",
+        "ItemTextColor",
+        "Image",
+        "BackgroundColor",
+        "ShowFilterBar",
+        "FontTypeface",
+        "Width",
+        "FontItalic",
+        "WidthPercent"
+      ],
+      "events" : [
+        "GotFocus",
+        "AfterPicking",
+        "LostFocus",
+        "TouchDown",
+        "BeforePicking",
+        "TouchUp"
+      ],
+      "android" : {
+        "methodCount" : 1,
+        "propertyCount" : 25,
+        "eventCount" : 6
+      },
+      "methods" : [
+        "Open"
+      ],
+      "ios" : {
+        "methodCount" : 1,
+        "eventCount" : 6,
+        "propertyCount" : 25
+      },
+      "propertyGetters" : [
+        "FontSize",
+        "TextColor",
+        "Title",
+        "Image",
+        "Enabled",
+        "Text",
+        "Width",
+        "Elements",
+        "FontItalic",
+        "Height",
+        "ItemBackgroundColor",
+        "BackgroundColor",
+        "SelectionIndex",
+        "Selection",
+        "FontBold",
+        "ItemTextColor",
+        "ShowFeedback",
+        "ShowFilterBar",
+        "Visible"
+      ]
+    },
+    "TinyDB" : {
+      "ios" : {
+        "methodCount" : 5,
+        "propertyCount" : 1,
+        "eventCount" : 0
+      },
+      "events" : [
+
+      ],
+      "android" : {
+        "methodCount" : 5,
+        "propertyCount" : 1,
+        "eventCount" : 0
+      },
+      "propertySetters" : [
+        "Namespace"
+      ],
+      "propertyGetters" : [
+        "Namespace"
+      ],
+      "methods" : [
+        "ClearTag",
+        "StoreValue",
+        "ClearAll",
+        "GetTags",
+        "GetValue"
+      ]
+    },
+    "GameClient" : {
+      "android" : {
+        "propertyCount" : 10,
+        "eventCount" : 13,
+        "methodCount" : 9
+      },
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "ios" : {
+        "methodCount" : 0,
+        "propertyCount" : 0,
+        "eventCount" : 0
+      },
+      "events" : [
+
+      ],
+      "methods" : [
+
+      ]
+    },
+    "FirebaseDB" : {
+      "ios" : {
+        "propertyCount" : 0,
+        "methodCount" : 0,
+        "eventCount" : 0
+      },
+      "propertyGetters" : [
+
+      ],
+      "events" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "android" : {
+        "propertyCount" : 6,
+        "eventCount" : 5,
+        "methodCount" : 7
+      }
+    },
+    "TinyWebDB" : {
+      "ios" : {
+        "eventCount" : 3,
+        "methodCount" : 2,
+        "propertyCount" : 1
+      },
+      "android" : {
+        "eventCount" : 3,
+        "methodCount" : 2,
+        "propertyCount" : 1
+      },
+      "events" : [
+        "GotValue",
+        "WebServiceError",
+        "ValueStored"
+      ],
+      "methods" : [
+        "GetValue",
+        "StoreValue"
+      ],
+      "propertyGetters" : [
+        "ServiceURL"
+      ],
+      "propertySetters" : [
+        "ServiceURL"
+      ]
+    },
+    "Ev3UltrasonicSensor" : {
+      "android" : {
+        "propertyCount" : 8,
+        "methodCount" : 3,
+        "eventCount" : 3
+      },
+      "ios" : {
+        "eventCount" : 0,
+        "methodCount" : 0,
+        "propertyCount" : 0
+      },
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "events" : [
+
+      ]
+    },
+    "NearField" : {
+      "ios" : {
+        "methodCount" : 0,
+        "propertyCount" : 0,
+        "eventCount" : 0
+      },
+      "events" : [
+
+      ],
+      "propertySetters" : [
+
+      ],
+      "android" : {
+        "propertyCount" : 4,
+        "methodCount" : 0,
+        "eventCount" : 2
+      },
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+
+      ]
+    },
+    "Hygrometer" : {
+      "propertySetters" : [
+
+      ],
+      "methods" : [
+
+      ],
+      "ios" : {
+        "methodCount" : 0,
+        "propertyCount" : 0,
+        "eventCount" : 0
+      },
+      "android" : {
+        "methodCount" : 0,
+        "propertyCount" : 4,
+        "eventCount" : 1
+      },
+      "events" : [
+
+      ],
+      "propertyGetters" : [
+
+      ]
+    },
+    "Button" : {
+      "ios" : {
+        "methodCount" : 0,
+        "propertyCount" : 17,
+        "eventCount" : 6
+      },
+      "methods" : [
+
+      ],
+      "propertyGetters" : [
+        "Image",
+        "Enabled",
+        "BackgroundColor",
+        "FontSize",
+        "Text",
+        "TextColor",
+        "Height",
+        "Visible",
+        "FontItalic",
+        "Width",
+        "ShowFeedback",
+        "FontBold"
+      ],
+      "propertySetters" : [
+        "BackgroundColor",
+        "Text",
+        "WidthPercent",
+        "Width",
+        "TextColor",
+        "FontTypeface",
+        "Shape",
+        "FontBold",
+        "FontSize",
+        "ShowFeedback",
+        "Visible",
+        "Enabled",
+        "HeightPercent",
+        "Height",
+        "FontItalic",
+        "TextAlignment",
+        "Image"
+      ],
+      "android" : {
+        "methodCount" : 0,
+        "eventCount" : 6,
+        "propertyCount" : 17
+      },
+      "events" : [
+        "TouchDown",
+        "GotFocus",
+        "LostFocus",
+        "TouchUp",
+        "Click",
+        "LongClick"
+      ]
+    },
+    "Canvas" : {
+      "android" : {
+        "eventCount" : 5,
+        "methodCount" : 13,
+        "propertyCount" : 14
+      },
+      "events" : [
+        "Dragged",
+        "Touched",
+        "Flung",
+        "TouchDown",
+        "TouchUp"
+      ],
+      "ios" : {
+        "eventCount" : 5,
+        "propertyCount" : 12,
+        "methodCount" : 13
+      },
+      "propertyGetters" : [
+        "Width",
+        "BackgroundImage",
+        "TextAlignment",
+        "Height",
+        "PaintColor",
+        "BackgroundColor",
+        "FontSize",
+        "LineWidth",
+        "Visible",
+        "ExtendMovesOutsideCanvas"
+      ],
+      "methods" : [
+        "DrawShape",
+        "GetPixelColor",
+        "Save",
+        "GetBackgroundPixelColor",
+        "Clear",
+        "DrawText",
+        "DrawTextAtAngle",
+        "DrawPoint",
+        "SaveAs",
+        "DrawLine",
+        "DrawCircle",
+        "SetBackgroundPixelColor",
+        "DrawArc"
+      ],
+      "propertySetters" : [
+        "BackgroundColor",
+        "Visible",
+        "LineWidth",
+        "Width",
+        "ExtendMovesOutsideCanvas",
+        "TextAlignment",
+        "BackgroundImage",
+        "Height",
+        "PaintColor",
+        "WidthPercent",
+        "FontSize",
+        "HeightPercent"
+      ]
+    }
+  },
+  "blocks" : {
+    "text" : {
+      "text_contains" : true,
+      "text_join" : true,
+      "text_starts_at" : true,
+      "text_split_at_spaces" : true,
+      "text_length" : true,
+      "text_trim" : true,
+      "text_changeCase" : true,
+      "text" : true,
+      "text_isEmpty" : true,
+      "text_replace_all" : true,
+      "text_is_string" : true,
+      "obfuscated_text" : true,
+      "text_segment" : true,
+      "text_split" : true,
+      "text_compare" : true
+    },
+    "color" : {
+      "color_black" : true,
+      "color_gray" : true,
+      "color_dark_gray" : true,
+      "color_light_gray" : true,
+      "color_pink" : true,
+      "color_blue" : true,
+      "color_orange" : true,
+      "color_yellow" : true,
+      "color_make_color" : true,
+      "color_green" : true,
+      "color_cyan" : true,
+      "color_white" : true,
+      "color_split_color" : true,
+      "color_magenta" : true,
+      "color_red" : true
+    },
+    "variables" : {
+      "local_declaration_expression" : true,
+      "lexical_variable_get" : true,
+      "local_declaration_statement" : true,
+      "lexical_variable_set" : true,
+      "global_declaration" : true
+    },
+    "dictionaries" : {
+      "dictionaries_alist_to_dict" : true,
+      "dictionaries_dict_to_alist" : true,
+      "dictionaries_combine_dicts" : true,
+      "dictionaries_is_dict" : true,
+      "dictionaries_get_values" : true,
+      "dictionaries_is_key_in" : true,
+      "dictionaries_recursive_lookup" : true,
+      "dictionaries_copy" : true,
+      "dictionaries_delete_pair" : true,
+      "dictionaries_recursive_set" : true,
+      "dictionaries_walk_all" : true,
+      "dictionaries_set_pair" : true,
+      "dictionaries_length" : true,
+      "dictionaries_getters" : true,
+      "dictionaries_lookup" : true,
+      "dictionaries_walk_tree" : true,
+      "dictionaries_create_with" : true
+    },
+    "list" : {
+      "lists_select_item" : true,
+      "lists_append_list" : true,
+      "lists_replace_item" : true,
+      "lists_is_list" : true,
+      "lists_pick_random_item" : true,
+      "lists_copy" : true,
+      "lists_insert_item" : true,
+      "lists_lookup_in_pairs" : true,
+      "lists_add_items" : true,
+      "lists_create_with2" : true,
+      "lists_from_csv_row" : true,
+      "lists_length" : true,
+      "lists_to_csv_row" : true,
+      "lists_is_in" : true,
+      "lists_to_csv_table" : true,
+      "lists_from_csv_table" : true,
+      "lists_is_empty" : true,
+      "lists_create_with" : true,
+      "lists_position_in" : true,
+      "lists_remove_item" : true
+    },
+    "procedures" : {
+      "procedures_defnoreturn" : true,
+      "procedures_callnoreturn" : true,
+      "procedures_defreturn" : true,
+      "procedures_callreturn" : true
+    },
+    "math" : {
+      "math_ceiling" : true,
+      "math_power" : true,
+      "math_convert_number" : true,
+      "math_abs" : true,
+      "math_random_set_seed" : true,
+      "math_cos" : true,
+      "math_floor" : true,
+      "math_format_as_decimal" : true,
+      "math_division" : true,
+      "math_round" : true,
+      "math_add" : true,
+      "math_single" : true,
+      "math_atan2" : true,
+      "math_is_a_number" : true,
+      "math_multiply" : true,
+      "math_divide" : true,
+      "math_tan" : true,
+      "math_random_float" : true,
+      "math_trig" : true,
+      "math_random_int" : true,
+      "math_on_list" : true,
+      "math_compare" : true,
+      "math_rad2deg" : true,
+      "math_number" : true,
+      "math_subtract" : true,
+      "math_neg" : true
+    },
+    "controls" : {
+      "controls_getStartValue" : true,
+      "controls_if" : true,
+      "controls_forEach" : true,
+      "controls_openAnotherScreenWithStartValue" : true,
+      "controls_for_each_dict" : true,
+      "controls_forRange" : true,
+      "controls_openAnotherScreen" : true,
+      "controls_closeApplication" : true,
+      "controls_do_then_return" : true,
+      "controls_closeScreenWithValue" : true,
+      "controls_eval_but_ignore" : true,
+      "controls_getPlainStartText" : true,
+      "controls_while" : true,
+      "controls_choose" : true,
+      "controls_closeScreen" : true,
+      "controls_closeScreenWithPlainText" : true,
+      "controls_break" : true
+    },
+    "logic" : {
+      "logic_operation" : true,
+      "logic_or" : true,
+      "logic_negate" : true,
+      "logic_false" : true,
+      "logic_boolean" : true,
+      "logic_compare" : true
+    }
+  }
+}
