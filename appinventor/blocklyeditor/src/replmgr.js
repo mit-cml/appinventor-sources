@@ -96,7 +96,7 @@ var PROTECT_ENUM_ANDROID = "(define-syntax protect-enum " +
 var PROTECT_ENUM_IOS = "#f))(define-syntax protect-enum " +
   "(syntax-rules () ((_ enum-value number-value) " +
   "(if (equal? \"\" (yail:invoke (yail:invoke AIComponentKit.Form 'getActiveForm) 'VersionName)) " +
-  "#'number-value #'enum-value))))(begin (begin #f";
+  "number-value enum-value))))(begin (begin #f";
 
 // Blockly is only loaded once now, so we can init this here.
 top.ReplState = new Blockly.ReplStateObj();
@@ -1427,6 +1427,7 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
         this.hardreset(this.formName);       // Tell aiStarter to kill off adb
     }
 };
+
 Blockly.ReplMgr.genCode = function() {
     var retval = '';
     for (var i = 0; i < 6; i++) {
@@ -1434,6 +1435,7 @@ Blockly.ReplMgr.genCode = function() {
     }
     return retval;
 };
+
 // Request ipAddress information from the Rendezvous Server
 Blockly.ReplMgr.getFromRendezvous = function() {
     var me = this;
@@ -1469,22 +1471,22 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
+                if (!(rs.android) && Blockly.ReplMgr.HasExtensions()){
+                    var ios_dialog = new Blockly.Util.Dialog(Blockly.Msg.EXTENSIONS, Blockly.Msg.EXTENSIONS_IOS, Blockly.Msg.REPL_CANCEL, true, null, 0, function(){
+                        ios_dialog.hide();
+                        top.ReplState.state = Blockly.ReplMgr.rsState.IDLE
+                        top.BlocklyPanel_indicateDisconnect();
+                        rs.connection = null;
+                    }); 
+                        ios_dialog.display();
+                }
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
                                           // HTTP
                 rs.webrtc = json.webrtc === "true";
                 rs.useproxy = json.useproxy === "true";
                 rs.hasfetchassets = rs.android || rs.webrtc;
-                if (!(rs.android) && Blockly.ReplMgr.hasExtensions()) {
-     var content = "Extentions are not currently supported for IOS Devices";
-    var ios_dialog = new Blockly.Util.Dialog(Blockly.Msg.EXTENSIONS, content, Blockly.Msg.REPL_CANCEL, true, null, 0, function(){
-                ios_dialog.hide();
-                top.ReplState.state = Blockly.ReplMgr.rsState.IDLE
-                top.BlocklyPanel_indicateDisconnect();
-                rs.connection = null;
-            }); 
-                ios_dialog.display();
-                }
+
                 // Let's see if the Rendezvous server gave us a second level to contact
                 // as well as a list of ice servers to override our defaults
 
@@ -1516,11 +1518,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
 
 Blockly.ReplMgr.hasExtensions = function() {
    var extensions = top.AssetManager_getExtensions();
-   if (extensions.length == 0) {
-    return false;
-   } else {
-    return true;
-   }
+   return extensions.length > 0
 }
 
 Blockly.ReplMgr.rendezvousDone = function() {
@@ -1707,6 +1705,7 @@ Blockly.ReplMgr.resendAssetsAndExtensions = function() {
         Blockly.ReplMgr.loadExtensions();
     });
 };
+
 Blockly.ReplMgr.loadExtensions = function() {
     var rs = top.ReplState;
     // Note: If hasfetchassets is false, we are on iOS which doesn't yet
