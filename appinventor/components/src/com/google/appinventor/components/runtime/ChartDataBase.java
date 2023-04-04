@@ -47,7 +47,6 @@ import java.util.concurrent.Future;
 @SimpleObject
 public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDataModel<?, ?, ?, ?, ?> > implements Component, DataSourceChangeListener,
     OnChartGestureListener, OnChartValueSelectedListener {
- //protected Chart container;
 
   /**
    * Used to queue & execute asynchronous tasks while ensuring

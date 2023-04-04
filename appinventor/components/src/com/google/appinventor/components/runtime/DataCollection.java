@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 import android.util.Log;
 
 
+import com.github.mikephil.charting.data.Entry;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -34,7 +35,7 @@ import java.util.concurrent.Future;
  */
 @SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
 @SimpleObject
-public abstract class DataCollection<C extends ComponentContainer, E, M extends DataModel>
+public abstract class DataCollection<C extends ComponentContainer, E extends Entry, M extends DataModel>
 implements Component, DataSourceChangeListener {
   protected M dataModel;
   protected C container;

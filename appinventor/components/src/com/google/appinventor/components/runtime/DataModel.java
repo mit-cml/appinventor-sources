@@ -25,6 +25,8 @@ public abstract class DataModel<E> {
    */
   protected int maximumTimeEntries = 200;
 
+  public abstract void clearEntries();
+
   /**
    * Enum used to specify the criterion to use for entry filtering/comparing.
    */
@@ -239,12 +241,7 @@ public abstract class DataModel<E> {
    *
    * @param index Index of the Entry to remove
    */
-  public void removeEntry(int index) {
-    // Entry exists; remove it
-    if (index >= 0) {
-      entries.remove(index);
-    }
-  }
+  public abstract void removeEntry(int index);
 
   /**
    * Checks whether an entry exists in the Data Series.
@@ -314,13 +311,6 @@ public abstract class DataModel<E> {
   public abstract int findEntryIndex(Entry entry);
 
   /**
-   * Deletes all the entries in the Data Series.
-   */
-  public void clearEntries() {
-    entries.clear();
-  }
-
-  /**
    * Adds the specified entry as a time entry to the Data Series.
    *
    * <p>The method handles additional logic for removing excess values
@@ -328,18 +318,7 @@ public abstract class DataModel<E> {
    *
    * @param tuple tuple representing the time entry
    */
-  public void addTimeEntry(YailList tuple) {
-    // If the entry count of the Data Series entries exceeds
-    // the maximum allowed time entries, then remove the first one
-    if (entries.size() >= maximumTimeEntries) {
-      entries.remove(0);
-    }
-
-    // Add entry from the specified tuple
-    // TODO: Support for multi-dimensional case (currently tuples always consist
-    // TODO: of two elements)
-    addEntryFromTuple(tuple);
-  }
+  public abstract void addTimeEntry(YailList tuple);
 
   /**
    * Sets the maximum time entries to be kept in the Data Series.
@@ -396,7 +375,5 @@ public abstract class DataModel<E> {
    *
    * @return List of entries of the Chart Data Model (Data Series)
    */
-  public List<E> getEntries() {
-    return Collections.unmodifiableList(entries);
-  }
+  public abstract List<E> getEntries();
 }
