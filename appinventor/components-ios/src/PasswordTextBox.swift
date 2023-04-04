@@ -7,7 +7,6 @@ import Foundation
 
 class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelegate {
   var placeholderColor: Int32 = Color.default.int32
-  
   fileprivate let _field = UITextField(frame: CGRect.zero)
   private var _readOnly = false
   private var _numbersOnly = false

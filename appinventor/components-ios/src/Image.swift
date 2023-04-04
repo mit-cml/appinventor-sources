@@ -30,7 +30,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       return _view
     }
   }
-  
+
   /**
    * A written description of what the image looks like.
    */
@@ -42,7 +42,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       view.accessibilityLabel = newValue
     }
   }
-  
+
   /**
    * Applies or cancels a horizontal scrolling animation
    */

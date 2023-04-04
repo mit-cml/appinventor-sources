@@ -256,7 +256,7 @@ open class ButtonBase: ViewComponent {
     }
     applyStyle()
   }
-  
+
   func updateFontSize() {
     guard let titleLabel = _view.titleLabel else {
       return
@@ -280,20 +280,20 @@ open class ButtonBase: ViewComponent {
       } else {
         _textColor = _userTextColor
       }
-      
+
       if _userBackgroundColor == Color.default.int32 {
         _backgroundColor = Int32(bitPattern: Color.black.rawValue)
       } else {
         _backgroundColor = _userBackgroundColor
       }
-      
+
     } else {
       _textColor = _userTextColor
       _backgroundColor = _userBackgroundColor
     }
     setNeedsStyleApplied()
   }
-  
+
   @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
@@ -356,7 +356,7 @@ open class ButtonBase: ViewComponent {
       updateFontSize()
     }
   }
-  
+
   @objc open var HighContrast: Bool {
     get {
       return _isHighContrast
@@ -389,7 +389,7 @@ open class ButtonBase: ViewComponent {
       setNeedsStyleApplied()
     }
   }
-  
+
   @objc open var LargeFont: Bool {
     get {
       return _isBigText

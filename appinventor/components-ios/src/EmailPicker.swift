@@ -8,7 +8,6 @@ import Contacts
 
 class EmailPickerAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelegate {
   var placeholderColor: Int32 = Color.default.int32
-  
   fileprivate let _field = UITextField(frame: CGRect.zero)
   fileprivate let _wrapper = UIView(frame: CGRect.zero)
   private var _readOnly = false

@@ -213,7 +213,7 @@ public class CheckBoxView: UIView {
   }
 }
 
-public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent{
+public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent {
   public var HighContrast: Bool = false
   fileprivate var _view = CheckBoxView()
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
@@ -235,7 +235,7 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, Accessibl
     Enabled = true
     FontSize = 14.0
   }
-  
+
   @objc func updateFontSize() {
     if form?.BigDefaultText == true {
       if _userFontSize == kFontSizeDefault {

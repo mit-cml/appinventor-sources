@@ -69,7 +69,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       _text.font = UIFont(descriptor: _text.font.fontDescriptor, size: CGFloat(_userFontSize))
     }
   }
-  
+
   open override var view: UIView {
     get {
       return _view

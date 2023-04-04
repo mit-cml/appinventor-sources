@@ -6,7 +6,6 @@
 import Foundation
 
 public final class Label: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent {
-  
   fileprivate var _view: UILabel
   fileprivate var _alignment: Int32 = Alignment.normal.rawValue
   fileprivate var _typeface = Typeface.normal
@@ -36,7 +35,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
     Width = kLengthPreferred
     FontSize = Float64(kFontSizeDefault)
   }
-  
+
   func updateFontSize() {
     if _htmlFormat {
       updateFormattedContent()
@@ -176,7 +175,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
       updateFontSize()
     }
   }
-  
+
   @objc public var Text: String {
     get {
       return _view.text ?? ""

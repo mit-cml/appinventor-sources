@@ -64,7 +64,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     _delegate = delegate
     super.setDelegate(delegate)
   }
-  
+
   func updateFontSize() {
     if form?.BigDefaultText == true {
       if _userFontSize == kFontSizeDefault {
@@ -76,7 +76,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       _delegate.font = getFontSize(font: _delegate.font, size: _userFontSize) ?? _delegate.font
     }
   }
-  
+
   func updateColor() {
     if form?.HighContrast == true {
       if _userTextColor == Color.default.int32  {
@@ -85,7 +85,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       } else {
         _textColor = _userTextColor
       }
-      
+
       if _userBackgroundColor == Color.default.int32 {
         _backgroundColor = Int32(bitPattern: Color.black.rawValue)
       } else {
@@ -96,13 +96,13 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     } else {
       _textColor = _userTextColor
       _backgroundColor = _userBackgroundColor
-      
+
       if _textColor == Color.default.int32 {
         _delegate.textColor = preferredTextColor(_container?.form)
       } else {
         _delegate.textColor = argbToColor(_textColor)
       }
-      
+
       if _userBackgroundColor == Color.default.int32 {
         _delegate.backgroundColor = preferredBackgroundColor(_container?.form)
       } else {
@@ -211,7 +211,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       updateColor()
     }
   }
-  
+
   @objc open var Hint: String {
     get {
       return _hint
@@ -221,7 +221,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
       _delegate?.placeholderText = hint
     }
   }
-  
+
   @objc open var LargeFont: Bool {
     get {
       return _isBigText

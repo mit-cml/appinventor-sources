@@ -10,7 +10,7 @@ import Foundation
    * The component's contrast controller for better visibility
    */
   var HighContrast : Bool { get set }
-  
+
   /**
    * The component's Font controller for better visibility
    */

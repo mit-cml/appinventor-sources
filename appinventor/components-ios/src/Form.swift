@@ -207,7 +207,7 @@ let kMinimumToastWait = 10.0
     _linearView.setNeedsLayout()
   }
 
-  // DAVID: Visual accessibility implementation
+  // MARK: Visual accessibility implementation
 
   public static func setBigDefaultTextRecursive(of container: ComponentContainer ,to enabled: Bool) {
     for child in container.getChildren() {
@@ -467,7 +467,7 @@ let kMinimumToastWait = 10.0
       }
     }
   }
-  
+
   @objc open var BigDefaultText: Bool {
     get {
       return _bigDefaultText
@@ -517,7 +517,7 @@ let kMinimumToastWait = 10.0
       NSLog("Cannot set Height of Form")
     }
   }
-  
+
   @objc open var HighContrast: Bool {
     get {
       return _highContrast
