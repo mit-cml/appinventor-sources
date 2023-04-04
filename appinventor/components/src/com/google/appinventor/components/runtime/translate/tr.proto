@@ -4,7 +4,7 @@
 option java_package = "com.google.appinventor.components.runtime.translate";
 option java_outer_classname = "TranslatorToken";
 
-message unsigned {
+message Unsigned {
     optional string huuid = 1;                   // userId of requestor
     optional uint64 version = 2 [default = 0];   // Token structure version #
     optional uint64 generation = 3 [default =0]; // used to revoke a compromised token
@@ -18,7 +18,7 @@ message unsigned {
 
 // When stored in a project, this token is base58 encoded
 
-message token {
+message Token {
     optional uint64 version = 1 [default = 1];    // version of structure
     optional uint64 keyid = 2 [default = 1];
     optional uint64 generation = 3 [default = 0]; // should match top level version
@@ -26,16 +26,16 @@ message token {
     optional bytes signature = 5;
 }
 
-message request {
+message Request {
     optional uint64 version = 1 [default = 1];
-    optional token token = 2;
+    optional Token token = 2;
     optional string totranslate = 3;
     optional string languagecode = 4;
     optional string sourcelanguage = 5;
     optional string targetlanguage = 6;
 }
 
-message response {
+message Response {
     optional uint64 version = 1 [default = 1];
     optional uint64 status = 2 [default = 0]; // 0 = success, otherwise error code
     optional string translated = 3;
