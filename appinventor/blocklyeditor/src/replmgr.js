@@ -1471,14 +1471,14 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
-                if (!(rs.android) && Blockly.ReplMgr.HasExtensions()){
-                    var ios_dialog = new Blockly.Util.Dialog(Blockly.Msg.EXTENSIONS, Blockly.Msg.EXTENSIONS_IOS, Blockly.Msg.REPL_CANCEL, true, null, 0, function(){
+                if (!(rs.android) && Blockly.ReplMgr.hasExtensions()){
+                    var ios_dialog = new Blockly.Util.Dialog(Blockly.Msg.EXTENSIONS, Blockly.Msg.EXTENSIONS_iOS, Blockly.Msg.REPL_CANCEL, true, null, 0, function(){
                         ios_dialog.hide();
-                        top.ReplState.state = Blockly.ReplMgr.rsState.IDLE
+                        top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
                         top.BlocklyPanel_indicateDisconnect();
                         rs.connection = null;
                     }); 
-                        ios_dialog.display();
+                ios_dialog.display();
                 }
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
@@ -1517,8 +1517,8 @@ Blockly.ReplMgr.getFromRendezvous = function() {
 };
 
 Blockly.ReplMgr.hasExtensions = function() {
-    var extensions = top.AssetManager_getExtensions();
-    return extensions.length > 0
+   var extensions = top.AssetManager_getExtensions();
+   return extensions.length > 0;
 }
 
 Blockly.ReplMgr.rendezvousDone = function() {
