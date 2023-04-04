@@ -1517,8 +1517,8 @@ Blockly.ReplMgr.getFromRendezvous = function() {
 };
 
 Blockly.ReplMgr.hasExtensions = function() {
-   var extensions = top.AssetManager_getExtensions();
-   return extensions.length > 0
+    var extensions = top.AssetManager_getExtensions();
+    return extensions.length > 0
 }
 
 Blockly.ReplMgr.rendezvousDone = function() {
