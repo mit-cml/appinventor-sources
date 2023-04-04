@@ -27,11 +27,29 @@ class PickerPadController: UIViewController {
   }
 
   @objc func setupViews() {
-    fatalError("setupViews() has not been implemented")
+//    fatalError("setupViews() has not been implemented")
+    let alert = UIAlertController(title: "Error", message: "setupViews() has not been implemented", preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+      // Handle OK action if needed
+    }
+    alert.addAction(okAction)
+    
+    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+      rootViewController.present(alert, animated: true, completion: nil)
+    }
   }
 
   @objc func addLayoutConstraints() {
-    fatalError("addLayoutConstraints() has not been implemented")
+//    fatalError("addLayoutConstraints() has not been implemented")
+    let alert = UIAlertController(title: "Error", message: "addLayoutConstraints() has not been implemented", preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+      // Handle OK action if needed
+    }
+    alert.addAction(okAction)
+    
+    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+      rootViewController.present(alert, animated: true, completion: nil)
+    }
   }
 }
 
@@ -75,7 +93,17 @@ class PickerPhoneController: UIViewController {
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+//    fatalError("init(coder:) has not been implemented")
+    let alert = UIAlertController(title: "Error", message: "init(coder:) has not been implemented", preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+      // Handle OK action if needed
+    }
+    alert.addAction(okAction)
+    
+    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+      rootViewController.present(alert, animated: true, completion: nil)
+    }
+    return nil
   }
 
   @objc public func dismissPicker() {

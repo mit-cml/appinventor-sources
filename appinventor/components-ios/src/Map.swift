@@ -1249,7 +1249,18 @@ private class ZoomButton: UIButton {
   }
 
   required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+//    fatalError("init(coder:) has not been implemented")
+    let alert = UIAlertController(title: "Error", message: "A Error Occured", preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+      // Handle OK action if needed
+    }
+    alert.addAction(okAction)
+    
+    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+      rootViewController.present(alert, animated: true, completion: nil)
+    }
+    
+    return nil // Return nil to indicate failure
   }
 
   override var isEnabled: Bool {

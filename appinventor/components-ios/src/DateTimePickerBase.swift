@@ -30,7 +30,18 @@ class DateTimePickerPadController: PickerPadController, DateTimePickerController
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+//    fatalError("init(coder:) has not been implemented")
+    let alert = UIAlertController(title: "Error", message: "init(coder:) has not been implemented", preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+      // Handle OK action if needed
+    }
+    alert.addAction(okAction)
+    
+    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+      rootViewController.present(alert, animated: true, completion: nil)
+    }
+    return nil
+    
   }
 
   override func setupViews() {
@@ -96,7 +107,17 @@ class DateTimePickerPhoneController: PickerPhoneController, DateTimePickerContro
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+//    fatalError("init(coder:) has not been implemented")
+    let alert = UIAlertController(title: "Error", message: "init(coder:) has not been implemented", preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+      // Handle OK action if needed
+    }
+    alert.addAction(okAction)
+    
+    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+      rootViewController.present(alert, animated: true, completion: nil)
+    }
+    return nil
   }
 
   @objc func setDateTime(_ calendar: Calendar) {
