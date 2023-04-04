@@ -5,7 +5,7 @@
 
 import Foundation
 
-let kDefaultPlaceholderColor = UIColor(red: 0, green: 0, blue: 25/255, alpha: 0.22)
+let kDefaultPlaceholderColor = UIColor.systemGray
 
 fileprivate protocol TextBoxDelegate: AbstractMethodsForTextBox, UITextFieldDelegate, UITextViewDelegate {
 }
@@ -111,7 +111,9 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   }
 
   open func updatePlaceholder() {
-    var newPlaceholder = NSAttributedString(string: placeholderText ?? "", attributes: [NSAttributedString.Key.foregroundColor:argbToColor(_placeholderColor)])
+    var newPlaceholder = NSAttributedString(string: placeholderText ?? "",
+        attributes: [NSAttributedString.Key.foregroundColor:argbToColor(_placeholderColor),
+                     NSAttributedString.Key.font: _field.font])
     _field.attributedPlaceholder = newPlaceholder
     if _empty {
       _view.attributedText = newPlaceholder

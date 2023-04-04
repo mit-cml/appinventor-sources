@@ -221,9 +221,9 @@ let kMinimumToastWait = 10.0
 
   public static func setHighContrastRecursive(of container: ComponentContainer, to enabled: Bool) {
     for child in container.getChildren() {
-      if let child = child as? ComponentContainer{
+      if let child = child as? ComponentContainer {
         Form.setHighContrastRecursive(of: child, to: enabled)
-      } else if let child = child as? AccessibleComponent{
+      } else if let child = child as? AccessibleComponent {
         child.HighContrast = enabled
       }
     }

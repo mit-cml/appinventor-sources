@@ -91,7 +91,7 @@ enum ButtonStylePipeline: Int {
 
 typealias PipelineStep = (ButtonBase)->Bool
 
-open class ButtonBase: ViewComponent {
+open class ButtonBase: ViewComponent, AccessibleComponent {
   @objc final var _view: MAIButton
   fileprivate weak var _delegate: AbstractMethodsForButton?
   fileprivate var _textAlignment = Alignment.center
@@ -271,6 +271,7 @@ open class ButtonBase: ViewComponent {
     } else {
       titleLabel.font = getFontSize(font: titleLabel.font, size: _userFontSize)
     }
+    setNeedsStyleApplied()
   }
 
   func updateColor() {

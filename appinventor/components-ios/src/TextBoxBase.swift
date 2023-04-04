@@ -31,7 +31,7 @@ extension AbstractMethodsForTextBox {
   }
 }
 
-open class TextBoxBase: ViewComponent, UITextViewDelegate {
+open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
   fileprivate weak var _delegate: AbstractMethodsForTextBox!
   
   fileprivate var _textAlignment: Int32 = 0
@@ -78,10 +78,11 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
   }
 
   func updateColor() {
+    var placeholderColor = colorToArgb(kDefaultPlaceholderColor)
     if form?.HighContrast == true {
       if _userTextColor == Color.default.int32  {
         _textColor = Int32(bitPattern: Color.white.rawValue)
-        _delegate.placeholderColor = Int32(bitPattern: Color.yellow.rawValue)
+        placeholderColor = Int32(bitPattern: Color.yellow.rawValue)
       } else {
         _textColor = _userTextColor
       }
@@ -109,6 +110,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
         _delegate.backgroundColor = argbToColor(_backgroundColor)
       }
     }
+    _delegate.placeholderColor = placeholderColor
   }
 
   // MARK: TextboxBase Properties
