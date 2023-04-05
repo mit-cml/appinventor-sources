@@ -1478,7 +1478,6 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                         top.BlocklyPanel_indicateDisconnect();
                         rs.connection = null;
                     }); 
-                ios_dialog.display();
                 }
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
