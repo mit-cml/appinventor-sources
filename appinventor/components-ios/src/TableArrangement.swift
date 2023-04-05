@@ -52,16 +52,7 @@ fileprivate enum ConstraintUpdate {
   }
 
   required public init?(coder aDecoder: NSCoder) {
-//    fatalError()
-    let alert = UIAlertController(title: "Error", message: "init(coder:) has not been implemented", preferredStyle: .alert)
-    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-      // Handle OK action if needed
-    }
-    alert.addAction(okAction)
-    
-    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
-      rootViewController.present(alert, animated: true, completion: nil)
-    }
+    showAlert(message: nil)
     return nil
   }
 
@@ -173,9 +164,6 @@ fileprivate enum ConstraintUpdate {
     _emptyConstraints = [heightAnchor.constraint(equalToConstant: 100), widthAnchor.constraint(equalToConstant: 100)]
   }
 
-//  required init?(coder aDecoder: NSCoder) {
-//    fatalError("init(coder:) has not been implemented")
-//  }
   required init?(coder aDecoder: NSCoder) {
       super.init(coder: aDecoder)
       showAlert(message: nil)

@@ -24,9 +24,6 @@ open class ListPickerActivity: UINavigationController {
     _tableViewController.navigationItem.leftBarButtonItem = cancelButton
   }
 
-//  public required init?(coder aDecoder: NSCoder) {
-//    fatalError("init(coder:) has not been implemented")
-//  }
   public required init?(coder aDecoder: NSCoder) {
       super.init(coder: aDecoder)
       showAlert(message: nil)

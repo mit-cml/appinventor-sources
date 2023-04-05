@@ -11,13 +11,10 @@ class PickerPadController: UIViewController {
     modalPresentationStyle = .popover
   }
 
-//  public required init?(coder aDecoder: NSCoder) {
-//    fatalError("init(coder:) has not been implemented")
-//  }
   required init?(coder aDecoder: NSCoder) {
-      super.init(coder: aDecoder)
+    super.init(coder: aDecoder)
     showAlert(message: nil)
-    }
+  }
 
   open override func viewDidLoad() {
     super.viewDidLoad()
@@ -27,29 +24,11 @@ class PickerPadController: UIViewController {
   }
 
   @objc func setupViews() {
-//    fatalError("setupViews() has not been implemented")
-    let alert = UIAlertController(title: "Error", message: "setupViews() has not been implemented", preferredStyle: .alert)
-    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-      // Handle OK action if needed
-    }
-    alert.addAction(okAction)
-    
-    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
-      rootViewController.present(alert, animated: true, completion: nil)
-    }
+    showAlert(message: "setupViews() has not been implemented")
   }
 
   @objc func addLayoutConstraints() {
-//    fatalError("addLayoutConstraints() has not been implemented")
-    let alert = UIAlertController(title: "Error", message: "addLayoutConstraints() has not been implemented", preferredStyle: .alert)
-    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-      // Handle OK action if needed
-    }
-    alert.addAction(okAction)
-    
-    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
-      rootViewController.present(alert, animated: true, completion: nil)
-    }
+    showAlert(message: "addLayoutConstraints() has not been implemented")
   }
 }
 
@@ -93,16 +72,7 @@ class PickerPhoneController: UIViewController {
   }
 
   public required init?(coder aDecoder: NSCoder) {
-//    fatalError("init(coder:) has not been implemented")
-    let alert = UIAlertController(title: "Error", message: "init(coder:) has not been implemented", preferredStyle: .alert)
-    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-      // Handle OK action if needed
-    }
-    alert.addAction(okAction)
-    
-    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
-      rootViewController.present(alert, animated: true, completion: nil)
-    }
+    showAlert(message: nil)
     return nil
   }
 
