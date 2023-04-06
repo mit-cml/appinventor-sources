@@ -1475,7 +1475,8 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                     rs.connection = null;
                     var ios_dialog = new Blockly.Util.Dialog(Blockly.Msg.EXTENSIONS, Blockly.Msg.EXTENSIONS_iOS, Blockly.Msg.REPL_CANCEL, true, null, 0, function(){
                         ios_dialog.hide();
-                    }); 
+                    });
+                    return;
                 }
                 // Keep the user informed about the connection
                 top.ConnectProgressBar_start();
@@ -1519,7 +1520,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
 Blockly.ReplMgr.hasExtensions = function() {
     var extensions = top.AssetManager_getExtensions();
     return extensions.length > 0;
-}
+};
 
 Blockly.ReplMgr.rendezvousDone = function() {
     var me = this;
