@@ -1477,7 +1477,8 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                     rs.connection = null;
                     var ios_dialog = new Blockly.Util.Dialog(Blockly.Msg.EXTENSIONS, Blockly.Msg.EXTENSIONS_iOS, Blockly.Msg.REPL_CANCEL, true, null, 0, function(){
                         ios_dialog.hide();
-                    }); 
+                    });
+                    return;
                 }
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
