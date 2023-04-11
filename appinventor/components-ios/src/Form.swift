@@ -52,6 +52,8 @@ let kMinimumToastWait = 10.0
   private var _environment = YailDictionary()
   private var _initThunks = YailDictionary()
   private var _lastToastTime = 0.0
+  private var _bigDefaultText = false
+  private var _highContrast = false
 
   public init(application: Application) {
     super.init(nibName: nil, bundle: nil)
@@ -205,6 +207,28 @@ let kMinimumToastWait = 10.0
     _linearView.setNeedsLayout()
   }
 
+  // MARK: Visual accessibility implementation
+
+  public static func setBigDefaultTextRecursive(of container: ComponentContainer ,to enabled: Bool) {
+    for child in container.getChildren() {
+      if let child = child as? ComponentContainer {
+        Form.setBigDefaultTextRecursive(of: child, to: enabled)
+      } else if let child = child as? AccessibleComponent {
+        child.LargeFont = enabled
+      }
+    }
+  }
+
+  public static func setHighContrastRecursive(of container: ComponentContainer, to enabled: Bool) {
+    for child in container.getChildren() {
+      if let child = child as? ComponentContainer {
+        Form.setHighContrastRecursive(of: child, to: enabled)
+      } else if let child = child as? AccessibleComponent {
+        child.HighContrast = enabled
+      }
+    }
+  }
+
   open func isVisible(component: ViewComponent) -> Bool {
     return _linearView.contains(component.view)
   }
@@ -342,8 +366,10 @@ let kMinimumToastWait = 10.0
     BackgroundImage = ""
     AboutScreen = ""
     BackgroundColor = Int32(bitPattern: Color.default.rawValue)
+    BigDefaultText = false
     AlignHorizontal = HorizontalGravity.left.rawValue
     AlignVertical = VerticalGravity.top.rawValue
+    HighContrast = false
     self.title = ""
     ShowStatusBar = true
     TitleVisible = true
@@ -442,6 +468,17 @@ let kMinimumToastWait = 10.0
     }
   }
 
+  @objc open var BigDefaultText: Bool {
+    get {
+      return _bigDefaultText
+    }
+    set(bigDefaultText) {
+      _bigDefaultText = bigDefaultText
+      Form.setBigDefaultTextRecursive(of: self ,to: _bigDefaultText)
+      recomputeLayout()
+    }
+  }
+
   @objc open var BlocksToolkit: String {
     get {
       return ""
@@ -478,6 +515,17 @@ let kMinimumToastWait = 10.0
     }
     set {
       NSLog("Cannot set Height of Form")
+    }
+  }
+
+  @objc open var HighContrast: Bool {
+    get {
+      return _highContrast
+    }
+    set(highcontrast) {
+      _highContrast = highcontrast
+      Form.setHighContrastRecursive(of: self ,to: _highContrast)
+      recomputeLayout()
     }
   }
 

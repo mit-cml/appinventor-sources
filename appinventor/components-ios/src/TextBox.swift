@@ -5,7 +5,7 @@
 
 import Foundation
 
-let kDefaultPlaceholderColor = UIColor(red: 0, green: 0, blue: 25/255, alpha: 0.22)
+let kDefaultPlaceholderColor = UIColor.systemGray
 
 fileprivate protocol TextBoxDelegate: AbstractMethodsForTextBox, UITextFieldDelegate, UITextViewDelegate {
 }
@@ -20,6 +20,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   private var _empty = true
   private var _readOnly = false
   private weak var _base: TextBoxBase? = nil
+  private var _placeholderColor: Int32 = Color.default.int32
   
   override init() {
     super.init()
@@ -99,6 +100,26 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
   }
 
+  open var placeholderColor: Int32 {
+    get {
+      return _placeholderColor
+    }
+    set {
+      _placeholderColor = newValue
+      updatePlaceholder()
+    }
+  }
+
+  open func updatePlaceholder() {
+    var newPlaceholder = NSAttributedString(string: placeholderText ?? "",
+        attributes: [NSAttributedString.Key.foregroundColor:argbToColor(_placeholderColor),
+                     NSAttributedString.Key.font: _field.font])
+    _field.attributedPlaceholder = newPlaceholder
+    if _empty {
+      _view.attributedText = newPlaceholder
+    }
+  }
+
   @objc open var placeholderText: String? {
     get {
       return _field.placeholder
@@ -108,6 +129,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
       if _empty {
         _view.text = text
       }
+      updatePlaceholder()
     }
   }
 
