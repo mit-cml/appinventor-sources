@@ -72,6 +72,8 @@
 	"Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "This text block does not contain a valid number",
 	"Blockly.Msg.ERROR_GENERIC_NEEDS_COMPONENT": "You need to provide a valid component to this block's \"%1\" socket.",
 	"Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE": "This block needs a value block connected to its socket.",
+	"Blockly.Msg.EXTENSIONS": "Extensions",
+	"Blockly.Msg.EXTENSIONS_iOS": "Extensions are not currently supported by iOS devices.",
 	"Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP": "Click the square to pick a color.",
 	"Blockly.Msg.LANG_COLOUR_BLACK": "black",
 	"Blockly.Msg.LANG_COLOUR_WHITE": "white",
