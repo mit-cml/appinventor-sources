@@ -16,10 +16,8 @@ class OnboardViewController: UIViewController {
     "Scan the code to finish the connection"
   ]
 
-  override func viewDidLoad() {
-    super.viewDidLoad()
-
-    // Do any additional setup after loading the view.
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     configure()
   }
 
@@ -35,11 +33,18 @@ class OnboardViewController: UIViewController {
 
   private func configure() {
     // Set up onboarding scrollview
-    let windowFrame = UIApplication.shared.keyWindow!.frame
-    var bottomAnchor = view.bottomAnchor
-    if #available(iOS 11, *) {
-      bottomAnchor = view.safeAreaLayoutGuide.bottomAnchor
+    var window: UIWindow? = nil
+    if #available(iOS 13, *) {
+      window = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first
+    } else {
+      window = UIApplication.shared.keyWindow
     }
+
+    guard let windowFrame = window?.frame else {
+      // We don't have a window?
+      return
+    }
+    let bottomAnchor = view.safeAreaLayoutGuide.bottomAnchor
 
     scrollView.translatesAutoresizingMaskIntoConstraints = false
     holderView.addSubview(scrollView)
