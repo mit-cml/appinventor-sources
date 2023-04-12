@@ -15,6 +15,7 @@ class OnboardViewController: UIViewController {
     "Select Connect then AI Companion to start a connection",
     "Scan the code to finish the connection"
   ]
+  var onCompletionHandler: (() -> Void)? = nil
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -123,7 +124,7 @@ class OnboardViewController: UIViewController {
   @objc func didTapButton(_ button: UIButton) {
     guard button.tag < titles.count else {
       SystemVariables.newUser = false
-      dismiss(animated: true, completion: nil)
+      dismiss(animated: true, completion: self.onCompletionHandler)
       return
     }
     scrollView.setContentOffset(CGPoint(x: holderView.frame.size.width * CGFloat(button.tag), y: 0), animated: true)
