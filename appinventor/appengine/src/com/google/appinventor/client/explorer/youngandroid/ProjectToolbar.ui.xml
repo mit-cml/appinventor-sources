@@ -2,7 +2,6 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:ai="urn:import:com.google.appinventor.client.widgets"
              xmlns:actions="urn:import:com.google.appinventor.client.actions"
-             xmlns:expactions="urn:import:com.google.appinventor.client.explorer.commands"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -16,7 +15,7 @@
                 <actions:SwitchToProjectAction />
             </ai:ToolbarItem>
             <ai:ToolbarItem name="Folder" caption="{messages.newProjectFolderMenuItem}" ui:field="newFolderItem" >
-                <expactions:AddFolderCommand />
+                <actions:NewFolderAction />
             </ai:ToolbarItem>
             <ai:ToolbarItem name="Move" caption="Move Project" >
                 <actions:MoveProjectsAction />

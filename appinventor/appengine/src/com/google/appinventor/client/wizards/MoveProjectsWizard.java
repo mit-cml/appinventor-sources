@@ -103,14 +103,14 @@ public final class MoveProjectsWizard extends Wizard {
     @Source({
       "com/google/appinventor/client/resources/base.css",
       "com/google/appinventor/client/resources/light.css",
-      "com/google/appinventor/client/explorer/commands/addFolderCommand.css"
+        "com/google/appinventor/client/wizards/NewFolderWizard.css"
     })
     Style styleLight();
 
     @Source({
       "com/google/appinventor/client/resources/base.css",
       "com/google/appinventor/client/resources/dark.css",
-      "com/google/appinventor/client/explorer/commands/addFolderCommand.css"
+        "com/google/appinventor/client/wizards/NewFolderWizard.css"
     })
     Style styleDark();
 

@@ -20,7 +20,7 @@ import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.components.Button;
 import com.google.appinventor.client.components.Dropdown;
 import com.google.appinventor.client.components.DropdownItem;
-import com.google.appinventor.client.explorer.commands.AddFolderCommand;
+import com.google.appinventor.client.wizards.NewFolderWizard;
 import com.google.appinventor.client.wizards.MoveProjectsWizard;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
@@ -176,7 +176,7 @@ public class ProjectsExplorer extends Composite {
 
   @UiHandler("newFolderButton")
   void newFolder(ClickEvent e) {
-    new AddFolderCommand().execute();
+    new NewFolderWizard();
   }
 
   @UiHandler("renameButton")
