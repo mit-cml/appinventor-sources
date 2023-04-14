@@ -60,14 +60,15 @@ public final class ProjectBuilder {
   private static final Logger LOG = Logger.getLogger(ProjectBuilder.class.getName());
 
   private static final int MAX_COMPILER_MESSAGE_LENGTH = 160;
+  private static final String SEPARATOR = File.separator;
 
   // Project folder prefixes
   // TODO(user): These constants are (or should be) also defined in
   // appengine/src/com/google/appinventor/server/project/youngandroid/YoungAndroidProjectService
   // They should probably be in some place shared with the server
   private static final String PROJECT_DIRECTORY = "youngandroidproject";
-  private static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + "/" +
-                                                            "project.properties";
+  private static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + SEPARATOR
+      + "project.properties";
   private static final String KEYSTORE_FILE_NAME = YoungAndroidConstants.PROJECT_KEYSTORE_LOCATION;
 
   private static final String FORM_PROPERTIES_EXTENSION =
@@ -182,7 +183,8 @@ public final class ProjectBuilder {
         userErrors.close();
 
         // Retrieve compiler messages and convert to HTML and log
-        String srcPath = projectRoot.getAbsolutePath() + "/" + PROJECT_DIRECTORY + "/../src/";
+        String srcPath = projectRoot.getAbsolutePath() + SEPARATOR + PROJECT_DIRECTORY + SEPARATOR
+            + ".." + SEPARATOR + "src" + SEPARATOR;
         String messages = processCompilerOutput(output.toString(PathUtil.DEFAULT_CHARSET),
             srcPath);
 
@@ -193,7 +195,7 @@ public final class ProjectBuilder {
             fileName = project.getProjectName() + (isAab ? ".aab" : ".apk");
           }
           File outputFile = new File(projectRoot,
-              "build/deploy/" + fileName);
+              "build" + SEPARATOR + "deploy" + SEPARATOR + fileName);
           if (!outputFile.exists()) {
             LOG.warning("Young Android build - " + outputFile + " does not exist");
           } else {
@@ -261,7 +263,7 @@ public final class ProjectBuilder {
         File scmFile = new File(f);
         String scmContent = new String(Files.toByteArray(scmFile),
             StandardCharsets.UTF_8);
-        String formName = f.substring(f.lastIndexOf("/") + 1, f.length() - extLength);
+        String formName = f.substring(f.lastIndexOf(SEPARATOR) + 1, f.length() - extLength);
         result.put(formName, FormPropertiesAnalyzer.getFormOrientation(scmContent));
       }
     }
@@ -392,7 +394,7 @@ public final class ProjectBuilder {
     * For DNAME, US may not the right country to assign it to.
     */
     String[] keytoolCommandline = {
-        System.getProperty("java.home") + "/bin/keytool",
+        System.getProperty("java.home") + SEPARATOR + "bin" + SEPARATOR + "keytool",
         "-genkey",
         "-keystore", keyStoreFile.getAbsolutePath(),
         "-alias", "AndroidKey",
@@ -519,6 +521,6 @@ public final class ProjectBuilder {
    * Loads the project properties file of a Young Android project.
    */
   private Project getProjectProperties(File projectRoot) {
-    return new Project(projectRoot.getAbsolutePath() + "/" + PROJECT_PROPERTIES_FILE_NAME);
+    return new Project(projectRoot.getAbsolutePath() + SEPARATOR + PROJECT_PROPERTIES_FILE_NAME);
   }
 }
