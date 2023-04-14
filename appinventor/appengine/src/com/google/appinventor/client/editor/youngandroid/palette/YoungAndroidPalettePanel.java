@@ -302,6 +302,11 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     if (category == ComponentCategory.UNINITIALIZED) {
       return false;
     }
+    // We should only show FUTURE components if the future feature flag is enabled...
+    if (category == ComponentCategory.FUTURE &&
+        !AppInventorFeatures.enableFutureFeatures()) {
+      return false;
+    }
     if (category == ComponentCategory.INTERNAL &&
         !AppInventorFeatures.showInternalComponentsCategory()) {
       return false;
