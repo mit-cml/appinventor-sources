@@ -1110,6 +1110,7 @@ open class CanvasView: UIView {
     super.init(coder: aDecoder)
     showAlert(message: nil)
   }
+  
   override init(frame: CGRect) {
     super.init(frame: frame)
   }

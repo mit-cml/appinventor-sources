@@ -33,7 +33,6 @@ fileprivate class SpinnerPadController: PickerPadController, SpinnerController {
     return nil
   }
 
-
   @objc public func reloadComponents(){
     _menuView.reloadData()
   }

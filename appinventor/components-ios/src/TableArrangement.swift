@@ -163,11 +163,11 @@ fileprivate enum ConstraintUpdate {
     super.init(frame: .zero)
     _emptyConstraints = [heightAnchor.constraint(equalToConstant: 100), widthAnchor.constraint(equalToConstant: 100)]
   }
-
+  
   required init?(coder aDecoder: NSCoder) {
-      super.init(coder: aDecoder)
-      showAlert(message: nil)
-    }
+    super.init(coder: aDecoder)
+    showAlert(message: nil)
+  }
 
   /**
    * Initializes the cells in the table with the corresponding views (if any)
