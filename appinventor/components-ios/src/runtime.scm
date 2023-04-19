@@ -2240,7 +2240,7 @@ Dictionary implementation.
             "Bad arguement to typeof"))))
 
 (define (indexof element lst)
-  (yail-list-index object lst))
+  (yail-list-index element lst))
 
 (define (type-lt? type1 type2)
   (< (indexof type1 typeordering)
