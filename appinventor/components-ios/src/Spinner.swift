@@ -29,7 +29,7 @@ fileprivate class SpinnerPadController: PickerPadController, SpinnerController {
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    showAlert(message: nil)
+    showAlert(message: "init(coder:) has not been implemented")
     return nil
   }
 
@@ -78,7 +78,7 @@ fileprivate class SpinnerPhoneController: PickerPhoneController, SpinnerControll
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    showAlert(message: nil)
+    showAlert(message: "init(coder:) has not been implemented")
     return nil
   }
 

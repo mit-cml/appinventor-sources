@@ -1249,7 +1249,7 @@ private class ZoomButton: UIButton {
   }
 
   required init?(coder aDecoder: NSCoder) {
-    showAlert(message: nil)
+    showAlert(message: "init(coder:) has not been implemented")
     return nil
   }
 

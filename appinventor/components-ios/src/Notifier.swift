@@ -185,7 +185,7 @@ fileprivate class CustomAlertView: UIView {
 
   required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
-    showAlert(message: nil)
+    showAlert(message: "init(coder:) has not been implemented")
   }
 
   func show(animated: Bool, callback: ((Bool) -> Void)? = nil){

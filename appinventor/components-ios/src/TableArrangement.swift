@@ -52,7 +52,7 @@ fileprivate enum ConstraintUpdate {
   }
 
   required public init?(coder aDecoder: NSCoder) {
-    showAlert(message: nil)
+    showAlert(message: "init(coder:) has not been implemented")
     return nil
   }
 
@@ -166,7 +166,7 @@ fileprivate enum ConstraintUpdate {
   
   required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
-    showAlert(message: nil)
+    showAlert(message: "init(coder:) has not been implemented")
   }
 
   /**

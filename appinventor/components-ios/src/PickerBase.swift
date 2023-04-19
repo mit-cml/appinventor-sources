@@ -13,7 +13,7 @@ class PickerPadController: UIViewController {
 
   required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
-    showAlert(message: nil)
+    showAlert(message: "init(coder:) has not been implemented")
   }
 
   open override func viewDidLoad() {
@@ -72,7 +72,7 @@ class PickerPhoneController: UIViewController {
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    showAlert(message: nil)
+    showAlert(message: "init(coder:) has not been implemented")
     return nil
   }
 
