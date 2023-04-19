@@ -116,7 +116,8 @@ let kMinimumToastWait = 10.0
   open func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
     let canDispatch = _screenInitialized || (self.isEqual(component) && eventName == "Initialize")
     if (canDispatch) {
-      Form.activeForm = self
+      // Don't dispatch unless the current form is the dispatch delegate of the component
+      return (component.dispatchDelegate as? Form) == self
     } else {
       NSLog("Attempted to dispatch event \(eventName) to \(component) but screen is not initialized");
     }
