@@ -86,6 +86,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -1587,10 +1588,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
-  @Override
-  public byte[] downloadRawFile(final String userId, final long projectId, final String fileName) {
-    validateGCS();
-    final Result<byte[]> result = new Result<byte[]>();
+  private Result<FileData> getFileData(final String userId, final long projectId, final String fileName) {
     final Result<FileData> fd = new Result<FileData>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -1603,9 +1601,26 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
         }
       }, false); // Transaction not needed
+      return fd;
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
           collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+  }
+
+  @Override
+  public byte[] downloadRawFile(final String userId, final long projectId, String fileName) {
+    validateGCS();
+    final Result<byte[]> result = new Result<byte[]>();
+    Result<FileData> fd = getFileData(userId, projectId, fileName);
+    if (fd.t == null) {
+      try{
+        fileName = URLDecoder.decode(fileName, "UTF-8");
+      }catch(UnsupportedEncodingException e) {
+        throw CrashReport.createAndLogError(LOG, null,
+        collectProjectErrorInfo(userId, projectId, fileName), e);
+      }
+      fd = getFileData(userId, projectId, fileName);
     }
     // read the blob/GCS File outside of the job
     FileData fileData = fd.t;
