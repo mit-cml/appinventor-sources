@@ -203,6 +203,7 @@ public final class ChartData2D extends ChartDataBase {
 
     importFromWebAsync(web, columns);
   }
+
   /**
    * Draws the line of best fit
    *
