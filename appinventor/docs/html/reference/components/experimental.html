@@ -131,8 +131,41 @@
 <p>Table of Contents:</p>
 
 <ul>
+  <li><a href="#ChatBot">ChatBot</a></li>
   <li><a href="#FirebaseDB">FirebaseDB</a></li>
 </ul>
+
+<h2 id="ChatBot">ChatBot</h2>
+
+<p>The ChatBot component is a non-visible component for chatting with an AI
+ chatbot. This version uses a proxy run by MIT that in turn uses the ChatGPT
+ generative large language model.</p>
+
+<h3 id="ChatBot-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="ChatBot.ApiKey" class="text wo"><em>ApiKey</em></dt>
+  <dd>The API Key to use. MIT App Inventor will automatically fill this
+ value in. You should not need to change it.</dd>
+  <dt id="ChatBot.System" class="text"><em>System</em></dt>
+  <dd>The “System” value given to ChatGPT. It is used to set the tone of a conversation. For example: “You are a funny person.”</dd>
+</dl>
+
+<h3 id="ChatBot-Events">Events</h3>
+
+<dl class="events">
+  <dt id="ChatBot.GotResponse">GotResponse(<em class="text">responseCode</em>,<em class="text">responseText</em>)</dt>
+  <dd>Event indicating that a request has finished and has returned data (translation).</dd>
+</dl>
+
+<h3 id="ChatBot-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="ChatBot.Converse" class="method"><i></i> Converse(<em class="text">question</em>)</dt>
+  <dd>Ask a question of the Chat Bot. Successive calls will remember information from earlier in the conversation. Use the “ResetConversation” function to reset for a new conversation.</dd>
+  <dt id="ChatBot.ResetConversation" class="method"><i></i> ResetConversation()</dt>
+  <dd>Reset the current conversation, Chat bot will forget any previous conversation when resonding in the future.</dd>
+</dl>
 
 <h2 id="FirebaseDB">FirebaseDB</h2>
 
