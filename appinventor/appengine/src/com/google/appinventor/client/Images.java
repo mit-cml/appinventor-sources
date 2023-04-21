@@ -650,6 +650,12 @@ public interface Images extends Resources {
   ImageResource translator();
 
   /**
+   * Designer pallette item: ChatBot Component
+   */
+  @Source("com/google/appinventor/images/chatbot.png")
+  ImageResource chatbot();
+
+  /**
     * Designer palette item: YandexTranslate
     */
   @Source("com/google/appinventor/images/yandex.png")

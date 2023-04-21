@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2022 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -298,7 +298,10 @@ public final class ErrorMessages {
   public static final int ERROR_INSUFFICIENT_CHART_ENTRY_VALUES = 4103;
   public static final int ERROR_INVALID_CHART_DATA_COLOR = 4104;
 
-  // Start the next group of errors at 4200
+  // ChatBot Errors
+  public static final int ERROR_CHATBOT_ERROR = 4200;
+
+  // Start the next group of errors at 4300
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -732,6 +735,9 @@ public final class ErrorMessages {
         + "values; Expected %1$d, but was %2$d");
     errorMessages.put(ERROR_INVALID_CHART_DATA_COLOR, "Invalid Chart Data color parameter "
         + "specified: %1$s");
+
+    // ChatBot Errors
+    errorMessages.put(ERROR_CHATBOT_ERROR, "Error from the ChatBot code %1$d %2$s");
 
   }
 
