@@ -267,7 +267,7 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  and a false value otherwise. See [`AddEntry`](#ChartData2D.AddEntry)
  for an explanation of the valid entry values.
 
-{:id="ChartData2D.DrawLineOfBestFit" class="method"} <i/> DrawLineOfBestFit(*x*{:.list},*y*{:.list})
+{:id="ChartData2D.DrawLineOfBestFit" class="method"} <i/> DrawLineOfBestFit(*xList*{:.list},*yList*{:.list})
 : Draws the line of best fit
 
 {:id="ChartData2D.GetAllEntries" class="method returns list"} <i/> GetAllEntries()
@@ -296,8 +296,8 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 : Imports data from the specified DataFile component by taking the specified x column
  for the x values, and the specified y column for the y values. The DataFile's source file
  is expected to be either a CSV or a JSON file.
- <p>
- Passing in empty test for any of the column parameters will result in the usage of
+
+   Passing in empty test for any of the column parameters will result in the usage of
  default values which are the indices of the entries. For the first entry, the default
  value would be the 1, for the second it would be 2, and so on.
 
@@ -308,13 +308,13 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  the x value, and the second one being the y value.
  Invalid list entries are simply skipped. Existing data are not cleared.
 
-{:id="ChartData2D.ImportFromSpreadsheet" class="method"} <i/> ImportFromSpreadsheet(*sheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
+{:id="ChartData2D.ImportFromSpreadsheet" class="method"} <i/> ImportFromSpreadsheet(*spreadsheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
 : Imports data from the specified Spreadsheet component by taking the specified x column
  for the x values, and the specified y column for the y values. Prior to calling this function,
  the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
  the GotSheet event in the Spreadsheet component is unnecessary.
- <p>
- Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+
+   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
 
 {:id="ChartData2D.ImportFromTinyDB" class="method"} <i/> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
 : Imports data from the specified TinyDB component by taking the value
@@ -330,11 +330,11 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
  for the x values, and the specified y column for the y values. Prior to calling this function,
  the Web component's Get method has to be called to load the data. The usage of the gotValue
  event in the Web component is unnecessary.
- <p>
- The expected response of the Web component is a JSON or CSV formatted
+
+   The expected response of the Web component is a JSON or CSV formatted
  file for this function to work.
- <p>
- Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+
+   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
 
 {:id="ChartData2D.RemoveDataSource" class="method"} <i/> RemoveDataSource()
 : Removes the currently attached Data Source from the Chart Data component.

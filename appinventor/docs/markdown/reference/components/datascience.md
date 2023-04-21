@@ -141,6 +141,9 @@ None
  The returned value is a list, where each element of the list
  is a list containing the values of the entry in order.
 
+{:id="AnomalyDetection.GetAnomalyIndex" class="method returns number"} <i/> GetAnomalyIndex(*anomaly*{:.list})
+: Gets the index of a single anomaly
+
 {:id="AnomalyDetection.GetEntriesWithXValue" class="method returns list"} <i/> GetEntriesWithXValue(*x*{:.text})
 : Returns all entries of the data series matching the specified x value.
  For a description of the format of the returned List, see [`GetAllEntries`](#AnomalyDetection.GetAllEntries)
@@ -201,6 +204,15 @@ None
  file for this function to work.
  <p>
  Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+
+{:id="AnomalyDetection.RemoveAnomaly" class="method returns list"} <i/> RemoveAnomaly(*anomaly*{:.list},*xList*{:.list},*yList*{:.list})
+: Given a single anomaly: [(anomaly index, anomaly value)]
+
+ 1. Iterate over the xList and delete value at anomaly index
+ 2. Iterate over the yList and delete the value at anomaly index with the same value as anomaly value
+ 3. combine the xList and yList after modification in a list of x and y pairs
+
+ We assume x and y lists are the same size and are ordered
 
 {:id="AnomalyDetection.RemoveDataSource" class="method"} <i/> RemoveDataSource()
 : Removes the currently attached Data Source from the Chart Data component.

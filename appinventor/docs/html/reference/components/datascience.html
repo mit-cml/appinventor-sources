@@ -21,7 +21,7 @@
                                    }
      //--><!]]>
     </script>
-    <title>Charts</title></head>
+    <title>Data Science</title></head>
 <body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
     <a class="navbar-brand" href="http://appinventor.mit.edu/">
 	<img src="/static/images/logo2.png" alt="Logo">
@@ -121,136 +121,43 @@
 </nav>
 <div class="default-page">
             <div class="header">
-	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Charts</h1>
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Data Science</h1>
             </div>
             <div class="container-fluid">
                 <article class="documentation">
 <p><a href="index.html">« Back to index</a></p>
-<h1 id="charts">Charts</h1>
+<h1 id="data-science">Data Science</h1>
 
 <p>Table of Contents:</p>
 
 <ul>
-  <li><a href="#Chart">Chart</a></li>
-  <li><a href="#ChartData2D">ChartData2D</a></li>
+  <li><a href="#AnomalyDetection">AnomalyDetection</a></li>
+  <li><a href="#Regression">Regression</a></li>
 </ul>
 
-<h2 id="Chart">Chart</h2>
+<h2 id="AnomalyDetection">AnomalyDetection</h2>
 
-<p>The Chart component plots data originating from it’s attached Data components. Five different
- Chart types are available, including Line, Area, Scatter, Bar and Pie, which can be changed by
- the <a href="#Chart.Type"><code class="highlighter-rouge">Type</code></a> property.
- The Chart component itself has various other properties that change the appearance
- of the Chart, such as {<a href="#Chart.Description"><code class="highlighter-rouge">Description</code></a>, <a href="#Chart.GridEnabled"><code class="highlighter-rouge">GridEnabled</code></a>,</p>
+<p>A data science component to apply different anomaly detection models
+ The component needs a data source to apply the model on</p>
 
-<h3 id="Chart-Properties">Properties</h3>
+<h3 id="AnomalyDetection-Properties">Properties</h3>
 
 <dl class="properties">
-  <dt id="Chart.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
-  <dd>Specifies the chart’s background color as an alpha-red-green-blue
- integer.</dd>
-  <dt id="Chart.Description" class="text"><em>Description</em></dt>
-  <dd>Specifies the text displayed by the description label inside the Chart.
- Specifying an empty string (“”) will not display any label.</dd>
-  <dt id="Chart.GridEnabled" class="boolean"><em>GridEnabled</em></dt>
-  <dd>Changes the visibility of the Chart’s grid, if the
- Chart Type is set to a Chart with an Axis (applies for Area, Bar, Line,
- Scatter Chart types).</dd>
-  <dt id="Chart.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">Chart</code>’s vertical height, measured in pixels.</dd>
-  <dt id="Chart.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">Chart</code>’s vertical height as a percentage
- of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
-  <dt id="Chart.Labels" class="list bo"><em>Labels</em></dt>
-  <dd>Changes the Chart’s X axis labels to the specified List,
- if the Chart’s Type is set to a Chart with an Axis.
-
-    <p>The first entry of the List corresponds to the minimum x value of the data,
- the second to the min x value + 1, and so on.</p>
-
-    <p>If a label is not specified for an x value, a default value
- is used (the x value of the axis tick at that location).</p>
-  </dd>
-  <dt id="Chart.LabelsFromString" class="text wo do"><em>LabelsFromString</em></dt>
-  <dd>Specifies the labels to set to the Chart’s X Axis, provided the current
- view is a Chart with an X Axis. The labels are specified as a single comma-separated
- values String (meaning each value is separated by a comma). See <a href="#Chart.Labels"><code class="highlighter-rouge">Labels</code></a>
- for more details on how the Labels are applied to the Chart.</dd>
-  <dt id="Chart.LegendEnabled" class="boolean"><em>LegendEnabled</em></dt>
-  <dd>Changes the visibility of the Chart’s Legend.</dd>
-  <dt id="Chart.PieRadius" class="number wo do"><em>PieRadius</em></dt>
-  <dd>Sets the Pie Radius of the Chart. If the current type is
- not the Pie Chart, the value has no effect.</dd>
-  <dt id="Chart.Type" class="com google appinventor components common ChartTypeEnum do"><em>Type</em></dt>
-  <dd>Specifies the type of the Chart, which determines how to visualize the data.</dd>
-  <dt id="Chart.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Specifies whether the <code class="highlighter-rouge">Chart</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
- if the <code class="highlighter-rouge">Chart</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
-  <dt id="Chart.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Chart</code>, measured in pixels.</dd>
-  <dt id="Chart.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Chart</code> as a percentage
- of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
-  <dt id="Chart.XFromZero" class="boolean"><em>XFromZero</em></dt>
-  <dd>Determines whether the X axis origin is set at 0 or the minimum X value
- across all data series.</dd>
-  <dt id="Chart.YFromZero" class="boolean"><em>YFromZero</em></dt>
-  <dd>Determines whether the Y axis origin is set at 0 or the minimum y value
- across all data series.</dd>
-</dl>
-
-<h3 id="Chart-Events">Events</h3>
-
-<dl class="events">
-  <dt id="Chart.EntryClick">EntryClick(<em class="component">series</em>,<em class="any">x</em>,<em class="number">y</em>)</dt>
-  <dd>Indicates that the user clicked on a data entry in the <code class="highlighter-rouge">Chart</code>. The specific series, along
- with its x and y values, are reported.</dd>
-</dl>
-
-<h3 id="Chart-Methods">Methods</h3>
-
-<dl class="methods">
-  <dt id="Chart.SetDomain" class="method"><i></i> SetDomain(<em class="number">minimum</em>,<em class="number">maximum</em>)</dt>
-  <dd>Sets the minimum and maximum for the domain of the X axis.</dd>
-  <dt id="Chart.SetRange" class="method"><i></i> SetRange(<em class="number">minimum</em>,<em class="number">maximum</em>)</dt>
-  <dd>Sets the minimum and maximum for the range of the Y axis.</dd>
-</dl>
-
-<h2 id="ChartData2D">ChartData2D</h2>
-
-<p>A ChartData2D component represents a single two-dimensional Data Series in the Chart component,
- for example, a single Line in the case of a Line Chart, or a single Bar in the case of a Bar
- Chart. The Data component is responsible for handling all the data of the Chart. The entries
- of the Data component correspond of an x and a y value.
- The component is attached directly to a Chart component by dragging it onto the Chart.</p>
-
-<h3 id="ChartData2D-Properties">Properties</h3>
-
-<dl class="properties">
-  <dt id="ChartData2D.Color" class="color"><em>Color</em></dt>
-  <dd>Specifies the data series color as an alpha-red-green-blue integer.</dd>
-  <dt id="ChartData2D.Colors" class="list bo"><em>Colors</em></dt>
-  <dd>Specifies the data series colors as a list of alpha-red-green-blue integers.
-
-    <p>If there is more data than there are colors, the colors will be alternated
- in order. E.g. if there are two colors Red and Blue, the colors will be applied
- in the order: Red, Blue, Red, Blue, …</p>
-  </dd>
-  <dt id="ChartData2D.DataFileXColumn" class="text wo do"><em>DataFileXColumn</em></dt>
-  <dd>Value used when importing data from a DataFile component <a href="#ChartData2D.Source"><code class="highlighter-rouge">Source</code></a>. The
+  <dt id="AnomalyDetection.DataFileXColumn" class="text wo do"><em>DataFileXColumn</em></dt>
+  <dd>Value used when importing data from a DataFile component <a href="#AnomalyDetection.Source"><code class="highlighter-rouge">Source</code></a>. The
  value represents the column to use from the DataFile for the x entries
  of the Data Series. For instance, if a column’s first value is “Time”,
  and a column value of “Time” is specified, that column will be used
  for the x values. If a value here is not specified, default values for the
  x values will be generated instead.</dd>
-  <dt id="ChartData2D.DataFileYColumn" class="text wo do"><em>DataFileYColumn</em></dt>
-  <dd>Value used when importing data from a DataFile component <a href="#ChartData2D.Source"><code class="highlighter-rouge">Source</code></a>. The
+  <dt id="AnomalyDetection.DataFileYColumn" class="text wo do"><em>DataFileYColumn</em></dt>
+  <dd>Value used when importing data from a DataFile component <a href="#AnomalyDetection.Source"><code class="highlighter-rouge">Source</code></a>. The
  value represents the column to use from the DataFile for the y entries
  of the Data Series. For instance, if a column’s first value is “Temperature”,
  and a column value of “Temperature” is specified, that column will be used
  for the y values. If a value here is not specified, default values for the
  y values will be generated instead.</dd>
-  <dt id="ChartData2D.DataSourceKey" class="text wo do"><em>DataSourceKey</em></dt>
+  <dt id="AnomalyDetection.DataSourceKey" class="text wo do"><em>DataSourceKey</em></dt>
   <dd>Sets the Data Source key identifier for the value to import from the
  attached Data Source.</dd>
 </dl>
@@ -277,26 +184,12 @@
  and the prefix will then be removed from the data. No value can be specified if purely
  numerical values are returned.
 
-{:id="ChartData2D.ElementsFromPairs" .text .wo .do} *ElementsFromPairs*
+{:id="AnomalyDetection.ElementsFromPairs" .text .wo .do} *ElementsFromPairs*
 : Comma separated list of Elements to use for the data series. Values are formatted
  as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed
  from the x and y values.
 
-{:id="ChartData2D.Label" .text} *Label*
-: Specifies the text for the data series label.
-
-{:id="ChartData2D.LineType" .com.google.appinventor.components.common.LineTypeEnum .wo .do} *LineType*
-: Changes the Line Type of the Data Series, provided that the
- Data component is attached to a Chart that has the type set to
- a line-based Chart(applies to area and line Chart types).
-    Valid types include linear, curved or stepped.
-
-{:id="ChartData2D.PointShape" .com.google.appinventor.components.common.PointStyleEnum .wo .do} *PointShape*
-: Changes the Point Shape of the Data Series, provided that the
- Data component is attached to a Chart that has the type set to
- the Scatter Chart. Valid types include circle, square, triangle, cross, x.
-
-{:id="ChartData2D.Source" .component .wo .do} *Source*
+{:id="AnomalyDetection.Source" .component .wo .do} *Source*
 : Sets the Source to use for the Data component. Valid choices
  include AccelerometerSensor, BluetoothClient, CloudDB, DataFile,
  GyroscopeSensor, LocationSesnro, OrientationSensor, Pedometer,
@@ -305,149 +198,345 @@
  depending on the type of the Source attached (the required properties
  show up in the Properties menu after the Source is changed).
  <p>
- If the data identified by the [`DataSourceKey`](#ChartData2D.DataSourceKey) is updated
+ If the data identified by the [`DataSourceKey`](#AnomalyDetection.DataSourceKey) is updated
  in the attached Data Source component, then the data is also updated in
  the Chart Data component.
 
-{:id="ChartData2D.SpreadsheetUseHeaders" .boolean .wo .do} *SpreadsheetUseHeaders*
+{:id="AnomalyDetection.SpreadsheetUseHeaders" .boolean .wo .do} *SpreadsheetUseHeaders*
 : If checked, the first row of the spreadsheet will be used to interpret the x and y column
  values. Otherwise, the x and y columns should be a column reference, such as A or B.
 
-{:id="ChartData2D.SpreadsheetXColumn" .text .wo .do} *SpreadsheetXColumn*
+{:id="AnomalyDetection.SpreadsheetXColumn" .text .wo .do} *SpreadsheetXColumn*
 : Sets the column to parse from the attached Spreadsheet component for the x values. If a
  column is not specified, default values for the x values will be generated instead.
 
-{:id="ChartData2D.SpreadsheetYColumn" .text .wo .do} *SpreadsheetYColumn*
+{:id="AnomalyDetection.SpreadsheetYColumn" .text .wo .do} *SpreadsheetYColumn*
 : Sets the column to parse from the attached Spreadsheet component for the y values. If a
  column is not specified, default values for the y values will be generated instead.
 
-{:id="ChartData2D.WebXColumn" .text .wo .do} *WebXColumn*
+{:id="AnomalyDetection.WebXColumn" .text .wo .do} *WebXColumn*
 : Value used when importing data from a Web component Source. The
  value represents the column to use from the Web for the x entries
  of the Data Series. For instance, if the contents of the Web are
  retrieved in JSON format, and an array with the "Time" tag exists,
  the "Time" column value can be specified to use that array.
 
-{:id="ChartData2D.WebYColumn" .text .wo .do} *WebYColumn*
+{:id="AnomalyDetection.WebYColumn" .text .wo .do} *WebYColumn*
 : Value used when importing data from a Web component Source. The
  value represents the column to use from the Web for the y entries
  of the Data Series. For instance, if the contents of the Web are
  retrieved in JSON format, and an array with the "Temperature" tag exists,
  the "Temperature" column value can be specified to use that array.
 
-### Events  {#ChartData2D-Events}
+### Events  {#AnomalyDetection-Events}
 
 {:.events}
+None
 
-{:id="ChartData2D.EntryClick"} EntryClick(*x*{:.any},*y*{:.number})
-: Indicates that the user tapped on a data point in the chart. The x and y values of the
- tapped entry are reported.
 
-### Methods  {#ChartData2D-Methods}
+### Methods  {#AnomalyDetection-Methods}
 
 {:.methods}
 
-{:id="ChartData2D.AddEntry" class="method"} <i /> AddEntry(*x*{:.text},*y*{:.text})
-: Adds an entry with the specified x and y value. Values can be specified as text,
- or as numbers. For Line, Scatter, Area and Bar Charts, both values should represent a number.
- For Bar charts, the x value is rounded to the nearest integer.
- For Pie Charts, the x value is a text value.
-
-{:id="ChartData2D.ChangeDataSource" class="method"} <i /> ChangeDataSource(*source*{:.component},*keyValue*{:.text})
+{:id="AnomalyDetection.ChangeDataSource" class="method"} <i /> ChangeDataSource(*source*{:.component},*keyValue*{:.text})
 : Changes the Data Source of the component to the specified component Source with the
- specified key value. See the [`Source`](#ChartData2D.Source) property for
- applicable components. See the [`DataSourceKey`](#ChartData2D.DataSourceKey) property for the interpretation
+ specified key value. See the [`Source`](#AnomalyDetection.Source) property for
+ applicable components. See the [`DataSourceKey`](#AnomalyDetection.DataSourceKey) property for the interpretation
  of the keyValue. In the case of the DataFile and Web components, the keyValue is expected to
  be a CSV formatted string, where the first value corresponds to the x column, and the second
  value corresponds to the y value.
 
-{:id="ChartData2D.Clear" class="method"} <i /> Clear()
+{:id="AnomalyDetection.Clear" class="method"} <i /> Clear()
 : Removes all the entries from the Data Series.
 
-{:id="ChartData2D.DoesEntryExist" class="method returns boolean"} <i /> DoesEntryExist(*x*{:.text},*y*{:.text})
-: Returns a boolean value specifying whether an entry with the specified x and y
- values exists. The boolean value of true is returned if the value exists,
- and a false value otherwise. See [`AddEntry`](#ChartData2D.AddEntry)
- for an explanation of the valid entry values.
+{:id="AnomalyDetection.DetectAnomalies" class="method returns list"} <i /> DetectAnomalies(*dataList*{:.list})
+: Calculates the mean and standard deviation of the data, and then checks each data point's Z-score against the threshold.
+ If a data point's Z-score is greater than the threshold, the data point is labeled as anomaly
 
-{:id="ChartData2D.DrawLineOfBestFit" class="method"} <i /> DrawLineOfBestFit(*xList*{:.list},*yList*{:.list})
-: Draws the line of best fit
+{:id="AnomalyDetection.DetectAnomaliesWithThreshold" class="method returns list"} <i /> DetectAnomaliesWithThreshold(*dataList*{:.list},*threshold*{:.number})
+: Simple anomaly detection with user defined threshold.
 
-{:id="ChartData2D.GetAllEntries" class="method returns list"} <i /> GetAllEntries()
+{:id="AnomalyDetection.GetAllEntries" class="method returns list"} <i /> GetAllEntries()
 : Returns all entries of the data series.
  The returned value is a list, where each element of the list
  is a list containing the values of the entry in order.
 
-{:id="ChartData2D.GetEntriesWithXValue" class="method returns list"} <i /> GetEntriesWithXValue(*x*{:.text})
+{:id="AnomalyDetection.GetAnomalyIndex" class="method returns number"} <i /> GetAnomalyIndex(*anomaly*{:.list})
+: Gets the index of a single anomaly
+
+{:id="AnomalyDetection.GetEntriesWithXValue" class="method returns list"} <i /> GetEntriesWithXValue(*x*{:.text})
 : Returns all entries of the data series matching the specified x value.
- For a description of the format of the returned List, see [`GetAllEntries`](#ChartData2D.GetAllEntries)
+ For a description of the format of the returned List, see [`GetAllEntries`](#AnomalyDetection.GetAllEntries)
 
-{:id="ChartData2D.GetEntriesWithYValue" class="method returns list"} <i /> GetEntriesWithYValue(*y*{:.text})
+{:id="AnomalyDetection.GetEntriesWithYValue" class="method returns list"} <i /> GetEntriesWithYValue(*y*{:.text})
 : Returns all entries of the data series matching the specified y value.
- For a description of the format of the returned List, see [`GetAllEntries`](#ChartData2D.GetAllEntries)
+ For a description of the format of the returned List, see [`GetAllEntries`](#AnomalyDetection.GetAllEntries)
 
-{:id="ChartData2D.ImportFromCloudDB" class="method"} <i /> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
+{:id="AnomalyDetection.ImportFromCloudDB" class="method"} <i /> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
 : Imports data from the specified CloudDB component by taking the value
  identified by the specified tag value.
  <p>
  The expected CloudDB value is a list formatted in the same way as described in
- [`ImportFromList`](#ChartData2D.ImportFromList).
+ [`ImportFromList`](#AnomalyDetection.ImportFromList).
  <p>
  Does not overwrite any data.
 
-{:id="ChartData2D.ImportFromDataFile" class="method"} <i /> ImportFromDataFile(*dataFile*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
+{:id="AnomalyDetection.ImportFromDataFile" class="method"} <i /> ImportFromDataFile(*dataFile*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified DataFile component by taking the specified x column
  for the x values, and the specified y column for the y values. The DataFile's source file
  is expected to be either a CSV or a JSON file.
-
-   Passing in empty test for any of the column parameters will result in the usage of
+ <p>
+ Passing in empty test for any of the column parameters will result in the usage of
  default values which are the indices of the entries. For the first entry, the default
  value would be the 1, for the second it would be 2, and so on.
 
-{:id="ChartData2D.ImportFromList" class="method"} <i /> ImportFromList(*list*{:.list})
+{:id="AnomalyDetection.ImportFromList" class="method"} <i /> ImportFromList(*list*{:.list})
 : Imports the data from the specified list parameter to the data series.
  The list is expected to contain element which are also lists. Each
  list element is expected to have 2 values, the first one being
  the x value, and the second one being the y value.
  Invalid list entries are simply skipped. Existing data are not cleared.
 
-{:id="ChartData2D.ImportFromSpreadsheet" class="method"} <i /> ImportFromSpreadsheet(*spreadsheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
+{:id="AnomalyDetection.ImportFromSpreadsheet" class="method"} <i /> ImportFromSpreadsheet(*sheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
 : Imports data from the specified Spreadsheet component by taking the specified x column
  for the x values, and the specified y column for the y values. Prior to calling this function,
  the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
  the GotSheet event in the Spreadsheet component is unnecessary.
+ <p>
+ Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
 
-   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
-
-{:id="ChartData2D.ImportFromTinyDB" class="method"} <i /> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
+{:id="AnomalyDetection.ImportFromTinyDB" class="method"} <i /> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
 : Imports data from the specified TinyDB component by taking the value
  identified by the specified tag value.
  <p>
  The expected TinyDB value is a list formatted in the same way as described in
- [`ImportFromList`](#ChartData2D.ImportFromList).
+ [`ImportFromList`](#AnomalyDetection.ImportFromList).
  <p>
  Does not overwrite any data.
 
-{:id="ChartData2D.ImportFromWeb" class="method"} <i /> ImportFromWeb(*web*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
+{:id="AnomalyDetection.ImportFromWeb" class="method"} <i /> ImportFromWeb(*web*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
 : Imports data from the specified Web component by taking the specified x column
  for the x values, and the specified y column for the y values. Prior to calling this function,
  the Web component's Get method has to be called to load the data. The usage of the gotValue
  event in the Web component is unnecessary.
-
-   The expected response of the Web component is a JSON or CSV formatted
+ <p>
+ The expected response of the Web component is a JSON or CSV formatted
  file for this function to work.
+ <p>
+ Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
 
-   Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+{:id="AnomalyDetection.RemoveAnomaly" class="method returns list"} <i /> RemoveAnomaly(*anomaly*{:.list},*xList*{:.list},*yList*{:.list})
+: Given a single anomaly: [(anomaly index, anomaly value)]
 
-{:id="ChartData2D.RemoveDataSource" class="method"} <i /> RemoveDataSource()
+ 1. Iterate over the xList and delete value at anomaly index
+ 2. Iterate over the yList and delete the value at anomaly index with the same value as anomaly value
+ 3. combine the xList and yList after modification in a list of x and y pairs
+
+ We assume x and y lists are the same size and are ordered
+
+{:id="AnomalyDetection.RemoveDataSource" class="method"} <i /> RemoveDataSource()
 : Removes the currently attached Data Source from the Chart Data component.
  Doing so will result in no more updates from the Data Source being sent, however,
  the current data will not be removed.
 
-{:id="ChartData2D.RemoveEntry" class="method"} <i /> RemoveEntry(*x*{:.text},*y*{:.text})
-: Removes an entry with the specified x and y value, provided it exists.
- See [`AddEntry`](#ChartData2D.AddEntry) for an explanation of the valid entry values.
-</p></p></p></p></p></p></p></p></p>
+## Regression  {#Regression}
+
+A data science component to apply different regression models
+ The component needs a data source to apply the model on
+
+
+
+### Properties  {#Regression-Properties}
+
+{:.properties}
+
+{:id="Regression.DataFileXColumn" .text .wo .do} *DataFileXColumn*
+: Value used when importing data from a DataFile component [`Source`](#Regression.Source). The
+ value represents the column to use from the DataFile for the x entries
+ of the Data Series. For instance, if a column's first value is "Time",
+ and a column value of "Time" is specified, that column will be used
+ for the x values. If a value here is not specified, default values for the
+ x values will be generated instead.
+
+{:id="Regression.DataFileYColumn" .text .wo .do} *DataFileYColumn*
+: Value used when importing data from a DataFile component [`Source`](#Regression.Source). The
+ value represents the column to use from the DataFile for the y entries
+ of the Data Series. For instance, if a column's first value is "Temperature",
+ and a column value of "Temperature" is specified, that column will be used
+ for the y values. If a value here is not specified, default values for the
+ y values will be generated instead.
+
+{:id="Regression.DataSourceKey" .text .wo .do} *DataSourceKey*
+: Sets the Data Source key identifier for the value to import from the
+ attached Data Source.
+ <p>
+ An example is the tag of the TinyDB component, which identifies the value.
+ <p>
+ The property is a Designer-only property, and should be changed after setting the
+ Source component of the Chart Data component.
+ <p>
+ A complete list of applicable values for each compatible source is as follows:
+ <p>
+ * For TinyDB and CloudDB, this is the tag value.
+ * For the AccelerometerSensor, the value should be one of the following: X Y or Z
+ * For the GyroscopeSensor, the value should be one of the following: X Y or Z
+ * For the LocationSensor, the value should be one of the following:
+ latitude, longitude, altitude or speed
+ * For the OrientationSensor, the value should be one of the following:
+ pitch, azimuth or roll
+ * For the Pedometer, the value should be one of the following:
+ WalkSteps, SimpleSteps or Distance
+ * For the ProximitySensor, the value should be distance.
+ * For the BluetoothClient, the value represents the prefix to remove from the value.
+ For instance, if values come in the format "t:12", the prefix can be specified as "t:",
+ and the prefix will then be removed from the data. No value can be specified if purely
+ numerical values are returned.
+
+{:id="Regression.ElementsFromPairs" .text .wo .do} *ElementsFromPairs*
+: Comma separated list of Elements to use for the data series. Values are formatted
+ as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed
+ from the x and y values.
+
+{:id="Regression.Source" .component .wo .do} *Source*
+: Sets the Source to use for the Data component. Valid choices
+ include AccelerometerSensor, BluetoothClient, CloudDB, DataFile,
+ GyroscopeSensor, LocationSesnro, OrientationSensor, Pedometer,
+ ProximitySensor TinyDB and Web components. The Source value also requires
+ valid DataSourceValue, WebColumn or DataFileColumn properties,
+ depending on the type of the Source attached (the required properties
+ show up in the Properties menu after the Source is changed).
+ <p>
+ If the data identified by the [`DataSourceKey`](#Regression.DataSourceKey) is updated
+ in the attached Data Source component, then the data is also updated in
+ the Chart Data component.
+
+{:id="Regression.SpreadsheetUseHeaders" .boolean .wo .do} *SpreadsheetUseHeaders*
+: If checked, the first row of the spreadsheet will be used to interpret the x and y column
+ values. Otherwise, the x and y columns should be a column reference, such as A or B.
+
+{:id="Regression.SpreadsheetXColumn" .text .wo .do} *SpreadsheetXColumn*
+: Sets the column to parse from the attached Spreadsheet component for the x values. If a
+ column is not specified, default values for the x values will be generated instead.
+
+{:id="Regression.SpreadsheetYColumn" .text .wo .do} *SpreadsheetYColumn*
+: Sets the column to parse from the attached Spreadsheet component for the y values. If a
+ column is not specified, default values for the y values will be generated instead.
+
+{:id="Regression.WebXColumn" .text .wo .do} *WebXColumn*
+: Value used when importing data from a Web component Source. The
+ value represents the column to use from the Web for the x entries
+ of the Data Series. For instance, if the contents of the Web are
+ retrieved in JSON format, and an array with the "Time" tag exists,
+ the "Time" column value can be specified to use that array.
+
+{:id="Regression.WebYColumn" .text .wo .do} *WebYColumn*
+: Value used when importing data from a Web component Source. The
+ value represents the column to use from the Web for the y entries
+ of the Data Series. For instance, if the contents of the Web are
+ retrieved in JSON format, and an array with the "Temperature" tag exists,
+ the "Temperature" column value can be specified to use that array.
+
+### Events  {#Regression-Events}
+
+{:.events}
+None
+
+
+### Methods  {#Regression-Methods}
+
+{:.methods}
+
+{:id="Regression.ChangeDataSource" class="method"} <i /> ChangeDataSource(*source*{:.component},*keyValue*{:.text})
+: Changes the Data Source of the component to the specified component Source with the
+ specified key value. See the [`Source`](#Regression.Source) property for
+ applicable components. See the [`DataSourceKey`](#Regression.DataSourceKey) property for the interpretation
+ of the keyValue. In the case of the DataFile and Web components, the keyValue is expected to
+ be a CSV formatted string, where the first value corresponds to the x column, and the second
+ value corresponds to the y value.
+
+{:id="Regression.Clear" class="method"} <i /> Clear()
+: Removes all the entries from the Data Series.
+
+{:id="Regression.GetAllEntries" class="method returns list"} <i /> GetAllEntries()
+: Returns all entries of the data series.
+ The returned value is a list, where each element of the list
+ is a list containing the values of the entry in order.
+
+{:id="Regression.GetEntriesWithXValue" class="method returns list"} <i /> GetEntriesWithXValue(*x*{:.text})
+: Returns all entries of the data series matching the specified x value.
+ For a description of the format of the returned List, see [`GetAllEntries`](#Regression.GetAllEntries)
+
+{:id="Regression.GetEntriesWithYValue" class="method returns list"} <i /> GetEntriesWithYValue(*y*{:.text})
+: Returns all entries of the data series matching the specified y value.
+ For a description of the format of the returned List, see [`GetAllEntries`](#Regression.GetAllEntries)
+
+{:id="Regression.GetLineOfBestFitCorCoef" class="method returns number"} <i /> GetLineOfBestFitCorCoef(*xList*{:.list},*yList*{:.list})
+: Gets the line of best fit correlation coefficient
+
+{:id="Regression.GetLineOfBestFitSlope" class="method returns number"} <i /> GetLineOfBestFitSlope(*xList*{:.list},*yList*{:.list})
+: Gets the line of best fit slope
+
+{:id="Regression.GetLineOfBestFitYIntercept" class="method returns number"} <i /> GetLineOfBestFitYIntercept(*xList*{:.list},*yList*{:.list})
+: Gets the line of best fit Intercept
+
+{:id="Regression.ImportFromCloudDB" class="method"} <i /> ImportFromCloudDB(*cloudDB*{:.component},*tag*{:.text})
+: Imports data from the specified CloudDB component by taking the value
+ identified by the specified tag value.
+ <p>
+ The expected CloudDB value is a list formatted in the same way as described in
+ [`ImportFromList`](#Regression.ImportFromList).
+ <p>
+ Does not overwrite any data.
+
+{:id="Regression.ImportFromDataFile" class="method"} <i /> ImportFromDataFile(*dataFile*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
+: Imports data from the specified DataFile component by taking the specified x column
+ for the x values, and the specified y column for the y values. The DataFile's source file
+ is expected to be either a CSV or a JSON file.
+ <p>
+ Passing in empty test for any of the column parameters will result in the usage of
+ default values which are the indices of the entries. For the first entry, the default
+ value would be the 1, for the second it would be 2, and so on.
+
+{:id="Regression.ImportFromList" class="method"} <i /> ImportFromList(*list*{:.list})
+: Imports the data from the specified list parameter to the data series.
+ The list is expected to contain element which are also lists. Each
+ list element is expected to have 2 values, the first one being
+ the x value, and the second one being the y value.
+ Invalid list entries are simply skipped. Existing data are not cleared.
+
+{:id="Regression.ImportFromSpreadsheet" class="method"} <i /> ImportFromSpreadsheet(*sheet*{:.component},*xColumn*{:.text},*yColumn*{:.text},*useHeaders*{:.boolean})
+: Imports data from the specified Spreadsheet component by taking the specified x column
+ for the x values, and the specified y column for the y values. Prior to calling this function,
+ the Spreadsheet component's ReadSheet method has to be called to load the data. The usage of
+ the GotSheet event in the Spreadsheet component is unnecessary.
+ <p>
+ Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+
+{:id="Regression.ImportFromTinyDB" class="method"} <i /> ImportFromTinyDB(*tinyDB*{:.component},*tag*{:.text})
+: Imports data from the specified TinyDB component by taking the value
+ identified by the specified tag value.
+ <p>
+ The expected TinyDB value is a list formatted in the same way as described in
+ [`ImportFromList`](#Regression.ImportFromList).
+ <p>
+ Does not overwrite any data.
+
+{:id="Regression.ImportFromWeb" class="method"} <i /> ImportFromWeb(*web*{:.component},*xValueColumn*{:.text},*yValueColumn*{:.text})
+: Imports data from the specified Web component by taking the specified x column
+ for the x values, and the specified y column for the y values. Prior to calling this function,
+ the Web component's Get method has to be called to load the data. The usage of the gotValue
+ event in the Web component is unnecessary.
+ <p>
+ The expected response of the Web component is a JSON or CSV formatted
+ file for this function to work.
+ <p>
+ Empty columns are filled with default values (1, 2, 3, ... for Entry 1, 2, 3, ...).
+
+{:id="Regression.RemoveDataSource" class="method"} <i /> RemoveDataSource()
+: Removes the currently attached Data Source from the Chart Data component.
+ Doing so will result in no more updates from the Data Source being sent, however,
+ the current data will not be removed.
+</p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p>
 
 </article>
 <script>
