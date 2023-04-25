@@ -144,11 +144,23 @@
 <h3 id="ChatBot-Properties">Properties</h3>
 
 <dl class="properties">
-  <dt id="ChatBot.ApiKey" class="text wo"><em>ApiKey</em></dt>
-  <dd>The API Key to use. MIT App Inventor will automatically fill this
- value in. You should not need to change it.</dd>
+  <dt id="ChatBot.ApiKey" class="text ro bo"><em>ApiKey</em></dt>
+  <dd>Property for ApiKey</dd>
+  <dt id="ChatBot.Apikey" class="text wo bo"><em>Apikey</em></dt>
+  <dd>An ApiKey for ChatGPT. User supplied. If provided, we will use it instead of the
+ API key embedded in the chat proxy service.</dd>
+</dl>
+
+<p>Note: We do not provide this as a DesignerProperty, it should be stored using the
+ blocks, preferably using the Obfuscated Text block to provide some protection
+ (not perfect protection) of the key embedded in a packaged app.</p>
+
+<dl>
   <dt id="ChatBot.System" class="text"><em>System</em></dt>
   <dd>The “System” value given to ChatGPT. It is used to set the tone of a conversation. For example: “You are a funny person.”</dd>
+  <dt id="ChatBot.Token" class="text wo"><em>Token</em></dt>
+  <dd>The MIT Access token to use. MIT App Inventor will automatically fill this
+ value in. You should not need to change it.</dd>
 </dl>
 
 <h3 id="ChatBot-Events">Events</h3>

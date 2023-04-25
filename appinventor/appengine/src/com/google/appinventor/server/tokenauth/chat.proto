@@ -32,6 +32,7 @@ message request {
     optional string uuid = 3;
     optional string question = 4;
     optional string system = 5;
+    optional string apikey = 6;
 }
 
 message response {

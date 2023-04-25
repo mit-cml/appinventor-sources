@@ -1704,6 +1704,20 @@ public final class ChatBotToken {
      */
     com.google.protobuf.ByteString
         getSystemBytes();
+
+    /**
+     * <code>optional string apikey = 6;</code>
+     */
+    boolean hasApikey();
+    /**
+     * <code>optional string apikey = 6;</code>
+     */
+    java.lang.String getApikey();
+    /**
+     * <code>optional string apikey = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getApikeyBytes();
   }
   /**
    * Protobuf type {@code request}
@@ -1721,6 +1735,7 @@ public final class ChatBotToken {
       uuid_ = "";
       question_ = "";
       system_ = "";
+      apikey_ = "";
     }
 
     @java.lang.Override
@@ -1785,6 +1800,12 @@ public final class ChatBotToken {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000010;
               system_ = bs;
+              break;
+            }
+            case 50: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000020;
+              apikey_ = bs;
               break;
             }
           }
@@ -1974,6 +1995,48 @@ public final class ChatBotToken {
       }
     }
 
+    public static final int APIKEY_FIELD_NUMBER = 6;
+    private volatile java.lang.Object apikey_;
+    /**
+     * <code>optional string apikey = 6;</code>
+     */
+    public boolean hasApikey() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional string apikey = 6;</code>
+     */
+    public java.lang.String getApikey() {
+      java.lang.Object ref = apikey_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          apikey_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string apikey = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getApikeyBytes() {
+      java.lang.Object ref = apikey_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        apikey_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -2001,6 +2064,9 @@ public final class ChatBotToken {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, system_);
       }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, apikey_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -2025,6 +2091,9 @@ public final class ChatBotToken {
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, system_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, apikey_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2068,6 +2137,11 @@ public final class ChatBotToken {
         result = result && getSystem()
             .equals(other.getSystem());
       }
+      result = result && (hasApikey() == other.hasApikey());
+      if (hasApikey()) {
+        result = result && getApikey()
+            .equals(other.getApikey());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -2099,6 +2173,10 @@ public final class ChatBotToken {
       if (hasSystem()) {
         hash = (37 * hash) + SYSTEM_FIELD_NUMBER;
         hash = (53 * hash) + getSystem().hashCode();
+      }
+      if (hasApikey()) {
+        hash = (37 * hash) + APIKEY_FIELD_NUMBER;
+        hash = (53 * hash) + getApikey().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -2233,6 +2311,8 @@ public final class ChatBotToken {
         bitField0_ = (bitField0_ & ~0x00000008);
         system_ = "";
         bitField0_ = (bitField0_ & ~0x00000010);
+        apikey_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -2281,6 +2361,10 @@ public final class ChatBotToken {
           to_bitField0_ |= 0x00000010;
         }
         result.system_ = system_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.apikey_ = apikey_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2342,6 +2426,11 @@ public final class ChatBotToken {
         if (other.hasSystem()) {
           bitField0_ |= 0x00000010;
           system_ = other.system_;
+          onChanged();
+        }
+        if (other.hasApikey()) {
+          bitField0_ |= 0x00000020;
+          apikey_ = other.apikey_;
           onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -2746,6 +2835,82 @@ public final class ChatBotToken {
   }
   bitField0_ |= 0x00000010;
         system_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object apikey_ = "";
+      /**
+       * <code>optional string apikey = 6;</code>
+       */
+      public boolean hasApikey() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional string apikey = 6;</code>
+       */
+      public java.lang.String getApikey() {
+        java.lang.Object ref = apikey_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            apikey_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string apikey = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getApikeyBytes() {
+        java.lang.Object ref = apikey_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          apikey_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string apikey = 6;</code>
+       */
+      public Builder setApikey(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        apikey_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string apikey = 6;</code>
+       */
+      public Builder clearApikey() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        apikey_ = getDefaultInstance().getApikey();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string apikey = 6;</code>
+       */
+      public Builder setApikeyBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        apikey_ = value;
         onChanged();
         return this;
       }
@@ -3748,13 +3913,14 @@ public final class ChatBotToken {
       "\022\n\007version\030\002 \001(\004:\0010\022\025\n\ngeneration\030\003 \001(\004:" +
       "\0010\"i\n\005token\022\022\n\007version\030\001 \001(\004:\0011\022\020\n\005keyid" +
       "\030\002 \001(\004:\0011\022\025\n\ngeneration\030\003 \001(\004:\0010\022\020\n\010unsi" +
-      "gned\030\004 \001(\014\022\021\n\tsignature\030\005 \001(\014\"d\n\007request" +
+      "gned\030\004 \001(\014\022\021\n\tsignature\030\005 \001(\014\"t\n\007request" +
       "\022\022\n\007version\030\001 \001(\004:\0011\022\025\n\005token\030\002 \001(\0132\006.to" +
       "ken\022\014\n\004uuid\030\003 \001(\t\022\020\n\010question\030\004 \001(\t\022\016\n\006s" +
-      "ystem\030\005 \001(\t\"O\n\010response\022\022\n\007version\030\001 \001(\004" +
-      ":\0011\022\021\n\006status\030\002 \001(\004:\0010\022\014\n\004uuid\030\003 \001(\t\022\016\n\006" +
-      "answer\030\004 \001(\tBA\n1com.google.appinventor.c",
-      "omponents.runtime.chatbotB\014ChatBotToken"
+      "ystem\030\005 \001(\t\022\016\n\006apikey\030\006 \001(\t\"O\n\010response\022" +
+      "\022\n\007version\030\001 \001(\004:\0011\022\021\n\006status\030\002 \001(\004:\0010\022\014" +
+      "\n\004uuid\030\003 \001(\t\022\016\n\006answer\030\004 \001(\tBA\n1com.goog",
+      "le.appinventor.components.runtime.chatbo" +
+      "tB\014ChatBotToken"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -3785,7 +3951,7 @@ public final class ChatBotToken {
     internal_static_request_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_request_descriptor,
-        new java.lang.String[] { "Version", "Token", "Uuid", "Question", "System", });
+        new java.lang.String[] { "Version", "Token", "Uuid", "Question", "System", "Apikey", });
     internal_static_response_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_response_fieldAccessorTable = new

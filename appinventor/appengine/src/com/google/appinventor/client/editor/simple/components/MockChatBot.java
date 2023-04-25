@@ -29,7 +29,7 @@ public class MockChatBot extends MockNonVisibleComponent {
 
   public static final String TYPE = "ChatBot";
 
-  private static final String PROPERTY_NAME_APIKEY = "ApiKey";
+  private static final String PROPERTY_NAME_TOKEN = "Token";
   private static boolean warningGiven = false; // Whether or not we have given experimental warning
 
   private boolean persistToken = false;
@@ -59,7 +59,7 @@ public class MockChatBot extends MockNonVisibleComponent {
 
   @Override
   public boolean isPropertyforYail(String propertyName) {
-    if (propertyName.equals(PROPERTY_NAME_APIKEY)) {
+    if (propertyName.equals(PROPERTY_NAME_TOKEN)) {
       return true;
     }
     return super.isPropertyforYail(propertyName);
@@ -67,7 +67,7 @@ public class MockChatBot extends MockNonVisibleComponent {
 
   @Override
   public boolean isPropertyPersisted(String propertyName) {
-    if (propertyName.equals(PROPERTY_NAME_APIKEY)) {
+    if (propertyName.equals(PROPERTY_NAME_TOKEN)) {
       return persistToken;
     } else {
       return super.isPropertyPersisted(propertyName);
@@ -91,8 +91,8 @@ public class MockChatBot extends MockNonVisibleComponent {
 
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
-    if (propertyName.equals(PROPERTY_NAME_APIKEY)) {
-      EditableProperty token = properties.getProperty(PROPERTY_NAME_APIKEY);
+    if (propertyName.equals(PROPERTY_NAME_TOKEN)) {
+      EditableProperty token = properties.getProperty(PROPERTY_NAME_TOKEN);
       int tokenType = token.getType();
       persistToken = false;
       tokenType |= EditableProperty.TYPE_NONPERSISTED;
@@ -108,18 +108,18 @@ public class MockChatBot extends MockNonVisibleComponent {
     Ode.getInstance().getTokenAuthService().getChatBotToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
-        EditableProperty tokenProperty = MockChatBot.this.properties.getProperty(PROPERTY_NAME_APIKEY);
+        EditableProperty tokenProperty = MockChatBot.this.properties.getProperty(PROPERTY_NAME_TOKEN);
         if (tokenProperty != null) {
           String existingToken = tokenProperty.getValue();
           if (!existingToken.isEmpty()) {
             return;             // If we have a value, don't over-write it
           }
         }
-        changeProperty(PROPERTY_NAME_APIKEY, token);
+        changeProperty(PROPERTY_NAME_TOKEN, token);
       }
       @Override
       public void onFailure(Throwable t){
-        changeProperty(PROPERTY_NAME_APIKEY, "ERROR : token not created");
+        changeProperty(PROPERTY_NAME_TOKEN, "ERROR : token not created");
         super.onFailure(t);
       }
     });
