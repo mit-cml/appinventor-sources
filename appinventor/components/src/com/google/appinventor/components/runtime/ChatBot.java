@@ -268,7 +268,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
         .setToken(token)
         .setUuid(uuid)
         .setQuestion(question);
-      if (!system.equals("")) {
+      if (!system.equals("") && uuid.equals("")) {
         builder = builder.setSystem(system);
       }
       if (apiKey != null && !apiKey.equals("")) {
