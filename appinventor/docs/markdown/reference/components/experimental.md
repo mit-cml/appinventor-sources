@@ -46,7 +46,7 @@ The ChatBot component is a non-visible component for chatting with an AI
 {:.events}
 
 {:id="ChatBot.GotResponse"} GotResponse(*responseCode*{:.text},*responseText*{:.text})
-: Event indicating that a request has finished and has returned data (translation).
+: Event indicating that a request has finished and has returned data (output from ChatBot).
 
 ### Methods  {#ChatBot-Methods}
 

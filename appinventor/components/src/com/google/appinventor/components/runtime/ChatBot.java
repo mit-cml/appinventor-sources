@@ -260,9 +260,15 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     // which tells the service to detect the language
     HttpsURLConnection connection = null;
     ensureSslSockFactory();
+    String iToken;
     try {
       Log.d(LOG_TAG, "performRequest: apiKey = " + apiKey);
-      byte [] decodedToken = Base58Util.decode(token);
+      if (token != null && !token.equals("") && token.substring(0, 1).equals("%")) {
+        iToken = token.substring(1);
+      } else {
+        iToken = token;
+      }
+      byte [] decodedToken = Base58Util.decode(iToken);
       ChatBotToken.token token = ChatBotToken.token.parseFrom(decodedToken);
       ChatBotToken.request.Builder builder = ChatBotToken.request.newBuilder()
         .setToken(token)
@@ -308,20 +314,20 @@ public final class ChatBot extends AndroidNonvisibleComponent {
         try {
           returnText = getResponseContent(connection, true);
         } catch  (IOException ee) {
-          returnText = "Error Fetching Translation";
+          returnText = "Error Fetching from ChatBot";
         }
         GotResponse("404", returnText);
       } else {
-        GotResponse("400", "Error Fetching Translation");
+        GotResponse("400", "Error Fetching ChatBot");
       }
     }
   }
 
   /**
-   * Event indicating that a request has finished and has returned data (translation).
+   * Event indicating that a request has finished and has returned data (output from ChatBot).
    *
    * @param responseCode the response code from the server
-   * @param translation the response content from the server
+   * @param responseText the response content from the server
    */
   @SimpleEvent(description = "Event fired when the Chat Bot answers a question.")
   public void GotResponse(final String responseCode, final String responseText) {
@@ -484,8 +490,8 @@ public final class ChatBot extends AndroidNonvisibleComponent {
         ctx.init(null, tmf.getTrustManagers(), null);
         sslSockFactory = ctx.getSocketFactory();
       } catch (Exception e) {
-        Log.e(LOG_TAG, "Could not setup SSL Trust Store for Tranlate", e);
-        throw new YailRuntimeError("Could Not setup SSL Trust Store for Translator: ", e.getMessage());
+        Log.e(LOG_TAG, "Could not setup SSL Trust Store for ChatBot", e);
+        throw new YailRuntimeError("Could Not setup SSL Trust Store for ChatBot: ", e.getMessage());
       }
     }
   }

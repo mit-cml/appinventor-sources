@@ -11,6 +11,7 @@ import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.MessageDialog;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 
@@ -31,8 +32,6 @@ public class MockChatBot extends MockNonVisibleComponent {
 
   private static final String PROPERTY_NAME_TOKEN = "Token";
   private static boolean warningGiven = false; // Whether or not we have given experimental warning
-
-  private boolean persistToken = false;
 
   /**
    * Creates a new instance of a non-visible component whose icon is
@@ -65,15 +64,6 @@ public class MockChatBot extends MockNonVisibleComponent {
     return super.isPropertyforYail(propertyName);
   }
 
-  @Override
-  public boolean isPropertyPersisted(String propertyName) {
-    if (propertyName.equals(PROPERTY_NAME_TOKEN)) {
-      return persistToken;
-    } else {
-      return super.isPropertyPersisted(propertyName);
-    }
-  }
-
   /**
    * Called when the component is dropped in the Designer window
    * we give a warning that ChatBox is still experimental.
@@ -89,22 +79,32 @@ public class MockChatBot extends MockNonVisibleComponent {
     }
   }
 
+  /**
+   * onPropertyChange: If the property we are changing is the token, then
+   * check to see if it begins with a "%" in which case we alter the type
+   * to be TYPE_NONPERSISTED.
+   */
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     if (propertyName.equals(PROPERTY_NAME_TOKEN)) {
       EditableProperty token = properties.getProperty(PROPERTY_NAME_TOKEN);
       int tokenType = token.getType();
-      persistToken = false;
-      tokenType |= EditableProperty.TYPE_NONPERSISTED;
-      tokenType |= EditableProperty.TYPE_DOYAIL;
+      if (newValue == null || newValue.isEmpty()) {
+        tokenType |= EditableProperty.TYPE_NONPERSISTED;
+        tokenType |= EditableProperty.TYPE_DOYAIL;
+        token.setType(tokenType);
+        getTokenFromServer();
+        return;                 // Callback from getTokenFromServer finishes up
+      } else if (newValue.substring(0, 1) == "%") {
+        tokenType &= ~EditableProperty.TYPE_NONPERSISTED;
+      }
       token.setType(tokenType);
-      getTokenFromServer();
     }
     super.onPropertyChange(propertyName, newValue);
   }
 
-
   private void getTokenFromServer() {
+    OdeLog.log("getTokenFromServer Called");
     Ode.getInstance().getTokenAuthService().getChatBotToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
@@ -112,11 +112,17 @@ public class MockChatBot extends MockNonVisibleComponent {
         if (tokenProperty != null) {
           String existingToken = tokenProperty.getValue();
           if (!existingToken.isEmpty()) {
+            OdeLog.log("bailing on getTokenFromServer existingToken = " + existingToken);
             return;             // If we have a value, don't over-write it
           }
         }
+        int tokenType = tokenProperty.getType();
+        tokenType |= EditableProperty.TYPE_NONPERSISTED;
+        tokenType |= EditableProperty.TYPE_DOYAIL;
+        tokenProperty.setType(tokenType);
         changeProperty(PROPERTY_NAME_TOKEN, token);
       }
+
       @Override
       public void onFailure(Throwable t){
         changeProperty(PROPERTY_NAME_TOKEN, "ERROR : token not created");
