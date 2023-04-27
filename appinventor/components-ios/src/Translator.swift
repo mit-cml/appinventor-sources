@@ -34,10 +34,12 @@ public let TRANSLATOR_SERVICE_URL = "https://tr.appinventor.mit.edu/tr/v1"
 
   @objc open func RequestTranslation(_ languageToTranslateTo: String, _ textToTranslate: String) {
     guard let url = URL(string: TRANSLATOR_SERVICE_URL) else {
-      fatalError("Unable to parse translator service URL")
+      showAlert(message: "Unable to parse translator service URL")
+      return
     }
     guard let decodedTokenBytes = Base58.base58Decode(_apiKey) else {
-      fatalError("Unable to decode api key")
+      showAlert(message: "Unable to decode api key")
+      return
     }
     let languages = languageToTranslateTo.split("-")
     guard languages.count <= 2 else {
