@@ -774,6 +774,7 @@ implements Component, DataSourceChangeListener {
 
         // Import the data from the retrieved columns
         dataModel.importFromColumns(dataColumns, true);
+        refreshChart();
 
       }
     });

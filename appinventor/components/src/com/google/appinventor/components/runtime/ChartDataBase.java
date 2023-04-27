@@ -5,8 +5,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.util.Log;
-
 import android.view.MotionEvent;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieEntry;
@@ -31,10 +29,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Base class for Chart Data components. Contains functionality common
@@ -43,56 +38,14 @@ import java.util.concurrent.Future;
  * Right now, the only extension is the ChartData2D component, but the
  * base class was created with future extensions (e.g. 3D data) in mind.
  */
-@SuppressWarnings({"TryWithIdenticalCatches", "checkstyle:JavadocParagraph"})
+@SuppressWarnings({"checkstyle:JavadocParagraph"})
 @SimpleObject
 public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDataModel<?, ?, ?, ?, ?> > implements Component, DataSourceChangeListener,
     OnChartGestureListener, OnChartValueSelectedListener {
 
-  /**
-   * Used to queue & execute asynchronous tasks while ensuring
-   * order of method execution (ExecutorService should be a Single Thread runner)
-   * In the case of methods which return values and where
-   * the result depends on the state of the data, blocking get
-   * calls are used to ensure that all the previous async tasks
-   * finish before the data is returned.
-   */
-  protected ExecutorService threadRunner;
-
-  /**
-   * Properties used in Designer to import from DataFile.
-   * Represents the names of the columns to use,
-   * where each index corresponds to a single dimension.
-   */
-  protected List<String> dataFileColumns;
-
-
-  protected List<String> sheetsColumns;
-
-  /**
-   * Properties used in Designer to import from Web components.
-   * Represents the names of the columns to use,
-   * where each index corresponds to a single dimension.
-   */
-  protected List<String> webColumns;
-
-  /**
-   * Property used in Designer to import from a Data Source.
-   * Represents the key value of the value to use from the
-   * attached Data Source.
-   */
-  protected String dataSourceKey;
-
   private String label;
   private int color;
   private YailList colors;
-
-
-  private DataSource<?, ?> dataSource; // Attached Chart Data Source
-
-  private String elements; // Elements Designer property
-
-  private boolean initialized = false; // Keep track whether the Screen has already been initialized
-
 
   /**
    * Creates a new Chart Data component.
@@ -106,18 +59,6 @@ public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDa
     DataSourceKey("");
 
     threadRunner = Executors.newSingleThreadExecutor();
-  }
-
-  /**
-   * Changes the underlying Executor Service of the threadRunner.
-   *
-   *   Primarily used for testing to inject test/mock ExecutorService
-   * classes.
-   *
-   * @param service new ExecutorService object to use..
-   */
-  public void setExecutorService(ExecutorService service) {
-    threadRunner = service;
   }
 
   /**
@@ -295,44 +236,6 @@ public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDa
    */
 
   /**
-   * Imports data from a Data File component, with the specified column names.
-   * The method is run asynchronously.
-   *
-   * @param dataFile Data File component to import from
-   * @param columns  list of column names to import from
-   */
-  protected void importFromDataFileAsync(final DataFile dataFile, YailList columns) {
-    // Get the Future object representing the columns in the DataFile component.
-    final Future<YailList> dataFileColumns = dataFile.getDataValue(columns);
-
-    // Import the data from the Data file asynchronously
-    threadRunner.execute(new Runnable() {
-      @SuppressWarnings("TryWithIdenticalCatches")
-      @Override
-      public void run() {
-        YailList dataResult = null;
-
-        try {
-          // Get the columns from the DataFile. The retrieval of
-          // the result is blocking, so it will first wait for
-          // the reading to be processed.
-          dataResult = dataFileColumns.get();
-        } catch (InterruptedException e) {
-          Log.e(this.getClass().getName(), e.getMessage());
-        } catch (ExecutionException e) {
-          Log.e(this.getClass().getName(), e.getMessage());
-        }
-
-        // Import from Data file with the specified parameters
-        dataModel.importFromColumns(dataResult, true);
-
-        // Refresh the Chart after import
-        refreshChart();
-      }
-    });
-  }
-
-  /**
    * Refreshes the Chart View object with the current up to date
    * Data Series data.
    */
@@ -346,44 +249,6 @@ public abstract class ChartDataBase extends DataCollection<Chart, Entry, ChartDa
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
     return this.container.getDispatchDelegate();
-  }
-
-  /**
-   * Links the Data Source component with the Data component, if
-   * the Source component has been defined earlier.
-   *
-   *   The reason this is done is because otherwise exceptions
-   * are thrown if the Data is being imported before the component
-   * is fully initialized.
-   */
-  public void Initialize() {
-    initialized = true;
-
-    // Data Source should only be imported after the Screen
-    // has been initialized, otherwise some exceptions may occur
-    // on small data sets with regards to Chart refreshing.
-    if (dataSource != null) {
-      Source(dataSource);
-      refreshChart();
-    } else {
-      // If no Source is specified, the ElementsFromPairs
-      // property can be set instead. Otherwise, this is not
-      // set to prevent data overriding.
-      ElementsFromPairs(elements);
-      refreshChart();
-    }
-  }
-
-  /**
-   * Checks whether the provided key is compatible based on the current set
-   * Data Source key.
-   *
-   * @param key Key to check
-   * @return True if the key is equivalent to the current Data Source key
-   */
-  private boolean isKeyValid(String key) {
-    // The key should either be equal to the local key, or null.
-    return (key == null || key.equals(dataSourceKey));
   }
 
   @Override
