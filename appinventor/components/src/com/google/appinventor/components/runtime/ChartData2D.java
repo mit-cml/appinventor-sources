@@ -13,6 +13,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
+import gnu.lists.LList;
 import gnu.lists.Pair;
 
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+
+import static com.google.appinventor.components.runtime.FileBase.LOG_TAG;
 
 
 /**
@@ -225,6 +228,32 @@ public final class ChartData2D extends ChartDataBase {
       ((LineDataSet) dataModel.getDataset()).setDrawValues(false);
     }
     refreshChart();
+  }
+  /**
+   * Highlights all given anomalies on the Chart in the color of choice
+   *
+   * @param anomalies - the list of anomalies. An anomaly inside the list is a pair of anomaly index and anomaly value: [[anomaly index, anomaly value],...,[,]]
+   * @param color - the highlight color chosen by the user
+   */
+  @SimpleFunction(description = "Highlights all given anomalies on the Chart. This block expects a list of anomalies, each anomaly is an index, value pair")
+  public void HighlightAnomalies(final YailList anomalies, int color) {
+    List<List> anomaliesList = (LList) anomalies.getCdr();
+    if(!anomalies.isEmpty()) {
+      List entries = dataModel.getEntries();
+      int defaultColor = ((LineDataSet) dataModel.getDataset()).getColor();
+      int[] highlights = new int[entries.size()];
+      Arrays.fill(highlights, defaultColor);
+
+      for (List anomaly: anomaliesList){
+        int anomalyIndex = (int) AnomalyDetection.GetAnomalyIndex((YailList) anomaly);
+        highlights[anomalyIndex - 1] = color;
+      }
+      ((LineDataSet) dataModel.getDataset()).setCircleColors(highlights);
+      refreshChart();
+    }else{
+      Log.i(LOG_TAG, "Anomalies list is Empty:"+ anomalies);
+      throw new IllegalStateException("Anomalies list is Empty. Nothing to clean!");
+    }
   }
 }
 

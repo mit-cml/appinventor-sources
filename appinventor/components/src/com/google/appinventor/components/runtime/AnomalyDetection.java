@@ -84,7 +84,7 @@ public final class AnomalyDetection extends DataCollection {
     for (int i = 0; i < data.size(); i++) {
       double zScore = Math.abs((data.get(i) - mean) / sd); // The z-score is a measure of how many standard deviations a data point is away from the mean
       if (threshold.length == 0) {
-        double defaultThreshold = 1; // Todo: define a default value if not defined by the user
+        double defaultThreshold = 2; //default threshold of 2 standard deviation steps away from the mean
         if (zScore > defaultThreshold) {
           anomalies.add(Arrays.asList(i + 1,data.get(i))); // We need to return the index in order to remove the x value at the same index when we remove anomalies (index starts at 0)
         }
@@ -109,8 +109,8 @@ public final class AnomalyDetection extends DataCollection {
    * @param anomaly - a single YailList tuple of anomaly index and value
    * @return List of combined x and y pairs without the anomaly pair
    */
-  @SimpleFunction(description = "test")
-  public List RemoveAnomaly(final YailList anomaly, YailList xList, YailList yList) {
+  @SimpleFunction(description = "Given a list of anomalies and the x and y values of your data. This block will return the x and y value pairs of your data without the anomalies")
+  public List CleanData(final YailList anomaly, YailList xList, YailList yList) {
     LList xValues = (LList) xList.getCdr();
     List xData = castToDouble(xValues);
 
@@ -134,9 +134,15 @@ public final class AnomalyDetection extends DataCollection {
     }
     return cleanData;
   }
-
+  /**
+   * Given a single anomaly: [(anomaly index, anomaly value)] return the anomaly index
+   *
+   *
+   * @param anomaly - a single YailList tuple of anomaly index and value
+   * @return double anomaly index
+   */
   @SimpleFunction(description = "Gets the index of a single anomaly")
-  public double GetAnomalyIndex(YailList anomaly){
+  public static double GetAnomalyIndex(YailList anomaly){
     LList anomalyValue = (LList) anomaly.getCdr();
     List<Double> anomalyNr = castToDouble(anomalyValue);
     return anomalyNr.get(0);

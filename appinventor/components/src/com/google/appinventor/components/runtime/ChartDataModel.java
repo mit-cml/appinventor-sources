@@ -187,9 +187,7 @@ public abstract class ChartDataModel<
    * Deletes all the entries in the Data Series.
    */
   public void clearEntries() {
-    Log.i(LOG_TAG, "Calling clear entries in DataModel for: " + entries.toString());
     entries.clear();
-    Log.i(LOG_TAG, "Entries are now cleared" + entries.toString());
   }
   /**
    * Removes the entry in the specified index, provided that the
