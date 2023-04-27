@@ -1462,15 +1462,25 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 if (rs.dialog) {      // Dialog won't be present when we connect via chromebook
                     rs.dialog.hide(); // Take down the QRCode dialog
                 }
-                // Keep the user informed about the connection
-                top.ConnectProgressBar_start();
-                top.ConnectProgressBar_setProgress(10, Blockly.Msg.DIALOG_FOUND_COMPANION);
                 var json = goog.json.parse(xmlhttp.response);
                 rs.url = 'http://' + json.ipaddr + ':8001/_newblocks';
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
+                if (!(rs.android) && Blockly.ReplMgr.hasExtensions()) {
+                    rs.dialog.hide();
+                    top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
+                    top.BlocklyPanel_indicateDisconnect();
+                    rs.connection = null;
+                    var ios_dialog = new Blockly.Util.Dialog(Blockly.Msg.EXTENSIONS, Blockly.Msg.EXTENSIONS_iOS, Blockly.Msg.REPL_CANCEL, true, null, 0, function() {
+                        ios_dialog.hide();
+                    });
+                    return;
+                }
+                // Keep the user informed about the connection
+                top.ConnectProgressBar_start();
+                top.ConnectProgressBar_setProgress(10, Blockly.Msg.DIALOG_FOUND_COMPANION);
                 rs.didversioncheck = true; // We are checking it here, so don't check it later
                                            // via HTTP because we may be using webrtc and there is no
                                           // HTTP
@@ -1505,6 +1515,11 @@ Blockly.ReplMgr.getFromRendezvous = function() {
         }
     };
     xmlhttp.send();
+};
+
+Blockly.ReplMgr.hasExtensions = function() {
+    var extensions = top.AssetManager_getExtensions();
+    return extensions.length > 0;
 };
 
 Blockly.ReplMgr.rendezvousDone = function() {

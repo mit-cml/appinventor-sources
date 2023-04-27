@@ -1107,7 +1107,8 @@ open class CanvasView: UIView {
   private var _oldSize: CGSize = .zero
 
   required public init?(coder aDecoder: NSCoder) {
-    fatalError("This class does not support NSCoding")
+    super.init(coder: aDecoder)
+    showAlert(message: "init(coder:) has not been implemented")
   }
   
   override init(frame: CGRect) {

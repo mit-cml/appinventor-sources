@@ -159,6 +159,7 @@
 		0AE0AA8744D14E11695CF2E0 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */; };
 		151EB7E2298853E400315044 /* AccessibleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151EB7E1298853E400315044 /* AccessibleComponent.swift */; };
 		22843757284F89DF00EC3133 /* AssetFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22843756284F89DF00EC3133 /* AssetFetcher.swift */; };
+		46E77D8E29DD6894002CCDFB /* ShowAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E77D8D29DD6894002CCDFB /* ShowAlert.swift */; };
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
 		703C389B22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */; };
 		C41392922280708000DBA8C6 /* Switch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41392912280708000DBA8C6 /* Switch.swift */; };
@@ -339,7 +340,7 @@
 		06B216031DB95146000B3366 /* Notifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifier.swift; sourceTree = "<group>"; };
 		06B216051DB95155000B3366 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		06B216071DB954A5000B3366 /* ColorUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorUtil.swift; sourceTree = "<group>"; };
-		06B2161E1DBDA4B4000B3366 /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = components-ios/src/runtime.scm; sourceTree = SOURCE_ROOT; };
+		06B2161E1DBDA4B4000B3366 /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = "components-ios/src/runtime.scm"; sourceTree = SOURCE_ROOT; };
 		06B3747B1DC06F6B003888CB /* GCDWebServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GCDWebServer.framework; path = "Pods/../build/Release-iphoneos/GCDWebServer/GCDWebServer.framework"; sourceTree = "<group>"; };
 		06B3747C1DC06F6B003888CB /* Pods_AIComponentKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_AIComponentKit.framework; path = "Pods/../build/Release-iphoneos/Pods_AIComponentKit.framework"; sourceTree = "<group>"; };
 		06B3747D1DC06F6B003888CB /* SchemeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SchemeKit.framework; path = "build/Release-iphoneos/SchemeKit.framework"; sourceTree = "<group>"; };
@@ -391,6 +392,7 @@
 		151EB7E1298853E400315044 /* AccessibleComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibleComponent.swift; sourceTree = "<group>"; };
 		22843756284F89DF00EC3133 /* AssetFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetFetcher.swift; sourceTree = "<group>"; };
 		32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		46E77D8D29DD6894002CCDFB /* ShowAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAlert.swift; sourceTree = "<group>"; };
 		4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58E89B4AF39EEFF895CBBDD1 /* Pods-AIComponentKit-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -568,7 +570,7 @@
 				DE5CBD271FE36C8B00F5EDDE /* webviewer.js */,
 				06678E31233956EE00BD3F19 /* main.swift */,
 			);
-			path = components-ios/src;
+			path = "components-ios/src";
 			sourceTree = "<group>";
 		};
 		0618A2901D8CF4EE0013A191 /* components-ios/tests */ = {
@@ -589,7 +591,7 @@
 				0653CBD71F9719920052065A /* RuntimeTests.swift */,
 				0653CBD91F971BA70052065A /* TestFailure.swift */,
 			);
-			path = components-ios/tests;
+			path = "components-ios/tests";
 			sourceTree = "<group>";
 		};
 		06D151911DC4646000FC981E /* ui */ = {
@@ -704,6 +706,7 @@
 				06F91463252CE50B00AF8F88 /* BundledApp.swift */,
 				CBC7868520113A3C005363A3 /* CircularBuffer.swift */,
 				06B216071DB954A5000B3366 /* ColorUtil.swift */,
+				46E77D8D29DD6894002CCDFB /* ShowAlert.swift */,
 				06604B722034EFE70066C459 /* CsvUtil.swift */,
 				06AEDC571E04C12900371E72 /* FormatUtil.swift */,
 				06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */,
@@ -1314,6 +1317,7 @@
 				CBC787022032272E005363A3 /* String+Replace.swift in Sources */,
 				151EB7E2298853E400315044 /* AccessibleComponent.swift in Sources */,
 				062832981DBE95A7009605D5 /* Layout.swift in Sources */,
+				46E77D8E29DD6894002CCDFB /* ShowAlert.swift in Sources */,
 				06D1519C1DC4736900FC981E /* NSString_SHA1.m in Sources */,
 				04248DD6201927C700688ED0 /* TimePicker.swift in Sources */,
 				CBC7868A202A28D8005363A3 /* MapFactory.swift in Sources */,
@@ -1438,7 +1442,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers",
 				);
-				INFOPLIST_FILE = components-ios/src/Info.plist;
+				INFOPLIST_FILE = "components-ios/src/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1525,7 +1529,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers",
 				);
-				INFOPLIST_FILE = components-ios/src/Info.plist;
+				INFOPLIST_FILE = "components-ios/src/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1616,7 +1620,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/geos/geos.framework/Headers\"",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)/WebRTC.framework/Headers",
 				);
-				INFOPLIST_FILE = components-ios/tests/Info.plist;
+				INFOPLIST_FILE = "components-ios/tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1683,7 +1687,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = components-ios/tests/Info.plist;
+				INFOPLIST_FILE = "components-ios/tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
