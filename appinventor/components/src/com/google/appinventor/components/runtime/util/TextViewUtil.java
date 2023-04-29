@@ -168,13 +168,8 @@ public class TextViewUtil {
     Typeface typeface;
     if (!fontFile.contains("/")) {
       if (form instanceof ReplForm) {
-        if (Build.VERSION.SDK_INT > 28) {
-          File file = new File("/storage/emulated/0/Android/data/edu.mit.appinventor.aicompanion3/files/assets/" + fontFile);
-          typeface = Typeface.createFromFile(file);
-        } else {
-          File file = new File("/storage/emulated/0/AppInventor/assets/" + fontFile);
-          typeface = Typeface.createFromFile(file);
-        }
+        File file = new File("/storage/emulated/0/Android/data/edu.mit.appinventor.aicompanion3/files/assets/" + fontFile);
+        typeface = Typeface.createFromFile(file);        
       } else {
         typeface = Typeface.createFromAsset(form.$context().getAssets(), fontFile);
       }
