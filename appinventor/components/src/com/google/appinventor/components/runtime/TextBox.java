@@ -17,6 +17,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.InputType;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -104,6 +105,8 @@ public final class TextBox extends TextBoxBase {
   // If true, then text box is read-only
   private boolean readOnly;
 
+  // If true, then text is hidden
+  private boolean passwordMode;
   /**
    * Creates a new TextBox component.
    *
@@ -114,6 +117,7 @@ public final class TextBox extends TextBoxBase {
     NumbersOnly(false);
     MultiLine(false);
     ReadOnly(false);
+    PasswordMode(false);
 
     // We need to set the IME options here.  Otherwise, Android's default
     // behavior is that the action button will be Done or Next, depending on
@@ -133,7 +137,7 @@ public final class TextBox extends TextBoxBase {
    * @return {@code true} indicates that the textbox accepts numbers only, {@code false} indicates
    *         that it accepts any text
    */
-  @SimpleProperty(
+   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
       description = "If true, then this text box accepts only numbers as keyboard input.  " +
       "Numbers can include a decimal point and an optional leading minus sign.  " +
@@ -160,12 +164,28 @@ public final class TextBox extends TextBoxBase {
       "can use [set Text to] to enter any text at all.")
   public void NumbersOnly(boolean acceptsNumbersOnly) {
     if (acceptsNumbersOnly) {
-      view.setInputType(
-          InputType.TYPE_CLASS_NUMBER |
-          InputType.TYPE_NUMBER_FLAG_SIGNED |
-          InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
+      if(passwordMode){
+        view.setInputType(
+                InputType.TYPE_CLASS_NUMBER |
+                        InputType.TYPE_NUMBER_FLAG_SIGNED |
+                        InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+      }
+      else{
+        view.setInputType(
+                InputType.TYPE_CLASS_NUMBER |
+                        InputType.TYPE_NUMBER_FLAG_SIGNED |
+                        InputType.TYPE_NUMBER_FLAG_DECIMAL);
+      }
+
     } else {
-      view.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+      if(passwordMode){
+        view.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE |InputType.TYPE_TEXT_VARIATION_PASSWORD);
+      }
+      else{
+        view.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+      }
+
     }
     this.acceptsNumbersOnly = acceptsNumbersOnly;
   }
@@ -236,6 +256,58 @@ public final class TextBox extends TextBoxBase {
   public void ReadOnly(boolean readOnly) {
     this.readOnly = readOnly;
     view.setEnabled(!readOnly);
+  }
+
+  /**
+   * PasswordMode property getter method.
+   *
+   * @return {@code true} indicates that the text-box hides the text typed in it,
+   *          {@code false} indicates that it shows the text
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+          description = "If true, then this text box does not show any text typed in it.  ")
+  public boolean PasswordMode() {
+    return passwordMode;
+  }
+
+  /**
+   * PasswordMode property setter method.
+   *
+   * @param passwordMode true if text is to be hidden.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty
+  public void PasswordMode(boolean passwordMode) {
+    if(passwordMode)
+    {
+
+      if(acceptsNumbersOnly){
+        view.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD|InputType.TYPE_CLASS_NUMBER|
+                InputType.TYPE_NUMBER_FLAG_SIGNED|
+                InputType.TYPE_NUMBER_FLAG_DECIMAL);
+      }
+      else{
+        view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+      }
+
+
+    }
+    else
+    {
+
+      if(acceptsNumbersOnly){
+        view.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD|InputType.TYPE_CLASS_NUMBER|
+                InputType.TYPE_NUMBER_FLAG_SIGNED|
+                InputType.TYPE_NUMBER_FLAG_DECIMAL);
+      }
+      else{
+        view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+      }
+
+
+    }
+    this.passwordMode = passwordMode;
   }
 
   // TODO(halabelson): We might also want a method to show the keyboard.

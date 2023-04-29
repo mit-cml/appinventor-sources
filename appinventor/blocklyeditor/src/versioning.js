@@ -3082,7 +3082,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI3: Added ReadOnly property
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI3: Added PasswordMode property
+    7: "noUpgrade"
 
   }, // End TextBox upgraders
 

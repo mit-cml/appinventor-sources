@@ -1783,6 +1783,10 @@ public final class YoungAndroidFormUpgrader {
       // ReadOnly property was added
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // PasswordMode property was added
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
