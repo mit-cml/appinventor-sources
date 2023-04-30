@@ -416,6 +416,8 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeEv3UltrasonicSensorProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("NxtDirectCommands")) {
         srcCompVersion = upgradeNxtDirectCommandsProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("NearField")) {
+        srcCompVersion = upgradeNearFieldProperties(componentProperties, srcCompVersion);
       }
 
       if (srcCompVersion < sysCompVersion) {
@@ -2036,6 +2038,16 @@ public final class YoungAndroidFormUpgrader {
       int srcCompVersion) {
     if (srcCompVersion < 2) {
       // Adds dropdown blocks.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeNearFieldProperties(
+      Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Adds tagId parameter to TagRead event.
       srcCompVersion = 2;
     }
     return srcCompVersion;

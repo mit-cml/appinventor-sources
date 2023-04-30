@@ -15,9 +15,11 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
+import android.os.Build;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.runtime.NearField;
 
 import java.net.CookieHandler;
@@ -127,7 +129,15 @@ public class GingerbreadUtil {
         byte[] payload = msgs[0].getRecords()[0].getPayload();
         //the substring chops off the two language encoding bits at the beginning
         String message = new String(payload).substring(3);
-        nfc.TagRead(message);
+
+        String tagId = "";
+        // TODO: After minSDK gets upgraded to 14, remove this check
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+          Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+          tagId = StringUtils.toHexString(tag.getId());
+        }
+
+        nfc.TagRead(tagId, message);
       } else {
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         NdefMessage msg = null;

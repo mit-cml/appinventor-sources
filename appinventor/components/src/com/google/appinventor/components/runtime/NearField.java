@@ -90,10 +90,10 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
    * See Compiler.java.
    */
   @SimpleEvent
-  public void TagRead(String message) {
+  public void TagRead(String tagId, String message) {
     Log.d(TAG, "Tag read: got message " + message);
     tagContent = message;
-    EventDispatcher.dispatchEvent(this, "TagRead", message);
+    EventDispatcher.dispatchEvent(this, "TagRead", tagId, message);
   }
 
   /**

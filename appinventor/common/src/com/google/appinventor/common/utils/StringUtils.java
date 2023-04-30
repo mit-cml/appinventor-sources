@@ -20,6 +20,8 @@ public final class StringUtils {
   private StringUtils() {
   }
 
+  private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+
   /**
    * A {@link CharMatcher} that matches valid filename characters:
    * [0-9],[a-z],[A-Z],'_','.', and '-'
@@ -345,5 +347,23 @@ public final class StringUtils {
    */
   public static boolean isNullOrEmpty(final String text) {
      return text == null || text.isEmpty();
+  }
+
+  /**
+   * Given an array of bytes, returns its hexadecimal representation.
+   * @param buffer array of bytes to represent
+   * @return hexadecimal representation of bytes
+   */
+  // Solution from https://stackoverflow.com/a/9855338
+  public static String toHexString(byte[] buffer) {
+    char[] hexChars = new char[buffer.length * 2];
+
+    for (int i = 0; i < buffer.length; i++) {
+      int v = buffer[i] & 0xff;
+      hexChars[i * 2] = HEX_ARRAY[v >>> 4];
+      hexChars[i * 2 + 1] = HEX_ARRAY[v & 0x0F];
+    }
+
+    return new String(hexChars);
   }
 }

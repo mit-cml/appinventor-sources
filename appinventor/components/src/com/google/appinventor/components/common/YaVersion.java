@@ -571,8 +571,10 @@ public class YaVersion {
   // - SPREADSHEET_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 221;
   // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 222:
+  // - NEARFIELD_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 221;
+  public static final int YOUNG_ANDROID_VERSION = 222;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1163,7 +1165,10 @@ public class YaVersion {
   public static final int NAVIGATION_COMPONENT_VERSION = 2;
 
   // For NEARFIELD_COMPONENT_VERSION 1:
-  public static final int NEARFIELD_COMPONENT_VERSION = 1;
+  // - Initial NearField implementation
+  // For NEARFIELD_COMPONENT_VERSION 2:
+  // Added tagId parameter to TagRead event
+  public static final int NEARFIELD_COMPONENT_VERSION = 2;
 
   // For NOTIFIER_COMPONENT_VERSION 2:
   // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
