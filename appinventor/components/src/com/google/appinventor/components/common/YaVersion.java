@@ -571,8 +571,10 @@ public class YaVersion {
   // - SPREADSHEET_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 221;
   // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 222:
+  // - SOUND_RECORDER_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 221;
+  public static final int YOUNG_ANDROID_VERSION = 222;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1309,7 +1311,10 @@ public class YaVersion {
 
   // For SOUND_RECORDER_COMPONENT_VERSION 2:
   // - The SavedRecording property was added.
-  public static final int SOUND_RECORDER_COMPONENT_VERSION = 2;
+  // For SOUND_RECORDER_COMPONENT_VERSION 3:
+  // - Added Pause and Resume methods.
+  // - Added PausedRecording and ResumedRecording events.
+  public static final int SOUND_RECORDER_COMPONENT_VERSION = 3;
 
   // For SPEECHRECOGNIZER_COMPONENT_VERSION 2:
   // - The UseLegacy property was added which is set to True by default.
