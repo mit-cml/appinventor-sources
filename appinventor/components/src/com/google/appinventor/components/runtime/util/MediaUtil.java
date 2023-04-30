@@ -64,7 +64,7 @@ public class MediaUtil {
   private MediaUtil() {
   }
 
-  static String fileUrlToFilePath(String mediaPath) throws IOException {
+  public static String fileUrlToFilePath(String mediaPath) throws IOException {
     try {
       return new File(new URL(mediaPath).toURI()).getAbsolutePath();
     } catch (IllegalArgumentException e) {
