@@ -168,7 +168,10 @@ public class TextViewUtil {
     Typeface typeface;
     if (!fontFile.contains("/")) {
       if (form instanceof ReplForm) {
-        File file = new File("/storage/emulated/0/Android/data/edu.mit.appinventor.aicompanion3/files/assets/" + fontFile);
+        try {
+          File file = new File(MediaUtil.fileUrlToFilePath(form.getAssetPath(fontFile)));
+        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {}
         typeface = Typeface.createFromFile(file);        
       } else {
         typeface = Typeface.createFromAsset(form.$context().getAssets(), fontFile);
