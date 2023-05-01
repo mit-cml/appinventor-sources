@@ -2,8 +2,6 @@
 
 goog.provide('AI.Events');
 
-goog.require('Blockly.Events');
-
 /**
  * Type identifier used for serializing CompanionConnect events.
  * @const {string}

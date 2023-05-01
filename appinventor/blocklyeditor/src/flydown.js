@@ -14,10 +14,6 @@
 
 goog.provide('AI.Blockly.Flydown');
 
-goog.require('Blockly.Flyout');
-goog.require('Blockly.Block');
-goog.require('Blockly.Comment');
-
 /**
  * Class for a flydown.
  * @constructor

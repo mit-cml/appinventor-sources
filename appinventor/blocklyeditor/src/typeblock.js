@@ -10,7 +10,6 @@
 'use strict';
 
 goog.provide('Blockly.TypeBlock');
-goog.require('Blockly.Xml');
 
 goog.require('goog.events');
 goog.require('goog.events.KeyCodes');

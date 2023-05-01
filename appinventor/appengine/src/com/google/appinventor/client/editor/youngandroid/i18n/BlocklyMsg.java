@@ -127,6 +127,9 @@ public interface BlocklyMsg extends ClientBundle {
     private static native void installTranslations(String translations)/*-{
       @com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg.Loader::translations =
         JSON.parse(translations);
+      $wnd.AI.Blockly.Msg.applyMessages(
+        @com.google.appinventor.client.editor.youngandroid.i18n.BlocklyMsg.Loader::translations
+      );
     }-*/;
   }
 }

@@ -11,8 +11,6 @@
 
 goog.provide('Blockly.Yail');
 
-goog.require('Blockly.Generator');
-
 Blockly.Yail = new Blockly.Generator('Yail');
 
 /**

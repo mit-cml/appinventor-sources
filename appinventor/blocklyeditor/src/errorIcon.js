@@ -30,10 +30,6 @@
 
 goog.provide('AI.Blockly.Error');
 
-goog.require('Blockly.Bubble');
-goog.require('Blockly.Icon');
-
-
 /**
  * Class for an error.
  * @param {!Blockly.Block} block The block associated with this error.

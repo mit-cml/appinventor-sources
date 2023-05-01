@@ -170,7 +170,7 @@
         <exclude name="media/*.css"/>
       </fileset>
     </copy>
-    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/blockly.js" />
+    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/static/js/aiblockly.js" />
 
     <!-- Move Blockly translations into place -->
     <mkdir dir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n"/>

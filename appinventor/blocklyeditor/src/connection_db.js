@@ -15,8 +15,6 @@
  */
 
 goog.provide('AI.Blockly.ConnectionDB');
-goog.require('Blockly.ConnectionDB');
-
 
 /**
  * A version of addConnection that maintains the invariant that the DB will contain the

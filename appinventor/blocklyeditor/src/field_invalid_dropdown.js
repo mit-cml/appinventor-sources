@@ -7,8 +7,6 @@
 
 goog.provide('AI.Blockly.FieldInvalidDropdown');
 
-goog.require('Blockly.FieldDropdown');
-
 /**
  * Dropdown field that allows you to display invalid options. Options that are
  * not available (invalid) are displayed, and the block is marked as a

@@ -11,8 +11,6 @@
 
 goog.provide('AI.Blockly.FieldProcedureName');
 
-goog.require('Blockly.FieldTextInput');
-
 /**
  * FieldProcedureName is a specialization of {@link Blockly.FieldTextInput} that handles renaming
  * procedures in the {@link AI.Blockly.ProcedureDatabase} when the procedure's name is changed.

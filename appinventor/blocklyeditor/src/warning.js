@@ -13,8 +13,6 @@
 
 goog.provide('AI2.Blockly.Warning');
 
-goog.require('Blockly.Warning');
-
 Blockly.Warning.prototype.drawIcon_ = (function(func) {
   if (func.isWrapped) {
     return func;

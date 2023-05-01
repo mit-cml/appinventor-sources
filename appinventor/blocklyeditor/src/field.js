@@ -11,9 +11,6 @@
 
 goog.provide('AI.Blockly.Field');
 
-goog.require('Blockly.Field');
-
-
 /**
  * Sets the value of the field. Since AI runs an older version of blockly,
  * the newValue should always be a string.

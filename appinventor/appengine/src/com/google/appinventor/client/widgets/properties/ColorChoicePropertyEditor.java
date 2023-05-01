@@ -369,7 +369,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
   // JSNI Methods
   private native void prepareCustomColorPicker(Element parent)/*-{
-    var picker = new goog.ui.HsvaPalette(new goog.dom.DomHelper(top.document), null, 1, 'goog-hsva-palette-sm');
+    var picker = new $wnd.goog.ui.HsvaPalette(new $wnd.goog.dom.DomHelper(top.document), null, 1, 'goog-hsva-palette-sm');
     picker.render(parent);
     this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::palettePicker = picker;
   }-*/;

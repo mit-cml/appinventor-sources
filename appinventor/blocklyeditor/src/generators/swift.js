@@ -7,8 +7,6 @@
  */
 goog.provide('Blockly.Swift')
 
-goog.require('Blockly.Generator')
-
 Blockly.Swift.SWIFT_DEFFORM_PRELUDE = "// $Source $Yail\n// automatically generated source file\n// any edits will be overwritten\n\nimport Foundation\nimport AIComponentKit\n\nclass ";
 Blockly.Swift.SWIFT_DEFFORM_POSTLUDE = ": Form {\n";
 Blockly.Swift.SWIFT_INIT = [

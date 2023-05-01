@@ -12,9 +12,6 @@
 
 goog.provide('Blockly.Blocks.logic');
 
-goog.require('Blockly.Mutator');
-goog.require('Blockly.Blocks.Utilities');
-
 Blockly.Blocks['logic_boolean'] = {
   // Boolean data type: true and false.
   category: 'Logic',

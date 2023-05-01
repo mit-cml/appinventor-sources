@@ -15,9 +15,6 @@
 
 goog.provide('AI.Blockly.FieldFlydown');
 
-goog.require('Blockly.FieldTextInput');
-goog.require('Blockly.Options');
-
 /**
  * Class for a clickable parameter field.
  * @param {string} text The initial parameter name in the field.

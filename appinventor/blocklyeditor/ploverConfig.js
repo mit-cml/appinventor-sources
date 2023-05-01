@@ -3,65 +3,9 @@
   "id": "blockly-config",
   "paths": [],
   "inputs": [//'testalert.js'
-    //blockly.js must come first
-    '../lib/blockly/core/blockly.js',
-
+    "../lib/blockly/blockly_compressed.js",
     // Lyn's instrumentation code
     "./src/instrument.js",
-
-    //the rest of the blockly .js files can come in any order
-
-    '../lib/blockly/core/block.js',
-    '../lib/blockly/core/block_drag_surface.js',
-    '../lib/blockly/core/block_render_svg.js',
-    '../lib/blockly/core/block_svg.js',
-    '../lib/blockly/core/blocks.js',
-    '../lib/blockly/core/blockly.js',
-    '../lib/blockly/core/bubble.js',
-    '../lib/blockly/core/comment.js',
-    '../lib/blockly/core/connection.js',
-    '../lib/blockly/core/connection_db.js',
-    '../lib/blockly/core/constants.js',
-    '../lib/blockly/core/contextmenu.js',
-    '../lib/blockly/core/css.js',
-    '../lib/blockly/core/events.js',
-    '../lib/blockly/core/field.js',
-    '../lib/blockly/core/field_angle.js',
-    '../lib/blockly/core/field_checkbox.js',
-    '../lib/blockly/core/field_colour.js',
-    '../lib/blockly/core/field_date.js',
-    '../lib/blockly/core/field_dropdown.js',
-    '../lib/blockly/core/field_image.js',
-    '../lib/blockly/core/field_label.js',
-    '../lib/blockly/core/field_number.js',
-    '../lib/blockly/core/field_textinput.js',
-    '../lib/blockly/core/field_variable.js',
-    '../lib/blockly/core/flyout.js',
-    '../lib/blockly/core/flyout_button.js',
-    '../lib/blockly/core/generator.js',
-    '../lib/blockly/core/icon.js',
-    '../lib/blockly/core/inject.js',
-    '../lib/blockly/core/input.js',
-    '../lib/blockly/core/msg.js',
-    '../lib/blockly/core/mutator.js',
-    '../lib/blockly/core/names.js',
-    '../lib/blockly/core/options.js',
-    '../lib/blockly/core/procedures.js',
-    '../lib/blockly/core/rendered_connection.js',
-    '../lib/blockly/core/scrollbar.js',
-    '../lib/blockly/core/toolbox.js',
-    '../lib/blockly/core/tooltip.js',
-    '../lib/blockly/core/touch.js',
-    '../lib/blockly/core/trashcan.js',
-    '../lib/blockly/core/utils.js',
-    '../lib/blockly/core/variables.js',
-    '../lib/blockly/core/warning.js',
-    '../lib/blockly/core/widgetdiv.js',
-    '../lib/blockly/core/workspace.js',
-    '../lib/blockly/core/workspace_drag_surface_svg.js',
-    '../lib/blockly/core/workspace_svg.js',
-    '../lib/blockly/core/xml.js',
-    '../lib/blockly/core/zoom_controls.js',
 
     //finally, include any of our own .js file in any order
     "./src/msg.js",
@@ -164,6 +108,7 @@
   "experimental-compiler-options": {
     "languageIn": "ECMASCRIPT5"
   },
+  "dependency_mode": "PRUNE_LEGACY",
   "closure-library" : "../lib/closure-library/closure/goog",
   "output-file": "../build/blocklyeditor/blockly-all.js"
 }

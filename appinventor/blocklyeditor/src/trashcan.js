@@ -12,8 +12,6 @@
 
 goog.provide('AI.Blockly.Trashcan');
 
-goog.require('Blockly.Trashcan');
-
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Instrument'); // lyn's instrumentation code
 

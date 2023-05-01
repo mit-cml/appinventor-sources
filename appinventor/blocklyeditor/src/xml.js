@@ -13,8 +13,6 @@
 
 goog.provide('AI.Blockly.Xml');
 
-goog.require('Blockly.Xml');
-
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Instrument');  // lyn's instrumentation code
 

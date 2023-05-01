@@ -12,7 +12,6 @@
 'use strict';
 
 goog.provide('AI.Blockly.ProcedureDatabase');
-goog.require('Blockly');
 goog.require('goog.object');
 
 /**

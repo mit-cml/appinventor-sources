@@ -13,8 +13,6 @@
 
 goog.provide('AI.Blockly.WorkspaceSvg');
 
-goog.require('Blockly.WorkspaceSvg');
-
 /**
  * AI2 Blocks Drawer
  * @type {Blockly.Drawer}

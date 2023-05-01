@@ -13,8 +13,6 @@
 
 goog.provide('AI.Blockly');
 
-goog.require('Blockly');
-
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Instrument');
 goog.require('Blockly.TypeBlock');

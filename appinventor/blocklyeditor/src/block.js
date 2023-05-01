@@ -13,8 +13,6 @@
 
 goog.provide('AI.Blockly.Block');
 
-goog.require('Blockly.Block');
-
 Blockly.Block.mutationToDom = function() {
   var container = details.mutationToDomFunc ? details.mutationToDomFunc()
     : document.createElement('mutation');

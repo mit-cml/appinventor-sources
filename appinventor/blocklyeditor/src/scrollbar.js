@@ -12,8 +12,6 @@
 
 goog.provide('AI.Blockly.ScrollbarPair');
 
-goog.require('Blockly.ScrollbarPair');
-
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Instrument');
 

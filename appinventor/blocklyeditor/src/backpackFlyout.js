@@ -28,9 +28,6 @@
 
 goog.provide('Blockly.BackpackFlyout');
 
-goog.require('Blockly.Block');
-goog.require('Blockly.Comment');
-goog.require('Blockly.WorkspaceSvg');
 goog.require('goog.userAgent');
 
 /**
