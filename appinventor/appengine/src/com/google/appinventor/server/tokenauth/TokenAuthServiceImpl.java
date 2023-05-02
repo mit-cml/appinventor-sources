@@ -138,7 +138,10 @@ public class TokenAuthServiceImpl extends OdeRemoteServiceServlet
   }
 
   /**
-   * Get the token for the chatbot service
+   * Get the token for the chatbot service also used by the ImageBot
+   * service ImageBot may get its own tokens in the future, but for
+   * now we use the same tokens. Changing in the future will be easy,
+   * because it isn't a component update.
    *
    * @return base58 encoded token
    */

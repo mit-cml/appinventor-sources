@@ -301,7 +301,10 @@ public final class ErrorMessages {
   // ChatBot Errors
   public static final int ERROR_CHATBOT_ERROR = 4200;
 
-  // Start the next group of errors at 4300
+  // ImageBot Errors
+  public static final int ERROR_IMAGEBOT_ERROR = 4300;
+
+  // Start the next group of errors at 4400
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -738,6 +741,9 @@ public final class ErrorMessages {
 
     // ChatBot Errors
     errorMessages.put(ERROR_CHATBOT_ERROR, "Error from the ChatBot code %1$d %2$s");
+
+    // ImageBot Errors
+    errorMessages.put(ERROR_IMAGEBOT_ERROR, "Error from the ImageBot code %1$d %2$s");
 
   }
 
