@@ -571,8 +571,10 @@ public class YaVersion {
   // - SPREADSHEET_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 221;
   // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 222:
+  // - IMAGEBOT_COMPONENT_VERSION was introduced
 
-  public static final int YOUNG_ANDROID_VERSION = 221;
+  public static final int YOUNG_ANDROID_VERSION = 222;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1039,6 +1041,8 @@ public class YaVersion {
   // For IMAGE_COMPONENT_VERSION 6:
   // - Assets helper block was added.
   public static final int IMAGE_COMPONENT_VERSION = 6;
+
+  public static final int IMAGEBOT_COMPONENT_VERSION = 1;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

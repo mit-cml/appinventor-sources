@@ -2063,6 +2063,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End Image upgraders
 
+  "ImageBot": {
+    // This is the initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+  },  // End ImageBot upgraders
+
   "ImagePicker": {
 
     // AI1: The Alignment property was renamed to TextAlignment.
