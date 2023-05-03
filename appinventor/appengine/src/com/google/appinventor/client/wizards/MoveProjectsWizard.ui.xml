@@ -1,19 +1,20 @@
 <!--MoveProjectsWizard.ui.xml -->
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             xmlns:w="urn:import:com.google.appinventor.client.widgets"
+             xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
-  <ui:with field="style" />
-  <ai:Dialog ui:field="moveDialog">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <wiz:Dialog ui:field="moveDialog" caption="Move Projects" styleName="ode-DialogBox">
     <g:FlowPanel>
-      <g:Label styleName="{style.text}" text="Move to folder:" />
-      <g:Tree ui:field='tree' styleName="{style.tree}" />
-      <g:FlowPanel styleName="{style.actions}">
-        <ai:Button ui:field='cancelButton' icon="close" text='Cancel' type="INLINE" groupPosition='LEFT' />
-        <ai:Button ui:field='moveButton' icon="check" text='Move' type="INLINE" groupPosition='RIGHT' />
+      <g:Label styleName="ode-TreeLabel dialogContent" text="Move to folder:" />
+      <g:Tree ui:field='tree' />
+      <g:FlowPanel styleName="buttonRow" >
+        <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />
+        <g:Button ui:field='moveButton' text='{messages.okButton}' />
       </g:FlowPanel>
     </g:FlowPanel>
-  </ai:Dialog>
+  </wiz:Dialog>
 </ui:UiBinder>

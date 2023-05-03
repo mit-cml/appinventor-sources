@@ -245,13 +245,7 @@ public class ProjectsExplorer extends Composite {
 
   @UiHandler("moveButton")
   void moveSelectedProjects(ClickEvent e) {
-      new MoveProjectsWizard("Test Title").execute(new MoveProjectsWizard.MoveProjectsCallback() {
-        @Override
-        public void onSuccess(Folder destination) {
-          Ode.getInstance().getFolderManager().moveItemsToFolder(projectsList.getSelectedProjects(), new ArrayList<>(),
-              destination);
-        }
-      });
+      new MoveProjectsWizard();
   }
 
   @UiHandler("restoreButton")

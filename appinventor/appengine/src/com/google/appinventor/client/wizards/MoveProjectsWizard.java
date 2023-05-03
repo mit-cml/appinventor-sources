@@ -6,8 +6,9 @@
 package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.components.Button;
-import com.google.appinventor.client.components.Dialog;
+import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.gwt.user.client.ui.Button;
 import com.google.appinventor.client.components.FolderTreeItem;
 import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.client.explorer.folder.FolderManager;
@@ -20,51 +21,37 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Tree;
 
+import java.util.List;
+import java.util.logging.Logger;
+
 /**
  * A command that adds a new folder.
  */
-public final class MoveProjectsWizard extends Wizard {
+public final class MoveProjectsWizard {
   interface MoveProjectsWizardUiBinder extends UiBinder<Dialog, MoveProjectsWizard> {}
   private static final MoveProjectsWizardUiBinder UI_BINDER = GWT.create(MoveProjectsWizardUiBinder.class);
+  private static final Logger LOG = Logger.getLogger(MoveProjectsWizard.class.getName());
 
-  /**
-   * Interface for a command to to move sprojects after a
-   * destination is selected
-   */
-  public static interface MoveProjectsCallback {
-
-    /**
-     * Will be invoked after a new project was created.
-     *
-     * @param project  newly created project
-     */
-    void onSuccess(Folder destination);
-  }
 
   private FolderManager manager;
-  private MoveProjectsCallback moveAction;
 
   @UiField Dialog moveDialog;
   @UiField Button moveButton;
   @UiField Button cancelButton;
   @UiField Tree tree;
 
-  @UiField(provided=true)
-  Resources.Style style = Ode.getUserDarkThemeEnabled() ?
-      Resources.INSTANCE.styleDark() : Resources.INSTANCE.styleLight();
 
   /**
    * Creates a new command for renaming projects
    */
-  public MoveProjectsWizard(String title) {
-    super(title, true, false);
-    style.ensureInjected();
+  public MoveProjectsWizard() {
     UI_BINDER.createAndBindUi(this);
 
     manager = Ode.getInstance().getFolderManager();
     FolderTreeItem root = renderFolder(manager.getGlobalFolder());
     tree.addItem(root);
     tree.setSelectedItem(root);
+    moveDialog.center();
   }
 
   static FolderTreeItem renderFolder(Folder folder) {
@@ -87,14 +74,13 @@ public final class MoveProjectsWizard extends Wizard {
   @UiHandler("moveButton")
   void moveProjects(ClickEvent e) {
     FolderTreeItem treeItem = (FolderTreeItem) tree.getSelectedItem();
-    moveAction.onSuccess(treeItem.getFolder());
+    List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+    List<Folder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
+    Ode.getInstance().getFolderManager().moveItemsToFolder(selectedProjects, selectedFolders,
+        treeItem.getFolder());
     moveDialog.hide();
   }
 
-  public void execute(MoveProjectsCallback onSuccessCallback) {
-    moveAction = onSuccessCallback;
-    moveDialog.center();
-  }
 
   public interface Resources extends ClientBundle {
 
