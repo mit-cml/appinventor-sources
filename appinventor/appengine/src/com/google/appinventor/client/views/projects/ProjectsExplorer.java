@@ -161,7 +161,7 @@ public class ProjectsExplorer extends Composite {
       // Refuse to switch if locked (save file happening)
       return;
     }
-    new NewYoungAndroidProjectWizard(null).center();
+    new NewYoungAndroidProjectWizard();
   }
 
   @UiHandler("importProjectButton")
