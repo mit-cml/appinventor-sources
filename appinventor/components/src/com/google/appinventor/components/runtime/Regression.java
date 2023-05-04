@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
 
@@ -17,7 +18,7 @@ import java.util.List;
 
 /**
  * A data science component to apply different regression models
- * The component needs a data source to apply the model on
+ * The component requires a data source to apply the model on
  */
 @DesignerComponent(version = YaVersion.REGRESSION_COMPONENT_VERSION,
     description = "A component that contains regression models",
@@ -47,7 +48,7 @@ public final class Regression extends DataCollection {
    * @param yEntries - the list of y values
    * @return list. 1st element of the list is the slope, 2nd element is the intercept, 3 element is the line of best fit prediction values
    */
-  public static List ComputeLineOfBestFit(final YailList xEntries, final YailList yEntries) {
+  public static YailDictionary ComputeLineOfBestFit(final YailList xEntries, final YailList yEntries) {
     LList xValues = (LList) xEntries.getCdr();
     List<Double> x = castToDouble(xValues);
 
@@ -85,49 +86,30 @@ public final class Regression extends DataCollection {
       double prediction = slope * x.get(i) + intercept;
       predictions.add(prediction);
     }
-    // ToDo: return the user a dictionary and let the user extract the parameters they need themselves instead
-    ArrayList result = new ArrayList<>();
-    result.add(slope);
-    result.add(intercept);
-    result.add(corr);
-    result.add(predictions);
-    return result;
-  }
 
+    YailDictionary resultDic = new YailDictionary();
+    resultDic.put("slope",slope);
+    resultDic.put("Yintercept", intercept);
+    resultDic.put("correlation coefficient", corr);
+    resultDic.put("predictions", predictions);
+
+    return resultDic;
+  }
   /**
-   * Gets the line of best fit slope
+   * Returns one of the Line of Best Fit values. A value could be "slope", "intercept", "correlation coefficient", "predictions" or a dictionary with all values above if nothing specific provided
    *
    * @param xList - the list of x values
    * @param yList - the list of y values
    * @return Double slope
    */
-  @SimpleFunction(description = "Gets the line of best fit Slope.")
-  public double GetLineOfBestFitSlope(final YailList xList, final YailList yList) {
-    return (Double) ComputeLineOfBestFit(xList, yList).get(0);
-  }
-
-  /**
-   * Gets the line of best fit Intercept
-   *
-   * @param xList - the list of x values
-   * @param yList - the list of y values
-   * @return Double intercept
-   */
-  @SimpleFunction(description = "Gets the line of best fit intercept.")
-  public double GetLineOfBestFitYIntercept(final YailList xList, final YailList yList) {
-    return (Double) ComputeLineOfBestFit(xList, yList).get(1);
-  }
-
-  /**
-   * Gets the line of best fit correlation coefficient
-   *
-   * @param xList - the list of x values
-   * @param yList - the list of y values
-   * @return Double corr
-   */
-  @SimpleFunction(description = "Gets the line of best fit correlation coefficient.")
-  public double GetLineOfBestFitCorCoef(final YailList xList, final YailList yList) {
-    return (Double) ComputeLineOfBestFit(xList, yList).get(2);
+  @SimpleFunction(description = "Returns one of the Line of Best Fit values. A value could be \"slope\", \"intercept\", \"correlation coefficient\"or \"predictions\". Block returns the complete dictionary with all values if no specific value string is provided")
+  public Object CalculateLineOfBestFitValue(final YailList xList, final YailList yList, String value) {
+    YailDictionary result = ComputeLineOfBestFit(xList, yList);
+    if (result.containsKey(value)){
+        return result.get(value);
+    }else{
+      return result;
+    }
   }
 
   @Override

@@ -215,7 +215,7 @@ public final class ChartData2D extends ChartDataBase {
    */
   @SimpleFunction(description = "Draws the line of best fit.")
   public void DrawLineOfBestFit(final YailList xList, final YailList yList) {
-    List predictions = (List) Regression.ComputeLineOfBestFit(xList, yList).get(3);
+    List predictions = (List) Regression.ComputeLineOfBestFit(xList, yList).get("predictions");
     final List predictionPairs = new ArrayList<Pair>();
     List xValues = (List) xList.getCdr();
     for (int i = 0; i < xValues.size(); i++) {
@@ -223,7 +223,6 @@ public final class ChartData2D extends ChartDataBase {
     }
     YailList predictionPairsList = YailList.makeList(predictionPairs);
     dataModel.importFromList(predictionPairsList);
-
     if (dataModel.getDataset() instanceof LineDataSet) {
       ((LineDataSet) dataModel.getDataset()).setDrawCircles(false);
       ((LineDataSet) dataModel.getDataset()).setDrawValues(false);
@@ -253,7 +252,7 @@ public final class ChartData2D extends ChartDataBase {
       refreshChart();
     }else{
       Log.i(LOG_TAG, "Anomalies list is Empty:"+ anomalies);
-      throw new IllegalStateException("Anomalies list is Empty. Nothing to clean!");
+      throw new IllegalStateException("Anomalies list is Empty. Nothing to highlight!");
     }
   }
 }
