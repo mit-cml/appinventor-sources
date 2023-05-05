@@ -14,6 +14,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Vibrator;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -175,7 +176,7 @@ public final class Player extends AndroidNonvisibleComponent
       defaultValue = "")
   @SimpleProperty
   @UsesPermissions(READ_EXTERNAL_STORAGE)
-  public void Source(String path) {
+  public void Source(@Asset String path) {
     final String tempPath = (path == null) ? "" : path;
     if (MediaUtil.isExternalFile(form, tempPath)
         && form.isDeniedPermission(READ_EXTERNAL_STORAGE)) {

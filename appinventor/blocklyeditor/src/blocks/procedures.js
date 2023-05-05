@@ -382,7 +382,8 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
 
     var procDb = workspace.getProcedureDatabase();
-    if (editable && procDb) {  // only true for the top-level workspaces, not flyouts/flydowns
+    if (editable && procDb && workspace == Blockly.mainWorkspace) {
+      // only remove for the top-level workspaces, not flyouts/flydowns
       procDb.removeProcedure(this.id);
     }
 
@@ -901,4 +902,3 @@ Blockly.Blocks['procedures_callreturn'] = {
   // blocks have not been loaded yet (they are loaded in typeblock.js)
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME}]
 };
-

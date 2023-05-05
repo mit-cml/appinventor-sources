@@ -40,7 +40,7 @@
 		<div class="dropdown-menu">
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
-		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
                     <a class="dropdown-item"
                        href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
@@ -144,7 +144,7 @@
   <li><a href="#randomseed">random set seed to</a></li>
   <li><a href="#min">min</a></li>
   <li><a href="#max">max</a></li>
-  <li><a href="#sqrt">sqrt</a></li>
+  <li><a href="#sqrt">square root</a></li>
   <li><a href="#abs">abs</a></li>
   <li><a href="#neg">neg</a></li>
   <li><a href="#log">log</a></li>
@@ -170,6 +170,13 @@
   <li><a href="#bitwise_and">bitwise and</a></li>
   <li><a href="#bitwise_ior">bitwise or (inclusive)</a></li>
   <li><a href="#bitwise_xor">bitwise or (exclusive)</a></li>
+  <li><a href="#avg">average</a></li>
+  <li><a href="#minl">list min</a></li>
+  <li><a href="#maxl">list max</a></li>
+  <li><a href="#mode">mode</a></li>
+  <li><a href="#gm">geometric mean</a></li>
+  <li><a href="#sd">standard deviation</a></li>
+  <li><a href="#se">standard error</a></li>
 </ul>
 
 <p><em>Can’t find the math block you’re looking for in the built-in blocks?</em></p>
@@ -327,7 +334,7 @@
 
 <p>Returns the largest value of a set of numbers. If there are unplugged sockets in the block, max will also consider 0 in its set of numbers. This block is a <a href="../concepts/mutators.html">mutator</a> and a dropdown.</p>
 
-<h3 id="sqrt">sqrt</h3>
+<h3 id="sqrt">square root</h3>
 
 <p><img src="images/math/sqrt.png" alt="" /></p>
 
@@ -578,6 +585,34 @@
   </tbody>
 </table>
 
+<p><img src="images/math/avg.png" alt="" /></p>
+
+<p>Calculates the arithmetic mean of the elements in a list.</p>
+
+<p><img src="images/math/minl.png" alt="" /></p>
+
+<p>Returns the minimum element in a list.</p>
+
+<p><img src="images/math/maxl.png" alt="" /></p>
+
+<p>Returns the maximum element in a list.</p>
+
+<p><img src="images/math/mode.png" alt="" /></p>
+
+<p>Returns the most frequent element in a list.</p>
+
+<p><img src="images/math/gm.png" alt="" /></p>
+
+<p>Calculates the geometric mean of the elements in a list.</p>
+
+<p><img src="images/math/sd.png" alt="" /></p>
+
+<p>Calculates the (population) standard deviations of the elements in a list.</p>
+
+<p><img src="images/math/se.png" alt="" /></p>
+
+<p>Calculates the standard error of the elements in a list.</p>
+
 </article>
 <script>
   // Handle redirection to documentation based on locale query parameter (if specified)
@@ -656,7 +691,7 @@
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2023 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -551,7 +551,28 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 214:
   // - FILE_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 213;
+  // For YOUNG_ANDROID_VERSION 215:
+  // Added Translator
+  // For YOUNG_ANDROID_VERSION 216:
+  // YandexTranslate turned into Translator (and YandexTranslate
+  //   itself stubbed out and placed in INTERNAL
+  // For YOUNG_ANDROID_VERION 217:
+  // - Added GOOGLESHEETS_COMPONENT_VERSION
+  // For YOUNG_ANDROID_VERION 218:
+  // - SPREADSHEET_COMPONENT_VERSION = 1
+  // - Renamed GoogleSheets to Spreadsheet
+  // For YOUNG_ANDROID_VERSION 219:
+  // - CHART_COMPONENT_VERSION was introduced
+  // - CHART_DATA_2D_COMPONENT_VERSION was introduced
+  // - DATA_FILE_COMPONENT_VERSION was introduced
+  // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 7
+  // For YOUNG_ANDROID_VERSION 220:
+  // - CHART_COMPONENT_VERSION was incremented to 2
+  // - SPREADSHEET_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 221;
+  // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 8
+
+  public static final int YOUNG_ANDROID_VERSION = 221;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -638,13 +659,19 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 34
   // - The helpers_screen_names block was added.
   // - Add sanitizing concrete values to OptionLists.
-  public static final int BLOCKS_LANGUAGE_VERSION = 34;
+  // For BLOCKS_LANGUAGE_VERSION 35
+  // - Add PHOLO blocks
+  // For BLOCKS_LANGUAGE_VERSION 36
+  // - Add stats blocks
+  // - Rename lists_*_number to lists_*_value
+  // - Added "every component" block.
+  public static final int BLOCKS_LANGUAGE_VERSION = 36;
 
   // ................................. Target SDK Version Number ..................................
 
-  public static final int TARGET_SDK_VERSION = 30;
+  public static final int TARGET_SDK_VERSION = 31;
 
-  public static final String TARGET_ANDROID_VERSION = "Android 11.0";
+  public static final String TARGET_ANDROID_VERSION = "Android 12.0";
 
   // ................................. Component Version Numbers ..................................
 
@@ -740,7 +767,11 @@ public class YaVersion {
   // - The BluetoothClient.Secure property was added.
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 6:
   // - The BluetoothClient.DisconnectOnError property was added.
-  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 6;
+  // For BLUETOOTHCLIENT_COMPONENT_VERSION 7:
+  // - The BluetoothClient.PollingRate property was added.
+  // For BLUETOOTHCLIENT_COMPONENT_VERSION 8:
+  // - The BluetoothClient.NoLocationNeeded property was added.
+  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 8;
 
   // For BLUETOOTHSERVER_COMPONENT_VERSION 2:
   // - The BluetoothServer.Enabled property was added.
@@ -806,12 +837,19 @@ public class YaVersion {
   // For CANVAS_COMPONENT_VERSION 13
   // - BackgroundImageinBase64 was added
   // For CANVAS_PROPERTY_VERSION 14
-  // -TAP_THRESHOLD was changed from being constant to user settable 
+  // -TAP_THRESHOLD was changed from being constant to user settable
   // -TAP_THRESHOLD renamed to tapThreshold
   // -TapThreshold was added
   // For CANVAS_COMPONENT_VERSION 15
   // - Assets helper block was added.
   public static final int CANVAS_COMPONENT_VERSION = 15;
+
+  // For CHART_COMPONENT_VERSION 2:
+  // - The XFromZero and YFromZero properties were added
+  // - The SetDomain and SetRange methods were added
+  public static final int CHART_COMPONENT_VERSION = 2;
+
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -844,6 +882,8 @@ public class YaVersion {
   // For CONTACTPICKER_COMPONENT_VERSION 6:
   // - The ContactUri property was added
   public static final int CONTACTPICKER_COMPONENT_VERSION = 6;
+
+  public static final int DATA_FILE_COMPONENT_VERSION = 1;
 
   // For DATEPICKER_COMPONENT_VERSION 2:
   // The datepicker dialog was updated to show the current date
@@ -1275,7 +1315,21 @@ public class YaVersion {
   // - The UseLegacy property was added which is set to True by default.
   // - The Stop method was added, which works only when UseLegacy
   //   property is set to False.
-  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 2;
+  // For SPEECHRECOGNIZER_COMPONENT_VERSION 3:
+  // - The Language property was added.
+  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 3;
+
+  // For SPREADSHEET_COMPONENT_VERSION 2:
+  // - Added the HasHeaders property
+  // - The ReadCol method was renamed to ReadColumn
+  // - The GotColData event was renamed to GotColumnData
+  // - The WriteCol method was renamed to WriteColumn
+  // - The FinishedWriteCol event was renamed to FinishedWriteColumn
+  // - The AddCol method was renamed to AddColumn
+  // - The FinishedAddCol event was renamed to FinishedAddColumn
+  // - The RemoveCol method was renamed to RemoveColumn
+  // - The FinishedRemoveCol event was renamed to FinishedRemoveColumn
+  public static final int SPREADSHEET_COMPONENT_VERSION = 2;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
@@ -1474,7 +1528,9 @@ public class YaVersion {
   // - Initial version.
   // For YANDEX_COMPONENT_VERSION 2:
   // - Added ApiKey property
-  public static final int YANDEX_COMPONENT_VERSION = 2;
+  // For YANDEX_COMPONENT_VERSION 3:
+  // - Stubbed out: blocks changed to use Translator
+  public static final int YANDEX_COMPONENT_VERSION = 3;
 
   //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
@@ -1484,6 +1540,9 @@ public class YaVersion {
 
   //For MAGNETICFIELDSENSOR_COMPONENT_VERSION: Initial Version
   public static final int MAGNETICFIELDSENSOR_COMPONENT_VERSION = 1;
+
+  //For TRANSLATE_COMPONENT_VERSION: Initial Version
+  public static final int TRANSLATOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
   public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";
@@ -1532,11 +1591,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.61";
+  public static final String PREFERRED_COMPANION = "2.66";
+  public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.61", "2.61u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.66", "2.66u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

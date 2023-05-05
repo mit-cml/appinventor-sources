@@ -73,4 +73,8 @@ public class Synchronizer<T> {
     return error;
   }
 
+  @Override
+  public String toString() {
+    return "Synchronizer(" + result + ", " + error + ", " + errorMessage + ")";
+  }
 }

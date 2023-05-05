@@ -1,0 +1,115 @@
+<html>
+  <head>
+    <script type="text/javascript">
+      var origin = "*"; // Will be replaced with real origin
+      var QUEUE = [];
+      var QUEUE_RUNNING = false;
+      async function sendtophone(how, value, value2) {
+        if (how == 'blocks') {
+          await sendblocks(value);
+        } else if (how == 'version') {
+          let resp = await getversion();
+          window.opener.postMessage(resp, origin);
+        } else if (how == 'asset') {
+          // console.log("About to PUT " + value);
+          let resp = await fetch('/?' + value, {
+            method : 'PUT',
+            mode: 'cors',
+            body: value2 });
+          let result = await resp.text();
+          // console.log("Asset Result = " + result);
+        } else if (how == 'extensions') {
+          let resp = await
+          fetch('/_extensions', {
+            method: 'POST',
+            mode: 'cors',
+            body: value });
+          let result = await resp.text();
+          // Tell App Inventor that extensions are loaded
+          window.opener.postMessage({'status' : 'EXTENSIONS_LOADED'},
+                                    origin);
+          // console.log("Extensions Result = " + result);
+        }
+      };
+      async function sendblocks(block) {
+        let resp = await fetch('/_newblocks', {
+          method : 'POST',
+          mode: 'cors',
+          body: block });
+        let data = await resp.json();
+        // console.log(data);
+        console.log('sendblocks: Response: ' + JSON.stringify(data));
+        window.opener.postMessage(data, origin);
+      }
+      async function getversion() {
+        let resp = await
+        fetch('/_getversion');
+        let data = await resp.json();
+        // console.log(data);
+        return data;
+      }
+      async function init() {
+        // First let replmgr.js that we are loaded and running
+        window.opener.postMessage({ "status" : "hello" }, origin);
+        while (true) {
+          // console.log('getting values');
+          let resp = await fetch('/_values', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-store',
+            body: "IGNORED=STUFF" });
+          let data = await resp.json();
+          console.log("values: " + JSON.stringify(data));
+          window.opener.postMessage(data, origin);
+        }
+      }
+      function dowork() {
+        let work = QUEUE.shift();
+        if (!work) {
+          // console.log("QUEUE_RUNNING = false");
+          QUEUE_RUNNING = false;
+        } else {
+          origin = work.origin;
+          let how = work.data[0];
+          let value = work.data[1];
+          let value2 = work.data[2];
+          // console.log("About to: how = " + how + " value = " + value);
+          sendtophone(how, value, value2).then(function() {
+            setTimeout(() => {
+              dowork();
+            });
+          });
+        }
+      };
+      window.addEventListener("message", (event) => {
+        QUEUE.push(event);
+        if (!QUEUE_RUNNING) {
+          QUEUE_RUNNING = true;
+          // console.log("QUEUE_RUNNING = true");
+          setTimeout(() => {
+            dowork();
+          });
+        }
+      });
+      function closeme() {
+        window.resizeTo(1, 1);
+        window.moveTo(0, 0);
+      }
+      window.onload = init;
+    </script>
+  </head>
+  <body>
+    <img src="data:image/png;base64,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" style="width:180px; height:40px"/>
+    <h1>This is a special window used by MIT App Inventor</h1>
+    <p>
+      You can safely ignore this window, it should close when you
+      disconnect the MIT AI2 Companion, or exit MIT App Inventor.
+    </p>
+    <p>
+      <button onClick="closeme();">Press this button</button>
+      which will move this window to the upper left hand corner of
+      your screen. You can then just click on the main window and
+      continue working.
+    </p>
+  </body>
+</html>

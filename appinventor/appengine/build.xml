@@ -225,13 +225,16 @@
     <echo message="Using KeyczarTool to generate keystore"/>
     <mkdir dir="${build.war.dir}/WEB-INF/keystore"/>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="create --location=${build.war.dir}/WEB-INF/keystore --purpose=crypt"/>
+      <arg line="create --purpose=crypt"/>
+      <arg value="--location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="addkey --location=${build.war.dir}/WEB-INF/keystore"/>
+      <arg line="addkey"/>
+      <arg value="--location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="promote --location=${build.war.dir}/WEB-INF/keystore --version=1"/>
+      <arg line="promote --version=1"/>
+      <arg value="--location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
   </target>
 
@@ -266,6 +269,7 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/jackson-core-2.1.3.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-client-1.22.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-client-jackson2-1.20.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-client-appengine-1.22.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-1.22.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-appengine-1.22.0.jar" />
@@ -357,16 +361,29 @@
     <delete file="${tmp.dir}/authkey/meta"/>
     <delete file="${tmp.dir}/authkey/1"/>
   </target>
-
+  <!-- =====================================================================
+       Check to see if the war/WEB-INF directory already has an
+       authkey, which would mean it was copied over in WarLibs from
+       the source tree. In the master branch this will *not* be the
+       case, but it may be in a branding branch.
+       ===================================================================== -->
+  <target name="CheckBuildAuthKey"
+          depends="init,WarLibs">
+    <available file="${build.war.dir}/WEB-INF/authkey/meta"
+               property="authkey.inbuild" />
+  </target>
   <!-- =====================================================================
        Install the Authkey into the correct location
+       but only if we don't already have one copied over
+       from war/WEB-INF.
        ===================================================================== -->
   <target name="InstallAuthKey"
-          depends="init,CheckAuthKey,WarLibs">
+          depends="init,CheckAuthKey,WarLibs,CheckBuildAuthKey"
+          unless="${authkey.inbuild}">
     <fail message="You Must Create an Auth Key see misc/docs/authkey.md"
           unless="${authkey.exists}" />
     <unzip dest="${build.war.dir}/WEB-INF"
-      src="${user.home}/.appinventor/authkey.zip"/>
+           src="${user.home}/.appinventor/authkey.zip" />
   </target>
 
   <!-- =====================================================================
@@ -525,7 +542,7 @@
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
               srcdir="${src.dir};${build.dir}/components/ComponentTranslation/src"
-              source="1.7" target="1.7" nowarn="true"
+              source="1.8" target="1.8" nowarn="true"
               debug="true" debuglevel="lines,vars,source">
       <include name="${appinventor.pkg}/client/**/*.java" />
       <include name="${appinventor.pkg}/shared/**/*.java" />
@@ -535,6 +552,7 @@
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
+        <pathelement location="${lib.dir}/charba/charba-2.5-sources.jar" />
         <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
         <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
         <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
@@ -573,6 +591,31 @@
     </uptodate>
   </target>
 
+  <path id="YaClientApp.classpath">
+    <pathelement location="src"/>
+    <pathelement location="${build.dir}/components/ComponentTranslation/src"/>
+    <pathelement location="${build.war.dir}/WEB-INF/classes"/>
+    <pathelement location="${local.build.dir}/AiRebindLib.jar" />
+    <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
+    <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
+    <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
+    <!-- external libs -->
+    <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
+    <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+    <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
+    <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
+    <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+    <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+    <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
+    <!-- gwt libs -->
+    <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+    <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+  </path>
+
   <target name="YaClientApp"
           description="GWT compile to JavaScript"
           depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
@@ -580,36 +623,18 @@
     <mkdir dir="${build.extra.dir}" />
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
       <classpath>
-        <pathelement location="src"/>
-        <pathelement location="${build.dir}/components/ComponentTranslation/src"/>
-        <pathelement location="${build.war.dir}/WEB-INF/classes"/>
-        <pathelement location="${local.build.dir}/AiRebindLib.jar" />
-        <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
-        <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
-        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
-        <!-- external libs -->
-        <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
-        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
-        <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
-        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
-        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
-        <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
-        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
-        <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
-        <!-- gwt libs -->
-        <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
-        <pathelement location="${gwt.sdk}/gwt-user.jar"/>
-        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
-        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+        <path refid="YaClientApp.classpath" />
       </classpath>
       <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
       <jvmarg value="-Xmx2G"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <jvmarg value="-Dfile.encoding=UTF-8" />
-      <arg line="-war"/>
+      <arg value="-war"/>
       <arg value="${build.war.dir}"/>
-      <arg line="-logLevel INFO -extra ${build.extra.dir} ${client.flags}"/>
-      <arg value="${client.module}"/>
+      <arg line="-logLevel INFO"/>
+      <arg value="-extra"/>
+      <arg value="${build.extra.dir}"/>
+      <arg line="${client.flags} ${client.module}"/>
     </java>
   </target>
 
@@ -618,29 +643,8 @@
           description="Run development mode">
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.codeserver.CodeServer">
       <classpath>
-        <pathelement location="src" />
-        <pathelement location="${build.dir}/components/ComponentTranslation/src" />
-        <pathelement location="${build.war.dir}/WEB-INF/classes" />
-        <pathelement location="${local.build.dir}/AiRebindLib.jar" />
-        <pathelement location="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
-        <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
-        <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
-        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
-        <!-- external libs -->
-        <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
-        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
-        <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
-        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
-        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
-        <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
-        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
-        <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
-        <!-- gwt libs -->
+        <path refid="YaClientApp.classpath" />
         <pathelement location="${gwt.sdk}/gwt-codeserver.jar" />
-        <pathelement location="${gwt.sdk}/gwt-dev.jar" />
-        <pathelement location="${gwt.sdk}/gwt-user.jar" />
-        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
-        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
       </classpath>
       <jvmarg value="-Xmx1G" />
       <arg line="-style PRETTY -logLevel INFO" />
@@ -675,6 +679,7 @@
     <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
     <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar"/>

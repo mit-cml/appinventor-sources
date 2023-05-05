@@ -49,8 +49,8 @@ public class ListAdapterWithRecyclerView
   private float textMainSize;
   private int textDetailColor;
   private float textDetailSize;
-  private int textMainFont;
-  private int textDetailFont;
+  private String textMainFont;
+  private String textDetailFont;
 
   private int layoutType;
   private int backgroundColor;
@@ -73,10 +73,10 @@ public class ListAdapterWithRecyclerView
         filteredList = new ArrayList<>(items);
       } else {
         for (YailDictionary itemDict : items) {
-          Object o = itemDict.get("Text2");
+          Object o = itemDict.get(Component.LISTVIEW_KEY_DESCRIPTION);
           String filterString = itemDict.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
           if (o != null) {
-            filterString += " " + o;
+            filterString += " " + o.toString().toLowerCase();
           }
           if (filterString.toLowerCase().contains(filterQuery)) {
             filteredList.add(itemDict);
@@ -94,22 +94,18 @@ public class ListAdapterWithRecyclerView
       // Usually GUI objects take up no screen space when set to invisible, but setting a CardView object to invisible
       // was displaying an empty object. Therefore, set the height to 0 as well.
       // Setting visibility on individual entries will keep the selected index(ices) the same regardless of filter.
-      if (filterItems == null || filterItems.size() == 0) {
-        Arrays.fill(isVisible, Boolean.TRUE);
-      } else {
-        for (int i = 0; i < items.size(); ++i) {
-          if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
-            isVisible[i] = true;
-            if (itemViews[i] != null) {
-              itemViews[i].setVisibility(View.VISIBLE);
-              itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            }
-          } else {
-            isVisible[i] = false;
-            if (itemViews[i] != null) {
-              itemViews[i].setVisibility(View.GONE);
-              itemViews[i].getLayoutParams().height = 0;
-            }
+      for (int i = 0; i < items.size(); ++i) {
+        if (filterItems.size() > 0 && filterItems.contains(items.get(i))) {
+          isVisible[i] = true;
+          if (itemViews[i] != null) {
+            itemViews[i].setVisibility(View.VISIBLE);
+            itemViews[i].getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+          }
+        } else {
+          isVisible[i] = false;
+          if (itemViews[i] != null) {
+            itemViews[i].setVisibility(View.GONE);
+            itemViews[i].getLayoutParams().height = 0;
           }
         }
       }
@@ -123,7 +119,8 @@ public class ListAdapterWithRecyclerView
   private int idImages = -1;
   private int idCard = 1;
 
-  public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, float textMainSize, float textDetailSize, int textMainFont, int textDetailFont, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
+  public ListAdapterWithRecyclerView(ComponentContainer container, List<YailDictionary> items, int textMainColor, int textDetailColor, float textMainSize, float textDetailSize, String textMainFont, String textDetailFont, int layoutType, int backgroundColor, int selectionColor, int imageWidth, int imageHeight, boolean multiSelect) {
+  
     this.items = items;
     this.container = container;
     this.textMainSize = textMainSize;
@@ -146,7 +143,7 @@ public class ListAdapterWithRecyclerView
     Arrays.fill(isVisible, Boolean.TRUE);
   }
 
-  public ListAdapterWithRecyclerView(ComponentContainer container, YailList stringItems, int textMainColor, float textMainSize, int textMainFont, int backgroundColor, int selectionColor) {
+  public ListAdapterWithRecyclerView(ComponentContainer container, YailList stringItems, int textMainColor, float textMainSize, String textMainFont, int backgroundColor, int selectionColor) {
     // Legacy Support
     this.container = container;
     this.textMainSize = textMainSize;
@@ -154,7 +151,7 @@ public class ListAdapterWithRecyclerView
     this.textMainFont = textMainFont;
     this.textDetailColor = textMainColor;
     this.textDetailSize = 0;
-    this.textDetailFont = 0;
+    this.textDetailFont = Component.TYPEFACE_DEFAULT;
     this.layoutType = Component.LISTVIEW_LAYOUT_SINGLE_TEXT;
     this.backgroundColor = backgroundColor;
     this.selectionColor = selectionColor;
@@ -187,6 +184,7 @@ public class ListAdapterWithRecyclerView
 
   public void toggleSelection(int pos) {
     // With single select, clicked item becomes the only selected item
+    // Using 0-indexed array.
     Arrays.fill(selection, Boolean.FALSE);
     for (int i = 0; i < itemViews.length; i++) {
       // Views are created when they are displayed, so this list may not be fully populated.
@@ -194,8 +192,12 @@ public class ListAdapterWithRecyclerView
         itemViews[i].setBackgroundColor(backgroundColor);
       }
     }
-    selection[pos] = true;
-    itemViews[pos].setBackgroundColor(selectionColor);
+    if (pos >= 0) {
+      selection[pos] = true;
+      if (itemViews[pos] != null) {
+        itemViews[pos].setBackgroundColor(selectionColor);
+      }
+    }
   }
 
   public void changeSelections(int pos) {
@@ -206,6 +208,10 @@ public class ListAdapterWithRecyclerView
     } else {
       itemViews[pos].setBackgroundColor(backgroundColor);
     }
+  }
+
+  public boolean hasVisibleItems() {
+    return Arrays.asList(isVisible).contains(true);
   }
 
   @Override
@@ -236,7 +242,7 @@ public class ListAdapterWithRecyclerView
     textViewFirst.setLayoutParams(layoutParams1);
     textViewFirst.setTextSize(textMainSize);
     textViewFirst.setTextColor(textMainColor);
-    TextViewUtil.setFontTypeface(textViewFirst, textMainFont, false, false);
+    TextViewUtil.setFontTypeface(container.$form(), textViewFirst, textMainFont, false, false);
     LinearLayout linearLayout1 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     linearLayout1.setLayoutParams(layoutParamslinear1);
@@ -262,7 +268,7 @@ public class ListAdapterWithRecyclerView
       textViewSecond.setId(idSecond);
       LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
       textViewSecond.setTextSize(textDetailSize);
-      TextViewUtil.setFontTypeface(textViewSecond, textDetailFont, false, false);
+      TextViewUtil.setFontTypeface(container.$form(), textViewSecond, textDetailFont, false, false);
       textViewSecond.setTextColor(textDetailColor);
       if (layoutType == Component.LISTVIEW_LAYOUT_TWO_TEXT || layoutType == Component.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
         layoutParams2.topMargin = 10;
@@ -308,7 +314,7 @@ public class ListAdapterWithRecyclerView
     String first = dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
     String second = "";
     if (dictItem.containsKey(Component.LISTVIEW_KEY_DESCRIPTION)) {
-      second = dictItem.get("Text2").toString();
+      second = dictItem.get(Component.LISTVIEW_KEY_DESCRIPTION).toString();
     }
     if (layoutType == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
       holder.textViewFirst.setText(first);
@@ -351,6 +357,9 @@ public class ListAdapterWithRecyclerView
     {
       holder.cardView.setVisibility(View.GONE);
       holder.cardView.getLayoutParams().height = 0;
+    } else {
+      holder.cardView.setVisibility(View.VISIBLE);
+      holder.cardView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
     }
     itemViews[position] = holder.cardView;
   }

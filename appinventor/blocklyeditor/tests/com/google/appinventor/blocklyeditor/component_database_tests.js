@@ -66,9 +66,9 @@ page.open('src/demos/yail/yail_testing_index.html', function(status) {
       'EVENT-TranslatedEvent': 'SuccessfulEvent',
       'METHOD-TranslatedMethod': 'SuccessfulMethod',
       'PROPERTY-TranslatedProperty': 'SuccessfulProperty',
-      'EVENTDESC-TranslatedEvent': 'Successfully translated event test.',
-      'METHODDESC-TranslatedMethod': 'Successfully translated method test.',
-      'PROPDESC-TranslatedProperty': 'Successfully translated property test.'
+      'EVENTDESC-TranslatedEventEventDescriptions': 'Successfully translated event test.',
+      'METHODDESC-TranslatedMethodMethodDescriptions': 'Successfully translated method test.',
+      'PROPDESC-TranslatedPropertyPropertyDescriptions': 'Successfully translated property test.'
     });
 
     var block;

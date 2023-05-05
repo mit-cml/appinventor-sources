@@ -56,8 +56,8 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 
 import com.google.appinventor.components.common.YaVersion;
 
-import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthService;
-import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthServiceAsync;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
+import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
 
 import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
@@ -257,8 +257,8 @@ public class Ode implements EntryPoint {
   private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
   private final AdminInfoServiceAsync adminInfoService = GWT.create(AdminInfoService.class);
 
-  //Web service for CloudDB authentication operations
-  private final CloudDBAuthServiceAsync cloudDBAuthService = GWT.create(CloudDBAuthService.class);
+  //Web service for Token authentication operations
+  private final TokenAuthServiceAsync tokenAuthService = GWT.create(TokenAuthService.class);
 
   private boolean windowClosing;
 
@@ -620,8 +620,6 @@ public class Ode implements EntryPoint {
    */
   @Override
   public void onModuleLoad() {
-    Tracking.trackPageview();
-
     // Handler for any otherwise unhandled exceptions
     GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
       @Override
@@ -1275,12 +1273,12 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Get an instance of the CloudDBAuth web service.
+   * Get an instance of the TokenAuth web service.
    *
-   * @return CloudDBAuth web service instance
+   * @return TokenAuth web service instance
    */
-  public CloudDBAuthServiceAsync getCloudDBAuthService(){
-    return cloudDBAuthService;
+  public TokenAuthServiceAsync getTokenAuthService(){
+    return tokenAuthService;
   }
 
   /**
@@ -1545,6 +1543,9 @@ public class Ode implements EntryPoint {
         public void run() {
         }
       }, true);                 // Wait for i/o!!!
+
+    doCloseProxy();
+
   }
 
   /**
@@ -2417,6 +2418,9 @@ public class Ode implements EntryPoint {
       tutorialPanel.setVisible(false);
       overDeckPanel.setCellWidth(tutorialPanel, "0%");
     }
+    if (currentFileEditor != null) {
+      currentFileEditor.resize();
+    }
   }
 
   /**
@@ -2505,6 +2509,10 @@ public class Ode implements EntryPoint {
     return config.getGalleryReadOnly();
   }
 
+  public boolean getDeleteAccountAllowed() {
+    return config.getDeleteAccountAllowed();
+  }
+
   /**
    * setRendezvousServer
    *
@@ -2570,6 +2578,12 @@ public class Ode implements EntryPoint {
 
   public static native void CLog(String message) /*-{
     console.log(message);
+  }-*/;
+
+  private static native void doCloseProxy() /*-{
+    if (top.proxy) {
+      top.proxy.close();
+    }
   }-*/;
 
 }

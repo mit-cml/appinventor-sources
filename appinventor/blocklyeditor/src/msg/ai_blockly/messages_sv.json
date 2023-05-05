@@ -493,6 +493,7 @@
 	"Blockly.Msg.LANG_TEXT_APPEND_VARIABLE": "element",
 	"Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MULTIPLY": "Ger produkten av de två talen.",
 	"Blockly.Msg.REPL_OK": "OK",
+	"Blockly.Msg.REPL_RESET": "Återställa",
 	"Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN": "resultat",
 	"Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX": "för ",
 	"Blockly.Msg.LANG_MATH_TRIG_ATAN2_Y": "y",

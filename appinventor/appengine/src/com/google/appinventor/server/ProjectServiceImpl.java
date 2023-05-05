@@ -1,17 +1,24 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
 import com.google.appinventor.common.version.AppInventorFeatures;
+
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
+import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.util.CsvParser;
+
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
@@ -26,6 +33,7 @@ import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.util.Base64Util;
+
 import com.google.common.collect.Lists;
 
 import java.io.BufferedReader;
@@ -35,9 +43,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.json.JSONException;
 
 /**
  * The implementation of the RPC service which runs on the server.
@@ -166,7 +179,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
                 new FileReader(pathToTemplatesDir + "/" + templateName + "/" + templateName + ".json"));
               json += in.readLine() +  ", ";
             } catch (IOException e) {
-              LOG.log(Level.SEVERE, "I/O Exception reading template json file", e);
+              LOG.log(Level.SEVERE, "I/O Exception reading template json file: " + templateName, e);
               throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), null,
                 new IllegalArgumentException("Cannot Read Internal Project Template"));
             }
@@ -394,6 +407,136 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public String load(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).load(userId, projectId, fileId);
+  }
+
+  /**
+   * Loads the file information associated with a node in the project tree. After
+   * loading the file, the contents of it are parsed.
+   *
+   * <p>Expected format is either JSON or CSV. If the first character of the
+   * file's contents is a left curly bracket ( { ), then JSON parsing is
+   * attempted. Otherwise, CSV parsing is done.
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  List of parsed columns (each column is a List of Strings)
+   */
+  @Override
+  public List<List<String>> loadDataFile(long projectId, String fileId) {
+    final int maxRows = 10; // Parse a maximum of 10 rows
+
+    // Load the contents of the specified file
+    String result = load(projectId, fileId);
+
+    // If the contents of the file start with a curly bracket, assume JSON
+    // and attempt parsing the contents as JSON. Otherwise, attempt to parse
+    // the contents as a CSV file.
+    if (result.startsWith("{")) {
+      try {
+        return parseJsonColumns(result, maxRows);
+      } catch (JSONException e) {
+        // JSON parsing failed; Attempt CSV parsing instead
+        return parseCsvColumns(result, maxRows);
+      }
+    } else {
+      return parseCsvColumns(result, maxRows);
+    }
+  }
+
+  /**
+   * Parses and returns columns from the specified String formatted
+   * in CSV.
+   *
+   * @param source  Source String to parse CSV columns from
+   * @param rows  Number of rows to parse
+   * @return  List representing the columns (each column is a List of Strings)
+   */
+  private List<List<String>> parseCsvColumns(String source, int rows) {
+    List<List<String>> columns = new ArrayList<List<String>>();
+
+    // Construct an InputStream and a CSVParser for the contents of the file
+    ByteArrayInputStream inputStream = new ByteArrayInputStream(source.getBytes());
+    CsvParser csvParser = new CsvParser(inputStream);
+
+    for (int i = 0; i <= rows && csvParser.hasNext(); ++i) {
+      // Parse next row
+      List<String> row = csvParser.next();
+
+      // Add row entries to columns
+      for (int j = 0; j < row.size(); ++j) {
+        // A List for the column did not exist before; Create one
+        if (columns.size() <= j) {
+          columns.add(new ArrayList<String>());
+        }
+
+        // Add the j-th element of the row to the j-th column.
+        // E.G. consider the CSV row 1,2,3,4
+        // 1 goes into the 1st column, 2 goes into the 2nd one, and so on.
+        // So the indexes for both the column and the row match.
+        columns.get(j).add(row.get(j));
+      }
+    }
+
+    return columns;
+  }
+
+  /**
+   * Parses and returns columns from the specified String formatted
+   * in JSON.
+   *
+   * @param source  Source String to parse JSON columns from
+   * @param rows  Number of rows to parse
+   * @return  List representing the columns (each column is a List of Strings)
+   */
+  private List<List<String>> parseJsonColumns(String source, int rows) throws JSONException {
+    List<List<String>> columns = new ArrayList<List<String>>();
+
+    // Parse a JSON value from the specified source String
+    ServerJsonParser jsonParser = new ServerJsonParser();
+    JSONValue value = jsonParser.parse(source);
+
+    // Value must be a JSONObject for the parsing to be valid. If
+    // that is not the case, skip column parsing.
+    if (value instanceof JSONObject) {
+      // Get the value as a JSONObject and retrieve the properties (key-value pairs)
+      Map<String, JSONValue> properties = value.asObject().getProperties();
+
+      // Iterate over all the entries (one entry is interpreted as a single column)
+      for (final Map.Entry<String, JSONValue> entry : properties.entrySet()) {
+        List<String> column = new ArrayList<String>();
+
+        // Add the key as the first entry in the column
+        column.add(entry.getKey());
+
+        // Get the actual value of the column
+        JSONValue entryValue = entry.getValue();
+
+        // JSONArrays require different handling
+        if (entryValue instanceof JSONArray) {
+          // Retrieve the value as an Array, and get it's elements
+          JSONArray entryArray = entryValue.asArray();
+          List<JSONValue> jsonElements = entryArray.getElements();
+
+          // A maximum of the specified rows should be parsed.
+          int entries = Math.min(jsonElements.size(), rows);
+
+          // Add all the entries from the array to the column
+          for (int i = 0; i < entries; ++i) {
+            JSONValue arrayValue = jsonElements.get(i);
+            column.add(arrayValue.toString()); // Value has to be converted to String
+          }
+        } else {
+          // Add the value as a String to the elements of the column
+          column.add(entryValue.toString());
+        }
+
+        // Add the constructed column to the resulting columns List
+        columns.add(column);
+      }
+    }
+
+    return columns;
   }
 
   /**

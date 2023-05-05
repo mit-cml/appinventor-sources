@@ -49,12 +49,6 @@ public interface Component {
   static final int BUTTON_SHAPE_OVAL = 3;
 
   /*
-   * ListView Orientation.
-   */
-  static final int VERTICAL_ORIENTATION = 0;
-  static final int HORISONTAL_ORIENTATION = 1;
-  
-  /*
    * Color constants.
    */
   static final int COLOR_NONE = 0x00FFFFFF;
@@ -95,13 +89,6 @@ public interface Component {
   static final float FONT_DEFAULT_SIZE = 14;
 
   /*
-   * Layout constants.
-   */
-  static final int LAYOUT_ORIENTATION_HORIZONTAL = ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL;
-  static final int LAYOUT_ORIENTATION_VERTICAL = ComponentConstants.LAYOUT_ORIENTATION_VERTICAL;
-  static final int LAYOUT_ORIENTATION_GRID = ComponentConstants.LAYOUT_ORIENTATION_GRID;
-
-  /*
    * Picture scaling constants.
    */
   static final int SCALING_SCALE_PROPORTIONALLY = 0;
@@ -110,10 +97,10 @@ public interface Component {
   /*
    * Typeface constants.
    */
-  static final int TYPEFACE_DEFAULT = 0;
-  static final int TYPEFACE_SANSSERIF = 1;
-  static final int TYPEFACE_SERIF = 2;
-  static final int TYPEFACE_MONOSPACE = 3;
+  static final String TYPEFACE_DEFAULT = "0";
+  static final String TYPEFACE_SANSSERIF = "1";
+  static final String TYPEFACE_SERIF = "2";
+  static final String TYPEFACE_MONOSPACE = "3";
 
   /*
    * Length constants (for width and height).

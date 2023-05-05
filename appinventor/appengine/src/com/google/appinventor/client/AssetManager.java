@@ -148,7 +148,6 @@ public final class AssetManager implements ProjectChangeListener {
     String fileId = node.getFileId();
     AssetInfo assetInfo = new AssetInfo();
     assetInfo.fileId = fileId;
-    assetInfo.fileContent = null;
     assetInfo.loaded = false; // Set to true when it is loaded to the repl
     assetInfo.transferred = false; // Set to true when asset is received on phone
     assets.put(fileId, assetInfo);
@@ -226,7 +225,7 @@ public final class AssetManager implements ProjectChangeListener {
     for (AssetInfo a : assets.values()) {
       if (!a.loaded) {
         loadInProgress = true;
-        if (a.fileContent == null && !useWebRTC()) { // Need to fetch it from the server
+        if (a.fileContent == null && !hasFetchAssets()) { // Need to fetch it from the server
           retryCount = 3;
           ConnectProgressBar.setProgress(100 * assetTransferProgress / (2 * assets.size()),
             MESSAGES.loadingAsset(a.fileId));
@@ -359,6 +358,10 @@ public final class AssetManager implements ProjectChangeListener {
 
   private static native boolean useWebRTC() /*-{
     return top.usewebrtc;
+  }-*/;
+
+  private static native boolean hasFetchAssets() /*-{
+    return top.ReplState.hasfetchassets;
   }-*/;
 
 }

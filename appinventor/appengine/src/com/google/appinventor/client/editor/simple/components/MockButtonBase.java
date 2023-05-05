@@ -132,9 +132,6 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
     shape = Integer.parseInt(text);
     // Android Buttons with images take the shape of the image and do not
     // use one of the defined Shapes.
-    if (hasImage) {
-      return;
-    }
     switch(shape) {
       case 0:
         // Default Button
@@ -226,7 +223,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
    * Sets the button's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(buttonWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, buttonWidget, text);
     updatePreferredSizeOfButton();
   }
 
@@ -240,7 +237,6 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       hasImage = false;
       url = "";
       setBackgroundColorProperty(backgroundColor);
-      setShapeProperty(Integer.toString(shape));
     } else {
       hasImage = true;
       // Android Buttons do not show a background color if they have an image.
@@ -251,6 +247,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
           "&H" + COLOR_NONE);
       DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
     }
+    setShapeProperty(Integer.toString(shape));
     MockComponentsUtil.setWidgetBackgroundImage(buttonWidget, url);
     image.setUrl(url);
   }
@@ -316,6 +313,19 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
     return height;
   }
 
+  /*
+   * Update widget's text content appearances according to width property value.
+   */
+  private void updateTextAppearances(String width) {
+    if (width.equals("-1")) {
+      // for width = Automatic
+      DOM.setStyleAttribute(buttonWidget.getElement(), "whiteSpace", "nowrap");
+    } else {
+      // for width = Fill Parent, Pixels or Percentage
+      DOM.setStyleAttribute(buttonWidget.getElement(), "whiteSpace", "normal");
+    }
+  }
+
   // PropertyChangeListener implementation
 
   @Override
@@ -351,7 +361,9 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
       setTextColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_BUTTONSHAPE)){
       setShapeProperty(newValue);
-
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      updateTextAppearances(newValue);
+      refreshForm();
     }
   }
 

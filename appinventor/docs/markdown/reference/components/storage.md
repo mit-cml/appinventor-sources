@@ -9,7 +9,9 @@ title: Storage
 Table of Contents:
 
 * [CloudDB](#CloudDB)
+* [DataFile](#DataFile)
 * [File](#File)
+* [Spreadsheet](#Spreadsheet)
 * [TinyDB](#TinyDB)
 * [TinyWebDB](#TinyWebDB)
 
@@ -103,6 +105,57 @@ The `CloudDB` component is a Non-visible component that allows you to store data
 {:id="CloudDB.StoreValue" class="method"} <i/> StoreValue(*tag*{:.text},*valueToStore*{:.any})
 : Asks `CloudDB` to store the given `value`{:.variable.block} under the given
  `tag`{:.text.block}.
+
+## DataFile  {#DataFile}
+
+Component for DataFile
+
+
+
+### Properties  {#DataFile-Properties}
+
+{:.properties}
+
+{:id="DataFile.ColumnNames" .list .ro .bo} *ColumnNames*
+: Retrieve the column names of the currently loaded Source file.
+ For CSV files, this will return a List of entries in the first row.
+ For JSON files, this will return a List of keys in the JSON object.
+
+{:id="DataFile.Columns" .list .ro .bo} *Columns*
+: Retrieve a List of columns of the currently loaded Source file.
+
+{:id="DataFile.DefaultScope" .com.google.appinventor.components.common.FileScopeEnum .wo .do} *DefaultScope*
+: Specifies the default scope for files accessed using the File component. The App scope should
+ work for most apps. Legacy mode can be used for apps that predate the newer constraints in
+ Android on app file access.
+
+{:id="DataFile.Rows" .list .ro .bo} *Rows*
+: Retrieve a List of rows of the currently loaded Source file.
+
+{:id="DataFile.SourceFile" .text .wo .do} *SourceFile*
+: Sets the source file to parse data from, and then parses the
+ file asynchronously. The results are stored in the [`Columns`](#DataFile.Columns),
+ [`Rows`](#DataFile.Rows) and [`ColumnNames`](#DataFile.ColumnNames) properties.
+ The expected formatting of the file is either the CSV or JSON format.
+
+### Events  {#DataFile-Events}
+
+{:.events}
+None
+
+
+### Methods  {#DataFile-Methods}
+
+{:.methods}
+
+{:id="DataFile.ReadFile" class="method"} <i/> ReadFile(*fileName*{:.text})
+: Indicates source file to load data from. The expected format of the contents of the file
+ are either CSV or JSON. Prefix the `fileName`{:.text.block} with `/` to read from a
+ specific file on the SD card (for example, `/myFile.txt` will read the file
+ `/sdcard/myFile.txt`). To read assets packaged with an application (also works for the
+ Companion) start the `fileName`{:.text.block} with `//` (two slashes). If a
+ `fileName`{:.text.block} does not start with a slash, it will be read from the application's
+ private storage (for packaged apps) and from `/sdcard/AppInventor/data` for the Companion.
 
 ## File  {#File}
 
@@ -239,6 +292,199 @@ Non-visible component for storing and retrieving files. Use this component to wr
 
    Note that this block will overwrite a file if it already exists. If you want to add content
  to an existing file use the [`AppendToFile`](#File.AppendToFile) method.
+
+## Spreadsheet  {#Spreadsheet}
+
+Spreadsheet is a non-visible component for storing and receiving data from
+ a Google Sheets document using the Google Sheets API.
+
+ In order to utilize this component, one must first have a Google Developer
+ Account. Then, one must create a new project under that Google Developer
+ Account, enable the Google Sheets API on that project, and finally create a
+ Service Account for the Sheets API.
+
+ Instructions on how to create the Service Account, as well as where to find
+ other relevant information for using the Google Sheets Component, can be
+ found <a href='/reference/other/googlesheets-api-setup.html'>here</a>.
+
+ Row and column numbers are 1-indexed.
+
+
+
+### Properties  {#Spreadsheet-Properties}
+
+{:.properties}
+
+{:id="Spreadsheet.ApplicationName" .text .do} *ApplicationName*
+: The name of your application, used when making API calls.
+
+{:id="Spreadsheet.CredentialsJson" .text} *CredentialsJson*
+: The JSON File with credentials for the Service Account
+
+{:id="Spreadsheet.SpreadsheetID" .text} *SpreadsheetID*
+: The ID for the Google Sheets file you want to edit. You can find the spreadsheetID in the URL of the Google Sheets file.
+
+### Events  {#Spreadsheet-Events}
+
+{:.events}
+
+{:id="Spreadsheet.ErrorOccurred"} ErrorOccurred(*errorMessage*{:.text})
+: Triggered whenever an API call encounters an error. Details about the error are in `errorMessage`.
+
+{:id="Spreadsheet.FinishedAddColumn"} FinishedAddColumn(*columnNumber*{:.number})
+: The callback event for the [`AddColumn`](#Spreadsheet.AddColumn) block, called once the
+ values on the table have been updated. Additionally, this returns the
+ column number for the new column.
+
+{:id="Spreadsheet.FinishedAddRow"} FinishedAddRow(*rowNumber*{:.number})
+: The callback event for the [`AddRow`](#Spreadsheet.AddRow) block, called once the
+ values on the table have been updated. Additionally, this returns the
+ row number for the new row.
+
+{:id="Spreadsheet.FinishedClearRange"} FinishedClearRange()
+: The callback event for the [`ClearRange`](#Spreadsheet.ClearRange) block, called once the
+ values on the table have been updated.
+
+{:id="Spreadsheet.FinishedRemoveColumn"} FinishedRemoveColumn()
+: The callback event for the [`RemoveColumn`](#Spreadsheet.RemoveColumn) block, called once the
+ values on the table have been updated.
+
+{:id="Spreadsheet.FinishedRemoveRow"} FinishedRemoveRow()
+: The callback event for the [`RemoveRow`](#Spreadsheet.RemoveRow) block, called once the
+ values on the table have been updated.
+
+{:id="Spreadsheet.FinishedWriteCell"} FinishedWriteCell()
+: The callback event for the [`WriteCell`](#Spreadsheet.WriteCell) block, called once the
+ values on the table have been updated.
+
+{:id="Spreadsheet.FinishedWriteColumn"} FinishedWriteColumn()
+: The callback event for the [`WriteColumn`](#Spreadsheet.WriteColumn) block, called once the
+ values on the table have been updated.
+
+{:id="Spreadsheet.FinishedWriteRange"} FinishedWriteRange()
+: The callback event for the [`WriteRange`](#Spreadsheet.WriteRange) block, called once the
+ values on the table have been updated.
+
+{:id="Spreadsheet.FinishedWriteRow"} FinishedWriteRow()
+: The callback event for the [`WriteRow`](#Spreadsheet.WriteRow) block, called once the
+ values on the table have been updated.
+
+{:id="Spreadsheet.GotCellData"} GotCellData(*cellData*{:.text})
+: The callback event for the [`ReadCell`](#Spreadsheet.ReadCell) block. The `cellData` is
+ the text value in the cell.
+
+{:id="Spreadsheet.GotColumnData"} GotColumnData(*columnData*{:.list})
+: The callback event for the [`ReadColumn`](#Spreadsheet.ReadColumn) block. The `columnData` is a
+ list of text cell-values in order of increasing row number.
+
+{:id="Spreadsheet.GotRangeData"} GotRangeData(*rangeData*{:.list})
+: The callback event for the [`ReadRange`](#Spreadsheet.ReadRange) block. The `rangeData` is
+ a list of rows, where the dimensions are the same as the rangeReference.
+
+{:id="Spreadsheet.GotRowData"} GotRowData(*rowDataList*{:.list})
+: The callback event for the [`ReadRow`](#Spreadsheet.ReadRow) block. The `rowDataList` is a
+ list of text cell-values in order of increasing column number.
+
+{:id="Spreadsheet.GotSheetData"} GotSheetData(*sheetData*{:.list})
+: The callback event for the [`ReadSheet`](#Spreadsheet.ReadSheet) block. The `sheetData` is a
+ list of rows.
+
+### Methods  {#Spreadsheet-Methods}
+
+{:.methods}
+
+{:id="Spreadsheet.AddColumn" class="method"} <i/> AddColumn(*sheetName*{:.text},*data*{:.list})
+: Given a list of values as `data`, appends the values to the next empty
+ column of the sheet. It will always start from the top row and continue
+ downwards. Once complete, it triggers the [`FinishedAddColumn`](#Spreadsheet.FinishedAddColumn)
+ callback event.
+
+{:id="Spreadsheet.AddRow" class="method"} <i/> AddRow(*sheetName*{:.text},*data*{:.list})
+: Given a list of values as `data`, appends the values to the next
+ empty row of the sheet. It will always start from the left most column and
+ continue to the right. Once complete, it triggers the [`FinishedAddRow`](#Spreadsheet.FinishedAddRow)
+ callback event. Additionally, this returns the row number for the new row.
+
+{:id="Spreadsheet.ClearRange" class="method"} <i/> ClearRange(*sheetName*{:.text},*rangeReference*{:.text})
+: Empties the cells in the given range. Once complete, this block triggers
+ the [`FinishedClearRange`](#Spreadsheet.FinishedClearRange) callback event.
+
+{:id="Spreadsheet.GetCellReference" class="method returns text"} <i/> GetCellReference(*row*{:.number},*column*{:.number})
+: Converts the integer representation of rows and columns to A1-Notation used
+ in Google Sheets for a single cell. For example, row 1 and col 2
+ corresponds to the string \"B1\".
+
+{:id="Spreadsheet.GetRangeReference" class="method returns text"} <i/> GetRangeReference(*row1*{:.number},*column1*{:.number},*row2*{:.number},*column2*{:.number})
+: Converts the integer representation of rows and columns for the corners of
+ the range to A1-Notation used in Google Sheets. For example, selecting the
+ range from row 1, col 2 to row 3, col 4 corresponds to the string "B1:D3".
+
+{:id="Spreadsheet.ReadCell" class="method"} <i/> ReadCell(*sheetName*{:.text},*cellReference*{:.text})
+: On the page with the provided sheetName, reads the cell at the given
+ cellReference and triggers the [`GotCellData`](#Spreadsheet.GotCellData) callback event. The
+ cellReference can be either a text block with A1-Notation, or the result of
+ the [`GetCellReference`](#Spreadsheet.GetCellReference) block.
+
+{:id="Spreadsheet.ReadColumn" class="method"} <i/> ReadColumn(*sheetName*{:.text},*column*{:.text})
+: On the page with the provided sheetName, reads the column at the given
+ colNumber and triggers the [`GotColumnData`](#Spreadsheet.GotColumnData) callback event.
+
+{:id="Spreadsheet.ReadRange" class="method"} <i/> ReadRange(*sheetName*{:.text},*rangeReference*{:.text})
+: On the page with the provided sheetName, reads the cells at the given
+ rangeReference and triggers the [`GotRangeData`](#Spreadsheet.GotRangeData) callback event. The
+ rangeReference can be either a text block with A1-Notation, or the result
+ of the [`GetRangeReference`](#Spreadsheet.GetRangeReference) block.
+
+{:id="Spreadsheet.ReadRow" class="method"} <i/> ReadRow(*sheetName*{:.text},*rowNumber*{:.number})
+: On the page with the provided sheetName, reads the row at the given
+ rowNumber and triggers the [`GotRowData`](#Spreadsheet.GotRowData) callback event.
+
+{:id="Spreadsheet.ReadSheet" class="method"} <i/> ReadSheet(*sheetName*{:.text})
+: Reads the <b>entire</b> Google Sheets document and triggers the
+ [`GotSheetData`](#Spreadsheet.GotSheetData) callback event.
+
+{:id="Spreadsheet.ReadWithExactFilter" class="method"} <i/> ReadWithExactFilter(*sheetName*{:.text},*colID*{:.number},*value*{:.text})
+: Filters a Google Sheet for rows where the given column number matches the provided value.
+
+{:id="Spreadsheet.ReadWithPartialFilter" class="method"} <i/> ReadWithPartialFilter(*sheetName*{:.text},*colID*{:.number},*value*{:.text})
+: Filters a Google Sheet for rows where the given column number contains the provided value string.
+
+{:id="Spreadsheet.RemoveColumn" class="method"} <i/> RemoveColumn(*sheetName*{:.text},*column*{:.text})
+: Deletes the column with the given column number from the table. This does
+ not clear the column, but removes it entirely. The sheet's grid id can be
+ found at the end of the url of the Google Sheets document, right after the
+ "gid=". Once complete, it triggers the [`FinishedRemoveColumn`](#Spreadsheet.FinishedRemoveColumn)
+ callback event.
+
+{:id="Spreadsheet.RemoveRow" class="method"} <i/> RemoveRow(*sheetName*{:.text},*rowNumber*{:.number})
+: Deletes the row with the given row number (1-indexed) from the table. This
+ does not clear the row, but removes it entirely. The sheet's grid id can be
+ found at the end of the url of the Google Sheets document, right after the
+ "gid=". Once complete, it triggers the [`FinishedRemoveRow`](#Spreadsheet.FinishedRemoveRow)
+ callback event.
+
+{:id="Spreadsheet.WriteCell" class="method"} <i/> WriteCell(*sheetName*{:.text},*cellReference*{:.text},*data*{:.any})
+: Given text or a number as `data`, writes the value to the cell. It will
+ override any existing data in the cell with the one provided. Once complete,
+ it triggers the [`FinishedWriteCell`](#Spreadsheet.FinishedWriteCell) callback event.
+
+{:id="Spreadsheet.WriteColumn" class="method"} <i/> WriteColumn(*sheetName*{:.text},*column*{:.text},*data*{:.list})
+: Given a list of values as `data`, writes the values to the column with the
+ given column number, overriding existing values from top down. (Note: It
+ will not erase the entire column.) Once complete, it triggers the
+ [`FinishedWriteColumn`](#Spreadsheet.FinishedWriteColumn) callback event.
+
+{:id="Spreadsheet.WriteRange" class="method"} <i/> WriteRange(*sheetName*{:.text},*rangeReference*{:.text},*data*{:.list})
+: Given list of lists as `data`, writes the values to cells in the range. The
+ number of rows and columns in the range must match the dimensions of your
+ data. This method will override existing data in the range. Once complete,
+ it triggers the [`FinishedWriteRange`](#Spreadsheet.FinishedWriteRange) callback event.
+
+{:id="Spreadsheet.WriteRow" class="method"} <i/> WriteRow(*sheetName*{:.text},*rowNumber*{:.number},*data*{:.list})
+: Given a list of values as `data`, writes the values to the row  with the
+ given row number, overriding existing values from left to right. (Note: It
+ will not erase the entire row.) Once complete, it triggers the
+ [`FinishedWriteRow`](#Spreadsheet.FinishedWriteRow) callback event.
 
 ## TinyDB  {#TinyDB}
 

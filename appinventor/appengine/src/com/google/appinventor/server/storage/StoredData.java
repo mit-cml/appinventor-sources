@@ -12,6 +12,7 @@ import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.Unindexed;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -312,6 +313,12 @@ public class StoredData {
     // datastore editing tools
     String allowedUrls;
 
+  }
+
+  public static final class ProjectNotFoundException extends IOException {
+    ProjectNotFoundException(String message) {
+      super(message);
+    }
   }
 
 }

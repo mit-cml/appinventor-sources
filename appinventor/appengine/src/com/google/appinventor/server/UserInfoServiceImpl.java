@@ -13,6 +13,7 @@ import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.server.tokens.Token;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -39,6 +40,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
 
   @SuppressWarnings("SimpleDateFormat")
   private static final DateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+
+  private static boolean deleteAccountAllowed = Flag.createFlag("auth.deleteaccountallowed", true).get();
 
   /**
    * Returns System Config, including user information record
@@ -78,6 +81,7 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     config.setGalleryEnabled(Flag.createFlag("gallery.enabled", false).get());
     config.setGalleryReadOnly(Flag.createFlag("gallery.readonly", false).get());
     config.setGalleryLocation(Flag.createFlag("gallery.location", "").get());
+    config.setDeleteAccountAllowed(deleteAccountAllowed);
 
     if (!Flag.createFlag("build2.server.host", "").get().isEmpty()) {
       config.setSecondBuildserver(true);
@@ -94,9 +98,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
         throw CrashReport.createAndLogError(LOG, null, null, e);
       }
     }
-
-    // Check to see if we need to upgrade this user's project to GCS
-    storageIo.checkUpgrade(userInfoProvider.getUserId());
 
     // Fetch list of allowed tutorial prefixes from the data store
     List<String> urls = storageIo.getTutorialsUrlAllowed();
@@ -219,6 +220,25 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void storeSharedBackpack(String backPackId, String content) {
     storageIo.uploadBackpack(backPackId, content);
+  }
+
+  @Override
+  public String deleteAccount() {
+    if (!deleteAccountAllowed) {
+      return ("");
+    }
+    if (storageIo.deleteAccount(userInfoProvider.getUserId())) {
+      String delAccountUrl = Flag.createFlag("deleteaccount.url", "NONE").get();
+      if (delAccountUrl.equals("NONE")) {
+        return (delAccountUrl);
+      } else {
+        String token = Token.makeAccountDeletionToken(userInfoProvider.getUserId(),
+          userInfoProvider.getUserEmail());
+        return (delAccountUrl + "/?token=" + token);
+      }
+    } else {
+      return ("");
+    }
   }
 
 }

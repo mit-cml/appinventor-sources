@@ -60,8 +60,6 @@
 
     <!-- Name of storage bucket in Google Cloud Store -->
     <property name="gcs.bucket" value="" />
-    <!-- Whether or not to use GCS for storage -->
-    <property name="use.gcs" value="true" />
 
     <!-- set to true if users need to accept a Terms of Service the first time
       they access App Inventor -->

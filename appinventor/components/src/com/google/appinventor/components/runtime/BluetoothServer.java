@@ -6,6 +6,10 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.BLUETOOTH;
+import static android.Manifest.permission.BLUETOOTH_ADMIN;
+import static android.Manifest.permission.BLUETOOTH_ADVERTISE;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -18,6 +22,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.BluetoothReflection;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.SUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.os.Handler;
@@ -39,9 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
     nonVisible = true,
     iconName = "images/bluetooth.png")
 @SimpleObject
-@UsesPermissions(permissionNames =
-                 "android.permission.BLUETOOTH, " +
-                 "android.permission.BLUETOOTH_ADMIN")
+@UsesPermissions({BLUETOOTH, BLUETOOTH_ADMIN, BLUETOOTH_ADVERTISE})
 public final class BluetoothServer extends BluetoothConnectionBase {
   private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
 
@@ -75,7 +78,16 @@ public final class BluetoothServer extends BluetoothConnectionBase {
     accept("AcceptConnectionWithUUID", serviceName, uuid);
   }
 
-  private void accept(final String functionName, String name, String uuidString) {
+  private void accept(final String functionName, final String name, final String uuidString) {
+    if (SUtil.requestPermissionsForAdvertising(form, this, functionName,
+        new PermissionResultHandler() {
+          @Override
+          public void HandlePermissionResponse(String permission, boolean granted) {
+            accept(functionName, name, uuidString);
+          }
+        })) {
+      return;
+    }
     final Object bluetoothAdapter = BluetoothReflection.getBluetoothAdapter();
     if (bluetoothAdapter == null) {
       form.dispatchErrorOccurredEvent(this, functionName,

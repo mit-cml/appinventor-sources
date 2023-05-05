@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -417,6 +417,12 @@ public interface Images extends Resources {
   ImageResource gameclient();
 
   /**
+   * Designer pallete item: Spreadsheet component
+   */
+  @Source("com/google/appinventor/images/spreadsheet.png")
+  ImageResource spreadsheet();
+
+  /**
    * Designer palette item: Sprite
    */
   @Source("com/google/appinventor/images/imageSprite.png")
@@ -646,6 +652,12 @@ public interface Images extends Resources {
   ImageResource spinner();
 
   /**
+   * Designer palette item: Translator Component
+   */
+  @Source("com/google/appinventor/images/translator.png")
+  ImageResource translator();
+
+  /**
     * Designer palette item: YandexTranslate
     */
   @Source("com/google/appinventor/images/yandex.png")
@@ -770,4 +782,22 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/get-app.png")
   ImageResource GetApp();
+
+  /**
+   * Designer palette item: Chart.
+   */
+  @Source("com/google/appinventor/images/chart.png")
+  ImageResource chart();
+
+  /**
+   * Designer palette item: ChartData2D.
+   */
+  @Source("com/google/appinventor/images/chartData.png")
+  ImageResource chartData2D();
+
+  /**
+   * Designer palette item: DataFile.
+   */
+  @Source("com/google/appinventor/images/dataFile.png")
+  ImageResource dataFile();
 }
