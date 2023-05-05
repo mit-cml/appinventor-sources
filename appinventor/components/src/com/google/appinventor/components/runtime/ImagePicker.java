@@ -32,10 +32,11 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.QUtil;
 
 import java.io.File;
 import java.io.IOException;
+
+import java.net.URI;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -179,12 +180,14 @@ public class ImagePicker extends Picker implements ActivityResultListener {
 
     File dest = null;
 
-    String fullDirname = QUtil.getExternalStoragePath(container.$form()) + imagePickerDirectoryName;
-    File destDirectory = new File(fullDirname);
+    String fullDirname = container.$form().getDefaultPath(imagePickerDirectoryName);
+    File destDirectory = new File(URI.create(fullDirname));
 
     try {
-      destDirectory.mkdirs();
-      dest = File.createTempFile (FILE_PREFIX, extension,  destDirectory);
+      if (!destDirectory.exists() && !destDirectory.mkdirs()) {
+        throw new IOException("Unable to create directory at " + fullDirname);
+      }
+      dest = File.createTempFile(FILE_PREFIX, extension, destDirectory);
 
       selectionSavedImage = dest.getPath();
       // Uncomment this to delete imageFile when the application stops
@@ -198,16 +201,20 @@ public class ImagePicker extends Picker implements ActivityResultListener {
       // is pretty annoying
       // new (container.$form()).ShowAlert("Image was copied to " + selectedImage);
 
-    } catch(IOException e) {
+    } catch (IOException e) {
       String err =  "destination is " + selectionSavedImage + ": " + "error is "  + e.getMessage();
       Log.i(LOG_TAG, "copyFile failed. " + err);
       container.$form().dispatchErrorOccurredEvent(this, "SaveImage",
           ErrorMessages.ERROR_CANNOT_SAVE_IMAGE, err);
       selectionSavedImage = "";
-      dest.delete();
+      if (dest != null) {
+        if (!dest.delete()) {
+          Log.w(LOG_TAG, "Unable to delete temporary destination");
+        }
+      }
     }
 
-    // clean up the temp file.  This isn't critical because MudiaUtil.copyMediaToTempFile
+    // clean up the temp file.  This isn't critical because MediaUtil.copyMediaToTempFile
     // marks this with deleteOnExit, but it's nice to clean up here.
     source.delete();
     trimDirectory(maxSavedFiles, destDirectory);

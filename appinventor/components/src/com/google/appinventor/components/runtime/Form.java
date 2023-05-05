@@ -2902,6 +2902,12 @@ public class Form extends AppInventorCompatActivity
     return "file://" + new java.io.File(getCacheDir(), cache).getAbsolutePath();
   }
 
+  /**
+   * Resolves {@code name} to a file: URI relative to the application's default scope.
+   *
+   * @param name the relative file name to resolve
+   * @return a String containing an absolute file: URI to the file named by {@code name}
+   */
   public String getDefaultPath(String name) {
     return FileUtil.resolveFileName(this, name, defaultFileScope);
   }
