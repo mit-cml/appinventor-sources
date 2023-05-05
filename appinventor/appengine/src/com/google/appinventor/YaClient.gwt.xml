@@ -41,6 +41,7 @@
   <servlet path="/projects" class="com.google.appinventor.server.ProjectServiceImpl" />
   <servlet path="/upload" class="com.google.appinventor.server.UploadServlet" />
   <servlet path="/userinfo" class="com.google.appinventor.server.UserInfoServiceImpl" />
+  <servlet path="/communityhelp" class="com.google.appinventor.server.SubmitPostServiceImpl" />
 
   <!-- srcs -->
   <source path="" includes="simple_components.json" />

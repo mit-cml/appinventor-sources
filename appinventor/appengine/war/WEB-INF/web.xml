@@ -166,6 +166,21 @@
     <servlet-name>userInfoService</servlet-name>
   </filter-mapping>
 
+  <!-- community posting -->
+  <servlet>
+    <servlet-name>submitPostService</servlet-name>
+    <servlet-class>com.google.appinventor.server.SubmitPostServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>submitPostService</servlet-name>
+    <url-pattern>/ode/submitpost</url-pattern>
+  </servlet-mapping>
+  <!-- <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>submitPostService</servlet-name>
+  </filter-mapping> -->
+
+  <!-- cloudDBAuth -->
   <!-- TokenAuth -->
   <servlet>
     <servlet-name>tokenAuthService</servlet-name>
@@ -257,6 +272,19 @@
   <filter-mapping>
     <filter-name>odeAuthFilter</filter-name>
     <servlet-name>componentService</servlet-name>
+  </filter-mapping>
+
+  <servlet>
+    <servlet-name>CommunityLogin</servlet-name>
+    <servlet-class>com.google.appinventor.server.CommunityLoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CommunityLogin</servlet-name>
+    <url-pattern>/community/login</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>CommunityLogin</servlet-name>
   </filter-mapping>
 
 </web-app>

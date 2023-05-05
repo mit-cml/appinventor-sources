@@ -39,6 +39,10 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   private String backPackId = null; // If non-null we have a shared backpack
 
+  private boolean communityLogin;
+  
+  private String communityLoginUsername;;
+
   public final static String usercachekey = "f682688a-1065-4cda-8515-a8bd70200ac9"; // UUID
   // This UUID is prepended to any key lookup for User objects. Memcache is a common
   // key/value store for the entire application. By prepending a unique value, we ensure
@@ -215,6 +219,22 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.backPackId = backPackId;
   }
 
+  public boolean isCommunityLogin() {
+    return communityLogin;
+  }
+
+  public void setCommunityLogin(boolean communityLogin) {
+    this.communityLogin = communityLogin;
+  }
+
+  public String getCommunityLoginUsername() {
+    return communityLoginUsername;
+  }
+
+  public void setCommunityLoginUsername(String username) {
+    this.communityLoginUsername = username;
+  }
+
   public User copy() {
     // We set the isReadOnly flag in the copy in this fashion so we do not have to
     // modify all the places in the source where we create a "User" object. There are
@@ -223,6 +243,8 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     User retval =  new User(id, email, tosAccepted, isAdmin, sessionId);
     retval.setReadOnly(isReadOnly);
     retval.setBackpackId(this.backPackId);
+    retval.setCommunityLogin(this.communityLogin);
+    retval.setCommunityLoginUsername(this.communityLoginUsername);
     return retval;
   }
 }

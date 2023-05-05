@@ -118,4 +118,41 @@ public class LocalUser implements UserInfoProvider {
     }
   }
 
+  @Override
+  public boolean isCommunityLogin() {
+    try {
+      return user.get().isCommunityLogin();
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+  @Override
+  public void setCommunityLogin(boolean communityLogin) {
+    try {
+      user.get().setCommunityLogin(communityLogin);
+    } catch (NullPointerException e) {
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+  @Override
+  public String getCommunityLoginUsername() {
+    try {
+      return user.get().getCommunityLoginUsername();
+    } catch (NullPointerException e) {
+      throw new UnsupportedOperationException("User field should have been initialized. " + e.getMessage());
+    }
+  }
+
+  @Override
+  public void setCommunityLoginUsername(String username) {
+    try {
+      user.get().setCommunityLoginUsername(username);
+    } catch (NullPointerException e) {
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
 }

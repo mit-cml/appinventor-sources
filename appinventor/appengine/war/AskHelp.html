@@ -1,0 +1,145 @@
+<html>
+<head>
+    <title>Ask Help</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="alert alert-danger mt-4" role="alert" id="error_box">
+            </div>
+            <div class="alert alert-success" role="alert" id="success_box">
+            </div>
+            <div class="d-flex flex-row my-4">
+                <h4 id="email_slot" style="font-weight: 400;">
+                    Loading...
+                </h4>
+                <button onclick="logout()" class="mx-4 btn btn-danger">Logout</button>
+            </div>
+            <FORM id="help__form" class="d-flex flex-column p-3">
+                <div class="form-floating my-1">
+                    <input type="text" class="form-control" id="ask_help_title" placeholder="name@example.com" required oninput="onInputChange()">
+                    <label for="ask_help_title">Title</label>
+                </div>
+                <div class="form my-2">
+                    <select class="form-select my-2" id="ask_help_category" aria-label="Default select example">
+                    </select>
+                </div>
+                <div class="form-floating my-1">
+                    <textarea class="form-control" placeholder="Leave a comment here" id="ask_help_description" style="height: 100px"></textarea>
+                    <label for="floatingTextarea">Enter question description</label>
+                </div>
+                <div class="form-check my-1">
+                    <input class="form-check-input" type="checkbox" value="" id="ask_help_attach" >
+                    <label class="form-check-label" for="flexCheckDefault">
+                    Attach project source file?
+                    </label>
+                </div>
+                <div class="d-flex">
+                    <INPUT type="submit" class="form-control my-3 btn btn-primary mx-3" placeholder="Submit" >
+                    <button type="button" id="help__close" class="form-control my-3 btn btn-danger mx-3">Cancel</button>
+                </div>
+            </FORM>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        var username;
+        var isCategoriesLoaded;
+        document.getElementById('error_box').style.display = 'none'
+        document.getElementById('success_box').style.display = 'none'
+        document.getElementById("help__close").addEventListener("click", (r) => {
+            console.log("Close")
+            window.top.postMessage(JSON.stringify({
+                type: 'close'
+            }), "*")
+        })
+        document.getElementById('help__form').addEventListener('submit', (r) => {
+            r.preventDefault();
+            console.log("Form submitted", r)
+            var title = document.getElementById("ask_help_title").value
+            var category = document.getElementById("ask_help_category").value
+            var description= document.getElementById("ask_help_description").value
+            var isChecked = document.getElementById("ask_help_attach").checked
+            window.top.postMessage(JSON.stringify({
+                type: 'submit',
+                title: title,
+                category: category,
+                description: description,
+                isChecked: isChecked
+            }), "*")
+        })
+        function logout() {
+            window.top.postMessage(JSON.stringify({
+                type: 'logout'
+            }), "*")
+        }
+        window.onmessage = function(r) {
+            var type = r.data.type
+            if (type == 'error') {
+                document.getElementById("error_box").style.display = 'block'
+                document.getElementById('error_box').innerText = r.data.message
+            } else if (type == 'email' ) {
+                username = r.data.username
+                document.getElementById("email_slot").innerText = username
+            } else if (type == 'upload_success') {
+                document.getElementById('success_box').style.display = 'block'
+                document.getElementById('success_box').innerText = "Your question is posted successfully"
+            } else if (type == 'categories') {
+                var categories = JSON.parse(r.data.categories).category_list.categories
+                console.log(r.data)
+                isCategoriesLoaded = true
+                let innerHtml = ''
+                categories.forEach((cat, index) => {
+                    if (index == 0) {
+                        innerHtml += `<option selected value=${cat.id}>${cat.name}</option>`;
+                    } else {
+                        innerHtml += `<option value=${cat.id}>${cat.name}</option>`;
+                    }
+                })
+                document.getElementById('ask_help_category').innerHTML = innerHtml;
+            }
+        }
+        window.onload = function(r) {
+            // Hide the error box in beginning
+            document.getElementById('error_box').style.display = 'none'
+            document.getElementById('success_box').style.display = 'none'
+
+            // Ask for username from GWT client
+            window.top.postMessage(JSON.stringify({
+                type: 'get_user_email'
+            }), "*")
+            window.top.postMessage(JSON.stringify({
+                type: 'categories'
+            }), "*")
+            setInterval(1000, function() {
+                // Check if username is fetched from server
+                if (!username) {
+                    // Ask for username from GWT client
+                    window.top.postMessage(JSON.stringify({
+                        type: 'get_user_email'
+                    }), "*")
+                }
+                if (!isCategoriesLoaded) {
+                    console.log("yo")
+                    window.top.postMessage(JSON.stringify({
+                        type: 'categories'
+                    }), "*")
+                }
+            })
+            
+        }
+        function onInputChange() {
+            var txt = document.getElementById("ask_help_title").value
+            window.top.postMessage(JSON.stringify({
+                type: 'similar_topics',
+                text: txt
+            }))
+        }
+
+    </script>
+</body>
+</html>

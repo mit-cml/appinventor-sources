@@ -56,6 +56,14 @@ public class ServerLayout {
   public static final String USER_INFO_SERVICE = "userinfo";
 
   /**
+   * Submit post
+   * {@link com.google.appinventor.shared.rpc.communityhelp.SubmitPostService} within the
+   * ODE GWT module
+   */
+  public static final String SUBMIT_POST_SERVICE = "submitpost";
+
+
+  /**
    * Relative path of the Admin Info Service within ODE
    */
 

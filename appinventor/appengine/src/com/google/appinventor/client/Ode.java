@@ -56,6 +56,10 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 
 import com.google.appinventor.components.common.YaVersion;
 
+import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthService;
+import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthServiceAsync;
+import com.google.appinventor.shared.rpc.communityhelp.SubmitPostServiceAsync;
+import com.google.appinventor.shared.rpc.communityhelp.SubmitPostService;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
 
@@ -259,6 +263,9 @@ public class Ode implements EntryPoint {
 
   //Web service for Token authentication operations
   private final TokenAuthServiceAsync tokenAuthService = GWT.create(TokenAuthService.class);
+
+  // Web service for SubmitPost to community
+  private final SubmitPostServiceAsync submitPostService = GWT.create(SubmitPostService.class);
 
   private boolean windowClosing;
 
@@ -1279,6 +1286,14 @@ public class Ode implements EntryPoint {
    */
   public TokenAuthServiceAsync getTokenAuthService(){
     return tokenAuthService;
+  }
+
+  /**
+   * Get an instance of SubmitPostService
+   * @reutrn SubmitPostService
+   */
+  public SubmitPostServiceAsync getSubmitPostService() {
+    return submitPostService;
   }
 
   /**

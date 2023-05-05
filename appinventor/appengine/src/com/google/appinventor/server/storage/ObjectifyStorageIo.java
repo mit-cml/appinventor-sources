@@ -312,6 +312,8 @@ public class ObjectifyStorageIo implements  StorageIo {
           user.setIsAdmin(userData.isAdmin);
           user.setSessionId(userData.sessionid);
           user.setPassword(userData.password);
+          user.setCommunityLogin(userData.communityLogin);
+          user.setCommunityLoginUsername(userData.communityLoginUsername);
         }
       }, false);                // Transaction not needed. If we fail there is nothing to rollback
     } catch (ObjectifyException e) {
@@ -394,6 +396,80 @@ public class ObjectifyStorageIo implements  StorageIo {
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.email = email;
+            datastore.put(userData);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+  }
+
+  @Override
+  public boolean getUserCommunityLogin(final String userId) {
+    final Result<Boolean> login = new Result<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            login.t = userData.communityLogin;
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    return login.t;
+  }
+
+  @Override
+  public void setUserCommunityLogin(final String userId, final boolean communitylogin) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.communityLogin = communitylogin;
+            datastore.put(userData);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+  }
+
+  @Override
+  public String getUserCommunityLoginUsername(final String userId) {
+    final Result<String> login = new Result<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            login.t = userData.communityLoginUsername;
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    return login.t;
+  }
+
+  @Override
+  public void setUserCommunityLoginUsername(final String userId, final String username) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.communityLoginUsername = username;
             datastore.put(userData);
           }
         }
@@ -2743,4 +2819,5 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
   }
+  
 }
