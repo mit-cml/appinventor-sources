@@ -11,8 +11,9 @@ class PickerPadController: UIViewController {
     modalPresentationStyle = .popover
   }
 
-  public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+  required init?(coder aDecoder: NSCoder) {
+    super.init(coder: aDecoder)
+    showAlert(message: "init(coder:) has not been implemented")
   }
 
   open override func viewDidLoad() {
@@ -23,11 +24,11 @@ class PickerPadController: UIViewController {
   }
 
   @objc func setupViews() {
-    fatalError("setupViews() has not been implemented")
+    showAlert(message: "setupViews() has not been implemented")
   }
 
   @objc func addLayoutConstraints() {
-    fatalError("addLayoutConstraints() has not been implemented")
+    showAlert(message: "addLayoutConstraints() has not been implemented")
   }
 }
 
@@ -71,7 +72,8 @@ class PickerPhoneController: UIViewController {
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    showAlert(message: "init(coder:) has not been implemented")
+    return nil
   }
 
   @objc public func dismissPicker() {
