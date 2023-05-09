@@ -114,4 +114,26 @@ public class ComponentCoverage implements ComponentCoverageInterface {
         return component.getIos();
     }
 
+    public boolean isAndroidCompatible(String componentName){
+        Map<String, Integer> androidCount = getAndroidCount(componentName);
+        boolean android = false;
+        for(Map.Entry<String,Integer> entry: androidCount.entrySet()){
+            if(entry.getValue()!=0){
+                android|= true;
+            }
+        }
+        return android;
+    }
+
+    public boolean isIosCompatible(String componentName){
+        Map<String, Integer> iosCount = getIosCount(componentName);
+        boolean ios = false;
+        for(Map.Entry<String, Integer> entry: iosCount.entrySet()){
+            if(entry.getValue()!=0){
+                ios|=true;
+            }
+        }
+        return ios;
+    }
+
 }

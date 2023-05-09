@@ -49,12 +49,6 @@ public class SimplePaletteItem extends DragSourcePanel {
   //It is here to keep the selected panel item
   private static Widget selectedPaletteItemWidget;
 
-  //component supports on android
-  private boolean android = false;
-
-  //component supports on iOS
-  private boolean ios = false;
-
   /**
    * Creates a new palette item.
    *
@@ -84,22 +78,10 @@ public class SimplePaletteItem extends DragSourcePanel {
 
     HorizontalPanel optPanel = new HorizontalPanel();
 
-    Map<String, Integer> androidCount = componentCoverage.getAndroidCount(scd.getName());
-    Map<String, Integer> iosCount = componentCoverage.getIosCount(scd.getName());
+    boolean isAndroidCompatible = componentCoverage.isAndroidCompatible(scd.getName());
+    boolean isIosCompatible = componentCoverage.isIosCompatible(scd.getName());
 
-    //check for count of properties, methods and events(if all of these is zero , then component not implemented)
-    for(Map.Entry<String,Integer> entry: androidCount.entrySet()){
-      if(entry.getValue()!=0){
-        android|= true;
-      }
-    }
-    for(Map.Entry<String, Integer> entry: iosCount.entrySet()){
-      if(entry.getValue()!=0){
-        ios|=true;
-      }
-    }
-
-    if(!android){
+    if(!isAndroidCompatible){
       //display apple icon if the component is available only in ios
       Image iosImage = new Image(images.iosLogo());
       iosImage.setWidth("16px");
@@ -109,7 +91,7 @@ public class SimplePaletteItem extends DragSourcePanel {
       optPanel.setCellHorizontalAlignment(iosImage, HorizontalPanel.ALIGN_LEFT);
       optPanel.setCellWidth(iosImage, "30px");
     }
-    else if(!ios) {
+    else if(!isIosCompatible) {
       //display android icon if the component is available only in android
       Image androidImage = new Image(images.androidLogo());
       androidImage.setWidth("16px");
