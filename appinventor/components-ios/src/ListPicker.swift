@@ -25,7 +25,8 @@ open class ListPickerActivity: UINavigationController {
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    super.init(coder: aDecoder)
+    showAlert(message: "init(coder:) has not been implemented")
   }
 }
 

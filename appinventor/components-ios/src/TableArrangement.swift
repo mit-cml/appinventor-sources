@@ -52,7 +52,8 @@ fileprivate enum ConstraintUpdate {
   }
 
   required public init?(coder aDecoder: NSCoder) {
-    fatalError()
+    showAlert(message: "init(coder:) has not been implemented")
+    return nil
   }
 
   /**
@@ -162,9 +163,10 @@ fileprivate enum ConstraintUpdate {
     super.init(frame: .zero)
     _emptyConstraints = [heightAnchor.constraint(equalToConstant: 100), widthAnchor.constraint(equalToConstant: 100)]
   }
-
+  
   required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    super.init(coder: aDecoder)
+    showAlert(message: "init(coder:) has not been implemented")
   }
 
   /**
