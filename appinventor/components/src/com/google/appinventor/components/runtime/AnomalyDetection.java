@@ -49,17 +49,8 @@ public final class AnomalyDetection extends DataCollection {
    * @param dataList - the data array represents the data you want to check for anomalies
    * @return List of detected anomaly data points
    */
-  @SimpleFunction(description = "Simple anomaly detection.")
-  public List DetectAnomalies(final YailList dataList) {
-    return ComputeDetectAnomalies(dataList);
-  }
-
-  @SimpleFunction(description = "Simple anomaly detection with user defined threshold.")
-  public List DetectAnomaliesWithThreshold(final YailList dataList, double threshold) {
-    return ComputeDetectAnomalies(dataList, threshold);
-  }
-
-  public List ComputeDetectAnomalies(final YailList dataList, double... threshold) {
+  @SimpleFunction(description = "Z-Score Anomaly Detection: checks each data point's Z-score against the given threshold if a data point's Z-score is greater than the threshold, the data point is labeled as anomaly and returned in a list of pairs (anomaly index, anomaly value)")
+  public List DetectAnomalies(final YailList dataList, double threshold) {
     ArrayList anomalies = new ArrayList<Pair>();
 
     LList dataListValues = (LList) dataList.getCdr();
@@ -83,16 +74,9 @@ public final class AnomalyDetection extends DataCollection {
     // Detect anomalies using Z-score
     for (int i = 0; i < data.size(); i++) {
       double zScore = Math.abs((data.get(i) - mean) / sd); // The z-score is a measure of how many standard deviations a data point is away from the mean
-      if (threshold.length == 0) {
-        double defaultThreshold = 2; //default threshold of 2 standard deviation steps away from the mean
-        if (zScore > defaultThreshold) {
-          anomalies.add(Arrays.asList(i + 1,data.get(i))); // We need to return the index in order to remove the x value at the same index when we remove anomalies (index starts at 0)
-        }
-      } else {
-        if (zScore > threshold[0]) {
+        if (zScore > threshold) {
           anomalies.add(Arrays.asList(i + 1, data.get(i)));
         }
-      }
     }
     return anomalies;
   }
@@ -109,7 +93,7 @@ public final class AnomalyDetection extends DataCollection {
    * @param anomaly - a single YailList tuple of anomaly index and value
    * @return List of combined x and y pairs without the anomaly pair
    */
-  @SimpleFunction(description = "Given an anomaly and the x and y values of your data. This block will return the x and y value pairs of your data without the anomaly")
+  @SimpleFunction(description = "Given a single anomaly and the x and y values of your data. This block will return the x and y value pairs of your data without the anomaly")
   public List CleanData(final YailList anomaly, YailList xList, YailList yList) {
     LList xValues = (LList) xList.getCdr();
     List xData = castToDouble(xValues);
@@ -141,7 +125,6 @@ public final class AnomalyDetection extends DataCollection {
    * @param anomaly - a single YailList tuple of anomaly index and value
    * @return double anomaly index
    */
-  @SimpleFunction(description = "Gets the index of a single anomaly")
   public static double GetAnomalyIndex(YailList anomaly){
     LList anomalyValue = (LList) anomaly.getCdr();
     List<Double> anomalyNr = castToDouble(anomalyValue);

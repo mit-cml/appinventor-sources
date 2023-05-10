@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.util.Log;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -39,6 +40,7 @@ import static com.google.appinventor.components.runtime.FileBase.LOG_TAG;
 @SimpleObject
 @SuppressWarnings("checkstyle:JavadocParagraph")
 public final class ChartData2D extends ChartDataBase {
+  private int initColor;
   /**
    * Creates a new Coordinate Data component.
    */
@@ -48,6 +50,7 @@ public final class ChartData2D extends ChartDataBase {
     dataFileColumns = Arrays.asList("", "");
     sheetsColumns = Arrays.asList("", "");
     webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
+    initColor = dataModel.getDataset().getColor();
   }
 
   /**
@@ -74,6 +77,8 @@ public final class ChartData2D extends ChartDataBase {
 
         // Refresh Chart with new data
         refreshChart();
+        // Set new Entry color to the initial default chart color
+        setEntryDefaultColor(x,y);
       }
     });
   }
@@ -96,9 +101,18 @@ public final class ChartData2D extends ChartDataBase {
       public void run() {
         // Create a 2-tuple, and remove the tuple from the Data Series
         YailList pair = YailList.makeList(Arrays.asList(x, y));
-        dataModel.removeEntryFromTuple(pair);
 
+
+        //get index of x and remove the color highlight at that index
+        float xValue = Float.parseFloat(x);
+        float yValue = Float.parseFloat(y);
+
+        Entry currEntry = new Entry(Float.parseFloat(x),Float.parseFloat(y));
+        int index = dataModel.findEntryIndex(currEntry);
+
+        dataModel.removeEntryFromTuple(pair);
         // Refresh Chart with new data
+        resetHighlightAtIndex(index);
         refreshChart();
       }
     });
@@ -213,7 +227,7 @@ public final class ChartData2D extends ChartDataBase {
    * @param xList - the list of x values
    * @param yList - the list of y values
    */
-  @SimpleFunction(description = "Draws the line of best fit.")
+  @SimpleFunction(description = "Draws the corresponding line of best fit on the graph")
   public void DrawLineOfBestFit(final YailList xList, final YailList yList) {
     List predictions = (List) Regression.ComputeLineOfBestFit(xList, yList).get("predictions");
     final List predictionPairs = new ArrayList<Pair>();
@@ -230,30 +244,42 @@ public final class ChartData2D extends ChartDataBase {
     refreshChart();
   }
   /**
-   * Highlights all given anomalies on the Chart in the color of choice
+   * Highlights all given data points on the Chart in the color of choice
    *
-   * @param anomalies - the list of anomalies. An anomaly inside the list is a pair of anomaly index and anomaly value: [[anomaly index, anomaly value],...,[,]]
+   * @param dataPoints - the list of data points. A data point inside this list is a pair of point index and point value: [[point index, point value],...,[,]]
    * @param color - the highlight color chosen by the user
    */
-  @SimpleFunction(description = "Highlights all given anomalies on the Chart. This block expects a list of anomalies, each anomaly is an index, value pair")
-  public void HighlightAnomalies(final YailList anomalies, int color) {
-    List<List> anomaliesList = (LList) anomalies.getCdr();
-    if(!anomalies.isEmpty()) {
-      List entries = dataModel.getEntries();
-      int defaultColor = ((LineDataSet) dataModel.getDataset()).getColor();
-      int[] highlights = new int[entries.size()];
-      Arrays.fill(highlights, defaultColor);
+  @SimpleFunction(description = "Highlights data points of choice on the Chart in the color of choice. This block expects a list of data points, each data point is an index, value pair")
+  public void HighlightDataPoints(final YailList dataPoints, int color) {
+    List<List> dataPointsList = (LList) dataPoints.getCdr();
+    if(!dataPoints.isEmpty()) {
+      List<Integer> highlights =((LineDataSet) dataModel.getDataset()).getCircleColors();
 
-      for (List anomaly: anomaliesList){
-        int anomalyIndex = (int) AnomalyDetection.GetAnomalyIndex((YailList) anomaly);
-        highlights[anomalyIndex - 1] = color;
+      for (List dataPoint: dataPointsList){
+        int dataPointIndex = (int) AnomalyDetection.GetAnomalyIndex((YailList) dataPoint);
+        highlights.set(dataPointIndex - 1, color);
       }
       ((LineDataSet) dataModel.getDataset()).setCircleColors(highlights);
       refreshChart();
     }else{
-      Log.i(LOG_TAG, "Anomalies list is Empty:"+ anomalies);
+      Log.i(LOG_TAG, "Anomalies list is Empty:"+ dataPoints);
       throw new IllegalStateException("Anomalies list is Empty. Nothing to highlight!");
     }
+  }
+  private void resetHighlightAtIndex(int index){
+    List<Integer> defaultColors = ((LineDataSet) dataModel.getDataset()).getCircleColors();
+    defaultColors.remove(index);
+  }
+  private void setEntryDefaultColor(String x, String y){
+    // set color of new entry to default
+    List<Integer> defaultColors = ((LineDataSet) dataModel.getDataset()).getCircleColors();
+    Entry currEntry = new Entry(Float.parseFloat(x),Float.parseFloat(y));
+    int index = dataModel.findEntryIndex(currEntry);
+    defaultColors.add(index, initColor);
+    ((LineDataSet) dataModel.getDataset()).setCircleColors(defaultColors);
+
+    // Refresh Chart with new data
+    refreshChart();
   }
 }
 
