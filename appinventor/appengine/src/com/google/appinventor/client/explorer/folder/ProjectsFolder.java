@@ -2,7 +2,6 @@ package com.google.appinventor.client.explorer.folder;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.appinventor.client.views.projects.ProjectSelectionChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -12,6 +11,7 @@ import com.google.gwt.user.client.ui.Composite;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 import java.util.logging.Logger;
 
 public abstract class ProjectsFolder extends Composite {
@@ -21,16 +21,12 @@ public abstract class ProjectsFolder extends Composite {
   protected int depth;
   protected ProjectSelectionChangeHandler changeHandler;
 
-  protected List<ProjectsFolder> projectsFolders;
-  protected List<ProjectListItem> projectListItems;
-  protected List<ProjectListItem> selectedProjectListItems;
-  protected List<ProjectsFolder> selectedProjectsFolders;
+  protected HashSet<ProjectsFolderListItem> projectsFolderListItems;
+  protected HashSet<ProjectListItem> projectListItems;
 
   public ProjectsFolder() {
-    projectsFolders = new ArrayList<ProjectsFolder>();
-    projectListItems = new ArrayList<ProjectListItem>();
-    selectedProjectListItems = new ArrayList<ProjectListItem>();
-    selectedProjectsFolders = new ArrayList<ProjectsFolder>();
+    projectsFolderListItems = new HashSet<>();
+    projectListItems = new HashSet<>();
   }
 
   public abstract void refresh();
@@ -60,54 +56,77 @@ public abstract class ProjectsFolder extends Composite {
 
   public List<Project> getSelectedProjects() {
     List<Project> selectedProjects = new ArrayList<Project>();
-    for (ProjectListItem item : selectedProjectListItems) {
-      selectedProjects.add(item.getProject());
+    for (ProjectListItem item : projectListItems) {
+      if (item.isSelected()) {
+        selectedProjects.add(item.getProject());
+      }
     }
-    for (ProjectsFolder item : projectsFolders) {
-      selectedProjects.addAll(item.getSelectedProjects());
+    for (ProjectsFolderListItem item : projectsFolderListItems) {
+      if (item.isExpanded())
+      {
+        selectedProjects.addAll(item.getSelectedProjects());
+      }
     }
     return selectedProjects;
   }
 
   public List<Folder> getSelectedFolders() {
     List<Folder> selectedFolders = new ArrayList<Folder>();
-    for (ProjectsFolder item : projectsFolders) {
+    for (ProjectsFolder item : projectsFolderListItems) {
       selectedFolders.addAll(item.getSelectedFolders());
     }
     return selectedFolders;
   }
 
-  public List<Project> getProjects() {
+  public List<Project> getAllProjects() {
     List<Project> projects = new ArrayList<Project>();
-    for (ProjectListItem item : projectListItems) {
-      projects.add(item.getProject());
+    for (Project item : folder.getProjects()) {
+      projects.add(item);
     }
-    for (ProjectsFolder item : projectsFolders) {
-      projects.addAll(item.getProjects());
+    for (ProjectsFolder item : projectsFolderListItems) {
+      projects.addAll(item.getAllProjects());
     }
     return projects;
   }
 
-  public List<Folder> getFolders() {
+  public List<Project> getVisibleProjects() {
+    List<Project> projects = new ArrayList<Project>();
+    for (Project item : folder.getProjects()) {
+      projects.add(item);
+    }
+    for (ProjectsFolderListItem folderItem : projectsFolderListItems) {
+      if (folderItem.isExpanded()) {
+        projects.addAll(folderItem.getVisibleProjects());
+      }
+    }
+    return projects;
+  }
+
+  public List<Folder> getAllFolders() {
     List<Folder> folders = new ArrayList<Folder>();
-    for (ProjectsFolder item : projectsFolders) {
-      folders.addAll(item.getFolders());
+    for (ProjectsFolder item : projectsFolderListItems) {
+      folders.addAll(item.getAllFolders());
     }
     return folders;
   }
 
-  protected ProjectsFolder createProjectsFolder(final Folder folder, final ComplexPanel container) {
-    final ProjectsFolder projectsFolder = new ProjectsFolderListItem(folder, depth + 1);
+  public List<Folder> getSelectableFolders() {
+    List<Folder> folders = new ArrayList<Folder>();
+    for (ProjectsFolderListItem item : projectsFolderListItems) {
+      if (item.isExpanded()) {
+        folders.addAll(item.getSelectableFolders());
+      } else {
+        folders.add(getFolder());
+      }
+    }
+    return folders;
+  }
+
+  protected ProjectsFolderListItem createProjectsFolderListItem(final Folder folder, final ComplexPanel container) {
+    final ProjectsFolderListItem projectsFolder = new ProjectsFolderListItem(folder, depth + 1);
     projectsFolder.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
       @Override
       public void onSelectionChange(boolean selected) {
-        if (selected) {
-          LOG.warning("ADD selected folder list item: " + folder.getName());
-          selectedProjectsFolders.add(projectsFolder);
-        } else {
-          LOG.warning("REMOVE project list item: " + folder.getName());
-          selectedProjectsFolders.remove(projectsFolder);
-        }
         fireSelectionChangeEvent();
       }
     });
@@ -120,13 +139,6 @@ public abstract class ProjectsFolder extends Composite {
     projectListItem.setSelectionChangeHandler(new ProjectSelectionChangeHandler() {
       @Override
       public void onSelectionChange(boolean selected) {
-        if (selected) {
-          LOG.warning("ADD project list item: " + project.getProjectName());
-          selectedProjectListItems.add(projectListItem);
-        } else {
-          LOG.warning("REMOVE project list item: " + project.getProjectName());
-          selectedProjectListItems.remove(projectListItem);
-        }
         fireSelectionChangeEvent();
       }
     });
@@ -140,7 +152,7 @@ public abstract class ProjectsFolder extends Composite {
         }
       });
     }
-//    projectListItems.add(projectListItem);
+    projectListItems.add(projectListItem);
     container.add(projectListItem);
     return projectListItem;
   }

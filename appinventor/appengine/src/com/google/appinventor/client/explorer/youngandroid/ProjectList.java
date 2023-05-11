@@ -9,6 +9,7 @@ package com.google.appinventor.client.explorer.youngandroid;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.folder.Folder;
 import com.google.appinventor.client.explorer.folder.FolderManagerEventListener;
+import com.google.appinventor.client.explorer.folder.ProjectsFolderListItem;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
@@ -86,7 +87,6 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
    * Creates a new ProjectList
    */
   public ProjectList() {
-    LOG.info("Creating Project-legacy List");
     projects = new ArrayList<>();
     selectedProjects = new ArrayList<Project>();
 
@@ -96,7 +96,6 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
     initWidget(UI_BINDER.createAndBindUi(this));
     refreshSortIndicators();
     Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
-    LOG.info("Added legacy project manager event listener");
 
     // It is important to listen to project manager events as soon as possible.
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
@@ -180,7 +179,6 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
   // implementation of.
 
   public void refresh(boolean needToSort) {
-    LOG.warning("Refreshing");
     projects = folder.getProjects();
     List<Folder> folders = folder.getChildFolders();
 //    if (needToSort) {
@@ -218,17 +216,13 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
     container.clear();
     selectedProjectListItems.clear();
     projectListItems.clear();
-    projectsFolders.clear();
+    projectsFolderListItems.clear();
     for (final Folder childFolder : folders) {
       if ("*trash*".equals(childFolder.getName())) {
-//        if (childFolder.getProjects().size() == 0) {
-//          Ode.getInstance().createEmptyTrashDialog(true);
-//        }
         continue;
       }
-
-      ProjectsFolder item = createProjectsFolder(childFolder, container);
-      projectsFolders.add(item);
+      ProjectsFolderListItem item = createProjectsFolderListItem(childFolder, container);
+      projectsFolderListItems.add(item);
     }
     for(final Project project : projects) {
       ProjectListItem item = createProjectListItem(project, container);
@@ -239,16 +233,14 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
   }
 
   public void setSelected(boolean selected) {
-    LOG.info("Setselected: " + selected + ". ProjectListItems count: " + projectListItems.size());
     selectedProjectListItems.clear();
     for(ProjectListItem item : projectListItems) {
-      LOG.info("ProjectListItem name: " + item.getProject().getProjectName());
       item.setSelected(selected);
       if(selected) {
         selectedProjectListItems.add(item);
       }
     }
-    for(ProjectsFolder item : projectsFolders) {
+    for(ProjectsFolderListItem item : projectsFolderListItems) {
       item.setSelected(selected);
     }
   }
@@ -258,23 +250,19 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
   }
 
   protected void fireSelectionChangeEvent() {
-    LOG.info("fireSelectionChangedEvent: getFolders().size = " + getFolders().size() +
-                " getSelectedFolders().size() = " + getSelectedFolders().size() +
-                " getProjects().size() = " + getProjects().size() + " getSelectedProjects().size() = " +
-                getSelectedProjects().size());
-    if (getFolders().size() == getSelectedFolders().size() &&
-            getProjects().size() == getSelectedProjects().size()) {
+    int selectableFolders = getSelectableFolders().size();
+    int visibleProjects = getVisibleProjects().size();
+    if (selectableFolders + visibleProjects > 0 &&
+            selectableFolders == getSelectedFolders().size() &&
+            visibleProjects == getSelectedProjects().size()) {
       selectAllCheckBox.setValue(true);
     } else {
-      LOG.info("fireSelectionChangedEvent: false");
       selectAllCheckBox.setValue(false);
     }
-    super.fireSelectionChangeEvent();
   }
 
   @UiHandler("selectAllCheckBox")
   void toggleItemSelection(ClickEvent e) {
-    LOG.warning("toggleItemSelection");
     setSelected(selectAllCheckBox.getValue());
   }
   /**
@@ -365,11 +353,8 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
 
   @Override
   public void onProjectAdded(Project project) {
-    LOG.info("On project added " + project.getProjectName() + " projectsLoaded=" + projectsLoaded);
     if (folder == null) {
-      LOG.info("Folder is null ");
     } else {
-      LOG.info("Folder is: ");
       LOG.info(folder.getName());
     }
 
@@ -409,7 +394,6 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
 
   @Override
   public void onProjectsLoaded() {
-    LOG.info("ProjectList.onProjectsLoaded");
     projectsLoaded = true;
     projectListLoading = false;
     refresh();
