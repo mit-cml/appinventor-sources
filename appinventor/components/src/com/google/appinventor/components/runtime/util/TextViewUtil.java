@@ -19,6 +19,7 @@ import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Helper methods for manipulating {@link TextView} objects.
@@ -165,14 +166,15 @@ public class TextViewUtil {
     if (fontFile == null || fontFile.isEmpty()) {
       return null;
     }
-    Typeface typeface;
+    Typeface typeface = null;
+    File file;
     if (!fontFile.contains("/")) {
       if (form instanceof ReplForm) {
         try {
-          File file = new File(MediaUtil.fileUrlToFilePath(form.getAssetPath(fontFile)));
-        } catch (IllegalArgumentException e) {
-        } catch (Exception e) {}
-        typeface = Typeface.createFromFile(file);        
+          file = new File(MediaUtil.fileUrlToFilePath(form.getAssetPath(fontFile)));
+          typeface = Typeface.createFromFile(file);
+        } catch (IOException ioe) {
+        }                
       } else {
         typeface = Typeface.createFromAsset(form.$context().getAssets(), fontFile);
       }
