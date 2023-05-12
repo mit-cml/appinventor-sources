@@ -74,7 +74,7 @@ public final class MoveProjectsWizard {
   @UiHandler("moveButton")
   void moveProjects(ClickEvent e) {
     FolderTreeItem treeItem = (FolderTreeItem) tree.getSelectedItem();
-    List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+    List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects(false);
     List<Folder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
     Ode.getInstance().getFolderManager().moveItemsToFolder(selectedProjects, selectedFolders,
         treeItem.getFolder());

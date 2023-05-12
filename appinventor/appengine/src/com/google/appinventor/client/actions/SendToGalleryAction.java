@@ -22,7 +22,7 @@ public class SendToGalleryAction implements Command {
   @Override
   public void execute() {
     List<Project> selectedProjects =
-        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects(false);
     if (selectedProjects.size() != 1) {
       ErrorReporter.reportInfo(MESSAGES.selectOnlyOneProject());
     } else {

@@ -63,10 +63,15 @@ public class ProjectsFolderListItem extends ProjectsFolder {
 
   @Override
   public void setSelected(boolean selected) {
+    setSelected(selected, false);
+  }
+
+
+  public void setSelected(boolean selected, boolean inTrash) {
     checkBox.setValue(selected);
     if (isExpanded) {
       for (ProjectsFolderListItem projectsFolderListItem : projectsFolderListItems) {
-        projectsFolderListItem.setSelected(selected);
+        projectsFolderListItem.setSelected(selected, inTrash);
       }
       for (ProjectListItem projectListItem : projectListItems) {
         projectListItem.setSelected(selected);
@@ -103,9 +108,9 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   }
 
   @Override
-  public List<Project> getSelectedProjects() {
+  public List<Project> getSelectedProjects(boolean inTrash) {
     if (isExpanded) {
-      return super.getSelectedProjects();
+      return super.getSelectedProjects(inTrash);
     } else {
       return new ArrayList<Project>();
     }

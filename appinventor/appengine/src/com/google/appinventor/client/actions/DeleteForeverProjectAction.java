@@ -16,7 +16,8 @@ public class DeleteForeverProjectAction implements Command {
     Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
       @Override
       public void execute() {
-        List<Project> deletedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+        List<Project> deletedProjects = ProjectListBox.getProjectListBox().getProjectList()
+                                            .getSelectedProjects(true);
         if (deletedProjects.size() > 0) {
           // Show one confirmation window for selected projects.
           if (deleteConfirmation(deletedProjects)) {

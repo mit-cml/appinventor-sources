@@ -2,6 +2,7 @@ package com.google.appinventor.client.explorer.folder;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.appinventor.client.views.projects.ProjectSelectionChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -54,17 +55,17 @@ public abstract class ProjectsFolder extends Composite {
     return folder;
   }
 
-  public List<Project> getSelectedProjects() {
+  public List<Project> getSelectedProjects(boolean inTrash) {
     List<Project> selectedProjects = new ArrayList<Project>();
     for (ProjectListItem item : projectListItems) {
-      if (item.isSelected()) {
+      if (item.isSelected() && item.getProject().isInTrash() == inTrash) {
         selectedProjects.add(item.getProject());
       }
     }
     for (ProjectsFolderListItem item : projectsFolderListItems) {
       if (item.isExpanded())
       {
-        selectedProjects.addAll(item.getSelectedProjects());
+        selectedProjects.addAll(item.getSelectedProjects(inTrash));
       }
     }
     return selectedProjects;
@@ -89,14 +90,16 @@ public abstract class ProjectsFolder extends Composite {
     return projects;
   }
 
-  public List<Project> getVisibleProjects() {
+  public List<Project> getVisibleProjects(boolean inTrash) {
     List<Project> projects = new ArrayList<Project>();
     for (Project item : folder.getProjects()) {
-      projects.add(item);
+      if (item.isInTrash() == inTrash) {
+        projects.add(item);
+      }
     }
     for (ProjectsFolderListItem folderItem : projectsFolderListItems) {
       if (folderItem.isExpanded()) {
-        projects.addAll(folderItem.getVisibleProjects());
+        projects.addAll(folderItem.getVisibleProjects(inTrash));
       }
     }
     return projects;
@@ -104,17 +107,17 @@ public abstract class ProjectsFolder extends Composite {
 
   public List<Folder> getAllFolders() {
     List<Folder> folders = new ArrayList<Folder>();
-    for (ProjectsFolder item : projectsFolderListItems) {
+    for (ProjectsFolderListItem item : projectsFolderListItems) {
       folders.addAll(item.getAllFolders());
     }
     return folders;
   }
 
-  public List<Folder> getSelectableFolders() {
+  public List<Folder> getSelectableFolders(boolean inTrash) {
     List<Folder> folders = new ArrayList<Folder>();
     for (ProjectsFolderListItem item : projectsFolderListItems) {
       if (item.isExpanded()) {
-        folders.addAll(item.getSelectableFolders());
+        folders.addAll(item.getSelectableFolders(isTrash));
       } else {
         folders.add(getFolder());
       }

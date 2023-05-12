@@ -233,16 +233,23 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
   }
 
   public void setSelected(boolean selected) {
+    // This intentionally does not call the selection changed event for individual
+    // list items.
     selectedProjectListItems.clear();
     for(ProjectListItem item : projectListItems) {
-      item.setSelected(selected);
-      if(selected) {
-        selectedProjectListItems.add(item);
+      if (item.getProject().isInTrash() == isTrash) {
+        item.setSelected(selected);
+        if (selected) {
+          selectedProjectListItems.add(item);
+        }
+      } else {
+        item.setSelected(false);
       }
     }
     for(ProjectsFolderListItem item : projectsFolderListItems) {
       item.setSelected(selected);
     }
+    Ode.getInstance().getBindProjectToolbar().updateButtons();
   }
 
   public boolean isSelected() {
@@ -250,15 +257,19 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
   }
 
   protected void fireSelectionChangeEvent() {
-    int selectableFolders = getSelectableFolders().size();
-    int visibleProjects = getVisibleProjects().size();
+    int selectableFolders = getSelectableFolders(isTrash).size();
+    int visibleProjects = getVisibleProjects(isTrash).size();
     if (selectableFolders + visibleProjects > 0 &&
             selectableFolders == getSelectedFolders().size() &&
-            visibleProjects == getSelectedProjects().size()) {
+            visibleProjects == getSelectedProjects(isTrash).size()) {
       selectAllCheckBox.setValue(true);
     } else {
       selectAllCheckBox.setValue(false);
     }
+    LOG.info("Checking SelectAll checkbox: SelectableFolders=" + selectableFolders + " visibleProjects=" +
+                visibleProjects + " " + "SelectedFolders=" + getSelectedFolders().size() +
+                " SelectedProjects=" + getSelectedProjects(isTrash).size());
+    Ode.getInstance().getBindProjectToolbar().updateButtons();
   }
 
   @UiHandler("selectAllCheckBox")
@@ -271,7 +282,8 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
    * @return the number of selected projects
    */
   public int getSelectedProjectsCount() {
-    return selectedProjectListItems.size();
+//    return getSelectedProjects().size();
+    return getSelectedProjects(isTrash).size() + getSelectedFolders().size();
   }
 
   public int getMyProjectsCount() {
@@ -295,25 +307,7 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
     }
   }
 
-  /**
-   * Returns true if all projects under the current view have been selected, and false if not.
-   */
-  public boolean isAllProjectsSelected() {
-    if (Ode.getInstance().getCurrentView() == Ode.PROJECTS
-          && getSelectedProjectsCount() == getMyProjectsCount()) {
-      return true;
-    }
-    if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN
-          && getSelectedProjectsCount() == projects.size() - getMyProjectsCount()) {
-      return true;
-    }
-    return false;
-  }
-  /**
-   * Returns the list of selected projects.
-   *
-   * @return the selected projects
-   */
+
   public void setIsTrash(boolean isTrash) {
     this.isTrash = isTrash;
     if (isTrash) {
@@ -325,6 +319,7 @@ public class ProjectList extends ProjectsFolder implements FolderManagerEventLis
       refresh();
     }
   }
+
   // FolderManagerEventListener implementation
   @Override
   public void onFolderAdded(Folder folder) {
