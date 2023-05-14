@@ -253,11 +253,13 @@ public final class ChartData2D extends ChartDataBase {
   public void HighlightDataPoints(final YailList dataPoints, int color) {
     List<List> dataPointsList = (LList) dataPoints.getCdr();
     if(!dataPoints.isEmpty()) {
-      List<Integer> highlights =((LineDataSet) dataModel.getDataset()).getCircleColors();
+      List entries = dataModel.getEntries();
+      int[] highlights = new int[entries.size()];
+      Arrays.fill(highlights, initColor);
 
       for (List dataPoint: dataPointsList){
         int dataPointIndex = (int) AnomalyDetection.GetAnomalyIndex((YailList) dataPoint);
-        highlights.set(dataPointIndex - 1, color);
+        highlights[dataPointIndex - 1] = color;
       }
       ((LineDataSet) dataModel.getDataset()).setCircleColors(highlights);
       refreshChart();
