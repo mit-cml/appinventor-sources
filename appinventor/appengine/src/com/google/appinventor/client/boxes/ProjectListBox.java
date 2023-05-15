@@ -56,14 +56,12 @@ public final class ProjectListBox extends Box {
   }
 
   public void loadProjectList () {
-    plist.getSelectedProjects().clear();
     plist.setIsTrash(false);
     plist.refresh(false);
     this.setCaption(MESSAGES.projectListBoxCaption());
   }
 
   public void loadTrashList() {
-    plist.getSelectedProjects().clear();
     plist.setIsTrash(true);
     plist.refresh(false);
     this.setCaption(MESSAGES.trashprojectlistbox());

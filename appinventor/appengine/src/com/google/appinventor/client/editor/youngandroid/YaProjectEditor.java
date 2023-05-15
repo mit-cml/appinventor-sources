@@ -227,8 +227,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   
   @Override
   protected void onShow() {
-    LOG.info("YaProjectEditor got onShow() for project " + projectId);
-    
     AssetListBox.getAssetListBox().getAssetList().refreshAssetList(projectId);
     
     DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
@@ -253,7 +251,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   @Override
   protected void onHide() {
-    LOG.info("YaProjectEditor: got onHide");
     AssetListBox.getAssetListBox().getAssetList().refreshAssetList(0);
 
     FileEditor selectedFileEditor = getSelectedFileEditor();
@@ -264,7 +261,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   
   @Override
   protected void onUnload() {
-    LOG.info("YaProjectEditor: got onUnload");
     super.onUnload();
     for (EditorSet editors : editorMap.values()) {
       editors.blocksEditor.prepareForUnload();
@@ -451,7 +447,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private void addFormEditor(YoungAndroidFormNode formNode) {
     final YaFormEditor newFormEditor = new YaFormEditor(this, formNode);
     final String formName = formNode.getFormName();
-    LOG.info("Adding form editor for " + formName);
     if (editorMap.containsKey(formName)) {
       // This happens if the blocks editor was already added.
       editorMap.get(formName).formEditor = newFormEditor;
@@ -511,7 +506,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private void addBlocksEditor(YoungAndroidBlocksNode blocksNode) {
     final YaBlocksEditor newBlocksEditor = new YaBlocksEditor(this, blocksNode);
     final String formName = blocksNode.getFormName();
-    LOG.info("Adding blocks editor for " + formName);
     if (editorMap.containsKey(formName)) {
       // This happens if the form editor was already added.
       editorMap.get(formName).blocksEditor = newBlocksEditor;

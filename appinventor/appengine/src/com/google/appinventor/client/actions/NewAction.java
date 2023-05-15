@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class NewAction implements Command {
   @Override
   public void execute() {
-    new NewYoungAndroidProjectWizard(null).center();
+    new NewYoungAndroidProjectWizard();
     // The wizard will switch to the design view when the new
     // project is created.
   }

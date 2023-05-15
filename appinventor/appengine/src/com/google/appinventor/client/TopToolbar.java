@@ -185,13 +185,6 @@ public class TopToolbar extends Composite {
       settingsDropDown.setItemHtmlById("DyslexicFont", MESSAGES.enableOpenDyslexic());
       settingsDropDown.setCommandById("DyslexicFont", new SetFontDyslexicAction());
     }
-    if (Ode.getUserNewLayout()) {
-      settingsDropDown.setItemVisible(MESSAGES.disableNewLayout(), true);
-      settingsDropDown.setItemVisible(MESSAGES.enableNewLayout(), false);
-    } else {
-      settingsDropDown.setItemVisible(MESSAGES.disableNewLayout(), false);
-      settingsDropDown.setItemVisible(MESSAGES.enableNewLayout(), true);
-    }
 
 //    helpDropDown.removeUnneededSeparators();
 

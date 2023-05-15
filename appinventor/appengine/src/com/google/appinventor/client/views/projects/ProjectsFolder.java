@@ -83,6 +83,17 @@ public abstract class ProjectsFolder extends Composite {
     return projects;
   }
 
+  public List<Project> getVisibleProjects() {
+    List<Project> projects = new ArrayList<Project>();
+    for (ProjectListItem item : projectListItems) {
+      projects.add(item.getProject());
+    }
+    for (ProjectsFolder item : projectsFolders) {
+      projects.addAll(item.getProjects());
+    }
+    return projects;
+  }
+
   public List<Folder> getFolders() {
     List<Folder> folders = new ArrayList<Folder>();
     for (ProjectsFolder item : projectsFolders) {

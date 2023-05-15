@@ -1,11 +1,9 @@
 package com.google.appinventor.client.explorer.folder;
 
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
-import com.google.appinventor.client.views.projects.Resources;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -15,17 +13,19 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class ProjectsFolderListItem extends ProjectsFolder {
+  private static final Logger LOG = Logger.getLogger(ProjectsFolderListItem.class.getName());
+
   interface ProjectsFolderListItemUiBinder extends UiBinder<FlowPanel, ProjectsFolderListItem> {}
   private static final ProjectsFolderListItemUiBinder UI_BINDER = GWT.create(ProjectsFolderListItemUiBinder.class);
 
@@ -49,11 +49,11 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   @Override
   public void refresh() {
     childrenContainer.clear();
-    selectedProjectListItems.clear();
-    selectedProjectsFolders.clear();
+    projectListItems.clear();
+    projectsFolderListItems.clear();
     for (final Folder childFolder : folder.getChildFolders()) {
-      ProjectsFolder item = createProjectsFolder(childFolder, childrenContainer);
-      projectsFolders.add(item);
+      ProjectsFolderListItem item = createProjectsFolderListItem(childFolder, childrenContainer);
+      projectsFolderListItems.add(item);
     }
     for(final Project project : folder.getProjects()) {
       ProjectListItem item = createProjectListItem(project, childrenContainer);
@@ -63,12 +63,15 @@ public class ProjectsFolderListItem extends ProjectsFolder {
 
   @Override
   public void setSelected(boolean selected) {
+    setSelected(selected, false);
+  }
+
+
+  public void setSelected(boolean selected, boolean inTrash) {
     checkBox.setValue(selected);
-    selectedProjectListItems.clear();
-    selectedProjectsFolders.clear();
     if (isExpanded) {
-      for (ProjectsFolder projectsFolder : projectsFolders) {
-        projectsFolder.setSelected(selected);
+      for (ProjectsFolderListItem projectsFolderListItem : projectsFolderListItems) {
+        projectsFolderListItem.setSelected(selected, inTrash);
       }
       for (ProjectListItem projectListItem : projectListItems) {
         projectListItem.setSelected(selected);
@@ -105,12 +108,16 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   }
 
   @Override
-  public List<Project> getSelectedProjects() {
+  public List<Project> getSelectedProjects(boolean inTrash) {
     if (isExpanded) {
-      return super.getSelectedProjects();
+      return super.getSelectedProjects(inTrash);
     } else {
       return new ArrayList<Project>();
     }
+  }
+
+  public boolean isExpanded() {
+    return isExpanded;
   }
 
   @Override
@@ -127,21 +134,17 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   }
 
   @Override
-  public List<Project> getProjects() {
+  public List<Project> getAllProjects() {
     if (isExpanded) {
-      return super.getProjects();
+      return super.getAllProjects();
     } else {
       return new ArrayList<Project>();
     }
   }
 
   @Override
-  public List<Folder> getFolders() {
-    if (isExpanded) {
-      return super.getFolders();
-    } else {
-      return Arrays.asList(new Folder[] {folder});
-    }
+  public List<Folder> getAllFolders() {
+    return super.getAllFolders();
   }
 
   @UiFactory
@@ -158,7 +161,6 @@ public class ProjectsFolderListItem extends ProjectsFolder {
   @UiHandler("toggleButton")
   void toggleExpandedState(ClickEvent e) {
     setSelected(false);
-    fireSelectionChangeEvent();
     isExpanded = !isExpanded;
     if (isExpanded) {
       toggleButton.setIcon("expand_more");
@@ -170,6 +172,7 @@ public class ProjectsFolderListItem extends ProjectsFolder {
       childrenContainer.addStyleName("ode-ProjectRowHidden");
       checkBox.removeStyleName("ode-ProjectElementHidden");
     }
+    fireSelectionChangeEvent();
   }
 
   @UiHandler("nameLabel")

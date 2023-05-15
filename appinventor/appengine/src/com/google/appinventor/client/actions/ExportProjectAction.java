@@ -15,10 +15,10 @@ import java.util.List;
 public class ExportProjectAction implements Command {
   @Override
   public void execute() {
-    List<Project> selectedProjects =
-        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
     if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
       //If we are in the projects view
+      List<Project> selectedProjects =
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects(false);
       if (selectedProjects.size() == 1) {
         exportProject(selectedProjects.get(0));
       } else if (selectedProjects.size() > 1) {
@@ -29,7 +29,8 @@ public class ExportProjectAction implements Command {
       }
     } else {
       //If we are in the designer view.
-      Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + Ode.getInstance().getCurrentYoungAndroidProjectId());
+      Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE
+                                            + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + Ode.getInstance().getCurrentYoungAndroidProjectId());
     }
   }
 

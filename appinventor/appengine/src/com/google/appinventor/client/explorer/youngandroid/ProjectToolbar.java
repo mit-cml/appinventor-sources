@@ -97,19 +97,19 @@ public class ProjectToolbar extends Toolbar {
    */
   public void updateButtons() {
     ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
-    int numProjects = projectList.getMyProjectsCount();  // Get number of valid projects not in trash
+    int numAllItems = projectList.getMyProjectsCount();  // Get number of valid projects not in trash
     int numSelectedProjects = projectList.getSelectedProjectsCount();
     if (isReadOnly) {           // If we are read-only, we disable all buttons
       setButtonEnabled(WIDGET_NAME_NEW, false);
       setButtonEnabled(WIDGET_NAME_DELETE, false);
       setButtonEnabled(WIDGET_NAME_RESTORE, false);
-      Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
+      Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numAllItems);
       return;
     }
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_DELETE_FROM_TRASH, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_RESTORE, numSelectedProjects > 0);
-    Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numProjects);
+    Ode.getInstance().getTopToolbar().updateMenuState(numSelectedProjects, numAllItems);
   }
 
   // If we started a project, then the start button was disabled (to avoid

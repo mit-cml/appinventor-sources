@@ -19,7 +19,7 @@ public class DeleteAction implements Command {
       public void execute() {
         if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
           List<Project> selectedProjects =
-              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects(false);
           if (selectedProjects.size() > 0) {
             // Show one confirmation window for selected projects.
             if (deleteConfirmation(selectedProjects)) {

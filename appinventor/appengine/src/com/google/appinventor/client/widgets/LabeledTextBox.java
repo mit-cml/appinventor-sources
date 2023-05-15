@@ -25,6 +25,7 @@ public class LabeledTextBox extends Composite {
   private String defaultTextBoxColor;
   private String errorMessage = "";
   private Label errorLabel;
+  private Label captionLabel;
   private Validator validator;
 
   /**
@@ -32,16 +33,20 @@ public class LabeledTextBox extends Composite {
    *
    * @param caption  caption for leading label
    */
+  public LabeledTextBox() {
+    this("Placedholder");
+  }
+
   public LabeledTextBox(String caption) {
     HorizontalPanel panel = new HorizontalPanel();
-    Label label = new Label(caption);
-    panel.add(label);
-    panel.setCellVerticalAlignment(label, HasVerticalAlignment.ALIGN_MIDDLE);
+    captionLabel = new Label(caption);
+    panel.add(captionLabel);
+    panel.setCellVerticalAlignment(captionLabel, HasVerticalAlignment.ALIGN_MIDDLE);
     textbox = new TextBox();
     textbox.setStylePrimaryName("ode-LabeledTextBox");
     textbox.setWidth("100%");
     panel.add(textbox);
-    panel.setCellWidth(label, "40%");
+    panel.setCellWidth(captionLabel, "40%");
     panel.setCellVerticalAlignment(textbox, HasVerticalAlignment.ALIGN_MIDDLE);
 
     initWidget(panel);
@@ -84,6 +89,9 @@ public class LabeledTextBox extends Composite {
     setWidth("100%");
   }
 
+  public void setCaption(String caption) {
+    captionLabel.setText(caption);
+  }
   /**
    * Sets the content of the TextBox.
    *

@@ -408,11 +408,6 @@ public class Ode implements EntryPoint {
           bindProjectToolbar.enableStartButton();
           bindProjectToolbar.setProjectTabButtonsVisible(true);
           bindProjectToolbar.setTrashTabButtonsVisible(false);
-
-          if(Ode.getUserNewLayout()) {
-            ModuleController.get().switchToProjectsModule();
-            ModuleController.get().displayModularLayouts();
-          }
         }
       };
     if (bindDesignToolbar.getCurrentView() != DesignToolbar.View.BLOCKS) {
@@ -428,8 +423,7 @@ public class Ode implements EntryPoint {
    */
 
   public void switchToTrash() {
-    ModuleController.get().displayLegacyLayout();
-    Ode.getInstance().getTopToolbar().updateMoveToTrash("Delete From Trash");
+    getInstance().getTopToolbar().updateMoveToTrash("Delete From Trash");
     hideChaff();
     hideTutorials();
     currentView = TRASHCAN;
@@ -444,7 +438,6 @@ public class Ode implements EntryPoint {
    */
 
   public void switchToUserAdminPanel() {
-    ModuleController.get().displayLegacyLayout();
     hideChaff();
     hideTutorials();
     currentView = USERADMIN;
@@ -467,7 +460,6 @@ public class Ode implements EntryPoint {
    * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
    */
   public void switchToDesignView() {
-    ModuleController.get().displayLegacyLayout();
     hideChaff();
     // Only show designer if there is a current editor.
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
@@ -475,13 +467,7 @@ public class Ode implements EntryPoint {
     currentView = DESIGNER;
     getTopToolbar().updateFileMenuButtons(currentView);
     if (currentFileEditor != null) {
-      if (!paletteBox.loaded) {
-        // Replacing code that clears and reloads the palette whenever a project
-        // is loaded. Do we want that? Possibly if we go to designer modules?
-        paletteBox.loadComponents(currentFileEditor.getDropTargetProvider());
-      }
       deckPanel.showWidget(designTabIndex);
-      bindPropertiesBox.show((YaFormEditor) currentFileEditor, true);
     } else if (!editorManager.hasOpenEditor()) {  // is there a project editor pending visibility?
       LOG.warning("No current file editor to show in designer");
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
@@ -496,7 +482,6 @@ public class Ode implements EntryPoint {
    * Switch to the Debugging tab
    */
   public void switchToDebuggingView() {
-    ModuleController.get().displayLegacyLayout();
     hideChaff();
     hideTutorials();
     deckPanel.showWidget(debuggingTabIndex);
@@ -957,9 +942,7 @@ public class Ode implements EntryPoint {
     // Debugging Panel
     debuggingTabIndex = 3;
 
-    //Commenting out for now to gain more space for the blocks editor
-//    RootPanel.get().add(mainPanel);
-    RootPanel.get().add(ModuleController.get().wrapAroundLegacyLayout(mainPanel));
+    RootPanel.get().add(mainPanel);
 
     // Add a handler to the RootPanel to keep track of Google Chrome Pinch Zooming and
     // handle relevant bugs. Chrome maps a Pinch Zoom to a MouseWheelEvent with the

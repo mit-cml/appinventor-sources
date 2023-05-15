@@ -3,7 +3,6 @@
              xmlns:ai="urn:import:com.google.appinventor.client.widgets"
              xmlns:c="urn:import:com.google.appinventor.client.components"
              xmlns:actions="urn:import:com.google.appinventor.client.actions"
-             xmlns:expactions="urn:import:com.google.appinventor.client.explorer.commands"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -27,7 +26,7 @@
                 <actions:ImportTemplateAction />
             </ai:ToolbarItem>
             <ai:ToolbarItem name="Folder" icon="create_new_folder" ui:field="newFolderItem"  align="left" styleName="ode-ProjectListButton bright">
-                <expactions:AddFolderCommand />
+                <actions:NewFolderAction />
             </ai:ToolbarItem>
             <ai:ToolbarItem name="Move" caption='Move' icon='drive_file_move' align="center" styleName="ode-ProjectListButton inline bleft">
                 <actions:MoveProjectsAction />

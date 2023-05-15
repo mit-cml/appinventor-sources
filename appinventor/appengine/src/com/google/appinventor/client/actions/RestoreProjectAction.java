@@ -13,7 +13,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class RestoreProjectAction implements Command {
   @Override
   public void execute() {
-    List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+    List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList()
+                                         .getSelectedProjects(true);
     if (selectedProjects.size() > 0) {
       for (Project project : selectedProjects) {
         project.restoreFromTrash();

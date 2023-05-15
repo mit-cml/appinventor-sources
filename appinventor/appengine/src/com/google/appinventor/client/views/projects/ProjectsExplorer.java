@@ -20,7 +20,7 @@ import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.components.Button;
 import com.google.appinventor.client.components.Dropdown;
 import com.google.appinventor.client.components.DropdownItem;
-import com.google.appinventor.client.explorer.commands.AddFolderCommand;
+import com.google.appinventor.client.wizards.NewFolderWizard;
 import com.google.appinventor.client.wizards.MoveProjectsWizard;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
@@ -161,7 +161,7 @@ public class ProjectsExplorer extends Composite {
       // Refuse to switch if locked (save file happening)
       return;
     }
-    new NewYoungAndroidProjectWizard(null).center();
+    new NewYoungAndroidProjectWizard();
   }
 
   @UiHandler("importProjectButton")
@@ -176,7 +176,7 @@ public class ProjectsExplorer extends Composite {
 
   @UiHandler("newFolderButton")
   void newFolder(ClickEvent e) {
-    new AddFolderCommand().execute();
+    new NewFolderWizard();
   }
 
   @UiHandler("renameButton")
@@ -245,13 +245,7 @@ public class ProjectsExplorer extends Composite {
 
   @UiHandler("moveButton")
   void moveSelectedProjects(ClickEvent e) {
-      new MoveProjectsWizard("Test Title").execute(new MoveProjectsWizard.MoveProjectsCallback() {
-        @Override
-        public void onSuccess(Folder destination) {
-          Ode.getInstance().getFolderManager().moveItemsToFolder(projectsList.getSelectedProjects(), new ArrayList<>(),
-              destination);
-        }
-      });
+      new MoveProjectsWizard();
   }
 
   @UiHandler("restoreButton")
