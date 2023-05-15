@@ -467,13 +467,7 @@ public class Ode implements EntryPoint {
     currentView = DESIGNER;
     getTopToolbar().updateFileMenuButtons(currentView);
     if (currentFileEditor != null) {
-      if (!paletteBox.loaded) {
-        // Replacing code that clears and reloads the palette whenever a project
-        // is loaded. Do we want that? Possibly if we go to designer modules?
-        paletteBox.loadComponents(currentFileEditor.getDropTargetProvider());
-      }
       deckPanel.showWidget(designTabIndex);
-      bindPropertiesBox.show((YaFormEditor) currentFileEditor, true);
     } else if (!editorManager.hasOpenEditor()) {  // is there a project editor pending visibility?
       LOG.warning("No current file editor to show in designer");
       ErrorReporter.reportInfo(MESSAGES.chooseProject());

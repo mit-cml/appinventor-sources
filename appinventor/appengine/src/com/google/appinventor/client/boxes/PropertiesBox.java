@@ -32,7 +32,7 @@ public final class PropertiesBox extends Box {
 
   // Singleton properties box instance
   private static final Logger LOG = Logger.getLogger(PropertiesBox.class.getName());
-  private static final PropertiesBox INSTANCE = new PropertiesBox();
+  private static PropertiesBox INSTANCE = new PropertiesBox();
   private EditableProperties selectedProperties = null;
   private final PropertiesPanel designProperties = new PropertiesPanel();
 
@@ -56,6 +56,10 @@ public final class PropertiesBox extends Box {
         false,  // startMinimized
         false,  // bodyPadding
         false); // highlightCaption
+
+    // UIBinder calls the private constructor, presumably through reflection, which
+    // disrupts the singleton pattern. This might not be the best way to deal with it.
+    INSTANCE = this;
   }
 
   /*
