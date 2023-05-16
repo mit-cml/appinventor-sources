@@ -16,8 +16,11 @@ public class ToolbarItem {
   private Command command;
   private String align;
   private boolean visible = true;
+  private boolean enabled = true;
   private Icon icon = null;
   private String styleName = null;
+
+  private String tooltip = "";
 
 
   @SuppressWarnings("unused")  // Used by UiBinder
@@ -48,7 +51,6 @@ public class ToolbarItem {
   public Command getCommand() {
     return command;
   }
-
   public Icon getIcon() { return icon; }
 
   public void setIcon(String iconName) {
@@ -84,11 +86,24 @@ public class ToolbarItem {
     this.align = align;
   }
 
+  public boolean getEnabled() { return enabled; }
+  public void setEnabled(boolean p_enabled) {
+    this.enabled = p_enabled;
+  }
+
   public void setVisible(boolean visible) {
     this.visible = visible;
   }
 
   public boolean isVisible() {
     return visible;
+  }
+
+  public void setTooltip (String text) {
+    this.tooltip = text;
+  }
+
+  public String getTooltip () {
+    return this.tooltip;
   }
 }
