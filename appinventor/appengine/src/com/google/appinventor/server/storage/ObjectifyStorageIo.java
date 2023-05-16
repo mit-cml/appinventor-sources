@@ -575,7 +575,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         if (isTrue(addedFile.isGCS)) {  // Do something
           if (addedFile.gcsName != null) {
             try {
-              gcsService.delete(new GcsFilename(getGcsBucketToUse(addedFile.gcsName), addedFile.gcsName));
+              gcsService.delete(new GcsFilename(getGcsBucketToUse(addedFile.role), addedFile.gcsName));
             } catch (IOException ee) {
               LOG.log(Level.WARNING, "Unable to delete " + addedFile.gcsName +
                 " from GCS while aborting project creation.", ee);
@@ -608,7 +608,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       file.isGCS = true;
       file.gcsName = makeGCSfileName(fileName, projectKey.getId());
       GcsOutputChannel outputChannel =
-        gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(file.gcsName), file.gcsName), GcsFileOptions.getDefaultInstance());
+        gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(file.role), file.gcsName), GcsFileOptions.getDefaultInstance());
       outputChannel.write(ByteBuffer.wrap(content));
       outputChannel.close();
     } else {
@@ -660,8 +660,10 @@ public class ObjectifyStorageIo implements  StorageIo {
       // Now delete the gcs files
       for (String gcsName: gcsPaths) {
         try {
-          gcsService.delete(new GcsFilename(getGcsBucketToUse(gcsName), gcsName));
+          gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), gcsName));
         } catch (IOException e) {
+          // Note: this warning will happen if we attempt to remove an APK file, because we may be looking
+          // in the wrong bucket. But that's OK. Things in the apk bucket will go away on their own.
           LOG.log(Level.WARNING, "Unable to delete " + gcsName + " from GCS while deleting project", e);
         }
       }
@@ -1414,7 +1416,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             fd.gcsName = makeGCSfileName(fileName, projectId);
             try {
               GcsOutputChannel outputChannel =
-                  gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(fd.gcsName), fd.gcsName), GcsFileOptions.getDefaultInstance());
+                  gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(fd.role), fd.gcsName), GcsFileOptions.getDefaultInstance());
               outputChannel.write(ByteBuffer.wrap(content));
               outputChannel.close();
             } catch (IOException e) {
@@ -1428,7 +1430,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           } else {
             if (isTrue(fd.isGCS)) {     // Was a GCS file, must have gotten smaller
               try {             // and is now stored in the data store
-                gcsService.delete(new GcsFilename(getGcsBucketToUse(fd.gcsName), fd.gcsName));
+                gcsService.delete(new GcsFilename(getGcsBucketToUse(fd.role), fd.gcsName));
               } catch (IOException e) {
                 throw CrashReport.createAndLogError(LOG, null,
                   collectProjectErrorInfo(userId, projectId, fileName), e);
@@ -1449,7 +1451,7 @@ public class ObjectifyStorageIo implements  StorageIo {
               try {
                 String gcsName = makeGCSfileName(fileName + "." + formattedTime() + ".backup", projectId);
                 GcsOutputChannel outputChannel =
-                    gcsService.createOrReplace((new GcsFilename(getGcsBucketToUse(gcsName), gcsName)), GcsFileOptions.getDefaultInstance());
+                    gcsService.createOrReplace((new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), gcsName)), GcsFileOptions.getDefaultInstance());
                 outputChannel.write(ByteBuffer.wrap(content));
                 outputChannel.close();
                 fd.lastBackup = System.currentTimeMillis();
@@ -1551,8 +1553,10 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     if (oldgcsName.t != null) {
       try {
-        gcsService.delete(new GcsFilename(getGcsBucketToUse(oldgcsName.t), oldgcsName.t));
+        gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), oldgcsName.t));
       } catch (IOException e) {
+        // This may get logged if we attempt to delete an APK file. But we can ignore
+        // this case because APK files will be deleted on their own
         LOG.log(Level.WARNING, "Unable to delete " + oldgcsName + " from GCS.", e);
       }
     }
@@ -1631,7 +1635,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           boolean npfHappened = false;
           boolean recovered = false;
           for (count = 0; count < 5; count++) {
-            GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(fileData.gcsName), fileData.gcsName);
+            GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(fileData.role), fileData.gcsName);
             int bytesRead = 0;
             int fileSize = 0;
             ByteBuffer resultBuffer;
@@ -1849,7 +1853,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             boolean npfHappened = false;
             boolean recovered = false;
             for (count = 0; count < 5; count++) {
-              GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(fd.gcsName), fd.gcsName);
+              GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(fd.role), fd.gcsName);
               int bytesRead = 0;
               int fileSize = 0;
               ByteBuffer resultBuffer;
@@ -2381,7 +2385,8 @@ public class ObjectifyStorageIo implements  StorageIo {
     if (!fileName.startsWith("__TEMP__")) {
       throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
     }
-    GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(fileName), fileName);
+    // Use FileData.RoleEnum.TARGET because these temp files never live very long
+    GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), fileName);
     int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
     ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
     GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
@@ -2401,7 +2406,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     if (!fileName.startsWith("__TEMP__")) {
       throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
     }
-    gcsService.delete(new GcsFilename(getGcsBucketToUse(fileName), fileName));
+    gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), fileName));
   }
 
   // ********* METHODS BELOW ARE ONLY FOR TESTING *********
@@ -2440,7 +2445,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   @VisibleForTesting
   void setGcsFileContent(String gcsPath, byte[] content) throws IOException {
     GcsOutputChannel outputChannel = gcsService.createOrReplace(
-      new GcsFilename(getGcsBucketToUse(gcsPath), gcsPath),
+      new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), gcsPath),
         GcsFileOptions.getDefaultInstance());
     outputChannel.write(ByteBuffer.wrap(content));
     outputChannel.close();
@@ -2757,8 +2762,8 @@ public class ObjectifyStorageIo implements  StorageIo {
    * APK files go in a bucket with a short TTL, because they are really
    * temporary files.
    */
-  private static final String getGcsBucketToUse(String fileName) {
-    if (fileName.endsWith(".apk")) {
+  private static final String getGcsBucketToUse(FileData.RoleEnum role) {
+    if (role == FileData.RoleEnum.TARGET) {
       return APK_BUCKET_NAME;
     } else {
       return GCS_BUCKET_NAME;
