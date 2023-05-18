@@ -244,6 +244,7 @@ div.StatusPanel {
   border-color: #444444;
   box-shadow: 1px 1px;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .ode-ProjectListButton .html-face {
@@ -276,11 +277,6 @@ div.StatusPanel {
 .bcenter + .bcenter {
   border-left-width: 1px;
 }
-
-.none {
-  border-radius: 4px;
-}
-
 
 .danger {
   background-color: #FF7D7D;
@@ -352,7 +348,9 @@ div.StatusPanel {
   color: #000000;
   width: 200px;
   height: 30px;
-  align-self: center;
+  align-items: center;
+  display: inline-flex;
+
 }
 
 .ode-ProjectTable {
@@ -470,7 +468,7 @@ div.StatusPanel {
 
 .ode-ComponentRowHighlighted {
   border-bottom: 1px solid #ddd;
-  background-color: #fff6c3;
+  background-color: rgba(167, 36, 122, 0.21);
   border-collapse: collapse;
 }
 
@@ -562,6 +560,10 @@ div.StatusPanel {
   margin-left: 4px;
   padding-top: 5px
 ;
+}
+
+.right-spacer {
+  margin-right: 10px;
 }
 
 .ode-TopPanelAccount a {
@@ -849,10 +851,16 @@ div.StatusPanel {
   color: #555;
   cursor: default;
   display: block !important;
+
+  display: flex !important;
+  align-items: center;
+  height: 30px;
+  cursor: pointer;
 }
 
 .gwt-Tree .gwt-TreeItem-selected {
   background: none;
+  background-color: rgba(167, 36, 122, 0.21);
 }
 
 .gwt-Tree .gwt-TreeItem span {
@@ -900,6 +908,7 @@ div.StatusPanel {
   white-space: nowrap;
   background-color: #A5CF47;
   border: 1px solid #444444;
+  border-radius: 4px;
 }
 
 .ode-TextButton-up-disabled,
@@ -1025,7 +1034,7 @@ div.StatusPanel {
   background-color: white; /* needed on Firefox */
   height: 15px;
   cursor: pointer;
-  padding: 13px 5px 5px 13px;
+  padding: 13px 5px 5px 5px;
 }
 
 .ode-SimplePaletteItem-Selected {
@@ -1687,13 +1696,12 @@ path.ode-SimpleMockMapFeature-selected {
 /* End of NoProjectsDialogBox. */
 
 .ode-DialogBox {
-  background-color: white;
-  border-left: 4px solid #8fc202;
-  border-right: 4px solid #8fc202;
-  border-bottom: 4px solid #8fc202;
+  border-radius: 10px;
   z-index: 1000;
-  min-width: 340px;
-  min-height: 40px;
+  background-color: #FFF;
+  width: 400px;
+  box-shadow: 4px 4px 20px 7px rgba(0, 0, 0, 0.1);
+  overflow: hidden !important;
 }
 
 .DialogBox-message {}
@@ -1707,9 +1715,8 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .gwt-Label {
-  padding-left: 10px;
-  font-size: 12px;
-  color: #555;
+  font-size: 14px;
+  white-space: nowrap
 }
 
 .ode-TreeLabel {
@@ -1717,10 +1724,11 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .gwt-Tree {
-  border: thin solid #CCCCCC;
-  border-radius: 3px;
-  font-size: 12px;
-  margin-left: 10px;
+  margin: 0 20px 20px 20px;
+  border: 1px solid #DDD;
+  border-radius: 5px;
+  height: 200px;
+  overflow: scroll;
 }
 
 .ode-DialogBox .gwt-CheckBox input[type="checkbox"] {
@@ -1729,26 +1737,26 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .dialogTop {
-  background-color: #8fc202;
+  /*background-color: rgba(150, 150, 150, 0.1);*/
 }
 
 .ode-DialogBox .Caption {
-  background-color: #8fc202;
-  color: white;
-  font-weight: bold;
-  font-size: 13px;
-  padding: 5px 10px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.065);
-
+  padding: 10px 20px;
+  text-align: center;
+  border-bottom: 1px solid #DDD;
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-family: 'Poppins';
+  font-weight: 500;
 }
 
 .ode-DialogBox .dialogContent {
-  padding: 5px 10px;
+  padding: 5px 20px;
   color: #555;
 }
 
 .ode-DialogBox .dialogContent td {
-  padding: 2px 10px;
+  padding: 2px 35px;
   font-size: 12px;
   color: #555;
 }
@@ -1769,6 +1777,7 @@ path.ode-SimpleMockMapFeature-selected {
   display: inline-flex;
   justify-content: space-around ;
   width: 95%;
+  padding: 10px;
 }
 
 /* AI2 Extensions Styles */
@@ -1994,6 +2003,7 @@ input[type="button"],
 input[type="radio"],
 input[type="checkbox"] {
   width: auto;
+  margin: auto;
 }
 
 select,

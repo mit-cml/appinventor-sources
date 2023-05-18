@@ -998,7 +998,7 @@ a, a:visited, a:hover {
   cursor: pointer;
 }
 .gwt-Tree .gwt-TreeItem-selected {
-  background: #93c2f1 url(../images/hborder.png) repeat-x 0px -1463px;
+  background: rgba(167, 36, 122, 0.21);
 }
 .gwt-TreeItem .gwt-RadioButton input,
 .gwt-TreeItem .gwt-CheckBox input {
