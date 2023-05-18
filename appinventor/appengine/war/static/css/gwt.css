@@ -998,7 +998,6 @@ a, a:visited, a:hover {
   cursor: pointer;
 }
 .gwt-Tree .gwt-TreeItem-selected {
-  background: rgba(167, 36, 122, 0.21);
 }
 .gwt-TreeItem .gwt-RadioButton input,
 .gwt-TreeItem .gwt-CheckBox input {

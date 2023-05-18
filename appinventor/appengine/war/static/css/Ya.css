@@ -870,7 +870,7 @@ div.StatusPanel {
 
 .gwt-Tree .gwt-TreeItem span:hover,
 .gwt-Tree .gwt-TreeItem-selected span {
-  background-color: rgba(167, 36, 122, 0.21);
+  color: rgba(167, 36, 122, 0.21);
 }
 
 /* Young Android Toolbar */
@@ -1471,27 +1471,37 @@ path.ode-SimpleMockMapFeature-selected {
 /* Component Help */
 
 .ode-ComponentHelpPopup {
-  background-color: white;
-  border-left: 4px solid #8fc202;
-  border-right: 4px solid #8fc202;
-  border-bottom: 4px solid #8fc202;
-  width: 20%;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.065);
+  border-radius: 10px;
   z-index: 1000;
+  background-color: #FFF;
+  box-shadow: 4px 4px 20px 7px rgba(0, 0, 0, 0.1);
+  overflow: hidden !important;
+  /*border-left: 4px solid #8fc202;*/
+  /*border-right: 4px solid #8fc202;*/
+  /*border-bottom: 4px solid #8fc202;*/
+  width: 20%;
 }
 
 .ode-ComponentHelpPopup-TitleBar {
-  background-color: #8fc202;
-  color: white;
-  font-weight: bold;
-  font-size: 13px;
-  padding: 5px 10px;
+  padding: 10px 20px;
+  text-align: center;
+  border-bottom: 1px solid #DDD;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-family: 'Poppins';
+  font-weight: 500;
+
+  /*background-color: #8fc202;*/
+  /*color: white;*/
+  /*font-weight: bold;*/
+  /*font-size: 13px;*/
+  /*padding: 5px 10px;*/
 }
 
 .ode-ComponentHelpPopup-Body {
   padding: 10px;
   color: #555;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .ode-ComponentHelpPopup-Link {
