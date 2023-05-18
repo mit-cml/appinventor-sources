@@ -17,6 +17,14 @@
     In-browser blocks editor for App Inventor based on Blockly
   </description>
 
+  <property name="release" value="false"/>
+
+  <condition property="blockly.config"
+             value="ploverConfig.js"
+             else="ploverConfig-dev.js">
+    <equals arg1="${release}" arg2="true"/>
+  </condition>
+
   <target name="all"
           depends="BlocklyTranslationGenerator">
   </target>
@@ -85,7 +93,9 @@
 			</classpath>
 		</ai.javac>
 		<java failonerror="true" classname="msg.BlocklyTranslationGenerator">
-			<arg line="${ai.i18n.src.dir} ${lib.dir}/blockly/msg/json ${BlocklyTranslations.dir}" />
+                      <arg value="${ai.i18n.src.dir}"/>
+                      <arg value="${lib.dir}/blockly/msg/json"/>
+                      <arg value="${BlocklyTranslations.dir}"/>
 			<classpath>
 				<pathelement location="${BlocklyTranslator-class.dir}"/>
 				<pathelement location="${gwt.sdk}/gwt-dev.jar"/>
@@ -99,8 +109,7 @@
             <srcfiles dir="src/" includes="**/*.js" />
             <srcfiles dir="${blockly.src.dir}/" includes="core/**/*.js" />
             <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
-            <srcfiles dir="${basedir}" includes="ploverConfig.js" />
-            <!-- <mapper type="merge" to="${public.build.dir}/blockly-all.js" /> -->
+            <srcfiles dir="${basedir}" includes="${blockly.config}" />
           </uptodate>
         </target>
 
@@ -109,7 +118,7 @@
 		      depends="init,CheckBlocklyCompile"
                       unless="BlocklyCompile.uptodate">
 		<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
-			<arg line="build ploverConfig.js" />
+			<arg line="build ${blockly.config}" />
 		</java>
 	</target>
 

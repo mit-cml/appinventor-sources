@@ -1,14 +1,12 @@
 package com.google.appinventor.buildserver.tasks;
 
-import com.google.appinventor.buildserver.*;
+import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.Compiler;
+import com.google.appinventor.buildserver.CompilerContext;
+import com.google.appinventor.buildserver.ExecutorUtils;
+import com.google.appinventor.buildserver.TaskResult;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.json.JSONTokener;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +15,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONTokener;
 
 /**
  * "static"

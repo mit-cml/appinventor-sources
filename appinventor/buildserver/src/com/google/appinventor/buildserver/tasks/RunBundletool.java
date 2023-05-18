@@ -1,22 +1,73 @@
 package com.google.appinventor.buildserver.tasks;
 
-import com.google.appinventor.buildserver.*;
+import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.CompilerContext;
+import com.google.appinventor.buildserver.Execution;
+import com.google.appinventor.buildserver.ExecutorUtils;
+import com.google.appinventor.buildserver.TaskResult;
+
+import com.google.appinventor.buildserver.util.AabPaths;
+import com.google.appinventor.buildserver.util.AabZipper;
 import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 @BuildType(aab = true)
 public class RunBundletool implements Task {
   private AabPaths aab;
+
+  // These regexes were taken from a project compiled via Android Studio
+  private static final String[] NONCOMPRESSIBLE_EXTS = new String[] {
+      "**.3[gG]2",
+      "**.3[gG][pP]",
+      "**.3[gG][pP][pP]",
+      "**.3[gG][pP][pP]2",
+      "**.[aA][aA][cC]",
+      "**.[aA][mM][rR]",
+      "**.[aA][wW][bB]",
+      "**.[gG][iI][fF]",
+      "**.[iI][mM][yY]",
+      "**.[jJ][eE][tT]",
+      "**.[jJ][pP][eE][gG]",
+      "**.[jJ][pP][gG]",
+      "**.[mM]4[aA]",
+      "**.[mM]4[vV]",
+      "**.[mM][iI][dD]",
+      "**.[mM][iI][dD][iI]",
+      "**.[mM][kK][vV]",
+      "**.[mM][pP]2",
+      "**.[mM][pP]3",
+      "**.[mM][pP]4",
+      "**.[mM][pP][eE][gG]",
+      "**.[mM][pP][gG]",
+      "**.[oO][gG][gG]",
+      "**.[oO][pP][uU][sS]",
+      "**.[pP][nN][gG]",
+      "**.[rR][tT][tT][tT][lL]",
+      "**.[sS][mM][fF]",
+      "**.[tT][fF][lL][iI][tT][eE]",
+      "**.[wW][aA][vV]",
+      "**.[wW][eE][bB][mM]",
+      "**.[wW][eE][bB][pP]",
+      "**.[wW][mM][aA]",
+      "**.[wW][mM][vV]",
+      "**.[xX][mM][fF]"
+  };
 
   @Override
   public TaskResult execute(CompilerContext context) {
@@ -128,6 +179,27 @@ public class RunBundletool implements Task {
   }
 
   private boolean bundletool(CompilerContext context) {
+    // Create the bundle configuration
+    File configFile;
+    try {
+      configFile = File.createTempFile("BundleConfig", ".pb.json");
+    } catch (IOException e) {
+      throw new RuntimeException("Unable to generate bundle config", e);
+    }
+    try (FileOutputStream out = new FileOutputStream(configFile)) {
+      JSONObject config = new JSONObject();
+      JSONObject compression = new JSONObject();
+      JSONArray uncompressedGlob = new JSONArray();
+      config.put("compression", compression);
+      compression.put("uncompressedGlob", uncompressedGlob);
+      for (String ext : NONCOMPRESSIBLE_EXTS) {
+        uncompressedGlob.put(ext);
+      }
+      out.write(config.toString().getBytes(StandardCharsets.UTF_8));
+    } catch (JSONException | IOException e) {
+      throw new RuntimeException("Unable to generate AAB", e);
+    }
+
     aab.setBASE(new File(context.getProject().getBuildDirectory(), "base.zip"));
 
     if (!AabZipper.zipBundle(aab.getROOT(), aab.getBASE(), aab.getROOT().getName() + File.separator)) {
@@ -148,6 +220,7 @@ public class RunBundletool implements Task {
     bundletoolCommandLine.add(bundletool);
     bundletoolCommandLine.add("build-bundle");
     bundletoolCommandLine.add("--modules=" + aab.getBASE());
+    bundletoolCommandLine.add("--config=" + configFile.getAbsolutePath());
     bundletoolCommandLine.add("--output=" + context.getPaths().getDeployFile().getAbsolutePath());
     String[] bundletoolBuildCommandLine = bundletoolCommandLine.toArray(new String[0]);
 
@@ -177,139 +250,5 @@ public class RunBundletool implements Task {
     String[] jarsignerSignCommandLine = jarsignerCommandLine.toArray(new String[0]);
 
     return Execution.execute(null, jarsignerSignCommandLine, context.getReporter().getSystemOut(), System.err);
-  }
-}
-
-
-class AabPaths {
-  private File ROOT = null;
-  private File BASE = null;
-  private File protoApk = null;
-
-  private File assetsDir = null;
-  private File dexDir = null;
-  private File libDir = null;
-  private File manifestDir = null;
-  private File resDir = null;
-
-  public File getROOT() {
-    return ROOT;
-  }
-
-  public void setROOT(File ROOT) {
-    this.ROOT = ROOT;
-  }
-
-  public File getBASE() {
-    return BASE;
-  }
-
-  public void setBASE(File BASE) {
-    this.BASE = BASE;
-  }
-
-  public File getProtoApk() {
-    return protoApk;
-  }
-
-  public void setProtoApk(File protoApk) {
-    this.protoApk = protoApk;
-  }
-
-  public File getAssetsDir() {
-    return assetsDir;
-  }
-
-  public void setAssetsDir(File assetsDir) {
-    this.assetsDir = assetsDir;
-  }
-
-  public File getDexDir() {
-    return dexDir;
-  }
-
-  public void setDexDir(File dexDir) {
-    this.dexDir = dexDir;
-  }
-
-  public File getLibDir() {
-    return libDir;
-  }
-
-  public void setLibDir(File libDir) {
-    this.libDir = libDir;
-  }
-
-  public File getManifestDir() {
-    return manifestDir;
-  }
-
-  public void setManifestDir(File manifestDir) {
-    this.manifestDir = manifestDir;
-  }
-
-  public File getResDir() {
-    return resDir;
-  }
-
-  public void setResDir(File resDir) {
-    this.resDir = resDir;
-  }
-}
-
-class AabZipper {
-  public static boolean zipBundle(File src, File dest, String root) {
-    try {
-      FileOutputStream fos = new FileOutputStream(dest);
-      ZipOutputStream zipOut = new ZipOutputStream(fos);
-
-      zipFile(src, src.getName(), zipOut, root);
-      zipOut.close();
-      fos.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-      return false;
-    }
-    return true;
-  }
-
-  private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, String root) throws IOException {
-    if (fileToZip.isHidden()) {
-      return;
-    }
-    String zipFileName = fileName;
-    if (zipFileName.startsWith(root)) {
-      zipFileName = zipFileName.substring(root.length());
-    }
-
-    boolean windows = !File.separator.equals("/");
-    if (windows) {
-      zipFileName = zipFileName.replace(File.separator, "/");
-    }
-
-    if (fileToZip.isDirectory()) {
-      if (zipFileName.endsWith("/")) {
-        zipOut.putNextEntry(new ZipEntry(zipFileName));
-      } else {
-        zipOut.putNextEntry(new ZipEntry(zipFileName + "/"));
-      }
-      zipOut.closeEntry();
-      File[] children = fileToZip.listFiles();
-      assert children != null;
-      for (File childFile : children) {
-        zipFile(childFile, fileName + File.separator + childFile.getName(), zipOut, root);
-      }
-      return;
-    }
-
-    FileInputStream fis = new FileInputStream(fileToZip);
-    ZipEntry zipEntry = new ZipEntry(zipFileName);
-    zipOut.putNextEntry(zipEntry);
-    byte[] bytes = new byte[1024];
-    int length;
-    while ((length = fis.read(bytes)) >= 0) {
-      zipOut.write(bytes, 0, length);
-    }
-    fis.close();
   }
 }

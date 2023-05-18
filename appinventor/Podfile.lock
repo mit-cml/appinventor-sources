@@ -1,0 +1,97 @@
+PODS:
+  - Alamofire (4.8.1)
+  - Base58Swift (2.1.10):
+    - BigInt (~> 5.0.0)
+  - BigInt (5.0.0)
+  - CocoaAsyncSocket (7.6.3)
+  - GCDWebServer (3.4.2):
+    - GCDWebServer/Core (= 3.4.2)
+  - GCDWebServer/Core (3.4.2)
+  - geos (3.7.1)
+  - GEOSwift (3.1.0):
+    - geos (= 3.7.1)
+  - KTVJSONWebToken (2.1.0)
+  - PSSRedisClient (0.1.14):
+    - CocoaAsyncSocket (>= 7.6.1)
+  - SQLite.swift (0.11.5):
+    - SQLite.swift/standard (= 0.11.5)
+  - SQLite.swift/standard (0.11.5)
+  - SwiftProtobuf (1.20.3)
+  - SwiftSVG (2.2.0)
+  - Toast-Swift (4.0.1)
+  - Zip (2.1.1)
+  - ZXingObjC (3.6.2):
+    - ZXingObjC/All (= 3.6.2)
+  - ZXingObjC/All (3.6.2)
+
+DEPENDENCIES:
+  - Alamofire (~> 4.8)
+  - Base58Swift (~> 2.1.0)
+  - GCDWebServer (~> 3.4.1)
+  - GEOSwift (~> 3.1.0)
+  - KTVJSONWebToken (from `https://github.com/kreactive/JSONWebToken.git`, commit `d2e37fa`)
+  - "PSSRedisClient (from `git@github.com:mit-cml/PSSRedisClient.git`, commit `344302b`)"
+  - SQLite.swift (~> 0.11.5)
+  - SwiftProtobuf (~> 1.0)
+  - SwiftSVG (~> 2.0)
+  - Toast-Swift (~> 4.0.0)
+  - Zip (~> 2.1)
+  - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC.git`, commit `47704a8`)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - Base58Swift
+    - BigInt
+    - CocoaAsyncSocket
+    - GCDWebServer
+    - geos
+    - GEOSwift
+    - SQLite.swift
+    - SwiftProtobuf
+    - SwiftSVG
+    - Toast-Swift
+    - Zip
+
+EXTERNAL SOURCES:
+  KTVJSONWebToken:
+    :commit: d2e37fa
+    :git: https://github.com/kreactive/JSONWebToken.git
+  PSSRedisClient:
+    :commit: 344302b
+    :git: "git@github.com:mit-cml/PSSRedisClient.git"
+  ZXingObjC:
+    :commit: 47704a8
+    :git: https://github.com/TheLevelUp/ZXingObjC.git
+
+CHECKOUT OPTIONS:
+  KTVJSONWebToken:
+    :commit: d2e37fa
+    :git: https://github.com/kreactive/JSONWebToken.git
+  PSSRedisClient:
+    :commit: 344302b
+    :git: "git@github.com:mit-cml/PSSRedisClient.git"
+  ZXingObjC:
+    :commit: 47704a8
+    :git: https://github.com/TheLevelUp/ZXingObjC.git
+
+SPEC CHECKSUMS:
+  Alamofire: 16ce2c353fb72865124ddae8a57c5942388f4f11
+  Base58Swift: 53d551f0b33d9478fa63b3445e453a772d6b31a7
+  BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
+  CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
+  GCDWebServer: 8d67ee9f634b4bb91eb4b8aee440318a5fc6debd
+  geos: 4f86329dc270f513bc220c77d9079aef38c5960d
+  GEOSwift: 663f79f312f61dbc50ea7d233b8d04642f9aa1fb
+  KTVJSONWebToken: c3cc06e26876d63c62a5c40c5e89939899de48cf
+  PSSRedisClient: 1b8e9d807999f0ee3d1f09e5b80da4367ba41550
+  SQLite.swift: 6e5356850bb1791459f8c16d6ee9195b28714a2e
+  SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
+  SwiftSVG: 19bc4e434dcf236ece45ddf75f5ee1d3ef8061e6
+  Toast-Swift: e42a638589a2f95036b4bb7626cfbdde7daf0393
+  Zip: 414f59909701fda9a84ab774ebe0f5449b1082cc
+  ZXingObjC: ec0306e7c8dac717f653e165f1c4fd0e69fde99f
+
+PODFILE CHECKSUM: 861ff4c17bf6c095f34cfce17417044abe9edf37
+
+COCOAPODS: 1.11.3

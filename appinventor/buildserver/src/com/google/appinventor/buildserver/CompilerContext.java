@@ -9,6 +9,7 @@ package com.google.appinventor.buildserver;
 import com.google.appinventor.buildserver.context.ComponentInfo;
 import com.google.appinventor.buildserver.context.Resources;
 import com.google.appinventor.buildserver.context.Paths;
+import com.google.appinventor.buildserver.stats.StatReporter;
 import org.codehaus.jettison.json.JSONArray;
 
 import java.util.HashMap;
@@ -20,7 +21,13 @@ public class CompilerContext {
   private String ext;
   private Set<String> compTypes;
   private Map<String, Set<String>> compBlocks;
+  /**
+   * Maps Screen names to their orientation values to populate the
+   * android:screenOrientation attribution in the &lt;activity&gt; element.
+   */
+  private Map<String, String> formOrientations;
   private Reporter reporter;
+  private StatReporter statReporter;
   private boolean isForCompanion;
   private boolean isForEmulator;
   private boolean includeDangerousPermissions;
@@ -31,6 +38,7 @@ public class CompilerContext {
 
   private JSONArray simpleCompsBuildInfo;
   private JSONArray extCompsBuildInfo;
+  private JSONArray buildInfo;
   private Set<String> simpleCompTypes;  // types needed by the project
   private Set<String> extCompTypes; // types needed by the project
 
@@ -45,7 +53,9 @@ public class CompilerContext {
     private final String ext;
     private Set<String> compTypes;
     private Map<String, Set<String>> compBlocks;
+    private Map<String, String> formOrientations;
     private Reporter reporter;
+    private StatReporter statReporter;
     private boolean isForCompanion = false;
     private boolean isForEmulator = false;
     private boolean includeDangerousPermissions = false;
@@ -69,8 +79,18 @@ public class CompilerContext {
       return this;
     }
 
+    public Builder withFormOrientations(Map<String, String> formOrientations) {
+      this.formOrientations = formOrientations;
+      return this;
+    }
+
     public Builder withReporter(Reporter reporter) {
       this.reporter = reporter;
+      return this;
+    }
+
+    public Builder withStatReporter(StatReporter statReporter) {
+      this.statReporter = statReporter;
       return this;
     }
 
@@ -131,7 +151,9 @@ public class CompilerContext {
       context.ext = ext;
       context.compTypes = compTypes;
       context.compBlocks = compBlocks;
+      context.formOrientations = formOrientations;
       context.reporter = reporter;
+      context.statReporter = statReporter;
       context.isForCompanion = isForCompanion;
       context.isForEmulator = isForEmulator;
       context.includeDangerousPermissions = includeDangerousPermissions;
@@ -183,8 +205,16 @@ public class CompilerContext {
     return compBlocks;
   }
 
+  public Map<String, String> getFormOrientations() {
+    return formOrientations;
+  }
+
   public Reporter getReporter() {
     return reporter;
+  }
+
+  public StatReporter getStatReporter() {
+    return statReporter;
   }
 
   public boolean isForCompanion() {
@@ -213,6 +243,14 @@ public class CompilerContext {
 
   public String getOutputFileName() {
     return outputFileName;
+  }
+
+  public JSONArray getBuildInfo() {
+    return buildInfo;
+  }
+
+  public void setBuildInfo(JSONArray buildInfo) {
+    this.buildInfo = buildInfo;
   }
 
   public JSONArray getSimpleCompsBuildInfo() {
@@ -265,6 +303,10 @@ public class CompilerContext {
 
   public Map<String, String> getExtTypePathCache() {
     return this.extTypePathCache;
+  }
+
+  public boolean usesLegacyFileAccess() {
+    return "Legacy".equals(project.getDefaultFileScope());
   }
 
   @Override

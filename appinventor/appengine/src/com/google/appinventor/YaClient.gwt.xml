@@ -31,6 +31,7 @@
   <inherits name="com.google.appinventor.common.CommonVersion" />
   <inherits name="com.google.common.annotations.Annotations" />
   <inherits name="com.google.gwt.query.Query" />
+  <inherits name="org.pepstock.charba.Charba"/>
   <inherits name="com.google.gwt.xml.XML" />
 
   <!-- servlets -->
@@ -147,8 +148,12 @@
   <extend-property name="locale" values="pl"/>
   <!-- Lithuanian -->
   <extend-property name="locale" values="lt"/>
+  <!-- Turkish -->
+  <extend-property name="locale" values="tr"/>
+  <!-- Armenian -->
+  <extend-property name="locale" values="hy"/>
+  <!-- Catalan -->
+  <extend-property name="locale" values="ca"/>
 
   <set-property-fallback name="locale" value="en"/>
-  <collapse-all-properties/>
-
 </module>

@@ -74,6 +74,7 @@ body {
   background-color: white;
 }
 
+.ode-ContextMenuItem-Red,
 .ode-ContextMenuItem,
 .ode-CurrentColor {
   color: #555;
@@ -85,6 +86,18 @@ body {
 }
 
 .ode-ContextMenuItem {
+  min-width: 50px;
+  padding: 4px 12px;
+  -o-transition:color .1s ease-out, background .1s ease-in;
+  -ms-transition:color .1s ease-out, background .1s ease-in;
+  -moz-transition:color .1s ease-out, background .1s ease-in;
+  -webkit-transition:color .1s ease-out, background .1s ease-in;
+  /* ...and now override with proper CSS property */
+  transition:color .1s ease-out, background .1s ease-in;
+}
+
+.ode-ContextMenuItem-Red {
+  color: #ff0000;
   min-width: 50px;
   padding: 4px 12px;
   -o-transition:color .1s ease-out, background .1s ease-in;
@@ -111,6 +124,11 @@ body {
 
 .ode-ContextMenuItem-selected {
   color: #ffffff;
+  background: #99CC00;
+}
+
+.ode-ContextMenuItem-Red-selected {
+  color: #ff0000;
   background: #99CC00;
 }
 
@@ -949,11 +967,11 @@ select.ode-PropertyEditor[disabled] {
 
 /* ==== start: skins for Android */
 .ode-SimpleMockFormPhoneLandscape {
-    background: url(../images/phoneLandscape.png);
-    background-repeat: no-repeat;
-    background-position: right top;
-    background-size: 100% 100%;
-    padding: 11px 43px 7px 48px;
+  background: url(../images/phoneLandscape.png);
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: 100% 100%;
+  padding: 11px 43px 7px 48px;
 }
 
 .ode-SimpleMockFormPhonePortrait {
@@ -965,11 +983,11 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockFormPhoneLandscapeTablet {
-    background: url(../images/phoneLandscapeTablet.png);
-    background-repeat: no-repeat;
-    background-position: right top;
-    background-size: 100% 100%;
-    padding: 15px 56px 12px 64px;;
+  background: url(../images/phoneLandscapeTablet.png);
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: 100% 100%;
+  padding: 15px 56px 12px 64px;;
 }
 .ode-SimpleMockFormPhonePortraitTablet {
   background: url(../images/phonePortraitTablet.png);
@@ -1003,6 +1021,7 @@ select.ode-PropertyEditor[disabled] {
   background-color: dimgray;
   color: white;
   font-size: 90%;
+  position: relative;
   border-bottom: 1px solid lightgray;
 }
 
@@ -1010,10 +1029,7 @@ select.ode-PropertyEditor[disabled] {
   background-color: #a5cf47;
   color: white;
   font-size: 20px;
-}
-
-.ode-SimpleMockFormPhoneBar {
-  background-color: #000000;
+  position: relative;
 }
 
 .ode-SimpleMockFormTitle {
@@ -1148,16 +1164,10 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-SimpleMockButton {
   padding: 4px 8px;
-  text-shadow: none;
-  border: 0;
-  border-radius: 2px;
   background-color: #d6d7d7;
+  border-radius: 0px;
+  border-bottom: 2px #b9b9b9 solid;
   color: rgba(0, 0, 0, 0.87);
-}
-
-.ode-SimpleMockForm-Dark .ode-SimpleMockButton {
-  background-color: #5a595b;
-  color: #fff;
 }
 
 /* class for the ListView Mock component */
@@ -1729,6 +1739,7 @@ input[type="checkbox"]:focus {
   outline: thin dotted #333;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
+
 }
 
 .uneditable-input,
@@ -1848,7 +1859,6 @@ textarea::-webkit-input-placeholder {
 .ode-UserProfileWrapper .gallery-card {
   height: 160px;
 }
-
 .ode-UserProfileWrapper .app-image {
   margin-top: 15px;
   margin-left: 15px;

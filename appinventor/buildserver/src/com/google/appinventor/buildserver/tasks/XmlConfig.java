@@ -1,14 +1,23 @@
 package com.google.appinventor.buildserver.tasks;
 
-import com.google.appinventor.buildserver.*;
-
-import java.io.*;
+import com.google.appinventor.buildserver.AnimationXmlConstants;
+import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.CompilerContext;
+import com.google.appinventor.buildserver.ExecutorUtils;
+import com.google.appinventor.buildserver.TaskResult;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * compiler.createValuesXml()
@@ -144,10 +153,10 @@ public class XmlConfig implements Task {
    * Create the default color and styling for the app.
    */
   private boolean createValuesXml(File valuesDir, String suffix) {
-    String colorPrimary = context.getProject().getPrimaryColor() == null ? "#A5CF47" : context.getProject().getPrimaryColor();
-    String colorPrimaryDark = context.getProject().getPrimaryColorDark() == null ? "#41521C" : context.getProject().getPrimaryColorDark();
-    String colorAccent = context.getProject().getAccentColor() == null ? "#00728A" : context.getProject().getAccentColor();
-    String theme = context.getProject().getTheme() == null ? "Classic" : context.getProject().getTheme();
+    String colorPrimary = context.getProject().getPrimaryColor();
+    String colorPrimaryDark = context.getProject().getPrimaryColorDark();
+    String colorAccent = context.getProject().getAccentColor();
+    String theme = context.getProject().getTheme();
     String actionbar = context.getProject().getActionBar();
     String parentTheme;
     boolean isClassicTheme = "Classic".equals(theme) || suffix.isEmpty();  // Default to classic theme prior to SDK 11

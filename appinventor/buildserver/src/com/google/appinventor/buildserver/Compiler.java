@@ -144,6 +144,7 @@ public class Compiler implements Callable<Boolean> {
 
       // Get the current time to know the time needed to execute it.
       context.getReporter().taskStart(taskName);
+      context.getStatReporter().nextStage(this, task.getSimpleName());
       long start = System.currentTimeMillis();
 
       // And then invoke the execute(ExecutorContext) method to run the Task.

@@ -1,11 +1,24 @@
 package com.google.appinventor.buildserver.tasks;
 
-import com.google.appinventor.buildserver.*;
+import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.CompilerContext;
+import com.google.appinventor.buildserver.Project;
+import com.google.appinventor.buildserver.Signatures;
+import com.google.appinventor.buildserver.TaskResult;
+import com.google.appinventor.buildserver.util.PermissionConstraint;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,12 +39,12 @@ public class CreateManifest implements Task {
     String packageName = Signatures.getPackageName(mainClass);
     String className = Signatures.getClassName(mainClass);
     String projectName = context.getProject().getProjectName();
-    String vCode = (context.getProject().getVCode() == null) ? YoungAndroidConstants.DEFAULT_VERSION_CODE : context.getProject().getVCode();
-    String vName = (context.getProject().getVName() == null) ? YoungAndroidConstants.DEFAULT_VERSION_NAME : cleanName(context.getProject().getVName());
+    String vCode = context.getProject().getVCode();
+    String vName = cleanName(context.getProject().getVName());
     if (context.isIncludeDangerousPermissions()) {
       vName += "u";
     }
-    String aName = (context.getProject().getAName() == null) ? YoungAndroidConstants.DEFAULT_APP_NAME : cleanName(context.getProject().getAName());
+    String aName = cleanName(context.getProject().getAName());
     context.getReporter().log("VCode: " + context.getProject().getVCode());
     context.getReporter().log("VName: " + context.getProject().getVName());
 
@@ -72,7 +85,20 @@ public class CreateManifest implements Task {
         }
       }
 
-      int minSdk = Integer.parseInt((context.getProject().getMinSdk() == null) ? YoungAndroidConstants.DEFAULT_MIN_SDK : context.getProject().getMinSdk());
+      final Map<String, Set<String>> queriesNeeded = context.getComponentInfo().getQueriesNeeded();
+      if (queriesNeeded.size() > 0) {
+        out.write("  <queries>\n");
+        for (Map.Entry<String, Set<String>> componentSubElSetPair : queriesNeeded.entrySet()) {
+          Set<String> subelementSet = componentSubElSetPair.getValue();
+          for (String subelement : subelementSet) {
+            // replace %packageName% with the actual packageName
+            out.write(subelement.replace("%packageName%", packageName));
+          }
+        }
+        out.write("  </queries>\n");
+      }
+
+      int minSdk = Integer.parseInt(context.getProject().getMinSdk());
       if (!context.isForCompanion()) {
         for (Set<String> minSdks : context.getComponentInfo().getMinSdksNeeded().values()) {
           for (String sdk : minSdks) {
@@ -89,6 +115,10 @@ public class CreateManifest implements Task {
       Set<String> permissions = Sets.newHashSet();
       for (Set<String> compPermissions : context.getComponentInfo().getPermissionsNeeded().values()) {
         permissions.addAll(compPermissions);
+      }
+      if (context.usesLegacyFileAccess()) {
+        permissions.add("android.permission.READ_EXTERNAL_STORAGE");
+        permissions.add("android.permission.WRITE_EXTERNAL_STORAGE");
       }
 
       // Remove Google's Forbidden Permissions
@@ -110,12 +140,31 @@ public class CreateManifest implements Task {
         permissions.remove("android.permission.WRITE_CALL_LOG");
       }
 
+      Multimap<String, PermissionConstraint<?>> permissionConstraints = HashMultimap.create();
+      for (Map<String, Set<PermissionConstraint<?>>> constraints :
+          context.getComponentInfo().getPermissionConstraintsNeeded().values()) {
+        for (Map.Entry<String, Set<PermissionConstraint<?>>> entry : constraints.entrySet()) {
+          permissionConstraints.putAll(entry.getKey(), entry.getValue());
+        }
+      }
+
       for (String permission : permissions) {
-        context.getReporter().log("Needs permission " + permission);
-        out.write("  <uses-permission android:name=\"" +
-            permission
-                .replace("%packageName%", packageName) // replace %packageName% with the actual packageName
-            + "\" />\n");
+        if ("android.permission.WRITE_EXTERNAL_STORAGE".equals(permission)) {
+          out.write("  <uses-permission android:name=\"" + permission + "\"");
+
+          // we don't need these permissions post KitKat, but we do need them for the companion
+          if (!context.isForCompanion() && !context.usesLegacyFileAccess() && minSdk < 29) {
+            out.write(" android:maxSdkVersion=\"29\"");
+          }
+
+        } else {
+          out.write("  <uses-permission android:name=\""
+              // replace %packageName% with the actual packageName
+              + permission.replace("%packageName%", packageName)
+              + "\"");
+        }
+        outputPermissionConstraints(out, permissionConstraints, permission);
+        out.write(" />");
       }
 
       if (context.isForCompanion()) { // This is so ACRA can do a logcat on phones older then Jelly Bean
@@ -186,6 +235,11 @@ public class CreateManifest implements Task {
         } else if (isMain && context.isForCompanion()) {
           out.write("android:launchMode=\"singleTop\" ");
         }
+        // The line below is required for Android 12+
+        out.write("android:exported=\"true\" ");
+        out.write("android:screenOrientation=\"");
+        out.write(context.getFormOrientations().get(source.getSimpleName()));
+        out.write("\" ");
 
         out.write("android:windowSoftInputMode=\"stateHidden\" ");
 
@@ -200,6 +254,14 @@ public class CreateManifest implements Task {
           out.write("        <category android:name=\"android.intent.category.LAUNCHER\" />\n");
         }
         out.write("      </intent-filter>\n");
+        if (context.isForCompanion()) {
+          out.write("<intent-filter>\n");
+          out.write("<action android:name=\"android.intent.action.VIEW\" />\n");
+          out.write("<category android:name=\"android.intent.category.DEFAULT\" />\n");
+          out.write("<category android:name=\"android.intent.category.BROWSABLE\" />\n");
+          out.write("<data android:scheme=\"aicompanion\" android:host=\"comp\" />\n");
+          out.write("</intent-filter>\n");
+        }
 
         if (context.getSimpleCompTypes().contains("com.google.appinventor.components.runtime.NearField") && !context.isForCompanion() && isMain) {
           //  make the form respond to NDEF_DISCOVERED
@@ -214,7 +276,7 @@ public class CreateManifest implements Task {
         }
         out.write("    </activity>\n");
 
-        Set<Map.Entry<String, Set<String>>> metadataElements = context.getComponentInfo().getActivitiyMetadataNeeded().entrySet();
+        Set<Map.Entry<String, Set<String>>> metadataElements = context.getComponentInfo().getActivityMetadataNeeded().entrySet();
 
         // If any component needs to register additional activity metadata,
         // insert them into the manifest here.
@@ -232,7 +294,7 @@ public class CreateManifest implements Task {
 
         // Companion display a splash screen... define it's activity here
         if (isMain && context.isForCompanion()) {
-          out.write("    <activity android:name=\"com.google.appinventor.components.runtime.SplashActivity\" android:screenOrientation=\"behind\" android:configChanges=\"keyboardHidden|orientation\">\n");
+          out.write("    <activity android:name=\"com.google.appinventor.components.runtime.SplashActivity\" android:exported=\"false\" android:screenOrientation=\"behind\" android:configChanges=\"keyboardHidden|orientation\">\n");
           out.write("      <intent-filter>\n");
           out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
           out.write("      </intent-filter>\n");
@@ -243,14 +305,15 @@ public class CreateManifest implements Task {
       // Collect any additional <application> subelements into a single set.
       Set<Map.Entry<String, Set<String>>> subelements = Sets.newHashSet();
       subelements.addAll(context.getComponentInfo().getActivitiesNeeded().entrySet());
-      subelements.addAll(context.getComponentInfo().getMetadataNeeded().entrySet());
       subelements.addAll(context.getComponentInfo().getBroadcastReceiversNeeded().entrySet());
-      subelements.addAll(context.getComponentInfo().getServicesNeeded().entrySet());
       subelements.addAll(context.getComponentInfo().getContentProvidersNeeded().entrySet());
+      subelements.addAll(context.getComponentInfo().getMetadataNeeded().entrySet());
+      subelements.addAll(context.getComponentInfo().getServicesNeeded().entrySet());
 
 
-      // If any component needs to register additional activities or
-      // broadcast receivers, insert them into the manifest here.
+      // If any component needs to register additional activities,
+      // broadcast receivers, services or content providers, insert
+      // them into the manifest here.
       if (!subelements.isEmpty()) {
         for (Map.Entry<String, Set<String>> componentSubElSetPair : subelements) {
           Set<String> subelementSet = componentSubElSetPair.getValue();
@@ -299,7 +362,7 @@ public class CreateManifest implements Task {
           }
         }
         out.write(
-            "<receiver android:name=\"" + brNameAndActions[0] + "\" >\n");
+            "<receiver android:name=\"" + brNameAndActions[0] + "\" android:exported=\"true\">\n");
         if (brNameAndActions.length > 1) {
           out.write("  <intent-filter>\n");
           for (int i = 1; i < brNameAndActions.length; i++) {
@@ -331,6 +394,42 @@ public class CreateManifest implements Task {
     }
 
     return TaskResult.generateSuccess();
+  }
+
+  private void outputPermissionConstraints(Writer out,
+      Multimap<String, PermissionConstraint<?>> permissionConstraints, String permission)
+      throws IOException {
+    Collection<PermissionConstraint<?>> constraints = permissionConstraints.get(permission);
+    if (constraints == null) {
+      return;
+    }
+
+    Multimap<String, PermissionConstraint<?>> aggregates = HashMultimap.create();
+    for (PermissionConstraint<?> constraint : constraints) {
+      aggregates.put(constraint.getAttribute(), constraint);
+    }
+
+    for (Map.Entry<String, Collection<PermissionConstraint<?>>> entry : aggregates.asMap().entrySet()) {
+      String attribute = entry.getKey();
+      // TODO(ewpatton): Figure out a more generic way of doing this.
+      String value;
+      if ("maxSdkVersion".equals(attribute)) {
+        PermissionConstraint.Reducer<Integer> reducer = new PermissionConstraint.MaxReducer();
+        for (PermissionConstraint<?> constraint : entry.getValue()) {
+          constraint.as(Integer.class).apply(reducer);
+        }
+        value = reducer.toString();
+      } else if ("usesPermissionFlags".equals(attribute)) {
+        PermissionConstraint.Reducer<String> reducer = new PermissionConstraint.UnionReducer<>();
+        for (PermissionConstraint<?> constraint : entry.getValue()) {
+          constraint.as(String.class).apply(reducer);
+        }
+        value = reducer.toString();
+      } else {
+        throw new IllegalArgumentException("Unrecognized permission constraint: " + attribute);
+      }
+      out.write(" android:" + attribute + "=\"" + value + "\"");
+    }
   }
 
   private String cleanName(String name) {

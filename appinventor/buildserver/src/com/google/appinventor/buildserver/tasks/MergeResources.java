@@ -2,7 +2,11 @@ package com.google.appinventor.buildserver.tasks;
 
 import com.android.ide.common.internal.AaptCruncher;
 import com.android.ide.common.internal.PngCruncher;
-import com.google.appinventor.buildserver.*;
+
+import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.CompilerContext;
+import com.google.appinventor.buildserver.ExecutorUtils;
+import com.google.appinventor.buildserver.TaskResult;
 
 import java.io.File;
 

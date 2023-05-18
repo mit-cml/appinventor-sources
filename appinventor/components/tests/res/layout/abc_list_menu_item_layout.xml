@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 
-<android.support.v7.internal.view.menu.ListMenuItemView
+<androidx.appcompat.view.menu.ListMenuItemView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="?attr/listPreferredItemHeightSmall">
@@ -57,5 +57,5 @@
 
     <!-- Checkbox, and/or radio button will be inserted here. -->
 
-</android.support.v7.internal.view.menu.ListMenuItemView>
-<!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/lmp-mr1-supportlib-release/frameworks/support/v7/appcompat/res/layout/abc_list_menu_item_layout.xml -->
+</androidx.appcompat.view.menu.ListMenuItemView>
+<!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/layout/abc_list_menu_item_layout.xml -->

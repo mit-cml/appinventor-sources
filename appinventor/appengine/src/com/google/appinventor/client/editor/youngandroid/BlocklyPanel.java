@@ -26,8 +26,10 @@ import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.query.client.builders.JsniBundle;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -35,6 +37,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -74,7 +78,8 @@ public class BlocklyPanel extends HTMLPanel {
         MESSAGES.useCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.PREFERRED_COMPANION + "u"),
         YaVersion.COMPANION_UPDATE_URL,
         YaVersion.COMPANION_UPDATE_URL1,
-        YaVersion.COMPANION_UPDATE_EMULATOR_URL);
+        YaVersion.COMPANION_UPDATE_EMULATOR_URL,
+        YaVersion.EMULATOR_UPDATE_URL);
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }
@@ -139,6 +144,7 @@ public class BlocklyPanel extends HTMLPanel {
     getElement().addClassName("svg");
     getElement().setId(formName);
     this.formName = formName;
+
     /* Blockly initialization now occurs in three stages. This is due to the fact that certain
      * Blockly objects rely on SVG methods such as getScreenCTM(), which are not properly
      * initialized and/or null prior to the svg element being attached to the DOM. The first
@@ -151,6 +157,7 @@ public class BlocklyPanel extends HTMLPanel {
      * has been downloaded from the server.
      */
     initWorkspace(Long.toString(blocksEditor.getProjectId()), readOnly, LocaleInfo.getCurrentLocale().isRTL());
+
     OdeLog.log("Created BlocklyPanel for " + formName);
   }
 
@@ -344,7 +351,17 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static DialogBox createDialog(String title, String mess, final String buttonName, Boolean destructive,
                                        final String cancelButtonName, int size, final JavaScriptObject callback) {
-    final DialogBox dialogBox = new DialogBox();
+    // Holds a reference to an event handler to process key.
+    // AtomicReference would be a better way to do this but GWT doesn't support it.
+    final List<HandlerRegistration> registrationHolder = new ArrayList<>();
+    final DialogBox dialogBox = new DialogBox() {
+      @Override
+      public void hide(boolean autoClosed) {
+        super.hide(autoClosed);
+        // Clean up the registration
+        registrationHolder.get(0).removeHandler();
+      }
+    };
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(title);
     if (size == 0) {
@@ -389,6 +406,17 @@ public class BlocklyPanel extends HTMLPanel {
     terminateDrag();  // cancel a drag before showing the modal dialog
     ConnectProgressBar.tempHide(true); // Hide any connection progress bar
     dialogBox.show();
+    // Note that this MUST be after dialogBox.show() so that it runs after the dialog's
+    // event handlers, which cancel key events like Ctrl+C. We want people to be able to
+    // copy text, so we 'consume' the event to let the browser perform its default behavior.
+    registrationHolder.add(Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+      @Override
+      public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        if ((event.getTypeInt() & Event.KEYEVENTS) != 0) {
+          event.consume();
+        }
+      }
+    }));
     return dialogBox;
   }
 
@@ -700,7 +728,27 @@ public class BlocklyPanel extends HTMLPanel {
    */
   public native String getBlocksContent() /*-{
     return this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
-      .saveBlocksFile();
+      .saveBlocksFile(@com.google.appinventor.common.version.AppInventorFeatures::doPrettifyXml()());
+  }-*/;
+
+  public native void addScreen(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .addScreen(name);
+  }-*/;
+
+  public native void removeScreen(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .removeScreen(name);
+  }-*/;
+
+  public native void addAsset(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .addAsset(name);
+  }-*/;
+
+  public native void removeAsset(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .removeAsset(name);
   }-*/;
 
   /**
@@ -798,6 +846,11 @@ public class BlocklyPanel extends HTMLPanel {
     Blockly.hideChaff();
   }-*/;
 
+  public native void resize()/*-{
+    Blockly.svgResize(
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
+  }-*/;
+
   public native void toggleWarning()/*-{
     var handler =
       this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
@@ -858,11 +911,12 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.PREFERRED_COMPANION;
   }-*/;
 
-  static native void setPreferredCompanion(String comp, String url, String url1, String url2) /*-{
+  static native void setPreferredCompanion(String comp, String url, String url1, String url2, String url3) /*-{
     $wnd.PREFERRED_COMPANION = comp;
     $wnd.COMPANION_UPDATE_URL = url;
     $wnd.COMPANION_UPDATE_URL1 = url1;
     $wnd.COMPANION_UPDATE_EMULATOR_URL = url2;
+    $wnd.EMULATOR_UPDATE_URL = url3;
   }-*/;
 
   static native void addAcceptableCompanionPackage(String comp) /*-{

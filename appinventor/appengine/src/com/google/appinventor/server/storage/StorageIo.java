@@ -571,13 +571,6 @@ public interface StorageIo {
   // Cleanup expired nonces
   void cleanupNonces();
 
-  // Check to see if user needs projects upgraded (moved to GCS)
-  // if so, add task to task queue
-  void checkUpgrade(String userId);
-
-  // Called by the task queue to actually upgrade user's projects
-  void doUpgrade(String userId);
-
   // Retrieve the current Splash Screen Version
   SplashConfig getSplashConfig();
 
@@ -651,4 +644,24 @@ public interface StorageIo {
    */
   void assertUserHasProject(String userId, long projectId);
 
+  List<String> getTutorialsUrlAllowed();
+
+  /**
+   * Delete a user account.
+   *
+   * This requires that all of the user's projects are delete, or at
+   * least has the projectMovedToTrashFlag set.  If so, this method
+   * will remove all vestiges of the user's account and returns
+   * true. Otherwise returns false.
+   *
+   * Note: If a user attempts to login again after this method is run,
+   * a new account will automatically be created.
+   *
+   * @param userId id for the user
+   * @return true on successful account deletion, otherwise false
+   */
+  boolean deleteAccount(String userId);
+
 }
+
+

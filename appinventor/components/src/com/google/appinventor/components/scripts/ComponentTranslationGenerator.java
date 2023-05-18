@@ -7,6 +7,7 @@ package com.google.appinventor.components.scripts;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -26,6 +27,7 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
   private Map<String, String> tooltips = new TreeMap<>();
   private Map<String, Set<String>> tooltipComponent = new TreeMap<>();
   private Set<String> collisionKeys = new HashSet<>();
+  private Set<String> writtenKeys = new HashSet<>();
 
   private void outputComponent(ComponentInfo component, Set<String> outProperties,
       Set<String> outMethods, Set<String> outEvents, StringBuilder sb) {
@@ -47,10 +49,16 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
           || prop.isDeprecated() // [lyn, 2015/12/30] For deprecated AI2 blocks (but not AI1 blocks)
                                  // must translate property names so they can be displayed in bad blocks.
           ) {
-        sb.append("    map.put(\"PROPERTY-" + propertyName + "\", MESSAGES." + propertyName + "Properties());\n");
+        String key = "PROPERTY-" + propertyName;
+        if (writtenKeys.contains(key)) {
+          continue;
+        }
+        sb.append("    map.put(\"" + key + "\", MESSAGES." + propertyName + "Properties());\n");
         outProperties.add(propertyName);
+        writtenKeys.add(key);
       }
     }
+
     sb.append("\n\n/* Events */\n\n");
     for (Event event : component.events.values()) {
       String propertyName = event.name;
@@ -58,13 +66,18 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
           || event.deprecated // [lyn, 2015/12/30] For deprecated AI2 blocks (but not AI1 blocks)
                               // must translate property names so they can be displayed in bad blocks.
           ) {
-        sb.append("    map.put(\"EVENT-" + propertyName + "\", MESSAGES." + propertyName + "Events());\n");
+        String key = "EVENT-" + propertyName;
+        if (!writtenKeys.contains(key)) {
+          sb.append("    map.put(\"" + key + "\", MESSAGES." + propertyName + "Events());\n");
+        }
         for (Parameter parameter : event.parameters) {
           parameters.put(parameter.name, parameter);
         }
         outEvents.add(propertyName);
+        writtenKeys.add(key);
       }
     }
+
     sb.append("\n\n/* Methods */\n\n");
     for (Method method : component.methods.values()) {
       String propertyName = method.name;
@@ -72,21 +85,37 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
           || method.deprecated // [lyn, 2015/12/30] For deprecated AI2 blocks (but not AI1 blocks)
                                // must translate property names so they can be displayed in bad blocks.
           ) {
-        sb.append("    map.put(\"METHOD-" + propertyName + "\", MESSAGES." + propertyName + "Methods());\n");
+        String key = "METHOD-" + propertyName;
+        if (!writtenKeys.contains(key)) {
+          sb.append("    map.put(\"" + key + "\", MESSAGES." + propertyName + "Methods());\n");
+        }
         for (Parameter parameter : method.parameters) {
           parameters.put(parameter.name, parameter);
         }
         outMethods.add(propertyName);
+        writtenKeys.add(key);
       }
     }
-    // This special case adds the notAlreadyHandled parameter, which is the second parameter for the generic event
-    // handlers. Since it's not explicitly declared in any event handler, we add it here for internationalization.
-    parameters.put("notAlreadyHandled", new Parameter("notAlreadyHandled", "boolean"));
+
     sb.append("\n\n/* Parameters */\n\n");
+    // TODO: Instead of compiling the names here, can we just create a list instead of a map?
+    ArrayList<String> names = new ArrayList();
     for (Parameter parameter : parameters.values()) {
-      sb.append("    map.put(\"PARAM-" + parameter.name + "\", MESSAGES." +
-          Character.toLowerCase(parameter.name.charAt(0)) + parameter.name.substring(1) +
-          "Params());\n");
+      names.add(parameter.name);
+    }
+    // This special case adds the notAlreadyHandled parameter, which is the second parameter for the
+    // generic event handlers. Since it's not explicitly declared in any event handler, we add it
+    // here for internationalization.
+    names.add("notAlreadyHandled");
+    for (String name : names) {
+      String key = "PARAM-" + name;
+      if (writtenKeys.contains(key)) {
+        continue;
+      }
+      sb.append("    map.put(\"").append(key).append("\", MESSAGES.")
+          .append(Character.toLowerCase(name.charAt(0))).append(name.substring(1))
+          .append("Params());\n");
+      writtenKeys.add(key);
     }
   }
 
@@ -112,7 +141,8 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
 
   private void outputComponentAutogen(ComponentInfo component,
       Map<String, Property> outProperties, Map<String, Method> outMethods,
-      Map<String, Event> outEvents, StringBuilder sb) {
+      Map<String, Event> outEvents, Map<String, Parameter> outParams,
+      StringBuilder sb) {
     sb.append("  @DefaultMessage(\"");
     sb.append(component.getName());
     sb.append("\")\n");
@@ -137,11 +167,17 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     for (Method method : component.methods.values()) {
       if (method.userVisible || method.deprecated) {
         outMethods.put(method.name, method);
+        for (Parameter p : method.parameters) {
+          outParams.put(p.name, p);
+        }
       }
     }
     for (Event event : component.events.values()) {
       if (event.userVisible || event.deprecated) {
         outEvents.put(event.name, event);
+        for (Parameter p : event.parameters) {
+          outParams.put(p.name, p);
+        }
       }
     }
   }
@@ -156,7 +192,7 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("Properties();\n\n");
   }
 
-  private void outputMethodAutogen(Method method, Map<String, Parameter> outParameters, StringBuilder sb) {
+  private void outputMethodAutogen(Method method, StringBuilder sb) {
     sb.append("  @DefaultMessage(\"");
     sb.append(sanitize(method.name));
     sb.append("\")\n");
@@ -164,12 +200,9 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("  String ");
     sb.append(method.name);
     sb.append("Methods();\n\n");
-    for (Parameter param : method.parameters) {
-      outParameters.put(param.name, param);
-    }
   }
 
-  private void outputEventAutogen(Event event, Map<String, Parameter> outParameters, StringBuilder sb) {
+  private void outputEventAutogen(Event event, StringBuilder sb) {
     sb.append("  @DefaultMessage(\"");
     sb.append(sanitize(event.name));
     sb.append("\")\n");
@@ -177,9 +210,6 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("  String ");
     sb.append(event.name);
     sb.append("Events();\n\n");
-    for (Parameter param : event.parameters) {
-      outParameters.put(param.name, param);
-    }
   }
 
   private void outputParameterAutogen(Parameter parameter, StringBuilder sb) {
@@ -279,9 +309,13 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("\n  /* Components */\n");
     for (Map.Entry<String, ComponentInfo> entry : components.entrySet()) {
       ComponentInfo component = entry.getValue();
-      outputComponentAutogen(component, properties, methods, events, sb);
+      outputComponentAutogen(component, properties, methods, events, parameters, sb);
       computeTooltipMap(component);
       categories.add(component.getCategory());
+    }
+    for (Map.Entry<String, OptionList> entry : optionLists.entrySet()) {
+      OptionList optionList = entry.getValue();
+      outputOptionListAutogen(optionList, sb);
     }
     for (String key : collisionKeys) {
       tooltips.remove(key);
@@ -292,11 +326,11 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     }
     sb.append("\n  /* Methods */\n");
     for (Map.Entry<String, Method> entry : methods.entrySet()) {
-      outputMethodAutogen(entry.getValue(), parameters, sb);
+      outputMethodAutogen(entry.getValue(), sb);
     }
     sb.append("\n  /* Events */\n");
     for (Map.Entry<String, Event> entry : events.entrySet()) {
-      outputEventAutogen(entry.getValue(), parameters, sb);
+      outputEventAutogen(entry.getValue(), sb);
     }
     for (Map.Entry<String, String> entry : tooltips.entrySet()) {
       sb.append("  @DefaultMessage(\"");
@@ -327,6 +361,59 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     writer.close();
     messager.printMessage(Kind.NOTE, "Wrote file " + src.toUri());
   }
+
+  protected void outputOptionList(OptionList optionList, StringBuilder sb) {
+    String tagName = optionList.getTagName();
+    sb.append("\n\n/* OptionList ");
+    sb.append(tagName);
+    sb.append(" */\n\n");
+
+    // Translate tag.
+    String lowerTagName = Character.toLowerCase(tagName.charAt(0))
+        + tagName.substring(1);
+    sb.append("     map.put(\"OPTIONLIST-")
+      .append(tagName)
+      .append("\", MESSAGES.")
+      .append(lowerTagName)
+      .append("OptionList());\n");
+
+    // Translate options.
+    for (Option option : optionList.asCollection()) {
+      sb.append("    map.put(\"OPTION-")
+        .append(tagName)
+        .append(option.name)
+        .append("\", MESSAGES.")
+        .append(lowerTagName)
+        .append(option.name)
+        .append("Option());\n");
+    }
+  }
+
+  private void outputOptionListAutogen(OptionList optionList, StringBuilder sb) {
+    String tagName = optionList.getTagName();
+    String lowerTagName = Character.toLowerCase(tagName.charAt(0))
+        + tagName.substring(1);
+
+    sb.append("  @DefaultMessage(\"")
+      .append(sanitize(tagName))
+      .append("\")\n")
+      .append("  @Description(\"\")\n")
+      .append("  String ")
+      .append(lowerTagName)
+      .append("OptionList();\n\n");
+
+    for (Option option : optionList.asCollection()) {
+      sb.append("  @DefaultMessage(\"")
+        .append(sanitize(option.name))
+        .append("\")\n")
+        .append("  @Description(\"\")\n")
+        .append("  String ")
+        .append(lowerTagName)
+        .append(option.name)
+        .append("Option();\n\n");
+    }
+  }
+
 
   @Override
   protected void outputResults() throws IOException {
@@ -400,6 +487,10 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
       ComponentInfo component = entry.getValue();
       outputComponent(component, properties, methods, events, sb);
       categories.add(component.getCategory());
+    }
+    for (Map.Entry<String, OptionList> entry : optionLists.entrySet()) {
+      OptionList optionList = entry.getValue();
+      outputOptionList(optionList, sb);
     }
     sb.append("\n\n    /* Descriptions */\n\n");
     for (String key : tooltips.keySet()) {

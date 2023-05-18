@@ -1,17 +1,26 @@
 package com.google.appinventor.buildserver.tasks;
 
-import com.google.appinventor.buildserver.*;
+import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.CompilerContext;
+import com.google.appinventor.buildserver.ExecutorUtils;
+import com.google.appinventor.buildserver.TaskResult;
+import com.google.appinventor.buildserver.util.PermissionConstraint;
 import com.google.appinventor.components.common.ComponentDescriptorConstants;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 
 /**
@@ -28,23 +37,33 @@ import java.util.concurrent.ConcurrentMap;
 public class LoadComponentInfo implements Task {
   CompilerContext context = null;
   private ConcurrentMap<String, Map<String, Map<String, Set<String>>>> conditionals;
+  /**
+   * Maps types to blocks to permissions to permission constraints.
+   */
+  private final ConcurrentMap<String, Map<String, Map<String, Set<PermissionConstraint<?>>>>>
+      conditionalPermissionConstraints = new ConcurrentHashMap<>();
 
   @Override
   public TaskResult execute(CompilerContext context) {
     this.context = context;
     this.conditionals = new ConcurrentHashMap<>();
 
+    if (!loadJsonInfo()) {
+      return TaskResult.generateError("Unable to load component information");
+    }
+
     if (!this.generateAssets() ||
         !this.generateActivities() ||
-        !this.generateMetadata() ||
         !this.generateActivityMetadata() ||
         !this.generateBroadcastReceivers() ||
-        !this.generateServices() ||
         !this.generateContentProviders() ||
         !this.generateLibNames() ||
+        !this.generateMetadata() ||
+        !this.generateMinSdks() ||
         !this.generateNativeLibNames() ||
         !this.generatePermissions() ||
-        !this.generateMinSdks()) {
+        !this.generateQueries() ||
+        !this.generateServices()) {
       return TaskResult.generateError("Could not extract info from the app");
     }
 
@@ -129,7 +148,7 @@ public class LoadComponentInfo implements Task {
    */
   private boolean generateActivityMetadata() {
     try {
-      loadJsonInfo(context.getComponentInfo().getActivitiyMetadataNeeded(), ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET);
+      loadJsonInfo(context.getComponentInfo().getActivityMetadataNeeded(), ComponentDescriptorConstants.ACTIVITY_METADATA_TARGET);
     } catch (IOException | JSONException e) {
       // This is fatal.
       context.getReporter().error("There was an error in the Activity Metadata stage", true);
@@ -137,11 +156,11 @@ public class LoadComponentInfo implements Task {
     }
 
     int n = 0;
-    for (String type : context.getComponentInfo().getActivitiyMetadataNeeded().keySet()) {
-      n += context.getComponentInfo().getActivitiyMetadataNeeded().get(type).size();
+    for (String type : context.getComponentInfo().getActivityMetadataNeeded().keySet()) {
+      n += context.getComponentInfo().getActivityMetadataNeeded().get(type).size();
     }
 
-    context.getReporter().log("Component activities metadata needed, n = " + n);
+    context.getReporter().log("Component activity metadata needed, n = " + n);
     return true;
   }
 
@@ -161,6 +180,24 @@ public class LoadComponentInfo implements Task {
     mergeConditionals(conditionals.get(ComponentDescriptorConstants.BROADCAST_RECEIVERS_TARGET), context.getComponentInfo().getBroadcastReceiversNeeded());
 
     // TODO: Output the number of broadcast receivers
+
+    return true;
+  }
+
+  /**
+   * Generate a set of conditionally included queries needed by this project.
+   */
+  private boolean generateQueries() {
+    try {
+      loadJsonInfo(context.getComponentInfo().getQueriesNeeded(), ComponentDescriptorConstants.QUERIES_TARGET);
+    } catch (IOException | JSONException e) {
+      // This is fatal.
+      context.getReporter().error("There was an error in the Queries stage", true);
+      return false;
+    }
+
+    mergeConditionals(conditionals.get(ComponentDescriptorConstants.QUERIES_TARGET),
+        context.getComponentInfo().getQueriesNeeded());
 
     return true;
   }
@@ -258,6 +295,7 @@ public class LoadComponentInfo implements Task {
     context.getReporter().info("Generating permissions...");
     try {
       loadJsonInfo(context.getComponentInfo().getPermissionsNeeded(), ComponentDescriptorConstants.PERMISSIONS_TARGET);
+      loadPermissionConstraints();
       if (context.getProject() != null) {    // Only do this if we have a project (testing doesn't provide one :-( ).
         context.getReporter().log("usesLocation = " + context.getProject().getUsesLocation());
         if (context.getProject().getUsesLocation().equals("True")) { // Add location permissions if any WebViewer requests it
@@ -276,6 +314,7 @@ public class LoadComponentInfo implements Task {
     }
 
     mergeConditionals(conditionals.get(ComponentDescriptorConstants.PERMISSIONS_TARGET), context.getComponentInfo().getPermissionsNeeded());
+    mergeConditionalPermissionConstraints();
 
     int n = 0;
     for (String type : context.getComponentInfo().getPermissionsNeeded().keySet()) {
@@ -317,35 +356,43 @@ public class LoadComponentInfo implements Task {
     return true;
   }
 
+  private boolean loadJsonInfo() {
+    try {
+      context.setBuildInfo(new JSONArray(
+          "[" + context.getSimpleCompsBuildInfo().join(",") + ","
+              + context.getExtCompsBuildInfo().join(",") + "]"));
+      return true;
+    } catch (JSONException e) {
+      e.printStackTrace();
+      context.getReporter().error("There was an error loading component info", true);
+      return false;
+    }
+  }
+
+  /*
+   *  Loads permissions and information on component libraries and assets.
+   */
   private void loadJsonInfo(ConcurrentMap<String, Set<String>> infoMap, String targetInfo) throws IOException, JSONException {
     synchronized (infoMap) {
       if (!infoMap.isEmpty()) {
         return;
       }
 
-      JSONArray buildInfo = new JSONArray(
-          "[" + context.getSimpleCompsBuildInfo().join(",") + "," +
-              context.getExtCompsBuildInfo().join(",") + "]");
+      if (context.getBuildInfo() == null) {
+        loadJsonInfo();
+      }
+
+      final JSONArray buildInfo = context.getBuildInfo();
 
       for (int i = 0; i < buildInfo.length(); ++i) {
         JSONObject compJson = buildInfo.getJSONObject(i);
         JSONArray infoArray = null;
         String type = compJson.getString("type");
-        try {
-          infoArray = compJson.getJSONArray(targetInfo);
-        } catch (JSONException e) {
-          // Older compiled extensions will not have a broadcastReceiver
-          // defined. Rather then require them all to be recompiled, we
-          // treat the missing attribute as empty.
-          if (e.getMessage().contains("broadcastReceiver")) {
-            context.getReporter().warn("Component \"" + type + "\" does not have a broadcast receiver.");
-            continue;
-          } else if (e.getMessage().contains(ComponentDescriptorConstants.ANDROIDMINSDK_TARGET)) {
-            context.getReporter().warn("Component \"" + type + "\" does not specify a minimum SDK.");
-            continue;
-          } else {
-            throw e;
-          }
+        infoArray = compJson.optJSONArray(targetInfo);
+        if (infoArray == null) {
+          context.getReporter().info("Component \"" + type + "\" does not specify " + targetInfo);
+          // Continue to process other components
+          continue;
         }
 
         if (!context.getSimpleCompTypes().contains(type) && !context.getExtCompTypes().contains(type)) {
@@ -405,6 +452,85 @@ public class LoadComponentInfo implements Task {
     }
   }
 
+  private void loadPermissionConstraints() throws JSONException {
+    if (!context.getComponentInfo().getPermissionConstraintsNeeded().isEmpty()) {
+      // Nothing to do here.
+      return;
+    }
+
+    final JSONArray buildInfo = context.getBuildInfo();
+    final Set<String> simpleCompTypes = context.getSimpleCompTypes();
+    final Set<String> extCompTypes = context.getExtCompTypes();
+
+    for (int i = 0; i < buildInfo.length(); i++) {
+      JSONObject compJson = buildInfo.getJSONObject(i);
+      String type = compJson.getString("type");
+      if (!simpleCompTypes.contains(type) && !extCompTypes.contains(type)) {
+        // Component type not used.
+        continue;
+      }
+
+      JSONObject infoObject = compJson.optJSONObject(
+          ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET);
+      if (infoObject == null) {
+        context.getReporter().info("Component \"" + type + "\" does not specify "
+            + ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET);
+        continue;
+      }
+
+      // Handle declared constraints
+      context.getComponentInfo().getPermissionConstraintsNeeded()
+          .put(type, processPermissionConstraints(infoObject));
+
+      // Handle conditional constraints
+      infoObject = compJson.optJSONObject(ComponentDescriptorConstants.CONDITIONALS_TARGET);
+      if (infoObject == null) {
+        continue;
+      }
+      infoObject = infoObject.optJSONObject(
+          ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET);
+      if (infoObject == null) {
+        continue;
+      }
+      Map<String, Map<String, Set<PermissionConstraint<?>>>> blockConstraints = new HashMap<>();
+      Iterator<?> it = infoObject.keys();
+      while (it.hasNext()) {
+        String blockName = (String) it.next();
+        JSONObject constraints = infoObject.getJSONObject(blockName);
+        blockConstraints.put(blockName, processPermissionConstraints(constraints));
+      }
+      conditionalPermissionConstraints.put(type, blockConstraints);
+    }
+  }
+
+  private Map<String, Set<PermissionConstraint<?>>> processPermissionConstraints(JSONObject src)
+      throws JSONException {
+    Map<String, Set<PermissionConstraint<?>>> neededConstraints = new HashMap<>();
+    Iterator<?> it = src.keys();
+    while (it.hasNext()) {
+      String permissionName = (String) it.next();
+      Set<PermissionConstraint<?>> constraintSet = neededConstraints.get(permissionName);
+      if (constraintSet == null) {
+        constraintSet = new HashSet<>();
+        neededConstraints.put(permissionName, constraintSet);
+      }
+      JSONObject constraints = src.getJSONObject(permissionName);
+      Iterator<?> it2 = constraints.keys();
+      while (it2.hasNext()) {
+        String attribute = (String) it2.next();
+        Object value = constraints.get(attribute);
+        if (value instanceof Number) {
+          constraintSet.add(new PermissionConstraint<>(permissionName, attribute,
+              ((Number) value).intValue()));
+        } else {
+          constraintSet.add(new PermissionConstraint<>(permissionName, attribute,
+              value.toString()));
+        }
+      }
+    }
+    return neededConstraints;
+  }
+
   private void mergeConditionals(Map<String, Map<String, Set<String>>> conditionalMap, Map<String, Set<String>> infoMap) {
     if (conditionalMap != null) {
       if (context.isForCompanion()) {
@@ -434,6 +560,48 @@ public class LoadComponentInfo implements Task {
                 }
               }
             }
+          }
+        }
+      }
+    }
+  }
+
+  private void mergeConditionalPermissionConstraints() {
+    if (context.isForCompanion()) {
+      return;  // We don't want to place additional constraints on the companion
+    }
+
+    final Map<String, Set<String>> compBlocks = context.getCompBlocks();
+    final Map<String, Map<String, Set<PermissionConstraint<?>>>> permissionConstraintsNeeded =
+        context.getComponentInfo().getPermissionConstraintsNeeded();
+
+    for (String type : conditionalPermissionConstraints.keySet()) {
+      String name = type.substring(type.lastIndexOf('.') + 1);
+      Set<String> blocks = compBlocks.get(name);
+      if (blocks == null) {  // this component wasn't used
+        continue;
+      }
+      Map<String, Map<String, Set<PermissionConstraint<?>>>> blockPermsMap =
+          conditionalPermissionConstraints.get(type);
+      if (!permissionConstraintsNeeded.containsKey(type)) {
+        permissionConstraintsNeeded.put(type,
+            new HashMap<String, Set<PermissionConstraint<?>>>());
+      }
+      Map<String, Set<PermissionConstraint<?>>> permConstraints =
+          permissionConstraintsNeeded.get(type);
+      for (String blockName : blocks) {
+        Map<String, Set<PermissionConstraint<?>>> blockPerms = blockPermsMap.get(blockName);
+        if (blockPerms == null) {
+          // No constraints specified by this block
+          continue;
+        }
+        for (Map.Entry<String, Set<PermissionConstraint<?>>> entry1 : blockPerms.entrySet()) {
+          String permName = entry1.getKey();
+          Set<PermissionConstraint<?>> constraints = entry1.getValue();
+          if (permConstraints.containsKey(permName)) {
+            permConstraints.get(permName).addAll(constraints);
+          } else {
+            permConstraints.put(permName, new HashSet<>(constraints));
           }
         }
       }

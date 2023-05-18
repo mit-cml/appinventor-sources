@@ -152,6 +152,9 @@ A round 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react
  the center of the `Ball` will be placed here. Otherwise, the top left edge of the `Ball` will
  be placed at the specified coordinates.
 
+{:id="Ball.MoveToPoint" class="method"} <i/> MoveToPoint(*coordinates*{:.list})
+: Moves the Ball so that its origin is at the specified x and y coordinates.
+
 {:id="Ball.PointInDirection" class="method"} <i/> PointInDirection(*x*{:.number},*y*{:.number})
 : Turns this `Ball` to point toward the point with the coordinates `(x, y)`.
 
@@ -216,6 +219,9 @@ A two-dimensional touch-sensitive rectangular panel on which drawing can
  i.e., `0xAARRGGBB`.  An alpha of `00` indicates fully
  transparent and `FF` means opaque.
 
+{:id="Canvas.TapThreshold" .number} *TapThreshold*
+: Specifies the movement threshold to differentiate a drag from a tap.
+
 {:id="Canvas.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the canvas's text: center, normal
  (starting at the specified point in [`DrawText`](#Canvas.DrawText) or
@@ -249,7 +255,7 @@ A two-dimensional touch-sensitive rectangular panel on which drawing can
 : When a fling gesture (quick swipe) is made on the canvas: provides
  the (x,y) position of the start of the fling, relative to the upper
  left of the canvas. Also provides the speed (pixels per millisecond) and heading
- (0-360 degrees) of the fling, as well as the x velocity and y velocity
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
  components of the fling's vector. The value "flungSprite" is true if a sprite
  was located near the the starting point of the fling gesture.
 
@@ -423,7 +429,7 @@ A 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react to to
 : When a fling gesture (quick swipe) is made on the sprite: provides
  the (x,y) position of the start of the fling, relative to the upper
  left of the canvas. Also provides the speed (pixels per millisecond) and heading
- (0-360 degrees) of the fling, as well as the x velocity and y velocity
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
  components of the fling's vector.
 
 {:id="ImageSprite.NoLongerCollidingWith"} NoLongerCollidingWith(*other*{:.component})
@@ -464,6 +470,9 @@ A 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react to to
 
 {:id="ImageSprite.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number})
 : Moves the ImageSprite so that its left top corner is at the specified `x` and `y` coordinates.
+
+{:id="ImageSprite.MoveToPoint" class="method"} <i/> MoveToPoint(*coordinates*{:.list})
+: Moves the ImageSprite so that its origin is at the specified x and y coordinates.
 
 {:id="ImageSprite.PointInDirection" class="method"} <i/> PointInDirection(*x*{:.number},*y*{:.number})
 : Turns this `ImageSprite` to point toward the point with the coordinates `(x, y)`.

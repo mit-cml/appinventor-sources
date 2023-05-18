@@ -2,8 +2,10 @@ package com.google.appinventor.buildserver.context;
 
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.util.AARLibraries;
+import com.google.appinventor.buildserver.util.PermissionConstraint;
 import com.google.common.collect.Sets;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -14,13 +16,19 @@ public class ComponentInfo {
   private final ConcurrentMap<String, Set<String>> assetsNeeded;
   private final ConcurrentMap<String, Set<String>> activitiesNeeded;
   private final ConcurrentMap<String, Set<String>> metadataNeeded;
-  private final ConcurrentMap<String, Set<String>> activitiyMetadataNeeded;
+  private final ConcurrentMap<String, Set<String>> activityMetadataNeeded;
   private final ConcurrentMap<String, Set<String>> broadcastReceiversNeeded;
   private final ConcurrentMap<String, Set<String>> libsNeeded;
   private final ConcurrentMap<String, Set<String>> nativeLibsNeeded;
   private final ConcurrentMap<String, Set<String>> permissionsNeeded;
+  /**
+   * Maps types to permissions to permission constraints.
+   */
+  private final ConcurrentMap<String, Map<String, Set<PermissionConstraint<?>>>>
+      permissionConstraintsNeeded;
   private final ConcurrentMap<String, Set<String>> minSdksNeeded;
   private final ConcurrentMap<String, Set<String>> componentBroadcastReceiver;
+  private final ConcurrentMap<String, Set<String>> queriesNeeded;
   private final ConcurrentMap<String, Set<String>> servicesNeeded;
   private final ConcurrentMap<String, Set<String>> contentProvidersNeeded;
 
@@ -31,13 +39,15 @@ public class ComponentInfo {
     assetsNeeded = new ConcurrentHashMap<>();
     activitiesNeeded = new ConcurrentHashMap<>();
     metadataNeeded = new ConcurrentHashMap<>();
-    activitiyMetadataNeeded = new ConcurrentHashMap<>();
+    activityMetadataNeeded = new ConcurrentHashMap<>();
     broadcastReceiversNeeded = new ConcurrentHashMap<>();
     libsNeeded = new ConcurrentHashMap<>();
     nativeLibsNeeded = new ConcurrentHashMap<>();
     permissionsNeeded = new ConcurrentHashMap<>();
+    permissionConstraintsNeeded = new ConcurrentHashMap<>();
     minSdksNeeded = new ConcurrentHashMap<>();
     componentBroadcastReceiver = new ConcurrentHashMap<>();
+    queriesNeeded = new ConcurrentHashMap<>();
     servicesNeeded = new ConcurrentHashMap<>();
     contentProvidersNeeded = new ConcurrentHashMap<>();
 
@@ -56,8 +66,8 @@ public class ComponentInfo {
     return metadataNeeded;
   }
 
-  public ConcurrentMap<String, Set<String>> getActivitiyMetadataNeeded() {
-    return activitiyMetadataNeeded;
+  public ConcurrentMap<String, Set<String>> getActivityMetadataNeeded() {
+    return activityMetadataNeeded;
   }
 
   public ConcurrentMap<String, Set<String>> getBroadcastReceiversNeeded() {
@@ -74,6 +84,10 @@ public class ComponentInfo {
 
   public ConcurrentMap<String, Set<String>> getPermissionsNeeded() {
     return permissionsNeeded;
+  }
+
+  public ConcurrentMap<String, Map<String, Set<PermissionConstraint<?>>>> getPermissionConstraintsNeeded() {
+    return permissionConstraintsNeeded;
   }
 
   public ConcurrentMap<String, Set<String>> getMinSdksNeeded() {
@@ -98,6 +112,10 @@ public class ComponentInfo {
 
   public ConcurrentMap<String, Set<String>> getComponentBroadcastReceiver() {
     return componentBroadcastReceiver;
+  }
+
+  public ConcurrentMap<String, Set<String>> getQueriesNeeded() {
+    return queriesNeeded;
   }
 
   public ConcurrentMap<String, Set<String>> getServicesNeeded() {

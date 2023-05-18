@@ -1,9 +1,21 @@
 package com.google.appinventor.buildserver.tasks;
 
-import com.google.appinventor.buildserver.*;
+import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.CompilerContext;
+import com.google.appinventor.buildserver.Execution;
+import com.google.appinventor.buildserver.ExecutorUtils;
+import com.google.appinventor.buildserver.Project;
+import com.google.appinventor.buildserver.Signatures;
+import com.google.appinventor.buildserver.TaskResult;
+import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.common.collect.Lists;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.Reader;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

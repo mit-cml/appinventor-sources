@@ -326,7 +326,7 @@ Blockly.Blocks['controls_forRange'] = {
     }
     return result;
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM}]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_NUMBER_TYPEBLOCK}]
 };
 
 Blockly.Blocks['controls_forEach'] = {
@@ -413,7 +413,7 @@ Blockly.Blocks['controls_forEach'] = {
     }
     return result;
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM}]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_ITEM_TYPEBLOCK}]
 };
 
 Blockly.Blocks['controls_for_each_dict'] = {

@@ -27,19 +27,20 @@ public class Resources {
   // Kawa and DX processes can use a lot of memory. We only launch one Kawa or DX process at a time.
   private static final Object SYNC_KAWA_OR_DX = new Object();
 
-  public static final String RUNTIME_FILES_DIR = "/" + "files" + "/";
+  public static final String RUNTIME_FILES_DIR = "/files/";
+  public static final String RUNTIME_TOOLS_DIR = "/tools/";
   private static final String ANDROID_RUNTIME = RUNTIME_FILES_DIR + "android.jar";
   private static final String ACRA_RUNTIME = RUNTIME_FILES_DIR + "acra-4.4.0.jar";
   private static final String KAWA_RUNTIME = RUNTIME_FILES_DIR + "kawa.jar";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR = RUNTIME_FILES_DIR + "AndroidRuntime.jar";
-  private static final String DX_JAR = RUNTIME_FILES_DIR + "dx.jar";
-  private static final String APKSIGNER_JAR = RUNTIME_FILES_DIR + "apksigner.jar";
+  private static final String DX_JAR = RUNTIME_TOOLS_DIR + "dx.jar";
+  private static final String APKSIGNER_JAR = RUNTIME_TOOLS_DIR + "apksigner.jar";
 
   public static final String YAIL_RUNTIME = RUNTIME_FILES_DIR + "runtime.scm";
   private static final String DEFAULT_ICON = RUNTIME_FILES_DIR + "ya.png";
 
   private static final String COMP_BUILD_INFO = RUNTIME_FILES_DIR + "simple_components_build_info.json";
-  private static final String BUNDLETOOL_JAR = RUNTIME_FILES_DIR + "bundletool.jar";
+  private static final String BUNDLETOOL_JAR = RUNTIME_TOOLS_DIR + "bundletool.jar";
 
   public Resources() {
     resources = new ConcurrentHashMap<>();
@@ -167,11 +168,11 @@ public class Resources {
     String osName = System.getProperty("os.name");
     String aaptTool;
     if (osName.equals("Mac OS X")) {
-      aaptTool = "/tools/mac/aapt";
+      aaptTool = RUNTIME_TOOLS_DIR + "mac/aapt";
     } else if (osName.equals("Linux")) {
-      aaptTool = "/tools/linux/aapt";
+      aaptTool = RUNTIME_TOOLS_DIR + "linux/aapt";
     } else if (osName.startsWith("Windows")) {
-      aaptTool = "/tools/windows/aapt";
+      aaptTool = RUNTIME_TOOLS_DIR + "windows/aapt";
     } else {
       aaptTool = null;
     }
@@ -184,11 +185,11 @@ public class Resources {
     String osName = System.getProperty("os.name");
     String aaptTool;
     if (osName.equals("Mac OS X")) {
-      aaptTool = "/tools/mac/aapt2";
+      aaptTool = RUNTIME_TOOLS_DIR + "mac/aapt2";
     } else if (osName.equals("Linux")) {
-      aaptTool = "/tools/linux/aapt2";
+      aaptTool = RUNTIME_TOOLS_DIR + "linux/aapt2";
     } else if (osName.startsWith("Windows")) {
-      aaptTool = "/tools/windows/aapt2";
+      aaptTool = RUNTIME_TOOLS_DIR + "windows/aapt2";
     } else {
       aaptTool = null;
     }
@@ -201,11 +202,11 @@ public class Resources {
     String osName = System.getProperty("os.name");
     String zipAlignTool;
     if (osName.equals("Mac OS X")) {
-      zipAlignTool = "/tools/mac/zipalign";
+      zipAlignTool = RUNTIME_TOOLS_DIR + "mac/zipalign";
     } else if (osName.equals("Linux")) {
-      zipAlignTool = "/tools/linux/zipalign";
+      zipAlignTool = RUNTIME_TOOLS_DIR + "linux/zipalign";
     } else if (osName.startsWith("Windows")) {
-      zipAlignTool = "/tools/windows/zipalign";
+      zipAlignTool = RUNTIME_TOOLS_DIR + "windows/zipalign";
     } else {
       zipAlignTool = null;
     }

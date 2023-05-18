@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 /**
  * Unit tests for the YailDictionary datatype.
@@ -35,6 +36,7 @@ import org.robolectric.RobolectricTestRunner;
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = 23, manifest="tests/AndroidManifest.xml")
 public class YailDictionaryTest {
 
   private static final String TEST_JSON = "{\"foo\":[{\"bar\":[0,{\"baz\":true}]}], \"num\": 1}";
@@ -372,15 +374,10 @@ public class YailDictionaryTest {
             YailList.makeList(new Object[] {
                 YailList.makeList(new Object[] { "a", "b" }), 2, 3})}),
         YailList.makeList(new Object[] { "dict",
+            YailDictionary.makeDictionary("a","b")}),
+        YailList.makeList(new Object[] { "list-with-dict", 
             YailList.makeList(new Object[] {
-                YailList.makeList(new Object[] { "a", "b" })})}),
-        YailList.makeList(new Object[] { "list-with-dict",
-            YailList.makeList(new Object[] {
-                YailList.makeList(new Object[] {
-                    YailList.makeList(new Object[] {
-                        "a", "b"
-                    })
-                })
+                YailDictionary.makeDictionary("a","b")
             })})
     });
   }

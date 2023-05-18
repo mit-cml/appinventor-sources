@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2013-2019 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2013-2022 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -41,6 +41,33 @@ Blockly.Versioning.log = function log(string) { // Display feedback on upgrade i
 };
 
 /**
+ * Updates the `<mutation>` element of `component_method` blocks to include a `shape` field that
+ * the block can use to shape itself properly in the event that the method definition is
+ * unavailable.
+ *
+ * @param {Element} dom the root of the workspace XML document
+ * @returns {Element}
+ */
+Blockly.Versioning.upgradeComponentMethods = function(dom) {
+  var els = dom.querySelectorAll('block[type="component_method"]');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    var parent = el.parentElement;
+    var mutation = el.querySelector('mutation');
+    if (!mutation) {
+      console.warn('component_method without mutation', el);
+      return;
+    }
+    if (!parent) {
+      // detached block
+      return;
+    }
+    mutation.setAttribute('shape', parent.tagName.toLowerCase());
+  }
+  return dom;
+};
+
+/**
  * [lyn, 2014/11/04] Simplified version of Halloween AI2 upgrading architecture.
  *
  * @param preUpgradeFormJsonString: JSON String from pre-upgrade Form associated with these blocks
@@ -69,6 +96,7 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
   opt_workspace = opt_workspace || Blockly.mainWorkspace;
   var preUpgradeFormJsonObject = JSON.parse(preUpgradeFormJsonString);
   var dom = Blockly.Xml.textToDom(blocksContent); // Initial blocks rep is dom for blocksContent
+  dom = Blockly.Versioning.upgradeComponentMethods(dom);
   var didUpgrade = false;
 
   /**
@@ -150,6 +178,13 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
   var blocksRep = dom; // Initial blocks rep is dom
   blocksRep = upgradeComponentType("Language", preUpgradeLanguageVersion, systemLanguageVersion, blocksRep);
 
+  if ((versionTags.length === 0 ||
+       parseInt(versionTags[0].getAttribute('ya-version'), 10) <= 217) &&
+      systemYoungAndroidVersion >= 218) {
+    // Spreadsheet was introduced as GoogleSheets in 217 but renamed in 218
+    blocksRep = Blockly.Versioning.renameComponentType("GoogleSheets", "Spreadsheet")(blocksRep);
+  }
+
   // --------------------------------------------------------------------------------
   // Upgrade components based on pre-upgrade version numbers
   var preUpgradeComponentVersionDict = Blockly.Versioning.makeComponentVersionDict(preUpgradeFormJsonObject);
@@ -160,6 +195,11 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
     if (Blockly.Versioning.isExternal(componentType, opt_workspace)) continue;
 
     var preUpgradeVersion = preUpgradeComponentVersionDict[componentType];
+    if (componentType == "GoogleSheets") { // This is a kludge, GoogleSheets is now Spreadsheet
+                                           // we renamed it above, but we are looking at the
+                                           // pre-upgraded name here, so just skip it here
+      continue;
+    }
     var systemVersion = Blockly.Versioning.getSystemComponentVersion(componentType, opt_workspace);
     blocksRep = upgradeComponentType(componentType, preUpgradeVersion, systemVersion, blocksRep);
   }
@@ -741,6 +781,30 @@ Blockly.Versioning.v17_translateComponentSetGetProperty = function(blockElem) {
   // old blocks had a 'yailtype' attribute in mutator, lets get rid of
   if (mutationElement.getAttribute('yailtype')!=null)
     mutationElement.removeAttribute('yailtype');
+}
+
+/******************************************************************************
+ Upgrade screen names to use dropdown block.
+ ******************************************************************************/
+
+Blockly.Versioning.makeScreenNamesBeDropdowns = function (blocksRep, workspace) {
+  var dom = Blockly.Versioning.ensureDom(blocksRep);
+  var allBlocks = dom.getElementsByTagName('block');
+  for (var i = 0, block; block = allBlocks[i]; i++) {
+    if (block.getAttribute('type') == 'controls_openAnotherScreen' ||
+        block.getAttribute('type') == 'controls_openAnotherScreenWithStartValue') {
+      var value = Blockly.Versioning.firstChildWithTagName(block, 'value');
+      if (!value) {
+        // The socket is empty, so nothing to do.
+        continue;
+      }
+      var name = value.getAttribute('name');
+      if (name == 'SCREENNAME' || name == 'SCREEN') {
+        Blockly.Versioning.tryReplaceBlockWithScreen(value);
+      }
+    }
+  }
+  return blocksRep;
 };
 
 /******************************************************************************
@@ -957,6 +1021,298 @@ Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName,
   }
 };
 
+
+Blockly.Versioning.makeMethodUseHelper =
+  function(componentType, methodName, argNum, replaceFunc) {
+    return function(blocksRep, workspace) {
+      var dom = Blockly.Versioning.ensureDom(blocksRep);
+      var methodNodes = Blockly.Versioning
+          .findAllMethodCalls(dom, componentType, methodName);
+      for (var i = 0, method; method = methodNodes[i]; i++) {
+        for (var j = 0, child; child = method.children[j]; j++) {
+          if (child.tagName == 'value' &&
+              child.getAttribute('name') == 'ARG' + argNum) {
+            replaceFunc(child, workspace);
+            break;
+          }
+        }
+      }
+      return dom;
+    }
+  }
+
+/**
+ * Upgrades the given method param to use a dropdown. Upgrades iff the block
+ * currently used as the arguement is a constant (like a number or text block).
+ * @param {string} componentType Name of the component type for method.
+ * @param {string} methodName Name of the method.
+ * @param {number} argNum The arguement that needs to be upgraded (zero indexed).
+ * @param {string} dropdownKey The key for the dropdown block we want to use now.
+ */
+Blockly.Versioning.makeMethodUseDropdown =
+  function(componentType, methodName, argNum, dropdownKey) {
+    return function (blocksRep, workspace) {
+      var valueMap = Blockly.Versioning.getOptionListValueMap(
+          workspace, dropdownKey);
+      var replaceFunc = function(node) {
+        Blockly.Versioning.tryReplaceBlockWithDropdown(
+            node, valueMap, dropdownKey);
+      }
+      // makeMethodUseHelper returns a function.
+      var replaceBlocks = Blockly.Versioning.makeMethodUseHelper(
+          componentType, methodName, argNum, replaceFunc);
+      return replaceBlocks(blocksRep, workspace);
+    }
+  }
+
+Blockly.Versioning.makeSetterUseHelper =
+  function(componentType, propertyName, replaceFunc) {
+    return function(blocksRep, workspace) {
+      var dom = Blockly.Versioning.ensureDom(blocksRep);
+      var props = Blockly.Versioning
+          .findAllPropertyBlocks(dom, componentType, propertyName);
+      for (var i = 0, prop; prop = props[i]; i++) {
+        var mutation = Blockly.Versioning.firstChildWithTagName(prop, 'mutation');
+        if (mutation.getAttribute('set_or_get') != 'set') {
+          continue;
+        }
+        replaceFunc(Blockly.Versioning.firstChildWithTagName(prop, 'value'), workspace);
+      }
+      return dom;
+    }
+  }
+
+Blockly.Versioning.methodToSetterWithValue =
+  function(componentType, methodName, propertyName, value) {
+    return function(blocksRep) {
+      var dom = Blockly.Versioning.ensureDom(blocksRep);
+      var methods = Blockly.Versioning.findAllMethodCalls(
+          dom, componentType, methodName);
+      for (var i = 0, method; method = methods[i]; i++) {
+        method.setAttribute('type', 'component_set_get');
+        var mutation = Blockly.Versioning.firstChildWithTagName(method, 'mutation');
+        mutation.removeAttribute('method_name');
+        mutation.setAttribute('property_name', propertyName);
+        mutation.setAttribute('set_or_get', 'set');
+        var childText;
+        if (isNaN(value)) {
+          childText = '<value name="VALUE">' +
+              '<block type="text">' +
+                '<field name="TEXT">' + value + '</field>' +
+              '</block>' +
+            '</value>';
+        } else {
+          childText = '<value name="VALUE">' +
+              '<block type="math_number">' +
+                '<field name="NUM">' + value + '</field>' +
+              '</block>' +
+            '</value>';
+        }
+        var childXml = Blockly.Versioning.xmlBlockTextToDom(childText);
+        method.appendChild(childXml);
+      }
+      return dom;
+    }
+  }
+
+/**
+ * Upgrades the given setter to use a dropdown. Upgrades iff the block
+ * currently used as the arguement is a constant (like a number or text block).
+ * @param {string} componentType Name of the component type for method.
+ * @param {string} propertyName Name of the property.
+ * @param {string} dropdownKey The key for the dropdown block we want to use now.
+ */
+Blockly.Versioning.makeSetterUseDropdown =
+  function(componentType, propertyName, dropdownKey) {
+    return function(blocksRep, workspace) {
+      var valueMap = Blockly.Versioning.getOptionListValueMap(
+          workspace, dropdownKey);
+      var replaceFunc = function(node) {
+        Blockly.Versioning.tryReplaceBlockWithDropdown(
+            node, valueMap, dropdownKey);
+      }
+      // makeSetterUseHelper returns a function.
+      var replaceBlocks = Blockly.Versioning.makeSetterUseHelper(
+        componentType, propertyName, replaceFunc);
+      return replaceBlocks(blocksRep, workspace);
+    }
+  }
+
+/**
+ * Gets the available option values for the given option list key.
+ * @param {!Blockly.Workspace} workspace Used to get the component database.
+ * @param {string} key The key to the option list.
+ * @return {!Object<!string, !string>} A map of values to their enum constant
+ *     names.
+ */
+Blockly.Versioning.getOptionListValueMap = function(workspace, key) {
+  var map = {};
+  var db = workspace.getComponentDatabase();
+  var optionList = db.getOptionList(key);
+  for (var i = 0, option; option = optionList.options[i]; i++) {
+    map[option.value] = option.name;
+    map[option.value.toLowerCase()] = option.name;
+  }
+  return map;
+}
+
+/**
+ * Replaces the block currently attached to the passed value input with a
+ * dropdown block. The currently block is replaced iff it is a constant (eg a
+ * text or number block) and the value is present in the passed valueMap.
+ * @param {Element} valueNode The node to modify.
+ * @param {!Object<!string, !string>} valueToNameMap A map of values to their
+ *     enum constant names.
+ * @param {string} dropdownKey The key for the dropdown block we want to create.
+ */
+Blockly.Versioning.tryReplaceBlockWithDropdown =
+  function(valueNode, valueToNameMap, dropdownKey) {
+    if (!valueNode) {
+      return;
+    }
+
+    // The node describing the value input's target block.
+    var targetNode = Blockly.Versioning
+        .firstChildWithTagName(valueNode, 'block');
+    if (!targetNode) {
+      return;
+    }
+
+    var name = targetNode.getAttribute('type');
+    if (name != 'text' && name != 'math_number') {
+      return;
+    }
+    var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+    if (!field) {
+      // Older projects may use <title> rather than <field> in Blockly XML
+      field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+    }
+    var targetValue = field.textContent;
+    if (!valueToNameMap[targetValue]) {
+      return;
+    }
+
+    valueNode.removeChild(targetNode);
+    var newBlock = document.createElement('block');
+    newBlock.setAttribute('type', 'helpers_dropdown');
+    var mutation = document.createElement('mutation');
+    mutation.setAttribute('key', dropdownKey);
+    var field = document.createElement('field');
+    field.setAttribute('name', 'OPTION');
+    var option = document.createTextNode(valueToNameMap[targetValue]);
+    field.appendChild(option);
+    newBlock.appendChild(mutation);
+    newBlock.appendChild(field);
+    valueNode.appendChild(newBlock);
+  }
+
+/**
+ * Replaces the block currently attached to the passed value input with a screen
+ * names block. The current block is replaced iff it is a constant (eg a text or
+ * number block).
+ * @param {Element} valueNode The node to modify.
+ */
+Blockly.Versioning.tryReplaceBlockWithScreen = function(valueNode) {
+  if (!valueNode) {
+    return;
+  }
+
+  // The node describing the value input's target block.
+  var targetNode = Blockly.Versioning
+      .firstChildWithTagName(valueNode, 'block');
+  if (!targetNode) {
+    return;
+  }
+
+  var name = targetNode.getAttribute('type');
+  if (name != 'text') {
+    return;
+  }
+  var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+  if (!field) {
+    // Older projects may use <title> rather than <field> in Blockly XML
+    field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+  }
+  var targetValue = field.textContent;
+
+  valueNode.removeChild(targetNode);
+  var newBlock = document.createElement('block');
+  newBlock.setAttribute('type', 'helpers_screen_names');
+  var field = document.createElement('field');
+  field.setAttribute('name', 'SCREEN');
+  var option = document.createTextNode(targetValue);
+  field.appendChild(option);
+  newBlock.appendChild(field);
+  valueNode.appendChild(newBlock);
+}
+
+/**
+ * Replaces the block currently attached to the passed value input with an
+ * assets block. the current block is replaced iff it is a text block.
+ * @param {Element} valueNode The node to modify.
+ */
+Blockly.Versioning.tryReplaceBlockWithAssets = function(valueNode, workspace) {
+  if (!valueNode) {
+    return;
+  }
+
+  // The node describing the value input's target block.
+  var targetNode = Blockly.Versioning
+      .firstChildWithTagName(valueNode, 'block');
+  if (!targetNode) {
+    return;
+  }
+
+  var name = targetNode.getAttribute('type');
+  if (name != 'text') {
+    return;
+  }
+  var field = Blockly.Versioning.firstChildWithTagName(targetNode, 'field');
+  if (!field) {
+    // Older projects may use <title> rather than <field> in Blockly XML
+    field = Blockly.Versioning.firstChildWithTagName(targetNode, 'title');
+  }
+  var targetValue = field.textContent;
+  if (workspace.getAssetList().indexOf(targetValue) == -1) {
+    // This is probably an http request or something. Don't upgrade.
+    return;
+  }
+
+  valueNode.removeChild(targetNode);
+  var newBlock = document.createElement('block');
+  newBlock.setAttribute('type', 'helpers_assets');
+  var field = document.createElement('field');
+  field.setAttribute('name', 'ASSET');
+  var option = document.createTextNode(targetValue);
+  field.appendChild(option);
+  newBlock.appendChild(field);
+  valueNode.appendChild(newBlock);
+}
+
+/**
+ * Replaces the block currently attached to the passed value input with a
+ * permissions dropdown block. The current block is replaced iff it is a text
+ * or number block.
+ * @param {Element} valueNode The node to modify.
+ */
+Blockly.Versioning.tryReplaceBlockWithPermissions =
+  function(valueNode, workspace) {
+    if (!valueNode) {
+      return;
+    }
+    var valueMap = Blockly.Versioning
+        .getOptionListValueMap(workspace, 'Permission');
+    var entries = Object.entries(valueMap);
+    for (var i = 0, pair; pair = entries[i]; i++) {
+      var key = pair[0];
+      var value = pair[1];
+      if (valueMap.hasOwnProperty(key)) {
+        valueMap['android.permission.' + key] = value;
+      }
+    }
+    Blockly.Versioning.tryReplaceBlockWithDropdown(valueNode, valueMap, 'Permission');
+  };
+
 /**
  * Returns the list of top-level blocks that are event handlers for the given eventName for
  * componentType.
@@ -1043,6 +1399,31 @@ Blockly.Versioning.findAllPropertyBlocks = function (dom, componentType, propert
     }
   }
   return propertyBlocks;
+};
+
+/**
+ * @param dom: DOM for XML workspace
+ * @param componentType: component type to rename
+ * @param newComponentType: New component type name
+ *
+ * @author jis@mit.edu (Jeffrey I. Schiller>
+ *
+ */
+
+Blockly.Versioning.renameComponentType = function(componentType, newComponentType) {
+  return function(blocksRep) {
+    var dom = Blockly.Versioning.ensureDom(blocksRep);
+    var allBlocks = dom.getElementsByTagName('block');
+    for (var b = 0, block; block = allBlocks[b]; b++) {
+      var mutation = Blockly.Versioning.firstChildWithTagName(block, "mutation");
+      if (mutation) {
+        if (mutation.getAttribute("component_type") == componentType) {
+          mutation.setAttribute("component_type", newComponentType);
+        }
+      }
+    }
+    return dom;
+  }
 };
 
 /**
@@ -1147,7 +1528,11 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
 
     // AI2: LegacyMode property was added.
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // Adds Sensitivity dropdown block.
+    5: Blockly.Versioning.makeSetterUseDropdown(
+          'AccelerometerSensor', 'Sensitivity', 'Sensitivity')
 
   }, // End Accelerometer upgraders
 
@@ -1213,7 +1598,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The CenterAtOrigin property was added.
     // The default value of false is correct for upgraded apps.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // The MoveToPoint method was added.
+    7: "noUpgrade",
+
+    // Adds dropdown blocks for Direction.
+    8: Blockly.Versioning.makeMethodUseDropdown('Ball', 'Bounce', 0, 'Direction')
   }, // End Ball upgraders
 
   "BarcodeScanner": {
@@ -1250,8 +1641,16 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // The BluetoothClient.DisconnectOnError property was added.
-    // No blocks need to be modified to upgrade to version 5.
-    6: "noUpgrade"
+    // No blocks need to be modified to upgrade to version 6.
+    6: "noUpgrade",
+
+    // The BluetoothClient.PollingRate property was added.
+    // No blocks need to be modified to upgrade to version 7.
+    7: "noUpgrade",
+
+    // The BluetoothClient.NoLocationNeeded property was added.
+    // No blocks need to be modified to upgrade to version 8.
+    8: "noUpgrade"
 
   }, // End BluetoothClient upgraders
 
@@ -1304,7 +1703,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: Added TouchUp and TouchDown events;
     // FontSize, FontBold, FontItalic properties made visible in block editor
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // Assets helper block was added.
+    7: Blockly.Versioning.makeSetterUseHelper(
+        'Button', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End BarcodeScanner upgraders
 
@@ -1394,9 +1797,28 @@ Blockly.Versioning.AllUpgradeMaps =
 
     //  BackgroundImageinBase64 was added
     // No blocks need to be modified to upgrade to version 13.
-    13: "noUpgrade"
+    13: "noUpgrade",
+
+    // TAP_THRESHOLD modified to be user settable
+    // TAP_THRESHOLD renamed to tapThreshold
+    // TapThreshold is added
+    // No blocks need to be modified to upgrade to version 14.
+    14: "noUpgrade",
+
+    // Assets helper block was added.
+    15: Blockly.Versioning.makeSetterUseHelper(
+        'Canvas', 'BackgroundImage', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End Canvas upgraders
+
+  "Chart": {
+    2: "noUpgrade"
+
+  }, // End Chart upgraders
+
+  "ChartData2D": {
+
+  }, // End ChartData2D upgraders
 
   "CheckBox": {
 
@@ -1435,8 +1857,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
   "CloudDB": {
 
-    //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    // This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+    // UpdateDone event was added.
+    2: "noUpgrade"
 
   },
 
@@ -1465,6 +1889,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End ContactPicker upgraders
 
+  "DataFile": {
+
+  }, // End DataFile upgraders
+
 
   "DatePicker": {
 
@@ -1476,7 +1904,11 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // AI2: SetDateToDisplayFromInstant method and Instant property are added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // Assets helper block was added.
+    4: Blockly.Versioning.makeSetterUseHelper(
+        'DatePicker', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End DatePicker upgraders
 
@@ -1517,7 +1949,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The LegacyMode property was added.
     // No blocks need to be modified to upgrade to version 3.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: The LegacyMode property was deprecated.
+    // AI2: The DefaultScope and Scope properties were added.
+    4: "noUpgrade"
 
   }, // End File upgraders
 
@@ -1571,14 +2007,34 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
+    // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+    // - Assets helper block was added.
+    4: [Blockly.Versioning.makeSetterUseDropdown(
+           'HorizontalArrangement', 'AlignHorizontal', 'HorizontalAlignment'),
+        Blockly.Versioning.makeSetterUseDropdown(
+           'HorizontalArrangement', 'AlignVertical', 'VerticalAlignment'),
+        Blockly.Versioning.makeSetterUseHelper(
+           'HorizontalArrangement', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)]
 
   }, // End HorizontalArrangement upgraders
 
   "HorizontalScrollArrangement": {
 
     // This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // For HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
+    // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+    // - Assets helper block was added.
+    2: [Blockly.Versioning.makeSetterUseDropdown(
+           'HorizontalScrollArrangement', 'AlignHorizontal', 'HorizontalAlignment'),
+        Blockly.Versioning.makeSetterUseDropdown(
+           'HorizontalScrollArrangement', 'AlignVertical', 'VerticalAlignment'),
+        Blockly.Versioning.makeSetterUseHelper('HorizontalScrollArrangement', 'Image',
+           Blockly.Versioning.tryReplaceBlockWithAssets)]
 
   }, // End HorizontalScrollArrangement upgraders
 
@@ -1596,7 +2052,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Click event was added
     // The Clickable property was added.
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // AlternateText property was added.
+    5: "noUpgrade",
+
+    // Assets helper block was added.
+    6: Blockly.Versioning.makeSetterUseHelper(
+        'Image', 'Picture', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End Image upgraders
 
@@ -1654,7 +2117,16 @@ Blockly.Versioning.AllUpgradeMaps =
           markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
         }
     */
-    6: "ai1CantDoUpgrade" // Just indicates we couldn't do upgrade even if we wanted to
+    6: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
+
+    // The MoveToPoint method was added.
+    7: "noUpgrade",
+
+    // Adds dropdown blocks for Direction.
+    // Assest helper block was added.
+    8: [Blockly.Versioning.makeMethodUseDropdown('ImageSprite', 'Bounce', 0, 'Direction'),
+        Blockly.Versioning.makeSetterUseHelper('ImageSprite', 'Picture',
+            Blockly.Versioning.tryReplaceBlockWithAssets)],
 
   }, // End ImageSprite upgraders
 
@@ -1833,7 +2305,18 @@ Blockly.Versioning.AllUpgradeMaps =
     32: "noUpgrade",
 
     // AI2: Added "contains any" and "contains all" options to the text contains block.
-    33:"noUpgrade"
+    33:"noUpgrade",
+
+    // AI2: Add screen names dropdown block.
+    34: Blockly.Versioning.makeScreenNamesBeDropdowns,
+
+    // AI2: Added List Mathematical Operations
+    35: "noUpgrade",
+
+    // AI2: Added mode on List Mathematical Operations
+    // AI2: Added "every component" block.
+    36: [Blockly.Versioning.renameBlockType('lists_minimum_number', 'lists_minimum_value'),
+         Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')]
 
   }, // End Language upgraders
 
@@ -1886,7 +2369,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
     // AI2:
     // - Added SelectionColor Property
-    5: "noUpgrade"
+    5: "noUpgrade",
+    // AI2:
+    // - Added ...
+    6: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -1927,7 +2413,14 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:
     // - The ScaleUnits and ShowScale properties were added to Map
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2:
+    // - Adds Units and MapType dropdowns.
+    6: [Blockly.Versioning.makeSetterUseDropdown(
+          'Map', 'ScaleUnits', 'ScaleUnits'),
+        Blockly.Versioning.makeSetterUseDropdown(
+          'Map', 'MapType', 'MapType')]
 
   }, // End Map upgraders
 
@@ -1950,7 +2443,18 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:
     // - The FillOpacity and StrokeOpacity properties were added
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // For MARKER_COMPONENT_VERSION 4:
+    // - Add AlignHorizontal and AlignVertical dropdown blocks.
+    // - Asset helper block was added.
+    4: [Blockly.Versioning.makeSetterUseDropdown(
+           'Marker', 'AnchorHorizontal', 'HorizontalAlignment'),
+        Blockly.Versioning.makeSetterUseDropdown(
+           'Marker', 'AnchorVertical', 'VerticalAlignment'),
+        Blockly.Versioning.makeSetterUseHelper('Marker', 'ImageAsset',
+            Blockly.Versioning.tryReplaceBlockWithAssets)],
+
   }, // End Marker upgraders
 
   "Polygon": {
@@ -1964,6 +2468,16 @@ Blockly.Versioning.AllUpgradeMaps =
     // - The FillOpacity and StrokeOpacity properties were added
     2: "noUpgrade"
   }, // End Rectangle upgraders
+
+  "Navigation": {
+    // This is an initial version. Placehoder for future upgrades.
+    1: "noUpgrade",
+
+    // Adds TransportMethod dropdown.
+    2: [Blockly.Versioning.makeSetterUseDropdown(
+          'Navigation', 'TransportationMethod', 'TransportMethod')]
+
+  }, // End Navigation upgraders.
 
   "NearField": {
 
@@ -2021,7 +2535,41 @@ Blockly.Versioning.AllUpgradeMaps =
   "NxtDirectCommands": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Add dropdown blocks.
+    2: [Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetOutputState', 0, 'NxtMotorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetOutputState', 2, 'NxtMotorMode'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetOutputState', 3, 'NxtRegulationMode'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetOutputState', 5, 'NxtRunState'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetInputMode', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetInputMode', 1, 'NxtSensorType'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'SetInputMode', 2, 'NxtSensorMode'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'GetOutputState', 0, 'NxtMotorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'GetInputValues', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'ResetInputScaledValue', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'ResetMotorPosition', 0, 'NxtMotorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'LsGetStatus', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'LsWrite', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'LsRead', 0, 'NxtSensorPort'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'MessageRead', 0, 'NxtMailbox'),
+        Blockly.Versioning.makeMethodUseDropdown(
+            'NxtDirectCommands', 'MessageWrite', 0, 'NxtMailbox')]
 
   }, // End NxtDirectCommands upgraders
 
@@ -2070,14 +2618,34 @@ Blockly.Versioning.AllUpgradeMaps =
   "Ev3ColorSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Remove SetAmbientMode, SetColorMode, and SetReflectedMode. Use Mode setter instead.
+    // Add ColorSensorMode dropdown.
+    2: [Blockly.Versioning.methodToSetterWithValue(
+          'Ev3ColorSensor', 'SetAmbientMode', 'Mode', 'ambient'),
+        Blockly.Versioning.methodToSetterWithValue(
+          'Ev3ColorSensor', 'SetColorMode', 'Mode', 'color'),
+        Blockly.Versioning.methodToSetterWithValue(
+          'Ev3ColorSensor', 'SetReflectedMode', 'Mode', 'reflected'),
+        Blockly.Versioning.makeSetterUseDropdown(
+         'Ev3ColorSensor', 'Mode', 'ColorSensorMode')]
 
   }, // End Ev3ColorSensor upgraders
 
   "Ev3GyroSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Remove SetAngleMode and SetRateMode. Use Mode setter instead.
+    // Add GyroSensorMode dropdown block.
+    2: [Blockly.Versioning.methodToSetterWithValue(
+          'Ev3GyroSensor', 'SetAngleMode', 'Mode', 'angle'),
+        Blockly.Versioning.methodToSetterWithValue(
+          'Ev3GyroSensor', 'SetRateMode', 'Mode', 'rate'),
+        Blockly.Versioning.makeSetterUseDropdown(
+          'Ev3GyroSensor', 'Mode', 'GyroSensorMode')]
 
   }, // End Ev3GyroSensor upgraders
 
@@ -2091,7 +2659,15 @@ Blockly.Versioning.AllUpgradeMaps =
   "Ev3UltrasonicSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Remove SetCmUnit and SetInchUnit. Use Unit setter instead.
+    2: [Blockly.Versioning.methodToSetterWithValue(
+          'Ev3UltrasonicSensor', 'SetCmUnit', 'Unit', 'cm'),
+        Blockly.Versioning.methodToSetterWithValue(
+          'Ev3UltrasonicSensor', 'SetInchUnit', 'Unit', 'inch'),
+        Blockly.Versioning.makeSetterUseDropdown(
+          'Ev3UltrasonicSensor', 'Unit', 'UltrasonicSensorUnit')]
 
   }, // End Ev3UltrasonicSensor upgraders
 
@@ -2145,7 +2721,10 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
 
     // PasswordVisible was added
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // NumbersOnly was added
+    5: "noUpgrade"
 
   }, // End PasswordTextBox upgraders
 
@@ -2354,8 +2933,36 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 27:
     // - Platform and PlatformVersion read-only blocks were added
-    27: "noUpgrade"
+    27: "noUpgrade",
 
+    // For FORM_COMPONENT_VERSION 28:
+    // - HighContrast and BigDefaultText properties were added
+    28: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 29:
+    // - Adds dropdown blocks for ScreenAnimation.
+    // - Adds dropdown blocks for HorizontalAlignment and VerticalAlignment.
+    // - Adds dropdown block for ScreenOrientation.
+    // - Assets helper block was added.
+    // - Adds Permission dropdown block.
+    29: [Blockly.Versioning.makeSetterUseDropdown(
+            'Form', 'OpenScreenAnimation', 'ScreenAnimation'),
+         Blockly.Versioning.makeSetterUseDropdown(
+            'Form', 'CloseScreenAnimation', 'ScreenAnimation'),
+         Blockly.Versioning.makeSetterUseDropdown(
+            'Form', 'AlignHorizontal', 'HorizontalAlignment'),
+         Blockly.Versioning.makeSetterUseDropdown(
+            'Form', 'AlignVertical', 'VerticalAlignment'),
+         Blockly.Versioning.makeSetterUseDropdown(
+            'Form', 'ScreenOrientation', 'ScreenOrientation'),
+         Blockly.Versioning.makeSetterUseHelper(
+            'Form', 'BackgroundImage', Blockly.Versioning.tryReplaceBlockWithAssets),
+         Blockly.Versioning.makeMethodUseHelper(
+            'Form', 'AskForPermission', 0, Blockly.Versioning.tryReplaceBlockWithPermissions)],
+
+    // For FORM_COMPONENT_VERSION 30:
+    // - DefaultFileScope designer property was added
+    30: "noUpgrade"
 
   }, // End Screen
 
@@ -2390,7 +2997,11 @@ Blockly.Versioning.AllUpgradeMaps =
             "Please use the Screen.ErrorOccurred event instead.");
       }
     */
-    3: "ai1CantDoUpgrade" // Just indicates we couldn't do upgrade even if we wanted to
+    3: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
+
+    // Assets helper block was added.
+    4: Blockly.Versioning.makeSetterUseHelper(
+        'Sound', 'Source', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End Sound upgraders
 
@@ -2410,7 +3021,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
     // The Stop method was added. No blocks need to be changed.
     // The SpeechRecognizer.UseLegacy property was added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // The Language property was added.
+    3: "noUpgrade"
 
   }, // End SpeechRecognizer upgraders
 
@@ -2420,6 +3034,22 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade"
 
   }, // End Spinner upgraders
+
+  "Spreadsheet": {
+    2: [
+      Blockly.Versioning.changeMethodName("Spreadsheet", "ReadCol", "ReadColumn"),
+      Blockly.Versioning.changeMethodName("Spreadsheet", "WriteCol", "WriteColumn"),
+      Blockly.Versioning.changeMethodName("Spreadsheet", "AddCol", "AddColumn"),
+      Blockly.Versioning.changeMethodName("Spreadsheet", "RemoveCol", "RemoveColumn"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "GotColData", "GotColumnData"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "FinishedWriteCol", "FinishedWriteColumn"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "FinishedAddCol", "FinishedAddColumn"),
+      Blockly.Versioning.changeEventName("Spreadsheet", "FinishedRemoveCol", "FinishedRemoveColumn"),
+      Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotFilterResult", "return_rows", "returnRows"),
+      Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotFilterResult", "return_data", "returnData"),
+      Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotColumnData", "colDataList", "columnData")
+    ]
+  },
 
   "TableArrangement": {
 
@@ -2469,7 +3099,11 @@ Blockly.Versioning.AllUpgradeMaps =
     */
     3: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
-    4: 'noUpgrade'
+    4: 'noUpgrade',
+
+    // Adds ReceivingState dropdown block.
+    5: Blockly.Versioning.makeSetterUseDropdown(
+         'Texting', 'ReceivingEnabled', 'ReceivingState')
 
   }, // End Texting
 
@@ -2502,7 +3136,11 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // AI2: SetTimeToDisplayFromInstant method and Instant property are added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // Assets helper block was added.
+    4: Blockly.Versioning.makeSetterUseHelper(
+        'TimePicker', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End TimePicker upgraders
 
@@ -2581,15 +3219,33 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade"
+    3: "noUpgrade",
 
+    // For VERTICALARRANGEMENT_COMPONENT_VERSION 4:
+    // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+    // - Assets block was added.
+    4: [Blockly.Versioning.makeSetterUseDropdown(
+           'VerticalArrangement', 'AlignHorizontal', 'HorizontalAlignment'),
+        Blockly.Versioning.makeSetterUseDropdown(
+           'VerticalArrangement', 'AlignVertical', 'VerticalAlignment'),
+        Blockly.Versioning.makeSetterUseHelper('VerticalArrangement', 'Image',
+           Blockly.Versioning.tryReplaceBlockWithAssets)]
   }, // End VerticalArrangement upgraders
 
   "VerticalScrollArrangement": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
 
+    // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
+    // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
+    // - Assets block was added.
+    2: [Blockly.Versioning.makeSetterUseDropdown(
+           'VerticalScrollArrangement', 'AlignHorizontal', 'HorizontalAlignment'),
+        Blockly.Versioning.makeSetterUseDropdown(
+           'VerticalScrollArrangement', 'AlignVertical', 'VerticalAlignment'),
+        Blockly.Versioning.makeSetterUseHelper('VerticalScrollArrangement', 'Image',
+           Blockly.Versioning.tryReplaceBlockWithAssets)]
   }, // End VerticalScrollArrangement upgraders
 
   "VideoPlayer": {
@@ -2616,7 +3272,11 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI2: Stop method was added to the VideoPlayer.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // Assets helper block was added.
+    7: Blockly.Versioning.makeSetterUseHelper(
+        'VideoPlayer', 'Source', Blockly.Versioning.tryReplaceBlockWithAssets)
 
   }, // End VideoPlayer upgraders
 
@@ -2666,7 +3326,10 @@ Blockly.Versioning.AllUpgradeMaps =
     6: "noUpgrade",
 
     // AI2: Added methods JsonTextDecodeWithDictionaries and XMLTextDecodeAsDictionary
-    7: "noUpgrade"
+    7: "noUpgrade",
+
+	// AI2: Added methods PatchText, PatchTextWithEncoding, and PatchFile
+    8: "noUpgrade"
 
   }, // End Web upgraders
 
@@ -2709,8 +3372,19 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     // AI2: ApiKey property added
-    2: "noUpgrade"
+    2: "noUpgrade",
 
-  } // End YandexTranslate upgraders
+    // YandexTranslate to be removed, rename blocks to Translator
+    // which has identical set of blocks
+    3: [
+      Blockly.Versioning.renameComponentType("YandexTranslate", "Translator"),
+      ]
+
+  }, // End YandexTranslate upgraders
+
+  "Translator": {
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+  } // End Translate upgraders
 
 };

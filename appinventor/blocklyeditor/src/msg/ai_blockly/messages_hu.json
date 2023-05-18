@@ -599,6 +599,7 @@
 	"Blockly.Msg.REPL_NETWORK_ERROR": "Hálózati Hiba",
 	"Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "Hiba történt az AI Companion segédalkalmazással való kapcsolat során.<br />Indítsd újra az AI Companion appot és kapcsolódj hozzá újra",
 	"Blockly.Msg.REPL_OK": "OK",
+	"Blockly.Msg.REPL_RESET": "Visszaállítás",
 	"Blockly.Msg.REPL_COMPANION_VERSION_CHECK": "AI Companion Verzió Ellenőrzése",
 	"Blockly.Msg.REPL_COMPANION_OUT_OF_DATE": "Az AI Companion segédalkalmazásod régi verziójával rendelkezel. Nyomd meg az 'OK' gombot a legújabb verzió letöltéséhez. Figyeld a(z)",
 	"Blockly.Msg.REPL_COMPANION_OUT_OF_DATE2": "Az AI Companion segédalkalmazásod régi verziójával rendelkezel. Indítsd újra az AI Companion alkalmazást és szkenneld be vele a lenti QR kódot az aktualizáláshoz.",

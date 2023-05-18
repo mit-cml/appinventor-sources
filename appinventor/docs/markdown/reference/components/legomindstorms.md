@@ -58,7 +58,10 @@ Table of Contents:
  property is set to True and the detected color changes
 
 {:id="Ev3ColorSensor.Mode" .text} *Mode*
-: Returns the mode of the sensor.
+: The current mode of the sensor. One of:
+     Reflected: Senses the current light level including light reflected by the sensor.
+     Ambient: Senses the current light level *not* including light reflected by the sensor.
+     Color: Senses the color the sensor is pointing at.
 
 {:id="Ev3ColorSensor.SensorPort" .text .do} *SensorPort*
 : Specifies the sensor port that the sensor is connected to.
@@ -100,15 +103,6 @@ Table of Contents:
 
 {:id="Ev3ColorSensor.GetLightLevel" class="method returns number"} <i/> GetLightLevel()
 : It returns the light level in percentage.
-
-{:id="Ev3ColorSensor.SetAmbientMode" class="method"} <i/> SetAmbientMode()
-: Make the sensor read the light level without reflected light.
-
-{:id="Ev3ColorSensor.SetColorMode" class="method"} <i/> SetColorMode()
-: Enter the color detection mode.
-
-{:id="Ev3ColorSensor.SetReflectedMode" class="method"} <i/> SetReflectedMode()
-: Make the sensor read the light level with reflected light.
 
 ## Ev3Commands  {#Ev3Commands}
 
@@ -202,12 +196,6 @@ None
 {:id="Ev3GyroSensor.GetSensorValue" class="method returns number"} <i/> GetSensorValue()
 : Returns the current angle or rotation speed based on current mode,
  or -1 if the value cannot be read from sensor.
-
-{:id="Ev3GyroSensor.SetAngleMode" class="method"} <i/> SetAngleMode()
-: Make the sensor read the angle.
-
-{:id="Ev3GyroSensor.SetRateMode" class="method"} <i/> SetRateMode()
-: Make the sensor read the rotation rate.
 
 ## Ev3Motors  {#Ev3Motors}
 
@@ -478,12 +466,6 @@ None
 
 {:id="Ev3UltrasonicSensor.GetDistance" class="method returns number"} <i/> GetDistance()
 : Returns the current distance in centimeters as a value between 0 and 254, or -1 if the distance can not be read.
-
-{:id="Ev3UltrasonicSensor.SetCmUnit" class="method"} <i/> SetCmUnit()
-: Measure the distance in centimeters.
-
-{:id="Ev3UltrasonicSensor.SetInchUnit" class="method"} <i/> SetInchUnit()
-: Measure the distance in inches.
 
 ## NxtColorSensor  {#NxtColorSensor}
 

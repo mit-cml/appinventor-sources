@@ -25,6 +25,17 @@ layout: documentation
 * [list from csv table](#listfromcsvtable)
 * [lookup in pairs](#lookupinpairs)
 * [join with separator](#joinwithseparator)
+* [make new mapped list](#mapnondest)
+* [make new filtered list](#filter)
+* [reduce list to a single value](#reduce)
+* [sort list in ascending order](#sort)
+* [sort list with a specified comparator](#sortwithcomparator)
+* [sort list with proxy values](#sortwithkey)
+* [minimum value in list](#minnumber)
+* [maximum value in list](#maximum)
+* [all but first](#butfirst)
+* [all but last](#butlast)
+* [list slices](#slices)
 
 *Need additional help understanding lists? Check out [making lists](../concepts/lists.html) on the Concepts page.*
 
@@ -126,7 +137,7 @@ If *thing* is a list, returns true; otherwise, returns false.
 
 ![](images/lists/reverse.png)
 
-Reverses a copy of the list with items in the reverse order. For example reverse([1,2,3]) returns [3,2,1]
+Returns a copy of the list with items in the reverse order. For example reverse([1,2,3]) returns [3,2,1]
 
 ### list to csv row   {#listtocsvrow}
 
@@ -177,3 +188,100 @@ pairs, then the operation will signal an error.
 ![](images/lists/joinwithseparator.png)
 
 Joins all elements in the specified list by the specified separator, producing text as a result.
+
+### make new mapped list  {#map}
+
+![](images/lists/mapnondest.png)
+
+Creates a new list from mapping each item in the input list to a new value using the provided expression.
+The body is an expression that manipulates each item in the list.
+Use the given variable name, item, to refer to the current list item.
+
+[Here](../concepts/pholo.html#map) is a tutorial on how to use the map block.
+
+### make new filtered list  {#filter}
+
+![](images/lists/filternondest.png)
+
+Create a new list from keeping each item in the input list satisfying the test.
+The body is a boolean expression that checks if an item passes the test.
+If the body returns true, then the item is added to the new filtered list.
+Use the given variable name, item, to refer to the current list item.
+
+[Here](../concepts/pholo.html#filter) is a tutorial on how to use the filter block.
+
+### reduce list to a single value  {#reduce}
+
+![](images/lists/reduce.png)
+
+Returns an accumulated value by reducing the input list.
+If the input list is empty, then initialAnswer is returned. Otherwise, answerSoFar is initialized to initialAnswer.
+The body block will be evaluated using the accumulated answerSoFar and each item in the input list.
+
+[Here](../concepts/pholo.html#reduce) is a tutorial on how to use the reduce block.
+
+### sort list in ascending order  {#sort}
+
+![](images/lists/sort.png)
+
+Create a new list from sorting the input list in ascending order.
+This is a generic sorting procedure that works on lists of any type.
+It groups items of the same type together, and then sorts accordingly within the same type group.
+The current order of the types is booleans, numbers, strings, lists and then components.
+For booleans, false is defined as less than true.
+Components are first compared with their class names.
+If they are instances of the same class, their hashcodes are used for comparison.
+
+[Here](../concepts/pholo.html#sort) is a tutorial on how to use the sort block.
+
+### sort list with a specified comparator  {#sortwithcomparator}
+
+![](images/lists/sortwithcomparator.png)
+
+Create a new list from sorting the input list in an order specified by the body of the block.
+The body of this block is a boolean expression involving item1 and item2 and returns true or false.
+If the body returns true, then item1 is merged prior to item2 in sorting.
+If the body returns false, then item2 is merged prior to item1 in sorting.
+Use the given variable names, item1 and item2, to refer to the two current list items that are being compared.
+
+[Here](../concepts/pholo.html#sortwithcomparator) is a tutorial on how to use the sort with comparator block.
+
+### sort list with key  {#sortwithkey}
+
+![](images/lists/sortwithkey.png)
+
+Create a new list from sorting the input list with the keys in ascending order.
+The keys are proxy values generated from each item in the list by the body of this block.
+
+[Here](../concepts/pholo.html#sortwithkey) is a tutorial on how to use the sort with key block.
+
+### minimum value in list  {#minnumber}
+
+![](images/lists/minnumber.png)
+
+Return the minimum number in the input list.
+
+### maximum value in list  {#maxnumber}
+
+![](images/lists/maxnumber.png)
+
+Return the maximum number in the input list.
+
+### all but first  {#butfirst}
+
+![](images/lists/butfirst.png)
+
+Return a list without the first item in the input list.
+
+### all but last  {#butlast}
+
+![](images/lists/butlast.png)
+
+Return a list without the last item in the input list.
+
+### list slices  {#slices}
+
+![](images/lists/slices.png)
+
+Return a list from slicing the input list at the two given index.
+The returned list contains items of the input list that starts from index1 up to but not including index2.

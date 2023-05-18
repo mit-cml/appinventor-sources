@@ -214,4 +214,17 @@ public class FormPropertiesAnalyzer {
     }
     return result;
   }
+
+  /**
+   * Computes a mapping from form name to desired orientation set by the user.
+   *
+   * @param source the contents of a .scm file
+   * @return screen orientation map
+   * @throws JSONException if the form's properties field is missing
+   */
+  public static String getFormOrientation(String source) throws JSONException {
+    JSONObject propertiesObject = parseSourceFile(source);
+    JSONObject props = propertiesObject.getJSONObject("Properties");
+    return props.optString("ScreenOrientation", "unspecified");
+  }
 }

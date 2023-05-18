@@ -60,8 +60,6 @@
 
     <!-- Name of storage bucket in Google Cloud Store -->
     <property name="gcs.bucket" value="" />
-    <!-- Whether or not to use GCS for storage -->
-    <property name="use.gcs" value="true" />
 
     <!-- set to true if users need to accept a Terms of Service the first time
       they access App Inventor -->
@@ -113,6 +111,10 @@
          MOTD checking, make the interval long, because this check is
          resource expensive on App Engine -->
     <property name="motd.check.interval.secs" value="0" />
+
+    <!-- The time at which the server should show an expiration notice,
+         specified in ISO 8601 format, e.g., 2021-12-31T11:59:59Z -->
+    <property name="service.expires.time" value="" />
 
     <!-- Set this to false if we should not send the Git build version with build requests.
          This is useful when testing new servers where we don't want to require the

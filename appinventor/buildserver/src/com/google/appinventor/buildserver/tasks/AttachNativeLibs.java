@@ -1,6 +1,10 @@
 package com.google.appinventor.buildserver.tasks;
 
-import com.google.appinventor.buildserver.*;
+import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.CompilerContext;
+import com.google.appinventor.buildserver.ExecutorUtils;
+import com.google.appinventor.buildserver.TaskResult;
+import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.appinventor.components.common.ComponentDescriptorConstants;
 import com.google.common.io.Files;
 
