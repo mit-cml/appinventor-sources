@@ -4,7 +4,7 @@
   width: 0;
 }
 
-.item .gwt-TreeItem.gwt-TreeItem-selected {
+.item .gwt-TreeItem .gwt-TreeItem-selected {
   background: c-highlight;
 }
 
