@@ -73,8 +73,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
       @Override
       public void onClick(ClickEvent event) {
         if (assetsFolder != null) {
-          FileUploadWizard uploader = new FileUploadWizard(assetsFolder);
-          uploader.show();
+          new FileUploadWizard(assetsFolder);
         }
       }
     });
