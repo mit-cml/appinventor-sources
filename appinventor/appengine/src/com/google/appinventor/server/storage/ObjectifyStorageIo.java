@@ -2445,7 +2445,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   @VisibleForTesting
   void setGcsFileContent(String gcsPath, byte[] content) throws IOException {
     GcsOutputChannel outputChannel = gcsService.createOrReplace(
-      new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), gcsPath),
+      new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), gcsPath),
         GcsFileOptions.getDefaultInstance());
     outputChannel.write(ByteBuffer.wrap(content));
     outputChannel.close();
