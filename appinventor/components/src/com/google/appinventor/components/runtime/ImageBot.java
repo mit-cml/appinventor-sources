@@ -61,7 +61,8 @@ import org.json.JSONObject;
     version = YaVersion.IMAGEBOT_COMPONENT_VERSION,
     iconName = "images/paintpalette.png",
     nonVisible = true,
-    category = ComponentCategory.EXPERIMENTAL
+    category = ComponentCategory.EXPERIMENTAL,
+    androidMinSdk = 9
 )
 public class ImageBot extends AndroidNonvisibleComponent {
   public static final String LOG_TAG = ImageBot.class.getSimpleName();
@@ -410,7 +411,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
       ColorMatrixColorFilter filter = new ColorMatrixColorFilter(transform);
       Paint paint = new Paint();
       paint.setColorFilter(filter);
-      Bitmap newBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888, true);
+      Bitmap newBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
       android.graphics.Canvas canvas = new android.graphics.Canvas(newBitmap);
       canvas.drawBitmap(bitmap, 0.0f, 0.0f, paint);
       bitmap = newBitmap;
