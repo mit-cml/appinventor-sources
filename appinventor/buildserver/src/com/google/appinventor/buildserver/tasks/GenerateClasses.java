@@ -8,6 +8,7 @@ import com.google.appinventor.buildserver.Project;
 import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
+import com.google.appinventor.buildserver.interfaces.Task;
 import com.google.common.collect.Lists;
 
 import java.io.ByteArrayOutputStream;

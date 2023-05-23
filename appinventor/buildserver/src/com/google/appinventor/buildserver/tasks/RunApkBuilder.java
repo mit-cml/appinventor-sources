@@ -3,8 +3,8 @@ package com.google.appinventor.buildserver.tasks;
 import com.android.sdklib.build.ApkBuilder;
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.CompilerContext;
-import com.google.appinventor.buildserver.Task;
 import com.google.appinventor.buildserver.TaskResult;
+import com.google.appinventor.buildserver.interfaces.Task;
 
 import java.io.File;
 

@@ -4,6 +4,7 @@ import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.CompilerContext;
 import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
+import com.google.appinventor.buildserver.interfaces.Task;
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
 

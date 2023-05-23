@@ -5,6 +5,7 @@ import com.google.appinventor.buildserver.CompilerContext;
 import com.google.appinventor.buildserver.Execution;
 import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
+import com.google.appinventor.buildserver.interfaces.Task;
 
 import com.google.appinventor.buildserver.util.AabPaths;
 import com.google.appinventor.buildserver.util.AabZipper;

@@ -4,6 +4,7 @@ import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.CompilerContext;
 import com.google.appinventor.buildserver.ExecutorUtils;
 import com.google.appinventor.buildserver.TaskResult;
+import com.google.appinventor.buildserver.interfaces.Task;
 import com.google.common.base.Strings;
 
 import java.awt.Graphics2D;
