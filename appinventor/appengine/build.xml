@@ -553,7 +553,6 @@
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
-        <!-- <pathelement location="${local.build.dir}/AiClientLib.jar"/> -->
         <!-- external libs -->
         <pathelement location="${lib.dir}/charba/charba-2.5-sources.jar" />
         <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
@@ -577,11 +576,6 @@
           file="${build.dir}/components/simple_components.json" />
     <copy todir="${build.war.dir}/WEB-INF/classes">
       <fileset dir="src" excludes="**/*.java"/>
-    </copy>
-        <copy todir="${build.classes.dir}" >  
-        <fileset dir="${build.war.dir}/WEB-INF/classes">  
-            <include name="${build.war.dir}/WEB-INF/classes/**"/>
-        </fileset>
     </copy>
   </target>
 
